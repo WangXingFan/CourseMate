@@ -291,10 +291,13 @@ func (s *Service) BatchDeleteUpstreams(ctx context.Context, upstreamIDs []uint) 
 
 func (s *Service) validateUpstreamBaseURL(raw string) error {
 	env := ""
+	ssrfProtectionEnabled := false
 	if s != nil && s.cfg != nil {
-		env = s.cfg.Snapshot().Env
+		cfg := s.cfg.Snapshot()
+		env = cfg.Env
+		ssrfProtectionEnabled = cfg.SSRFProtectionEnabled
 	}
-	if err := security.ValidateOutboundHTTPURL(raw, env); err != nil {
+	if err := security.ValidateOutboundHTTPURL(raw, env, ssrfProtectionEnabled); err != nil {
 		return ErrInvalidUpstreamBaseURL
 	}
 	return nil

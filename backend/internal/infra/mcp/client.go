@@ -53,12 +53,12 @@ type Tool struct {
 
 // NewClient 创建 MCP 客户端。
 func NewClient() *Client {
-	return NewClientWithEnv("")
+	return NewClientWithEnv("", false)
 }
 
 // NewClientWithEnv 创建带运行环境的 MCP 客户端。
-func NewClientWithEnv(env string) *Client {
-	transport := security.NewOutboundHTTPTransport(env, 10*time.Second)
+func NewClientWithEnv(env string, ssrfProtectionEnabled bool) *Client {
+	transport := security.NewOutboundHTTPTransport(env, ssrfProtectionEnabled, 10*time.Second)
 	return &Client{
 		httpClient: &http.Client{
 			Timeout:   30 * time.Second,

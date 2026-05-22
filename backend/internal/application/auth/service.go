@@ -66,10 +66,13 @@ func NewService(cfg config.Config, repo repository.AuthRepository, geoResolver *
 // NewServiceWithRuntime 创建使用运行时配置容器的服务。
 func NewServiceWithRuntime(cfg *config.Runtime, repo repository.AuthRepository, geoResolver *geoip.Client) *Service {
 	env := ""
+	ssrfProtectionEnabled := false
 	if cfg != nil {
-		env = cfg.Snapshot().Env
+		snapshot := cfg.Snapshot()
+		env = snapshot.Env
+		ssrfProtectionEnabled = snapshot.SSRFProtectionEnabled
 	}
-	transport := security.NewOutboundHTTPTransport(env, 10*time.Second)
+	transport := security.NewOutboundHTTPTransport(env, ssrfProtectionEnabled, 10*time.Second)
 	return &Service{
 		cfg:         cfg,
 		repo:        repo,

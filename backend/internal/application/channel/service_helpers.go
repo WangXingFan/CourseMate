@@ -547,7 +547,7 @@ func detectModelIcon(candidates ...string) string {
 				return "sora"
 			case strings.HasPrefix(value, "gpt-"), strings.HasPrefix(value, "chatgpt"), strings.HasPrefix(value, "gpt-image"),
 				strings.HasPrefix(value, "o1"), strings.HasPrefix(value, "o3"), strings.HasPrefix(value, "o4"), strings.HasPrefix(value, "codex"):
-				return "chatgpt"
+				return "openai"
 			}
 		}
 	}

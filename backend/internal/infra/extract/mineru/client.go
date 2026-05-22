@@ -30,11 +30,12 @@ const (
 
 // ClientConfig 表示 MinerU 服务接入配置。
 type ClientConfig struct {
-	Source         string
-	BaseURL        string
-	AuthToken      string
-	TimeoutSeconds int
-	Env            string
+	Source                string
+	BaseURL               string
+	AuthToken             string
+	TimeoutSeconds        int
+	Env                   string
+	SSRFProtectionEnabled bool
 }
 
 // Request 表示一次 MinerU 文本提取请求。
@@ -64,20 +65,20 @@ func New(cfg ClientConfig) *Client {
 		source:             source,
 		baseURL:            baseURL,
 		authToken:          strings.TrimSpace(cfg.AuthToken),
-		httpClient:         newServiceHTTPClient(timeout, source, cfg.Env),
-		artifactHTTPClient: newSafeHTTPClient(timeout, cfg.Env),
+		httpClient:         newServiceHTTPClient(timeout, source, cfg.Env, cfg.SSRFProtectionEnabled),
+		artifactHTTPClient: newSafeHTTPClient(timeout, cfg.Env, cfg.SSRFProtectionEnabled),
 	}
 }
 
-func newServiceHTTPClient(timeout time.Duration, source string, env string) *http.Client {
+func newServiceHTTPClient(timeout time.Duration, source string, env string, ssrfProtectionEnabled bool) *http.Client {
 	if normalizeSource(source) == SourceSelfHosted {
 		return platformtracing.NewHTTPClient(timeout)
 	}
-	return newSafeHTTPClient(timeout, env)
+	return newSafeHTTPClient(timeout, env, ssrfProtectionEnabled)
 }
 
-func newSafeHTTPClient(timeout time.Duration, env string) *http.Client {
-	transport := security.NewOutboundHTTPTransport(env, 10*time.Second)
+func newSafeHTTPClient(timeout time.Duration, env string, ssrfProtectionEnabled bool) *http.Client {
+	transport := security.NewOutboundHTTPTransport(env, ssrfProtectionEnabled, 10*time.Second)
 	return &http.Client{
 		Timeout:   timeout,
 		Transport: platformtracing.NewHTTPTransport(transport),

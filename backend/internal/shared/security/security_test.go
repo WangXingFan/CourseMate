@@ -16,17 +16,26 @@ func TestRedactHeadersJSONMasksSensitiveHeaders(t *testing.T) {
 }
 
 func TestValidateOutboundHTTPURLRejectsPrivateIPInProduction(t *testing.T) {
-	if err := ValidateOutboundHTTPURL("http://127.0.0.1:8080", "prod"); err == nil {
+	if err := ValidateOutboundHTTPURL("http://127.0.0.1:8080", "prod", true); err == nil {
 		t.Fatal("expected private loopback URL to be rejected in production")
 	}
-	if err := ValidateOutboundHTTPURL("http://127.0.0.1:8080", "dev"); err != nil {
+	if err := ValidateOutboundHTTPURL("http://127.0.0.1:8080", "dev", true); err != nil {
 		t.Fatalf("dev URL should remain available for local testing: %v", err)
 	}
 }
 
 func TestValidateOutboundHTTPURLRejectsMetadataIP(t *testing.T) {
-	if err := ValidateOutboundHTTPURL("http://100.100.100.200/latest/meta-data", "prod"); err == nil {
+	if err := ValidateOutboundHTTPURL("http://100.100.100.200/latest/meta-data", "prod", true); err == nil {
 		t.Fatal("expected cloud metadata URL to be rejected")
+	}
+}
+
+func TestValidateOutboundHTTPURLAllowsPrivateIPWhenSSRFProtectionDisabled(t *testing.T) {
+	if err := ValidateOutboundHTTPURL("http://127.0.0.1:8080", "prod", false); err != nil {
+		t.Fatalf("SSRF protection disabled should allow private URL: %v", err)
+	}
+	if err := ValidateOutboundHTTPURL("http://100.100.100.200/latest/meta-data", "prod", false); err != nil {
+		t.Fatalf("SSRF protection disabled should allow metadata URL: %v", err)
 	}
 }
 
@@ -34,6 +43,7 @@ func TestOutboundDialerRejectsResolvedPrivateIPInProduction(t *testing.T) {
 	dialCalled := false
 	dial := newOutboundDialContext(
 		"prod",
+		true,
 		func(context.Context, string) ([]net.IPAddr, error) {
 			return []net.IPAddr{{IP: net.ParseIP("10.0.0.10")}}, nil
 		},
@@ -56,6 +66,7 @@ func TestOutboundDialerRejectsMixedResolvedIPsInProduction(t *testing.T) {
 	dialCalled := false
 	dial := newOutboundDialContext(
 		"prod",
+		true,
 		func(context.Context, string) ([]net.IPAddr, error) {
 			return []net.IPAddr{
 				{IP: net.ParseIP("8.8.8.8")},
@@ -82,6 +93,7 @@ func TestOutboundDialerDialsResolvedPublicIPInProduction(t *testing.T) {
 	dialErr := errors.New("dial sentinel")
 	dial := newOutboundDialContext(
 		"prod",
+		true,
 		func(context.Context, string) ([]net.IPAddr, error) {
 			return []net.IPAddr{{IP: net.ParseIP("8.8.8.8")}}, nil
 		},
@@ -106,6 +118,7 @@ func TestOutboundDialerSkipsResolutionOutsideProduction(t *testing.T) {
 	dialErr := errors.New("dial sentinel")
 	dial := newOutboundDialContext(
 		"dev",
+		true,
 		func(context.Context, string) ([]net.IPAddr, error) {
 			resolveCalled = true
 			return nil, errors.New("resolve should not be called")
@@ -122,6 +135,35 @@ func TestOutboundDialerSkipsResolutionOutsideProduction(t *testing.T) {
 	}
 	if resolveCalled {
 		t.Fatal("development dialer should not resolve or enforce SSRF policy")
+	}
+	if dialAddress != "localhost:8080" {
+		t.Fatalf("expected original address, got %q", dialAddress)
+	}
+}
+
+func TestOutboundDialerSkipsResolutionWhenSSRFProtectionDisabled(t *testing.T) {
+	resolveCalled := false
+	var dialAddress string
+	dialErr := errors.New("dial sentinel")
+	dial := newOutboundDialContext(
+		"prod",
+		false,
+		func(context.Context, string) ([]net.IPAddr, error) {
+			resolveCalled = true
+			return []net.IPAddr{{IP: net.ParseIP("127.0.0.1")}}, nil
+		},
+		func(_ context.Context, _ string, address string) (net.Conn, error) {
+			dialAddress = address
+			return nil, dialErr
+		},
+	)
+
+	_, err := dial(context.Background(), "tcp", "localhost:8080")
+	if !errors.Is(err, dialErr) {
+		t.Fatalf("expected dial sentinel, got %v", err)
+	}
+	if resolveCalled {
+		t.Fatal("disabled SSRF protection should not resolve or enforce outbound policy")
 	}
 	if dialAddress != "localhost:8080" {
 		t.Fatalf("expected original address, got %q", dialAddress)

@@ -23,6 +23,8 @@ security:
   # data_encryption_key protects upstream API keys, SSO secrets, MCP tokens, and TOTP secrets.
   jwt_secret: "change-me-dev-jwt-secret"
   data_encryption_key: "change-me-dev-data-encryption-key-32-bytes-min"
+  # Optional: set true to block outbound requests to localhost, private networks, link-local, and metadata IPs in prod.
+  ssrf_protection_enabled: false
 
 database:
   postgres:

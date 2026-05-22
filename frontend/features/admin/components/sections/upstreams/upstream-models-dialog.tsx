@@ -227,7 +227,7 @@ const ModelRow = React.memo(function ModelRow({ row, isSelected, onSelect, onUpd
         row.isDirty && "bg-amber-50/40 dark:bg-amber-900/10",
       )}
     >
-      <TableCell className="w-[44px] px-0 py-0 text-center whitespace-nowrap">
+      <TableCell className="w-[44px] py-0 text-center whitespace-nowrap">
         <div className="flex h-10 items-center justify-center">
           <Checkbox
             checked={isSelected}
@@ -1233,7 +1233,7 @@ export function UpstreamModelsDialog({
             <Table className="min-w-[800px]">
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
-                    <TableHead className="w-[44px] px-0 py-0 text-center">
+                    <TableHead className="w-[44px] py-0 text-center">
                       <div className="flex h-8 items-center justify-center">
                         <Checkbox
                           checked={allSelected ? true : someSelected ? "indeterminate" : false}

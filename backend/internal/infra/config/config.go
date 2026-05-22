@@ -128,8 +128,9 @@ type yamlConfig struct {
 		MaxHeaderBytes           int    `yaml:"max_header_bytes"`
 	} `yaml:"server"`
 	Security struct {
-		JWTSecret         string `yaml:"jwt_secret"`
-		DataEncryptionKey string `yaml:"data_encryption_key"`
+		JWTSecret             string `yaml:"jwt_secret"`
+		DataEncryptionKey     string `yaml:"data_encryption_key"`
+		SSRFProtectionEnabled *bool  `yaml:"ssrf_protection_enabled"`
 	} `yaml:"security"`
 	Database struct {
 		Postgres struct {
@@ -199,6 +200,7 @@ type Config struct {
 	HTTPMaxHeaderBytes           int
 	JWTSecret                    string
 	DataEncryptionKey            string
+	SSRFProtectionEnabled        bool
 	PostgresDSN                  string
 	PostgresMaxOpenConns         int
 	PostgresMaxIdleConns         int
@@ -395,6 +397,7 @@ func Load() Config {
 		HTTPMaxHeaderBytes:           envOrInt("HTTP_MAX_HEADER_BYTES", yc.Server.MaxHeaderBytes, defaultHTTPMaxHeaderBytes),
 		JWTSecret:                    envOr("JWT_SECRET", yc.Security.JWTSecret, defaultJWTSecret),
 		DataEncryptionKey:            envOr("DATA_ENCRYPTION_KEY", yc.Security.DataEncryptionKey, defaultDataEncryptionKey),
+		SSRFProtectionEnabled:        envOrBoolPtr("SSRF_PROTECTION_ENABLED", yc.Security.SSRFProtectionEnabled, false),
 		PostgresDSN:                  envOr("POSTGRES_DSN", yc.Database.Postgres.DSN, "host=127.0.0.1 user=deeix_chat password=deeix_chat_dev_2026 dbname=deeix_chat port=5432 sslmode=disable TimeZone=Asia/Shanghai"),
 		PostgresMaxOpenConns:         envOrInt("POSTGRES_MAX_OPEN_CONNS", yc.Database.Postgres.MaxOpenConns, 30),
 		PostgresMaxIdleConns:         envOrInt("POSTGRES_MAX_IDLE_CONNS", yc.Database.Postgres.MaxIdleConns, 10),

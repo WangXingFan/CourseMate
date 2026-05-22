@@ -37,10 +37,11 @@ const (
 
 // Client 负责跨厂商共享的 HTTP client、adapter 路由和上游调试能力。
 type Client struct {
-	baseTransport *http.Transport
-	httpClients   sync.Map
-	adapters      map[string]transportAdapter
-	env           string
+	baseTransport         *http.Transport
+	httpClients           sync.Map
+	adapters              map[string]transportAdapter
+	env                   string
+	ssrfProtectionEnabled bool
 }
 
 // RouteConfig 定义渠道路由调用参数。
@@ -622,11 +623,11 @@ func (e *UpstreamError) Error() string {
 
 // NewClient 创建上游调用客户端。
 func NewClient() *Client {
-	return NewClientWithEnv("")
+	return NewClientWithEnv("", false)
 }
 
 // NewClientWithEnv 创建带运行环境的上游调用客户端。
-func NewClientWithEnv(env string) *Client {
+func NewClientWithEnv(env string, ssrfProtectionEnabled bool) *Client {
 	transport := &http.Transport{
 		MaxIdleConns:        100,
 		MaxIdleConnsPerHost: 20,
@@ -634,8 +635,9 @@ func NewClientWithEnv(env string) *Client {
 		ForceAttemptHTTP2:   true,
 	}
 	client := &Client{
-		baseTransport: transport,
-		env:           strings.TrimSpace(env),
+		baseTransport:         transport,
+		env:                   strings.TrimSpace(env),
+		ssrfProtectionEnabled: ssrfProtectionEnabled,
 	}
 	client.adapters = map[string]transportAdapter{
 		AdapterOpenAIResponses:        &openAIResponsesAdapter{client: client},
@@ -678,7 +680,7 @@ func (c *Client) httpClientForRoute(route RouteConfig) *http.Client {
 
 func (c *Client) newHTTPClient(connectTimeoutMS int) *http.Client {
 	transport := c.baseTransport.Clone()
-	transport.DialContext = security.NewOutboundDialContext(c.env, time.Duration(connectTimeoutMS)*time.Millisecond, 30*time.Second)
+	transport.DialContext = security.NewOutboundDialContext(c.env, c.ssrfProtectionEnabled, time.Duration(connectTimeoutMS)*time.Millisecond, 30*time.Second)
 
 	return &http.Client{
 		Timeout:   0,

@@ -145,7 +145,7 @@ func (s *Service) resolveSelectedToolRuntime(ctx context.Context, toolIDs []uint
 			if err != nil || server == nil || server.Status != "active" {
 				continue
 			}
-			if validateErr := security.ValidateOutboundHTTPURL(server.BaseURL, cfg.Env); validateErr != nil {
+			if validateErr := security.ValidateOutboundHTTPURL(server.BaseURL, cfg.Env, cfg.SSRFProtectionEnabled); validateErr != nil {
 				continue
 			}
 			serverCache[tool.ServerID] = server

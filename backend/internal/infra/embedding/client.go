@@ -38,17 +38,21 @@ type responsePayload struct {
 
 // Client 封装 OpenAI 兼容 embedding API 的 HTTP 调用能力。
 type Client struct {
-	env string
+	env                   string
+	ssrfProtectionEnabled bool
 }
 
 // New 创建 Client。
 func New() *Client {
-	return NewWithEnv("")
+	return NewWithEnv("", false)
 }
 
 // NewWithEnv 创建带运行环境的 Client。
-func NewWithEnv(env string) *Client {
-	return &Client{env: strings.TrimSpace(env)}
+func NewWithEnv(env string, ssrfProtectionEnabled bool) *Client {
+	return &Client{
+		env:                   strings.TrimSpace(env),
+		ssrfProtectionEnabled: ssrfProtectionEnabled,
+	}
 }
 
 // CallAPI 向指定 apiBase 发起 embedding 请求，返回各文本对应的向量列表。
@@ -81,7 +85,7 @@ func (c *Client) CallAPI(
 	if timeoutSeconds <= 0 {
 		timeoutSeconds = 60
 	}
-	transport := security.NewOutboundHTTPTransport(c.env, 10*time.Second)
+	transport := security.NewOutboundHTTPTransport(c.env, c.ssrfProtectionEnabled, 10*time.Second)
 	httpClient := &http.Client{
 		Timeout:   time.Duration(timeoutSeconds) * time.Second,
 		Transport: platformtracing.NewHTTPTransport(transport),

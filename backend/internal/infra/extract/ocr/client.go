@@ -33,12 +33,13 @@ const (
 
 // ClientConfig 表示 OCR 服务接入配置。
 type ClientConfig struct {
-	BaseURL        string
-	AuthToken      string
-	Model          string
-	TimeoutSeconds int
-	Prompt         string
-	Env            string
+	BaseURL               string
+	AuthToken             string
+	Model                 string
+	TimeoutSeconds        int
+	Prompt                string
+	Env                   string
+	SSRFProtectionEnabled bool
 }
 
 // Request 表示一次 PDF OCR 请求。
@@ -107,7 +108,7 @@ func NewLLM(cfg ClientConfig) *Client {
 		model:          strings.TrimSpace(cfg.Model),
 		prompt:         strings.TrimSpace(cfg.Prompt),
 		timeoutSeconds: cfg.TimeoutSeconds,
-		llmClient:      llm.NewClientWithEnv(cfg.Env),
+		llmClient:      llm.NewClientWithEnv(cfg.Env, cfg.SSRFProtectionEnabled),
 		pdfRenderer:    pdfrender.New(),
 	}
 }

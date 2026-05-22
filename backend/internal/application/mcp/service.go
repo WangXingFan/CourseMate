@@ -306,10 +306,13 @@ func (s *Service) normalizeServerInput(input ServerInput, requireToken bool) (Se
 
 func (s *Service) validateServerBaseURL(raw string) error {
 	env := ""
+	ssrfProtectionEnabled := false
 	if s != nil && s.cfg != nil {
-		env = s.cfg.Snapshot().Env
+		cfg := s.cfg.Snapshot()
+		env = cfg.Env
+		ssrfProtectionEnabled = cfg.SSRFProtectionEnabled
 	}
-	return security.ValidateOutboundHTTPURL(raw, env)
+	return security.ValidateOutboundHTTPURL(raw, env, ssrfProtectionEnabled)
 }
 
 func normalizeToolInput(input ToolInput) (repository.UpdateMCPToolInput, error) {

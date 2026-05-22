@@ -290,11 +290,12 @@ func (s *Service) resolvePrimaryEngine() engine {
 			name: EngineMinerU,
 			extract: func(ctx context.Context, input ExtractInput) (string, error) {
 				client := mineruextract.New(mineruextract.ClientConfig{
-					Source:         strings.TrimSpace(snapshot.ExtractMinerUSource),
-					BaseURL:        strings.TrimSpace(snapshot.ExtractMinerUBaseURL),
-					AuthToken:      snapshot.ExtractMinerUAuthToken,
-					TimeoutSeconds: snapshot.ExtractMinerUTimeoutSeconds,
-					Env:            snapshot.Env,
+					Source:                strings.TrimSpace(snapshot.ExtractMinerUSource),
+					BaseURL:               strings.TrimSpace(snapshot.ExtractMinerUBaseURL),
+					AuthToken:             snapshot.ExtractMinerUAuthToken,
+					TimeoutSeconds:        snapshot.ExtractMinerUTimeoutSeconds,
+					Env:                   snapshot.Env,
+					SSRFProtectionEnabled: snapshot.SSRFProtectionEnabled,
 				})
 				if client == nil {
 					return "", fmt.Errorf("mineru_unavailable")
@@ -609,10 +610,11 @@ func resolveOCREngine(snapshot config.Config, mode string) ocrEngine {
 		return ocrEngine{
 			provider: mode,
 			client: ocr.NewTesseract(ocr.ClientConfig{
-				BaseURL:        strings.TrimSpace(snapshot.ExtractTesseractOCRBaseURL),
-				AuthToken:      snapshot.ExtractTesseractOCRAuthToken,
-				TimeoutSeconds: snapshot.ExtractTesseractOCRTimeoutSeconds,
-				Env:            snapshot.Env,
+				BaseURL:               strings.TrimSpace(snapshot.ExtractTesseractOCRBaseURL),
+				AuthToken:             snapshot.ExtractTesseractOCRAuthToken,
+				TimeoutSeconds:        snapshot.ExtractTesseractOCRTimeoutSeconds,
+				Env:                   snapshot.Env,
+				SSRFProtectionEnabled: snapshot.SSRFProtectionEnabled,
 			}),
 		}
 	case OCREngineRapidOCR:
@@ -628,22 +630,24 @@ func resolveOCREngine(snapshot config.Config, mode string) ocrEngine {
 		return ocrEngine{
 			provider: mode,
 			client: ocr.NewPaddle(ocr.ClientConfig{
-				BaseURL:        strings.TrimSpace(snapshot.ExtractPaddleOCRBaseURL),
-				AuthToken:      snapshot.ExtractPaddleOCRAuthToken,
-				TimeoutSeconds: snapshot.ExtractPaddleOCRTimeoutSeconds,
-				Env:            snapshot.Env,
+				BaseURL:               strings.TrimSpace(snapshot.ExtractPaddleOCRBaseURL),
+				AuthToken:             snapshot.ExtractPaddleOCRAuthToken,
+				TimeoutSeconds:        snapshot.ExtractPaddleOCRTimeoutSeconds,
+				Env:                   snapshot.Env,
+				SSRFProtectionEnabled: snapshot.SSRFProtectionEnabled,
 			}),
 		}
 	case OCREngineLLM:
 		return ocrEngine{
 			provider: mode,
 			client: ocr.NewLLM(ocr.ClientConfig{
-				BaseURL:        snapshot.ExtractLLMOCRBaseURL,
-				AuthToken:      snapshot.ExtractLLMOCRAuthToken,
-				Model:          snapshot.ExtractLLMOCRModel,
-				TimeoutSeconds: snapshot.ExtractLLMOCRTimeoutSeconds,
-				Prompt:         snapshot.ExtractLLMOCRPrompt,
-				Env:            snapshot.Env,
+				BaseURL:               snapshot.ExtractLLMOCRBaseURL,
+				AuthToken:             snapshot.ExtractLLMOCRAuthToken,
+				Model:                 snapshot.ExtractLLMOCRModel,
+				TimeoutSeconds:        snapshot.ExtractLLMOCRTimeoutSeconds,
+				Prompt:                snapshot.ExtractLLMOCRPrompt,
+				Env:                   snapshot.Env,
+				SSRFProtectionEnabled: snapshot.SSRFProtectionEnabled,
 			}),
 		}
 	default:

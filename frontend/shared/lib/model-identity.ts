@@ -28,7 +28,7 @@ const VENDOR_CATALOG: readonly VendorCatalogItem[] = [
     key: "openai",
     label: "OpenAI",
     vendorIcon: "openai",
-    modelIcon: "chatgpt",
+    modelIcon: "openai",
     aliases: ["openai", "chatgpt"],
     patterns: [/\bchatgpt\b/i, /\bgpt(?:-[a-z0-9.]+)?\b/i, /\bo[134]\b/i, /\bcodex\b/i],
   },
@@ -253,7 +253,7 @@ function detectModelFamilyIcon(value: string): string {
   if (/\bernie\b/i.test(value) || /\bwenxin\b/i.test(value)) return "wenxin";
   if (/\bdall-e\b/i.test(value)) return "dalle";
   if (/\bsora\b/i.test(value)) return "sora";
-  if (/\bgpt\b/i.test(value) || /\bchatgpt\b/i.test(value) || /\bo[134]\b/i.test(value) || /\bcodex\b/i.test(value)) return "chatgpt";
+  if (/\bgpt\b/i.test(value) || /\bchatgpt\b/i.test(value) || /\bo[134]\b/i.test(value) || /\bcodex\b/i.test(value)) return "openai";
   return "";
 }
 

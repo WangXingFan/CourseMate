@@ -61,8 +61,8 @@ func IsSensitiveHeaderName(name string) bool {
 	return false
 }
 
-// ValidateOutboundHTTPURL 校验管理员配置的外联 HTTP 地址；生产环境额外阻断本机、内网、链路本地和元数据地址。
-func ValidateOutboundHTTPURL(raw string, env string) error {
+// ValidateOutboundHTTPURL 校验管理员配置的外联 HTTP 地址；启用 SSRF 防护时额外阻断本机、内网、链路本地和元数据地址。
+func ValidateOutboundHTTPURL(raw string, env string, ssrfProtectionEnabled bool) error {
 	value := strings.TrimSpace(raw)
 	parsed, err := url.Parse(value)
 	if err != nil || parsed == nil || parsed.Scheme == "" || parsed.Host == "" {
@@ -75,7 +75,7 @@ func ValidateOutboundHTTPURL(raw string, env string) error {
 	if scheme != "http" && scheme != "https" {
 		return fmt.Errorf("%w: unsupported scheme", ErrUnsafeOutboundURL)
 	}
-	if !isProductionEnv(env) {
+	if !shouldEnforceSSRFProtection(env, ssrfProtectionEnabled) {
 		return nil
 	}
 	host := normalizeURLHostname(parsed.Hostname())
@@ -88,31 +88,31 @@ func ValidateOutboundHTTPURL(raw string, env string) error {
 	return nil
 }
 
-// NewOutboundHTTPClient 创建带生产环境 SSRF 防护的 HTTP client。
-func NewOutboundHTTPClient(env string, timeout time.Duration) *http.Client {
+// NewOutboundHTTPClient 创建带可选 SSRF 防护的 HTTP client。
+func NewOutboundHTTPClient(env string, ssrfProtectionEnabled bool, timeout time.Duration) *http.Client {
 	return &http.Client{
 		Timeout:   timeout,
-		Transport: NewOutboundHTTPTransport(env, defaultOutboundConnectTimeout),
+		Transport: NewOutboundHTTPTransport(env, ssrfProtectionEnabled, defaultOutboundConnectTimeout),
 	}
 }
 
-// NewOutboundHTTPTransport 创建带生产环境 SSRF 防护的 HTTP transport。
-func NewOutboundHTTPTransport(env string, connectTimeout time.Duration) *http.Transport {
+// NewOutboundHTTPTransport 创建带可选 SSRF 防护的 HTTP transport。
+func NewOutboundHTTPTransport(env string, ssrfProtectionEnabled bool, connectTimeout time.Duration) *http.Transport {
 	base, ok := http.DefaultTransport.(*http.Transport)
 	if !ok {
 		base = &http.Transport{}
 	}
 	transport := base.Clone()
-	if isProductionEnv(env) {
+	if shouldEnforceSSRFProtection(env, ssrfProtectionEnabled) {
 		transport.Proxy = nil
 	}
-	transport.DialContext = NewOutboundDialContext(env, connectTimeout, 30*time.Second)
+	transport.DialContext = NewOutboundDialContext(env, ssrfProtectionEnabled, connectTimeout, 30*time.Second)
 	return transport
 }
 
-// NewOutboundDialContext 创建生产环境安全 dialer。
-// 生产环境会先解析目标域名，拒绝 loopback/private/link-local/metadata IP，再直接拨打已校验 IP。
-func NewOutboundDialContext(env string, timeout time.Duration, keepAlive time.Duration) func(context.Context, string, string) (net.Conn, error) {
+// NewOutboundDialContext 创建可选安全 dialer。
+// 启用 SSRF 防护时会先解析目标域名，拒绝 loopback/private/link-local/metadata IP，再直接拨打已校验 IP。
+func NewOutboundDialContext(env string, ssrfProtectionEnabled bool, timeout time.Duration, keepAlive time.Duration) func(context.Context, string, string) (net.Conn, error) {
 	if timeout <= 0 {
 		timeout = defaultOutboundConnectTimeout
 	}
@@ -123,15 +123,15 @@ func NewOutboundDialContext(env string, timeout time.Duration, keepAlive time.Du
 		Timeout:   timeout,
 		KeepAlive: keepAlive,
 	}
-	return newOutboundDialContext(env, net.DefaultResolver.LookupIPAddr, dialer.DialContext)
+	return newOutboundDialContext(env, ssrfProtectionEnabled, net.DefaultResolver.LookupIPAddr, dialer.DialContext)
 }
 
 type lookupIPAddrFunc func(context.Context, string) ([]net.IPAddr, error)
 type dialContextFunc func(context.Context, string, string) (net.Conn, error)
 
-func newOutboundDialContext(env string, lookupIPAddr lookupIPAddrFunc, dial dialContextFunc) func(context.Context, string, string) (net.Conn, error) {
+func newOutboundDialContext(env string, ssrfProtectionEnabled bool, lookupIPAddr lookupIPAddrFunc, dial dialContextFunc) func(context.Context, string, string) (net.Conn, error) {
 	return func(ctx context.Context, network string, address string) (net.Conn, error) {
-		if !isProductionEnv(env) {
+		if !shouldEnforceSSRFProtection(env, ssrfProtectionEnabled) {
 			return dial(ctx, network, address)
 		}
 		addresses, err := resolveSafeDialAddresses(ctx, network, address, lookupIPAddr)
@@ -217,6 +217,10 @@ func isProductionEnv(env string) bool {
 	default:
 		return false
 	}
+}
+
+func shouldEnforceSSRFProtection(env string, enabled bool) bool {
+	return enabled && isProductionEnv(env)
 }
 
 func normalizeURLHostname(host string) string {
