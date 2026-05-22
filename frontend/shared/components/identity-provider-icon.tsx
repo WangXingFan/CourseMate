@@ -2,7 +2,11 @@
 
 import * as React from "react";
 
-import { resolveIdentityProviderIconScale, resolveIdentityProviderIconURL } from "@/shared/lib/identity-provider-icons";
+import {
+  resolveIdentityProviderIconScale,
+  resolveIdentityProviderIconURL,
+  shouldInvertIdentityProviderIcon,
+} from "@/shared/lib/identity-provider-icons";
 import { cn } from "@/lib/utils";
 
 export function IdentityProviderIcon({
@@ -35,15 +39,17 @@ export function IdentityProviderIcon({
   const iconUrl = iconCandidates[iconIndex] ?? "";
   const iconScale = resolveIdentityProviderIconScale(name, slug);
   const rootClassName = cn("grid size-4 shrink-0 place-items-center", className);
+  const isDefaultIcon = iconUrl === defaultIconURL;
+  const invertInDarkMode = isDefaultIcon && shouldInvertIdentityProviderIcon(name, slug);
   if (iconUrl) {
     return (
-      <span aria-hidden="true" className={rootClassName}>
+      <span aria-hidden="true" className={cn(rootClassName, isDefaultIcon && "text-foreground")}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           alt=""
-          className={cn("block size-4 object-contain", iconClassName)}
+          className={cn("block size-4 object-contain", invertInDarkMode && "dark:invert", iconClassName)}
           src={iconUrl}
-          style={{ transform: iconUrl === defaultIconURL ? `scale(${iconScale})` : undefined }}
+          style={{ transform: isDefaultIcon ? `scale(${iconScale})` : undefined }}
           onError={() => {
             setIconIndex((current) => Math.min(current + 1, iconCandidates.length));
           }}

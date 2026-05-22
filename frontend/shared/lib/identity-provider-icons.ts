@@ -1,8 +1,10 @@
 import { resolveLobeHubIconURL } from "@/shared/lib/model-identity";
 
-const SIMPLE_ICON_SLUGS = new Set(["discord", "facebook", "x"]);
 const LOCAL_ICON_URLS: Record<string, string> = {
-  linuxdo: "/linux-do.svg",
+  discord: "/identity-providers/discord.svg",
+  facebook: "/identity-providers/facebook.svg",
+  linuxdo: "/identity-providers/linux-do.svg",
+  x: "/identity-providers/x.svg",
 };
 
 const PROVIDER_ICON_ALIASES: Array<{ icon: string; patterns: RegExp[] }> = [
@@ -28,9 +30,6 @@ export function resolveIdentityProviderIconURL(name: string, slug: string): stri
   const icon = resolveIdentityProviderIconKey(name, slug);
   if (!icon) return null;
   if (LOCAL_ICON_URLS[icon]) return LOCAL_ICON_URLS[icon];
-  if (SIMPLE_ICON_SLUGS.has(icon)) {
-    return `https://cdn.jsdelivr.net/npm/simple-icons@v16/icons/${icon}.svg`;
-  }
   return resolveLobeHubIconURL(icon);
 }
 
@@ -39,4 +38,9 @@ export function resolveIdentityProviderIconScale(name: string, slug: string): nu
   if (icon === "x") return 0.78;
   if (icon === "linuxdo") return 0.86;
   return 1;
+}
+
+export function shouldInvertIdentityProviderIcon(name: string, slug: string): boolean {
+  const icon = resolveIdentityProviderIconKey(name, slug);
+  return Boolean(icon) && icon !== "linuxdo";
 }
