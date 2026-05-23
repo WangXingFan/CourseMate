@@ -47,7 +47,10 @@ func TestProtocolDefaultsForXAIUsesXAIResponsesForConversationKinds(t *testing.T
 	if defaults[modelKindImageGen] != "xai_image" {
 		t.Fatalf("expected xAI image default, got %q in %s", defaults[modelKindImageGen], raw)
 	}
-	for _, kind := range []string{modelKindImageEdit, modelKindVideoGen} {
+	if defaults[modelKindImageEdit] != "xai_image_edits" {
+		t.Fatalf("expected xAI image edit default, got %q in %s", defaults[modelKindImageEdit], raw)
+	}
+	for _, kind := range []string{modelKindVideoGen} {
 		if _, ok := defaults[kind]; ok {
 			t.Fatalf("unexpected xAI default protocol for %s in %s", kind, raw)
 		}
@@ -305,8 +308,8 @@ func TestInferKindsJSONRecognizesXAIImageModels(t *testing.T) {
 		"grok-imagine-image-pro",
 		"grok-imagine-image-preview",
 	} {
-		if got := inferKindsJSON(modelName); got != `["image_gen"]` {
-			t.Fatalf("expected %s to infer image generation kind, got %s", modelName, got)
+		if got := inferKindsJSON(modelName); got != `["image_gen","image_edit"]` {
+			t.Fatalf("expected %s to infer image generation and edit kinds, got %s", modelName, got)
 		}
 	}
 }
@@ -356,7 +359,7 @@ func TestResolveRouteProtocolAcceptsExplicitProtocolForAnyDeclaredKind(t *testin
 	}
 }
 
-func TestSupportedRouteProtocolCombinationOnlyAllowsOpenAIImagePair(t *testing.T) {
+func TestSupportedRouteProtocolCombinationOnlyAllowsSameProviderImagePair(t *testing.T) {
 	tests := []struct {
 		name      string
 		protocols []string
@@ -365,9 +368,11 @@ func TestSupportedRouteProtocolCombinationOnlyAllowsOpenAIImagePair(t *testing.T
 		{name: "single chat", protocols: []string{"openai_responses"}, want: true},
 		{name: "single image generation", protocols: []string{"openai_image_generations"}, want: true},
 		{name: "openai image generation and edit", protocols: []string{"openai_image_generations", "openai_image_edits"}, want: true},
+		{name: "xai image generation and edit", protocols: []string{"xai_image", "xai_image_edits"}, want: true},
 		{name: "duplicate protocol", protocols: []string{"openai_responses", "openai_responses"}, want: true},
 		{name: "two chat protocols", protocols: []string{"openai_responses", "openai_chat_completions"}, want: false},
 		{name: "image generation with chat", protocols: []string{"openai_image_generations", "openai_responses"}, want: false},
+		{name: "mixed provider image pair", protocols: []string{"openai_image_generations", "xai_image_edits"}, want: false},
 		{name: "three protocols", protocols: []string{"openai_image_generations", "openai_image_edits", "openai_responses"}, want: false},
 	}
 
@@ -403,6 +408,22 @@ func TestResolveRouteProtocolsKeepsSingleGoogleProtocolForDualImageKinds(t *test
 	}
 	if len(protocols) != 1 || protocols[0] != "google_image_generation" {
 		t.Fatalf("expected single Google image protocol, got %#v", protocols)
+	}
+}
+
+func TestResolveRouteProtocolsExpandsXAIDualImageKinds(t *testing.T) {
+	protocols, err := resolveRouteProtocols(nil, compatibleXAI, "", `["image_gen","image_edit"]`)
+	if err != nil {
+		t.Fatalf("resolve route protocols: %v", err)
+	}
+	expected := []string{"xai_image", "xai_image_edits"}
+	if len(protocols) != len(expected) {
+		t.Fatalf("expected %d protocols, got %#v", len(expected), protocols)
+	}
+	for i, expectedProtocol := range expected {
+		if protocols[i] != expectedProtocol {
+			t.Fatalf("expected protocol %d to be %q, got %#v", i, expectedProtocol, protocols)
+		}
 	}
 }
 
@@ -480,6 +501,12 @@ func TestIsRouteAllowedForTaskSeparatesChatAndImageProtocols(t *testing.T) {
 	}
 	if !IsRouteAllowedForTask(TaskTypeImageEdit, `["image_edit"]`, "google_image_generation") {
 		t.Fatalf("expected image edit task to allow Google image protocol")
+	}
+	if !IsRouteAllowedForTask(TaskTypeImageEdit, `["image_edit"]`, "xai_image_edits") {
+		t.Fatalf("expected image edit task to allow xAI image edits protocol")
+	}
+	if IsRouteAllowedForTask(TaskTypeImageEdit, `["image_edit"]`, "xai_image") {
+		t.Fatalf("expected image edit task to reject xAI image generation protocol")
 	}
 }
 

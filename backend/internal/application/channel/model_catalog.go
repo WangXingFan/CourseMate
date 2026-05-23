@@ -33,6 +33,7 @@ const (
 	protocolOpenAIVideoGenerations = "openai_video_generations"
 	protocolGoogleImageGeneration  = llm.AdapterGoogleImageGeneration
 	protocolXAIImage               = llm.AdapterXAIImage
+	protocolXAIImageEdits          = llm.AdapterXAIImageEdits
 )
 
 var protocolDefaultKindOrder = []string{
@@ -128,9 +129,10 @@ func systemFallbackProtocols(compatible string) map[string]string {
 		}
 	case compatibleXAI:
 		return map[string]string{
-			modelKindChat:     llm.AdapterXAIResponses,
-			modelKindAudio:    llm.AdapterXAIResponses,
-			modelKindImageGen: protocolXAIImage,
+			modelKindChat:      llm.AdapterXAIResponses,
+			modelKindAudio:     llm.AdapterXAIResponses,
+			modelKindImageGen:  protocolXAIImage,
+			modelKindImageEdit: protocolXAIImageEdits,
 		}
 	case compatibleOpenRouter:
 		return map[string]string{
@@ -163,7 +165,8 @@ func isKnownProtocol(raw string) bool {
 		protocolOpenAIImageEdits,
 		protocolOpenAIVideoGenerations,
 		protocolGoogleImageGeneration,
-		protocolXAIImage:
+		protocolXAIImage,
+		protocolXAIImageEdits:
 		return true
 	default:
 		return false
@@ -296,6 +299,11 @@ func isSupportedRouteProtocolCombination(protocols []string) bool {
 	}
 	_, hasGeneration := seen[protocolOpenAIImageGenerations]
 	_, hasEdit := seen[protocolOpenAIImageEdits]
+	if hasGeneration && hasEdit {
+		return true
+	}
+	_, hasGeneration = seen[protocolXAIImage]
+	_, hasEdit = seen[protocolXAIImageEdits]
 	return hasGeneration && hasEdit
 }
 
@@ -343,7 +351,8 @@ func isProtocolAllowedForKind(kind string, protocol string) bool {
 	case modelKindImageEdit:
 		switch protocol {
 		case protocolOpenAIImageEdits,
-			protocolGoogleImageGeneration:
+			protocolGoogleImageGeneration,
+			protocolXAIImageEdits:
 			return true
 		default:
 			return false
@@ -429,9 +438,9 @@ func inferKindsJSON(platformModelName string) string {
 	code := strings.ToLower(strings.TrimSpace(platformModelName))
 	switch {
 	case strings.HasPrefix(code, "gpt-image-"), code == "chatgpt-image-latest", code == "dall-e-2",
-		isGeminiImageGenerationModel(code):
+		isGeminiImageGenerationModel(code), isXAIImageGenerationModel(code):
 		return `["image_gen","image_edit"]`
-	case code == "dall-e-3", strings.HasPrefix(code, "imagen-"), isXAIImageGenerationModel(code):
+	case code == "dall-e-3", strings.HasPrefix(code, "imagen-"):
 		return `["image_gen"]`
 	case code == "sora", code == "veo-2", strings.HasPrefix(code, "kling"):
 		return `["video_gen"]`

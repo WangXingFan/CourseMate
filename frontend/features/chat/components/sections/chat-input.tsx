@@ -504,13 +504,14 @@ const PROTOCOL_LABELS: Record<string, string> = {
   google_generate_content: "Generate Content",
   google_image_generation: "Image Generation",
   openai_chat_completions: "Chat Completions",
-  openai_image_edits: "Image Edits",
-  openai_image_generations: "Image Generations",
+  openai_image_edits: "Images Edits",
+  openai_image_generations: "Images Generations",
   openai_responses: "Responses",
   openai_video_generations: "Video Generations",
   replicate_predictions: "Predictions",
   stability_ai_generate: "Image Generation",
-  xai_image: "Image Generation",
+  xai_image: "Images Generations",
+  xai_image_edits: "Images Edits",
   xai_responses: "xAI Responses",
 };
 

@@ -106,6 +106,12 @@ func DefaultModelOptionAllowedPathsJSON() string {
     "resolution",
     "response_format"
   ],
+  "xai_image_edits": [
+    "aspect_ratio",
+    "n",
+    "resolution",
+    "response_format"
+  ],
   "gemini_generate_content": [
     "generationConfig.temperature",
     "generationConfig.topP",

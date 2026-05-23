@@ -134,7 +134,7 @@
     "invalidHeadersConfig": "请求头配置无效。",
     "invalidKinds": "模型类型无效。",
     "invalidPlatformModelName": "平台模型名称无效。",
-    "invalidRouteProtocolCombination": "当前协议组合不可用。同一绑定只能选择单个协议，或同时选择 OpenAI 图像生成与图像编辑协议。",
+    "invalidRouteProtocolCombination": "当前协议组合不可用。同一绑定只能选择单个协议，或同时选择同一厂商的图像生成与图像编辑协议。",
     "systemPromptTooLong": "系统提示词不能超过 20000 个字符。",
     "invalidProtocolDefaultsConfig": "协议默认配置无效。",
     "modelRouteNotConfigured": "模型路由未配置。",

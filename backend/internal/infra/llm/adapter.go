@@ -18,6 +18,7 @@ const (
 	AdapterGoogleImageGeneration  = "google_image_generation"  // POST /v1beta/models/{model}:generateContent
 	AdapterXAIResponses           = "xai_responses"            // POST /v1/responses（OpenAI 兼容）
 	AdapterXAIImage               = "xai_image"                // POST /v1/images/generations
+	AdapterXAIImageEdits          = "xai_image_edits"          // POST /v1/images/edits
 )
 
 var (
@@ -54,7 +55,8 @@ func IsKnownAdapter(raw string) bool {
 		AdapterGoogleGenerateContent,
 		AdapterGoogleImageGeneration,
 		AdapterXAIResponses,
-		AdapterXAIImage:
+		AdapterXAIImage,
+		AdapterXAIImageEdits:
 		return true
 	default:
 		return false
@@ -65,7 +67,7 @@ func IsKnownAdapter(raw string) bool {
 func IsImplementedAdapter(raw string) bool {
 	switch NormalizeAdapter(raw) {
 	case AdapterOpenAIResponses, AdapterOpenAIChatCompletions, AdapterOpenAIImageGenerations, AdapterOpenAIImageEdits, AdapterXAIResponses,
-		AdapterAnthropicMessages, AdapterGoogleGenerateContent, AdapterGoogleImageGeneration, AdapterXAIImage:
+		AdapterAnthropicMessages, AdapterGoogleGenerateContent, AdapterGoogleImageGeneration, AdapterXAIImage, AdapterXAIImageEdits:
 		return true
 	default:
 		return false
@@ -116,7 +118,7 @@ func IsImageGenerationAdapter(raw string) bool {
 // IsImageEditAdapter 返回协议是否属于独立图片编辑链路。
 func IsImageEditAdapter(raw string) bool {
 	switch NormalizeAdapter(raw) {
-	case AdapterOpenAIImageEdits, AdapterGoogleImageGeneration:
+	case AdapterOpenAIImageEdits, AdapterGoogleImageGeneration, AdapterXAIImageEdits:
 		return true
 	default:
 		return false
@@ -130,7 +132,7 @@ func DefaultEndpointForAdapter(adapter string) string {
 		return EndpointChatCompletions
 	case AdapterOpenAIImageGenerations, AdapterGoogleImageGeneration, AdapterXAIImage:
 		return EndpointImageGenerations
-	case AdapterOpenAIImageEdits:
+	case AdapterOpenAIImageEdits, AdapterXAIImageEdits:
 		return EndpointImageEdits
 	default:
 		// openai_responses、xai_responses 及所有未知值均使用 Responses 端点。

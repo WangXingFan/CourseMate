@@ -37,14 +37,15 @@ type ProtocolOption = {
 export const PROTOCOL_OPTIONS: ReadonlyArray<ProtocolOption> = [
   { value: "openai_responses", label: "Responses API (OpenAI)", kinds: ["chat"] },
   { value: "openai_chat_completions", label: "Chat Completions (OpenAI)", kinds: ["chat"] },
-  { value: "openai_image_generations", label: "Image Generations (OpenAI)", kinds: ["image_gen"] },
-  { value: "openai_image_edits", label: "Image Edits (OpenAI)", kinds: ["image_edit"] },
+  { value: "openai_image_generations", label: "Images Generations (OpenAI)", kinds: ["image_gen"] },
+  { value: "openai_image_edits", label: "Images Edits (OpenAI)", kinds: ["image_edit"] },
   { value: "openai_video_generations", label: "Video Generations (OpenAI)", kinds: ["video_gen"] },
   { value: "anthropic_messages", label: "Messages (Anthropic)", kinds: ["chat"] },
   { value: "google_generate_content", label: "Generate Content (Google)", kinds: ["chat"] },
   { value: "google_image_generation", label: "Image Generation (Google)", kinds: ["image_gen", "image_edit"] },
   { value: "xai_responses", label: "Responses (xAI)", kinds: ["chat"] },
-  { value: "xai_image", label: "Image Generation (xAI)", kinds: ["image_gen"] },
+  { value: "xai_image", label: "Images Generations (xAI)", kinds: ["image_gen"] },
+  { value: "xai_image_edits", label: "Images Edits (xAI)", kinds: ["image_edit"] },
 ] as const;
 
 const PROTOCOL_LABELS: Record<string, string> = {
@@ -55,10 +56,10 @@ const PROTOCOL_KINDS: Record<string, readonly string[]> = {
   ...Object.fromEntries(PROTOCOL_OPTIONS.map((item) => [item.value, item.kinds])),
 };
 
-const IMAGE_ROUTE_PROTOCOL_PAIR: ReadonlySet<AdminLLMAdapter> = new Set([
-  "openai_image_generations",
-  "openai_image_edits",
-]);
+const IMAGE_ROUTE_PROTOCOL_PAIRS: ReadonlyArray<readonly [AdminLLMAdapter, AdminLLMAdapter]> = [
+  ["openai_image_generations", "openai_image_edits"],
+  ["xai_image", "xai_image_edits"],
+];
 
 const LLM_STATUS_LABELS: Record<string, string> = {
   active: "Enabled",
@@ -86,7 +87,9 @@ export function isSupportedRouteProtocolSelection(protocols: readonly AdminLLMAd
   if (uniqueProtocols.length <= 1) {
     return true;
   }
-  return uniqueProtocols.length === 2 && uniqueProtocols.every((protocol) => IMAGE_ROUTE_PROTOCOL_PAIR.has(protocol));
+  return uniqueProtocols.length === 2 && IMAGE_ROUTE_PROTOCOL_PAIRS.some(([generationProtocol, editProtocol]) =>
+    uniqueProtocols.includes(generationProtocol) && uniqueProtocols.includes(editProtocol),
+  );
 }
 
 export function resolveNextRouteProtocolSelection(

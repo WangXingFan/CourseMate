@@ -29,6 +29,9 @@ func TestSupportsImageGenerationStream(t *testing.T) {
 	if SupportsStreamingAdapter(AdapterXAIImage) {
 		t.Fatalf("expected xAI image adapter to use non-streaming media flow")
 	}
+	if SupportsStreamingAdapter(AdapterXAIImageEdits) {
+		t.Fatalf("expected xAI image edits adapter to use non-streaming media flow")
+	}
 	if SupportsImageGenerationStream(AdapterOpenAIImageGenerations, "dall-e-3") {
 		t.Fatalf("expected DALL-E models to remain non-streaming")
 	}
@@ -46,5 +49,14 @@ func TestImageAdapterCapabilities(t *testing.T) {
 	}
 	if !IsImageEditAdapter(AdapterGoogleImageGeneration) {
 		t.Fatalf("expected google image protocol to support image editing")
+	}
+	if !IsImageGenerationAdapter(AdapterXAIImage) {
+		t.Fatalf("expected xAI image protocol to support image generation")
+	}
+	if IsImageEditAdapter(AdapterXAIImage) {
+		t.Fatalf("expected xAI image protocol to stay generation-only")
+	}
+	if !IsImageEditAdapter(AdapterXAIImageEdits) {
+		t.Fatalf("expected xAI image edits protocol to support image editing")
 	}
 }

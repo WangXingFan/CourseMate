@@ -159,7 +159,7 @@ func (s *Service) validateRouteProtocolCombination(
 	routeID uint,
 	protocol string,
 ) error {
-	// 同一个平台模型到同一个上游真实模型只允许单协议，或 OpenAI 图片生成/编辑这一个成对组合。
+	// 同一个平台模型到同一个上游真实模型只允许单协议，或同厂商图片生成/编辑成对组合。
 	routes, err := s.repo.ListPlatformModelRoutesByPair(ctx, upstreamID, platformModelID, upstreamModelID)
 	if err != nil {
 		return err

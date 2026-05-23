@@ -331,6 +331,8 @@ func modelOptionPolicyProtocolKey(protocol string) string {
 		return "anthropic_messages"
 	case llm.AdapterXAIImage:
 		return "xai_image"
+	case llm.AdapterXAIImageEdits:
+		return "xai_image_edits"
 	case llm.AdapterXAIResponses:
 		return "xai_responses"
 	default:

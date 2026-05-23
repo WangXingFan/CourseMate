@@ -11,7 +11,8 @@ export type AdminLLMAdapter =
   | "google_generate_content"
   | "google_image_generation"
   | "xai_responses"
-  | "xai_image";
+  | "xai_image"
+  | "xai_image_edits";
 export type AdminLLMModelVendor = string;
 export type AdminLLMCompatible =
   | "openai"

@@ -134,7 +134,7 @@
     "invalidHeadersConfig": "Invalid headers configuration.",
     "invalidKinds": "Invalid model kinds.",
     "invalidPlatformModelName": "Invalid platform model name.",
-    "invalidRouteProtocolCombination": "This protocol combination is not available. A binding can use one protocol, or both OpenAI image generation and image editing protocols.",
+    "invalidRouteProtocolCombination": "This protocol combination is not available. A binding can use one protocol, or image generation and image editing protocols from the same provider.",
     "systemPromptTooLong": "System prompt must be at most 20000 characters.",
     "invalidProtocolDefaultsConfig": "Invalid protocol defaults configuration.",
     "modelRouteNotConfigured": "Model route is not configured.",

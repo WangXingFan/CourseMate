@@ -453,7 +453,7 @@ func mediaImageRunningMessage(taskType MediaImageTaskType) string {
 	return "generating image"
 }
 
-// resolveMediaImageEditInputs 读取图片编辑输入图，确保只有图片文件进入 OpenAI Images Edits。
+// resolveMediaImageEditInputs 读取图片编辑输入图，确保只有图片文件进入图片编辑协议。
 func (s *Service) resolveMediaImageEditInputs(ctx context.Context, input MediaImageInput) ([]AttachmentInput, []llm.ContentPart, error) {
 	if input.TaskType != MediaImageTaskEdit {
 		return nil, nil, nil
