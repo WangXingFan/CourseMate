@@ -49,6 +49,31 @@ export const DEFAULT_MODEL_OPTION_ALLOWED_PATHS = `{
     "reasoning.summary",
     "text.verbosity"
   ],
+  "openai_image_generations": [
+    "background",
+    "moderation",
+    "n",
+    "output_compression",
+    "output_format",
+    "partial_images",
+    "quality",
+    "response_format",
+    "size",
+    "style",
+    "user"
+  ],
+  "openai_image_edits": [
+    "background",
+    "input_fidelity",
+    "n",
+    "output_compression",
+    "output_format",
+    "partial_images",
+    "quality",
+    "response_format",
+    "size",
+    "user"
+  ],
   "google_image_generation": [
     "aspect_ratio",
     "aspectRatio",
@@ -73,6 +98,12 @@ export const DEFAULT_MODEL_OPTION_ALLOWED_PATHS = `{
     "reasoning.effort"
   ],
   "xai_image": [
+    "aspect_ratio",
+    "n",
+    "resolution",
+    "response_format"
+  ],
+  "xai_image_edits": [
     "aspect_ratio",
     "n",
     "resolution",

@@ -65,6 +65,18 @@ func DefaultModelOptionAllowedPathsJSON() string {
     "style",
     "user"
   ],
+  "openai_image_edits": [
+    "background",
+    "input_fidelity",
+    "n",
+    "output_compression",
+    "output_format",
+    "partial_images",
+    "quality",
+    "response_format",
+    "size",
+    "user"
+  ],
   "google_image_generation": [
     "aspect_ratio",
     "aspectRatio",
@@ -89,6 +101,12 @@ func DefaultModelOptionAllowedPathsJSON() string {
     "reasoning.effort"
   ],
   "xai_image": [
+    "aspect_ratio",
+    "n",
+    "resolution",
+    "response_format"
+  ],
+  "xai_image_edits": [
     "aspect_ratio",
     "n",
     "resolution",

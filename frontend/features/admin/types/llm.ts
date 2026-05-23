@@ -35,6 +35,7 @@ export const ADAPTER_LABELS: Record<string, string> = {
   google_image_generation:  resolveProtocolLabel("google_image_generation"),
   xai_responses:            resolveProtocolLabel("xai_responses"),
   xai_image:                resolveProtocolLabel("xai_image"),
+  xai_image_edits:          resolveProtocolLabel("xai_image_edits"),
 };
 
 // ---------------------------------------------------------------------------

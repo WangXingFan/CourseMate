@@ -11,7 +11,8 @@ export type AdminLLMAdapter =
   | "google_generate_content"
   | "google_image_generation"
   | "xai_responses"
-  | "xai_image";
+  | "xai_image"
+  | "xai_image_edits";
 export type AdminLLMModelVendor = string;
 export type AdminLLMCompatible =
   | "openai"
@@ -141,6 +142,7 @@ export type AdminLLMRemoteModelItem = {
   suggestedPlatformModelName: string;
   suggestedKindsJSON: string;
   suggestedProtocol: AdminLLMAdapter | "";
+  suggestedProtocols: AdminLLMAdapter[];
   bindingCode: string;
   boundPlatformModels: string[];
   upstreamModelStatus: AdminLLMStatus | "";
@@ -251,6 +253,7 @@ export type ImportAdminLLMUpstreamModelsRequest = {
     platformModelName: string;
     upstreamModelName: string;
     protocol?: AdminLLMAdapter;
+    protocols?: AdminLLMAdapter[];
     kindsJSON?: string;
     status?: AdminLLMStatus;
     priority?: number;
@@ -305,6 +308,9 @@ export type ImportAdminLLMUpstreamModelsData = {
     bindingCode: string;
     status: "created" | "existing" | "failed";
     createdRoute: boolean;
+    createdRoutes: number;
+    existingRoutes: number;
+    protocols: AdminLLMAdapter[];
     createdPlatform: boolean;
     error?: string;
   }>;
