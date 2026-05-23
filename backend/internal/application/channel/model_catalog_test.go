@@ -436,15 +436,44 @@ func TestFilterPricedModelViewsUsesPlatformModelNameKey(t *testing.T) {
 
 }
 
-func TestNormalizePlatformModelNameRejectsWhitespace(t *testing.T) {
-	if _, err := normalizePlatformModelName("claude sonnet"); err == nil {
-		t.Fatal("expected whitespace in platform model name to be rejected")
+func TestNormalizePlatformModelNameAllowsDisplaySpaces(t *testing.T) {
+	tests := []struct {
+		name string
+		raw  string
+		want string
+	}{
+		{name: "plain", raw: "claude-sonnet", want: "claude-sonnet"},
+		{name: "display spaces", raw: "GPT Image 1", want: "GPT Image 1"},
+		{name: "trim outer spaces", raw: "  GPT Image 1  ", want: "GPT Image 1"},
 	}
-	name, err := normalizePlatformModelName("claude-sonnet")
-	if err != nil {
-		t.Fatalf("normalize platform model name: %v", err)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := normalizePlatformModelName(tt.raw)
+			if err != nil {
+				t.Fatalf("normalize platform model name: %v", err)
+			}
+			if got != tt.want {
+				t.Fatalf("expected %q, got %q", tt.want, got)
+			}
+		})
 	}
-	if name != "claude-sonnet" {
-		t.Fatalf("expected normalized platform model name, got %q", name)
+}
+
+func TestNormalizePlatformModelNameRejectsUnsafeWhitespace(t *testing.T) {
+	tests := []string{
+		"",
+		"   ",
+		"claude\tsonnet",
+		"claude\nsonnet",
+		"claude\u00a0sonnet",
+	}
+
+	for _, raw := range tests {
+		t.Run(raw, func(t *testing.T) {
+			if _, err := normalizePlatformModelName(raw); err == nil {
+				t.Fatal("expected unsafe platform model name to be rejected")
+			}
+		})
 	}
 }
