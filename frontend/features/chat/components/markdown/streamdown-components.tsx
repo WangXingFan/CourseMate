@@ -70,16 +70,156 @@ export type MarkdownArtifactActions = {
 
 type MarkdownParagraphProps = React.HTMLAttributes<HTMLParagraphElement> & {
   children?: React.ReactNode;
+  node?: unknown;
 };
 
 type MarkdownHeadingProps = React.HTMLAttributes<HTMLHeadingElement> & {
   children?: React.ReactNode;
 };
 
+type MarkdownHTMLBlockProps = React.HTMLAttributes<HTMLElement> & {
+  children?: React.ReactNode;
+  node?: unknown;
+};
+
+type MarkdownHTMLInlineProps = React.HTMLAttributes<HTMLSpanElement> & {
+  children?: React.ReactNode;
+  node?: unknown;
+};
+
+type MarkdownHTMLDetailsProps = React.DetailsHTMLAttributes<HTMLDetailsElement> & {
+  children?: React.ReactNode;
+  node?: unknown;
+};
+
 const StreamdownLinkContext = React.createContext(false);
 const FootnoteBackrefGroupContext = React.createContext(false);
 export const MarkdownImageActionsContext = React.createContext<MarkdownImageActions | null>(null);
 export const MarkdownArtifactActionsContext = React.createContext<MarkdownArtifactActions | null>(null);
+
+const SAFE_HTML_STYLE_PROPERTIES: ReadonlySet<string> = new Set([
+  "alignContent",
+  "alignItems",
+  "alignSelf",
+  "background",
+  "backgroundColor",
+  "border",
+  "borderBlock",
+  "borderBlockEnd",
+  "borderBlockStart",
+  "borderBottom",
+  "borderColor",
+  "borderInline",
+  "borderInlineEnd",
+  "borderInlineStart",
+  "borderLeft",
+  "borderRadius",
+  "borderRight",
+  "borderStyle",
+  "borderTop",
+  "borderWidth",
+  "boxShadow",
+  "boxSizing",
+  "color",
+  "columnGap",
+  "display",
+  "flex",
+  "flexBasis",
+  "flexDirection",
+  "flexGrow",
+  "flexShrink",
+  "flexWrap",
+  "fontSize",
+  "fontStyle",
+  "fontWeight",
+  "gap",
+  "gridAutoColumns",
+  "gridAutoFlow",
+  "gridAutoRows",
+  "gridColumn",
+  "gridColumnEnd",
+  "gridColumnStart",
+  "gridRow",
+  "gridRowEnd",
+  "gridRowStart",
+  "gridTemplateColumns",
+  "gridTemplateRows",
+  "height",
+  "justifyItems",
+  "justifyContent",
+  "justifySelf",
+  "lineHeight",
+  "margin",
+  "marginBlock",
+  "marginBlockEnd",
+  "marginBlockStart",
+  "marginBottom",
+  "marginInline",
+  "marginInlineEnd",
+  "marginInlineStart",
+  "marginLeft",
+  "marginRight",
+  "marginTop",
+  "maxHeight",
+  "maxWidth",
+  "minHeight",
+  "minWidth",
+  "opacity",
+  "order",
+  "overflow",
+  "overflowX",
+  "overflowY",
+  "padding",
+  "paddingBlock",
+  "paddingBlockEnd",
+  "paddingBlockStart",
+  "paddingBottom",
+  "paddingInline",
+  "paddingInlineEnd",
+  "paddingInlineStart",
+  "paddingLeft",
+  "paddingRight",
+  "paddingTop",
+  "placeContent",
+  "placeItems",
+  "placeSelf",
+  "rowGap",
+  "textAlign",
+  "verticalAlign",
+  "whiteSpace",
+  "width",
+]);
+const UNSAFE_STYLE_VALUE_RE = /(?:url\s*\(|expression\s*\(|javascript:|@import|[<>{}])/i;
+
+function isSafeHTMLStyleValue(value: string | number): boolean {
+  if (typeof value === "number") {
+    return Number.isFinite(value);
+  }
+  const normalizedValue = value.trim();
+  return Boolean(normalizedValue) && normalizedValue.length <= 120 && !UNSAFE_STYLE_VALUE_RE.test(normalizedValue);
+}
+
+function sanitizeHTMLStyle(style: React.CSSProperties | undefined): React.CSSProperties | undefined {
+  if (!style) {
+    return undefined;
+  }
+
+  const safeStyle: Record<string, string | number> = {};
+  for (const [property, value] of Object.entries(style)) {
+    if (!SAFE_HTML_STYLE_PROPERTIES.has(property)) {
+      continue;
+    }
+    if (typeof value !== "string" && typeof value !== "number") {
+      continue;
+    }
+    if (!isSafeHTMLStyleValue(value)) {
+      continue;
+    }
+    safeStyle[property] = value;
+  }
+
+  return Object.keys(safeStyle).length > 0 ? safeStyle : undefined;
+}
 
 function resolveLinkKind(href: string): ResolvedLinkKind {
   if (href.startsWith("#")) {
@@ -778,7 +918,7 @@ export function MarkdownImage({ alt, className, onError, onLoad, src, ...props }
   );
 }
 
-export function MarkdownParagraph({ children, className, ...props }: MarkdownParagraphProps) {
+export function MarkdownParagraph({ children, className, node: _node, style, ...props }: MarkdownParagraphProps) {
   const normalizedChildren = React.Children.toArray(children).filter((child) => !isEmptyReactNode(child));
   if (normalizedChildren.length === 1) {
     const onlyChild = normalizedChildren[0];
@@ -795,9 +935,77 @@ export function MarkdownParagraph({ children, className, ...props }: MarkdownPar
     );
 
   return (
-    <p className={cn("min-w-0 max-w-full break-words [overflow-wrap:anywhere]", className)} {...props}>
+    <p
+      {...props}
+      className={cn("min-w-0 max-w-full break-words [overflow-wrap:anywhere]", className)}
+      style={sanitizeHTMLStyle(style)}
+    >
       {paragraphChildren}
     </p>
+  );
+}
+
+export function MarkdownHTMLDiv({ children, className, node: _node, style }: MarkdownHTMLBlockProps) {
+  return (
+    <div className={cn("min-w-0 max-w-full", className)} style={sanitizeHTMLStyle(style)}>
+      {children}
+    </div>
+  );
+}
+
+export function MarkdownHTMLSection({ children, className, node: _node, style }: MarkdownHTMLBlockProps) {
+  return (
+    <section className={cn("min-w-0 max-w-full", className)} style={sanitizeHTMLStyle(style)}>
+      {children}
+    </section>
+  );
+}
+
+export function MarkdownHTMLArticle({ children, className, node: _node, style }: MarkdownHTMLBlockProps) {
+  return (
+    <article className={cn("min-w-0 max-w-full", className)} style={sanitizeHTMLStyle(style)}>
+      {children}
+    </article>
+  );
+}
+
+export function MarkdownHTMLAside({ children, className, node: _node, style }: MarkdownHTMLBlockProps) {
+  return (
+    <aside className={cn("min-w-0 max-w-full", className)} style={sanitizeHTMLStyle(style)}>
+      {children}
+    </aside>
+  );
+}
+
+export function MarkdownHTMLMain({ children, className, node: _node, style }: MarkdownHTMLBlockProps) {
+  return (
+    <main className={cn("min-w-0 max-w-full", className)} style={sanitizeHTMLStyle(style)}>
+      {children}
+    </main>
+  );
+}
+
+export function MarkdownHTMLDetails({ children, className, node: _node, open, style }: MarkdownHTMLDetailsProps) {
+  return (
+    <details className={cn("min-w-0 max-w-full", className)} open={open} style={sanitizeHTMLStyle(style)}>
+      {children}
+    </details>
+  );
+}
+
+export function MarkdownHTMLSummary({ children, className, node: _node, style }: MarkdownHTMLBlockProps) {
+  return (
+    <summary className={cn("min-w-0 max-w-full", className)} style={sanitizeHTMLStyle(style)}>
+      {children}
+    </summary>
+  );
+}
+
+export function MarkdownHTMLSpan({ children, className, node: _node, style }: MarkdownHTMLInlineProps) {
+  return (
+    <span className={cn("min-w-0 max-w-full", className)} style={sanitizeHTMLStyle(style)}>
+      {children}
+    </span>
   );
 }
 

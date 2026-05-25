@@ -3,7 +3,7 @@
 import * as React from "react";
 import { cjk } from "@streamdown/cjk";
 import { createMathPlugin } from "@streamdown/math";
-import { type PluginConfig, Streamdown } from "streamdown";
+import { type AllowedTags, type PluginConfig, Streamdown } from "streamdown";
 import { useTranslations } from "next-intl";
 
 import { ChevronDown } from "@/components/animate-ui/icons/chevron-down";
@@ -22,6 +22,14 @@ import {
   MarkdownImage,
   MarkdownLink,
   MarkdownParagraph,
+  MarkdownHTMLArticle,
+  MarkdownHTMLAside,
+  MarkdownHTMLDetails,
+  MarkdownHTMLDiv,
+  MarkdownHTMLMain,
+  MarkdownHTMLSection,
+  MarkdownHTMLSpan,
+  MarkdownHTMLSummary,
   MarkdownArtifactActionsContext,
   ThinkingHeading,
   type MarkdownArtifactActions,
@@ -85,6 +93,17 @@ const STREAMDOWN_REMEND = {
 
 const STREAMDOWN_CARET = "circle" as const;
 const STREAMDOWN_LINK_SAFETY = { enabled: false } as const;
+const STREAMDOWN_ALLOWED_HTML_TAGS = {
+  article: ["style"],
+  aside: ["style"],
+  details: ["open", "style"],
+  div: ["style"],
+  main: ["style"],
+  p: ["style"],
+  section: ["style"],
+  span: ["style"],
+  summary: ["style"],
+} satisfies AllowedTags;
 const FENCED_CODE_BLOCK_RE = /(?:^|\n)[ \t]*(?:```|~~~)(?!\s*(?:mermaid|mmd)\b)[^\n]*(?:\n|$)/i;
 const MERMAID_CODE_BLOCK_RE = /(?:^|\n)[ \t]*(?:```|~~~)\s*(?:mermaid|mmd)\b/i;
 const DISPLAY_MATH_RE = /(?:^|\n)\s*\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\begin\{[a-z*]+\}/i;
@@ -167,9 +186,17 @@ const THINKING_MARKDOWN_CLASSNAME = cn(
 
 const DEFAULT_STREAMDOWN_COMPONENTS = {
   a: MarkdownLink,
+  article: MarkdownHTMLArticle,
+  aside: MarkdownHTMLAside,
+  details: MarkdownHTMLDetails,
+  div: MarkdownHTMLDiv,
   img: MarkdownImage,
+  main: MarkdownHTMLMain,
   p: MarkdownParagraph,
   pre: CollapsibleCodePre,
+  section: MarkdownHTMLSection,
+  span: MarkdownHTMLSpan,
+  summary: MarkdownHTMLSummary,
 } as const;
 
 const THINKING_STREAMDOWN_COMPONENTS = {
@@ -364,6 +391,7 @@ function ThinkingSegmentBlock({
         </AccordionTrigger>
         <AccordionContent className="pb-0 pt-1.5">
           <Streamdown
+            allowedTags={STREAMDOWN_ALLOWED_HTML_TAGS}
             className={cn(THINKING_MARKDOWN_CLASSNAME, "text-[12px] leading-6 text-muted-foreground/84")}
             components={THINKING_STREAMDOWN_COMPONENTS}
             controls={STREAMDOWN_CONTROLS}
@@ -448,6 +476,7 @@ export const StreamdownRender = React.memo(function StreamdownRender({
         <MarkdownArtifactActionsContext.Provider key={`markdown-${index}`} value={artifactActions ?? null}>
           <MarkdownImageActionsContext.Provider value={imageActions ?? null}>
             <Streamdown
+              allowedTags={STREAMDOWN_ALLOWED_HTML_TAGS}
               className={activeMarkdownClassName}
               components={components}
               controls={STREAMDOWN_CONTROLS}

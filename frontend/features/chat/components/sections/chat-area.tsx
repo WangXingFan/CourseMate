@@ -164,7 +164,6 @@ const ChatMessageRow = React.memo(function ChatMessageRow({
         onEditUserMessage={onEditUserMessage}
         onCycleMessageBranch={onCycleMessageBranch}
         onCopy={() => void onCopy()}
-        markdownRender={markdownRender}
       />
     );
   }

@@ -11758,6 +11758,9 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "htmlVisualPrompt": {
+                    "type": "boolean"
+                },
                 "model": {
                     "type": "string",
                     "maxLength": 128
