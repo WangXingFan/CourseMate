@@ -1,4 +1,4 @@
-name: Docker Image
+name: GHCR Image
 
 on:
   push:
@@ -18,7 +18,7 @@ permissions:
   packages: write
 
 jobs:
-  build:
+  build_ghcr_image:
     name: Build image (${{ matrix.arch }})
     strategy:
       fail-fast: false
