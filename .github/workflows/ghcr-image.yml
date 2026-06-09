@@ -82,7 +82,7 @@ jobs:
     name: Merge image
     runs-on: ubuntu-latest
     needs:
-      - build
+      - build_ghcr_image
     if: github.event_name != 'pull_request'
 
     steps:
