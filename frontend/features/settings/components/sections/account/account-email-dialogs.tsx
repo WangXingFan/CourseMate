@@ -236,3 +236,122 @@ export function CurrentEmailVerificationDialog({
     />
   );
 }
+
+export function EmailSecurityDialog({
+  open,
+  onOpenChange,
+  bootstrap,
+  emailVerificationEnabled,
+  currentVerificationMethods,
+  pending,
+  sendingCode,
+  currentCodeCooldownSeconds,
+  newCodeCooldownSeconds,
+  debugCode,
+  currentDebugCode,
+  onSendBootstrapCode,
+  onCompleteBootstrap,
+  onSendCurrentCode,
+  onSendNewCode,
+  onCompleteChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  bootstrap: boolean;
+  emailVerificationEnabled: boolean;
+  currentVerificationMethods: SecurityVerificationMethod[];
+  pending: boolean;
+  sendingCode: boolean;
+  currentCodeCooldownSeconds: number;
+  newCodeCooldownSeconds: number;
+  debugCode: string;
+  currentDebugCode: string;
+  onSendBootstrapCode: (email: string) => Promise<void>;
+  onCompleteBootstrap: (payload: { email: string; code: string }) => Promise<void>;
+  onSendCurrentCode: (method: SecurityVerificationMethod) => Promise<void>;
+  onSendNewCode: (email: string) => Promise<void>;
+  onCompleteChange: (payload: { email: string; currentVerificationMethod: SecurityVerificationMethod; currentCode: string; newCode: string }) => Promise<void>;
+}) {
+  const t = useTranslations("settings.accountPage.securityDialog.email");
+  const common = useTranslations("settings.accountPage.securityDialog.common");
+  const [email, setEmail] = React.useState("");
+  const [selectedCurrentVerificationMethod, setSelectedCurrentVerificationMethod] = React.useState<SecurityVerificationMethod>(currentVerificationMethods[0] ?? "none");
+
+  React.useEffect(() => {
+    if (!open) {
+      setEmail("");
+      setSelectedCurrentVerificationMethod(currentVerificationMethods[0] ?? "none");
+    }
+  }, [currentVerificationMethods, open]);
+
+  const disabled = pending || sendingCode;
+  const currentVerificationMethod = bootstrap ? "none" : (currentVerificationMethods[0] ?? "none");
+  const needsStagedVerification = emailVerificationEnabled || currentVerificationMethod !== "none";
+  const description = bootstrap
+    ? emailVerificationEnabled
+      ? t("description.bootstrapVerified")
+      : t("description.saveOnly")
+    : emailVerificationEnabled
+      ? t("description.change")
+      : t("description.saveOnly");
+
+  const handleSave = React.useCallback(() => {
+    void (bootstrap
+      ? onCompleteBootstrap({ email, code: "" })
+      : onCompleteChange({ email, currentVerificationMethod, currentCode: "", newCode: "" }));
+  }, [bootstrap, currentVerificationMethod, email, onCompleteBootstrap, onCompleteChange]);
+
+  if (needsStagedVerification) {
+    return (
+      <EmailChangeVerificationDialog
+        open={open}
+        onOpenChange={onOpenChange}
+        bootstrap={bootstrap}
+        email={email}
+        onEmailChange={setEmail}
+        emailVerificationEnabled={emailVerificationEnabled}
+        currentVerificationMethod={selectedCurrentVerificationMethod}
+        currentVerificationMethods={currentVerificationMethods}
+        onCurrentVerificationMethodChange={setSelectedCurrentVerificationMethod}
+        pending={pending}
+        sendingCode={sendingCode}
+        currentCodeCooldownSeconds={currentCodeCooldownSeconds}
+        newCodeCooldownSeconds={newCodeCooldownSeconds}
+        debugCode={debugCode}
+        currentDebugCode={selectedCurrentVerificationMethod === "email" ? currentDebugCode : ""}
+        onSendCurrentCode={onSendCurrentCode}
+        onSendNewCode={() => (bootstrap ? onSendBootstrapCode(email) : onSendNewCode(email))}
+        onSubmit={({ currentVerificationMethod, currentCode, newCode }) => (bootstrap
+          ? onCompleteBootstrap({ email, code: newCode })
+          : onCompleteChange({ email, currentVerificationMethod, currentCode, newCode }))}
+      />
+    );
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle>{bootstrap ? t("title.set") : t("title.change")}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="space-y-1">
+            <p className="text-xs text-muted-foreground">{t("labels.newEmail")}</p>
+            <Input id="new-email" type="email" value={email} disabled={disabled} onChange={(event) => setEmail(event.target.value)} />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" disabled={pending} onClick={() => onOpenChange(false)}>{common("cancel")}</Button>
+          <Button
+            type="button"
+            disabled={disabled || !email}
+            onClick={handleSave}
+          >
+            {disabled ? <SpinnerLabel>{pending ? common("saving") : common("processing")}</SpinnerLabel> : common("save")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
