@@ -108,28 +108,6 @@ function removeCachedModelOptions(platformModelName: string): void {
   }
 }
 
-function normalizeConversationOptionValue(value: unknown): unknown {
-  if (Array.isArray(value)) {
-    return value.map(normalizeConversationOptionValue);
-  }
-  if (value !== null && typeof value === "object") {
-    return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>)
-        .sort(([left], [right]) => left.localeCompare(right))
-        .map(([key, item]) => [key, normalizeConversationOptionValue(item)]),
-    );
-  }
-  return value;
-}
-
-function serializeConversationOptions(options: ConversationOptions): string {
-  return JSON.stringify(normalizeConversationOptionValue(sanitizeConversationOptions(options)));
-}
-
-function conversationOptionsEqual(left: ConversationOptions, right: ConversationOptions): boolean {
-  return serializeConversationOptions(left) === serializeConversationOptions(right);
-}
-
 function parseDefaultMCPToolIDs(raw: string | null | undefined): number[] {
   const value = raw?.trim();
   if (!value) {
@@ -389,11 +367,12 @@ export function AppChatArea() {
       return;
     }
     selectedModelDefaultOptionsRef.current = nextDefaultOptions;
-    if (conversationOptionsEqual(previousDefaultOptions, nextDefaultOptions)) {
+    const previousDefaultOptionsJSON = JSON.stringify(previousDefaultOptions);
+    if (previousDefaultOptionsJSON === JSON.stringify(nextDefaultOptions)) {
       return;
     }
     setOptions((currentOptions) => {
-      if (!conversationOptionsEqual(currentOptions, previousDefaultOptions)) {
+      if (JSON.stringify(currentOptions) !== previousDefaultOptionsJSON) {
         return currentOptions;
       }
       removeCachedModelOptions(platformModelName);
