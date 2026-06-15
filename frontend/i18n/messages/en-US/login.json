@@ -18,6 +18,8 @@
   "verifyAndSignIn": "Verify and sign in",
   "backToPasswordLogin": "Back to password sign-in",
   "backToLoginMethods": "Back to sign-in methods",
+  "rememberPassword": "Remembered your password?",
+  "back": "Back",
   "forgotPassword": "Forgot password?",
   "resetPassword": "Reset password",
   "resettingPassword": "Resetting",
