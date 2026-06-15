@@ -175,6 +175,7 @@ export function ChatMessageUser({
     onFileSelect: () => undefined,
     onModelCatalogRefresh,
     onModelChange,
+    placementPreference: "bottom",
     onSelectedToolsChange: () => undefined,
   });
   const mentionSectionOffsets = React.useMemo(() => {
