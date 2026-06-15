@@ -293,7 +293,8 @@ function ChatInputComponent({
     onFileSelect: onAttachExistingFile,
     onModelCatalogRefresh,
     onModelChange,
-    placementPreference: isConversationMode ? "auto" : "bottom",
+    placementAnchor: "container",
+    placementPreference: isConversationMode ? "top" : "bottom",
     onSelectedToolsChange,
     onToolLimitReached: () => {
       toast.error(tComposer("mcpToolLimitTitle"), {

@@ -55,7 +55,7 @@ const HTML_VISUAL_MARKDOWN_BLOCK_START_RE =
 const INLINE_DOLLAR_MATH_RE = /(^|[^\\$])\$([^$\n]{1,800})\$/g;
 const ESCAPED_INLINE_DOLLAR_MATH_RE = /\\\$([^$\n]{1,400})\\\$/g;
 const DISPLAY_DOLLAR_MATH_RE = /(\${2,})([\s\S]*?)(\1)/g;
-const CURRENCY_DOLLAR_RE = /(^|[^\\$])\$((?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d{1,2})?)(?!\$)(?=\b)/g;
+const CURRENCY_DOLLAR_RE = /(^|[^\\$])\$((?:\d{1,3}(?:,\d{3})+|\d+\.\d{1,2}))(?!\$)(?=\b)/g;
 
 function isMarkdownLiteralFragment(fragment: string): boolean {
   return fragment.startsWith("```") || fragment.startsWith("~~~") || fragment.startsWith("`");
