@@ -166,10 +166,10 @@ func TestAddPeriodUsageAndSettleOverageSplitsCreditAndBalance(t *testing.T) {
 	if covered != 200 || overage != 300 {
 		t.Fatalf("snapshot split = covered %d overage %d, want 200/300", covered, overage)
 	}
-	debited := int64(snapshot["period_balance_debited_nanousd"].(float64))
+	charged := int64(snapshot["period_balance_charged_nanousd"].(float64))
 	delta := int64(snapshot["period_balance_settlement_delta_nanousd"].(float64))
-	if debited != 300 || delta != 300 {
-		t.Fatalf("snapshot balance = debit %d delta %d, want 300/300", debited, delta)
+	if charged != 300 || delta != 300 {
+		t.Fatalf("snapshot balance = charged %d delta %d, want 300/300", charged, delta)
 	}
 }
 

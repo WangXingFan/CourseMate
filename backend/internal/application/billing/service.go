@@ -1007,6 +1007,7 @@ func (s *Service) ReserveUsageBalance(ctx context.Context, userID uint, platform
 	}
 	reserveNanousd := prepaidNanousd
 	if mode == "period" {
+		// 周期模式预扣只做调用前的余额风险控制；最终超额金额仍由入账事务在账户行锁下重算并兜底。
 		plan, startAt, endAt, planErr := s.currentPeriodPlan(ctx, userID, time.Now())
 		if planErr != nil {
 			return nil, planErr
