@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import {
   Collapsible,
-  CollapsibleContent,
 } from "@/components/ui/collapsible"
 import { Spinner } from "@/components/ui/spinner"
 import {
@@ -35,6 +34,7 @@ import {
 } from "@/features/chat/components/sections/chat-share-dialog"
 import { useChatConversationExport } from "@/features/chat/hooks/use-chat-conversation-export"
 import { DeleteFilesOption } from "@/shared/components/delete-files-option"
+import { CollapsibleMotionContent } from "@/shared/components/collapsible-motion-content"
 import { useSettingsChatPreferences } from "@/features/settings/hooks/use-settings-chat-preferences"
 import { useLayoutActiveConversation } from "@/features/layouts/hooks/use-layout-active-conversation"
 import { useLayoutSidebarListFlip } from "@/features/layouts/hooks/use-layout-sidebar-list-flip"
@@ -44,6 +44,7 @@ import type {
 } from "@/features/layouts/types/navigation"
 import { useSidebarRecents } from "@/features/recent/context/sidebar-recents-context"
 import { useLoadMoreSentinel } from "@/shared/hooks/use-load-more-sentinel"
+import { useStoredBoolean } from "@/shared/hooks/use-stored-boolean"
 import { cn } from "@/lib/utils"
 
 const RECENT_SKELETON_WIDTHS = ["74%", "61%", "69%", "57%", "72%"] as const
@@ -81,8 +82,7 @@ export function NavRecents() {
   const [shareTarget, setShareTarget] = React.useState<{ publicID: string; title: string } | null>(null)
   const [renameValue, setRenameValue] = React.useState("")
   const [autoRenamingPublicID, setAutoRenamingPublicID] = React.useState<string | null>(null)
-  const [recentsOpen, setRecentsOpen] = React.useState(true)
-  const [recentsOpenHydrated, setRecentsOpenHydrated] = React.useState(false)
+  const [recentsOpen, setRecentsOpen] = useStoredBoolean(RECENTS_OPEN_STORAGE_KEY, true)
   const loadMoreRef = React.useRef<HTMLLIElement | null>(null)
   const listContainerRef = React.useRef<HTMLDivElement | null>(null)
   const deleteFilesID = React.useId()
@@ -92,35 +92,8 @@ export function NavRecents() {
     failureMessage: t("exportFailed"),
   })
 
-  React.useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(RECENTS_OPEN_STORAGE_KEY)
-      if (stored === "true") {
-        setRecentsOpen(true)
-      } else if (stored === "false") {
-        setRecentsOpen(false)
-      }
-    } catch {
-      // Keep the default open state when localStorage is unavailable.
-    } finally {
-      setRecentsOpenHydrated(true)
-    }
-  }, [])
-
-  React.useEffect(() => {
-    if (!recentsOpenHydrated) {
-      return
-    }
-
-    try {
-      window.localStorage.setItem(RECENTS_OPEN_STORAGE_KEY, recentsOpen ? "true" : "false")
-    } catch {
-      // Ignore storage failures; the current in-memory state still controls the UI.
-    }
-  }, [recentsOpen, recentsOpenHydrated])
-
   useLoadMoreSentinel({
-    enabled: recentsOpenHydrated && recentsOpen && hasMore && !loadingInitial && !loadMoreFailed,
+    enabled: recentsOpen && hasMore && !loadingInitial && !loadMoreFailed,
     targetRef: loadMoreRef,
     onLoadMore: loadMore,
   })
@@ -247,7 +220,7 @@ export function NavRecents() {
                 />
               </button>
             </SidebarGroupLabel>
-            <CollapsibleContent id={recentsContentID}>
+            <CollapsibleMotionContent id={recentsContentID} open={recentsOpen}>
               <div ref={listContainerRef} className="relative">
                 <LoadingReveal
                   loading={showInitialSkeleton}
@@ -334,7 +307,7 @@ export function NavRecents() {
                   </SidebarMenu>
                 </LoadingReveal>
               </div>
-            </CollapsibleContent>
+            </CollapsibleMotionContent>
           </SidebarGroup>
         </Collapsible>
       </div>

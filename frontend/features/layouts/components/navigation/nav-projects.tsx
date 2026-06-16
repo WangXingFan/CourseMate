@@ -24,7 +24,6 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Collapsible,
-  CollapsibleContent,
 } from "@/components/ui/collapsible"
 import {
   Dialog,
@@ -59,6 +58,7 @@ import {
   ConversationShareDialog,
   sharePatchFromDTO,
 } from "@/features/chat/components/sections/chat-share-dialog"
+import { CollapsibleMotionContent } from "@/shared/components/collapsible-motion-content"
 import { useChatConversationExport } from "@/features/chat/hooks/use-chat-conversation-export"
 import { useChatSession } from "@/features/chat/context/chat-session-context"
 import { DeleteFilesOption } from "@/shared/components/delete-files-option"
@@ -74,6 +74,7 @@ import { sortByUpdatedAtDesc, upsertByPublicID, removeByPublicID } from "@/featu
 import { listConversations } from "@/shared/api/conversation"
 import type { ConversationDTO } from "@/shared/api/conversation.types"
 import { resolveAccessToken } from "@/shared/auth/resolve-access-token"
+import { useStoredBoolean } from "@/shared/hooks/use-stored-boolean"
 import { cn } from "@/lib/utils"
 
 type ProjectDraft = {
@@ -336,8 +337,7 @@ export function NavProjects() {
   const [hoveredProjectCreateID, setHoveredProjectCreateID] = React.useState<string | null>(null)
   const [hoveredProjectRowID, setHoveredProjectRowID] = React.useState<string | null>(null)
   const [focusedProjectRowID, setFocusedProjectRowID] = React.useState<string | null>(null)
-  const [projectsOpen, setProjectsOpen] = React.useState(true)
-  const [projectsOpenHydrated, setProjectsOpenHydrated] = React.useState(false)
+  const [projectsOpen, setProjectsOpen] = useStoredBoolean(PROJECTS_OPEN_STORAGE_KEY, true)
   const projectConversationStateRef = React.useRef(projectConversationState)
   const expandedProjectIDsRef = React.useRef(expandedProjectIDs)
   const activeConversationProjectID = React.useMemo(
@@ -364,33 +364,6 @@ export function NavProjects() {
     expandedProjectIDsRef.current = next
     setExpandedProjectIDs(next)
   }, [])
-
-  React.useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(PROJECTS_OPEN_STORAGE_KEY)
-      if (stored === "true") {
-        setProjectsOpen(true)
-      } else if (stored === "false") {
-        setProjectsOpen(false)
-      }
-    } catch {
-      // Keep the default open state when localStorage is unavailable.
-    } finally {
-      setProjectsOpenHydrated(true)
-    }
-  }, [])
-
-  React.useEffect(() => {
-    if (!projectsOpenHydrated) {
-      return
-    }
-
-    try {
-      window.localStorage.setItem(PROJECTS_OPEN_STORAGE_KEY, projectsOpen ? "true" : "false")
-    } catch {
-      // Ignore storage failures; the current in-memory state still controls the UI.
-    }
-  }, [projectsOpen, projectsOpenHydrated])
 
   const closeDraft = React.useCallback(() => {
     setDraft(null)
@@ -734,9 +707,9 @@ export function NavProjects() {
                 onOpenChange={setProjectsOpen}
                 toggleLabel={projectsOpen ? t("collapseSection") : t("expandSection")}
               />
-              <CollapsibleContent id={projectsContentID}>
+              <CollapsibleMotionContent id={projectsContentID} open={projectsOpen}>
                 <div className="px-2 py-1 text-xs text-sidebar-foreground/55">{t("empty")}</div>
-              </CollapsibleContent>
+              </CollapsibleMotionContent>
             </SidebarGroup>
           </Collapsible>
         </div>
@@ -759,7 +732,7 @@ export function NavProjects() {
               onOpenChange={setProjectsOpen}
               toggleLabel={projectsOpen ? t("collapseSection") : t("expandSection")}
             />
-            <CollapsibleContent id={projectsContentID}>
+            <CollapsibleMotionContent id={projectsContentID} open={projectsOpen}>
               <SidebarMenu>
                 {projects.map((project) => {
                   const expanded = expandedProjectIDs.has(project.publicID)
@@ -939,7 +912,7 @@ export function NavProjects() {
                   )
                 })}
               </SidebarMenu>
-            </CollapsibleContent>
+            </CollapsibleMotionContent>
           </SidebarGroup>
         </Collapsible>
       </div>

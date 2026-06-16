@@ -9,7 +9,6 @@ import { useTranslations } from "next-intl"
 import { List } from "@/components/animate-ui/icons/list"
 import {
   Collapsible,
-  CollapsibleContent,
 } from "@/components/ui/collapsible"
 import {
   AlertDialog,
@@ -36,6 +35,7 @@ import {
   ConversationShareDialog,
   sharePatchFromDTO,
 } from "@/features/chat/components/sections/chat-share-dialog"
+import { CollapsibleMotionContent } from "@/shared/components/collapsible-motion-content"
 import { useChatConversationExport } from "@/features/chat/hooks/use-chat-conversation-export"
 import { DeleteFilesOption } from "@/shared/components/delete-files-option"
 import { useSettingsChatPreferences } from "@/features/settings/hooks/use-settings-chat-preferences"
@@ -50,6 +50,7 @@ import type {
 import { filterConversationSearchResults } from "@/features/layouts/utils/navigation-search"
 import { useSidebarRecents } from "@/features/recent/context/sidebar-recents-context"
 import type { ConversationDTO } from "@/shared/api/conversation.types"
+import { useStoredBoolean } from "@/shared/hooks/use-stored-boolean"
 import { cn } from "@/lib/utils"
 
 const STARRED_SKELETON_WIDTHS = ["71%", "59%", "66%", "54%", "70%"] as const
@@ -98,8 +99,7 @@ export function NavStarred() {
   const [shareTarget, setShareTarget] = React.useState<{ publicID: string; title: string } | null>(null)
   const [renameValue, setRenameValue] = React.useState("")
   const [autoRenamingPublicID, setAutoRenamingPublicID] = React.useState<string | null>(null)
-  const [starredOpen, setStarredOpen] = React.useState(true)
-  const [starredOpenHydrated, setStarredOpenHydrated] = React.useState(false)
+  const [starredOpen, setStarredOpen] = useStoredBoolean(STARRED_OPEN_STORAGE_KEY, true)
   const listContainerRef = React.useRef<HTMLDivElement | null>(null)
   const deleteFilesID = React.useId()
   const starredContentID = React.useId()
@@ -132,33 +132,6 @@ export function NavStarred() {
     signature: visibleStarredSignature,
     excludeKey: transferringStarPublicID,
   })
-
-  React.useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(STARRED_OPEN_STORAGE_KEY)
-      if (stored === "true") {
-        setStarredOpen(true)
-      } else if (stored === "false") {
-        setStarredOpen(false)
-      }
-    } catch {
-      // Keep the default open state when localStorage is unavailable.
-    } finally {
-      setStarredOpenHydrated(true)
-    }
-  }, [])
-
-  React.useEffect(() => {
-    if (!starredOpenHydrated) {
-      return
-    }
-
-    try {
-      window.localStorage.setItem(STARRED_OPEN_STORAGE_KEY, starredOpen ? "true" : "false")
-    } catch {
-      // Ignore storage failures; the current in-memory state still controls the UI.
-    }
-  }, [starredOpen, starredOpenHydrated])
 
   React.useEffect(() => {
     if (!showAllStarredDialog) {
@@ -318,7 +291,7 @@ export function NavStarred() {
                 />
               </button>
             </SidebarGroupLabel>
-            <CollapsibleContent id={starredContentID}>
+            <CollapsibleMotionContent id={starredContentID} open={starredOpen}>
               <div ref={listContainerRef}>
                 <LoadingReveal
                   loading={showInitialSkeleton}
@@ -400,7 +373,7 @@ export function NavStarred() {
                   </SidebarMenu>
                 </LoadingReveal>
               </div>
-            </CollapsibleContent>
+            </CollapsibleMotionContent>
           </SidebarGroup>
         </Collapsible>
       </motion.div>

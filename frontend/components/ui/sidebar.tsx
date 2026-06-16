@@ -60,9 +60,12 @@ function isCompactSidebarViewport() {
   return typeof window !== "undefined" && window.innerWidth < SIDEBAR_AUTO_COLLAPSE_BREAKPOINT
 }
 
-function readSidebarStorageOpen() {
+function readSidebarInitialOpen(defaultOpen: boolean) {
+  if (!defaultOpen) {
+    return false
+  }
   if (typeof window === "undefined") {
-    return null
+    return defaultOpen
   }
 
   try {
@@ -77,11 +80,7 @@ function readSidebarStorageOpen() {
     // Keep the default state when localStorage is unavailable.
   }
 
-  return null
-}
-
-function resolveSidebarPreferredOpen(defaultOpen: boolean) {
-  return readSidebarStorageOpen() ?? defaultOpen
+  return defaultOpen
 }
 
 function useCompactSidebarViewport() {
@@ -116,11 +115,11 @@ function SidebarProvider({
   const isCompactViewport = useCompactSidebarViewport()
   const [openMobile, setOpenMobile] = React.useState(false)
   const wasCompactViewportRef = React.useRef(isCompactSidebarViewport())
-  const autoCollapsedRef = React.useRef(resolveSidebarPreferredOpen(defaultOpen) && isCompactSidebarViewport())
+  const autoCollapsedRef = React.useRef(readSidebarInitialOpen(defaultOpen) && isCompactSidebarViewport())
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
-  const [_open, _setOpen] = React.useState(() => resolveSidebarPreferredOpen(defaultOpen) && !isCompactSidebarViewport())
+  const [_open, _setOpen] = React.useState(() => readSidebarInitialOpen(defaultOpen) && !isCompactSidebarViewport())
   const open = openProp ?? _open
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
