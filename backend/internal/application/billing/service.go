@@ -99,6 +99,7 @@ type UsagePricingInput struct {
 	ServerSideToolUsage map[string]int64
 	ServiceItems        []ServiceUsageInput
 	RawUsageJSON        string
+	BillingAt           time.Time
 }
 
 func upstreamUsageSnapshot(input UsagePricingInput) interface{} {
@@ -960,11 +961,13 @@ func (s *Service) RecordUsageWithReservation(ctx context.Context, usage *domainb
 		return nil
 	}
 	if mode == "period" {
-		now := usage.UsageDate
-		if now.IsZero() {
-			now = time.Now()
+		if usage.BillingAt.IsZero() {
+			return repository.ErrInvalidInput
 		}
-		plan, startAt, endAt, planErr := s.currentPeriodPlan(ctx, usage.UserID, now)
+		if usage.UsageDate.IsZero() {
+			return repository.ErrInvalidInput
+		}
+		plan, startAt, endAt, planErr := s.currentPeriodPlan(ctx, usage.UserID, usage.BillingAt)
 		if planErr != nil {
 			return planErr
 		}
@@ -1588,6 +1591,13 @@ func (s *Service) BuildUsageLedger(ctx context.Context, input UsagePricingInput)
 		snapshotJSON = string(raw)
 	}
 
+	billingAt := input.BillingAt
+	if billingAt.IsZero() {
+		billingAt = time.Now()
+	}
+	usageDateYear, usageDateMonth, usageDateDay := billingAt.Date()
+	usageDate := time.Date(usageDateYear, usageDateMonth, usageDateDay, 0, 0, 0, 0, billingAt.Location())
+
 	ledger := &domainbilling.UsageLedger{
 		UserID:              input.UserID,
 		ConversationID:      input.ConversationID,
@@ -1597,7 +1607,8 @@ func (s *Service) BuildUsageLedger(ctx context.Context, input UsagePricingInput)
 		RoutedBindingCode:   strings.TrimSpace(input.RoutedBindingCode),
 		UpstreamModelName:   strings.TrimSpace(input.UpstreamModelName),
 		IsFreeModel:         isFreeModel,
-		UsageDate:           time.Now(),
+		BillingAt:           billingAt,
+		UsageDate:           usageDate,
 		InputTokens:         input.InputTokens,
 		CacheReadTokens:     input.CacheReadTokens,
 		CacheWriteTokens:    cacheWriteTokens,

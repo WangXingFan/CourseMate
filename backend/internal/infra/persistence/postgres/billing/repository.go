@@ -647,7 +647,7 @@ func (r *Repo) AddPeriodUsageAndSettleOverage(
 		var usedBeforeNanousd int64
 		if err = tx.Model(&model.UsageLedger{}).
 			Select("COALESCE(SUM(billed_nanousd), 0)").
-			Where("user_id = ? AND is_free_model = ? AND created_at >= ? AND created_at < ?", usage.UserID, false, periodStart, periodEnd).
+			Where("user_id = ? AND is_free_model = ? AND billing_at >= ? AND billing_at < ?", usage.UserID, false, periodStart, periodEnd).
 			Scan(&usedBeforeNanousd).Error; err != nil {
 			return translateError(err)
 		}
@@ -1844,7 +1844,7 @@ func (r *Repo) SumBillableNanousd(ctx context.Context, userID uint, startAt time
 	err := r.db.WithContext(ctx).
 		Model(&model.UsageLedger{}).
 		Select("COALESCE(SUM(billed_nanousd), 0)").
-		Where("user_id = ? AND is_free_model = ? AND created_at >= ? AND created_at < ?", userID, false, startAt, endAt).
+		Where("user_id = ? AND is_free_model = ? AND billing_at >= ? AND billing_at < ?", userID, false, startAt, endAt).
 		Scan(&total).Error
 	if err != nil {
 		return 0, translateError(err)
@@ -1910,6 +1910,7 @@ func toModelUsageLedger(usage *domainbilling.UsageLedger) model.UsageLedger {
 		RoutedBindingCode:   usage.RoutedBindingCode,
 		UpstreamModelName:   usage.UpstreamModelName,
 		IsFreeModel:         usage.IsFreeModel,
+		BillingAt:           usage.BillingAt,
 		UsageDate:           usage.UsageDate,
 		InputTokens:         usage.InputTokens,
 		CacheReadTokens:     usage.CacheReadTokens,
@@ -1940,6 +1941,7 @@ func toDomainUsageLedger(item model.UsageLedger) domainbilling.UsageLedger {
 		RoutedBindingCode:   item.RoutedBindingCode,
 		UpstreamModelName:   item.UpstreamModelName,
 		IsFreeModel:         item.IsFreeModel,
+		BillingAt:           item.BillingAt,
 		UsageDate:           item.UsageDate,
 		InputTokens:         item.InputTokens,
 		CacheReadTokens:     item.CacheReadTokens,
