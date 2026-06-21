@@ -213,7 +213,7 @@ func (s *Service) BuildUserView(ctx context.Context, item domainuser.User) (user
 	if err != nil {
 		return userview.UserView{}, err
 	}
-	if mode == "usage" {
+	if mode != "self" {
 		accounts, accountErr := s.subscriptionResolver.ListBillingAccountSnapshots(ctx, []uint{item.ID})
 		if accountErr != nil {
 			return userview.UserView{}, accountErr
@@ -286,7 +286,7 @@ func (s *Service) BuildUserViews(ctx context.Context, items []domainuser.User) (
 	if err != nil {
 		return nil, err
 	}
-	if mode == "usage" {
+	if mode != "self" {
 		accounts, accountErr := s.subscriptionResolver.ListBillingAccountSnapshots(ctx, userIDs)
 		if accountErr != nil {
 			return nil, accountErr
