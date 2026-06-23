@@ -8,6 +8,7 @@ import {
   ClockArrowUp,
   ClockCheck,
   CircleDollarSign,
+  TicketSlash,
   DatabaseSearch,
   DatabaseZap,
   Cpu,
@@ -740,6 +741,7 @@ function BillingCostBadge({ item }: { item: ChatMetaMessage }) {
   if (lines.length === 0) {
     return null;
   }
+  const freeModel = parseBillingSnapshot(cost.pricingSnapshotJSON).is_free_model === true;
 
   return (
     <Tooltip>
@@ -749,7 +751,11 @@ function BillingCostBadge({ item }: { item: ChatMetaMessage }) {
           aria-label={t("billingCost")}
           className="ml-0.5 inline-flex cursor-default items-center gap-1 rounded bg-muted/30 px-1.5 py-0.5 font-mono text-[10px] leading-3.5 text-muted-foreground/70 select-none whitespace-nowrap outline-none focus-visible:ring-[1px] focus-visible:ring-ring/40"
         >
-          <CircleDollarSign className="size-3" strokeWidth={1.4} />
+          {freeModel ? (
+            <TicketSlash className="size-3" strokeWidth={1.4} />
+          ) : (
+            <CircleDollarSign className="size-3" strokeWidth={1.4} />
+          )}
           {formatBillingCost(nanousdToUSD(cost.billedNanousd))}
         </span>
       </TooltipTrigger>

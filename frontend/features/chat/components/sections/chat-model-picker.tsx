@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { Check, ChevronDown, ChevronLeft, ChevronRight, CircleDollarSign } from "lucide-react";
+import { Check, ChevronDown, ChevronLeft, ChevronRight, CircleDollarSign, TicketSlash } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -524,7 +524,11 @@ function ChatModelMenuItem({
               className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 transition-colors hover:text-current focus-visible:text-current focus-visible:outline-none group-hover:text-current group-focus-within:text-current group-data-[selected=true]:text-current"
               aria-label={viewPricingLabel}
             >
-              <CircleDollarSign className="size-3.5" strokeWidth={1.8} />
+              {model.pricing.isFree ? (
+                <TicketSlash className="size-3.5" strokeWidth={1.8} />
+              ) : (
+                <CircleDollarSign className="size-3.5" strokeWidth={1.8} />
+              )}
             </button>
           </TooltipTrigger>
           <TooltipContent
