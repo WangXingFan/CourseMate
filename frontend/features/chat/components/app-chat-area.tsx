@@ -361,6 +361,15 @@ export function AppChatArea() {
   }, [mcpMaxSelectedTools]);
 
   React.useEffect(() => {
+    setSelectedSkills((current) => {
+      if (current.length <= mcpMaxSelectedTools) {
+        return current;
+      }
+      return current.slice(0, mcpMaxSelectedTools);
+    });
+  }, [mcpMaxSelectedTools]);
+
+  React.useEffect(() => {
     const platformModelName = selectedModel?.platformModelName.trim() || "";
     if (!platformModelName) {
       initializedOptionsModelRef.current = "";
@@ -492,6 +501,15 @@ export function AppChatArea() {
     setSelectedToolIDs(filterAvailableMCPToolIDs(defaultToolIDsRef.current, availableTools, mcpMaxSelectedTools));
   }, [availableTools, conversationID, mcpMaxSelectedTools, newConversationRevision]);
 
+  // Selected skills persist across turns within a conversation, mirroring selected tools.
+  // Reset them only when a new conversation starts.
+  React.useEffect(() => {
+    if (conversationID) {
+      return;
+    }
+    setSelectedSkills([]);
+  }, [conversationID, newConversationRevision]);
+
   const onDefaultToolIDsChange = React.useCallback(async (nextToolIDs: number[]) => {
     const nextDefaults = filterAvailableMCPToolIDs(nextToolIDs, availableTools, mcpMaxSelectedTools);
     const previousDefaults = defaultToolIDs;
@@ -573,7 +591,6 @@ export function AppChatArea() {
     replaceMessage,
     setDraft,
     setAttachments,
-    setSelectedSkills,
     releaseAttachments,
     activeGenerationRunsRef,
     failedGenerationRunsRef,
