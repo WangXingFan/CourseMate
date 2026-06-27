@@ -47,6 +47,13 @@ const SCREENSHOT_PADDING = 24;
 const MAX_CANVAS_DIMENSION = 16384;
 const MIN_SCREENSHOT_SCALE = 0.25;
 
+export class ConversationScreenshotTooLargeError extends Error {
+  constructor() {
+    super("conversation_screenshot_too_large");
+    this.name = "ConversationScreenshotTooLargeError";
+  }
+}
+
 function resolveSafeScale(element: HTMLElement, requestedScale: number, padding: number) {
   const width = element.scrollWidth + padding * 2;
   const height = element.scrollHeight + padding * 2;
@@ -56,7 +63,7 @@ function resolveSafeScale(element: HTMLElement, requestedScale: number, padding:
   }
   const maxScale = MAX_CANVAS_DIMENSION / largestSide;
   if (maxScale < MIN_SCREENSHOT_SCALE) {
-    throw new Error("Conversation is too large to capture as a single image");
+    throw new ConversationScreenshotTooLargeError();
   }
   return Math.min(requestedScale, maxScale);
 }

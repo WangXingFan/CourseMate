@@ -78,20 +78,6 @@ export function ConversationShareExportMenuItems({
         <>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            disabled={!onScreenshotFull}
-            onSelect={(event) => {
-              event.preventDefault();
-              if (!onScreenshotFull) {
-                return;
-              }
-              onCloseMenu?.();
-              onScreenshotFull();
-            }}
-          >
-            <DropdownMenuItemIcon icon={Camera} />
-            {screenshotFullLabel}
-          </DropdownMenuItem>
-          <DropdownMenuItem
             disabled={!onScreenshotSelect}
             onSelect={(event) => {
               event.preventDefault();
@@ -104,6 +90,20 @@ export function ConversationShareExportMenuItems({
           >
             <DropdownMenuItemIcon icon={MousePointerClick} />
             {screenshotSelectLabel}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={!onScreenshotFull}
+            onSelect={(event) => {
+              event.preventDefault();
+              if (!onScreenshotFull) {
+                return;
+              }
+              onCloseMenu?.();
+              onScreenshotFull();
+            }}
+          >
+            <DropdownMenuItemIcon icon={Camera} />
+            {screenshotFullLabel}
           </DropdownMenuItem>
         </>
       ) : null}

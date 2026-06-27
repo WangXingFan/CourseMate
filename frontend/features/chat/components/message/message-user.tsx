@@ -48,6 +48,7 @@ type ChatMessageUserProps = {
   readOnly?: boolean;
   attachmentContentLoader?: (file: PreviewDialogFile) => Promise<FileContentResult>;
   showBranchNavigator?: boolean;
+  screenshotMeta?: React.ReactNode;
 };
 
 export function ChatMessageUser({
@@ -65,6 +66,7 @@ export function ChatMessageUser({
   readOnly = false,
   attachmentContentLoader,
   showBranchNavigator = true,
+  screenshotMeta,
 }: ChatMessageUserProps) {
   const tCommon = useTranslations("common.actions");
   const tComposer = useTranslations("chat.composer");
@@ -310,6 +312,7 @@ export function ChatMessageUser({
           </>
         ) : null}
       </div>
+      {screenshotMeta}
       <UserMessageMeta
         item={item}
         busy={busy}

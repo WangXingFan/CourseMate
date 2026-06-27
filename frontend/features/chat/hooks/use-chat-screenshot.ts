@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import {
   captureElementToPngBlob,
+  ConversationScreenshotTooLargeError,
   copyPngBlobToClipboard,
   downloadPngBlob,
   isClipboardImageWriteSupported,
@@ -17,6 +18,7 @@ export type ChatScreenshotMessages = {
   ready: string;
   failed: string;
   loadLimitReached: string;
+  tooLarge: string;
   downloaded: string;
   copied: string;
   copyFailed: string;
@@ -62,11 +64,25 @@ function prepareConversationScreenshotDom(
   const restoreDisplays: Array<{ element: HTMLElement; display: string }> = [];
   const restorePaddings: Array<{ element: HTMLElement; paddingLeft: string }> = [];
   const restoreMaxHeights: Array<{ element: HTMLElement; maxHeight: string }> = [];
+  const restoreMetaDisplays: Array<{ element: HTMLElement; display: string }> = [];
+  const restoreScreenshotOnlyDisplays: Array<{ element: HTMLElement; display: string }> = [];
 
   const collapsibles = target.querySelectorAll<HTMLElement>(".chat-user-message-collapsible");
   collapsibles.forEach((element) => {
     restoreMaxHeights.push({ element, maxHeight: element.style.maxHeight });
     element.style.maxHeight = "none";
+  });
+
+  const metaRows = target.querySelectorAll<HTMLElement>(".chat-message-meta");
+  metaRows.forEach((element) => {
+    restoreMetaDisplays.push({ element, display: element.style.display });
+    element.style.display = "none";
+  });
+
+  const screenshotOnlyElements = target.querySelectorAll<HTMLElement>("[data-screenshot-only='true']");
+  screenshotOnlyElements.forEach((element) => {
+    restoreScreenshotOnlyDisplays.push({ element, display: element.style.display });
+    element.style.display = "flex";
   });
 
   if (selectedOnly) {
@@ -97,6 +113,12 @@ function prepareConversationScreenshotDom(
       restoreMaxHeights.forEach(({ element, maxHeight }) => {
         element.style.maxHeight = maxHeight;
       });
+      restoreMetaDisplays.forEach(({ element, display }) => {
+        element.style.display = display;
+      });
+      restoreScreenshotOnlyDisplays.forEach(({ element, display }) => {
+        element.style.display = display;
+      });
     },
   };
 }
@@ -114,6 +136,7 @@ export function useChatScreenshot({
   const [selectedIDs, setSelectedIDs] = React.useState<Set<string>>(() => new Set());
   const [capturing, setCapturing] = React.useState(false);
   const capturingRef = React.useRef(false);
+  const captureRunIDRef = React.useRef(0);
   const [preview, setPreview] = React.useState<ChatScreenshotPreview | null>(null);
   const previewRef = React.useRef<ChatScreenshotPreview | null>(null);
 
@@ -129,6 +152,7 @@ export function useChatScreenshot({
   }, [preview]);
 
   React.useEffect(() => {
+    captureRunIDRef.current += 1;
     setSelectionMode(false);
     setSelectedIDs(new Set());
     capturingRef.current = false;
@@ -182,6 +206,22 @@ export function useChatScreenshot({
     setSelectedIDs(new Set());
   }, []);
 
+  const pruneSelection = React.useCallback((publicIDs: string[]) => {
+    const availableIDs = new Set(publicIDs.filter(Boolean));
+    setSelectedIDs((previous) => {
+      let changed = false;
+      const next = new Set<string>();
+      previous.forEach((publicID) => {
+        if (availableIDs.has(publicID)) {
+          next.add(publicID);
+        } else {
+          changed = true;
+        }
+      });
+      return changed ? next : previous;
+    });
+  }, []);
+
   const setPreviewBlob = React.useCallback((blob: Blob) => {
     const fileName = resolveConversationScreenshotFileName(titleRef.current);
     const url = URL.createObjectURL(blob);
@@ -200,26 +240,38 @@ export function useChatScreenshot({
       }
       const selected = selectedIDs;
       const startedConversationID = conversationIDRef.current;
+      const captureRunID = captureRunIDRef.current + 1;
       if (selectedOnly && selected.size === 0) {
         toast.error(messagesRef.current.emptySelection);
         return;
       }
 
+      captureRunIDRef.current = captureRunID;
       capturingRef.current = true;
       setCapturing(true);
       const loadingToast = toast.loading(messagesRef.current.generating);
       let preparedDom: PreparedScreenshotDom | null = null;
+      const cancelCapture = () => {
+        toast.dismiss(loadingToast);
+      };
+      const isCurrentCapture = () =>
+        captureRunIDRef.current === captureRunID && startedConversationID === conversationIDRef.current;
 
       try {
         if (!selectedOnly && onLoadAllMessages) {
           const loadedAll = await onLoadAllMessages({ maxPages: MAX_SCREENSHOT_LOAD_PAGES });
+          if (!isCurrentCapture()) {
+            cancelCapture();
+            return;
+          }
           if (!loadedAll) {
             toast.error(messagesRef.current.loadLimitReached, { id: loadingToast });
             return;
           }
         }
 
-        if (startedConversationID !== conversationIDRef.current) {
+        if (!isCurrentCapture()) {
+          cancelCapture();
           return;
         }
 
@@ -237,12 +289,14 @@ export function useChatScreenshot({
 
         await nextAnimationFrame();
 
-        if (startedConversationID !== conversationIDRef.current) {
+        if (!isCurrentCapture()) {
+          cancelCapture();
           return;
         }
 
         const blob = await captureElementToPngBlob(target);
-        if (startedConversationID !== conversationIDRef.current) {
+        if (!isCurrentCapture()) {
+          cancelCapture();
           return;
         }
         setPreviewBlob(blob);
@@ -253,12 +307,19 @@ export function useChatScreenshot({
       } catch (error) {
         toast.error(messagesRef.current.failed, {
           id: loadingToast,
-          description: error instanceof Error ? error.message : undefined,
+          description:
+            error instanceof ConversationScreenshotTooLargeError
+              ? messagesRef.current.tooLarge
+              : error instanceof Error
+                ? error.message
+                : undefined,
         });
       } finally {
         preparedDom?.restore();
-        capturingRef.current = false;
-        setCapturing(false);
+        if (captureRunIDRef.current === captureRunID) {
+          capturingRef.current = false;
+          setCapturing(false);
+        }
       }
     },
     [exitSelectionMode, messageContentRef, onLoadAllMessages, selectedIDs, setPreviewBlob],
@@ -318,6 +379,7 @@ export function useChatScreenshot({
     toggleSelection,
     selectMany,
     clearSelection,
+    pruneSelection,
     startSelectionScreenshot: enterSelectionMode,
     captureFullConversation,
     captureSelectedMessages,

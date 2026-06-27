@@ -737,6 +737,7 @@ export function AppChatArea() {
       ready: tScreenshot("ready"),
       failed: tScreenshot("failed"),
       loadLimitReached: tScreenshot("loadLimitReached"),
+      tooLarge: tScreenshot("tooLarge"),
       downloaded: tScreenshot("downloaded"),
       copied: tScreenshot("copied"),
       copyFailed: tScreenshot("copyFailed"),
@@ -1164,6 +1165,7 @@ export function AppChatArea() {
                     onToggleSelection: screenshot.toggleSelection,
                     onSelectAll: screenshot.selectMany,
                     onClearSelection: screenshot.clearSelection,
+                    onPruneSelection: screenshot.pruneSelection,
                     onCapture: screenshot.captureSelectedMessages,
                     onExit: screenshot.exitSelectionMode,
                   }}

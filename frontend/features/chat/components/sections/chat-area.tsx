@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion } from "motion/react";
-import { ArrowDownToLine } from "lucide-react";
+import { ArrowDownToLine, Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { ChatLabel } from "@/features/chat/components/sections/chat-label";
@@ -22,7 +22,6 @@ import { CenteredEmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ConversationShareExportIconDropdown } from "@/shared/components/conversation-share-export-menu";
 import { ChatScreenshotSelectionBar } from "@/features/chat/components/sections/chat-screenshot-selection-bar";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useCopyAction } from "@/shared/components/copy-action";
 import type { ChatModelOption } from "@/features/chat/types/chat-runtime";
 import type { BillingDisplayCurrency } from "@/shared/lib/billing-display";
@@ -115,10 +114,97 @@ type ChatAreaProps = {
     onToggleSelection: (publicID: string) => void;
     onSelectAll: (publicIDs: string[]) => void;
     onClearSelection: () => void;
+    onPruneSelection: (publicIDs: string[]) => void;
     onCapture: () => void;
     onExit: () => void;
   };
 };
+
+type ScreenshotTimestampValues = {
+  year: number;
+  month: number;
+  day: number;
+  time: string;
+};
+
+type ScreenshotTimestampFormatter = (
+  key: "todayTime" | "thisYearDateTime" | "fullDateTime",
+  values: ScreenshotTimestampValues,
+) => string;
+
+function formatScreenshotMessageTimestamp(
+  value: string | undefined,
+  formatLabel: ScreenshotTimestampFormatter,
+) {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const time = [date.getHours(), date.getMinutes(), date.getSeconds()]
+    .map((part) => String(part).padStart(2, "0"))
+    .join(":");
+  const values = { year, month, day, time };
+
+  return formatLabel("fullDateTime", values);
+}
+
+function ChatScreenshotMessageMeta({
+  align,
+  modelName,
+  timestamp,
+}: {
+  align: "start" | "end";
+  modelName: string;
+  timestamp: string;
+}) {
+  if (!modelName && !timestamp) {
+    return null;
+  }
+
+  return (
+    <div
+      className={cn(
+        "chat-screenshot-meta mt-1.5 hidden min-w-0 flex-wrap items-center gap-1 text-[10px] leading-3.5 text-muted-foreground/70",
+        align === "end" ? "justify-end" : "justify-start",
+      )}
+      data-screenshot-only="true"
+    >
+      {modelName ? (
+        <span className="inline-flex max-w-48 items-center truncate rounded bg-muted/30 px-1.5 py-0.5 font-mono">
+          {modelName}
+        </span>
+      ) : null}
+      {timestamp ? (
+        <span className="inline-flex items-center rounded bg-muted/30 px-1.5 py-0.5 tabular-nums">
+          {timestamp}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+function ChatScreenshotBrandMark({ placement }: { placement: "top" | "bottom" }) {
+  return (
+    <div
+      className={cn(
+        "chat-screenshot-brand hidden items-center border-border/50",
+        placement === "top" ? "mb-3 justify-start border-b pb-2" : "mt-1.5 justify-center border-t pt-2",
+      )}
+      data-screenshot-only="true"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/logo.svg" alt="DEEIX Chat" className="h-5 w-auto opacity-75" />
+    </div>
+  );
+}
 
 function useStableEvent<Args extends unknown[], Return>(callback: (...args: Args) => Return) {
   const callbackRef = React.useRef(callback);
@@ -154,6 +240,7 @@ const ChatMessageRow = React.memo(function ChatMessageRow({
   billingDisplayCurrency,
   billingDisplayUsdToCnyRate,
   contentWidthClassName,
+  screenshotMeta,
 }: {
   item: ChatAreaMessage;
   busy: boolean;
@@ -179,6 +266,7 @@ const ChatMessageRow = React.memo(function ChatMessageRow({
   billingDisplayCurrency: BillingDisplayCurrency;
   billingDisplayUsdToCnyRate: number | null;
   contentWidthClassName: string;
+  screenshotMeta?: React.ReactNode;
 }) {
   const t = useTranslations("chat.messages");
   const { copy, isCopied } = useCopyAction({
@@ -219,6 +307,7 @@ const ChatMessageRow = React.memo(function ChatMessageRow({
         onCycleMessageBranch={onCycleMessageBranch}
         onCopy={() => void onCopy()}
         copySucceeded={isCopied(copyKey)}
+        screenshotMeta={screenshotMeta}
       />
     );
   }
@@ -246,6 +335,7 @@ const ChatMessageRow = React.memo(function ChatMessageRow({
         billingDisplayCurrency={billingDisplayCurrency}
         billingDisplayUsdToCnyRate={billingDisplayUsdToCnyRate}
         contentWidthClassName={contentWidthClassName}
+        screenshotMeta={screenshotMeta}
       />
     );
   }
@@ -260,6 +350,7 @@ const ChatMessageRow = React.memo(function ChatMessageRow({
       {item.inlineAlert ? (
         <ChatInlineAlertCard alert={item.inlineAlert} className={item.content.trim() ? "my-4" : "mb-4"} />
       ) : null}
+      {screenshotMeta}
     </div>
   );
 }, (previous, next) => (
@@ -273,6 +364,7 @@ const ChatMessageRow = React.memo(function ChatMessageRow({
   previous.billingDisplayCurrency === next.billingDisplayCurrency &&
   previous.billingDisplayUsdToCnyRate === next.billingDisplayUsdToCnyRate &&
   previous.contentWidthClassName === next.contentWidthClassName &&
+  previous.screenshotMeta === next.screenshotMeta &&
   previous.modelOptions === next.modelOptions &&
   previous.selectedPlatformModelName === next.selectedPlatformModelName &&
   previous.onModelChange === next.onModelChange &&
@@ -345,6 +437,7 @@ export function ChatArea({
   const shareLabel = shareActive ? t("manageShare") : t("shareConversation");
   const shareExportLabel = t("labelMenu.shareAndExport");
   const tScreenshot = useTranslations("chat.screenshot");
+  const timeT = useTranslations("common.time");
   const selectableMessagePublicIDs = React.useMemo(
     () =>
       messages
@@ -356,6 +449,13 @@ export function ChatArea({
   const onSelectAllMessages = React.useCallback(() => {
     screenshot?.onSelectAll(selectableMessagePublicIDs);
   }, [screenshot, selectableMessagePublicIDs]);
+  const pruneScreenshotSelection = screenshot?.onPruneSelection;
+  React.useEffect(() => {
+    if (!selectionMode) {
+      return;
+    }
+    pruneScreenshotSelection?.(selectableMessagePublicIDs);
+  }, [pruneScreenshotSelection, selectableMessagePublicIDs, selectionMode]);
 
   return (
     <>
@@ -421,6 +521,7 @@ export function ChatArea({
             className={cn("mx-auto w-full", contentWidthClassName)}
             style={{ fontFamily: "var(--font-chat)", fontWeight: "var(--font-chat-weight)" }}
           >
+            <ChatScreenshotBrandMark placement="top" />
             {messages.map((item, index) => {
               const previousItem = index > 0 ? messages[index - 1] : null;
               const spacingClass =
@@ -433,6 +534,17 @@ export function ChatArea({
               const publicID = item.publicID?.trim() ?? "";
               const selectable = selectionMode && Boolean(publicID) && !item.isPending;
               const isSelected = selectable && (screenshot?.selectedIDs.has(publicID) ?? false);
+              const screenshotTimestamp = formatScreenshotMessageTimestamp(
+                item.role === "assistant" ? item.updatedAt || item.createdAt : item.createdAt,
+                (key, values) => timeT(key, values),
+              );
+              const screenshotMeta = (
+                <ChatScreenshotMessageMeta
+                  align={item.role === "user" ? "end" : "start"}
+                  modelName={item.role === "assistant" ? item.platformModelName?.trim() || "" : ""}
+                  timestamp={screenshotTimestamp}
+                />
+              );
 
               const row = (
                 <ChatMessageRow
@@ -460,33 +572,50 @@ export function ChatArea({
                   billingDisplayCurrency={billingDisplayCurrency}
                   billingDisplayUsdToCnyRate={billingDisplayUsdToCnyRate}
                   contentWidthClassName={contentWidthClassName}
+                  screenshotMeta={screenshotMeta}
                 />
               );
 
               const rowContent = selectable ? (
                 <div
                   data-screenshot-selectable="true"
-                  className="chat-screenshot-selectable group relative rounded-xl"
+                  className="chat-screenshot-selectable group relative cursor-pointer rounded-lg outline-none"
+                  role="checkbox"
+                  tabIndex={0}
+                  aria-checked={isSelected}
+                  aria-label={tScreenshot("selectMessage")}
+                  onClick={() => screenshot?.onToggleSelection(publicID)}
+                  onKeyDown={(event) => {
+                    if (event.key !== " " && event.key !== "Enter") {
+                      return;
+                    }
+                    event.preventDefault();
+                    screenshot?.onToggleSelection(publicID);
+                  }}
                 >
                   <div
                     className={cn(
-                      "pointer-events-none absolute inset-0 z-0 rounded-xl transition-colors",
-                      isSelected ? "bg-primary/5 ring-1 ring-primary/40" : "group-hover:bg-muted/40",
+                      "pointer-events-none absolute -inset-y-1 left-0 right-0 z-0 rounded-lg transition-colors group-focus-visible:ring-2 group-focus-visible:ring-ring/35",
+                      isSelected ? "bg-muted/35" : "group-hover:bg-muted/20",
                     )}
                     data-screenshot-exclude="true"
                     aria-hidden="true"
                   />
                   <div
-                    className="absolute left-1 top-2 z-10 flex items-center"
+                    className="absolute left-2 top-1.5 z-10 flex items-center"
                     data-screenshot-exclude="true"
+                    aria-hidden="true"
                   >
-                    <Checkbox
-                      checked={isSelected}
-                      onCheckedChange={() => screenshot?.onToggleSelection(publicID)}
-                      aria-label={tScreenshot("selectMessage")}
-                    />
+                    <span
+                      className={cn(
+                        "pointer-events-none inline-flex size-4 items-center justify-center rounded-[5px] border border-border/70 bg-background/80 text-background transition-colors",
+                        isSelected && "border-foreground bg-foreground",
+                      )}
+                    >
+                      {isSelected ? <Check className="size-3" strokeWidth={2} /> : null}
+                    </span>
                   </div>
-                  <div className="chat-screenshot-selectable-content pointer-events-none relative z-[1] pl-7" inert>
+                  <div className="chat-screenshot-selectable-content pointer-events-none relative z-[1] pl-8 pr-2" inert>
                     {row}
                   </div>
                 </div>
@@ -521,6 +650,7 @@ export function ChatArea({
                 </motion.div>
               );
             })}
+            <ChatScreenshotBrandMark placement="bottom" />
             <div ref={messageEndRef} aria-hidden="true" className="h-px" />
           </div>
         </div>
