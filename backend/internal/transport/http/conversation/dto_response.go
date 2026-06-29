@@ -1032,6 +1032,8 @@ type RunResponse struct {
 	ErrorMessage        string     `json:"errorMessage"`
 	StartedAt           time.Time  `json:"startedAt"`
 	EndedAt             *time.Time `json:"endedAt"`
+	SkillIDs            []uint     `json:"skillIDs"`
+	SelectedToolIDs     []uint     `json:"selectedToolIDs"`
 	CreatedAt           time.Time  `json:"createdAt"`
 	UpdatedAt           time.Time  `json:"updatedAt"`
 }
@@ -1068,6 +1070,8 @@ func toRunResponse(r model.Run) RunResponse {
 		ErrorMessage:        r.ErrorMessage,
 		StartedAt:           r.StartedAt,
 		EndedAt:             r.EndedAt,
+		SkillIDs:            r.SkillIDs,
+		SelectedToolIDs:     r.SelectedToolIDs,
 		CreatedAt:           r.CreatedAt,
 		UpdatedAt:           r.UpdatedAt,
 	}

@@ -95,6 +95,7 @@ export type ConversationRunDTO = {
   requestID: string;
   userID: number;
   conversationID: number;
+  taskType: string;
   endpoint: string;
   provider: string;
   providerProtocol: string;
@@ -119,6 +120,8 @@ export type ConversationRunDTO = {
   errorMessage: string;
   startedAt: string;
   endedAt: string | null;
+  skillIDs?: number[];
+  selectedToolIDs?: number[];
   createdAt: string;
   updatedAt: string;
 };

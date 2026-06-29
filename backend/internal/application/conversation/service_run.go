@@ -62,6 +62,8 @@ func newMessageSendRunState(
 			ErrorMessage:       "",
 			StartedAt:          startedAt,
 			EndedAt:            nil,
+			SkillIDs:           normalizeSelectedSkillIDs(input.SkillIDs),
+			SelectedToolIDs:    uniqueToolIDs(input.SelectedToolIDs),
 		},
 	}
 }

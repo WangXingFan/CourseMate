@@ -16045,6 +16045,18 @@ const docTemplate = `{
                 "runID": {
                     "type": "string"
                 },
+                "selectedToolIDs": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "skillIDs": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "startedAt": {
                     "type": "string"
                 },

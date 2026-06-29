@@ -4334,6 +4334,14 @@ definitions:
         type: string
       runID:
         type: string
+      selectedToolIDs:
+        items:
+          type: integer
+        type: array
+      skillIDs:
+        items:
+          type: integer
+        type: array
       startedAt:
         type: string
       status:
