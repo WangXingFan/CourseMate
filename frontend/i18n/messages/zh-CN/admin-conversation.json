@@ -145,9 +145,9 @@
     "updated": "会话配置已更新"
   },
   "dataExport": {
+    "title": "全部对话",
     "description": "导出所有对话、消息和元数据为 JSONL 文件。",
-    "exportButton": "导出全部对话",
-    "exporting": "导出中…",
+    "exportButton": "导出",
     "failed": "导出失败，请重试。"
   }
 }

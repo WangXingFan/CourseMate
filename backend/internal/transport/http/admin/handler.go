@@ -29,6 +29,15 @@ type conversationExporter interface {
 	ListAllConversationsAfterID(ctx context.Context, afterID uint, limit int) ([]domainconversation.Conversation, error)
 }
 
+type conversationExportManifest struct {
+	Type      string `json:"_type"`
+	Complete  bool   `json:"complete"`
+	Exported  int64  `json:"exported"`
+	Failed    int    `json:"failed"`
+	FailedIDs []uint `json:"failedIDs,omitempty"`
+	Error     string `json:"error,omitempty"`
+}
+
 // Handler 封装后台管理 HTTP 处理。
 type Handler struct {
 	service            *appadmin.Service
@@ -1006,7 +1015,7 @@ func (h *Handler) ListUserAuthEvents(c *gin.Context) {
 
 // ExportConversations godoc
 // @Summary 管理员导出全量对话数据
-// @Description 流式导出全量会话及消息为 NDJSON 文件
+// @Description 流式导出全量会话及消息为 NDJSON 文件，最后一行为 export_manifest 元数据
 // @Tags admin
 // @Produce application/x-ndjson
 // @Security BearerAuth
@@ -1033,6 +1042,21 @@ func (h *Handler) ExportConversations(c *gin.Context) {
 	encoder := json.NewEncoder(c.Writer)
 	exported := int64(0)
 	var failedIDs []uint
+	writeManifest := func(complete bool, exportErr string) bool {
+		manifest := conversationExportManifest{
+			Type:      "export_manifest",
+			Complete:  complete,
+			Exported:  exported,
+			Failed:    len(failedIDs),
+			FailedIDs: failedIDs,
+			Error:     exportErr,
+		}
+		if err := encoder.Encode(manifest); err != nil {
+			return false
+		}
+		c.Writer.Flush()
+		return true
+	}
 
 	for {
 		if c.Request.Context().Err() != nil {
@@ -1040,6 +1064,7 @@ func (h *Handler) ExportConversations(c *gin.Context) {
 		}
 		conversations, err := h.conversationExport.ListAllConversationsAfterID(c.Request.Context(), lastID, batchSize)
 		if err != nil {
+			writeManifest(false, "failed to list conversations")
 			return
 		}
 		if len(conversations) == 0 {
@@ -1052,7 +1077,9 @@ func (h *Handler) ExportConversations(c *gin.Context) {
 				failedIDs = append(failedIDs, conversations[i].ID)
 				continue
 			}
-			_ = encoder.Encode(conversationhttp.ToConversationExportResponse(result))
+			if err := encoder.Encode(conversationhttp.ToConversationExportResponse(result)); err != nil {
+				return
+			}
 			exported++
 		}
 
@@ -1064,15 +1091,7 @@ func (h *Handler) ExportConversations(c *gin.Context) {
 		}
 	}
 
-	if len(failedIDs) > 0 {
-		_ = encoder.Encode(map[string]interface{}{
-			"_type":     "export_manifest",
-			"exported":  exported,
-			"failed":    len(failedIDs),
-			"failedIDs": failedIDs,
-		})
-		c.Writer.Flush()
-	}
+	writeManifest(true, "")
 }
 
 func pageParams(c *gin.Context) (int, int) {

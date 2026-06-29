@@ -25,6 +25,7 @@ import {
   SettingsFieldInset,
   SettingsFieldItem,
   SettingsFieldList,
+  SettingsFieldRow,
   SettingsPage,
   SettingsSection,
   SettingsSectionSeparator,
@@ -356,12 +357,11 @@ export function AdminConversationSettingsPage() {
     try {
       const token = await resolveAccessToken();
       if (!token) return;
-      const blob = await exportAllConversations(token);
+      const { blob, fileName } = await exportAllConversations(token);
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
       link.href = url;
-      link.download = `conversations-export-${timestamp}.jsonl`;
+      link.download = fileName;
       link.rel = "noopener";
       document.body.appendChild(link);
       link.click();
@@ -589,18 +589,24 @@ export function AdminConversationSettingsPage() {
       <SettingsSectionSeparator />
 
       <SettingsSection title={t("sections.dataExport")}>
-        <div className="flex items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">{t("dataExport.description")}</p>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={exporting}
-            onClick={handleExportConversations}
-          >
-            <Download className="size-3.5" />
-            {exporting ? t("dataExport.exporting") : t("dataExport.exportButton")}
-          </Button>
-        </div>
+        <SettingsFieldList>
+          <SettingsFieldItem>
+            <SettingsFieldRow
+              title={t("dataExport.title")}
+              description={t("dataExport.description")}
+            >
+              <Button
+                variant="default"
+                size="sm"
+                disabled={exporting}
+                onClick={handleExportConversations}
+              >
+                <Download className="size-3.5" />
+                {t("dataExport.exportButton")}
+              </Button>
+            </SettingsFieldRow>
+          </SettingsFieldItem>
+        </SettingsFieldList>
       </SettingsSection>
     </SettingsPage>
   );

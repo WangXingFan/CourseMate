@@ -145,9 +145,9 @@
     "updated": "Conversation settings updated"
   },
   "dataExport": {
+    "title": "All conversations",
     "description": "Export all conversations, messages, and metadata as a JSONL file.",
-    "exportButton": "Export all conversations",
-    "exporting": "Exporting…",
+    "exportButton": "Export",
     "failed": "Export failed. Please try again."
   }
 }
