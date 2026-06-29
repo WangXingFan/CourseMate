@@ -8,7 +8,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/animate-ui/components/radix/accordion";
+} from "@/components/ui/accordion";
 import { Marker, MarkerContent } from "@/components/ui/marker";
 import type { ChatMessageProcessTrace } from "@/features/chat/types/messages";
 import { useProcessTraceLabels } from "@/features/chat/hooks/use-process-trace-labels";
@@ -91,8 +91,8 @@ export function MessageProcessTrace({
       >
         <AccordionItem value="message-process-trace" className="border-b-0">
           <AccordionTrigger
-            showArrow={false}
-            className="group/trace min-h-0 gap-1.5 py-0.5 text-left no-underline hover:no-underline"
+            iconPosition="none"
+            className="group/trace min-h-0 justify-between gap-1.5 py-0.5 text-left no-underline hover:no-underline"
           >
             <div className="min-w-0 flex-1">
               <div className="flex items-center">
@@ -119,7 +119,7 @@ export function MessageProcessTrace({
               )}
             />
           </AccordionTrigger>
-          <AccordionContent className="space-y-2.5 pb-0 pt-1.5">
+          <AccordionContent className="space-y-2.5 px-0 pb-0 pt-1.5 duration-[350ms] ease-in-out">
             <TraceContent
               block={trace.process}
               streaming={processStreaming}

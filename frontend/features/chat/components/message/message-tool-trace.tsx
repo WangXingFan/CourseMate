@@ -9,7 +9,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/animate-ui/components/radix/accordion";
+} from "@/components/ui/accordion";
 import { Marker, MarkerContent } from "@/components/ui/marker";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { ChatTraceBlock } from "@/features/chat/types/messages";
@@ -949,8 +949,8 @@ export function MessageToolChainTrace({
       >
         <AccordionItem value="message-tool-chain" className="border-b-0">
           <AccordionTrigger
-            showArrow={false}
-            className="group/tool-chain min-h-0 gap-1.5 py-0.5 text-left no-underline hover:no-underline"
+            iconPosition="none"
+            className="group/tool-chain min-h-0 justify-between gap-1.5 py-0.5 text-left no-underline hover:no-underline"
           >
             <div className="min-w-0 flex-1">
               <div className="flex items-center">
@@ -977,7 +977,7 @@ export function MessageToolChainTrace({
               )}
             />
           </AccordionTrigger>
-          <AccordionContent className="pb-0 pt-1.5">
+          <AccordionContent className="px-0 pb-0 pt-1.5 duration-[350ms] ease-in-out">
             <ToolChainRows steps={steps} labels={labels} />
           </AccordionContent>
         </AccordionItem>
@@ -1031,8 +1031,8 @@ export function MessageToolTrace({
       >
         <AccordionItem value="message-tool-trace" className="border-b-0">
           <AccordionTrigger
-            showArrow={false}
-            className="group/tool min-h-0 gap-1.5 py-0.5 text-left no-underline hover:no-underline"
+            iconPosition="none"
+            className="group/tool min-h-0 justify-between gap-1.5 py-0.5 text-left no-underline hover:no-underline"
           >
             <div className="min-w-0 flex-1">
               <div className="flex items-center">
@@ -1057,7 +1057,7 @@ export function MessageToolTrace({
               )}
             />
           </AccordionTrigger>
-          <AccordionContent className="pb-0 pt-1.5">
+          <AccordionContent className="px-0 pb-0 pt-1.5 duration-[350ms] ease-in-out">
             {toolCalls.length > 0 ? (
               <ToolTraceRows calls={toolCalls} labels={labels} />
             ) : (
