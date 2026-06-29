@@ -142,6 +142,5 @@ export function useChatSubmitStream({
   return {
     ...messageSubmit,
     pendingExchange,
-    streamingText: pendingExchange?.assistantText ?? "",
   };
 }

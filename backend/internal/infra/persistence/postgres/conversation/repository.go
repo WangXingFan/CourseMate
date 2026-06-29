@@ -496,7 +496,7 @@ func (r *Repo) UpdateConversationTitleByPublicID(
 func (r *Repo) UpdateConversationMetadata(ctx context.Context, conversationID uint, patch repository.ConversationMetadataPatch) (*domainconversation.Conversation, error) {
 	updates := map[string]interface{}{}
 	if strings.TrimSpace(patch.Title) != "" {
-		replaceable := []string{"new chat", "新会话"}
+		replaceable := []string{"new chat", "新对话"}
 		for _, item := range patch.ReplaceableTitles {
 			value := strings.TrimSpace(strings.ToLower(item))
 			if value != "" {
@@ -797,6 +797,19 @@ func (r *Repo) UpdateConversationModel(ctx context.Context, conversationID uint,
 			"provider": provider,
 		}).
 		Error)
+}
+
+// ListAllConversationsAfterID 按主键游标分页列出会话（管理员导出用）。
+func (r *Repo) ListAllConversationsAfterID(ctx context.Context, afterID uint, limit int) ([]domainconversation.Conversation, error) {
+	var rows []models.Conversation
+	query := r.db.WithContext(ctx).Order("id ASC").Limit(limit)
+	if afterID > 0 {
+		query = query.Where("id > ?", afterID)
+	}
+	if err := query.Find(&rows).Error; err != nil {
+		return nil, translateError(err)
+	}
+	return toConversationDomains(rows), nil
 }
 
 // CreateMessage 创建消息。
