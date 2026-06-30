@@ -1354,8 +1354,8 @@ func updateToolCallInput(items *[]ToolCall, itemID string, input string, done bo
 }
 
 func appendUniqueStrings(items []string, values ...string) []string {
-	seen := make(map[string]struct{}, len(items)+len(values))
-	result := make([]string, 0, len(items)+len(values))
+	seen := make(map[string]struct{}, len(items))
+	result := make([]string, 0, len(items))
 	for _, item := range items {
 		value := strings.TrimSpace(item)
 		if value == "" {
