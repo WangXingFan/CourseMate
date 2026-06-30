@@ -31,7 +31,6 @@ import {
 } from "@/features/chat/model/message-process-trace";
 
 export { MessageTraceEventBlocks, MessageUpstreamThink } from "@/features/chat/components/message/message-thinking-trace";
-export { MessageToolTrace } from "@/features/chat/components/message/message-tool-trace";
 
 function buildProcessSummary(trace: ChatMessageProcessTrace): string {
   if (trace.process?.summary) {

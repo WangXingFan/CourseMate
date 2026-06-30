@@ -12,7 +12,10 @@ import {
 import { Marker, MarkerContent } from "@/components/ui/marker";
 import type { ChatTraceBlock, ChatTraceEvent } from "@/features/chat/types/messages";
 import { useProcessTraceLabels } from "@/features/chat/hooks/use-process-trace-labels";
-import { MessageToolChainTrace } from "@/features/chat/components/message/message-tool-trace";
+import {
+  hasActiveToolTraceCalls,
+  MessageToolChainTrace,
+} from "@/features/chat/components/message/message-tool-trace";
 import { StreamdownRender } from "@/shared/components/markdown/streamdown-render";
 import { cn } from "@/lib/utils";
 import { TRACE_ROOT_CLASS } from "@/features/chat/components/shared/message-process-trace-shared";
@@ -116,6 +119,14 @@ function splitTraceDisplayEvents(events: TraceDisplayEvent[], activeThinkBlock?:
   };
 }
 
+function firstTraceSeq(events: TraceDisplayEvent[], kind: TraceDisplayEvent["kind"]): number | undefined {
+  const matched = events.filter((item) => item.kind === kind).map((item) => item.event.seq);
+  if (matched.length === 0) {
+    return undefined;
+  }
+  return Math.min(...matched);
+}
+
 export function MessageTraceEventBlocks({
   events: traceEvents,
   activeToolBlock,
@@ -138,21 +149,44 @@ export function MessageTraceEventBlocks({
     return null;
   }
 
+  const toolSeq = firstTraceSeq(displayEvents, "tool");
+  const thinkSeq = firstTraceSeq(displayEvents, "think");
+  const shouldRenderThinkFirst = Boolean(
+    thinkBlock &&
+      (
+        (toolEvents.length === 0 && !activeToolBlock) ||
+        thinkSeq === undefined ||
+        toolSeq === undefined ||
+        thinkSeq <= toolSeq
+      ),
+  );
+  const toolTrace = (
+    <MessageToolChainTrace
+      events={toolEvents}
+      activeToolBlock={activeToolBlock}
+      streaming={Boolean(
+        messageStreaming &&
+        (
+          activeToolBlock?.status === "streaming" ||
+          hasActiveToolTraceCalls(activeToolBlock?.payloadJson) ||
+          toolEvents.some((item) => item.event.status === "streaming" || hasActiveToolTraceCalls(item.event.payloadJson))
+        ),
+      )}
+      autoCollapseReady={autoCollapseReady || Boolean(thinkBlock)}
+    />
+  );
+  const thinkTrace = thinkBlock ? (
+    <MessageUpstreamThink
+      block={thinkBlock}
+      streaming={Boolean(messageStreaming && thinkBlock.status === "streaming")}
+      autoCollapseReady={autoCollapseReady}
+    />
+  ) : null;
+
   return (
     <>
-      <MessageToolChainTrace
-        events={toolEvents}
-        activeToolBlock={activeToolBlock}
-        streaming={Boolean(messageStreaming && (activeToolBlock?.status === "streaming" || toolEvents.some((item) => item.event.status === "streaming")))}
-        autoCollapseReady={autoCollapseReady || Boolean(thinkBlock)}
-      />
-      {thinkBlock ? (
-        <MessageUpstreamThink
-          block={thinkBlock}
-          streaming={Boolean(messageStreaming && thinkBlock.status === "streaming")}
-          autoCollapseReady={autoCollapseReady}
-        />
-      ) : null}
+      {shouldRenderThinkFirst ? thinkTrace : toolTrace}
+      {shouldRenderThinkFirst ? toolTrace : thinkTrace}
     </>
   );
 }

@@ -601,14 +601,6 @@
         "titleDone": "Tool calls",
         "summaryCount": "{count} tool calls",
         "summaryFallback": "Tool calls"
-      },
-      "trace": {
-        "titleActive": "Calling tools",
-        "titleDone": "Tool calls",
-        "summaryDone": "Tool calls completed",
-        "summaryActive": "{count, plural, one {# tool call in progress} other {# tool calls in progress}}",
-        "summaryCount": "{count, plural, one {# tool call completed} other {# tool calls completed}}",
-        "summaryFailed": "{count, plural, one {# tool call} other {# tool calls}}, {failed, plural, one {# failed} other {# failed}}"
       }
     },
     "think": {
