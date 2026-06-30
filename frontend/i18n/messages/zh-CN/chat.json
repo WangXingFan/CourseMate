@@ -601,14 +601,6 @@
         "titleDone": "工具调用",
         "summaryCount": "{count} 次工具调用",
         "summaryFallback": "工具调用"
-      },
-      "trace": {
-        "titleActive": "工具调用中",
-        "titleDone": "工具调用",
-        "summaryDone": "工具调用已完成",
-        "summaryActive": "{count} 次工具调用进行中",
-        "summaryCount": "{count} 次工具调用已完成",
-        "summaryFailed": "{count} 次工具调用，{failed} 次失败"
       }
     },
     "think": {

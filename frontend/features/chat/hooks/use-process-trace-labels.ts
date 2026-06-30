@@ -99,14 +99,6 @@ export type ProcessTraceLabels = {
       summaryCount: (count: number) => string;
       summaryFallback: string;
     };
-    trace: {
-      titleActive: string;
-      titleDone: string;
-      summaryDone: string;
-      summaryActive: (count: number) => string;
-      summaryCount: (count: number) => string;
-      summaryFailed: (count: number, failed: number) => string;
-    };
   };
   think: {
     titleActive: string;
@@ -259,14 +251,6 @@ export function useProcessTraceLabels(): ProcessTraceLabels {
           summaryCount: (count: number) => t("tool.chain.summaryCount", { count }),
           summaryFallback: t("tool.chain.summaryFallback"),
         },
-        trace: {
-          titleActive: t("tool.trace.titleActive"),
-          titleDone: t("tool.trace.titleDone"),
-          summaryDone: t("tool.trace.summaryDone"),
-          summaryActive: (count: number) => t("tool.trace.summaryActive", { count }),
-          summaryCount: (count: number) => t("tool.trace.summaryCount", { count }),
-          summaryFailed: (count: number, failed: number) => t("tool.trace.summaryFailed", { count, failed }),
-        },
       },
       think: {
         titleActive: t("think.titleActive"),
@@ -321,4 +305,3 @@ export function useProcessTraceLabels(): ProcessTraceLabels {
     [t],
   );
 }
-

@@ -19,10 +19,7 @@ import {
 } from "@/features/chat/hooks/use-process-trace-labels";
 import { StreamdownRender } from "@/shared/components/markdown/streamdown-render";
 import { cn } from "@/lib/utils";
-import {
-  TRACE_ROOT_CLASS,
-  TraceContent,
-} from "@/features/chat/components/shared/message-process-trace-shared";
+import { TRACE_ROOT_CLASS } from "@/features/chat/components/shared/message-process-trace-shared";
 import type { TraceDisplayEvent } from "@/features/chat/model/message-process-trace";
 
 type ToolTraceCall = {
@@ -56,6 +53,14 @@ function parseToolTraceCalls(payloadJson: string | undefined): ToolTraceCall[] {
   } catch {
     return [];
   }
+}
+
+function isToolTraceStatusActive(status: string | undefined): boolean {
+  return ["requested", "streaming", "queued", "in_progress", "searching"].includes(status?.trim() || "");
+}
+
+export function hasActiveToolTraceCalls(payloadJson: string | undefined): boolean {
+  return parseToolTraceCalls(payloadJson).some((call) => isToolTraceStatusActive(call.status));
 }
 
 function shouldCollapseToolDetail(value: string): boolean {
@@ -96,12 +101,25 @@ function readNumber(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
+function readStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.map((item) => readString(item)).filter(Boolean);
+}
+
 function firstStringFromRecord(record: Record<string, unknown>, keys: string[]): string {
   for (const key of keys) {
     const value = readString(record[key]);
     if (value) return value;
   }
   return "";
+}
+
+function firstStringListFromRecord(record: Record<string, unknown>, keys: string[]): string[] {
+  for (const key of keys) {
+    const values = readStringList(record[key]);
+    if (values.length > 0) return values;
+  }
+  return [];
 }
 
 function collectToolStrings(value: unknown, keys: string[], result: string[] = []): string[] {
@@ -155,7 +173,7 @@ function resolveNativeToolKind(call: ToolTraceCall): NativeToolKind {
   const name = normalizeToolName(call.name);
   const type = normalizeToolName(call.type);
   const value = `${name} ${type}`;
-  if (value.includes("web_search")) return "web_search";
+  if (value.includes("web_search") || value.includes("google_search") || value.includes("url_context")) return "web_search";
   if (value.includes("code_interpreter") || value.includes("code_execution")) return "code_interpreter";
   if (value.includes("image_generation")) return "image_generation";
   if (value.includes("shell")) return "shell";
@@ -233,21 +251,6 @@ function nativeToolStatusText(call: ToolTraceCall, labels: ProcessTraceLabels): 
     default:
       return failed ? labels.tool.nativeStatus.genericFailed : done ? labels.tool.nativeStatus.genericDone : labels.tool.nativeStatus.genericActive;
   }
-}
-
-function localizeToolTraceSummary(block: ChatTraceBlock, calls: ToolTraceCall[], labels: ProcessTraceLabels): string {
-  if (calls.length > 0) {
-    const failed = calls.filter((call) => call.status === "error" || call.status === "failed").length;
-    const active = calls.filter((call) => ["requested", "streaming", "queued", "in_progress", "searching"].includes(call.status?.trim())).length;
-    if (failed > 0) {
-      return labels.tool.trace.summaryFailed(calls.length, failed);
-    }
-    if (active > 0) {
-      return labels.tool.trace.summaryActive(calls.length);
-    }
-    return labels.tool.trace.summaryCount(calls.length);
-  }
-  return block.summary?.trim() || labels.tool.trace.summaryDone;
 }
 
 function ToolDetailExpandButton({
@@ -451,6 +454,25 @@ function toolOutputText(call: ToolTraceCall, keys: string[]): string {
   return readString(output);
 }
 
+function geminiWebSearchQuery(output: unknown): string {
+  if (!isRecord(output)) return "";
+  return firstStringListFromRecord(output, ["queries", "webSearchQueries"]).join(", ");
+}
+
+function geminiWebSearchSummary(output: unknown): string {
+  if (!isRecord(output)) return "";
+  const chunks = Array.isArray(output.groundingChunks) ? output.groundingChunks.length : 0;
+  const supports = Array.isArray(output.groundingSupports) ? output.groundingSupports.length : 0;
+  const supportCount = readNumber(output.support_count);
+  const urls = collectToolStrings(output, ["url", "uri", "retrievedUrl"]);
+  const parts = [];
+  if (chunks > 0) parts.push(`${chunks} sources`);
+  if (supportCount !== null && supportCount > 0) parts.push(`${supportCount} grounding supports`);
+  if (supportCount === null && supports > 0) parts.push(`${supports} grounding supports`);
+  if (urls.length > 0) parts.push(urls.slice(0, 4).map(safeURLHostname).join(", "));
+  return parts.join(" · ");
+}
+
 function ToolTraceStructuredContent({
   call,
   rawDetail,
@@ -475,11 +497,11 @@ function ToolTraceStructuredContent({
   const urlKeys = ["url", "uri", "image_url"];
 
   if (kind === "web_search") {
-    const query = firstStringFromRecord(input, ["query", "q"]) || toolOutputText(call, ["query"]);
+    const query = firstStringFromRecord(input, ["query", "q"]) || firstStringListFromRecord(input, ["queries"]).join(", ") || geminiWebSearchQuery(output) || toolOutputText(call, ["query"]);
     const actionType = firstStringFromRecord(input, ["type", "action"]);
-    const urls = collectToolStrings(output, urlKeys);
+    const urls = collectToolStrings(output, [...urlKeys, "retrievedUrl"]);
     const responseText = urls.length === 0
-      ? formatToolPayload(call.output_detail) || formatToolPayload(call.output) || formatToolPayload(call.output_text) || formatToolPayload(call.output_preview)
+      ? geminiWebSearchSummary(output) || formatToolPayload(call.output_detail) || formatToolPayload(call.output) || formatToolPayload(call.output_text) || formatToolPayload(call.output_preview)
       : "";
     const hasRequest = Boolean(query || (actionType && actionType !== query));
     const hasResponse = urls.length > 0 || Boolean(responseText);
@@ -512,6 +534,7 @@ function ToolTraceStructuredContent({
 
   if (kind === "code_interpreter") {
     const code = toolInputText(call, ["code", "input"]);
+    const language = firstStringFromRecord(input, ["language"]);
     const logs = collectToolStrings(output, ["logs", "stdout", "stderr", "text", "output"]).join("\n\n");
     const artifactURLs = collectToolStrings(output, urlKeys);
     return (
@@ -519,7 +542,7 @@ function ToolTraceStructuredContent({
         <div>{statusText}</div>
         {code ? (
           <div>
-            <ToolMiniLabel>{labels.tool.detail.code}</ToolMiniLabel>
+            <ToolMiniLabel>{language ? `${labels.tool.detail.code} · ${language}` : labels.tool.detail.code}</ToolMiniLabel>
             <ToolPre>{code}</ToolPre>
           </div>
         ) : null}
@@ -605,76 +628,6 @@ function ToolTraceStructuredContent({
     </ToolDetailText>
   );
 }
-
-function ToolTraceRows({ calls, labels }: { calls: ToolTraceCall[]; labels: ProcessTraceLabels }) {
-  const [expanded, setExpanded] = React.useState<Set<number>>(() => new Set());
-
-  if (calls.length === 0) return null;
-
-  return (
-    <ol className="space-y-0.5">
-      {calls.map((call, index) => {
-        const label = toolTraceCallLabel(call, labels);
-        const { detail: rawDetail, failed } = toolTraceCallDetail(call, labels);
-        const open = expanded.has(index);
-        const canExpand = shouldCollapseToolDetail(rawDetail);
-
-        return (
-          <li
-            key={`${label}-${index}-${call.latency_ms ?? 0}`}
-            className={cn(
-              "group/tool-row grid grid-cols-[0.875rem_8rem_minmax(0,1fr)] gap-x-5 gap-y-0.5 text-[12px] leading-5",
-              "max-sm:grid-cols-[0.875rem_minmax(0,1fr)] max-sm:gap-x-2",
-            )}
-          >
-            <div className="relative flex justify-center">
-              {index > 0 ? <span className="absolute -top-0.5 bottom-1/2 w-px bg-border/42" /> : null}
-              {index < calls.length - 1 ? <span className="absolute bottom-[-0.125rem] top-1/2 w-px bg-border/42" /> : null}
-              <span
-                className={cn(
-                  "relative z-10 mt-[0.45rem] size-1.5 rounded-full bg-muted-foreground/38 ring-4 ring-background transition-colors group-hover/tool-row:bg-foreground/58",
-                  failed && "bg-destructive/80",
-                )}
-              />
-            </div>
-            <div className="min-w-0 max-sm:col-start-2">
-              <span
-                className={cn(
-                  "block truncate font-medium text-muted-foreground/76 transition-colors group-hover/tool-row:text-foreground/88",
-                  failed && "text-destructive/85 group-hover/tool-row:text-destructive",
-                )}
-              >
-                {label}
-              </span>
-            </div>
-            <div className="min-w-0 pb-2 max-sm:col-start-2">
-              <ToolTraceStructuredContent
-                call={call}
-                rawDetail={rawDetail}
-                failed={failed}
-                open={open}
-                canExpand={canExpand}
-                labels={labels}
-                onToggle={() =>
-                  setExpanded((current) => {
-                    const next = new Set(current);
-                    if (next.has(index)) {
-                      next.delete(index);
-                    } else {
-                      next.add(index);
-                    }
-                    return next;
-                  })
-                }
-              />
-            </div>
-          </li>
-        );
-      })}
-    </ol>
-  );
-}
-
 
 type ToolChainStep = {
   key: string;
@@ -990,90 +943,6 @@ export function MessageToolChainTrace({
           </AccordionTrigger>
           <AccordionContent className="px-0 pb-0 pt-1.5 duration-[350ms] ease-in-out">
             <ToolChainRows steps={steps} labels={labels} />
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </div>
-  );
-}
-
-
-export function MessageToolTrace({
-  block,
-  streaming,
-  autoCollapseReady,
-  title,
-}: {
-  block?: ChatTraceBlock;
-  streaming?: boolean;
-  autoCollapseReady?: boolean;
-  title?: string;
-}) {
-  const labels = useProcessTraceLabels();
-  const [accordionValue, setAccordionValue] = React.useState(() => (streaming ? "message-tool-trace" : ""));
-
-  React.useEffect(() => {
-    if (streaming) {
-      setAccordionValue("message-tool-trace");
-      return;
-    }
-    if (autoCollapseReady) {
-      setAccordionValue("");
-    }
-  }, [autoCollapseReady, streaming]);
-
-  if (!block) {
-    return null;
-  }
-
-  const open = accordionValue === "message-tool-trace";
-  const resolvedTitle = title ?? (streaming ? labels.tool.trace.titleActive : labels.tool.trace.titleDone);
-  const toolCalls = parseToolTraceCalls(block.payloadJson);
-  const summary = localizeToolTraceSummary(block, toolCalls, labels);
-
-  return (
-    <div className={TRACE_ROOT_CLASS}>
-      <Accordion
-        type="single"
-        collapsible
-        value={accordionValue}
-        onValueChange={(value) => setAccordionValue(value || "")}
-        className="w-full"
-      >
-        <AccordionItem value="message-tool-trace" className="border-b-0">
-          <AccordionTrigger
-            iconPosition="none"
-            className="group/tool min-h-0 justify-between gap-1.5 py-0.5 text-left no-underline hover:no-underline"
-          >
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center">
-                <Marker
-                  render={<span />}
-                  className={cn(
-                    "inline-flex min-h-0 w-auto text-[13px] font-medium transition-colors",
-                    !streaming && "text-muted-foreground group-hover/tool:text-foreground",
-                  )}
-                >
-                  <MarkerContent className={cn("min-w-0", streaming && "shimmer")}>
-                    {resolvedTitle}
-                  </MarkerContent>
-                </Marker>
-              </div>
-              <div className="mt-0.5 truncate text-[11px] font-normal leading-4 text-muted-foreground/62">{summary}</div>
-            </div>
-            <ChevronDown
-              className={cn(
-                "mt-0.5 size-3.5 shrink-0 text-muted-foreground transition-transform duration-200 group-hover/tool:text-foreground",
-                open && "rotate-180",
-              )}
-            />
-          </AccordionTrigger>
-          <AccordionContent className="px-0 pb-0 pt-1.5 duration-[350ms] ease-in-out">
-            {toolCalls.length > 0 ? (
-              <ToolTraceRows calls={toolCalls} labels={labels} />
-            ) : (
-              <TraceContent block={block} streaming={Boolean(streaming)} labels={labels} />
-            )}
           </AccordionContent>
         </AccordionItem>
       </Accordion>
