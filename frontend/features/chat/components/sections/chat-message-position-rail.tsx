@@ -15,6 +15,9 @@ const ANSWER_PREVIEW_MAX_LENGTH = 420;
 const PREVIEW_EDGE_MARGIN_PX = 12;
 const PREVIEW_ESTIMATED_HEIGHT_PX = 96;
 const PREVIEW_OFFSET_X_PX = 8;
+const RAIL_LINE_BASE_WIDTH_REM = 0.6;
+const RAIL_LINE_ACTIVE_WIDTH_MULTIPLIER = 2;
+const RAIL_LINE_ADJACENT_WIDTH_MULTIPLIER = 1.5;
 
 type TurnPreviewItem = {
   answer: string;
@@ -59,6 +62,17 @@ function resolvePreviewPosition({
   const minTop = boundary.boundaryTop + halfHeight;
   const maxTop = Math.max(minTop, boundary.boundaryBottom - halfHeight);
   return clamp(boundary.top, minTop, maxTop);
+}
+
+function resolveRailLineWidthRem(distance: number, distributed: boolean) {
+  if (!distributed || distance >= 2) {
+    return RAIL_LINE_BASE_WIDTH_REM;
+  }
+
+  return (
+    RAIL_LINE_BASE_WIDTH_REM *
+    (distance === 0 ? RAIL_LINE_ACTIVE_WIDTH_MULTIPLIER : RAIL_LINE_ADJACENT_WIDTH_MULTIPLIER)
+  );
 }
 
 function ChatMessagePositionPreview({
@@ -205,6 +219,7 @@ function ChatMessagePositionRailComponent({
   const currentIndex = items.findIndex(turnIsActive);
   const hoveredIndex = hoveredID ? items.findIndex((item) => item.id === hoveredID) : -1;
   const activeIndex = hoveredIndex >= 0 ? hoveredIndex : currentIndex >= 0 ? currentIndex : items.length - 1;
+  const railLineDistributionActive = hoveredIndex >= 0;
   const currentItem = items[currentIndex >= 0 ? currentIndex : items.length - 1] ?? null;
   const currentItemID = currentItem?.id ?? "";
   const previewItem = hoveredID ? items.find((item) => item.id === hoveredID) : null;
@@ -304,13 +319,12 @@ function ChatMessagePositionRailComponent({
       >
         {items.map((item, index) => {
           const distance = Math.abs(index - activeIndex);
-          const focused = distance === 0;
+          const lineWidthRem = resolveRailLineWidthRem(distance, railLineDistributionActive);
           const lineClassName = cn(
             "h-0.5 rounded-full bg-current opacity-35 transition-[opacity,width]",
-            focused && "w-6 text-foreground opacity-100",
-            distance === 1 && "w-4 opacity-70",
-            distance === 2 && "w-3.5 opacity-50",
-            distance > 2 && (index === 0 || index === items.length - 1 ? "w-2.5" : "w-3"),
+            distance === 0 && "text-foreground opacity-100",
+            distance === 1 && "opacity-70",
+            distance === 2 && "opacity-50",
           );
           return (
             <div key={item.id} className="relative flex w-6 justify-center">
@@ -323,14 +337,14 @@ function ChatMessagePositionRailComponent({
                   itemRefs.current.delete(item.id);
                 }}
                 type="button"
-                className="flex h-1.5 w-6 items-center justify-center rounded-sm"
+                className="flex h-1.5 w-6 items-center justify-start rounded-sm"
                 onMouseEnter={(event) => activatePreview(item.id, event.currentTarget)}
                 onFocus={(event) => activatePreview(item.id, event.currentTarget)}
                 onClick={() => scrollToMessage(item.id, { align: "start", behavior: "smooth", scrollMargin: 16 })}
                 aria-label={item.question}
                 tabIndex={-1}
               >
-                <span className={lineClassName} />
+                <span className={lineClassName} style={{ width: `${lineWidthRem}rem` }} />
               </button>
             </div>
           );
