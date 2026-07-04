@@ -3,7 +3,7 @@ import { listPublicModels } from "@/shared/api/model";
 import type { PublicModelDTO } from "@/shared/api/model.types";
 import { getUserSettings } from "@/shared/api/user-settings";
 
-export type ConversationDefaultModelSource = "explicit" | "user_default" | "system_default" | "latest_run" | "recommended" | "none";
+export type ConversationDefaultModelSource = "explicit" | "user_default" | "system_default" | "recommended" | "none";
 
 export type ConversationDefaultModelResult = {
   platformModelName: string;
@@ -48,7 +48,7 @@ export async function resolveConversationDefaultModel({
   if (candidateModel) {
     return {
       platformModelName: candidateModel,
-      source: candidate?.source === "system_default" ? "system_default" : "latest_run",
+      source: "system_default",
     };
   }
 

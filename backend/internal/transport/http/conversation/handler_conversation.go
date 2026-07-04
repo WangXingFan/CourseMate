@@ -93,7 +93,7 @@ func (h *Handler) ListConversations(c *gin.Context) {
 
 // GetConversationDefaultModelCandidate godoc
 // @Summary 查询新会话默认模型候选
-// @Description 返回后台配置的系统推荐模型，未配置时回退当前用户最近一次真实运行使用的模型
+// @Description 返回后台配置的新会话系统推荐模型；未配置时返回空候选
 // @Tags chat
 // @Accept json
 // @Produce json
@@ -102,8 +102,6 @@ func (h *Handler) ListConversations(c *gin.Context) {
 // @Failure 500 {object} ErrorDoc
 // @Router /conversations/default-model-candidate [get]
 func (h *Handler) GetConversationDefaultModelCandidate(c *gin.Context) {
-	userID := middleware.MustUserID(c)
-
 	if systemDefaultModel := h.service.GetConversationSystemDefaultModel(); systemDefaultModel != "" {
 		response.Success(c, ConversationDefaultModelCandidateResponse{
 			PlatformModelName: systemDefaultModel,
@@ -112,25 +110,7 @@ func (h *Handler) GetConversationDefaultModelCandidate(c *gin.Context) {
 		return
 	}
 
-	run, err := h.service.GetLatestConversationRunModel(c.Request.Context(), userID)
-	if err != nil {
-		response.Error(c, http.StatusInternalServerError, "load default model candidate failed")
-		return
-	}
-	if run == nil {
-		response.Success(c, ConversationDefaultModelCandidateResponse{})
-		return
-	}
-
-	usedAt := run.EndedAt
-	if usedAt == nil {
-		usedAt = &run.StartedAt
-	}
-	response.Success(c, ConversationDefaultModelCandidateResponse{
-		PlatformModelName: run.PlatformModelName,
-		Source:            "latest_run",
-		UsedAt:            usedAt,
-	})
+	response.Success(c, ConversationDefaultModelCandidateResponse{})
 }
 
 // GetConversation godoc
