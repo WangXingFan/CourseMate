@@ -1,8 +1,8 @@
 export const ADMIN_SECTIONS = [
   { id: "accounts", label: "Accounts", href: "/users" },
+  { id: "groups", label: "Permission Groups", href: "/groups" },
   { id: "upstreams", label: "Upstreams", href: "/upstreams" },
   { id: "models", label: "Models", href: "/models" },
-  { id: "groups", label: "Groups", href: "/groups" },
   { id: "tool-settings", label: "Tools", href: "/tools" },
   { id: "billing", label: "Billing", href: "/billing" },
   { id: "announcements", label: "Announcements", href: "/announcements" },

@@ -32,7 +32,6 @@ import {
   parseIntValue,
   parsePrice,
   stringifyTieredPricing,
-  PLAN_PERMISSION_GROUP_NONE,
   type PlanFormState,
   type PricingMode,
   type PricingFormState,
@@ -216,7 +215,6 @@ export function PlanBillingDialog({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={PLAN_PERMISSION_GROUP_NONE}>{t("plans.permissionGroupNone")}</SelectItem>
                       {permissionGroups.map((group) => (
                         <SelectItem key={group.id} value={String(group.id)}>
                           {group.name}

@@ -104,7 +104,6 @@ import {
   paymentProviderSetting,
   paymentSettingsChanged,
   stringifyTieredPricing,
-  PLAN_PERMISSION_GROUP_NONE,
   type BillingModelPricingRow,
   type PaymentProvider,
   type PaymentSettings,
@@ -359,7 +358,7 @@ export function AdminBillingPage() {
       const [referenceData, billingSettings, groups] = await Promise.all([
         getAdminReferenceData(token),
         listAdminSettingsByNamespace(token, "billing"),
-        listPermissionGroups(token).catch(() => [] as PermissionGroup[]),
+        listPermissionGroups(token),
       ]);
       setPermissionGroups(groups);
       const nextPaymentSettings = flattenPaymentSettings(billingSettings);
@@ -646,7 +645,7 @@ export function AdminBillingPage() {
 
   function openPlanEdit(plan: AdminBillingPlanDTO) {
     setEditPlan(plan);
-    setPlanForm(createPlanFormState(plan));
+    setPlanForm(createPlanFormState(plan, permissionGroups.find((group) => group.isDefault)?.id ?? permissionGroups[0]?.id));
   }
 
   function openRedemptionCreate() {
@@ -1405,10 +1404,7 @@ export function AdminBillingPage() {
         billingInterval: planForm.billingInterval,
         periodCreditUSD: parsePrice(planForm.periodCredit),
         discountPercent: Math.min(100, parseIntValue(planForm.discountPercent)),
-        permissionGroupID:
-          planForm.permissionGroupID === PLAN_PERMISSION_GROUP_NONE
-            ? null
-            : Number(planForm.permissionGroupID),
+        permissionGroupID: Number(planForm.permissionGroupID) || undefined,
       });
       setPlans((current) => current.map((plan) => plan.id === data.plan.id ? data.plan : plan));
       invalidateAdminReferenceDataCache();

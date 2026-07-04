@@ -42,69 +42,58 @@ func TestComposeGroupRatePercentIdentity(t *testing.T) {
 // ---------------------------------------------------------------------------
 
 type groupRateResolverStub struct {
-	percent int
-	err     error
-	called  bool
+	percent         int
+	err             error
+	called          bool
+	receivedModelID uint
+	receivedExtra   []uint
 }
 
-func (s *groupRateResolverStub) GetUserGroupRateMultiplierPercent(_ context.Context, _ uint, _ []uint) (int, error) {
+func (s *groupRateResolverStub) GetUserModelGroupRateMultiplierPercent(_ context.Context, _ uint, platformModelID uint, extra []uint) (int, error) {
 	s.called = true
+	s.receivedModelID = platformModelID
+	s.receivedExtra = append([]uint(nil), extra...)
 	return s.percent, s.err
 }
 
 // ---------------------------------------------------------------------------
-// applyGroupRateMultiplier unit tests
+// resolveGroupRatePercent unit tests
 // ---------------------------------------------------------------------------
 
-func TestApplyGroupRateMultiplierNoResolverKeepsBase(t *testing.T) {
+func TestResolveGroupRatePercentNoResolverReturnsIdentity(t *testing.T) {
 	s := &Service{}
-	base := billingRateMultiplier{Numerator: 2, Denominator: 1}
-	got, err := s.applyGroupRateMultiplier(nil, 1, nil, base)
+	got, err := s.resolveGroupRatePercent(nil, 1, 99, nil)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if got != base {
-		t.Fatalf("expected base unchanged without resolver, got %+v", got)
+	if got != 100 {
+		t.Fatalf("expected identity group rate without resolver, got %d", got)
 	}
 }
 
-func TestApplyGroupRateMultiplierReturnsErrorOnResolverFailure(t *testing.T) {
+func TestResolveGroupRatePercentReturnsErrorOnResolverFailure(t *testing.T) {
 	resolver := &groupRateResolverStub{err: errors.New("db down")}
 	s := &Service{groupRateResolver: resolver}
-	base := billingRateMultiplier{Numerator: 1, Denominator: 1}
-	_, err := s.applyGroupRateMultiplier(context.Background(), 1, nil, base)
+	_, err := s.resolveGroupRatePercent(context.Background(), 1, 99, nil)
 	if err == nil {
 		t.Fatal("expected error propagation from resolver")
 	}
 }
 
-func TestApplyGroupRateMultiplierPassesSubscriptionGroupID(t *testing.T) {
-	var receivedExtra []uint
+func TestResolveGroupRatePercentPassesModelAndSubscriptionGroupID(t *testing.T) {
 	resolver := &groupRateResolverStub{percent: 80}
-	orig := resolver.GetUserGroupRateMultiplierPercent
-	_ = orig
-	s := &Service{groupRateResolver: &captureExtraGroupResolver{
-		percent: 80,
-		capture: func(extra []uint) { receivedExtra = extra },
-	}}
+	s := &Service{groupRateResolver: resolver}
 	subID := uint(42)
-	_, err := s.applyGroupRateMultiplier(context.Background(), 1, &subID, billingRateMultiplier{Numerator: 1, Denominator: 1})
+	_, err := s.resolveGroupRatePercent(context.Background(), 1, 99, &subID)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if len(receivedExtra) != 1 || receivedExtra[0] != 42 {
-		t.Fatalf("expected subscription group ID 42 passed as extra, got %v", receivedExtra)
+	if resolver.receivedModelID != 99 {
+		t.Fatalf("expected platform model ID 99 passed to resolver, got %d", resolver.receivedModelID)
 	}
-}
-
-type captureExtraGroupResolver struct {
-	percent int
-	capture func(extra []uint)
-}
-
-func (c *captureExtraGroupResolver) GetUserGroupRateMultiplierPercent(_ context.Context, _ uint, extra []uint) (int, error) {
-	c.capture(extra)
-	return c.percent, nil
+	if len(resolver.receivedExtra) != 1 || resolver.receivedExtra[0] != 42 {
+		t.Fatalf("expected subscription group ID 42 passed as extra, got %v", resolver.receivedExtra)
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -143,6 +132,37 @@ func TestBuildUsageLedgerAppliesGroupRateMultiplier(t *testing.T) {
 	}
 	if snapshot["rate_multiplier"] != 0.8 {
 		t.Fatalf("expected rate_multiplier=0.8, got %v", snapshot["rate_multiplier"])
+	}
+}
+
+func TestBuildUsageLedgerResolvesGroupRateByPlatformModelID(t *testing.T) {
+	repo := &billingRepositoryStub{
+		mode: "usage",
+		pricing: &domainbilling.ModelPricing{
+			PlatformModelName:      "gpt-test",
+			Currency:               "USD",
+			PricingMode:            domainbilling.PricingModeToken,
+			InputNanousdPerMTokens: 1_000_000_000,
+		},
+	}
+	resolver := &groupRateResolverStub{percent: 100}
+	service := NewService(repo)
+	service.SetGroupRateMultiplierResolver(resolver)
+	service.SetPlatformModelIdentityResolver(modelIdentityResolverStub{identity: PlatformModelIdentity{
+		PlatformModelID:   123,
+		PlatformModelName: "gpt-test",
+	}})
+
+	_, err := service.BuildUsageLedger(context.Background(), UsagePricingInput{
+		UserID:            1,
+		PlatformModelName: "gpt-test",
+		InputTokens:       1_000,
+	})
+	if err != nil {
+		t.Fatalf("BuildUsageLedger: %v", err)
+	}
+	if resolver.receivedModelID != 123 {
+		t.Fatalf("expected group rate lookup to use platform model ID 123, got %d", resolver.receivedModelID)
 	}
 }
 

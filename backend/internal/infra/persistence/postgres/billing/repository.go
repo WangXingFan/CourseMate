@@ -231,6 +231,18 @@ func (r *Repo) UpdatePlanWithDefaultPrice(ctx context.Context, plan *domainbilli
 	})
 }
 
+// CountPlansWithPermissionGroup 统计绑定指定权限组的套餐数量。
+func (r *Repo) CountPlansWithPermissionGroup(ctx context.Context, groupID uint) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.BillingPlan{}).
+		Where("permission_group_id = ?", groupID).
+		Count(&count).Error; err != nil {
+		return 0, translateError(err)
+	}
+	return count, nil
+}
+
 // ListCurrentSubscriptionsByUserIDs 查询一批用户当前有效的活跃订阅。
 func (r *Repo) ListCurrentSubscriptionsByUserIDs(
 	ctx context.Context,
@@ -1613,7 +1625,6 @@ func (r *Repo) ListMonthlyUsageByUser(ctx context.Context, userID uint, limit in
 	}
 	now := time.Now()
 	endMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location()).AddDate(0, 1, 0)
-	startMonth := endMonth.AddDate(0, -limit, 0)
 
 	type monthlyUsageRow struct {
 		MonthKey         string `gorm:"column:month_key"`
@@ -1644,8 +1655,8 @@ func (r *Repo) ListMonthlyUsageByUser(ctx context.Context, userID uint, limit in
 			COALESCE(SUM(duration_seconds), 0) AS duration_seconds,
 			COALESCE(ROUND(AVG(NULLIF(latency_ms, 0))), 0) AS avg_latency_ms,
 			COALESCE(SUM(billed_nanousd), 0) AS billed_nanousd
-		`).
-		Where("user_id = ? AND usage_date >= ? AND usage_date < ?", userID, startMonth, endMonth).
+			`).
+		Where("user_id = ? AND usage_date < ?", userID, endMonth).
 		Group(monthKeyExpression).
 		Order("month_key DESC").
 		Limit(limit).

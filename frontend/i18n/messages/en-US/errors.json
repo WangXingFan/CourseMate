@@ -1,10 +1,13 @@
 {
   "admin": {
-    "defaultPermissionGroupDeleteNotAllowed": "The default group cannot be deleted.",
-    "invalidPermissionGroupCode": "Invalid group code. Only lowercase letters, digits, and hyphens are allowed.",
-    "invalidPermissionGroupName": "Group name is required.",
+    "defaultPermissionGroupDeleteNotAllowed": "The default permission group cannot be deleted.",
+    "permissionGroupNotFound": "Permission group not found.",
+    "invalidPermissionGroupName": "Permission group name is required.",
     "invalidPermissionGroupRateMultiplier": "Invalid rate multiplier. Must be between 1 and 10000.",
-    "permissionGroupReferencedByPlan": "This group is referenced by a billing plan. Unbind it before deleting."
+    "invalidPermissionGroupModels": "Permission group model configuration is invalid.",
+    "invalidPermissionGroupUsers": "Permission group member configuration is invalid.",
+    "defaultPermissionGroupUsersImplicit": "Default permission group members are managed automatically.",
+    "permissionGroupReferencedByPlan": "This permission group is referenced by a billing plan. Unbind it before deleting."
   },
   "auth": {
     "adminRequired": "Administrator permission is required.",
@@ -77,6 +80,9 @@
   "billing": {
     "insufficientBalance": "Insufficient balance.",
     "insufficientFunds": "Insufficient balance.",
+    "invalidPlan": "Invalid billing plan.",
+    "planNotFound": "Billing plan not found.",
+    "invalidPermissionGroup": "Invalid permission group.",
     "invalidDailyUsageDateRange": "Invalid usage date range.",
     "invalidDailyUsageDays": "Invalid usage day count.",
     "invalidModelPricing": "Invalid model pricing.",

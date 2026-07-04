@@ -29,7 +29,13 @@ type subscriptionGroupResolver interface {
 	GetUserSubscriptionGroupID(ctx context.Context, userID uint) (*uint, error)
 }
 
-// resolveUserGroupIDs 返回用户的全部归属分组 ID（直接分组 + 默认组 + 订阅绑定组）。
+type modelPermissionGroupWriter interface {
+	PermissionGroupExists(ctx context.Context, id uint) (bool, error)
+	ListModelManualGroupIDs(ctx context.Context, platformModelID uint) ([]uint, error)
+	SetModelManualGroups(ctx context.Context, platformModelID uint, groupIDs []uint) error
+}
+
+// resolveUserGroupIDs 返回用户的全部归属权限组 ID（手动权限组 + 默认权限组 + 订阅绑定权限组）。
 func (s *Service) resolveUserGroupIDs(ctx context.Context, userID uint) (map[uint]struct{}, error) {
 	groups := make(map[uint]struct{})
 	if s.permGroupRepo == nil || userID == 0 {
@@ -61,7 +67,7 @@ func (s *Service) resolveUserGroupIDs(ctx context.Context, userID uint) (map[uin
 	return groups, nil
 }
 
-// isModelAccessible 判断用户是否可访问指定模型（基于分组归属）。
+// isModelAccessible 判断用户是否可访问指定模型（基于权限组归属）。
 func (s *Service) isModelAccessible(ctx context.Context, platformModelID uint, userID uint) (bool, error) {
 	if s.permGroupRepo == nil || userID == 0 {
 		return true, nil
@@ -71,11 +77,7 @@ func (s *Service) isModelAccessible(ctx context.Context, platformModelID uint, u
 		return false, err
 	}
 	if len(modelGroups) == 0 {
-		allAssigned, err := s.permGroupRepo.ListModelsWithGroupAccess(ctx)
-		if err != nil {
-			return false, err
-		}
-		return len(allAssigned) == 0, nil
+		return false, nil
 	}
 	userGroups, err := s.resolveUserGroupIDs(ctx, userID)
 	if err != nil {

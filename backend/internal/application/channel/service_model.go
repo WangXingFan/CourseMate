@@ -26,6 +26,7 @@ type ListModelsInput struct {
 	Status        string
 	Vendor        string
 	Protocol      string
+	UpstreamID    uint
 	Sort          string
 }
 
@@ -41,6 +42,7 @@ func (s *Service) ListModels(ctx context.Context, page int, pageSize int, input 
 		Status:        input.Status,
 		Vendor:        input.Vendor,
 		Protocol:      input.Protocol,
+		UpstreamID:    input.UpstreamID,
 		Sort:          input.Sort,
 	})
 	if err != nil {
@@ -110,11 +112,11 @@ func (s *Service) listActiveModelViews(ctx context.Context) ([]ModelView, error)
 	return cloneModelViews(views), nil
 }
 
-// filterModelsByPermission 按分组过滤用户可访问的模型。
+// filterModelsByPermission 按权限组过滤用户可访问的模型。
 //
-// 当任一分组绑定了模型时，未绑定到任何分组的模型对所有人隐藏；
-// 绑定到分组的模型仅对归属组成员可见。
-// 用户归属组 = 直接分配的组 + 默认组（is_default） + 订阅套餐绑定的组。
+// 未绑定到任何有效权限组的模型对用户隐藏；
+// 绑定到权限组的模型仅对归属权限组成员可见。
+// 用户归属权限组 = 手动权限组 + 默认权限组（is_default） + 订阅套餐绑定权限组。
 func (s *Service) filterModelsByPermission(ctx context.Context, userID uint, views []ModelView) ([]ModelView, error) {
 	if s.permGroupRepo == nil || userID == 0 {
 		return views, nil
@@ -124,7 +126,7 @@ func (s *Service) filterModelsByPermission(ctx context.Context, userID uint, vie
 		return nil, err
 	}
 	if len(modelsWithGroups) == 0 {
-		return views, nil
+		return []ModelView{}, nil
 	}
 
 	userGroups, err := s.resolveUserGroupIDs(ctx, userID)
@@ -290,6 +292,7 @@ func (s *Service) ResolvePlatformModelIdentity(ctx context.Context, platformMode
 		return appbilling.PlatformModelIdentity{}, err
 	}
 	return appbilling.PlatformModelIdentity{
+		PlatformModelID:   item.ID,
 		PlatformModelName: item.PlatformModelName,
 		ModelVendor:       strings.TrimSpace(item.Vendor),
 		ModelIcon:         strings.TrimSpace(item.Icon),

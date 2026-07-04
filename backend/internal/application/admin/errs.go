@@ -45,14 +45,20 @@ var (
 	ErrOpenWebUIImportFailed = errors.New("openwebui import failed")
 	// ErrPermissionGroupRepoUnavailable 表示权限组仓储未注入。
 	ErrPermissionGroupRepoUnavailable = errors.New("permission group repo unavailable")
-	// ErrInvalidPermissionGroupCode 表示权限组编码不合法。
-	ErrInvalidPermissionGroupCode = errors.New("invalid permission group code")
+	// ErrPermissionGroupNotFound 表示权限组不存在。
+	ErrPermissionGroupNotFound = errors.New("permission group not found")
 	// ErrInvalidPermissionGroupName 表示权限组名称不合法。
 	ErrInvalidPermissionGroupName = errors.New("invalid permission group name")
 	// ErrDefaultPermissionGroupDeleteNotAllowed 表示默认权限组不可删除。
 	ErrDefaultPermissionGroupDeleteNotAllowed = errors.New("default permission group delete not allowed")
-	// ErrInvalidPermissionGroupRateMultiplier 表示分组计费倍率不合法。
+	// ErrDefaultPermissionGroupUsersImmutable 表示默认权限组成员由系统隐式维护，不可手动配置。
+	ErrDefaultPermissionGroupUsersImmutable = errors.New("default permission group users are implicit")
+	// ErrInvalidPermissionGroupRateMultiplier 表示权限组计费倍率不合法。
 	ErrInvalidPermissionGroupRateMultiplier = errors.New("invalid permission group rate multiplier")
 	// ErrPermissionGroupReferencedByPlan 表示权限组被计费套餐引用，不可删除。
 	ErrPermissionGroupReferencedByPlan = errors.New("permission group is referenced by billing plan")
+	// ErrInvalidPermissionGroupModels 表示权限组绑定的平台模型集合非法。
+	ErrInvalidPermissionGroupModels = errors.New("invalid permission group models")
+	// ErrInvalidPermissionGroupUsers 表示权限组绑定的用户集合非法。
+	ErrInvalidPermissionGroupUsers = errors.New("invalid permission group users")
 )

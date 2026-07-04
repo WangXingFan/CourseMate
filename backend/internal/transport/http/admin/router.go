@@ -27,6 +27,8 @@ func (m *Module) RegisterRoutes(adminGroup *gin.RouterGroup) {
 	adminGroup.DELETE("/permission-groups/:id", m.Handler.DeletePermissionGroup)
 	adminGroup.GET("/permission-groups/:id/models", m.Handler.ListGroupModels)
 	adminGroup.PUT("/permission-groups/:id/models", m.Handler.SetGroupModels)
+	adminGroup.GET("/models/:modelID/permission-groups", m.Handler.ListModelPermissionGroups)
+	adminGroup.PUT("/models/:modelID/permission-groups", m.Handler.SetModelPermissionGroups)
 	adminGroup.GET("/permission-groups/:id/users", m.Handler.ListGroupUsers)
 	adminGroup.PUT("/permission-groups/:id/users", m.Handler.SetGroupUsers)
 }
