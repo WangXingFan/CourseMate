@@ -1315,9 +1315,19 @@ export function ModelSheet({ open, mode, target, models, onClose, onSuccess }: M
 
                               <div className="grid grid-cols-2 gap-2">
                                 <div className="min-w-0 space-y-1">
-                                  <Label className="text-xs font-normal text-muted-foreground" htmlFor={`model-source-priority-${row.id}`}>
-                                    {t("sources.priority")}
-                                  </Label>
+                                  <div className="flex items-center gap-1">
+                                    <Label className="text-xs font-normal text-muted-foreground" htmlFor={`model-source-priority-${row.id}`}>
+                                      {t("sources.priority")}
+                                    </Label>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <CircleHelp className="size-3.5 shrink-0 cursor-help text-muted-foreground" aria-label={t("sources.priorityDesc")} />
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="max-w-xs text-xs">
+                                        {t("sources.priorityDesc")}
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </div>
                                   <Input
                                     id={`model-source-priority-${row.id}`}
                                     value={draft.priority}
@@ -1328,9 +1338,19 @@ export function ModelSheet({ open, mode, target, models, onClose, onSuccess }: M
                                   />
                                 </div>
                                 <div className="min-w-0 space-y-1">
-                                  <Label className="text-xs font-normal text-muted-foreground" htmlFor={`model-source-weight-${row.id}`}>
-                                    {t("sources.weight")}
-                                  </Label>
+                                  <div className="flex items-center gap-1">
+                                    <Label className="text-xs font-normal text-muted-foreground" htmlFor={`model-source-weight-${row.id}`}>
+                                      {t("sources.weight")}
+                                    </Label>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <CircleHelp className="size-3.5 shrink-0 cursor-help text-muted-foreground" aria-label={t("sources.weightDesc")} />
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="max-w-xs text-xs">
+                                        {t("sources.weightDesc")}
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </div>
                                   <Input
                                     id={`model-source-weight-${row.id}`}
                                     value={draft.weight}
