@@ -39,6 +39,7 @@ import {
   chatMessageScrollerID,
 } from "@/features/chat/components/sections/chat-message-position-rail";
 import { cn } from "@/lib/utils";
+import { AppLogo } from "@/shared/components/app-logo";
 
 function CompactDivider({ summaryPreview }: { summaryPreview: string }) {
   const t = useTranslations("chat.messages");
@@ -199,8 +200,7 @@ function ChatScreenshotBrandMark({ placement }: { placement: "top" | "bottom" })
       )}
       data-screenshot-only="true"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/logo.svg" alt="DEEIX Chat" className="h-5 w-auto opacity-75" />
+      <AppLogo width={65} height={20} className="h-5 w-auto opacity-75" />
     </div>
   );
 }

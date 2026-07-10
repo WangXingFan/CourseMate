@@ -23,10 +23,9 @@ import enRecent from "@/i18n/messages/en-US/recent.json";
 import enSettings from "@/i18n/messages/en-US/settings.json";
 import enShare from "@/i18n/messages/en-US/share.json";
 import type { AppLocale } from "@/i18n/config";
+import { replaceDefaultBrandTitleInMessages } from "@/shared/lib/branding";
 
-export type AppMessages = typeof DEFAULT_MESSAGES;
-
-export const DEFAULT_MESSAGES = {
+const ENGLISH_MESSAGES = {
   common: enCommon,
   conversation: enConversation,
   errors: enErrors,
@@ -52,6 +51,31 @@ export const DEFAULT_MESSAGES = {
   adminUpstreams: enAdminUpstreams,
   adminUsers: enAdminUsers,
 };
+
+export type AppMessages = typeof ENGLISH_MESSAGES;
+
+function prepareMessages(messages: AppMessages): AppMessages {
+  const brandedMessages = replaceDefaultBrandTitleInMessages(messages);
+  return {
+    ...brandedMessages,
+    settings: {
+      ...brandedMessages.settings,
+      aboutPage: {
+        ...brandedMessages.settings.aboutPage,
+        description: messages.settings.aboutPage.description,
+      },
+    },
+    adminUsers: {
+      ...brandedMessages.adminUsers,
+      aboutPage: {
+        ...brandedMessages.adminUsers.aboutPage,
+        description: messages.adminUsers.aboutPage.description,
+      },
+    },
+  };
+}
+
+export const DEFAULT_MESSAGES: AppMessages = prepareMessages(ENGLISH_MESSAGES);
 
 export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages> {
   if (locale === "en-US") {
@@ -110,7 +134,7 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
     import("@/i18n/messages/zh-CN/admin-users.json"),
   ]);
 
-  return {
+  return prepareMessages({
     common: common.default,
     conversation: conversation.default,
     errors: errors.default,
@@ -135,5 +159,5 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
     adminTools: adminTools.default,
     adminUpstreams: adminUpstreams.default,
     adminUsers: adminUsers.default,
-  };
+  });
 }

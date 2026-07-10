@@ -33,6 +33,7 @@ import { useOptionalAuthSession } from "@/shared/auth/auth-session-context";
 import { resolveAccessToken } from "@/shared/auth/resolve-access-token";
 import { useAppLocale } from "@/i18n/app-i18n-provider";
 import { useLocalizedErrorMessage } from "@/i18n/use-localized-error";
+import { brandText } from "@/shared/lib/branding";
 
 function formatSharedAt(value: string, locale: string): string {
   const date = new Date(value);
@@ -384,7 +385,7 @@ export function PublicSharePage() {
               <span>{t("snapshotMessages", { count: data.messages.length })}</span>
             </div>
           </div>
-          <Link href="/" aria-label="DEEIX Chat" className="mt-0.5 inline-flex h-8 shrink-0 items-center">
+          <Link href="/" aria-label={brandText.title} className="mt-0.5 inline-flex h-8 shrink-0 items-center">
             <AppLogo width={78} height={24} priority className="h-6 w-auto" />
           </Link>
         </header>

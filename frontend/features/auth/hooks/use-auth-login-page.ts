@@ -13,6 +13,7 @@ import { normalizeAuthNextPath } from "@/shared/auth/local-path";
 import { resolveAccessToken } from "@/shared/auth/resolve-access-token";
 import { writeSessionSnapshot } from "@/shared/auth/session";
 import { useLocalizedErrorMessage } from "@/i18n/use-localized-error";
+import { replaceDefaultBrandTitle } from "@/shared/lib/branding";
 import {
   createProviderPKCE,
   DEFAULT_LOGIN_OPTIONS,
@@ -140,7 +141,10 @@ export function useLoginPage({ nextPath }: UseLoginPageInput) {
         if (cancelled) {
           return;
         }
-        setSettings(pageSettings);
+        setSettings({
+          ...pageSettings,
+          title: replaceDefaultBrandTitle(pageSettings.title),
+        });
         setOptions(loginOptions);
       })
       .catch(() => undefined)
