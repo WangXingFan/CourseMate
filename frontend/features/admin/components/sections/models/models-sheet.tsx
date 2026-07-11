@@ -1315,18 +1315,33 @@ export function ModelSheet({ open, mode, target, models, onClose, onSuccess }: M
 
                               <div className="grid grid-cols-2 gap-2">
                                 <div className="min-w-0 space-y-1">
-                                  <div className="flex items-center gap-1">
-                                    <Label className="text-xs font-normal text-muted-foreground" htmlFor={`model-source-priority-${row.id}`}>
+                                  <div className="inline-flex items-center gap-1">
+                                    <Label className="text-xs font-normal leading-4 text-muted-foreground" htmlFor={`model-source-priority-${row.id}`}>
                                       {t("sources.priority")}
                                     </Label>
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <CircleHelp className="size-3.5 shrink-0 cursor-help text-muted-foreground" aria-label={t("sources.priorityDesc")} />
-                                      </TooltipTrigger>
-                                      <TooltipContent side="top" className="max-w-xs text-xs">
+                                    <Popover>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <PopoverTrigger asChild>
+                                            <Button
+                                              type="button"
+                                              variant="ghost"
+                                              size="icon-xs"
+                                              className="-translate-y-0.5 text-muted-foreground hover:bg-transparent hover:text-foreground"
+                                              aria-label={t("sources.priorityDesc")}
+                                            >
+                                              <CircleHelp className="size-3" />
+                                            </Button>
+                                          </PopoverTrigger>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="top" className="max-w-xs text-xs">
+                                          {t("sources.priorityDesc")}
+                                        </TooltipContent>
+                                      </Tooltip>
+                                      <PopoverContent className="w-72 max-w-[calc(100vw-2rem)] p-3 text-xs leading-5">
                                         {t("sources.priorityDesc")}
-                                      </TooltipContent>
-                                    </Tooltip>
+                                      </PopoverContent>
+                                    </Popover>
                                   </div>
                                   <Input
                                     id={`model-source-priority-${row.id}`}
@@ -1338,18 +1353,33 @@ export function ModelSheet({ open, mode, target, models, onClose, onSuccess }: M
                                   />
                                 </div>
                                 <div className="min-w-0 space-y-1">
-                                  <div className="flex items-center gap-1">
-                                    <Label className="text-xs font-normal text-muted-foreground" htmlFor={`model-source-weight-${row.id}`}>
+                                  <div className="inline-flex items-center gap-1">
+                                    <Label className="text-xs font-normal leading-4 text-muted-foreground" htmlFor={`model-source-weight-${row.id}`}>
                                       {t("sources.weight")}
                                     </Label>
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <CircleHelp className="size-3.5 shrink-0 cursor-help text-muted-foreground" aria-label={t("sources.weightDesc")} />
-                                      </TooltipTrigger>
-                                      <TooltipContent side="top" className="max-w-xs text-xs">
+                                    <Popover>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <PopoverTrigger asChild>
+                                            <Button
+                                              type="button"
+                                              variant="ghost"
+                                              size="icon-xs"
+                                              className="-translate-y-0.5 text-muted-foreground hover:bg-transparent hover:text-foreground"
+                                              aria-label={t("sources.weightDesc")}
+                                            >
+                                              <CircleHelp className="size-3" />
+                                            </Button>
+                                          </PopoverTrigger>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="top" className="max-w-xs text-xs">
+                                          {t("sources.weightDesc")}
+                                        </TooltipContent>
+                                      </Tooltip>
+                                      <PopoverContent className="w-72 max-w-[calc(100vw-2rem)] p-3 text-xs leading-5">
                                         {t("sources.weightDesc")}
-                                      </TooltipContent>
-                                    </Tooltip>
+                                      </PopoverContent>
+                                    </Popover>
                                   </div>
                                   <Input
                                     id={`model-source-weight-${row.id}`}
