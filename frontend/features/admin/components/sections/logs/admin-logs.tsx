@@ -890,6 +890,13 @@ function LogDetailSheet({ detail: rawDetail, onClose }: { detail: LogDetail | nu
                 <DetailRow label={t("fields.conversationID")} value={detail.item.conversationID} mono />
                 <DetailRow label={t("fields.messageID")} value={detail.item.messageID} mono />
               </DetailBlock>
+              <DetailBlock title={t("blocks.modelRoute")}>
+                <DetailRow label={t("fields.platformModel")} value={detail.item.platformModelName || "-"} mono />
+                <DetailRow label={t("fields.upstreamName")} value={detail.item.upstreamName || "-"} />
+                <DetailRow label={t("fields.upstreamModel")} value={detail.item.upstreamModelName || "-"} mono />
+                <DetailRow label={t("fields.bindingCode")} value={detail.item.routedBindingCode || "-"} mono />
+                <DetailRow label={t("fields.protocol")} value={detail.item.providerProtocol || "-"} />
+              </DetailBlock>
               <DetailBlock title={t("blocks.tool")}>
                 <DetailRow label={t("fields.toolName")} value={detail.item.toolName || "-"} />
                 <DetailRow label={t("fields.toolCallID")} value={detail.item.toolCallID || "-"} mono />
@@ -1673,14 +1680,15 @@ function ConversationEventTable({ onOpenDetail }: { onOpenDetail: (item: AdminCo
             <TableHead>{t("columns.scope")}</TableHead>
             <TableHead>{t("columns.event")}</TableHead>
             <TableHead>{t("columns.status")}</TableHead>
+            <TableHead>{t("columns.upstream")}</TableHead>
             <TableHead>{t("columns.tool")}</TableHead>
             <TableHead>{t("columns.runID")}</TableHead>
             <TableHead>{t("columns.time")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {logs.loading && logs.events.length === 0 ? <TableLoadingRow colSpan={8} /> : null}
-          {logs.events.length > 0 ? <VirtualTablePaddingRow colSpan={8} height={virtualRows.paddingTop} /> : null}
+          {logs.loading && logs.events.length === 0 ? <TableLoadingRow colSpan={9} /> : null}
+          {logs.events.length > 0 ? <VirtualTablePaddingRow colSpan={9} height={virtualRows.paddingTop} /> : null}
           {logs.events.length > 0 ? virtualRows.rows.map(({ item }) => (
             <TableRow key={item.id} className="cursor-pointer" onClick={() => onOpenDetail(item)}>
               <TableCell className="font-mono text-xs text-foreground">{item.id}</TableCell>
@@ -1693,6 +1701,9 @@ function ConversationEventTable({ onOpenDetail }: { onOpenDetail: (item: AdminCo
               </TableCell>
               <TableCell className="whitespace-nowrap">{eventStatusLabel(item.status)}</TableCell>
               <TableCell>
+                <div className="max-w-[12rem] truncate text-muted-foreground" title={item.upstreamName || "-"}>{item.upstreamName || "-"}</div>
+              </TableCell>
+              <TableCell>
                 <div className="max-w-[10rem] truncate text-muted-foreground" title={item.toolName || "-"}>{item.toolName || "-"}</div>
               </TableCell>
               <TableCell className="font-mono text-xs text-muted-foreground">
@@ -1701,8 +1712,8 @@ function ConversationEventTable({ onOpenDetail }: { onOpenDetail: (item: AdminCo
               <TableCell className="whitespace-nowrap text-muted-foreground">{formatDateTime(item.createdAt, locale)}</TableCell>
             </TableRow>
           )) : null}
-          {logs.events.length > 0 ? <VirtualTablePaddingRow colSpan={8} height={virtualRows.paddingBottom} /> : null}
-          {!logs.loading && logs.events.length === 0 ? <TableEmptyRow colSpan={8}>{t("conversation.empty")}</TableEmptyRow> : null}
+          {logs.events.length > 0 ? <VirtualTablePaddingRow colSpan={9} height={virtualRows.paddingBottom} /> : null}
+          {!logs.loading && logs.events.length === 0 ? <TableEmptyRow colSpan={9}>{t("conversation.empty")}</TableEmptyRow> : null}
         </TableBody>
       </Table>
 

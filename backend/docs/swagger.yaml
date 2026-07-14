@@ -177,7 +177,13 @@ definitions:
         type: string
       phase:
         type: string
+      platformModelName:
+        type: string
+      providerProtocol:
+        type: string
       roundID:
+        type: string
+      routedBindingCode:
         type: string
       runID:
         type: string
@@ -198,6 +204,10 @@ definitions:
       toolName:
         type: string
       updatedAt:
+        type: string
+      upstreamModelName:
+        type: string
+      upstreamName:
         type: string
       userDisplayName:
         type: string
