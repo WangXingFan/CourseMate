@@ -327,7 +327,6 @@ const ChatMessageRow = React.memo(function ChatMessageRow({
     return (
       <ChatMessageUser
         item={item}
-        busy={busy}
         onRetryUserMessage={onRetryUserMessage}
         onEditUserMessage={onEditUserMessage}
         modelOptions={modelOptions}

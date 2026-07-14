@@ -166,7 +166,6 @@ function PublicSharedMessage({
     return (
       <ChatMessageUser
         item={item}
-        busy={false}
         onRetryUserMessage={noopAsync}
         onEditUserMessage={async () => false}
         onCycleMessageBranch={onCycleBranch}
@@ -182,7 +181,6 @@ function PublicSharedMessage({
     return (
       <ChatMessageBot
         item={item}
-        busy={false}
         reaction={null}
         onRetryAssistantMessage={noopAsync}
         onEditAssistantMessage={async () => false}

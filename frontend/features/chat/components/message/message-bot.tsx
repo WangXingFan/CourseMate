@@ -125,7 +125,7 @@ function resolveEditableImageAttachment(
 
 type ChatMessageBotProps = {
   item: ChatAreaMessage;
-  busy: boolean;
+  busy?: boolean;
   reaction: AssistantReaction;
   onRetryAssistantMessage: (message: ChatAreaMessage) => Promise<void> | void;
   onContinueAssistantMessage?: (message: ChatAreaMessage) => Promise<void> | void;
@@ -152,7 +152,7 @@ type ChatMessageBotProps = {
 
 export function ChatMessageBot({
   item,
-  busy,
+  busy = false,
   reaction,
   onRetryAssistantMessage,
   onContinueAssistantMessage,
