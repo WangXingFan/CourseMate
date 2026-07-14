@@ -10436,7 +10436,16 @@ const docTemplate = `{
                 "phase": {
                     "type": "string"
                 },
+                "platformModelName": {
+                    "type": "string"
+                },
+                "providerProtocol": {
+                    "type": "string"
+                },
                 "roundID": {
+                    "type": "string"
+                },
+                "routedBindingCode": {
                     "type": "string"
                 },
                 "runID": {
@@ -10467,6 +10476,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
+                    "type": "string"
+                },
+                "upstreamModelName": {
+                    "type": "string"
+                },
+                "upstreamName": {
                     "type": "string"
                 },
                 "userDisplayName": {
