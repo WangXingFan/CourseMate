@@ -544,6 +544,7 @@ export function AppChatArea() {
   });
 
   const {
+    currentLeafMessage,
     onCycleMessageBranch,
     onEditAssistantMessage,
     onEditUserMessage,
@@ -592,12 +593,21 @@ export function AppChatArea() {
   const generating = sending || Boolean(resumingRunID);
   const uploadDropDisabled = loading || uploading;
   const onStopActiveMessage = React.useCallback(() => {
-    if (sending) {
-      onStopMessage();
+    const visibleRunID = currentLeafMessage?.runID?.trim() || "";
+    if (resumingRunID && visibleRunID === resumingRunID) {
+      void cancelResumedGeneration();
+      return;
+    }
+    if (onStopMessage()) {
       return;
     }
     void cancelResumedGeneration();
-  }, [cancelResumedGeneration, onStopMessage, sending]);
+  }, [
+    cancelResumedGeneration,
+    currentLeafMessage?.runID,
+    onStopMessage,
+    resumingRunID,
+  ]);
 
   const messageContentRef = React.useRef<HTMLDivElement | null>(null);
   const loadingOlderInFlightRef = React.useRef(false);
