@@ -413,9 +413,6 @@ func (s *Service) sendMessageInternal(
 			return nil, err
 		}
 	}
-	if !reuseUserMessage {
-		s.maybeGenerateConversationMetadataAsync(*conversation, *userMessage)
-	}
 	run.Endpoint = llm.DefaultEndpointForAdapter(route.Protocol)
 	run.ProviderProtocol = route.Protocol
 	run.UpstreamID = route.UpstreamID
@@ -1369,33 +1366,9 @@ func (s *Service) sendMessageInternal(
 		Messages:            compactMessages,
 		PromptTokenEstimate: estimatedPromptTokens,
 	}
+	var postBillingCompaction *postBillingCompactionTask
 	if !compactPolicy.EffectiveEnabled() {
 		// 用户已关闭自动压缩，仅完成 trace 记录
-		if traceRecorder != nil {
-			traceRecorder.complete()
-			traceRecorder.attachToMessage(assistantMessage)
-		}
-	} else if compactCfg.CompactAsyncEnabled {
-		// 异步压缩：移出响应关键路径，不阻塞流式返回
-		compactPlatformModelName := s.resolveTextTaskModel(ctx, compactCfg.CompactTaskModel, conversation.Model, input.UserID, input.ConversationID, strings.TrimSpace(input.RequestID))
-		compactInput.PlatformModelName = compactPlatformModelName
-		go func() {
-			asyncCtx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
-			defer cancel()
-			asyncCtx = withBasicServiceBillingContext(asyncCtx, input.UserID, input.ConversationID)
-			if compactSnapshot, compactErr := s.compactSvc.MaybeCompactConversation(asyncCtx, compactInput); compactErr == nil && compactSnapshot != nil {
-				// 压缩后清空 LastResponseID：Responses API 有状态会话链已失效，需重传
-				s.invalidateSnapshotCache(input.ConversationID) // 新 Snapshot 已生成，失效缓存
-				_ = s.repo.UpdateConversationLastResponseID(asyncCtx, input.ConversationID, "")
-				s.persistSnapshotContextArtifact(asyncCtx, snapshotContextArtifactInput{
-					ConversationID: input.ConversationID,
-					UserID:         input.UserID,
-					MessageID:      assistantMessage.ID,
-					RunID:          runID,
-					Snapshot:       compactSnapshot,
-				})
-			}
-		}()
 		if traceRecorder != nil {
 			traceRecorder.complete()
 			traceRecorder.attachToMessage(assistantMessage)
@@ -1403,37 +1376,22 @@ func (s *Service) sendMessageInternal(
 	} else {
 		compactPlatformModelName := s.resolveTextTaskModel(ctx, compactCfg.CompactTaskModel, conversation.Model, input.UserID, input.ConversationID, strings.TrimSpace(input.RequestID))
 		compactInput.PlatformModelName = compactPlatformModelName
-		compactCtx := withBasicServiceBillingContext(ctx, input.UserID, input.ConversationID)
-		if snapshot, snapshotErr := s.compactSvc.MaybeCompactConversation(compactCtx, compactInput); snapshotErr == nil && snapshot != nil {
-			// 压缩后清空 LastResponseID：Responses API 有状态会话链已失效，需重传
-			s.invalidateSnapshotCache(input.ConversationID) // 新 Snapshot 已生成，失效缓存
-			_ = s.repo.UpdateConversationLastResponseID(compactCtx, input.ConversationID, "")
-			s.persistSnapshotContextArtifact(compactCtx, snapshotContextArtifactInput{
-				ConversationID: input.ConversationID,
-				UserID:         input.UserID,
-				MessageID:      assistantMessage.ID,
-				RunID:          runID,
-				Snapshot:       snapshot,
-			})
-			if traceRecorder != nil {
-				summary, markdown, payload := buildCompactionProcessTrace(snapshot)
-				traceRecorder.appendProcessSection(summary, markdown, payload, messageTraceStatusStreaming)
-			}
-			// 通知前端压缩完成（同步路径仍在 SSE 流中，可发送事件）
-			previewLen := len([]rune(snapshot.SummaryText))
-			if previewLen > 80 {
-				previewLen = 80
-			}
-			emitEvent(input.OnEvent, "compact_done", map[string]interface{}{
-				"method":          snapshot.Strategy,
-				"freed_tokens":    snapshot.SourceTokens - snapshot.SummaryTokens,
-				"kept_turns":      compactCfg.ContextCompactPreserve,
-				"summary_preview": string([]rune(snapshot.SummaryText)[:previewLen]),
-			})
+		postBillingCompaction = &postBillingCompactionTask{
+			Async:          compactCfg.CompactAsyncEnabled,
+			Input:          compactInput,
+			ConversationID: input.ConversationID,
+			UserID:         input.UserID,
+			MessageID:      assistantMessage.ID,
+			RunID:          runID,
+			PreserveTurns:  compactCfg.ContextCompactPreserve,
+			OnEvent:        input.OnEvent,
+			TraceRecorder:  traceRecorder,
 		}
-		if traceRecorder != nil {
+		if compactCfg.CompactAsyncEnabled && traceRecorder != nil {
 			traceRecorder.complete()
 			traceRecorder.attachToMessage(assistantMessage)
+			postBillingCompaction.TraceRecorder = nil
+			postBillingCompaction.OnEvent = nil
 		}
 	}
 
@@ -1449,24 +1407,25 @@ func (s *Service) sendMessageInternal(
 	}
 
 	return &SendMessageResult{
-		UserMessage:         *userMessage,
-		AssistantMessage:    *assistantMessage,
-		MetadataRefreshHint: conversationMetadataRefreshHint(*conversation, *userMessage),
-		Billable:            true,
-		UpstreamID:          run.UpstreamID,
-		UpstreamName:        run.UpstreamName,
-		PlatformModelName:   route.PlatformModelName,
-		RoutedBindingCode:   route.BindingCode,
-		UpstreamModelName:   route.UpstreamModel,
-		UpstreamProtocol:    route.Protocol,
-		EffectiveOptions:    filteredOptions,
-		UsageSpeed:          totalUsage.Speed,
-		UsageServiceTier:    totalUsage.ServiceTier,
-		RawUsageJSON:        totalUsage.RawUsageJSON,
-		CacheWrite5mTokens:  totalUsage.CacheWrite5mTokens,
-		CacheWrite1hTokens:  totalUsage.CacheWrite1hTokens,
-		ServerSideToolUsage: totalServerSideToolUsage,
-		LatencyMS:           time.Since(startedAt).Milliseconds(),
-		StartedAt:           startedAt,
+		UserMessage:           *userMessage,
+		AssistantMessage:      *assistantMessage,
+		MetadataRefreshHint:   conversationMetadataRefreshHint(*conversation, *userMessage),
+		Billable:              true,
+		UpstreamID:            run.UpstreamID,
+		UpstreamName:          run.UpstreamName,
+		PlatformModelName:     route.PlatformModelName,
+		RoutedBindingCode:     route.BindingCode,
+		UpstreamModelName:     route.UpstreamModel,
+		UpstreamProtocol:      route.Protocol,
+		EffectiveOptions:      filteredOptions,
+		UsageSpeed:            totalUsage.Speed,
+		UsageServiceTier:      totalUsage.ServiceTier,
+		RawUsageJSON:          totalUsage.RawUsageJSON,
+		CacheWrite5mTokens:    totalUsage.CacheWrite5mTokens,
+		CacheWrite1hTokens:    totalUsage.CacheWrite1hTokens,
+		ServerSideToolUsage:   totalServerSideToolUsage,
+		LatencyMS:             time.Since(startedAt).Milliseconds(),
+		StartedAt:             startedAt,
+		postBillingCompaction: postBillingCompaction,
 	}, nil
 }
