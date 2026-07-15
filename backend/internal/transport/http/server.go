@@ -208,6 +208,9 @@ func NewEngine(cfg *config.Runtime, log *zap.Logger, modules Modules, hc HealthC
 	if modules.StartupLog != nil {
 		modules.StartupLog(log)
 	}
+	if modules.Settings != nil {
+		modules.Settings.RegisterFrontendRoutes(engine)
+	}
 	registerFrontendStatic(engine, snapshot.FrontendDistDir, log)
 
 	return engine, nil
