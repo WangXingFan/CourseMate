@@ -2,10 +2,15 @@
 
 import * as React from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Bar, BarChart, CartesianGrid, Rectangle, XAxis, YAxis } from "recharts";
-import type { BarShapeProps, RectangleProps } from "recharts";
+import { Area, Bar, BarChart, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
 
-import { ChartContainer, ChartTooltip, type ChartConfig } from "@/components/ui/chart";
+import {
+  ChartContainer,
+  ChartInteractiveLegend,
+  ChartTooltip,
+  type ChartConfig,
+  type ChartInteractiveLegendItem,
+} from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import type {
   AdminUsageStatisticsMetricsDTO,
@@ -16,16 +21,8 @@ import type {
 } from "@/features/admin/api";
 import {
   formatBillingDisplayAmountFromUSD,
-  formatBillingDisplayCompactAmountFromUSD,
   type BillingDisplayOptions,
 } from "@/shared/lib/billing-display";
-
-const trendChartConfig = {
-  metricValue: {
-    label: "Value",
-    color: "var(--chart-1)",
-  },
-} satisfies ChartConfig;
 
 const STACK_COLORS = [
   "#2563eb",
@@ -40,15 +37,12 @@ const STACK_COLORS = [
   "#ef4444",
 ];
 
+const CHART_ANIMATION_DURATION_MS = 240;
+
 function displayCost(value: number, billingDisplay: BillingDisplayOptions): string {
-  if (!Number.isFinite(value) || value <= 0) {
-    return formatBillingDisplayAmountFromUSD(0, billingDisplay, { maximumFractionDigits: 4 });
-  }
-  const compact = formatBillingDisplayCompactAmountFromUSD(value, billingDisplay, 0.0001);
-  if (compact.startsWith("< ")) return compact;
   return formatBillingDisplayAmountFromUSD(value, billingDisplay, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 4,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   });
 }
 
@@ -90,7 +84,10 @@ function chartAxisValue(
 ): string {
   if (rankBy !== "cost") return compactNumber(value, locale);
   const symbol = billingDisplay.currency === "CNY" && Number(billingDisplay.usdToCnyRate) > 0 ? "¥" : "$";
-  return `${symbol}${compactNumber(value, locale)}`;
+  return `${symbol}${value.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 }
 
 function formatLatency(value: number, locale: string): string {
@@ -106,9 +103,29 @@ function parsePeriodDate(value: string): Date | null {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-function periodLabels(value: string, granularity: string, locale: string): { short: string; full: string } {
+function periodLabels(
+  value: string,
+  granularity: string,
+  locale: string,
+  rangeStartDate?: string,
+  rangeEndDate?: string,
+): { short: string; full: string } {
   const date = parsePeriodDate(value);
   if (!date) return { short: "-", full: "-" };
+  if (granularity === "week") {
+    const selectedStart = rangeStartDate ? parsePeriodDate(rangeStartDate) : null;
+    const selectedEnd = rangeEndDate ? parsePeriodDate(rangeEndDate) : null;
+    const weekStart = selectedStart && selectedStart > date ? selectedStart : date;
+    const weekEnd = new Date(date);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    const visibleWeekEnd = selectedEnd && selectedEnd < weekEnd ? selectedEnd : weekEnd;
+    const shortFormatter = new Intl.DateTimeFormat(locale, { month: "2-digit", day: "2-digit" });
+    const fullFormatter = new Intl.DateTimeFormat(locale, { year: "numeric", month: "2-digit", day: "2-digit" });
+    return {
+      short: shortFormatter.format(weekStart),
+      full: `${fullFormatter.format(weekStart)} - ${fullFormatter.format(visibleWeekEnd)}`,
+    };
+  }
   if (granularity === "month") {
     return {
       short: new Intl.DateTimeFormat(locale, { month: "short" }).format(date),
@@ -141,8 +158,8 @@ function StatisticsTooltipContent({
     <div className="grid min-w-[12rem] gap-2 rounded-md border border-border/60 bg-background px-3 py-2 text-xs shadow-md">
       <p className="font-medium">{item.fullLabel || label}</p>
       <div className="grid gap-1 text-muted-foreground">
-        <TooltipRow label={t("metrics.cost")} value={displayCost(metrics.billedUSD, billingDisplay)} />
         <TooltipRow label={t("metrics.tokens")} value={new Intl.NumberFormat(locale).format(metrics.totalTokens)} />
+        <TooltipRow label={t("metrics.cost")} value={displayCost(metrics.billedUSD, billingDisplay)} />
         <TooltipRow label={t("metrics.calls")} value={new Intl.NumberFormat(locale).format(metrics.callCount)} />
         <TooltipRow label={t("metrics.latency")} value={formatLatency(metrics.avgLatencyMS, locale)} />
       </div>
@@ -173,63 +190,156 @@ function ChartLoadingSkeleton({ horizontal = false }: { horizontal?: boolean }) 
   );
 }
 
-export function StatisticsTrendChart({
+function useHiddenChartSeries() {
+  const [hiddenSeries, setHiddenSeries] = React.useState<Set<string>>(() => new Set());
+  const toggleSeries = React.useCallback((id: string) => {
+    setHiddenSeries((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+  return { hiddenSeries, toggleSeries };
+}
+
+export const StatisticsTrendChart = React.memo(function StatisticsTrendChart({
   items,
   granularity,
+  rangeStartDate,
+  rangeEndDate,
   rankBy,
   billingDisplay,
   loading,
 }: {
   items: AdminUsageStatisticsTrendDTO[];
   granularity: string;
+  rangeStartDate?: string;
+  rangeEndDate?: string;
   rankBy: AdminUsageStatisticsRankBy;
   billingDisplay: BillingDisplayOptions;
   loading: boolean;
 }) {
   const t = useTranslations("adminStatistics");
   const locale = useLocale();
+  const { hiddenSeries, toggleSeries } = useHiddenChartSeries();
+  const chartConfig = React.useMemo<ChartConfig>(() => ({
+    metricValue: {
+      label: t(`rankBy.${rankBy}`),
+      color: "var(--chart-1)",
+    },
+    avgLatencyMS: {
+      label: t("metrics.latency"),
+      color: "var(--chart-2)",
+    },
+  }), [rankBy, t]);
   const data = React.useMemo(
     () =>
       items.map((item) => {
-        const labels = periodLabels(item.periodStart, granularity, locale);
+        const labels = periodLabels(item.periodStart, granularity, locale, rangeStartDate, rangeEndDate);
         return {
           label: labels.short,
           fullLabel: labels.full,
           metricValue: chartMetricValue(item, rankBy, billingDisplay),
+          avgLatencyMS: item.avgLatencyMS,
           metrics: item,
         };
       }),
-    [billingDisplay, granularity, items, locale, rankBy],
+    [billingDisplay, granularity, items, locale, rangeEndDate, rangeStartDate, rankBy],
   );
   const hasData = items.some((item) => item.recordCount > 0 || item.totalTokens > 0 || item.callCount > 0 || item.billedUSD > 0);
+  const legendItems = React.useMemo<ChartInteractiveLegendItem[]>(() => [
+    { id: "metricValue", label: t(`rankBy.${rankBy}`), color: "var(--chart-1)" },
+    { id: "avgLatencyMS", label: t("metrics.latency"), color: "var(--chart-2)" },
+  ], [rankBy, t]);
 
   if (loading) return <ChartLoadingSkeleton />;
   if (!loading && !hasData) {
-    return <div className="flex h-[300px] items-center justify-center text-sm text-muted-foreground">{t("empty")}</div>;
+    return <div className="flex h-[300px] items-center justify-center text-xs text-muted-foreground">{t("empty")}</div>;
   }
   return (
-    <ChartContainer config={trendChartConfig} className="h-[320px] w-full aspect-auto">
-      <BarChart data={data} margin={{ top: 12, right: 12, left: 4, bottom: 0 }}>
+    <div className="space-y-3">
+      <ChartContainer config={chartConfig} className="h-[320px] w-full aspect-auto">
+        <ComposedChart
+          accessibilityLayer
+          data={data}
+          margin={{ top: 12, right: 12, left: 4, bottom: 0 }}
+          onMouseDown={(_, event) => event.preventDefault()}
+        >
+        <defs>
+          <linearGradient id="fillUsageTrendMetric" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="var(--color-metricValue)" stopOpacity={0.3} />
+            <stop offset="95%" stopColor="var(--color-metricValue)" stopOpacity={0.02} />
+          </linearGradient>
+        </defs>
         <CartesianGrid vertical={false} strokeDasharray="3 3" />
-        <XAxis dataKey="label" axisLine={false} tickLine={false} tickMargin={8} interval="preserveStartEnd" />
+        <XAxis
+          dataKey="label"
+          axisLine={false}
+          tickLine={false}
+          tickMargin={8}
+          minTickGap={24}
+          interval="equidistantPreserveStart"
+        />
         <YAxis
+          yAxisId="metric"
           width={64}
           axisLine={false}
           tickLine={false}
           tickMargin={6}
           tickFormatter={(value: number) => chartAxisValue(value, rankBy, billingDisplay, locale)}
         />
+        <YAxis
+          yAxisId="latency"
+          orientation="right"
+          width={52}
+          axisLine={false}
+          tickLine={false}
+          tickMargin={6}
+          tickFormatter={(value: number) => formatLatency(value, locale)}
+        />
         <ChartTooltip
-          cursor={false}
+          cursor={{ stroke: "var(--border)", strokeDasharray: "3 3" }}
           content={<StatisticsTooltipContent billingDisplay={billingDisplay} />}
         />
-        <Bar dataKey="metricValue" fill="var(--color-metricValue)" radius={[5, 5, 1, 1]} maxBarSize={44} />
-      </BarChart>
-    </ChartContainer>
+        <Area
+          yAxisId="metric"
+          dataKey="metricValue"
+          type="monotone"
+          fill="url(#fillUsageTrendMetric)"
+          fillOpacity={1}
+          stroke="var(--color-metricValue)"
+          strokeWidth={2}
+          dot={false}
+          activeDot={{ r: 3, strokeWidth: 2 }}
+          isAnimationActive
+          animationDuration={CHART_ANIMATION_DURATION_MS}
+          animationEasing="ease-out"
+          hide={hiddenSeries.has("metricValue")}
+        />
+        <Line
+          yAxisId="latency"
+          dataKey="avgLatencyMS"
+          type="monotone"
+          stroke="var(--color-avgLatencyMS)"
+          strokeWidth={1.5}
+          strokeDasharray="4 4"
+          dot={false}
+          activeDot={{ r: 2.5, strokeWidth: 1.5 }}
+          isAnimationActive
+          animationDuration={CHART_ANIMATION_DURATION_MS}
+          animationEasing="ease-out"
+          hide={hiddenSeries.has("avgLatencyMS")}
+        />
+        </ComposedChart>
+      </ChartContainer>
+      <ChartInteractiveLegend items={legendItems} hiddenSeries={hiddenSeries} onToggle={toggleSeries} />
+    </div>
   );
-}
+});
 
 type StatisticsStackedSeries = {
+  id: string;
   key: string;
   label: string;
   fullLabel: string;
@@ -238,11 +348,13 @@ type StatisticsStackedSeries = {
 };
 
 type StatisticsStackedSegment = {
+  id: string;
   key: string;
   label: string;
   fullLabel: string;
   color: string;
   rawValue: number;
+  chartValue: number;
 };
 
 type StatisticsStackedChartPoint = Record<string, unknown> & {
@@ -271,26 +383,24 @@ function StatisticsStackedTooltipContent({
   payload,
   rankBy,
   billingDisplay,
+  hiddenSeries,
 }: {
   active?: boolean;
   payload?: Array<{ payload?: StatisticsStackedChartPoint }>;
   rankBy: AdminUsageStatisticsRankBy;
   billingDisplay: BillingDisplayOptions;
+  hiddenSeries: ReadonlySet<string>;
 }) {
   const t = useTranslations("adminStatistics");
   const locale = useLocale();
   const item = payload?.[0]?.payload;
   if (!active || !item) return null;
-  const segments = item.segments.filter((segment) => segment.rawValue > 0);
+  const segments = item.segments.filter((segment) => segment.rawValue > 0 && !hiddenSeries.has(segment.id));
   if (segments.length === 0) return null;
   return (
     <div className="grid min-w-[15rem] max-w-[22rem] gap-2 rounded-md border border-border/60 bg-background px-3 py-2.5 text-xs shadow-md">
       <p className="font-medium">{item.fullLabel}</p>
-      <TooltipRow
-        label={t("rankings.total")}
-        value={formatStackedMetricValue(item.totalRawValue, rankBy, billingDisplay, locale)}
-      />
-      <div className="grid gap-1.5 border-t border-border/50 pt-2 text-muted-foreground">
+      <div className="grid gap-1.5 text-muted-foreground">
         {segments.map((segment) => (
           <div key={segment.key} className="flex items-center justify-between gap-6">
             <span className="flex min-w-0 items-center gap-1.5" title={segment.fullLabel}>
@@ -303,39 +413,26 @@ function StatisticsStackedTooltipContent({
           </div>
         ))}
       </div>
+      <div className="border-t border-border/50 pt-2">
+        <TooltipRow
+          label={t("rankings.total")}
+          value={formatStackedMetricValue(
+            segments.reduce((total, segment) => total + segment.rawValue, 0),
+            rankBy,
+            billingDisplay,
+            locale,
+          )}
+        />
+      </div>
     </div>
   );
-}
-
-function isTopStackSegment(
-  point: StatisticsStackedChartPoint,
-  series: StatisticsStackedSeries[],
-  seriesIndex: number,
-): boolean {
-  if (Number(point[series[seriesIndex]?.key] ?? 0) <= 0) return false;
-  for (let index = seriesIndex + 1; index < series.length; index += 1) {
-    if (Number(point[series[index]?.key] ?? 0) > 0) return false;
-  }
-  return true;
-}
-
-function StatisticsStackedBarShape({
-  series,
-  seriesIndex,
-  props,
-}: {
-  series: StatisticsStackedSeries[];
-  seriesIndex: number;
-  props: BarShapeProps;
-}) {
-  const point: StatisticsStackedChartPoint | undefined = props.payload;
-  const radius: RectangleProps["radius"] = point && isTopStackSegment(point, series, seriesIndex) ? [4, 4, 0, 0] : 0;
-  return <Rectangle {...props} radius={radius} />;
 }
 
 function StatisticsStackedTrendChart({
   periods,
   granularity,
+  rangeStartDate,
+  rangeEndDate,
   series,
   rankBy,
   billingDisplay,
@@ -343,6 +440,8 @@ function StatisticsStackedTrendChart({
 }: {
   periods: AdminUsageStatisticsTrendDTO[];
   granularity: string;
+  rangeStartDate?: string;
+  rangeEndDate?: string;
   series: StatisticsStackedSeries[];
   rankBy: AdminUsageStatisticsRankBy;
   billingDisplay: BillingDisplayOptions;
@@ -350,6 +449,7 @@ function StatisticsStackedTrendChart({
 }) {
   const t = useTranslations("adminStatistics");
   const locale = useLocale();
+  const { hiddenSeries, toggleSeries } = useHiddenChartSeries();
   const config = React.useMemo<ChartConfig>(
     () => Object.fromEntries(series.map((item) => [item.key, { label: item.label, color: item.color }])),
     [series],
@@ -359,11 +459,12 @@ function StatisticsStackedTrendChart({
       const metricsBySeries = series.map((item) =>
         new Map(item.trend.map((point) => [statisticsPeriodKey(point.periodStart), point])),
       );
-      return periods.map((period) => {
-        const labels = periodLabels(period.periodStart, granularity, locale);
+      const points = periods.map((period) => {
+        const labels = periodLabels(period.periodStart, granularity, locale, rangeStartDate, rangeEndDate);
         const segments = series.map((item, index) => {
           const metrics = metricsBySeries[index]?.get(statisticsPeriodKey(period.periodStart));
           return {
+            id: item.id,
             key: item.key,
             label: item.label,
             fullLabel: item.fullLabel,
@@ -381,20 +482,41 @@ function StatisticsStackedTrendChart({
         for (const segment of segments) point[segment.key] = segment.chartValue;
         return point;
       });
+      return points;
     },
-    [billingDisplay, granularity, locale, periods, rankBy, series],
+    [billingDisplay, granularity, locale, periods, rangeEndDate, rangeStartDate, rankBy, series],
   );
   const hasData = data.some((point) => point.totalRawValue > 0);
+  const legendItems = React.useMemo<ChartInteractiveLegendItem[]>(
+    () => series.map((item) => ({ id: item.id, label: item.label, title: item.fullLabel, color: item.color })),
+    [series],
+  );
+  const topVisibleSeriesID = React.useMemo(
+    () => [...series].reverse().find((item) => !hiddenSeries.has(item.id))?.id,
+    [hiddenSeries, series],
+  );
   if (loading) return <ChartLoadingSkeleton />;
   if (!loading && !hasData) {
-    return <div className="flex h-[300px] items-center justify-center text-sm text-muted-foreground">{t("empty")}</div>;
+    return <div className="flex h-[300px] items-center justify-center text-xs text-muted-foreground">{t("empty")}</div>;
   }
   return (
     <div className="space-y-3">
       <ChartContainer config={config} className="h-[320px] w-full aspect-auto">
-        <BarChart data={data} margin={{ top: 12, right: 12, left: 4, bottom: 0 }}>
+        <BarChart
+          accessibilityLayer
+          data={data}
+          margin={{ top: 12, right: 12, left: 4, bottom: 0 }}
+          onMouseDown={(_, event) => event.preventDefault()}
+        >
           <CartesianGrid vertical={false} strokeDasharray="3 3" />
-          <XAxis dataKey="label" axisLine={false} tickLine={false} tickMargin={8} interval="preserveStartEnd" />
+          <XAxis
+            dataKey="label"
+            axisLine={false}
+            tickLine={false}
+            tickMargin={8}
+            minTickGap={24}
+            interval="equidistantPreserveStart"
+          />
           <YAxis
             width={64}
             axisLine={false}
@@ -404,38 +526,41 @@ function StatisticsStackedTrendChart({
           />
           <ChartTooltip
             cursor={{ fill: "var(--muted)", opacity: 0.45 }}
-            content={<StatisticsStackedTooltipContent rankBy={rankBy} billingDisplay={billingDisplay} />}
+            content={
+              <StatisticsStackedTooltipContent
+                rankBy={rankBy}
+                billingDisplay={billingDisplay}
+                hiddenSeries={hiddenSeries}
+              />
+            }
           />
-          {series.map((item, index) => (
+          {series.map((item) => (
             <Bar
               key={item.key}
               dataKey={item.key}
               stackId="usage"
               fill={item.color}
               maxBarSize={44}
-              shape={(props: BarShapeProps) => (
-                <StatisticsStackedBarShape series={series} seriesIndex={index} props={props} />
-              )}
+              isAnimationActive
+              animationDuration={CHART_ANIMATION_DURATION_MS}
+              animationEasing="ease-out"
+              hide={hiddenSeries.has(item.id)}
+              radius={item.id === topVisibleSeriesID ? [4, 4, 0, 0] : 0}
             />
           ))}
         </BarChart>
       </ChartContainer>
-      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 px-2 text-[11px] text-muted-foreground">
-        {series.map((item) => (
-          <span key={item.key} className="flex min-w-0 items-center gap-1.5" title={item.fullLabel}>
-            <span className="size-2 shrink-0 rounded-[2px]" style={{ backgroundColor: item.color }} />
-            <span className="max-w-48 truncate">{item.label}</span>
-          </span>
-        ))}
-      </div>
+      <ChartInteractiveLegend items={legendItems} hiddenSeries={hiddenSeries} onToggle={toggleSeries} />
     </div>
   );
 }
 
-export function StatisticsModelRankingChart({
+export const StatisticsModelRankingChart = React.memo(function StatisticsModelRankingChart({
   items,
   periods,
   granularity,
+  rangeStartDate,
+  rangeEndDate,
   rankBy,
   billingDisplay,
   loading,
@@ -443,6 +568,8 @@ export function StatisticsModelRankingChart({
   items: AdminUsageStatisticsModelRankDTO[];
   periods: AdminUsageStatisticsTrendDTO[];
   granularity: string;
+  rangeStartDate?: string;
+  rangeEndDate?: string;
   rankBy: AdminUsageStatisticsRankBy;
   billingDisplay: BillingDisplayOptions;
   loading: boolean;
@@ -451,6 +578,7 @@ export function StatisticsModelRankingChart({
   const series = React.useMemo<StatisticsStackedSeries[]>(
     () =>
       items.map((item, index) => ({
+        id: item.platformModelName.trim() || `unknown-model-${index}`,
         key: `model_${index}`,
         label: item.platformModelName.trim() || t("unknownModel"),
         fullLabel: item.platformModelName.trim() || t("unknownModel"),
@@ -463,18 +591,22 @@ export function StatisticsModelRankingChart({
     <StatisticsStackedTrendChart
       periods={periods}
       granularity={granularity}
+      rangeStartDate={rangeStartDate}
+      rangeEndDate={rangeEndDate}
       series={series}
       rankBy={rankBy}
       billingDisplay={billingDisplay}
       loading={loading}
     />
   );
-}
+});
 
-export function StatisticsUserRankingChart({
+export const StatisticsUserRankingChart = React.memo(function StatisticsUserRankingChart({
   items,
   periods,
   granularity,
+  rangeStartDate,
+  rangeEndDate,
   rankBy,
   billingDisplay,
   loading,
@@ -482,6 +614,8 @@ export function StatisticsUserRankingChart({
   items: AdminUsageStatisticsUserRankDTO[];
   periods: AdminUsageStatisticsTrendDTO[];
   granularity: string;
+  rangeStartDate?: string;
+  rangeEndDate?: string;
   rankBy: AdminUsageStatisticsRankBy;
   billingDisplay: BillingDisplayOptions;
   loading: boolean;
@@ -492,6 +626,7 @@ export function StatisticsUserRankingChart({
       items.map((item, index) => {
         const label = item.userLabel.trim() || item.userDisplayName.trim() || item.username.trim() || t("unknownUser", { id: item.userID });
         return {
+          id: String(item.userID),
           key: `user_${index}`,
           label,
           fullLabel: `${label} (#${item.userID})`,
@@ -505,13 +640,15 @@ export function StatisticsUserRankingChart({
     <StatisticsStackedTrendChart
       periods={periods}
       granularity={granularity}
+      rangeStartDate={rangeStartDate}
+      rangeEndDate={rangeEndDate}
       series={series}
       rankBy={rankBy}
       billingDisplay={billingDisplay}
       loading={loading}
     />
   );
-}
+});
 
 export function formatStatisticsCost(value: number, billingDisplay: BillingDisplayOptions): string {
   return displayCost(value, billingDisplay);

@@ -487,7 +487,7 @@ func (h *Handler) ListUsageLogs(c *gin.Context) {
 
 // GetUsageStatistics godoc
 // @Summary 管理员查询全局用量统计
-// @Description 管理员按日期、用户、平台模型和计费范围查看全局费用、Token、调用次数及排名
+// @Description 管理员按日期、统计对象、平台模型和计费范围查看全局费用、Token、调用次数及排名；用户与权限组筛选互斥
 // @Tags admin
 // @Accept json
 // @Produce json
@@ -495,16 +495,24 @@ func (h *Handler) ListUsageLogs(c *gin.Context) {
 // @Param start_date query string false "开始日期(YYYY-MM-DD)，默认近30天"
 // @Param end_date query string false "结束日期(YYYY-MM-DD，包含当日)"
 // @Param user_id query int false "用户ID"
+// @Param permission_group_id query int false "权限组ID，与 user_id 互斥"
 // @Param platform_model_name query string false "平台模型名"
 // @Param billing_scope query string false "计费范围：all/free/billable"
-// @Param rank_by query string false "排名指标：cost/tokens/calls"
+// @Param section query string false "返回范围：all/models/users"
+// @Param model_rank_by query string false "模型排名指标：cost/tokens/calls"
+// @Param user_rank_by query string false "用户排名指标：cost/tokens/calls"
 // @Success 200 {object} UsageStatisticsResponseDoc
 // @Failure 400 {object} ErrorDoc
+// @Failure 404 {object} ErrorDoc
 // @Failure 500 {object} ErrorDoc
 // @Router /admin/usage-statistics [get]
 // GetUsageStatistics 查询管理员全局用量统计。
 func (h *Handler) GetUsageStatistics(c *gin.Context) {
 	userID, ok := parseOptionalUintQuery(c, "user_id")
+	if !ok {
+		return
+	}
+	permissionGroupID, ok := parseOptionalUintQuery(c, "permission_group_id")
 	if !ok {
 		return
 	}
@@ -516,20 +524,20 @@ func (h *Handler) GetUsageStatistics(c *gin.Context) {
 	startDate := endDate.AddDate(0, 0, -29)
 	if startDateText != "" || endDateText != "" {
 		if startDateText == "" || endDateText == "" {
-			response.Error(c, http.StatusBadRequest, "start_date and end_date must be provided together")
+			response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.invalid_date_range", "start_date and end_date must be provided together")
 			return
 		}
 		parsedStartDate, startErr := time.Parse("2006-01-02", startDateText)
 		parsedEndDate, endErr := time.Parse("2006-01-02", endDateText)
 		if startErr != nil || endErr != nil {
-			response.Error(c, http.StatusBadRequest, "invalid usage statistics date range")
+			response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.invalid_date_range", "invalid usage statistics date range")
 			return
 		}
 		startDate = parsedStartDate
 		endDate = parsedEndDate
 	}
 	if endDate.Before(startDate) || int(endDate.Sub(startDate).Hours()/24)+1 > 366 {
-		response.Error(c, http.StatusBadRequest, "invalid usage statistics date range")
+		response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.invalid_date_range", "invalid usage statistics date range")
 		return
 	}
 
@@ -538,15 +546,31 @@ func (h *Handler) GetUsageStatistics(c *gin.Context) {
 		billingScope = "all"
 	}
 	if billingScope != "all" && billingScope != "free" && billingScope != "billable" {
-		response.Error(c, http.StatusBadRequest, "invalid billing_scope")
+		response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.invalid_billing_scope", "invalid billing_scope")
 		return
 	}
-	rankBy := strings.TrimSpace(c.Query("rank_by"))
-	if rankBy == "" {
-		rankBy = "cost"
+	section := strings.TrimSpace(c.Query("section"))
+	if section == "" {
+		section = "all"
 	}
-	if rankBy != "cost" && rankBy != "tokens" && rankBy != "calls" {
-		response.Error(c, http.StatusBadRequest, "invalid rank_by")
+	if section != "all" && section != "models" && section != "users" {
+		response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.invalid_section", "invalid section")
+		return
+	}
+	modelRankBy := strings.TrimSpace(c.Query("model_rank_by"))
+	if modelRankBy == "" {
+		modelRankBy = "cost"
+	}
+	if modelRankBy != "cost" && modelRankBy != "tokens" && modelRankBy != "calls" {
+		response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.invalid_rank_by", "invalid model_rank_by")
+		return
+	}
+	userRankBy := strings.TrimSpace(c.Query("user_rank_by"))
+	if userRankBy == "" {
+		userRankBy = "cost"
+	}
+	if userRankBy != "cost" && userRankBy != "tokens" && userRankBy != "calls" {
+		response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.invalid_rank_by", "invalid user_rank_by")
 		return
 	}
 
@@ -554,12 +578,22 @@ func (h *Handler) GetUsageStatistics(c *gin.Context) {
 		StartDate:         startDate,
 		EndDate:           endDate,
 		UserID:            userID,
+		PermissionGroupID: permissionGroupID,
 		PlatformModelName: c.Query("platform_model_name"),
 		BillingScope:      billingScope,
-		RankBy:            rankBy,
+		Section:           section,
+		ModelRankBy:       modelRankBy,
+		UserRankBy:        userRankBy,
 	})
 	if err != nil {
-		response.Error(c, http.StatusInternalServerError, "get usage statistics failed")
+		switch {
+		case errors.Is(err, appbilling.ErrInvalidUsageStatisticsSubject):
+			response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.subject_conflict", err.Error())
+		case errors.Is(err, appadmin.ErrPermissionGroupNotFound):
+			response.ErrorFrom(c, http.StatusNotFound, err)
+		default:
+			response.Error(c, http.StatusInternalServerError, "get usage statistics failed")
+		}
 		return
 	}
 	userIDs := make([]uint, 0, len(statistics.TopUsers))
@@ -567,7 +601,7 @@ func (h *Handler) GetUsageStatistics(c *gin.Context) {
 		userIDs = append(userIDs, rankedUser.UserID)
 	}
 	userLabels := h.service.ResolveUserLabels(c.Request.Context(), userIDs)
-	response.Success(c, toUsageStatisticsResponse(statistics, startDate, endDate, userLabels))
+	response.Success(c, toUsageStatisticsResponse(statistics, startDate, endDate, section, userLabels))
 }
 
 // ListPaymentOrders godoc

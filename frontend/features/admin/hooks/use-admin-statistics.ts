@@ -6,9 +6,14 @@ import {
   getAdminBillingConfig,
   getAdminUsageStatistics,
   listAdminLLMModels,
+  listPermissionGroups,
   type AdminUsageStatisticsBillingScope,
   type AdminUsageStatisticsData,
+  type AdminUsageStatisticsModelRankDTO,
   type AdminUsageStatisticsRankBy,
+  type AdminUsageStatisticsSection,
+  type AdminUsageStatisticsUserRankDTO,
+  type PermissionGroup,
 } from "@/features/admin/api";
 import { listAllAdminPages } from "@/features/admin/api/shared";
 import { resolveAdminErrorMessage } from "@/features/admin/utils/admin-error";
@@ -19,9 +24,14 @@ import {
   type BillingDisplayOptions,
 } from "@/shared/lib/billing-display";
 import { resolveModelOptionIconUrl } from "@/shared/lib/model-option-display";
+import type { UserDTO } from "@/shared/api/auth.types";
 
 export type AdminStatisticsRangePreset = "7" | "30" | "90" | "custom";
 export type AdminStatisticsRangeError = "incomplete" | "invalid" | "tooLong" | null;
+export type AdminStatisticsSubject =
+  | { type: "all" }
+  | { type: "user"; user: UserDTO }
+  | { type: "permission-group"; permissionGroup: PermissionGroup };
 
 function formatLocalDate(date: Date): string {
   const year = date.getFullYear();
@@ -66,23 +76,48 @@ export function useAdminStatistics() {
   const [startDate, setStartDateState] = React.useState(initialRangeRef.current.startDate);
   const [endDate, setEndDateState] = React.useState(initialRangeRef.current.endDate);
   const [rangePreset, setRangePresetState] = React.useState<AdminStatisticsRangePreset>("30");
-  const [userID, setUserID] = React.useState<number | undefined>();
+  const [subject, setSubject] = React.useState<AdminStatisticsSubject>({ type: "all" });
   const [platformModelName, setPlatformModelName] = React.useState("");
   const [billingScope, setBillingScope] = React.useState<AdminUsageStatisticsBillingScope>("all");
-  const [rankBy, setRankBy] = React.useState<AdminUsageStatisticsRankBy>("cost");
+  const [modelRankingMetric, setModelRankingMetric] = React.useState<AdminUsageStatisticsRankBy>("cost");
+  const [userRankingMetric, setUserRankingMetric] = React.useState<AdminUsageStatisticsRankBy>("cost");
+  const [appliedModelRankingMetric, setAppliedModelRankingMetric] = React.useState<AdminUsageStatisticsRankBy>("cost");
+  const [appliedUserRankingMetric, setAppliedUserRankingMetric] = React.useState<AdminUsageStatisticsRankBy>("cost");
   const [statistics, setStatistics] = React.useState<AdminUsageStatisticsData | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [reloadKey, setReloadKey] = React.useState(0);
   const [modelOptions, setModelOptions] = React.useState<ModelSelectOption[]>([]);
+  const [permissionGroups, setPermissionGroups] = React.useState<PermissionGroup[]>([]);
   const [referenceLoading, setReferenceLoading] = React.useState(true);
   const [billingDisplay, setBillingDisplay] = React.useState<BillingDisplayOptions>({
     currency: "USD",
     usdToCnyRate: null,
   });
   const requestSequenceRef = React.useRef(0);
+  const loadedFilterKeyRef = React.useRef("");
+  const appliedModelRankingMetricRef = React.useRef<AdminUsageStatisticsRankBy>("cost");
+  const appliedUserRankingMetricRef = React.useRef<AdminUsageStatisticsRankBy>("cost");
+  const modelRankingCacheRef = React.useRef(new Map<AdminUsageStatisticsRankBy, AdminUsageStatisticsModelRankDTO[]>());
+  const userRankingCacheRef = React.useRef(new Map<AdminUsageStatisticsRankBy, AdminUsageStatisticsUserRankDTO[]>());
   const rangeError = React.useMemo(
     () => validateDateRange(startDate, endDate),
     [endDate, startDate],
+  );
+  const statisticsFilterKey = React.useMemo(
+    () => JSON.stringify([
+      startDate,
+      endDate,
+      platformModelName,
+      billingScope,
+      reloadKey,
+      subject.type,
+      subject.type === "user"
+        ? subject.user.id
+        : subject.type === "permission-group"
+          ? subject.permissionGroup.id
+          : 0,
+    ]),
+    [billingScope, endDate, platformModelName, reloadKey, startDate, subject],
   );
 
   React.useEffect(() => {
@@ -92,9 +127,10 @@ export function useAdminStatistics() {
       try {
         const token = await resolveAccessToken();
         if (!token) return;
-        const [configResult, modelsResult] = await Promise.allSettled([
+        const [configResult, modelsResult, permissionGroupsResult] = await Promise.allSettled([
           getAdminBillingConfig(token),
           listAllAdminPages((options) => listAdminLLMModels(token, { ...options, onlyActive: false })),
+          listPermissionGroups(token),
         ]);
         if (cancelled) return;
         if (configResult.status === "fulfilled") {
@@ -121,7 +157,10 @@ export function useAdminStatistics() {
             ),
           );
         }
-        const rejectedResult = [configResult, modelsResult].find((result) => result.status === "rejected");
+        if (permissionGroupsResult.status === "fulfilled") {
+          setPermissionGroups(permissionGroupsResult.value);
+        }
+        const rejectedResult = [configResult, modelsResult, permissionGroupsResult].find((result) => result.status === "rejected");
         if (rejectedResult?.status === "rejected") {
           toast.error(t("toasts.referenceLoadFailed"), { description: resolveAdminErrorMessage(rejectedResult.reason) });
         }
@@ -144,6 +183,45 @@ export function useAdminStatistics() {
       setLoading(false);
       return;
     }
+    const filterChanged = loadedFilterKeyRef.current !== statisticsFilterKey;
+    const modelRankingChanged = appliedModelRankingMetricRef.current !== modelRankingMetric;
+    const userRankingChanged = appliedUserRankingMetricRef.current !== userRankingMetric;
+    if (!filterChanged && !modelRankingChanged && !userRankingChanged) {
+      setLoading(false);
+      return;
+    }
+    let section: AdminUsageStatisticsSection = "all";
+    if (!filterChanged && modelRankingChanged && !userRankingChanged) {
+      section = "models";
+    } else if (!filterChanged && userRankingChanged && !modelRankingChanged) {
+      section = "users";
+    }
+
+    if (filterChanged) {
+      modelRankingCacheRef.current.clear();
+      userRankingCacheRef.current.clear();
+    } else if (section === "models") {
+      const cachedModels = modelRankingCacheRef.current.get(modelRankingMetric);
+      if (cachedModels) {
+        requestSequenceRef.current += 1;
+        setStatistics((current) => current ? { ...current, topModels: cachedModels } : current);
+        appliedModelRankingMetricRef.current = modelRankingMetric;
+        setAppliedModelRankingMetric(modelRankingMetric);
+        setLoading(false);
+        return;
+      }
+    } else if (section === "users") {
+      const cachedUsers = userRankingCacheRef.current.get(userRankingMetric);
+      if (cachedUsers) {
+        requestSequenceRef.current += 1;
+        setStatistics((current) => current ? { ...current, topUsers: cachedUsers } : current);
+        appliedUserRankingMetricRef.current = userRankingMetric;
+        setAppliedUserRankingMetric(userRankingMetric);
+        setLoading(false);
+        return;
+      }
+    }
+
     const requestSequence = requestSequenceRef.current + 1;
     requestSequenceRef.current = requestSequence;
     setLoading(true);
@@ -157,16 +235,43 @@ export function useAdminStatistics() {
         const data = await getAdminUsageStatistics(token, {
           startDate,
           endDate,
-          userID,
           platformModelName,
           billingScope,
-          rankBy,
+          section,
+          modelRankBy: modelRankingMetric,
+          userRankBy: userRankingMetric,
+          ...(subject.type === "user"
+            ? { userID: subject.user.id }
+            : subject.type === "permission-group"
+              ? { permissionGroupID: subject.permissionGroup.id }
+              : {}),
         });
         if (requestSequence === requestSequenceRef.current) {
-          setStatistics(data);
+          setStatistics((current) => section === "models" && current
+            ? { ...current, topModels: data.topModels }
+            : section === "users" && current
+              ? { ...current, topUsers: data.topUsers }
+              : data);
+          if (section !== "users") {
+            modelRankingCacheRef.current.set(modelRankingMetric, data.topModels);
+            appliedModelRankingMetricRef.current = modelRankingMetric;
+            setAppliedModelRankingMetric(modelRankingMetric);
+          }
+          if (section !== "models") {
+            userRankingCacheRef.current.set(userRankingMetric, data.topUsers);
+            appliedUserRankingMetricRef.current = userRankingMetric;
+            setAppliedUserRankingMetric(userRankingMetric);
+          }
+          loadedFilterKeyRef.current = statisticsFilterKey;
         }
       } catch (error) {
         if (requestSequence === requestSequenceRef.current) {
+          const rollbackModelMetric = modelRankingMetric !== appliedModelRankingMetricRef.current;
+          const rollbackUserMetric = userRankingMetric !== appliedUserRankingMetricRef.current;
+          if (rollbackModelMetric || rollbackUserMetric) {
+            if (rollbackModelMetric) setModelRankingMetric(appliedModelRankingMetricRef.current);
+            if (rollbackUserMetric) setUserRankingMetric(appliedUserRankingMetricRef.current);
+          }
           toast.error(t("toasts.loadFailed"), { description: resolveAdminErrorMessage(error) });
         }
       } finally {
@@ -175,7 +280,7 @@ export function useAdminStatistics() {
         }
       }
     })();
-  }, [billingScope, endDate, platformModelName, rangeError, rankBy, reloadKey, startDate, t, userID]);
+  }, [billingScope, endDate, modelRankingMetric, platformModelName, rangeError, startDate, statisticsFilterKey, subject, t, userRankingMetric]);
 
   const setRangePreset = React.useCallback((preset: AdminStatisticsRangePreset) => {
     setRangePresetState(preset);
@@ -200,21 +305,26 @@ export function useAdminStatistics() {
     referenceLoading,
     billingDisplay,
     modelOptions,
+    permissionGroups,
     startDate,
     endDate,
     rangePreset,
     rangeError,
-    userID,
+    subject,
     platformModelName,
     billingScope,
-    rankBy,
+    modelRankingMetric,
+    userRankingMetric,
+    appliedModelRankingMetric,
+    appliedUserRankingMetric,
     setStartDate,
     setEndDate,
     setRangePreset,
-    setUserID,
+    setSubject,
     setPlatformModelName,
     setBillingScope,
-    setRankBy,
+    setModelRankingMetric,
+    setUserRankingMetric,
     refresh,
   };
 }

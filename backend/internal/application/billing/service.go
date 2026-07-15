@@ -2271,13 +2271,19 @@ type UsageStatisticsFilter struct {
 	StartDate         time.Time
 	EndDate           time.Time
 	UserID            uint
+	PermissionGroupID uint
 	PlatformModelName string
 	BillingScope      string
-	RankBy            string
+	Section           string
+	ModelRankBy       string
+	UserRankBy        string
 }
 
 // GetUsageStatistics 查询管理员仪表盘使用的全局用量统计。
 func (s *Service) GetUsageStatistics(ctx context.Context, filter UsageStatisticsFilter) (domainbilling.UsageStatistics, error) {
+	if filter.UserID > 0 && filter.PermissionGroupID > 0 {
+		return domainbilling.UsageStatistics{}, ErrInvalidUsageStatisticsSubject
+	}
 	statisticsRepo, ok := s.repo.(repository.UsageStatisticsRepository)
 	if !ok {
 		return domainbilling.UsageStatistics{}, errors.New("usage statistics repository unavailable")
@@ -2292,27 +2298,39 @@ func (s *Service) GetUsageStatistics(ctx context.Context, filter UsageStatistics
 	if days <= 0 || days > 366 {
 		return domainbilling.UsageStatistics{}, errors.New("invalid usage statistics date range")
 	}
-
-	granularity := "day"
-	if days > 90 {
-		granularity = "month"
-	}
+	granularity := usageStatisticsGranularity(days)
 	result, err := statisticsRepo.GetUsageStatistics(ctx, repository.UsageStatisticsFilter{
 		StartDate:         startDate,
 		EndDateExclusive:  endDate.AddDate(0, 0, 1),
 		UserID:            filter.UserID,
+		PermissionGroupID: filter.PermissionGroupID,
+		MembershipAt:      time.Now(),
 		PlatformModelName: strings.TrimSpace(filter.PlatformModelName),
 		BillingScope:      strings.TrimSpace(filter.BillingScope),
 		Granularity:       granularity,
-		RankBy:            strings.TrimSpace(filter.RankBy),
+		Section:           strings.TrimSpace(filter.Section),
+		ModelRankBy:       strings.TrimSpace(filter.ModelRankBy),
+		UserRankBy:        strings.TrimSpace(filter.UserRankBy),
 		RankLimit:         10,
 	})
 	if err != nil {
 		return domainbilling.UsageStatistics{}, err
 	}
 	result.Granularity = granularity
-	result.Trend = fillUsageStatisticsTrend(result.Trend, startDate, endDate, granularity)
+	if strings.TrimSpace(filter.Section) == "" || strings.TrimSpace(filter.Section) == "all" {
+		result.Trend = fillUsageStatisticsTrend(result.Trend, startDate, endDate, granularity)
+	}
 	return result, nil
+}
+
+func usageStatisticsGranularity(days int) string {
+	if days >= 180 {
+		return "month"
+	}
+	if days > 30 {
+		return "week"
+	}
+	return "day"
 }
 
 func fillUsageStatisticsTrend(
@@ -2327,7 +2345,10 @@ func fillUsageStatisticsTrend(
 	}
 
 	current := startDate
-	if granularity == "month" {
+	if granularity == "week" {
+		daysSinceMonday := (int(startDate.Weekday()) + 6) % 7
+		current = startDate.AddDate(0, 0, -daysSinceMonday)
+	} else if granularity == "month" {
 		current = time.Date(startDate.Year(), startDate.Month(), 1, 0, 0, 0, 0, startDate.Location())
 	}
 	results := make([]domainbilling.UsageStatisticsTrendPoint, 0, len(items))
@@ -2338,7 +2359,9 @@ func fillUsageStatisticsTrend(
 		} else {
 			results = append(results, domainbilling.UsageStatisticsTrendPoint{PeriodStart: current})
 		}
-		if granularity == "month" {
+		if granularity == "week" {
+			current = current.AddDate(0, 0, 7)
+		} else if granularity == "month" {
 			current = current.AddDate(0, 1, 0)
 		} else {
 			current = current.AddDate(0, 0, 1)

@@ -1,10 +1,10 @@
 "use client";
 
-import { format } from "date-fns";
+import { differenceInCalendarDays, format } from "date-fns";
 import { enUS, zhCN } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import type { DateRange } from "react-day-picker";
+import type { DateRange, Matcher } from "react-day-picker";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -20,6 +20,7 @@ type AdminDateRangeFilterProps = {
   onFromChange: (value: string) => void;
   onToChange: (value: string) => void;
   disabled?: boolean;
+  maxRangeDays?: number;
   placeholder?: string;
   triggerClassName?: string;
 };
@@ -43,6 +44,7 @@ export function AdminDateRangeFilter({
   onFromChange,
   onToChange,
   disabled = false,
+  maxRangeDays,
   placeholder,
   triggerClassName,
 }: AdminDateRangeFilterProps) {
@@ -54,6 +56,10 @@ export function AdminDateRangeFilter({
         from: parseDateValue(fromValue),
         to: parseDateValue(toValue),
       }
+    : undefined;
+  const rangeStart = selectedRange?.from;
+  const disabledDates: Matcher | undefined = maxRangeDays && rangeStart && !selectedRange?.to
+    ? (date) => Math.abs(differenceInCalendarDays(date, rangeStart)) >= maxRangeDays
     : undefined;
   const triggerLabel = selectedRange?.from
     ? selectedRange.to
@@ -85,6 +91,9 @@ export function AdminDateRangeFilter({
             mode="range"
             defaultMonth={selectedRange?.from}
             selected={selectedRange}
+            disabled={disabledDates}
+            max={maxRangeDays ? maxRangeDays - 1 : undefined}
+            resetOnSelect={Boolean(maxRangeDays)}
             locale={locale === "zh-CN" ? zhCN : enUS}
             onSelect={(range) => {
               onFromChange(range?.from ? format(range.from, "yyyy-MM-dd") : "");

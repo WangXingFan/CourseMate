@@ -2,6 +2,7 @@ import { authedRequest } from "@/shared/api/authed-client";
 
 export type AdminUsageStatisticsRankBy = "cost" | "tokens" | "calls";
 export type AdminUsageStatisticsBillingScope = "all" | "free" | "billable";
+export type AdminUsageStatisticsSection = "all" | "models" | "users";
 
 export type AdminUsageStatisticsMetricsDTO = {
   recordCount: number;
@@ -35,6 +36,7 @@ export type AdminUsageStatisticsUserRankDTO = AdminUsageStatisticsMetricsDTO & {
 };
 
 export type AdminUsageStatisticsData = {
+  section: AdminUsageStatisticsSection;
   range: {
     startDate: string;
     endDate: string;
@@ -46,14 +48,20 @@ export type AdminUsageStatisticsData = {
   topUsers: AdminUsageStatisticsUserRankDTO[];
 };
 
+type AdminUsageStatisticsSubjectOptions =
+  | { userID?: never; permissionGroupID?: never }
+  | { userID: number; permissionGroupID?: never }
+  | { userID?: never; permissionGroupID: number };
+
 export type GetAdminUsageStatisticsOptions = {
   startDate: string;
   endDate: string;
-  userID?: number;
   platformModelName?: string;
   billingScope?: AdminUsageStatisticsBillingScope;
-  rankBy?: AdminUsageStatisticsRankBy;
-};
+  section?: AdminUsageStatisticsSection;
+  modelRankBy?: AdminUsageStatisticsRankBy;
+  userRankBy?: AdminUsageStatisticsRankBy;
+} & AdminUsageStatisticsSubjectOptions;
 
 export async function getAdminUsageStatistics(
   accessToken: string,
@@ -63,10 +71,15 @@ export async function getAdminUsageStatistics(
     start_date: options.startDate,
     end_date: options.endDate,
     billing_scope: options.billingScope ?? "all",
-    rank_by: options.rankBy ?? "cost",
+    section: options.section ?? "all",
+    model_rank_by: options.modelRankBy ?? "cost",
+    user_rank_by: options.userRankBy ?? "cost",
   });
   if (options.userID && options.userID > 0) {
     params.set("user_id", String(options.userID));
+  }
+  if (options.permissionGroupID && options.permissionGroupID > 0) {
+    params.set("permission_group_id", String(options.permissionGroupID));
   }
   if (options.platformModelName?.trim()) {
     params.set("platform_model_name", options.platformModelName.trim());

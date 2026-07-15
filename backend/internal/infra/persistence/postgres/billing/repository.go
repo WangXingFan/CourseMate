@@ -67,6 +67,13 @@ func (r *Repo) usageMonthKeyExpression() string {
 	return "TO_CHAR(date_trunc('month', usage_date), 'YYYY-MM-DD')"
 }
 
+func (r *Repo) usageWeekKeyExpression() string {
+	if r.sqliteDialect() {
+		return "date(usage_date, '-' || ((CAST(strftime('%w', usage_date) AS INTEGER) + 6) % 7) || ' days')"
+	}
+	return "TO_CHAR(date_trunc('week', usage_date), 'YYYY-MM-DD')"
+}
+
 // ListActivePlans 查询启用套餐。
 func (r *Repo) ListActivePlans(ctx context.Context) ([]domainbilling.Plan, error) {
 	items := make([]model.BillingPlan, 0)
@@ -1520,6 +1527,41 @@ func (r *Repo) usageStatisticsQuery(ctx context.Context, filter repository.Usage
 	if filter.UserID > 0 {
 		query = query.Where("user_id = ?", filter.UserID)
 	}
+	if filter.PermissionGroupID > 0 {
+		membershipAt := filter.MembershipAt
+		if membershipAt.IsZero() {
+			membershipAt = time.Now()
+		}
+		query = query.Where(`
+			EXISTS (
+				SELECT 1
+				FROM permission_groups AS permission_group
+				WHERE permission_group.id = ?
+					AND (
+						permission_group.is_default = ?
+						OR EXISTS (
+							SELECT 1
+							FROM permission_group_user_access AS manual_access
+							WHERE manual_access.group_id = permission_group.id
+								AND manual_access.user_id = billing_usage_ledgers.user_id
+						)
+						OR EXISTS (
+							SELECT 1
+							FROM billing_subscriptions AS subscription
+							JOIN billing_plans AS plan ON plan.id = subscription.plan_id
+							WHERE plan.permission_group_id = permission_group.id
+								AND subscription.user_id = billing_usage_ledgers.user_id
+								AND plan.deleted_at IS NULL
+								AND subscription.deleted_at IS NULL
+								AND plan.is_active = ?
+								AND subscription.status = ?
+								AND subscription.current_period_start_at <= ?
+								AND (subscription.current_period_end_at IS NULL OR subscription.current_period_end_at > ?)
+						)
+					)
+			)
+		`, filter.PermissionGroupID, true, true, "active", membershipAt, membershipAt)
+	}
 	if platformModelName := strings.TrimSpace(filter.PlatformModelName); platformModelName != "" {
 		query = query.Where("platform_model_name = ?", platformModelName)
 	}
@@ -1551,135 +1593,147 @@ func (r *Repo) GetUsageStatistics(ctx context.Context, filter repository.UsageSt
 		TopModels:   []domainbilling.UsageStatisticsModelRank{},
 		TopUsers:    []domainbilling.UsageStatisticsUserRank{},
 	}
-
-	var totals usageStatisticsMetricRow
-	if err := r.usageStatisticsQuery(ctx, filter).
-		Select(usageStatisticsMetricsSelect).
-		Scan(&totals).Error; err != nil {
-		return result, translateError(err)
-	}
-	result.Totals = usageStatisticsMetricsFromRow(totals)
-
+	section := strings.TrimSpace(filter.Section)
+	includeOverview := section == "" || section == "all"
+	includeModels := includeOverview || section == "models"
+	includeUsers := includeOverview || section == "users"
 	periodExpression := r.usageDayKeyExpression()
-	if filter.Granularity == "month" {
+	if filter.Granularity == "week" {
+		periodExpression = r.usageWeekKeyExpression()
+	} else if filter.Granularity == "month" {
 		periodExpression = r.usageMonthKeyExpression()
 	}
-	trendRows := make([]usageStatisticsTrendRow, 0)
-	if err := r.usageStatisticsQuery(ctx, filter).
-		Select(periodExpression + " AS period_key," + usageStatisticsMetricsSelect).
-		Group(periodExpression).
-		Order("period_key ASC").
-		Scan(&trendRows).Error; err != nil {
-		return result, translateError(err)
-	}
-	for _, row := range trendRows {
-		periodStart, err := time.Parse("2006-01-02", row.PeriodKey)
-		if err != nil {
-			return result, err
+
+	if includeOverview {
+		var totals usageStatisticsMetricRow
+		if err := r.usageStatisticsQuery(ctx, filter).
+			Select(usageStatisticsMetricsSelect).
+			Scan(&totals).Error; err != nil {
+			return result, translateError(err)
 		}
-		result.Trend = append(result.Trend, domainbilling.UsageStatisticsTrendPoint{
-			PeriodStart: periodStart,
-			Metrics:     usageStatisticsMetricsFromRow(row.Metrics),
-		})
+		result.Totals = usageStatisticsMetricsFromRow(totals)
+
+		trendRows := make([]usageStatisticsTrendRow, 0)
+		if err := r.usageStatisticsQuery(ctx, filter).
+			Select(periodExpression + " AS period_key," + usageStatisticsMetricsSelect).
+			Group(periodExpression).
+			Order("period_key ASC").
+			Scan(&trendRows).Error; err != nil {
+			return result, translateError(err)
+		}
+		for _, row := range trendRows {
+			periodStart, err := time.Parse("2006-01-02", row.PeriodKey)
+			if err != nil {
+				return result, err
+			}
+			result.Trend = append(result.Trend, domainbilling.UsageStatisticsTrendPoint{
+				PeriodStart: periodStart,
+				Metrics:     usageStatisticsMetricsFromRow(row.Metrics),
+			})
+		}
 	}
 
 	rankLimit := filter.RankLimit
 	if rankLimit <= 0 || rankLimit > 50 {
 		rankLimit = 10
 	}
-	modelRows := make([]usageStatisticsModelRow, 0, rankLimit)
-	if err := r.usageStatisticsQuery(ctx, filter).
-		Select("platform_model_name," + usageStatisticsMetricsSelect).
-		Group("platform_model_name").
-		Order(usageStatisticsRankOrder(filter.RankBy, "platform_model_name ASC")).
-		Limit(rankLimit).
-		Scan(&modelRows).Error; err != nil {
-		return result, translateError(err)
-	}
-	for _, row := range modelRows {
-		result.TopModels = append(result.TopModels, domainbilling.UsageStatisticsModelRank{
-			PlatformModelName: row.PlatformModelName,
-			Metrics:           usageStatisticsMetricsFromRow(row.Metrics),
-			Trend:             []domainbilling.UsageStatisticsTrendPoint{},
-		})
-	}
-	if len(result.TopModels) > 0 {
-		modelNames := make([]string, 0, len(result.TopModels))
-		modelIndexes := make(map[string]int, len(result.TopModels))
-		for index, item := range result.TopModels {
-			modelNames = append(modelNames, item.PlatformModelName)
-			modelIndexes[item.PlatformModelName] = index
-		}
-		modelTrendRows := make([]usageStatisticsModelTrendRow, 0)
+	if includeModels {
+		modelRows := make([]usageStatisticsModelRow, 0, rankLimit)
 		if err := r.usageStatisticsQuery(ctx, filter).
-			Where("platform_model_name IN ?", modelNames).
-			Select(periodExpression + " AS period_key, platform_model_name," + usageStatisticsMetricsSelect).
-			Group(periodExpression + ", platform_model_name").
-			Order("period_key ASC, platform_model_name ASC").
-			Scan(&modelTrendRows).Error; err != nil {
+			Select("platform_model_name," + usageStatisticsMetricsSelect).
+			Group("platform_model_name").
+			Order(usageStatisticsRankOrder(filter.ModelRankBy, "platform_model_name ASC")).
+			Limit(rankLimit).
+			Scan(&modelRows).Error; err != nil {
 			return result, translateError(err)
 		}
-		for _, row := range modelTrendRows {
-			periodStart, err := time.Parse("2006-01-02", row.PeriodKey)
-			if err != nil {
-				return result, err
-			}
-			index, exists := modelIndexes[row.PlatformModelName]
-			if !exists {
-				continue
-			}
-			result.TopModels[index].Trend = append(result.TopModels[index].Trend, domainbilling.UsageStatisticsTrendPoint{
-				PeriodStart: periodStart,
-				Metrics:     usageStatisticsMetricsFromRow(row.Metrics),
+		for _, row := range modelRows {
+			result.TopModels = append(result.TopModels, domainbilling.UsageStatisticsModelRank{
+				PlatformModelName: row.PlatformModelName,
+				Metrics:           usageStatisticsMetricsFromRow(row.Metrics),
+				Trend:             []domainbilling.UsageStatisticsTrendPoint{},
 			})
+		}
+		if len(result.TopModels) > 0 {
+			modelNames := make([]string, 0, len(result.TopModels))
+			modelIndexes := make(map[string]int, len(result.TopModels))
+			for index, item := range result.TopModels {
+				modelNames = append(modelNames, item.PlatformModelName)
+				modelIndexes[item.PlatformModelName] = index
+			}
+			modelTrendRows := make([]usageStatisticsModelTrendRow, 0)
+			if err := r.usageStatisticsQuery(ctx, filter).
+				Where("platform_model_name IN ?", modelNames).
+				Select(periodExpression + " AS period_key, platform_model_name," + usageStatisticsMetricsSelect).
+				Group(periodExpression + ", platform_model_name").
+				Order("period_key ASC, platform_model_name ASC").
+				Scan(&modelTrendRows).Error; err != nil {
+				return result, translateError(err)
+			}
+			for _, row := range modelTrendRows {
+				periodStart, err := time.Parse("2006-01-02", row.PeriodKey)
+				if err != nil {
+					return result, err
+				}
+				index, exists := modelIndexes[row.PlatformModelName]
+				if !exists {
+					continue
+				}
+				result.TopModels[index].Trend = append(result.TopModels[index].Trend, domainbilling.UsageStatisticsTrendPoint{
+					PeriodStart: periodStart,
+					Metrics:     usageStatisticsMetricsFromRow(row.Metrics),
+				})
+			}
 		}
 	}
 
-	userRows := make([]usageStatisticsUserRow, 0, rankLimit)
-	if err := r.usageStatisticsQuery(ctx, filter).
-		Select("user_id," + usageStatisticsMetricsSelect).
-		Group("user_id").
-		Order(usageStatisticsRankOrder(filter.RankBy, "user_id ASC")).
-		Limit(rankLimit).
-		Scan(&userRows).Error; err != nil {
-		return result, translateError(err)
-	}
-	for _, row := range userRows {
-		result.TopUsers = append(result.TopUsers, domainbilling.UsageStatisticsUserRank{
-			UserID:  row.UserID,
-			Metrics: usageStatisticsMetricsFromRow(row.Metrics),
-			Trend:   []domainbilling.UsageStatisticsTrendPoint{},
-		})
-	}
-	if len(result.TopUsers) > 0 {
-		userIDs := make([]uint, 0, len(result.TopUsers))
-		userIndexes := make(map[uint]int, len(result.TopUsers))
-		for index, item := range result.TopUsers {
-			userIDs = append(userIDs, item.UserID)
-			userIndexes[item.UserID] = index
-		}
-		userTrendRows := make([]usageStatisticsUserTrendRow, 0)
+	if includeUsers {
+		userRows := make([]usageStatisticsUserRow, 0, rankLimit)
 		if err := r.usageStatisticsQuery(ctx, filter).
-			Where("user_id IN ?", userIDs).
-			Select(periodExpression + " AS period_key, user_id," + usageStatisticsMetricsSelect).
-			Group(periodExpression + ", user_id").
-			Order("period_key ASC, user_id ASC").
-			Scan(&userTrendRows).Error; err != nil {
+			Select("user_id," + usageStatisticsMetricsSelect).
+			Group("user_id").
+			Order(usageStatisticsRankOrder(filter.UserRankBy, "user_id ASC")).
+			Limit(rankLimit).
+			Scan(&userRows).Error; err != nil {
 			return result, translateError(err)
 		}
-		for _, row := range userTrendRows {
-			periodStart, err := time.Parse("2006-01-02", row.PeriodKey)
-			if err != nil {
-				return result, err
-			}
-			index, exists := userIndexes[row.UserID]
-			if !exists {
-				continue
-			}
-			result.TopUsers[index].Trend = append(result.TopUsers[index].Trend, domainbilling.UsageStatisticsTrendPoint{
-				PeriodStart: periodStart,
-				Metrics:     usageStatisticsMetricsFromRow(row.Metrics),
+		for _, row := range userRows {
+			result.TopUsers = append(result.TopUsers, domainbilling.UsageStatisticsUserRank{
+				UserID:  row.UserID,
+				Metrics: usageStatisticsMetricsFromRow(row.Metrics),
+				Trend:   []domainbilling.UsageStatisticsTrendPoint{},
 			})
+		}
+		if len(result.TopUsers) > 0 {
+			userIDs := make([]uint, 0, len(result.TopUsers))
+			userIndexes := make(map[uint]int, len(result.TopUsers))
+			for index, item := range result.TopUsers {
+				userIDs = append(userIDs, item.UserID)
+				userIndexes[item.UserID] = index
+			}
+			userTrendRows := make([]usageStatisticsUserTrendRow, 0)
+			if err := r.usageStatisticsQuery(ctx, filter).
+				Where("user_id IN ?", userIDs).
+				Select(periodExpression + " AS period_key, user_id," + usageStatisticsMetricsSelect).
+				Group(periodExpression + ", user_id").
+				Order("period_key ASC, user_id ASC").
+				Scan(&userTrendRows).Error; err != nil {
+				return result, translateError(err)
+			}
+			for _, row := range userTrendRows {
+				periodStart, err := time.Parse("2006-01-02", row.PeriodKey)
+				if err != nil {
+					return result, err
+				}
+				index, exists := userIndexes[row.UserID]
+				if !exists {
+					continue
+				}
+				result.TopUsers[index].Trend = append(result.TopUsers[index].Trend, domainbilling.UsageStatisticsTrendPoint{
+					PeriodStart: periodStart,
+					Metrics:     usageStatisticsMetricsFromRow(row.Metrics),
+				})
+			}
 		}
 	}
 

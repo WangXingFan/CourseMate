@@ -116,10 +116,14 @@ type UsageStatisticsFilter struct {
 	StartDate         time.Time
 	EndDateExclusive  time.Time
 	UserID            uint
+	PermissionGroupID uint
+	MembershipAt      time.Time
 	PlatformModelName string
 	BillingScope      string
 	Granularity       string
-	RankBy            string
+	Section           string
+	ModelRankBy       string
+	UserRankBy        string
 	RankLimit         int
 }
 

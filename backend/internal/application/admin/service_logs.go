@@ -30,6 +30,17 @@ func (s *Service) ListUsageLogs(ctx context.Context, page int, pageSize int, fil
 
 // GetUsageStatistics 查询管理员仪表盘的全局用量聚合。
 func (s *Service) GetUsageStatistics(ctx context.Context, filter billing.UsageStatisticsFilter) (domainbilling.UsageStatistics, error) {
+	if filter.UserID > 0 && filter.PermissionGroupID > 0 {
+		return domainbilling.UsageStatistics{}, billing.ErrInvalidUsageStatisticsSubject
+	}
+	if filter.PermissionGroupID > 0 {
+		if s.permissionGroupRepo == nil {
+			return domainbilling.UsageStatistics{}, ErrPermissionGroupRepoUnavailable
+		}
+		if _, err := s.permissionGroupRepo.GetPermissionGroup(ctx, filter.PermissionGroupID); err != nil {
+			return domainbilling.UsageStatistics{}, mapPermissionGroupRepoError(err)
+		}
+	}
 	if s.usageStatisticsService == nil {
 		return domainbilling.UsageStatistics{}, errors.New("usage statistics service unavailable")
 	}

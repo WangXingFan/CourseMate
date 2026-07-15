@@ -327,7 +327,8 @@ type UsageStatisticsUserRankResponse struct {
 
 // UsageStatisticsResponse 管理员用量统计响应。
 type UsageStatisticsResponse struct {
-	Range struct {
+	Section string `json:"section"`
+	Range   struct {
 		StartDate   string `json:"startDate"`
 		EndDate     string `json:"endDate"`
 		Granularity string `json:"granularity"`
@@ -829,9 +830,11 @@ func toUsageStatisticsResponse(
 	item domainbilling.UsageStatistics,
 	startDate time.Time,
 	endDate time.Time,
+	section string,
 	userLabels map[uint]appadmin.UserLabel,
 ) UsageStatisticsResponse {
 	result := UsageStatisticsResponse{
+		Section:   section,
 		Totals:    toUsageStatisticsMetricsResponse(item.Totals),
 		Trend:     make([]UsageStatisticsTrendResponse, 0, len(item.Trend)),
 		TopModels: make([]UsageStatisticsModelRankResponse, 0, len(item.TopModels)),
