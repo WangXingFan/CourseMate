@@ -2266,6 +2266,87 @@ func (s *Service) ListUsageLogs(ctx context.Context, page int, pageSize int, fil
 	}, offset, limit)
 }
 
+// UsageStatisticsFilter 描述管理员仪表盘的用量统计条件。
+type UsageStatisticsFilter struct {
+	StartDate         time.Time
+	EndDate           time.Time
+	UserID            uint
+	PlatformModelName string
+	BillingScope      string
+	RankBy            string
+}
+
+// GetUsageStatistics 查询管理员仪表盘使用的全局用量统计。
+func (s *Service) GetUsageStatistics(ctx context.Context, filter UsageStatisticsFilter) (domainbilling.UsageStatistics, error) {
+	statisticsRepo, ok := s.repo.(repository.UsageStatisticsRepository)
+	if !ok {
+		return domainbilling.UsageStatistics{}, errors.New("usage statistics repository unavailable")
+	}
+
+	startDate := time.Date(filter.StartDate.Year(), filter.StartDate.Month(), filter.StartDate.Day(), 0, 0, 0, 0, filter.StartDate.Location())
+	endDate := time.Date(filter.EndDate.Year(), filter.EndDate.Month(), filter.EndDate.Day(), 0, 0, 0, 0, filter.EndDate.Location())
+	if endDate.Before(startDate) {
+		return domainbilling.UsageStatistics{}, errors.New("invalid usage statistics date range")
+	}
+	days := int(endDate.Sub(startDate).Hours()/24) + 1
+	if days <= 0 || days > 366 {
+		return domainbilling.UsageStatistics{}, errors.New("invalid usage statistics date range")
+	}
+
+	granularity := "day"
+	if days > 90 {
+		granularity = "month"
+	}
+	result, err := statisticsRepo.GetUsageStatistics(ctx, repository.UsageStatisticsFilter{
+		StartDate:         startDate,
+		EndDateExclusive:  endDate.AddDate(0, 0, 1),
+		UserID:            filter.UserID,
+		PlatformModelName: strings.TrimSpace(filter.PlatformModelName),
+		BillingScope:      strings.TrimSpace(filter.BillingScope),
+		Granularity:       granularity,
+		RankBy:            strings.TrimSpace(filter.RankBy),
+		RankLimit:         10,
+	})
+	if err != nil {
+		return domainbilling.UsageStatistics{}, err
+	}
+	result.Granularity = granularity
+	result.Trend = fillUsageStatisticsTrend(result.Trend, startDate, endDate, granularity)
+	return result, nil
+}
+
+func fillUsageStatisticsTrend(
+	items []domainbilling.UsageStatisticsTrendPoint,
+	startDate time.Time,
+	endDate time.Time,
+	granularity string,
+) []domainbilling.UsageStatisticsTrendPoint {
+	byPeriod := make(map[string]domainbilling.UsageStatisticsTrendPoint, len(items))
+	for _, item := range items {
+		byPeriod[item.PeriodStart.Format("2006-01-02")] = item
+	}
+
+	current := startDate
+	if granularity == "month" {
+		current = time.Date(startDate.Year(), startDate.Month(), 1, 0, 0, 0, 0, startDate.Location())
+	}
+	results := make([]domainbilling.UsageStatisticsTrendPoint, 0, len(items))
+	for !current.After(endDate) {
+		key := current.Format("2006-01-02")
+		if item, exists := byPeriod[key]; exists {
+			results = append(results, item)
+		} else {
+			results = append(results, domainbilling.UsageStatisticsTrendPoint{PeriodStart: current})
+		}
+		if granularity == "month" {
+			current = current.AddDate(0, 1, 0)
+		} else {
+			current = current.AddDate(0, 0, 1)
+		}
+	}
+	return results
+}
+
 // ListPaymentOrders 分页查询管理员支付订单记录。
 func (s *Service) ListPaymentOrders(ctx context.Context, page int, pageSize int, filter PaymentOrderListFilter) ([]domainbilling.PaymentOrder, int64, error) {
 	offset, limit := normalizePage(page, pageSize)

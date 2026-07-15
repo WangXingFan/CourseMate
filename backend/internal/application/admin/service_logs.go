@@ -28,6 +28,14 @@ func (s *Service) ListUsageLogs(ctx context.Context, page int, pageSize int, fil
 	return s.usageLogService.ListUsageLogs(ctx, page, pageSize, filter)
 }
 
+// GetUsageStatistics 查询管理员仪表盘的全局用量聚合。
+func (s *Service) GetUsageStatistics(ctx context.Context, filter billing.UsageStatisticsFilter) (domainbilling.UsageStatistics, error) {
+	if s.usageStatisticsService == nil {
+		return domainbilling.UsageStatistics{}, errors.New("usage statistics service unavailable")
+	}
+	return s.usageStatisticsService.GetUsageStatistics(ctx, filter)
+}
+
 // ListPaymentOrders 查询管理员支付订单记录。
 func (s *Service) ListPaymentOrders(ctx context.Context, page int, pageSize int, filter billing.PaymentOrderListFilter) ([]domainbilling.PaymentOrder, int64, error) {
 	if s.orderLogService == nil {

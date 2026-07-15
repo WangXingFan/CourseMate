@@ -21,6 +21,7 @@ type AdminDateRangeFilterProps = {
   onToChange: (value: string) => void;
   disabled?: boolean;
   placeholder?: string;
+  triggerClassName?: string;
 };
 
 function parseDateValue(value: string): Date | undefined {
@@ -43,6 +44,7 @@ export function AdminDateRangeFilter({
   onToChange,
   disabled = false,
   placeholder,
+  triggerClassName,
 }: AdminDateRangeFilterProps) {
   const locale = useLocale();
   const t = useTranslations("common.dateRange");
@@ -60,7 +62,7 @@ export function AdminDateRangeFilter({
     : (placeholder ?? t("placeholder"));
 
   return (
-    <div className="space-y-2">
+    <div className="w-full min-w-0 space-y-2">
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -69,6 +71,7 @@ export function AdminDateRangeFilter({
             className={cn(
               ADMIN_DATE_PICKER_TRIGGER_CLASSNAME,
               "px-2.5 h-7",
+              triggerClassName,
               !selectedRange?.from && "text-muted-foreground",
             )}
             disabled={disabled}
