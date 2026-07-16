@@ -4,6 +4,8 @@
   "private": true,
   "packageManager": "pnpm@10.17.0",
   "scripts": {
+    "api:check": "pnpm --filter @deeix/api-contract check",
+    "api:generate": "pnpm --filter @deeix/api-contract generate",
     "build": "turbo run build",
     "check": "turbo run check",
     "clean": "turbo run clean",

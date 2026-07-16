@@ -8,6 +8,7 @@ on:
     paths:
       - "backend/**"
       - "frontend/**"
+      - "packages/**"
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
@@ -22,6 +23,7 @@ on:
     paths:
       - "backend/**"
       - "frontend/**"
+      - "packages/**"
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"

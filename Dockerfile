@@ -15,6 +15,7 @@ COPY scripts /src/scripts
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY frontend/package.json ./frontend/package.json
 COPY backend/package.json ./backend/package.json
+COPY packages/api-contract/package.json ./packages/api-contract/package.json
 COPY frontend/scripts ./frontend/scripts
 COPY frontend/public/pwa ./frontend/public/pwa
 
@@ -25,6 +26,7 @@ RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     && pnpm install --frozen-lockfile --filter @deeix/web...
 
 COPY frontend ./frontend
+COPY packages/api-contract ./packages/api-contract
 
 WORKDIR /src/frontend
 
