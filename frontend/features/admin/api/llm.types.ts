@@ -1,3 +1,35 @@
+import type {
+  BatchDeleteRequest,
+  BatchDeleteResponse,
+  BatchDeleteResultResponse,
+  BindModelUpstreamSourceRequest,
+  CircuitResetResponse,
+  CreateModelRequest,
+  CreateUpstreamRequest,
+  ImportUpstreamModelsRequest,
+  ImportUpstreamModelsResponse,
+  ModelDataResponse,
+  ModelProbeBatchResponse,
+  ModelProbeDebugRequestResponse,
+  ModelProbeDebugResponse,
+  ModelProbeDebugResponseResponse,
+  ModelProbeResponse,
+  ModelResponse,
+  ModelUpstreamSourceDataResponse,
+  ModelUpstreamSourceResponse,
+  ReorderModelsRequest,
+  UpdateModelRequest,
+  UpdateModelUpstreamSourceRequest,
+  UpdateUpstreamRequest,
+  UpsertUpstreamModelRequest,
+  UpstreamAPIKeyResponse,
+  UpstreamDataResponse,
+  UpstreamModelDataResponse,
+  UpstreamModelResponse,
+  UpstreamRemoteModelResponse,
+  UpstreamRemoteModelsResponse,
+  UpstreamResponse,
+} from "@deeix/api-contract";
 import type { PagePayload } from "@/shared/api/common.types";
 
 export type AdminLLMStatus = "active" | "inactive";
@@ -32,122 +64,57 @@ export type AdminLLMModelCbPolicyMode = "default" | "enforced";
 // Upstream views
 // ---------------------------------------------------------------------------
 
-export type AdminLLMUpstreamView = {
-  id: number;
-  name: string;
-  baseURL: string;
+export type AdminLLMUpstreamView = Omit<
+  Required<UpstreamResponse>,
+  "apiKeyItems" | "cbThresholdLogic" | "compatible" | "status"
+> & {
   compatible: AdminLLMCompatible | "";
-  protocolDefaultsJSON: string;
-  apiKeysMasked: string;
   apiKeyItems?: AdminLLMUpstreamAPIKey[];
   status: AdminLLMStatus;
-  connectTimeoutMS: number;
-  readTimeoutMS: number;
-  streamIdleTimeoutMS: number;
-  cbFailureThreshold: number;
-  cbModelThreshold: number;
   cbThresholdLogic: AdminLLMCbLogic;
-  cbDurationMin: number;
-  cbWindowMin: number;
-  headersJSON: string;
-  modelsCount: number;
-  activeModelsCount: number;
-  circuitOpen: boolean;
-  circuitUntil: string;
-  createdAt: string;
-  updatedAt: string;
 };
 
-export type AdminLLMUpstreamAPIKey = {
-  id: string;
-  index: number;
-  keyMasked: string;
-  status: string;
-  note: string;
-};
+export type AdminLLMUpstreamAPIKey = Required<UpstreamAPIKeyResponse>;
 
-export type AdminLLMModelDTO = {
-  id: number;
-  platformModelName: string;
+export type AdminLLMModelDTO = Omit<
+  Required<ModelResponse>,
+  "accessScope" | "cbPolicyMode" | "status" | "vendor"
+> & {
   vendor: AdminLLMModelVendor;
-  kindsJSON: string;
-  icon: string;
-  capabilitiesJSON: string;
-  systemPrompt: string;
   accessScope: AdminLLMModelAccessScope;
   status: AdminLLMStatus;
-  description: string;
   cbPolicyMode: AdminLLMModelCbPolicyMode;
-  cbFailureThreshold: number;
-  cbDurationMin: number;
-  cbWindowMin: number;
-  sortOrder: number;
-  sourceCount: number;
-  activeSourceCount: number;
-  protocolsJSON: string;
-  upstreamNamesJSON: string;
-  createdAt: string;
-  updatedAt: string;
 };
 
-export type AdminLLMUpstreamModelDTO = {
-  id: number;
-  routeID: number;
-  upstreamID: number;
-  bindingCode: string;
-  platformModelID: number;
-  platformModelName: string;
+export type AdminLLMUpstreamModelDTO = Omit<
+  Required<UpstreamModelResponse>,
+  "modelVendor" | "protocol" | "routeStatus" | "suggestedProtocol" | "upstreamModelStatus" | "upstreamModelVendor"
+> & {
   modelVendor: AdminLLMModelVendor;
-  modelKindsJSON: string;
-  modelIcon: string;
-  upstreamModelName: string;
   upstreamModelVendor: AdminLLMModelVendor;
-  upstreamModelIcon: string;
-  upstreamModelKindsJSON: string;
   suggestedProtocol: AdminLLMAdapter | "";
   protocol: AdminLLMAdapter | "";
   upstreamModelStatus: AdminLLMStatus;
   routeStatus: AdminLLMStatus | "";
-  priority: number;
-  weight: number;
-  source: string;
-  cbFailureThreshold: number;
-  cbDurationMin: number;
-  cbWindowMin: number;
-  headersJSON: string;
-  circuitOpen: boolean;
-  circuitUntil: string;
-  createdAt: string;
-  updatedAt: string;
 };
 
-export type AdminLLMModelUpstreamSourceDTO = {
-  id: number;
-  upstreamID: number;
-  upstreamName: string;
+export type AdminLLMModelUpstreamSourceDTO = Omit<
+  Required<ModelUpstreamSourceResponse>,
+  | "circuitScope"
+  | "protocol"
+  | "status"
+  | "suggestedProtocol"
+  | "upstreamModelStatus"
+  | "upstreamModelVendor"
+  | "upstreamStatus"
+> & {
   upstreamStatus: AdminLLMStatus;
-  baseURL: string;
-  bindingCode: string;
-  upstreamModelName: string;
-  upstreamModelKindsJSON: string;
   upstreamModelVendor: AdminLLMModelVendor;
-  upstreamModelIcon: string;
   suggestedProtocol: AdminLLMAdapter | "";
   upstreamModelStatus: AdminLLMStatus;
   protocol: AdminLLMAdapter | "";
   status: AdminLLMStatus;
-  priority: number;
-  weight: number;
-  source: string;
-  cbFailureThreshold: number;
-  cbDurationMin: number;
-  cbWindowMin: number;
-  headersJSON: string;
-  circuitOpen: boolean;
-  circuitUntil: string;
   circuitScope: "upstream" | "source" | "";
-  createdAt: string;
-  updatedAt: string;
 };
 
 export type AdminLLMUpstreamHealthView = {
@@ -162,59 +129,60 @@ export type AdminLLMUpstreamHealthView = {
   lastSuccessAt: string;
 };
 
-export type AdminLLMModelProbeDebug = {
-  request: {
-    method: string;
-    path: string;
-    headers?: Record<string, string>;
-    body: string;
-  };
-  response: {
-    statusCode: number;
-    headers?: Record<string, string>;
-    body: string;
-  };
+export type AdminLLMModelProbeDebug = Omit<Required<ModelProbeDebugResponse>, "request" | "response"> & {
+  request: Required<Omit<ModelProbeDebugRequestResponse, "headers">> &
+    Pick<ModelProbeDebugRequestResponse, "headers">;
+  response: Required<Omit<ModelProbeDebugResponseResponse, "headers">> &
+    Pick<ModelProbeDebugResponseResponse, "headers">;
 };
 
-export type AdminLLMModelProbeResult = {
-  success: boolean;
+export type AdminLLMModelProbeResult = Required<
+  Pick<
+    ModelProbeResponse,
+    | "bindingCode"
+    | "endpoint"
+    | "latencyMS"
+    | "platformModelID"
+    | "platformModelName"
+    | "routeID"
+    | "status"
+    | "success"
+  >
+> &
+  Omit<
+    ModelProbeResponse,
+    | "bindingCode"
+    | "debug"
+    | "endpoint"
+    | "latencyMS"
+    | "platformModelID"
+    | "platformModelName"
+    | "protocol"
+    | "routeID"
+    | "status"
+    | "success"
+  > & {
   status: "success" | "failed" | "unsupported";
-  errorCode?: string;
-  errorMessage?: string;
-  latencyMS: number;
   protocol: AdminLLMAdapter | "";
-  endpoint: string;
-  platformModelID: number;
-  platformModelName: string;
   upstreamID: number;
   upstreamName: string;
   upstreamModelID: number;
   upstreamModelName: string;
-  routeID: number;
-  bindingCode: string;
   upstreamStatusCode?: number;
   debug?: AdminLLMModelProbeDebug;
 };
 
-export type AdminLLMModelProbeBatchResult = {
-  totalCount: number;
-  successCount: number;
-  failedCount: number;
-  unsupportedCount: number;
+export type AdminLLMModelProbeBatchResult = Omit<Required<ModelProbeBatchResponse>, "results"> & {
   results: AdminLLMModelProbeResult[];
 };
 
-export type AdminLLMRemoteModelItem = {
-  upstreamModelName: string;
-  suggestedPlatformModelName: string;
-  suggestedKindsJSON: string;
+export type AdminLLMRemoteModelItem = Omit<
+  Required<UpstreamRemoteModelResponse>,
+  "suggestedProtocol" | "suggestedProtocols" | "upstreamModelStatus"
+> & {
   suggestedProtocol: AdminLLMAdapter | "";
   suggestedProtocols: AdminLLMAdapter[];
-  bindingCode: string;
-  boundPlatformModels: string[];
   upstreamModelStatus: AdminLLMStatus | "";
-  alreadySynced: boolean;
-  alreadyBound: boolean;
 };
 
 export type AdminLLMSetting = {
@@ -230,201 +198,126 @@ export type AdminLLMSetting = {
 // Request types
 // ---------------------------------------------------------------------------
 
-export type CreateAdminLLMUpstreamRequest = {
-  name: string;
-  baseURL: string;
+export type CreateAdminLLMUpstreamRequest = Omit<
+  CreateUpstreamRequest,
+  "cbThresholdLogic" | "compatible" | "status"
+> & {
   compatible?: AdminLLMCompatible | "";
-  protocolDefaultsJSON?: string;
-  apiKeys: string;
   status?: AdminLLMStatus;
-  connectTimeoutMS?: number;
-  readTimeoutMS?: number;
-  streamIdleTimeoutMS?: number;
-  cbFailureThreshold?: number;
-  cbModelThreshold?: number;
   cbThresholdLogic?: AdminLLMCbLogic;
-  cbDurationMin?: number;
-  cbWindowMin?: number;
-  headersJSON?: string;
 };
 
-export type UpdateAdminLLMUpstreamRequest = {
-  name?: string;
-  baseURL?: string;
+export type UpdateAdminLLMUpstreamRequest = Omit<
+  UpdateUpstreamRequest,
+  "cbThresholdLogic" | "compatible" | "status"
+> & {
   compatible?: AdminLLMCompatible | "";
-  protocolDefaultsJSON?: string;
-  apiKeys?: string;
-  addAPIKeys?: string;
-  deleteAPIKeyIDs?: string[];
   status?: AdminLLMStatus;
-  connectTimeoutMS?: number;
-  readTimeoutMS?: number;
-  streamIdleTimeoutMS?: number;
-  cbFailureThreshold?: number;
-  cbModelThreshold?: number;
   cbThresholdLogic?: AdminLLMCbLogic;
-  cbDurationMin?: number;
-  cbWindowMin?: number;
-  headersJSON?: string;
 };
 
-export type CreateAdminLLMModelRequest = {
-  platformModelName: string;
+export type CreateAdminLLMModelRequest = Omit<
+  CreateModelRequest,
+  "accessScope" | "cbPolicyMode" | "status" | "vendor"
+> & {
   vendor?: AdminLLMModelVendor;
-  kindsJSON?: string;
-  icon?: string;
-  capabilitiesJSON?: string;
-  systemPrompt?: string;
   accessScope?: AdminLLMModelAccessScope;
   status?: AdminLLMStatus;
-  description?: string;
   cbPolicyMode?: AdminLLMModelCbPolicyMode;
-  cbFailureThreshold?: number;
-  cbDurationMin?: number;
-  cbWindowMin?: number;
 };
 
-export type UpdateAdminLLMModelRequest = {
-  platformModelName?: string;
+export type UpdateAdminLLMModelRequest = Omit<
+  UpdateModelRequest,
+  "accessScope" | "cbPolicyMode" | "status" | "vendor"
+> & {
   vendor?: AdminLLMModelVendor;
-  kindsJSON?: string;
-  icon?: string;
-  capabilitiesJSON?: string;
-  systemPrompt?: string;
   accessScope?: AdminLLMModelAccessScope;
   status?: AdminLLMStatus;
-  description?: string;
   cbPolicyMode?: AdminLLMModelCbPolicyMode;
-  cbFailureThreshold?: number;
-  cbDurationMin?: number;
-  cbWindowMin?: number;
 };
 
-export type ReorderAdminLLMModelsRequest = {
-  modelIDs: number[];
-};
+export type ReorderAdminLLMModelsRequest = ReorderModelsRequest;
 
-export type UpsertAdminLLMUpstreamModelRequest = {
-  routeID?: number;
-  platformModelName: string;
-  upstreamModelName: string;
-  protocol?: AdminLLMAdapter;
-  kindsJSON?: string;
-  status?: AdminLLMStatus;
-  priority?: number;
-  weight?: number;
-  source?: string;
-  cbFailureThreshold?: number;
-  cbDurationMin?: number;
-  cbWindowMin?: number;
-  headersJSON?: string;
-};
-
-export type UpdateAdminLLMModelUpstreamSourceRequest = {
+export type UpsertAdminLLMUpstreamModelRequest = Omit<UpsertUpstreamModelRequest, "protocol" | "status"> & {
   protocol?: AdminLLMAdapter;
   status?: AdminLLMStatus;
-  priority?: number;
-  weight?: number;
-  cbFailureThreshold?: number;
-  cbDurationMin?: number;
-  cbWindowMin?: number;
 };
 
-export type BindAdminLLMModelUpstreamSourceRequest = {
-  upstreamID: number;
-  upstreamModelID: number;
+export type UpdateAdminLLMModelUpstreamSourceRequest = Omit<
+  UpdateModelUpstreamSourceRequest,
+  "protocol" | "status"
+> & {
   protocol?: AdminLLMAdapter;
   status?: AdminLLMStatus;
-  priority?: number;
-  weight?: number;
-  cbFailureThreshold?: number;
-  cbDurationMin?: number;
-  cbWindowMin?: number;
 };
 
-export type ImportAdminLLMUpstreamModelsRequest = {
-  permissionGroupIDs?: number[];
-  items: Array<{
-    platformModelName: string;
-    upstreamModelName: string;
-    protocol?: AdminLLMAdapter;
-    protocols?: AdminLLMAdapter[];
-    kindsJSON?: string;
-    status?: AdminLLMStatus;
-    priority?: number;
-  }>;
+export type BindAdminLLMModelUpstreamSourceRequest = Omit<
+  BindModelUpstreamSourceRequest,
+  "protocol" | "status"
+> & {
+  protocol?: AdminLLMAdapter;
+  status?: AdminLLMStatus;
+};
+
+export type ImportAdminLLMUpstreamModelsRequest = Omit<ImportUpstreamModelsRequest, "items"> & {
+  items: Array<
+    Omit<ImportUpstreamModelsRequest["items"][number], "protocol" | "protocols" | "status"> & {
+      protocol?: AdminLLMAdapter;
+      protocols?: AdminLLMAdapter[];
+      status?: AdminLLMStatus;
+    }
+  >;
 };
 
 export type AdminBatchDeleteStatus = "deleted" | "not_found" | "failed";
 
-export type AdminBatchDeleteRequest = {
-  ids: number[];
-};
+export type AdminBatchDeleteRequest = BatchDeleteRequest;
 
 // ---------------------------------------------------------------------------
 // Response data wrappers
 // ---------------------------------------------------------------------------
 
-export type AdminLLMUpstreamData = {
+export type AdminLLMUpstreamData = Omit<Required<UpstreamDataResponse>, "upstream"> & {
   upstream: AdminLLMUpstreamView;
 };
 
-export type AdminLLMModelData = {
+export type AdminLLMModelData = Omit<Required<ModelDataResponse>, "model"> & {
   model: AdminLLMModelDTO;
 };
 
-export type AdminLLMUpstreamModelData = {
+export type AdminLLMUpstreamModelData = Omit<Required<UpstreamModelDataResponse>, "binding"> & {
   binding: AdminLLMUpstreamModelDTO;
 };
 
-export type AdminLLMModelUpstreamSourceData = {
+export type AdminLLMModelUpstreamSourceData = Omit<Required<ModelUpstreamSourceDataResponse>, "source"> & {
   source: AdminLLMModelUpstreamSourceDTO;
 };
 
 export type AdminLLMModelProbeData = AdminLLMModelProbeResult;
 export type AdminLLMModelProbeBatchData = AdminLLMModelProbeBatchResult;
 
-export type ResetAdminLLMCircuitData = {
-  reset: boolean;
-};
+export type ResetAdminLLMCircuitData = Required<CircuitResetResponse>;
 
-export type ListAdminLLMRemoteModelsData = {
-  total: number;
+export type ListAdminLLMRemoteModelsData = Omit<Required<UpstreamRemoteModelsResponse>, "items"> & {
   items: AdminLLMRemoteModelItem[];
 };
 
-export type ImportAdminLLMUpstreamModelsData = {
-  total: number;
-  importedCount: number;
-  failedCount: number;
-  createdRoutes: number;
-  existingRoutes: number;
-  createdPlatform: number;
-  results: Array<{
-    upstreamModelName: string;
-    platformModelName: string;
-    bindingCode: string;
-    status: "created" | "existing" | "failed";
-    createdRoute: boolean;
-    createdRoutes: number;
-    existingRoutes: number;
-    protocols: AdminLLMAdapter[];
-    createdPlatform: boolean;
-    error?: string;
-  }>;
+export type ImportAdminLLMUpstreamModelsData = Omit<Required<ImportUpstreamModelsResponse>, "results"> & {
+  results: Array<
+    Omit<Required<ImportUpstreamModelsResponse["results"]>[number], "error" | "protocols" | "status"> & {
+      status: "created" | "existing" | "failed";
+      protocols: AdminLLMAdapter[];
+      error?: string;
+    }
+  >;
 };
 
-export type AdminBatchDeleteResult = {
-  id: number;
+export type AdminBatchDeleteResult = Omit<Required<BatchDeleteResultResponse>, "error" | "status"> & {
   status: AdminBatchDeleteStatus;
   error?: string;
 };
 
-export type AdminBatchDeleteData = {
-  total: number;
-  successCount: number;
-  notFoundCount: number;
-  failedCount: number;
+export type AdminBatchDeleteData = Omit<Required<BatchDeleteResponse>, "results"> & {
   results: AdminBatchDeleteResult[];
 };
 

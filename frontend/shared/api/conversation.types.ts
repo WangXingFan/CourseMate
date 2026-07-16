@@ -1,33 +1,58 @@
+import type {
+  BatchSetConversationProjectRequest as ContractBatchSetConversationProjectRequest,
+  BatchSetConversationProjectResponse,
+  ContextArtifactResponse,
+  ConversationDefaultModelCandidateResponse,
+  ConversationDeleteResponse,
+  ConversationExportResponse,
+  ConversationProjectResponse,
+  ConversationResponse,
+  ConversationShareResponse,
+  CreateConversationProjectRequest as ContractCreateConversationProjectRequest,
+  CreateConversationRequest as ContractCreateConversationRequest,
+  CreateConversationShareRequest as ContractCreateConversationShareRequest,
+  MessageBillingCostResponse,
+  MessageFeedbackResponse,
+  MessageProcessTraceResponse,
+  MessagePromptTraceBlockResponse,
+  MessagePromptTraceResponse,
+  MessagePromptTraceSourceResponse,
+  MessageResponse,
+  MessageTraceBlockResponse,
+  MessageTraceEventResponse,
+  ModelProbeDebugResponse,
+  PublicSharedConversationResponse,
+  PublicSharedMessageResponse,
+  RenameConversationRequest as ContractRenameConversationRequest,
+  ReorderConversationProjectsRequest as ContractReorderConversationProjectsRequest,
+  RevokeConversationSharesRequest as ContractRevokeConversationSharesRequest,
+  RevokeConversationSharesResponse,
+  RunResponse,
+  SendMessageRequest as ContractSendMessageRequest,
+  SendMessageResponse,
+  SetConversationArchiveRequest as ContractSetConversationArchiveRequest,
+  SetConversationProjectRequest as ContractSetConversationProjectRequest,
+  SetConversationStarRequest as ContractSetConversationStarRequest,
+  SetMessageFeedbackRequest as ContractSetMessageFeedbackRequest,
+  UpdateConversationProjectRequest as ContractUpdateConversationProjectRequest,
+  UpdateMessageRequest as ContractUpdateMessageRequest,
+} from "@deeix/api-contract";
 import type { UserStorageQuotaDTO } from "@/shared/api/file.types";
 
-export type ConversationDTO = {
-  userID: number;
-  publicID: string;
-  projectID: string;
-  projectName: string;
-  title: string;
-  labelsJSON: string;
-  model: string;
-  provider: string;
-  sessionKey: string;
-  isStarred: boolean;
+export type ConversationDTO = Omit<
+  Required<ConversationResponse>,
+  "lastCompactedAt" | "lastShareAccessedAt" | "sharedAt" | "starredAt"
+> & {
   starredAt: string | null;
-  messageCount: number;
-  status: string;
-  contextPolicyJSON: string;
   lastCompactedAt: string | null;
-  lastResponseID: string;
-  shareStatus: "none" | "active" | "revoked" | "expired" | string;
-  shareID: string;
   sharedAt: string | null;
   lastShareAccessedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
 };
 
-export type ConversationDefaultModelCandidateDTO = {
-  platformModelName: string;
-  source: string;
+export type ConversationDefaultModelCandidateDTO = Omit<
+  Required<ConversationDefaultModelCandidateResponse>,
+  "usedAt"
+> & {
   usedAt: string | null;
 };
 
@@ -38,174 +63,70 @@ export type ConversationProjectFilter = "all" | "unassigned" | string;
 export type ConversationProjectStatusFilter = "active" | "archived" | "all";
 export type ConversationProjectMCPDefaultMode = "inherit" | "custom";
 
-export type ConversationProjectDTO = {
-  publicID: string;
-  name: string;
-  description: string;
-  systemPrompt: string;
+export type ConversationProjectDTO = Omit<Required<ConversationProjectResponse>, "mcpDefaultMode"> & {
   mcpDefaultMode: ConversationProjectMCPDefaultMode;
-  defaultMCPToolIDs: number[];
-  defaultSkillIDs: number[];
-  color: string;
-  icon: string;
-  sortOrder: number;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
 };
 
-export type MessageDTO = {
-  id: number;
-  conversationID: number;
-  userID: number;
-  publicID: string;
+export type MessageDTO = Omit<
+  Required<MessageResponse>,
+  | "billingCost"
+  | "editedAt"
+  | "modelIcon"
+  | "modelVendor"
+  | "parentMessageID"
+  | "platformModelName"
+  | "processTrace"
+  | "sourceMessageID"
+  | "upstreamModelName"
+> & {
   parentMessageID: number | null;
-  parentPublicID: string;
-  runID: string;
-  role: string;
-  contentType: string;
-  content: string;
   branchReason: "default" | "retry" | "edit";
   sourceMessageID: number | null;
-  sourcePublicID: string;
-  tokenUsage: number;
-  inputTokens: number;
-  outputTokens: number;
-  cacheReadTokens: number;
-  cacheWriteTokens: number;
-  reasoningTokens: number;
-  latencyMS: number;
-  status: string;
-  errorCode: string;
-  errorMessage: string;
-  attachments: string;
   platformModelName?: string;
   upstreamModelName?: string;
   modelVendor?: string;
   modelIcon?: string;
   processTrace?: MessageProcessTraceDTO;
   myFeedback: "up" | "down" | "";
-  thumbsUpCount: number;
-  thumbsDownCount: number;
   billingCost?: MessageBillingCostDTO;
   editedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
 };
 
-export type ConversationRunDTO = {
-  id: number;
-  runID: string;
-  requestID: string;
-  userID: number;
-  conversationID: number;
-  endpoint: string;
-  provider: string;
-  providerProtocol: string;
-  upstreamID: number;
-  upstreamModelID: number;
-  requestedModelName: string;
-  platformModelName: string;
-  routedBindingCode: string;
-  modelVendor: string;
-  modelIcon: string;
-  upstreamModelName: string;
-  inputTokens: number;
-  outputTokens: number;
-  cacheReadTokens: number;
-  cacheWriteTokens: number;
-  reasoningTokens: number;
-  toolCallsCount: number;
-  firstTokenLatencyMS: number;
-  totalLatencyMS: number;
-  status: string;
-  errorCode: string;
-  errorMessage: string;
-  startedAt: string;
+export type ConversationRunDTO = Omit<Required<RunResponse>, "endedAt" | "taskType"> & {
   endedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
 };
 
-export type ConversationExportDTO = {
-  version: number;
-  exportScope: string;
-  exportedAt: string;
+export type ConversationExportDTO = Omit<
+  Required<ConversationExportResponse>,
+  "compatibility" | "conversation" | "messages" | "runs"
+> & {
   conversation: ConversationDTO;
   messages: MessageDTO[];
   runs: ConversationRunDTO[];
-  totalMessages: number;
-  totalRuns: number;
-  defaultMessagePublicIDs: string[];
-  compatibility: {
-    format: string;
-    notes: string;
-  };
+  compatibility: Required<NonNullable<ConversationExportResponse["compatibility"]>>;
 };
 
-export type MessageBillingCostDTO = {
-  billingMode: string;
-  billedCurrency: string;
-  billedNanousd: number;
-  billedUSD: number;
-  pricingSnapshotJSON: string;
-};
+export type MessageBillingCostDTO = Required<MessageBillingCostResponse>;
 
-export type TraceBlockDTO = {
-  title: string;
-  summary: string;
-  contentMarkdown: string;
-  status: string;
-  stage?: string;
-  roundID?: string;
-  parentEventID?: string;
-  updatedAt: string;
-  payloadJSON?: string;
-};
+export type TraceBlockDTO = Required<
+  Pick<MessageTraceBlockResponse, "contentMarkdown" | "status" | "summary" | "title" | "updatedAt">
+> &
+  Omit<MessageTraceBlockResponse, "contentMarkdown" | "status" | "summary" | "title" | "updatedAt">;
 
-export type PromptTraceBlockDTO = {
-  kind: string;
-  title: string;
-  tokenEstimate: number;
-  cacheable: boolean;
-  sourceCount: number;
+export type PromptTraceBlockDTO = Omit<Required<MessagePromptTraceBlockResponse>, "sourceRefs"> & {
   sourceRefs?: PromptTraceSourceDTO[];
 };
 
-export type PromptTraceSourceDTO = {
-  sourceType: string;
-  sourceID: string;
-  title: string;
-  artifactID?: number;
-};
+export type PromptTraceSourceDTO = Required<
+  Pick<MessagePromptTraceSourceResponse, "sourceID" | "sourceType" | "title">
+> &
+  Omit<MessagePromptTraceSourceResponse, "sourceID" | "sourceType" | "title">;
 
-export type ContextArtifactDTO = {
-  id: number;
-  messageID: number;
-  runID: string;
-  kind: string;
-  sourceType: string;
-  sourceID: string;
-  sourceTitle: string;
-  content: string;
-  tokenEstimate: number;
-  score: number;
-  metadataJSON: string;
+export type ContextArtifactDTO = Omit<Required<ContextArtifactResponse>, "expiresAt"> & {
   expiresAt?: string | null;
-  createdAt: string;
 };
 
-export type PromptTraceDTO = {
-  mode: string;
-  promptFingerprint: string;
-  statefulUsed: boolean;
-  statefulDisabledReason: string;
-  totalTokenEstimate: number;
-  sentTokenEstimate: number;
-  fullMessageCount: number;
-  sentMessageCount: number;
-  statefulSavedMessages: number;
-  statefulSavedTokens: number;
+export type PromptTraceDTO = Omit<Required<MessagePromptTraceResponse>, "blocks"> & {
   blocks: PromptTraceBlockDTO[];
 };
 
@@ -218,9 +139,8 @@ export type ReasoningDeltaDTO = {
   encrypted_content?: string;
 };
 
-export type MessageProcessTraceDTO = {
-  enabled: boolean;
-  status: string;
+export type MessageProcessTraceDTO = Required<Pick<MessageProcessTraceResponse, "enabled" | "status">> &
+  Omit<MessageProcessTraceResponse, "enabled" | "events" | "process" | "promptTrace" | "status" | "tools" | "upstreamThink"> & {
   process?: TraceBlockDTO;
   tools?: TraceBlockDTO;
   upstreamThink?: TraceBlockDTO;
@@ -228,198 +148,84 @@ export type MessageProcessTraceDTO = {
   events?: TraceEventDTO[];
 };
 
-export type TraceEventDTO = {
-  eventID: string;
-  eventType: string;
-  phase: string;
-  stage?: string;
-  roundID?: string;
-  parentEventID?: string;
-  title: string;
-  summary: string;
-  contentMarkdown: string;
-  status: string;
-  seq: number;
-  startedAt: string;
-  endedAt?: string;
-  updatedAt: string;
-  payloadJSON?: string;
-};
+export type TraceEventDTO = Required<
+  Pick<
+    MessageTraceEventResponse,
+    "contentMarkdown" | "eventID" | "eventType" | "phase" | "seq" | "startedAt" | "status" | "summary" | "title" | "updatedAt"
+  >
+> &
+  Omit<
+    MessageTraceEventResponse,
+    "contentMarkdown" | "eventID" | "eventType" | "phase" | "seq" | "startedAt" | "status" | "summary" | "title" | "updatedAt"
+  >;
 
-export type CreateConversationRequest = {
-  title?: string;
-  model?: string;
-  projectID?: string;
-};
+export type CreateConversationRequest = ContractCreateConversationRequest;
 
-export type CreateConversationProjectRequest = {
-  name: string;
-  description?: string;
-  systemPrompt?: string;
+export type CreateConversationProjectRequest = Omit<ContractCreateConversationProjectRequest, "mcpDefaultMode"> & {
   mcpDefaultMode?: ConversationProjectMCPDefaultMode;
-  defaultMCPToolIDs?: number[];
-  defaultSkillIDs?: number[];
-  color?: string;
-  icon?: string;
 };
 
-export type UpdateConversationProjectRequest = {
-  name?: string;
-  description?: string;
-  systemPrompt?: string;
+export type UpdateConversationProjectRequest = Omit<ContractUpdateConversationProjectRequest, "mcpDefaultMode"> & {
   mcpDefaultMode?: ConversationProjectMCPDefaultMode;
-  defaultMCPToolIDs?: number[];
-  defaultSkillIDs?: number[];
-  color?: string;
-  icon?: string;
-  status?: "active" | "archived";
 };
 
-export type ReorderConversationProjectsRequest = {
-  projectIDs: string[];
-};
+export type ReorderConversationProjectsRequest = ContractReorderConversationProjectsRequest;
 
-export type SetConversationProjectRequest = {
-  projectID?: string;
-};
+export type SetConversationProjectRequest = ContractSetConversationProjectRequest;
 
-export type BatchSetConversationProjectRequest = {
-  conversationPublicIDs: string[];
-  projectID?: string;
-};
+export type BatchSetConversationProjectRequest = ContractBatchSetConversationProjectRequest;
 
-export type BatchSetConversationProjectResult = {
-  updated: number;
-};
+export type BatchSetConversationProjectResult = Required<BatchSetConversationProjectResponse>;
 
 export type ConversationOptions = Record<string, unknown>;
 
-export type UpstreamDebugInfo = {
-  request?: {
-    method?: string;
-    path?: string;
-    headers?: Record<string, string>;
-    body?: string;
-  };
-  response?: {
-    statusCode?: number;
-    headers?: Record<string, string>;
-    body?: string;
-  };
-};
+export type UpstreamDebugInfo = ModelProbeDebugResponse;
 
-export type RenameConversationRequest = {
-  title: string;
-};
+export type RenameConversationRequest = ContractRenameConversationRequest;
 
-export type SetConversationStarRequest = {
-  starred: boolean;
-};
+export type SetConversationStarRequest = Required<ContractSetConversationStarRequest>;
 
-export type SetConversationArchiveRequest = {
-  archived: boolean;
-};
+export type SetConversationArchiveRequest = Required<ContractSetConversationArchiveRequest>;
 
-export type DeleteConversationData = {
-  deleted: boolean;
-  deletedFileCount?: number;
+export type DeleteConversationData = Omit<ConversationDeleteResponse, "deleted" | "quota"> & {
+  deleted: NonNullable<ConversationDeleteResponse["deleted"]>;
   quota?: UserStorageQuotaDTO;
 };
 
-export type CreateConversationShareRequest = {
-  defaultMessagePublicIDs?: string[];
-};
+export type CreateConversationShareRequest = ContractCreateConversationShareRequest;
 
-export type ConversationShareDTO = {
-  shareID: string;
-  status: "none" | "active" | "revoked" | "expired" | string;
-  titleSnapshot: string;
-  modelSnapshot: string;
-  messageCount: number;
-  createdAt: string;
-  updatedAt: string;
+export type ConversationShareDTO = Omit<Required<ConversationShareResponse>, "lastAccessedAt" | "revokedAt"> & {
   revokedAt: string | null;
   lastAccessedAt: string | null;
 };
 
-export type RevokeConversationSharesRequest = {
-  conversationPublicIDs: string[];
-};
+export type RevokeConversationSharesRequest = ContractRevokeConversationSharesRequest;
 
-export type RevokeConversationSharesResult = {
-  revoked: boolean;
-};
+export type RevokeConversationSharesResult = Required<RevokeConversationSharesResponse>;
 
-export type PublicSharedMessageDTO = {
-  publicID: string;
-  parentPublicID: string;
-  sourcePublicID: string;
-  runID: string;
-  role: "user" | "assistant" | "system" | string;
-  contentType: string;
-  content: string;
-  branchReason: "default" | "retry" | "edit" | string;
-  tokenUsage: number;
-  inputTokens: number;
-  outputTokens: number;
-  cacheReadTokens: number;
-  cacheWriteTokens: number;
-  reasoningTokens: number;
-  latencyMS: number;
-  status: string;
-  errorCode: string;
-  errorMessage: string;
-  attachments: string;
-  platformModelName: string;
-  upstreamModelName: string;
-  modelVendor: string;
-  modelIcon: string;
+export type PublicSharedMessageDTO = Omit<Required<PublicSharedMessageResponse>, "editedAt" | "processTrace"> & {
   processTrace?: MessageProcessTraceDTO;
   editedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
 };
 
-export type PublicSharedConversationDTO = {
-  shareID: string;
-  title: string;
-  model: string;
-  createdAt: string;
+export type PublicSharedConversationDTO = Omit<
+  Required<PublicSharedConversationResponse>,
+  "lastAccessedAt" | "messages"
+> & {
   lastAccessedAt: string | null;
-  defaultMessagePublicIDs: string[];
   messages: PublicSharedMessageDTO[];
 };
 
-export type SetMessageFeedbackRequest = {
-  feedback?: "up" | "down";
-};
+export type SetMessageFeedbackRequest = ContractSetMessageFeedbackRequest;
 
-export type UpdateMessageRequest = {
-  content: string;
-};
+export type UpdateMessageRequest = ContractUpdateMessageRequest;
 
-export type MessageFeedbackResult = {
-  messageID: number;
-  messagePublicID: string;
+export type MessageFeedbackResult = Omit<Required<MessageFeedbackResponse>, "myFeedback"> & {
   myFeedback: "up" | "down" | "";
-  thumbsUpCount: number;
-  thumbsDownCount: number;
 };
 
-export type SendMessageRequest = {
-  contentType: "text" | "markdown" | "image" | "file" | "mixed";
-  content: string;
-  model?: string;
+export type SendMessageRequest = Omit<ContractSendMessageRequest, "options"> & {
   options?: ConversationOptions;
-  clientRunID?: string;
-  fileIDs?: string[];
-  selectedToolIDs?: number[];
-  skillIDs?: number[];
-  htmlVisualPrompt?: boolean;
-  htmlVisualColorMode?: "light" | "dark";
-  parentMessagePublicID?: string;
-  sourceMessagePublicID?: string;
-  branchReason?: "default" | "retry" | "edit";
 };
 
 export type MediaImageRequest = {
@@ -445,7 +251,7 @@ export type MediaVideoRequest = {
   branchReason?: "default" | "retry" | "edit";
 };
 
-export type SendMessageResult = {
+export type SendMessageResult = Omit<Required<SendMessageResponse>, "assistantMessage" | "metadataRefreshHint" | "userMessage"> & {
   userMessage: MessageDTO;
   assistantMessage: MessageDTO;
   metadataRefreshHint?: "pending" | "not_needed" | "skipped_no_titleable_content" | string;

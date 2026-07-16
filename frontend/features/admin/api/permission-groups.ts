@@ -1,73 +1,49 @@
+import type {
+  CreatePermissionGroupRequest as ContractCreatePermissionGroupRequest,
+  DeletePermissionGroupResponse,
+  GroupModelsResponse,
+  GroupUsersResponse,
+  ModelPermissionGroupsResponse,
+  PermissionGroupDataResponse,
+  PermissionGroupDeleteSummaryResponse,
+  PermissionGroupListResponse,
+  PermissionGroupModelRuleResponse,
+  PermissionGroupResponse,
+  UpdatePermissionGroupRequest as ContractUpdatePermissionGroupRequest,
+} from "@deeix/api-contract";
 import { authedRequest } from "@/shared/api/authed-client";
 import { pathParam } from "@/shared/api/http-client";
 
-export type PermissionGroup = {
-  id: number;
-  name: string;
-  description: string;
-  isDefault: boolean;
-  rateMultiplierPercent: number;
-  modelCount: number;
-  manualModelCount: number;
-  ruleModelCount: number;
-  userCount: number;
-  manualUserCount: number;
-  subscriptionUserCount: number;
-  createdAt: string;
-  updatedAt: string;
-};
+export type PermissionGroup = Required<PermissionGroupResponse>;
 
 export type PermissionGroupModelRuleType = "all" | "vendor" | "protocol" | "upstream";
 
-export type PermissionGroupModelRule = {
+export type PermissionGroupModelRule = Omit<Required<PermissionGroupModelRuleResponse>, "type"> & {
   type: PermissionGroupModelRuleType;
-  value: string;
 };
 
-export type CreatePermissionGroupRequest = {
-  name: string;
-  description: string;
-  rateMultiplierPercent: number;
-};
+export type CreatePermissionGroupRequest = Required<ContractCreatePermissionGroupRequest>;
 
-export type UpdatePermissionGroupRequest = {
-  name: string;
-  description: string;
-  rateMultiplierPercent: number;
-};
+export type UpdatePermissionGroupRequest = Required<ContractUpdatePermissionGroupRequest>;
 
-type PermissionGroupListData = {
+type PermissionGroupListData = Omit<Required<PermissionGroupListResponse>, "results"> & {
   results: PermissionGroup[];
 };
 
-type PermissionGroupData = {
+type PermissionGroupData = Omit<Required<PermissionGroupDataResponse>, "group"> & {
   group: PermissionGroup;
 };
 
-type GroupModelsData = {
-  modelIDs: number[];
+type GroupModelsData = Omit<Required<GroupModelsResponse>, "rules"> & {
   rules?: PermissionGroupModelRule[];
 };
 
-type GroupUsersData = {
-  userIDs: number[];
-};
+type GroupUsersData = Required<GroupUsersResponse>;
 
-type ModelPermissionGroupsData = {
-  manualGroupIDs: number[];
-  matchedGroupIDs: number[];
-  effectiveGroupIDs: number[];
-  unassigned: boolean;
-};
+type ModelPermissionGroupsData = Required<ModelPermissionGroupsResponse>;
 
-export type DeletePermissionGroupResult = {
-  deleted: boolean;
-  summary: {
-    manualModelCount: number;
-    ruleCount: number;
-    manualUserCount: number;
-    planCount: number;
-  };
+export type DeletePermissionGroupResult = Omit<Required<DeletePermissionGroupResponse>, "summary"> & {
+  summary: Required<PermissionGroupDeleteSummaryResponse>;
 };
 
 export async function listPermissionGroups(accessToken: string): Promise<PermissionGroup[]> {

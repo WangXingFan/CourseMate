@@ -1,48 +1,41 @@
+import type {
+  PatchSkillRequest as ContractPatchSkillRequest,
+  SkillDataResponse,
+  SkillDeleteDataResponse,
+  SkillPageResponseDoc,
+  SkillResponse,
+  SkillSummaryResponse,
+  SkillSummaryPageResponseDoc,
+  WriteSkillRequest as ContractWriteSkillRequest,
+} from "@deeix/api-contract";
+
 export type SkillScope = "builtin" | "user";
 
-export type SkillSummaryDTO = {
-  id: number;
+export type SkillSummaryDTO = Omit<Required<SkillSummaryResponse>, "scope"> & {
   scope: SkillScope;
-  title: string;
-  trigger: string;
-  description: string;
-  enabled: boolean;
-  sortOrder: number;
-  createdAt: string;
-  updatedAt: string;
 };
 
-export type SkillDTO = SkillSummaryDTO & {
-  markdown: string;
-  createdByUserID: number;
-  updatedByUserID: number;
+export type SkillDTO = Omit<Required<SkillResponse>, "scope"> & {
+  scope: SkillScope;
 };
 
-export type SkillSummaryPage = {
+type ContractSkillSummaryPage = NonNullable<SkillSummaryPageResponseDoc["data"]>;
+type ContractSkillPage = NonNullable<SkillPageResponseDoc["data"]>;
+
+export type SkillSummaryPage = Omit<Required<ContractSkillSummaryPage>, "results"> & {
   results: SkillSummaryDTO[];
-  total: number;
 };
 
-export type SkillPage = {
+export type SkillPage = Omit<Required<ContractSkillPage>, "results"> & {
   results: SkillDTO[];
-  total: number;
 };
 
-export type WriteSkillRequest = {
-  title: string;
-  trigger: string;
-  description: string;
-  markdown: string;
-  enabled: boolean;
-  sortOrder: number;
-};
+export type WriteSkillRequest = Required<ContractWriteSkillRequest>;
 
-export type PatchSkillRequest = Partial<WriteSkillRequest>;
+export type PatchSkillRequest = ContractPatchSkillRequest;
 
-export type SkillData = {
+export type SkillData = Omit<Required<SkillDataResponse>, "skill"> & {
   skill: SkillDTO;
 };
 
-export type SkillDeleteData = {
-  deleted: boolean;
-};
+export type SkillDeleteData = Required<SkillDeleteDataResponse>;

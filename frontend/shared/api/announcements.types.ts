@@ -1,15 +1,9 @@
-export type AnnouncementDTO = {
-  id: number;
-  title: string;
-  contentMarkdown: string;
-  status: "active" | "inactive" | string;
-  type: "critical" | "warning" | "info" | "normal" | "general" | string;
-  pinned: boolean;
-  priority: number;
+import type { AnnouncementResponse } from "@deeix/api-contract";
+
+type RequiredAnnouncementResponse = Required<AnnouncementResponse>;
+
+export type AnnouncementDTO = Omit<RequiredAnnouncementResponse, "closedAt" | "expiresAt" | "startsAt"> & {
   startsAt: string | null;
   expiresAt: string | null;
-  createdByUserID: number;
-  createdAt: string;
-  updatedAt: string;
   closedAt: string | null;
 };
