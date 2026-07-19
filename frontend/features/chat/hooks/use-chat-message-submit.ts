@@ -181,7 +181,6 @@ type QueuedChatSubmission = {
   selectedToolIDs: number[];
   selectedSkills: SkillSummaryDTO[];
   htmlVisualPromptEnabled: boolean;
-  htmlVisualColorMode: "light" | "dark";
 };
 
 function sleep(ms: number): Promise<void> {
@@ -307,7 +306,6 @@ export function useChatMessageSubmit({
   selectedToolIDs,
   selectedSkills,
   htmlVisualPromptEnabled,
-  htmlVisualColorMode,
   options,
   draft,
   attachments,
@@ -350,7 +348,6 @@ export function useChatMessageSubmit({
   selectedToolIDs: number[];
   selectedSkills: SkillSummaryDTO[];
   htmlVisualPromptEnabled: boolean;
-  htmlVisualColorMode: "light" | "dark";
   options: ConversationOptions;
   draft: string;
   attachments: PendingAttachment[];
@@ -546,7 +543,6 @@ export function useChatMessageSubmit({
       const requestSelectedToolIDs = queuedSubmission?.selectedToolIDs ?? selectedToolIDs;
       const requestSelectedSkills = queuedSubmission?.selectedSkills ?? selectedSkills;
       const requestHTMLVisualPromptEnabled = queuedSubmission?.htmlVisualPromptEnabled ?? htmlVisualPromptEnabled;
-      const requestHTMLVisualColorMode = queuedSubmission?.htmlVisualColorMode ?? htmlVisualColorMode;
       const selectedModel = modelOptions.find((item) => item.platformModelName === requestPlatformModelName) ?? null;
       const resolvedBranchReason = branchReason ?? "default";
       const concurrentBranchRun = resolvedBranchReason === "retry" || resolvedBranchReason === "edit";
@@ -858,7 +854,6 @@ export function useChatMessageSubmit({
             selectedToolIDs: requestSelectedToolIDs.length > 0 ? requestSelectedToolIDs : undefined,
             skillIDs: requestSelectedSkills.length > 0 ? requestSelectedSkills.map((skill) => skill.id) : undefined,
             htmlVisualPrompt: requestHTMLVisualPromptEnabled || undefined,
-            htmlVisualColorMode: requestHTMLVisualPromptEnabled ? requestHTMLVisualColorMode : undefined,
           };
           completed = await streamConversationMessage(token, targetConversationID, chatPayload, streamOptions);
         } else if (submitTask === "video_generation") {
@@ -1074,7 +1069,6 @@ export function useChatMessageSubmit({
       selectedToolIDs,
       selectedSkills,
       htmlVisualPromptEnabled,
-      htmlVisualColorMode,
       selectedPlatformModelName,
       setAttachments,
       setBranchSelections,
@@ -1111,7 +1105,6 @@ export function useChatMessageSubmit({
         selectedToolIDs: selectedToolIDs.slice(),
         selectedSkills: selectedSkills.slice(),
         htmlVisualPromptEnabled,
-        htmlVisualColorMode,
       },
     ]);
     setDraft("");
@@ -1120,7 +1113,6 @@ export function useChatMessageSubmit({
   }, [
     attachments,
     draft,
-    htmlVisualColorMode,
     htmlVisualPromptEnabled,
     options,
     selectedPlatformModelName,

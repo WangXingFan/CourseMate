@@ -1,8 +1,9 @@
+import { spawnSync } from "node:child_process";
 import {
   copyFileSync,
   existsSync,
-  mkdtempSync,
   mkdirSync,
+  mkdtempSync,
   readFileSync,
   rmSync,
   writeFileSync,
@@ -10,7 +11,6 @@ import {
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
-import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const packageDir = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -113,8 +113,13 @@ function normalizeSwagger(swagger) {
   const mapping = definitionNameMap(definitions);
   const normalizedDefinitions = {};
 
-  for (const [originalName, definition] of Object.entries(definitions)) {
-    normalizedDefinitions[mapping.get(originalName)] = definition;
+  const definitionNames = Object.keys(definitions).sort((left, right) => {
+    const leftName = mapping.get(left);
+    const rightName = mapping.get(right);
+    return leftName < rightName ? -1 : leftName > rightName ? 1 : 0;
+  });
+  for (const originalName of definitionNames) {
+    normalizedDefinitions[mapping.get(originalName)] = definitions[originalName];
   }
 
   return rewriteReferences({ ...swagger, definitions: normalizedDefinitions }, mapping);
@@ -122,6 +127,94 @@ function normalizeSwagger(swagger) {
 
 function normalizeText(value) {
   return value.replaceAll("\r\n", "\n");
+}
+
+function rewriteGeneratedDefinitionNames(value, mapping) {
+  let rewritten = value;
+  const replacements = [...mapping.entries()]
+    .filter(([originalName, generatedName]) => originalName !== generatedName)
+    .sort(([left], [right]) => right.length - left.length);
+
+  for (const [originalName, generatedName] of replacements) {
+    rewritten = rewritten.replaceAll(originalName, generatedName);
+  }
+  return rewritten;
+}
+
+function replaceDocsTemplateDefinitions(value, definitions) {
+  const marker = '    "definitions": ';
+  const propertyStart = value.indexOf(marker);
+  if (propertyStart < 0) {
+    throw new Error("Unable to locate definitions in generated docs.go");
+  }
+  const valueStart = propertyStart + marker.length;
+  if (value[valueStart] !== "{") {
+    throw new Error("Expected generated docs.go definitions to be an object");
+  }
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  let valueEnd = -1;
+  for (let index = valueStart; index < value.length; index += 1) {
+    const character = value[index];
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (character === "\\") {
+        escaped = true;
+      } else if (character === '"') {
+        inString = false;
+      }
+      continue;
+    }
+    if (character === '"') {
+      inString = true;
+      continue;
+    }
+    if (character === "{") {
+      depth += 1;
+    } else if (character === "}") {
+      depth -= 1;
+      if (depth === 0) {
+        valueEnd = index + 1;
+        break;
+      }
+    }
+  }
+  if (valueEnd < 0) {
+    throw new Error("Unable to parse generated docs.go definitions object");
+  }
+
+  const formattedDefinitions = JSON.stringify(definitions, null, 4)
+    .split("\n")
+    .map((line, index) => (index === 0 ? `${marker}${line}` : `    ${line}`))
+    .join("\n");
+  return `${value.slice(0, propertyStart)}${formattedDefinitions}${value.slice(valueEnd)}`;
+}
+
+function sortYAMLDefinitions(value) {
+  const marker = "definitions:\n";
+  const sectionStart = value.indexOf(marker);
+  if (sectionStart < 0) {
+    throw new Error("Unable to locate definitions in generated Swagger YAML");
+  }
+  const bodyStart = sectionStart + marker.length;
+  const nextSection = value.slice(bodyStart).search(/^\S/mu);
+  const bodyEnd = nextSection < 0 ? value.length : bodyStart + nextSection;
+  const body = value.slice(bodyStart, bodyEnd);
+  const blockStarts = [...body.matchAll(/^ {2}([^\s][^:]*):\n/gmu)];
+  if (blockStarts.length === 0) {
+    return value;
+  }
+
+  const blocks = blockStarts.map((match, index) => {
+    const start = match.index;
+    const end = blockStarts[index + 1]?.index ?? body.length;
+    return { name: match[1], content: body.slice(start, end) };
+  });
+  blocks.sort((left, right) => (left.name < right.name ? -1 : left.name > right.name ? 1 : 0));
+  return `${value.slice(0, bodyStart)}${blocks.map((block) => block.content).join("")}${value.slice(bodyEnd)}`;
 }
 
 function runCommand(executable, arguments_, cwd) {
@@ -172,20 +265,32 @@ function generateSwagger(outputDir) {
 }
 
 function normalizeGeneratedSwagger(outputDir) {
+  const docsFile = join(outputDir, "docs.go");
   const jsonFile = join(outputDir, "swagger.json");
   const yamlFile = join(outputDir, "swagger.yaml");
   const swagger = JSON.parse(readFileSync(jsonFile, "utf8"));
   const version = swagger.info?.version;
+  const mapping = definitionNameMap(swagger.definitions ?? {});
+  const normalizedSwagger = normalizeSwagger(swagger);
 
-  writeFileSync(jsonFile, `${JSON.stringify(swagger, null, 4)}\n`);
+  writeFileSync(jsonFile, `${JSON.stringify(normalizedSwagger, null, 4)}\n`);
+  const docs = rewriteGeneratedDefinitionNames(readFileSync(docsFile, "utf8"), mapping);
+  writeFileSync(
+    docsFile,
+    replaceDocsTemplateDefinitions(docs, normalizedSwagger.definitions ?? {}),
+  );
+
+  let yaml = sortYAMLDefinitions(
+    rewriteGeneratedDefinitionNames(readFileSync(yamlFile, "utf8"), mapping),
+  );
   if (typeof version === "string" && version !== "") {
-    const yaml = readFileSync(yamlFile, "utf8");
-    const normalizedYaml = yaml.replace(/^  version: .+$/mu, `  version: "${version}"`);
+    const normalizedYaml = yaml.replace(/^ {2}version: .+$/mu, `  version: "${version}"`);
     if (normalizedYaml === yaml && !yaml.includes(`  version: "${version}"`)) {
       throw new Error("Unable to normalize generated Swagger YAML version");
     }
-    writeFileSync(yamlFile, normalizedYaml);
+    yaml = normalizedYaml;
   }
+  writeFileSync(yamlFile, yaml);
 }
 
 function swaggerTypescriptCLI() {
@@ -203,18 +308,33 @@ function assertGeneratedFilesMatch(expectedFiles) {
   const staleFiles = [];
   for (const [committedFile, generatedFile] of expectedFiles) {
     if (!existsSync(committedFile)) {
-      staleFiles.push(committedFile);
+      staleFiles.push({ committedFile, detail: "committed file is missing" });
       continue;
     }
     const committed = normalizeText(readFileSync(committedFile, "utf8"));
     const expected = normalizeText(readFileSync(generatedFile, "utf8"));
     if (committed !== expected) {
-      staleFiles.push(committedFile);
+      const committedLines = committed.split("\n");
+      const expectedLines = expected.split("\n");
+      const lineCount = Math.max(committedLines.length, expectedLines.length);
+      let detail = "content differs";
+      for (let index = 0; index < lineCount; index += 1) {
+        if (committedLines[index] === expectedLines[index]) {
+          continue;
+        }
+        const committedLine = (committedLines[index] ?? "<missing>").slice(0, 160);
+        const expectedLine = (expectedLines[index] ?? "<missing>").slice(0, 160);
+        detail = `line ${index + 1}: committed ${JSON.stringify(committedLine)}, generated ${JSON.stringify(expectedLine)}`;
+        break;
+      }
+      staleFiles.push({ committedFile, detail });
     }
   }
 
   if (staleFiles.length > 0) {
-    const relativeFiles = staleFiles.map((file) => `- ${file.slice(workspaceDir.length + 1)}`);
+    const relativeFiles = staleFiles.map(
+      ({ committedFile, detail }) => `- ${committedFile.slice(workspaceDir.length + 1)} (${detail})`,
+    );
     throw new Error(
       [
         "Generated API contract is stale:",

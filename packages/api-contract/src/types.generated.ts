@@ -2383,7 +2383,6 @@ export interface SendMessageRequest {
   contentType: "text" | "markdown" | "image" | "file" | "mixed";
   /** @maxItems 20 */
   fileIDs?: string[];
-  htmlVisualColorMode?: "light" | "dark";
   htmlVisualPrompt?: boolean;
   /** @maxLength 128 */
   model?: string;
