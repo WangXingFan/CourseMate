@@ -17,14 +17,15 @@ import (
 )
 
 const (
-	conversationMetadataMessageMaxTokens    = int64(5000)
-	conversationFallbackTitleMaxRunes       = 16
-	conversationMetadataGenerationTimeout   = 90 * time.Second
-	conversationAutoGenerateTitleSettingKey = "chat.auto_generate_title"
-	conversationMetadataRefreshPending      = "pending"
-	conversationMetadataRefreshNotNeeded    = "not_needed"
-	conversationMetadataRefreshNoContent    = "skipped_no_titleable_content"
-	conversationMetadataTitlePrompt         = `Generate a concise title from the first conversation turn below. Return ONLY a valid JSON object.
+	conversationMetadataMessageMaxTokens     = int64(5000)
+	conversationFallbackTitleMaxRunes        = 16
+	conversationMetadataGenerationTimeout    = 90 * time.Second
+	conversationAutoGenerateTitleSettingKey  = "chat.auto_generate_title"
+	conversationAutoGenerateLabelsSettingKey = "chat.auto_generate_labels"
+	conversationMetadataRefreshPending       = "pending"
+	conversationMetadataRefreshNotNeeded     = "not_needed"
+	conversationMetadataRefreshNoContent     = "skipped_no_titleable_content"
+	conversationMetadataTitlePrompt          = `Generate a concise title from the first conversation turn below. Return ONLY a valid JSON object.
 
 ## Constraints
 1. **Content**: Reflect the primary topic, goal, or main subject.
@@ -69,18 +70,33 @@ type conversationMetadataLLMResult struct {
 	Authorization     *domainbilling.UsageAuthorization
 }
 
+type conversationMetadataGenerationPlan struct {
+	replaceTitle   bool
+	generateTitle  bool
+	generateLabels bool
+}
+
+func (p conversationMetadataGenerationPlan) shouldRun() bool {
+	return p.replaceTitle || p.generateLabels
+}
+
 func (s *Service) maybeGenerateConversationMetadataAsync(conversation model.Conversation, userMsg model.Message) {
-	if !shouldGenerateConversationMetadata(conversation) {
+	if !shouldAutoReplaceConversationTitle(conversation.Title) && !conversationLabelsEmpty(conversation.LabelsJSON) {
 		return
-	}
-	fallbackTitle := ""
-	if shouldAutoReplaceConversationTitle(conversation.Title) {
-		fallbackTitle = conversationTitleFromFirstUserMessage(userMsg.Content)
 	}
 
 	go func() {
 		asyncCtx, cancel := context.WithTimeout(context.Background(), conversationMetadataGenerationTimeout)
 		defer cancel()
+		plan := s.resolveConversationMetadataGenerationPlan(asyncCtx, conversation)
+		if !plan.shouldRun() {
+			return
+		}
+
+		fallbackTitle := ""
+		if plan.replaceTitle {
+			fallbackTitle = conversationTitleFromFirstUserMessage(userMsg.Content)
+		}
 
 		if fallbackTitle != "" {
 			if _, err := s.repo.UpdateConversationMetadata(asyncCtx, conversation.ID, repository.ConversationMetadataPatch{Title: fallbackTitle}); err != nil && s.logger != nil {
@@ -92,7 +108,7 @@ func (s *Service) maybeGenerateConversationMetadataAsync(conversation model.Conv
 			}
 		}
 
-		if _, err := s.generateConversationMetadata(asyncCtx, conversation, userMsg); err != nil && s.logger != nil {
+		if _, err := s.generateConversationMetadata(asyncCtx, conversation, userMsg, plan); err != nil && s.logger != nil {
 			if errors.Is(err, ErrInvalidConversationTitle) {
 				s.logger.Info("conversation_metadata_skipped",
 					zap.Uint("conversation_id", conversation.ID),
@@ -110,7 +126,12 @@ func (s *Service) maybeGenerateConversationMetadataAsync(conversation model.Conv
 	}()
 }
 
-func (s *Service) generateConversationMetadata(ctx context.Context, conversation model.Conversation, userMsg model.Message) (*model.Conversation, error) {
+func (s *Service) generateConversationMetadata(
+	ctx context.Context,
+	conversation model.Conversation,
+	userMsg model.Message,
+	plan conversationMetadataGenerationPlan,
+) (*model.Conversation, error) {
 	cfg := s.cfg.Snapshot()
 	messages := buildConversationMetadataMessages(userMsg)
 	hasTitleableMessages := strings.TrimSpace(messages) != ""
@@ -119,8 +140,8 @@ func (s *Service) generateConversationMetadata(ctx context.Context, conversation
 	var labelsErr error
 	var updated *model.Conversation
 
-	shouldReplaceTitle := shouldAutoReplaceConversationTitle(conversation.Title)
-	shouldGenerateTitle := shouldReplaceTitle && s.autoGenerateConversationTitleEnabled(ctx, conversation.UserID)
+	shouldReplaceTitle := plan.replaceTitle
+	shouldGenerateTitle := plan.generateTitle
 	fallbackTitle := conversationTitleFromFirstUserMessage(userMsg.Content)
 
 	if shouldGenerateTitle && !hasTitleableMessages {
@@ -155,7 +176,7 @@ func (s *Service) generateConversationMetadata(ctx context.Context, conversation
 		}
 	}
 
-	shouldGenerateLabels := conversationLabelsEmpty(conversation.LabelsJSON)
+	shouldGenerateLabels := plan.generateLabels
 	if shouldGenerateLabels && !hasTitleableMessages {
 		labelsErr = ErrInvalidConversationTitle
 	}
@@ -275,14 +296,30 @@ func buildConversationMetadataMessages(userMsg model.Message) string {
 	return truncateByEstimatedTokens(strings.TrimSpace(sb.String()), conversationMetadataMessageMaxTokens)
 }
 
-func conversationMetadataRefreshHint(conversation model.Conversation, userMsg model.Message) string {
-	if !shouldGenerateConversationMetadata(conversation) {
+func conversationMetadataRefreshHint(
+	conversation model.Conversation,
+	userMsg model.Message,
+	autoGenerateLabels bool,
+) string {
+	if !shouldGenerateConversationMetadata(conversation, autoGenerateLabels) {
 		return conversationMetadataRefreshNotNeeded
 	}
 	if strings.TrimSpace(buildConversationMetadataMessages(userMsg)) == "" {
 		return conversationMetadataRefreshNoContent
 	}
 	return conversationMetadataRefreshPending
+}
+
+func (s *Service) resolveConversationMetadataRefreshHint(
+	ctx context.Context,
+	conversation model.Conversation,
+	userMsg model.Message,
+) string {
+	autoGenerateLabels := true
+	if !shouldAutoReplaceConversationTitle(conversation.Title) && conversationLabelsEmpty(conversation.LabelsJSON) {
+		autoGenerateLabels = s.autoGenerateConversationLabelsEnabled(ctx, conversation.UserID)
+	}
+	return conversationMetadataRefreshHint(conversation, userMsg, autoGenerateLabels)
 }
 
 func buildConversationTitleMessages(messages []model.Message) string {
@@ -601,6 +638,41 @@ func (s *Service) autoGenerateConversationTitleEnabled(ctx context.Context, user
 	return strings.TrimSpace(strings.ToLower(value)) != "false"
 }
 
+func (s *Service) autoGenerateConversationLabelsEnabled(ctx context.Context, userID uint) bool {
+	value, err := s.repo.GetUserSettingValue(ctx, userID, conversationAutoGenerateLabelsSettingKey)
+	if err != nil {
+		if s.logger != nil {
+			s.logger.Warn("conversation_labels_setting_load_failed", zap.Uint("user_id", userID), zap.Error(err))
+		}
+		return true
+	}
+	return strings.TrimSpace(strings.ToLower(value)) != "false"
+}
+
+func (s *Service) resolveConversationMetadataGenerationPlan(
+	ctx context.Context,
+	conversation model.Conversation,
+) conversationMetadataGenerationPlan {
+	replaceTitle := shouldAutoReplaceConversationTitle(conversation.Title)
+	autoGenerateTitle := !replaceTitle || s.autoGenerateConversationTitleEnabled(ctx, conversation.UserID)
+	labelsEmpty := conversationLabelsEmpty(conversation.LabelsJSON)
+	autoGenerateLabels := !labelsEmpty || s.autoGenerateConversationLabelsEnabled(ctx, conversation.UserID)
+	return buildConversationMetadataGenerationPlan(conversation, autoGenerateTitle, autoGenerateLabels)
+}
+
+func buildConversationMetadataGenerationPlan(
+	conversation model.Conversation,
+	autoGenerateTitle bool,
+	autoGenerateLabels bool,
+) conversationMetadataGenerationPlan {
+	replaceTitle := shouldAutoReplaceConversationTitle(conversation.Title)
+	return conversationMetadataGenerationPlan{
+		replaceTitle:   replaceTitle,
+		generateTitle:  replaceTitle && autoGenerateTitle,
+		generateLabels: conversationLabelsEmpty(conversation.LabelsJSON) && autoGenerateLabels,
+	}
+}
+
 func shouldAutoReplaceConversationTitle(title string) bool {
 	value := strings.TrimSpace(strings.ToLower(title))
 	switch value {
@@ -611,8 +683,9 @@ func shouldAutoReplaceConversationTitle(title string) bool {
 	}
 }
 
-func shouldGenerateConversationMetadata(conversation model.Conversation) bool {
-	return shouldAutoReplaceConversationTitle(conversation.Title) || conversationLabelsEmpty(conversation.LabelsJSON)
+func shouldGenerateConversationMetadata(conversation model.Conversation, autoGenerateLabels bool) bool {
+	return shouldAutoReplaceConversationTitle(conversation.Title) ||
+		(autoGenerateLabels && conversationLabelsEmpty(conversation.LabelsJSON))
 }
 
 func conversationLabelsEmpty(labelsJSON string) bool {

@@ -209,6 +209,7 @@ export function AppChatArea() {
   const activeGenerationRunsRef = React.useRef<Set<string>>(new Set());
   const failedGenerationRunsRef = React.useRef<Set<string>>(new Set());
   const {
+    autoGenerateLabels,
     deleteFilesByDefault,
     loaded: chatPreferencesLoaded,
     reuseModelOptions,
@@ -587,6 +588,7 @@ export function AppChatArea() {
     maxFilesPerMessage,
     uploading,
     restoreDraftOnFailure,
+    autoGenerateLabels,
     prependNewConversation: prependNewConversationInContext,
     onConversationCreated: setLocallyCreatedConversationID,
     touchByPublicID,
