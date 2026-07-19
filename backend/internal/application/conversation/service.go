@@ -150,7 +150,6 @@ type SendMessageInput struct {
 	SelectedToolIDs         []uint
 	SkillIDs                []uint
 	HTMLVisualPromptEnabled bool
-	HTMLVisualColorMode     string
 	ParentMessagePublicID   string
 	SourceMessagePublicID   string
 	BranchReason            string
