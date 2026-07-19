@@ -147,18 +147,7 @@ func normalizeDefaultBranchContext(
 		return nil, nil
 	}
 
-	contextMessages := append([]model.Message(nil), ancestors...)
-	for index := range contextMessages {
-		if isRecoveredAssistantRetryUser(contextMessages, index) {
-			// A successful assistant retry makes the reused user message valid context.
-			// Promote only the in-memory copy so existing conversations recover without
-			// rewriting historical rows, while downstream attachment collection also
-			// sees the retried user message as usable context.
-			contextMessages[index].Status = "success"
-			contextMessages[index].ErrorCode = ""
-			contextMessages[index].ErrorMessage = ""
-		}
-	}
+	contextMessages := recoverAssistantRetryUserStates(ancestors)
 
 	end := len(contextMessages)
 	for end > 0 && !isContextMessage(&contextMessages[end-1]) {
@@ -182,6 +171,28 @@ func normalizeDefaultBranchContext(
 	}
 	nextParent := normalized[len(normalized)-1]
 	return normalized, &nextParent
+}
+
+// recoverAssistantRetryUserStates makes a reused user message valid context
+// after its assistant retry produced usable output. Persisted history remains
+// unchanged so the original failed run can still be diagnosed.
+func recoverAssistantRetryUserStates(messages []model.Message) []model.Message {
+	var recovered []model.Message
+	for index := range messages {
+		if !isRecoveredAssistantRetryUser(messages, index) {
+			continue
+		}
+		if recovered == nil {
+			recovered = append([]model.Message(nil), messages...)
+		}
+		recovered[index].Status = "success"
+		recovered[index].ErrorCode = ""
+		recovered[index].ErrorMessage = ""
+	}
+	if recovered == nil {
+		return messages
+	}
+	return recovered
 }
 
 func isRecoveredAssistantRetryUser(messages []model.Message, index int) bool {

@@ -53,6 +53,44 @@ func TestNormalizeDefaultBranchContextKeepsHistoryAfterSuccessfulAssistantRetry(
 	}
 }
 
+func TestRecoverAssistantRetryUserStatesRestoresExpandedContext(t *testing.T) {
+	rootUserID := uint(1)
+	rootAssistantID := uint(2)
+	failedUserID := uint(3)
+	sourceAssistantID := uint(4)
+	retryAssistantID := uint(5)
+	retriedAttachments, err := json.Marshal([]attachmentSnapshotRef{{FileID: "file_from_retried_user"}})
+	if err != nil {
+		t.Fatalf("marshal retried user attachments: %v", err)
+	}
+	messages := []model.Message{
+		{ID: rootUserID, Role: "user", Status: "success"},
+		{ID: rootAssistantID, ParentMessageID: &rootUserID, Role: "assistant", Status: "success"},
+		{ID: failedUserID, ParentMessageID: &rootAssistantID, Role: "user", Status: "error", Attachments: string(retriedAttachments)},
+		{ID: retryAssistantID, ParentMessageID: &failedUserID, SourceMessageID: &sourceAssistantID, Role: "assistant", BranchReason: "retry", Status: "success"},
+		{ID: 6, ParentMessageID: &retryAssistantID, Role: "user", Status: "pending"},
+	}
+
+	recovered := recoverAssistantRetryUserStates(messages)
+
+	if len(recovered) != len(messages) {
+		t.Fatalf("expected expanded context length %d, got %#v", len(messages), recovered)
+	}
+	if recovered[2].Status != "success" {
+		t.Fatalf("expected retried user to be recovered, got status %q", recovered[2].Status)
+	}
+	if recovered[4].Status != "pending" {
+		t.Fatalf("expected unrelated message state to remain pending, got %q", recovered[4].Status)
+	}
+	if messages[2].Status != "error" {
+		t.Fatalf("expected persisted state copy to remain unchanged, got %q", messages[2].Status)
+	}
+	fileIDs := collectConversationFileIDs(recovered, nil)
+	if len(fileIDs) != 1 || fileIDs[0] != "file_from_retried_user" {
+		t.Fatalf("expected recovered attachment in expanded context, got %#v", fileIDs)
+	}
+}
+
 func TestNormalizeDefaultBranchContextDoesNotRecoverFailedRetry(t *testing.T) {
 	rootUserID := uint(1)
 	rootAssistantID := uint(2)
