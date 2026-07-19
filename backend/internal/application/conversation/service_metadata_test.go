@@ -126,33 +126,51 @@ func TestBuildConversationMetadataMessagesEmptyWhenNoText(t *testing.T) {
 
 func TestConversationMetadataRefreshHint(t *testing.T) {
 	cases := []struct {
-		name         string
-		conversation model.Conversation
-		userMsg      model.Message
-		want         string
+		name               string
+		conversation       model.Conversation
+		userMsg            model.Message
+		autoGenerateLabels bool
+		want               string
 	}{
 		{
-			name:         "not needed when title and labels already exist",
-			conversation: model.Conversation{Title: "已有标题", LabelsJSON: `["技术"]`},
-			userMsg:      model.Message{Content: "新的问题"},
-			want:         conversationMetadataRefreshNotNeeded,
+			name:               "not needed when title and labels already exist",
+			conversation:       model.Conversation{Title: "已有标题", LabelsJSON: `["技术"]`},
+			userMsg:            model.Message{Content: "新的问题"},
+			autoGenerateLabels: true,
+			want:               conversationMetadataRefreshNotNeeded,
 		},
 		{
-			name:         "skip when no titleable text",
-			conversation: model.Conversation{Title: "新对话", LabelsJSON: "[]"},
-			want:         conversationMetadataRefreshNoContent,
+			name:               "skip when no titleable text",
+			conversation:       model.Conversation{Title: "新对话", LabelsJSON: "[]"},
+			autoGenerateLabels: true,
+			want:               conversationMetadataRefreshNoContent,
 		},
 		{
-			name:         "pending when metadata needed and text exists",
-			conversation: model.Conversation{Title: "新对话", LabelsJSON: "[]"},
-			userMsg:      model.Message{Content: "帮我整理本周项目计划"},
-			want:         conversationMetadataRefreshPending,
+			name:               "pending when metadata needed and text exists",
+			conversation:       model.Conversation{Title: "新对话", LabelsJSON: "[]"},
+			userMsg:            model.Message{Content: "帮我整理本周项目计划"},
+			autoGenerateLabels: true,
+			want:               conversationMetadataRefreshPending,
+		},
+		{
+			name:               "not needed when only empty labels are disabled",
+			conversation:       model.Conversation{Title: "已有标题", LabelsJSON: "[]"},
+			userMsg:            model.Message{Content: "帮我整理本周项目计划"},
+			autoGenerateLabels: false,
+			want:               conversationMetadataRefreshNotNeeded,
+		},
+		{
+			name:               "pending for fallback title when labels are disabled",
+			conversation:       model.Conversation{Title: "新对话", LabelsJSON: "[]"},
+			userMsg:            model.Message{Content: "帮我整理本周项目计划"},
+			autoGenerateLabels: false,
+			want:               conversationMetadataRefreshPending,
 		},
 	}
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			got := conversationMetadataRefreshHint(tc.conversation, tc.userMsg)
+			got := conversationMetadataRefreshHint(tc.conversation, tc.userMsg, tc.autoGenerateLabels)
 			if got != tc.want {
 				t.Fatalf("unexpected metadata refresh hint: got %q, want %q", got, tc.want)
 			}
@@ -258,8 +276,31 @@ func TestShouldGenerateConversationMetadataAfterFailedFirstTurn(t *testing.T) {
 		MessageCount: 2,
 	}
 
-	if !shouldGenerateConversationMetadata(conversation) {
+	if !shouldGenerateConversationMetadata(conversation, true) {
 		t.Fatal("expected placeholder metadata to be generated even when failed messages already exist")
+	}
+}
+
+func TestConversationMetadataGenerationPlanRespectsLabelPreference(t *testing.T) {
+	conversation := model.Conversation{Title: "已有标题", LabelsJSON: "[]"}
+
+	disabled := buildConversationMetadataGenerationPlan(conversation, true, false)
+	if disabled.shouldRun() || disabled.generateLabels {
+		t.Fatalf("expected disabled labels to skip metadata generation, got %#v", disabled)
+	}
+
+	enabled := buildConversationMetadataGenerationPlan(conversation, true, true)
+	if !enabled.shouldRun() || !enabled.generateLabels {
+		t.Fatalf("expected enabled labels to schedule metadata generation, got %#v", enabled)
+	}
+}
+
+func TestConversationMetadataGenerationPlanKeepsFallbackTitleWhenModelTasksAreDisabled(t *testing.T) {
+	conversation := model.Conversation{Title: "新对话", LabelsJSON: "[]"}
+
+	plan := buildConversationMetadataGenerationPlan(conversation, false, false)
+	if !plan.shouldRun() || !plan.replaceTitle || plan.generateTitle || plan.generateLabels {
+		t.Fatalf("expected only fallback title metadata work, got %#v", plan)
 	}
 }
 

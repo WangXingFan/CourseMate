@@ -235,12 +235,16 @@ function conversationTitleFromFirstUserMessage(content: string): string {
   return Array.from(value).slice(0, 16).join("").trim();
 }
 
-function hasPendingGeneratedConversationMetadata(item: ConversationDTO | null, fallbackTitle = ""): boolean {
+function hasPendingGeneratedConversationMetadata(
+  item: ConversationDTO | null,
+  autoGenerateLabels: boolean,
+  fallbackTitle = "",
+): boolean {
   return (
     !item ||
     isPlaceholderConversationTitle(item.title) ||
     isFallbackConversationTitle(item.title, fallbackTitle) ||
-    normalizeLabelsJSON(item.labelsJSON) === "[]"
+    (autoGenerateLabels && normalizeLabelsJSON(item.labelsJSON) === "[]")
   );
 }
 
@@ -259,9 +263,10 @@ function hasGeneratedConversationMetadataChanged(
 function shouldPollGeneratedConversationMetadata(
   item: ConversationDTO | null,
   result: SendMessageResult | null | undefined,
+  autoGenerateLabels: boolean,
   fallbackTitle = "",
 ): boolean {
-  if (!hasPendingGeneratedConversationMetadata(item, fallbackTitle)) {
+  if (!hasPendingGeneratedConversationMetadata(item, autoGenerateLabels, fallbackTitle)) {
     return false;
   }
   const hint = result?.metadataRefreshHint?.trim();
@@ -275,6 +280,7 @@ async function refreshGeneratedConversationMetadata(
   accessToken: string,
   conversationPublicID: string,
   previous: ConversationDTO | null,
+  autoGenerateLabels: boolean,
   fallbackTitle: string,
   touchByPublicID: (publicID: string, patch?: Partial<ConversationDTO>) => void,
 ): Promise<void> {
@@ -296,7 +302,7 @@ async function refreshGeneratedConversationMetadata(
     if (hasGeneratedConversationMetadataChanged(current, latest)) {
       touchByPublicID(conversationPublicID, latest);
       current = latest;
-      if (!hasPendingGeneratedConversationMetadata(latest, fallbackTitle)) {
+      if (!hasPendingGeneratedConversationMetadata(latest, autoGenerateLabels, fallbackTitle)) {
         return;
       }
     }
@@ -323,6 +329,7 @@ export function useChatMessageSubmit({
   maxFilesPerMessage,
   uploading,
   restoreDraftOnFailure,
+  autoGenerateLabels,
   prependNewConversation,
   onConversationCreated,
   touchByPublicID,
@@ -365,6 +372,7 @@ export function useChatMessageSubmit({
   maxFilesPerMessage: number;
   uploading: boolean;
   restoreDraftOnFailure: boolean;
+  autoGenerateLabels: boolean;
   prependNewConversation: (platformModelName: string) => Promise<ConversationDTO | null | undefined>;
   onConversationCreated?: (conversationPublicID: string) => void;
   touchByPublicID: (publicID: string, patch?: Partial<ConversationDTO>) => void;
@@ -705,7 +713,12 @@ export function useChatMessageSubmit({
           if (
             !targetConversationID ||
             metadataRefreshInFlight ||
-            !shouldPollGeneratedConversationMetadata(targetConversation, result, metadataFallbackTitle)
+            !shouldPollGeneratedConversationMetadata(
+              targetConversation,
+              result,
+              autoGenerateLabels,
+              metadataFallbackTitle,
+            )
           ) {
             return;
           }
@@ -714,6 +727,7 @@ export function useChatMessageSubmit({
             token,
             targetConversationID,
             targetConversation,
+            autoGenerateLabels,
             metadataFallbackTitle,
             touchByPublicID,
           )
@@ -761,7 +775,6 @@ export function useChatMessageSubmit({
           }
           touchByPublicID(targetConversationID, { title: optimisticTitle });
         }
-        startMetadataRefresh(null);
         const commonStreamPayload = {
           model: requestPlatformModelName,
           options: Object.keys(sanitizedOptions).length > 0 ? sanitizedOptions : undefined,
@@ -990,7 +1003,7 @@ export function useChatMessageSubmit({
           activeConversationRef.current = { ...currentConversation, ...conversationPatch };
         }
         touchByPublicID(targetConversationID, conversationPatch);
-        if (assistantMessageSucceeded) {
+        if (assistantMessageSucceeded || completed.metadataRefreshHint?.trim() === "pending") {
           startMetadataRefresh(completed);
         }
         releaseAttachments(effectiveAttachments);
@@ -1065,6 +1078,7 @@ export function useChatMessageSubmit({
     },
     [
       activeGenerationRunsRef,
+      autoGenerateLabels,
       failedGenerationRunsRef,
       enqueueUpstreamThinkDelta,
       enqueueStreamText,

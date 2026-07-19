@@ -1454,7 +1454,7 @@ func (s *Service) sendMessageInternal(
 	return &SendMessageResult{
 		UserMessage:           *userMessage,
 		AssistantMessage:      *assistantMessage,
-		MetadataRefreshHint:   conversationMetadataRefreshHint(*conversation, *userMessage),
+		MetadataRefreshHint:   s.resolveConversationMetadataRefreshHint(ctx, *conversation, *userMessage),
 		Billable:              true,
 		UpstreamID:            run.UpstreamID,
 		UpstreamName:          run.UpstreamName,
