@@ -117,7 +117,7 @@ func (h *Handler) SearchConversations(c *gin.Context) {
 	page, pageSize := pageParams(c)
 	searchQuery := strings.TrimSpace(c.Query("q"))
 	if len([]rune(searchQuery)) > maxConversationSearchQueryRunes {
-		response.Error(c, http.StatusBadRequest, "search query is too long")
+		response.ErrorWithCode(c, http.StatusBadRequest, response.CodeRequestInvalidQuery, "search query is too long")
 		return
 	}
 	items, hasMore, err := h.service.SearchConversations(
