@@ -22,9 +22,11 @@ type capturingMCPClient struct {
 	cfg    mcp.CallConfig
 	input  mcp.CallInput
 	output string
+	called bool
 }
 
 func (c *capturingMCPClient) CallTool(_ context.Context, cfg mcp.CallConfig, input mcp.CallInput) (string, error) {
+	c.called = true
 	c.cfg = cfg
 	c.input = input
 	return c.output, nil
@@ -32,7 +34,7 @@ func (c *capturingMCPClient) CallTool(_ context.Context, cfg mcp.CallConfig, inp
 
 func newToolService(secret string, client *capturingMCPClient) *Service {
 	return &Service{
-		cfg:       config.NewRuntime(config.Config{JWTSecret: secret}),
+		cfg:       config.NewRuntime(config.Config{JWTSecret: "jwt-secret", MCPUserContextSecret: secret}),
 		mcpClient: client,
 	}
 }
@@ -121,7 +123,7 @@ func TestExecuteToolCallLeavesHeadersUntouchedWithoutTemplate(t *testing.T) {
 	}
 }
 
-func TestExecuteToolCallDropsTemplateHeaderWhenSigningFails(t *testing.T) {
+func TestExecuteToolCallFailsClosedWhenSigningFails(t *testing.T) {
 	client := &capturingMCPClient{output: "ok"}
 	svc := newToolService("", client)
 	_, err := svc.executeToolCall(context.Background(), ExecuteToolInput{
@@ -133,11 +135,11 @@ func TestExecuteToolCallDropsTemplateHeaderWhenSigningFails(t *testing.T) {
 			Headers: map[string]string{mcpauth.HeaderName: mcpauth.TemplateSignedUserContext},
 		},
 	})
-	if err != nil {
-		t.Fatalf("execute failed: %v", err)
+	if err == nil || !strings.Contains(err.Error(), "mcp user context signing failed") {
+		t.Fatalf("expected signing failure, got %v", err)
 	}
-	if _, ok := client.cfg.Headers[mcpauth.HeaderName]; ok {
-		t.Fatalf("expected template header to be dropped, got %#v", client.cfg.Headers)
+	if client.called {
+		t.Fatal("MCP client was called after signing failed")
 	}
 }
 

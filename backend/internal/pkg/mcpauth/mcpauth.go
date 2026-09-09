@@ -1,8 +1,8 @@
 // Package mcpauth 提供 MCP 工具调用携带的签名用户上下文。
 //
 // DEEIX 在 tools/call 时可以把当前用户身份以 HMAC 签名的形式发给 MCP 服务端，
-// 供外部网关按用户隔离单租户 MCP 工具。签名密钥复用实例的 JWT_SECRET，
-// 服务端可以用同一个密钥独立校验，不需要额外的密钥分发。
+// 供外部网关按用户隔离单租户 MCP 工具。签名密钥使用 MCP 专用配置，
+// 服务端可以用同一个 MCP 专用密钥独立校验，不需要额外的密钥分发。
 package mcpauth
 
 import (

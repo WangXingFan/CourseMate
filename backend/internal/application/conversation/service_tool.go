@@ -33,7 +33,10 @@ func (s *Service) executeToolCall(ctx context.Context, input ExecuteToolInput) (
 		return "", fmt.Errorf("mcp client is not configured")
 	}
 	cfg := s.cfg.Snapshot()
-	mcpCfg := applySignedUserContext(cfg, *input.MCPConfig, input)
+	mcpCfg, err := applySignedUserContext(cfg, *input.MCPConfig, input)
+	if err != nil {
+		return "", err
+	}
 
 	limit := cfg.MCPMaxConcurrentCalls
 	if limit <= 0 {
@@ -53,10 +56,10 @@ func (s *Service) executeToolCall(ctx context.Context, input ExecuteToolInput) (
 
 // applySignedUserContext 将请求头中值等于 ${DEEIX_SIGNED_USER_CONTEXT} 占位符的项
 // 替换为本次工具调用签名的用户上下文。未配置占位符时原样返回，不改变现有行为；
-// 签名失败时丢弃占位符项，不向 MCP 服务端发送无法校验的内容。
-func applySignedUserContext(cfg config.Config, base mcp.CallConfig, input ExecuteToolInput) mcp.CallConfig {
+// 签名失败时拒绝调用，避免 MCP 服务端收到没有用户上下文的请求。
+func applySignedUserContext(cfg config.Config, base mcp.CallConfig, input ExecuteToolInput) (mcp.CallConfig, error) {
 	if len(base.Headers) == 0 {
-		return base
+		return base, nil
 	}
 	matched := false
 	for _, value := range base.Headers {
@@ -66,27 +69,27 @@ func applySignedUserContext(cfg config.Config, base mcp.CallConfig, input Execut
 		}
 	}
 	if !matched {
-		return base
+		return base, nil
 	}
-	token, err := mcpauth.Sign(cfg.JWTSecret, mcpauth.Payload{
+	token, err := mcpauth.Sign(cfg.MCPUserContextSecret, mcpauth.Payload{
 		UserID:         input.UserID,
 		ConversationID: input.ConversationID,
 		RequestID:      strings.TrimSpace(input.RequestID),
 		ExpiresAt:      time.Now().Add(mcpauth.DefaultTTL).Unix(),
 	})
+	if err != nil || token == "" {
+		return mcp.CallConfig{}, fmt.Errorf("mcp user context signing failed")
+	}
 	expanded := make(map[string]string, len(base.Headers))
 	for key, value := range base.Headers {
 		if strings.TrimSpace(value) != mcpauth.TemplateSignedUserContext {
 			expanded[key] = value
 			continue
 		}
-		if err != nil || token == "" {
-			continue
-		}
 		expanded[key] = token
 	}
 	base.Headers = expanded
-	return base
+	return base, nil
 }
 
 func (s *Service) resolveMaxToolCallsPerRun() int {
