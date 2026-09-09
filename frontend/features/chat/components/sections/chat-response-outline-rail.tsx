@@ -356,11 +356,13 @@ function ChatResponseOutlineRailComponent({
     }
 
     viewport.addEventListener("scroll", handleViewportScroll, { passive: true });
-    const handleWheel = (event: WheelEvent) => {
-      if (event.deltaY === 0 || event.ctrlKey) {
+    const cancelForViewportScroll = (event: Event, direction: number) => {
+      const navigationTarget = navigationTargetRef.current;
+      const path = event.composedPath();
+      if (!navigationTarget || event.defaultPrevented || !path.includes(viewport)) {
         return;
       }
-      for (const target of event.composedPath()) {
+      for (const target of path) {
         if (target === viewport) {
           break;
         }
@@ -371,17 +373,46 @@ function ChatResponseOutlineRailComponent({
         if (overflowY !== "auto" && overflowY !== "scroll") {
           continue;
         }
-        const canScroll = event.deltaY < 0
+        const canScroll = direction < 0
           ? target.scrollTop > 0
           : target.scrollTop + target.clientHeight < target.scrollHeight;
         if (canScroll || overscrollBehaviorY !== "auto") {
           return;
         }
       }
-      cancelNavigationTarget();
+      // React handlers run later in propagation and may consume the event.
+      window.setTimeout(() => {
+        if (!event.defaultPrevented && navigationTargetRef.current === navigationTarget) {
+          cancelNavigationTarget();
+        }
+      }, 0);
+    };
+    const handleWheel = (event: WheelEvent) => {
+      if (event.ctrlKey || event.shiftKey || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) {
+        return;
+      }
+      cancelForViewportScroll(event, event.deltaY);
+    };
+    let previousTouch: Touch | null = null;
+    const handleTouchStart = (event: TouchEvent) => {
+      previousTouch = event.touches.length === 1 ? event.touches[0] : null;
+    };
+    const handleTouchMove = (event: TouchEvent) => {
+      const previous = previousTouch;
+      const touch = event.touches.length === 1 ? event.touches[0] : null;
+      previousTouch = touch;
+      if (!previous || !touch || previous.identifier !== touch.identifier) {
+        return;
+      }
+      const deltaY = previous.clientY - touch.clientY;
+      const deltaX = previous.clientX - touch.clientX;
+      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        cancelForViewportScroll(event, deltaY);
+      }
     };
     viewport.addEventListener("wheel", handleWheel, { passive: true });
-    viewport.addEventListener("touchmove", cancelNavigationTarget, { passive: true });
+    viewport.addEventListener("touchstart", handleTouchStart, { passive: true });
+    viewport.addEventListener("touchmove", handleTouchMove, { passive: true });
     const root = viewport.closest<HTMLElement>('[data-slot="message-scroller"]');
     const handlePointerDown = (event: PointerEvent) => {
       if (event.target instanceof Node && !viewport.contains(event.target)) {
@@ -397,8 +428,10 @@ function ChatResponseOutlineRailComponent({
       ) {
         return;
       }
-      if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(event.key)) {
-        cancelNavigationTarget();
+      if (["ArrowUp", "PageUp", "Home"].includes(event.key) || (event.key === " " && event.shiftKey)) {
+        cancelForViewportScroll(event, -1);
+      } else if (["ArrowDown", "PageDown", "End", " "].includes(event.key)) {
+        cancelForViewportScroll(event, 1);
       }
     };
     root?.addEventListener("keydown", handleKeyDown);
@@ -433,7 +466,8 @@ function ChatResponseOutlineRailComponent({
     return () => {
       viewport.removeEventListener("scroll", handleViewportScroll);
       viewport.removeEventListener("wheel", handleWheel);
-      viewport.removeEventListener("touchmove", cancelNavigationTarget);
+      viewport.removeEventListener("touchstart", handleTouchStart);
+      viewport.removeEventListener("touchmove", handleTouchMove);
       root?.removeEventListener("pointerdown", handlePointerDown);
       root?.removeEventListener("keydown", handleKeyDown);
       viewportResizeObserver?.disconnect();
@@ -559,7 +593,7 @@ function ChatResponseOutlineRailComponent({
           <div
             ref={railContentRef}
             className={cn(
-              "flex min-h-full flex-col items-center gap-1 px-1 py-1",
+              "flex min-h-full flex-col items-center gap-0.5 px-1 py-1",
               !railOverflowing && "justify-center",
             )}
           >

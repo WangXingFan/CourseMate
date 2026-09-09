@@ -332,7 +332,7 @@ function ChatMessagePositionRailComponent({
       <div
         ref={railContentRef}
         className={cn(
-          "flex min-h-full flex-col items-center gap-1 px-1 py-1",
+          "flex min-h-full flex-col items-center gap-0.5 px-1 py-1",
           !railOverflowing && "justify-center",
         )}
       >
