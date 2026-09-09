@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { CheckCircle2, FileBraces, ListOrdered, Pencil, Plus, RefreshCw, Save, Trash2, Wrench, X, XCircle } from "lucide-react";
+import { CheckCircle2, ChevronDown, FileBraces, ListOrdered, ListPlus, Pencil, Plus, RefreshCw, Save, Trash2, Wrench, X, XCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
@@ -28,6 +28,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -113,6 +120,11 @@ const TOOL_SORT_OPTIONS = [
   { labelKey: "sort.updatedAsc", value: "updated_asc" },
 ] as const;
 
+const SIGNED_USER_CONTEXT_HEADER: readonly [string, string] = [
+  "X-Deeix-User-Context",
+  String.raw`\${DEEIX_SIGNED_USER_CONTEXT}`,
+];
+
 function serverStatusLabel(status: string, translate: (key: string) => string): string {
   return status === "active" ? translate("status.active") : translate("status.inactive");
 }
@@ -136,6 +148,27 @@ function toServerPayload(form: ServerFormState): AdminMCPServerPayload {
     headersJSON: form.headersJSON.trim() || "{}",
     status: form.status,
   };
+}
+
+function addMCPHeaderPreset(headersJSON: string, [name, value]: readonly [string, string]): string | null | undefined {
+  const raw = headersJSON.trim();
+  let headers: Record<string, unknown> = {};
+  if (raw) {
+    try {
+      const parsed: unknown = JSON.parse(raw);
+      if (parsed === null || Array.isArray(parsed) || typeof parsed !== "object") return null;
+      headers = { ...(parsed as Record<string, unknown>) };
+    } catch {
+      return null;
+    }
+  }
+
+  const existingKey = Object.keys(headers).find((key) => key.toLowerCase() === name.toLowerCase());
+  if (existingKey) {
+    return headers[existingKey] === value ? headersJSON : undefined;
+  }
+  headers[name] = value;
+  return JSON.stringify(headers, null, 2);
 }
 
 function formatTime(value: string | null | undefined, locale: string, fallback: string): string {
@@ -1222,7 +1255,40 @@ export function AdminToolsPage() {
               </div>
 
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">{t("serverDialog.headers")}</p>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs text-muted-foreground">{t("serverDialog.headers")}</p>
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                      <Button type="button" variant="ghost" size="sm" className="h-6 gap-1 px-2 text-[11px]" disabled={serverSaving}>
+                        <ListPlus className="size-3" />
+                        {t("serverDialog.quickFillHeaders")}
+                        <ChevronDown className="size-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="min-w-64">
+                      <DropdownMenuLabel className="text-[10px] text-muted-foreground">
+                        {t("serverDialog.commonHeaderPresets")}
+                      </DropdownMenuLabel>
+                      <DropdownMenuItem
+                        onSelect={() => {
+                          const next = addMCPHeaderPreset(serverForm.headersJSON, SIGNED_USER_CONTEXT_HEADER);
+                          if (next === null) {
+                            toast.error(t("toast.invalidHeaders"));
+                            return;
+                          }
+                          if (next === undefined) {
+                            toast.info(t("toast.headerPresetConflict"));
+                            return;
+                          }
+                          setServerForm((prev) => ({ ...prev, headersJSON: next }));
+                        }}
+                      >
+                        <FileBraces />
+                        {t("serverDialog.signedUserContextHeader")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
                 <Textarea
                   value={serverForm.headersJSON}
                   className="h-24 resize-none font-mono text-xs"

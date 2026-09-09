@@ -76,6 +76,7 @@ cp config.sqlite.example.yaml config.yaml
 - `APP_ENV`：运行环境，支持 `dev`/`development` 和 `prod`/`production`；未配置时默认 `prod`
 - `HTTP_PORT`：HTTP 端口
 - `JWT_SECRET`：JWT 签名密钥
+- `MCP_USER_CONTEXT_SECRET`：MCP 用户上下文签名密钥；启用 `${DEEIX_SIGNED_USER_CONTEXT}` 时必须配置，并应与外部 MCP 网关共享
 - `POSTGRES_DSN`：PostgreSQL DSN
 - `REDIS_ADDR` / `REDIS_USERNAME` / `REDIS_PASSWORD` / `REDIS_DB` / `REDIS_TLS_ENABLED` / `REDIS_TLS_INSECURE_SKIP_VERIFY`：Redis 连接配置；`REDIS_TLS_INSECURE_SKIP_VERIFY` 会跳过证书校验，除非非标准 TLS 端点要求，否则保持关闭
 - `STORAGE_BACKEND`：`local` 或 `s3`
@@ -354,6 +355,8 @@ MCP 能力由后台工具设置管理：
 - 工具可单独启停；用户在聊天输入区选择可用工具。
 - 单次 run 支持最大 LLM 调用轮数、最大工具调用次数、并发数、超时和失败重试配置。
 - 工具调用结果会进入消息处理轨迹，前端与“处理链路 / 思考链路”并列展示工具链路。
+
+管理员可在 MCP Server 的请求头中配置签名用户上下文头：把某个请求头的值填为占位符 `${DEEIX_SIGNED_USER_CONTEXT}`，每次用户工具调用时该头会被替换为 HMAC-SHA256 签名的 token（payload 含 `user_id`、`conversation_id`、`request_id` 与过期时间，签名密钥来自独立的 `MCP_USER_CONTEXT_SECRET`，默认有效期 5 分钟）。MCP 服务端或外部网关可用同一 MCP 密钥校验，按用户隔离单租户 MCP 工具。工具同步时会忽略该占位符，不会把占位符原文发送给 MCP。启用了占位符但未配置签名密钥时，工具调用会失败并不会发送请求。未配置占位符的服务端不会收到任何额外请求头。
 
 计费侧把一次用户触发的多轮 LLM + 工具调用视为一次 run 汇总统计。
 
