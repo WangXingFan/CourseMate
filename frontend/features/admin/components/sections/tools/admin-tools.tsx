@@ -26,6 +26,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogHeightTransition,
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
@@ -122,7 +123,7 @@ const TOOL_SORT_OPTIONS = [
 
 const SIGNED_USER_CONTEXT_HEADER: readonly [string, string] = [
   "X-Deeix-User-Context",
-  String.raw`\${DEEIX_SIGNED_USER_CONTEXT}`,
+  `\${DEEIX_SIGNED_USER_CONTEXT}`,
 ];
 
 function serverStatusLabel(status: string, translate: (key: string) => string): string {
@@ -1190,115 +1191,116 @@ export function AdminToolsPage() {
       ) : null}
 
       <Dialog open={serverDialogOpen} onOpenChange={setServerDialogOpen}>
-        <DialogContent className="flex max-h-[min(86vh,760px)] w-[calc(100vw-2rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-[560px]">
-          <DialogHeader className="shrink-0 px-4 py-4">
-            <DialogTitle>{serverForm.id ? t("serverDialog.editTitle") : t("serverDialog.createTitle")}</DialogTitle>
-            <DialogDescription>{t("serverDialog.description")}</DialogDescription>
-          </DialogHeader>
+        <DialogContent className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[560px]">
+          <DialogHeightTransition contentClassName="max-h-[min(86vh,760px)]">
+            <DialogHeader className="shrink-0 px-4 py-4">
+              <DialogTitle>{serverForm.id ? t("serverDialog.editTitle") : t("serverDialog.createTitle")}</DialogTitle>
+              <DialogDescription>{t("serverDialog.description")}</DialogDescription>
+            </DialogHeader>
 
-          <form
-            className="flex min-h-0 flex-1 flex-col"
-            onSubmit={(event) => {
-              event.preventDefault();
-              void saveServer();
-            }}
-          >
-            <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-2">
-              <div className="grid grid-cols-2 gap-3">
+            <form
+              className="flex min-h-0 flex-1 flex-col"
+              onSubmit={(event) => {
+                event.preventDefault();
+                void saveServer();
+              }}
+            >
+              <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-2">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">
+                      {t("serverDialog.name")} <span className="text-destructive">*</span>
+                    </p>
+                    <Input
+                      value={serverForm.name}
+                      placeholder={t("serverDialog.namePlaceholder")}
+                      onChange={(event) => setServerForm((prev) => ({ ...prev, name: event.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">{t("serverDialog.status")}</p>
+                    <Select
+                      value={serverForm.status}
+                      onValueChange={(status: "active" | "inactive") => setServerForm((prev) => ({ ...prev, status }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">{t("status.active")}</SelectItem>
+                        <SelectItem value="inactive">{t("status.inactive")}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">
-                    {t("serverDialog.name")} <span className="text-destructive">*</span>
+                    {t("serverDialog.url")} <span className="text-destructive">*</span>
                   </p>
                   <Input
-                    value={serverForm.name}
-                    placeholder={t("serverDialog.namePlaceholder")}
-                    onChange={(event) => setServerForm((prev) => ({ ...prev, name: event.target.value }))}
+                    value={serverForm.baseURL}
+                    placeholder="https://example.com/mcp"
+                    onChange={(event) => setServerForm((prev) => ({ ...prev, baseURL: event.target.value }))}
                     required
                   />
                 </div>
+
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">{t("serverDialog.status")}</p>
-                  <Select
-                    value={serverForm.status}
-                    onValueChange={(status: "active" | "inactive") => setServerForm((prev) => ({ ...prev, status }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">{t("status.active")}</SelectItem>
-                      <SelectItem value="inactive">{t("status.inactive")}</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <p className="text-xs text-muted-foreground">{t("serverDialog.authToken")}</p>
+                  <Input
+                    value={serverForm.authToken}
+                    placeholder={serverForm.id ? t("serverDialog.authTokenEditPlaceholder") : t("serverDialog.authTokenCreatePlaceholder")}
+                    onChange={(event) => setServerForm((prev) => ({ ...prev, authToken: event.target.value }))}
+                  />
                 </div>
-              </div>
 
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">
-                  {t("serverDialog.url")} <span className="text-destructive">*</span>
-                </p>
-                <Input
-                  value={serverForm.baseURL}
-                  placeholder="https://example.com/mcp"
-                  onChange={(event) => setServerForm((prev) => ({ ...prev, baseURL: event.target.value }))}
-                  required
-                />
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">{t("serverDialog.authToken")}</p>
-                <Input
-                  value={serverForm.authToken}
-                  placeholder={serverForm.id ? t("serverDialog.authTokenEditPlaceholder") : t("serverDialog.authTokenCreatePlaceholder")}
-                  onChange={(event) => setServerForm((prev) => ({ ...prev, authToken: event.target.value }))}
-                />
-              </div>
-
-              <div className="space-y-1">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs text-muted-foreground">{t("serverDialog.headers")}</p>
-                  <DropdownMenu modal={false}>
-                    <DropdownMenuTrigger asChild>
-                      <Button type="button" variant="ghost" size="sm" className="h-6 gap-1 px-2 text-[11px]" disabled={serverSaving}>
-                        <ListPlus className="size-3" />
-                        {t("serverDialog.quickFillHeaders")}
-                        <ChevronDown className="size-3" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="min-w-64">
-                      <DropdownMenuLabel className="text-[10px] text-muted-foreground">
-                        {t("serverDialog.commonHeaderPresets")}
-                      </DropdownMenuLabel>
-                      <DropdownMenuItem
-                        onSelect={() => {
-                          const next = addMCPHeaderPreset(serverForm.headersJSON, SIGNED_USER_CONTEXT_HEADER);
-                          if (next === null) {
-                            toast.error(t("toast.invalidHeaders"));
-                            return;
-                          }
-                          if (next === undefined) {
-                            toast.info(t("toast.headerPresetConflict"));
-                            return;
-                          }
-                          setServerForm((prev) => ({ ...prev, headersJSON: next }));
-                        }}
-                      >
-                        <FileBraces />
-                        {t("serverDialog.signedUserContextHeader")}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-                <Textarea
-                  value={serverForm.headersJSON}
-                  className="h-24 resize-none font-mono text-xs"
-                  placeholder={`{
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs text-muted-foreground">{t("serverDialog.headers")}</p>
+                    <DropdownMenu modal={false}>
+                      <DropdownMenuTrigger asChild>
+                        <Button type="button" variant="ghost" size="sm" className="h-6 gap-1 px-2 text-[11px]" disabled={serverSaving}>
+                          <ListPlus className="size-3" />
+                          {t("serverDialog.quickFillHeaders")}
+                          <ChevronDown className="size-3" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="min-w-64">
+                        <DropdownMenuLabel className="text-[10px] text-muted-foreground">
+                          {t("serverDialog.commonHeaderPresets")}
+                        </DropdownMenuLabel>
+                        <DropdownMenuItem
+                          onSelect={() => {
+                            const next = addMCPHeaderPreset(serverForm.headersJSON, SIGNED_USER_CONTEXT_HEADER);
+                            if (next === null) {
+                              toast.error(t("toast.invalidHeaders"));
+                              return;
+                            }
+                            if (next === undefined) {
+                              toast.info(t("toast.headerPresetConflict"));
+                              return;
+                            }
+                            setServerForm((prev) => ({ ...prev, headersJSON: next }));
+                          }}
+                        >
+                          <FileBraces />
+                          {t("serverDialog.signedUserContextHeader")}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                  <Textarea
+                    value={serverForm.headersJSON}
+                    className="h-24 resize-none font-mono text-xs"
+                    placeholder={`{
   "X-API-Key": "..."
 }`}
-                  onChange={(event) => setServerForm((prev) => ({ ...prev, headersJSON: event.target.value }))}
-                />
+                    onChange={(event) => setServerForm((prev) => ({ ...prev, headersJSON: event.target.value }))}
+                  />
+                </div>
               </div>
-            </div>
 
             <DialogFooter className="shrink-0 px-4 py-3">
               <Button type="button" variant="ghost" onClick={() => setServerDialogOpen(false)} disabled={serverSaving}>
@@ -1308,7 +1310,8 @@ export function AdminToolsPage() {
                 {serverForm.id ? tActions("save") : tActions("create")}
               </Button>
             </DialogFooter>
-          </form>
+            </form>
+          </DialogHeightTransition>
         </DialogContent>
       </Dialog>
 
@@ -1321,29 +1324,31 @@ export function AdminToolsPage() {
       />
 
       <Dialog open={Boolean(schemaTool)} onOpenChange={(open) => !open && setSchemaTool(null)}>
-        <DialogContent className="flex max-h-[min(86vh,760px)] flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl">
-          <DialogHeader className="shrink-0 px-4 py-4">
-            <DialogTitle>{stableSchemaTool?.displayName || stableSchemaTool?.name || t("schemaDialog.fallbackTitle")}</DialogTitle>
-            <DialogDescription>
-              {stableSchemaTool?.name ? t("schemaDialog.description", { name: stableSchemaTool.name }) : t("schemaDialog.fallbackDescription")}
-            </DialogDescription>
-          </DialogHeader>
-          <pre className="mx-4 min-h-0 flex-1 overflow-auto rounded-md border border-border/60 bg-muted/35 p-3 text-xs leading-5 text-foreground/86">
-            <code>{schemaText}</code>
-          </pre>
-          <DialogFooter className="shrink-0 px-4 py-3">
-            <Button type="button" variant="ghost" onClick={() => setSchemaTool(null)}>
-              {tActions("close")}
-            </Button>
-            <CopyActionButton
-              type="button"
-              value={schemaText}
-              messages={{ copied: t("toast.schemaCopied"), failed: t("toast.copyFailed") }}
-              disabled={!stableSchemaTool}
-            >
-              {tActions("copy")}
-            </CopyActionButton>
-          </DialogFooter>
+        <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-2xl">
+          <DialogHeightTransition contentClassName="max-h-[min(86vh,760px)]">
+            <DialogHeader className="shrink-0 px-4 py-4">
+              <DialogTitle>{stableSchemaTool?.displayName || stableSchemaTool?.name || t("schemaDialog.fallbackTitle")}</DialogTitle>
+              <DialogDescription>
+                {stableSchemaTool?.name ? t("schemaDialog.description", { name: stableSchemaTool.name }) : t("schemaDialog.fallbackDescription")}
+              </DialogDescription>
+            </DialogHeader>
+            <pre className="mx-4 min-h-0 flex-1 overflow-auto rounded-md border border-border/60 bg-muted/35 p-3 text-xs leading-5 text-foreground/86">
+              <code>{schemaText}</code>
+            </pre>
+            <DialogFooter className="shrink-0 px-4 py-3">
+              <Button type="button" variant="ghost" onClick={() => setSchemaTool(null)}>
+                {tActions("close")}
+              </Button>
+              <CopyActionButton
+                type="button"
+                value={schemaText}
+                messages={{ copied: t("toast.schemaCopied"), failed: t("toast.copyFailed") }}
+                disabled={!stableSchemaTool}
+              >
+                {tActions("copy")}
+              </CopyActionButton>
+            </DialogFooter>
+          </DialogHeightTransition>
         </DialogContent>
       </Dialog>
 
