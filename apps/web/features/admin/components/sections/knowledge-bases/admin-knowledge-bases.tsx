@@ -38,13 +38,19 @@ import {
 import { TableToolbar } from "@/components/ui/table-tools";
 import { useAdminKnowledgeBasesFeature } from "@/features/admin/hooks/use-admin-knowledge-bases-feature";
 import { AdminPlatformFilesDialog } from "@/features/admin/components/sections/knowledge-bases/knowledge-bases-platform-files-dialog";
+import { KnowledgeBasesProcessingSettings } from "@/features/admin/components/sections/knowledge-bases/knowledge-bases-processing-settings";
 import {
   KnowledgeBaseDetail,
   KnowledgeBasePageDialogs,
   type KnowledgeBasePageModel,
   useKnowledgeBasePage,
 } from "@/features/knowledge-bases";
-import { SettingsFieldRow, SettingsPage, SettingsSection } from "@/shared/components/settings-layout";
+import {
+  SettingsFieldRow,
+  SettingsPage,
+  SettingsSection,
+  SettingsSectionSeparator,
+} from "@/shared/components/settings-layout";
 import { isOneOf } from "@/shared/lib/type-guards";
 
 type KnowledgeBaseSortKey = KnowledgeBasePageModel["list"]["sortKey"];
@@ -251,6 +257,9 @@ export function AdminKnowledgeBasesPage() {
             ) : null}
           </Field>
         </SettingsSection>
+
+        <SettingsSectionSeparator />
+        <KnowledgeBasesProcessingSettings />
 
         <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
           <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-[920px]">
