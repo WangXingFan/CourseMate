@@ -470,8 +470,6 @@ export interface Capabilities {
   multiUser: boolean;
   /** Registration 可自行注册账号。 */
   registration: boolean;
-  /** Sharing 对话公开分享链接；只监听回环的服务器没有可分享的对象。 */
-  sharing: boolean;
   /** UsageMetering 记录用量与费用。 */
   usageMetering: boolean;
 }
@@ -946,7 +944,6 @@ export interface ConversationResponse {
   labelsJSON: string;
   lastCompactedAt: string | null;
   lastResponseID: string;
-  lastShareAccessedAt: string | null;
   messageCount: number;
   model: string;
   projectID: string;
@@ -954,9 +951,6 @@ export interface ConversationResponse {
   provider: string;
   publicID: string;
   sessionKey: string;
-  shareID: string;
-  shareStatus: string;
-  sharedAt: string | null;
   starredAt: string | null;
   status: string;
   title: string;
@@ -997,23 +991,6 @@ export interface ConversationSearchResultResponse {
   status: string;
   title: string;
   updatedAt: string;
-}
-
-export interface ConversationShareResponse {
-  createdAt: string;
-  lastAccessedAt: string | null;
-  messageCount: number;
-  modelSnapshot: string;
-  revokedAt: string | null;
-  shareID: string;
-  status: string;
-  titleSnapshot: string;
-  updatedAt: string;
-}
-
-export interface ConversationShareResponseDoc {
-  data: ConversationShareResponse;
-  errorMsg: string;
 }
 
 export interface ConversationToolCallDetailResponse {
@@ -1088,11 +1065,6 @@ export interface CreateConversationRequest {
   projectID?: string;
   /** @maxLength 255 */
   title?: string;
-}
-
-export interface CreateConversationShareRequest {
-  /** @maxItems 1000 */
-  defaultMessagePublicIDs?: string[];
 }
 
 export interface CreateModelDisplayGroupRequest {
@@ -2991,53 +2963,6 @@ export interface PublicSchedulePeriodResponse {
   weekdays: number[];
 }
 
-export interface PublicSharedConversationResponse {
-  createdAt: string;
-  defaultMessagePublicIDs: string[];
-  lastAccessedAt: string | null;
-  messages: PublicSharedMessageResponse[];
-  model: string;
-  shareID: string;
-  title: string;
-  /** UIComponentsEnabled 为 false 时，分享页不渲染 deeix-ui 组件块。 */
-  uiComponentsEnabled: boolean;
-}
-
-export interface PublicSharedConversationResponseDoc {
-  data: PublicSharedConversationResponse;
-  errorMsg: string;
-}
-
-export interface PublicSharedMessageResponse {
-  attachments: string;
-  branchReason: string;
-  cacheReadTokens: number;
-  cacheWriteTokens: number;
-  content: string;
-  contentType: string;
-  createdAt: string;
-  editedAt: string | null;
-  errorCode: string;
-  errorMessage: string;
-  inputTokens: number;
-  latencyMS: number;
-  modelIcon: string;
-  modelVendor: string;
-  outputTokens: number;
-  parentPublicID: string;
-  platformModelName: string;
-  processTrace?: MessageProcessTraceResponse;
-  publicID: string;
-  reasoningTokens: number;
-  role: string;
-  runID: string;
-  sourcePublicID: string;
-  status: string;
-  tokenUsage: number;
-  updatedAt: string;
-  upstreamModelName: string;
-}
-
 export interface RedeemCodeRequest {
   /**
    * @minLength 3
@@ -3227,20 +3152,6 @@ export interface ResetUserTwoFactorResponse {
 
 export interface ResetUserTwoFactorResponseDoc {
   data: ResetUserTwoFactorResponse;
-  errorMsg: string;
-}
-
-export interface RevokeConversationSharesRequest {
-  /** @maxItems 1000 */
-  conversationPublicIDs?: string[];
-}
-
-export interface RevokeConversationSharesResponse {
-  revoked: boolean;
-}
-
-export interface RevokeConversationSharesResponseDoc {
-  data: RevokeConversationSharesResponse;
   errorMsg: string;
 }
 
@@ -8512,8 +8423,6 @@ export namespace Conversations {
       project?: string;
       /** 搜索关键词，匹配会话元数据、项目名称和消息正文 */
       q?: string;
-      /** 分享筛选: all|shared|unshared */
-      share?: string;
       /** 星标筛选: all|starred|unstarred */
       starred?: string;
       /** 状态筛选: active|archived|all */
@@ -8609,22 +8518,6 @@ export namespace Conversations {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = ConversationSearchListResponseDoc;
-  }
-
-  /**
-   * @description 批量关闭当前用户会话的公开分享链接
-   * @tags chat
-   * @name SharesRevokeCreate
-   * @summary 批量关闭会话公开分享
-   * @request POST:/conversations/shares/revoke
-   * @secure
-   */
-  export namespace SharesRevokeCreate {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = RevokeConversationSharesRequest;
-    export type RequestHeaders = {};
-    export type ResponseBody = RevokeConversationSharesResponseDoc;
   }
 
   /**
@@ -8967,82 +8860,6 @@ export namespace Conversations {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = ConversationRunListResponseDoc;
-  }
-
-  /**
-   * @description 查询当前用户指定会话的最近分享状态
-   * @tags chat
-   * @name ShareList
-   * @summary 查询会话分享状态
-   * @request GET:/conversations/{id}/share
-   * @secure
-   */
-  export namespace ShareList {
-    export type RequestParams = {
-      /** 会话 public_id */
-      id: string;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = ConversationShareResponseDoc;
-  }
-
-  /**
-   * @description 创建当前会话全部分支的公开快照分享链接
-   * @tags chat
-   * @name ShareCreate
-   * @summary 创建会话公开分享
-   * @request POST:/conversations/{id}/share
-   * @secure
-   */
-  export namespace ShareCreate {
-    export type RequestParams = {
-      /** 会话 public_id */
-      id: string;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = CreateConversationShareRequest;
-    export type RequestHeaders = {};
-    export type ResponseBody = ConversationShareResponseDoc;
-  }
-
-  /**
-   * @description 关闭当前会话的有效公开分享链接
-   * @tags chat
-   * @name ShareDelete
-   * @summary 关闭会话公开分享
-   * @request DELETE:/conversations/{id}/share
-   * @secure
-   */
-  export namespace ShareDelete {
-    export type RequestParams = {
-      /** 会话 public_id */
-      id: string;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = ConversationShareResponseDoc;
-  }
-
-  /**
-   * @description 关闭当前有效分享并创建新的公开快照链接
-   * @tags chat
-   * @name ShareRegenerateCreate
-   * @summary 重新生成会话分享链接
-   * @request POST:/conversations/{id}/share/regenerate
-   * @secure
-   */
-  export namespace ShareRegenerateCreate {
-    export type RequestParams = {
-      /** 会话 public_id */
-      id: string;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = CreateConversationShareRequest;
-    export type RequestHeaders = {};
-    export type ResponseBody = ConversationShareResponseDoc;
   }
 
   /**
@@ -10190,65 +10007,6 @@ export namespace Settings {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = Envelope;
-  }
-}
-
-export namespace SharedConversations {
-  /**
-   * @description 公开读取会话分享快照
-   * @tags chat
-   * @name SharedConversationsDetail
-   * @summary 查询公开分享会话
-   * @request GET:/shared-conversations/{share_id}
-   */
-  export namespace SharedConversationsDetail {
-    export type RequestParams = {
-      /** 分享 ID */
-      shareId: string;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = PublicSharedConversationResponseDoc;
-  }
-
-  /**
-   * @description 将公开分享快照克隆到当前登录用户账户，包含全部分支消息和分享内附件
-   * @tags chat
-   * @name CloneCreate
-   * @summary 克隆公开分享会话
-   * @request POST:/shared-conversations/{share_id}/clone
-   * @secure
-   */
-  export namespace CloneCreate {
-    export type RequestParams = {
-      /** 分享 ID */
-      shareId: string;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = ConversationUpdateResponseDoc;
-  }
-
-  /**
-   * @description 只允许读取公开分享快照中实际引用的附件内容
-   * @tags chat
-   * @name FilesContentList
-   * @summary 获取公开分享附件内容
-   * @request GET:/shared-conversations/{share_id}/files/{file_id}/content
-   */
-  export namespace FilesContentList {
-    export type RequestParams = {
-      /** 文件 ID */
-      fileId: string;
-      /** 分享 ID */
-      shareId: string;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = Blob;
   }
 }
 
