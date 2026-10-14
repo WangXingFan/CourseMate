@@ -160,12 +160,6 @@
     "streamInterrupted": "The generation connection was interrupted. Retry this message.",
     "streamNotFound": "Generation stream not found."
   },
-  "conversationShare": {
-    "invalid": "Invalid conversation share.",
-    "invalidId": "Invalid share ID.",
-    "notFound": "Share not found.",
-    "schemaOutdated": "Share schema is outdated. Rebuild the database."
-  },
   "contextArtifact": {
     "invalidId": "Invalid context artifact ID.",
     "notFound": "Context artifact not found."
@@ -414,12 +408,6 @@
   "run": {
     "invalidId": "Invalid run ID."
   },
-  "share": {
-    "invalidId": "Invalid share ID."
-  },
-  "sharedFile": {
-    "notFound": "Shared file not found."
-  },
   "runtime": {
     "doclingUnavailable": "Docling runtime is unavailable.",
     "mineruUnavailable": "MinerU runtime is unavailable.",
@@ -529,8 +517,7 @@
       "accountSecurity": "Password, email, two-factor and session management are not available on this server.",
       "billingGating": "Plans, balances and payments are not available on this server.",
       "usageMetering": "Usage metering is not available on this server.",
-      "contentModeration": "Content moderation is not available on this server.",
-      "sharing": "Public sharing is not available on this server."
+      "contentModeration": "Content moderation is not available on this server."
     }
   }
 }

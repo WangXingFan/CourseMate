@@ -16,26 +16,6 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestReplaceActiveConversationShareReportsMissingSchemaColumn(t *testing.T) {
-	db := openConversationRepositoryTestDB(t)
-	if err := db.Migrator().DropColumn(&models.ConversationShare{}, "default_message_ids_json"); err != nil {
-		t.Fatalf("drop legacy share column: %v", err)
-	}
-
-	item := &domainconversation.ConversationShare{
-		ShareID:               "share_schema_test",
-		ConversationID:        1,
-		UserID:                1,
-		Status:                "active",
-		MessageIDsJSON:        "[]",
-		DefaultMessageIDsJSON: "[]",
-	}
-	err := NewRepo(db).ReplaceActiveConversationShare(context.Background(), item)
-	if !errors.Is(err, repository.ErrConversationShareSchemaOutdated) {
-		t.Fatalf("ReplaceActiveConversationShare() error = %v, want ErrConversationShareSchemaOutdated", err)
-	}
-}
-
 func TestAttachmentDurationSecondsFromMetaJSON(t *testing.T) {
 	if got := attachmentDurationSecondsFromMetaJSON(`{"duration_seconds":6}`); got != 6 {
 		t.Fatalf("expected attachment duration 6, got %d", got)
@@ -1266,7 +1246,6 @@ func TestListConversationsByUserSearchesMetadataProjectsAndMessages(t *testing.T
 				Limit:         10,
 				StatusFilter:  "active",
 				StarredFilter: "all",
-				ShareFilter:   "all",
 				ProjectFilter: "all",
 				SearchQuery:   tt.query,
 			})
@@ -1428,7 +1407,7 @@ func openConversationRepositoryTestDB(t *testing.T) *gorm.DB {
 			_ = sqlDB.Close()
 		}
 	})
-	if err := db.AutoMigrate(&models.Conversation{}, &models.ConversationProject{}, &models.ConversationProjectMCPTool{}, &models.ConversationProjectSkill{}, &models.KnowledgeBase{}, &models.ConversationProjectKnowledgeBase{}, &models.ConversationShare{}, &models.Message{}, &models.Attachment{}, &models.FileObject{}, &models.ConversationRun{}, &models.ChatRunEvent{}); err != nil {
+	if err := db.AutoMigrate(&models.Conversation{}, &models.ConversationProject{}, &models.ConversationProjectMCPTool{}, &models.ConversationProjectSkill{}, &models.KnowledgeBase{}, &models.ConversationProjectKnowledgeBase{}, &models.Message{}, &models.Attachment{}, &models.FileObject{}, &models.ConversationRun{}, &models.ChatRunEvent{}); err != nil {
 		t.Fatalf("migrate models: %v", err)
 	}
 	return db

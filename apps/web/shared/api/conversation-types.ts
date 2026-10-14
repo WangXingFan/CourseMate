@@ -4,11 +4,9 @@ import type {
   BatchSetConversationProjectRequest as ContractBatchSetConversationProjectRequest,
   CreateConversationProjectRequest as ContractCreateConversationProjectRequest,
   CreateConversationRequest as ContractCreateConversationRequest,
-  CreateConversationShareRequest as ContractCreateConversationShareRequest,
   MediaVideoExtensionRequest as ContractMediaVideoExtensionRequest,
   RenameConversationRequest as ContractRenameConversationRequest,
   ReorderConversationProjectsRequest as ContractReorderConversationProjectsRequest,
-  RevokeConversationSharesRequest as ContractRevokeConversationSharesRequest,
   SendMessageRequest as ContractSendMessageRequest,
   TemporaryChatHistoryMessage as ContractTemporaryChatHistoryMessage,
   TemporaryChatMessageRequest as ContractTemporaryChatMessageRequest,
@@ -27,7 +25,6 @@ import type {
   ConversationResponse,
   ConversationSearchPageResponse,
   ConversationSearchResultResponse,
-  ConversationShareResponse,
   ConversationToolCallDetailResponse,
   MessageBillingCostResponse,
   MessageDeleteResponse,
@@ -40,9 +37,6 @@ import type {
   MessageTraceBlockResponse,
   MessageTraceEventResponse,
   ModelProbeDebugResponse,
-  PublicSharedConversationResponse,
-  PublicSharedMessageResponse,
-  RevokeConversationSharesResponse,
   ConversationRunStatusResponse,
   RunResponse,
   SendMessageResponse,
@@ -74,7 +68,6 @@ export type ConversationDefaultModelCandidateDTO = ConversationDefaultModelCandi
 
 export type ConversationStatusFilter = "active" | "archived" | "all";
 export type ConversationStarredFilter = "all" | "starred" | "unstarred";
-export type ConversationShareFilter = "all" | "shared" | "unshared";
 export type ConversationProjectFilter = "all" | "unassigned" | string;
 export type ConversationProjectStatusFilter = "active" | "archived" | "all";
 export type ConversationProjectMCPDefaultMode = "inherit" | "custom";
@@ -188,22 +181,6 @@ export type SetConversationArchiveRequest = ContractSetConversationArchiveReques
 
 export type DeleteConversationData = Omit<ConversationDeleteResponse, "quota"> & {
   quota?: UserStorageQuotaDTO;
-};
-
-export type CreateConversationShareRequest = ContractCreateConversationShareRequest;
-
-export type ConversationShareDTO = ConversationShareResponse;
-
-export type RevokeConversationSharesRequest = ContractRevokeConversationSharesRequest;
-
-export type RevokeConversationSharesResult = RevokeConversationSharesResponse;
-
-export type PublicSharedMessageDTO = Omit<PublicSharedMessageResponse, "processTrace"> & {
-  processTrace?: MessageProcessTraceDTO;
-};
-
-export type PublicSharedConversationDTO = Omit<PublicSharedConversationResponse, "messages"> & {
-  messages: PublicSharedMessageDTO[];
 };
 
 export type SetMessageFeedbackRequest = ContractSetMessageFeedbackRequest;

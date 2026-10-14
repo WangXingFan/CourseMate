@@ -30,7 +30,7 @@
   "adminWelcomeTitle": "Welcome to DEEIX Chat Admin",
   "userWelcomeTitle": "Welcome to DEEIX Chat",
   "adminWelcomeDescription": "Finish admin account security first, then configure upstreams, platform models, billing, logs, identity providers, and system policies.",
-  "userWelcomeDescription": "Finish your profile and security setup before using chats, files, tools, memory, and sharing.",
+  "userWelcomeDescription": "Finish your profile and security setup before using chats, files, tools, and memory.",
   "adminAccountTitle": "Complete admin account",
   "userAccountTitle": "Set up account",
   "adminTwoFactorTitle": "Protect admin account",
@@ -125,7 +125,7 @@
     "profile": "Set profile, timezone, and security options so chats, files, tools, and memory match your usage habits.",
     "models": "Use available platform models while routing, quotas, and billing are handled by administrator configuration.",
     "files": "Upload images and files, preview them, extract text, retrieve context, and trace their usage in the conversation.",
-    "conversation": "Conversations support branches, sharing, stars, archives, context planning, thinking traces, and tool call details.",
+    "conversation": "Conversations support branches, stars, archives, context planning, thinking traces, and tool call details.",
     "twoFactor": "After enabling two-factor authentication, sign-in gets another protection layer and recovery codes protect device loss."
   }
 }

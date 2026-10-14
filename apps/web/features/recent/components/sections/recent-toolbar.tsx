@@ -1,12 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { Archive, Download, FolderInput, Link2Off, LoaderCircle, SquareMousePointer, Trash, X } from "lucide-react";
+import { Archive, Download, FolderInput, LoaderCircle, SquareMousePointer, Trash, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { RecentFilterGroup } from "@/features/recent/components/sections/recent-filter-group";
 import {
-  RECENT_SHARE_FILTER_OPTIONS,
   RECENT_STARRED_FILTER_OPTIONS,
   RECENT_STATUS_FILTER_OPTIONS,
 } from "@/features/recent/utils/recent-display";
@@ -21,21 +20,17 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { ConversationProjectMenuItems } from "@/entities/conversation";
 import { cn } from "@/lib/utils";
 import type {
-  ConversationShareFilter,
   ConversationProjectDTO,
   ConversationStarredFilter,
   ConversationStatusFilter,
 } from "@/shared/api/conversation-types";
-import { FeatureGate } from "@/shared/capabilities";
 
 type RecentToolbarProps = {
   isSelectionMode: boolean;
   selectedCount: number;
-  selectedSharedCount: number;
   pageSelectionState: boolean | "indeterminate";
   statusFilter: ConversationStatusFilter;
   starredFilter: ConversationStarredFilter;
-  shareFilter: ConversationShareFilter;
   allSelectedArchived: boolean;
   projects: ConversationProjectDTO[];
   selectedProjectID: string | null;
@@ -45,13 +40,11 @@ type RecentToolbarProps = {
   onExitSelectionMode: () => void;
   onArchiveSelected: () => void | Promise<void>;
   onMoveSelectedToProject: (projectID?: string) => void | Promise<void>;
-  onRevokeSelectedShares: () => void | Promise<void>;
   onRequestDeleteSelected: () => void;
   onExportAll: () => void | Promise<void>;
   exportingAll: boolean;
   onStatusFilterChange: (value: ConversationStatusFilter) => void;
   onStarredFilterChange: (value: ConversationStarredFilter) => void;
-  onShareFilterChange: (value: ConversationShareFilter) => void;
 };
 
 function ToolbarActionTooltip({
@@ -76,11 +69,9 @@ function ToolbarActionTooltip({
 export function RecentToolbar({
   isSelectionMode,
   selectedCount,
-  selectedSharedCount,
   pageSelectionState,
   statusFilter,
   starredFilter,
-  shareFilter,
   allSelectedArchived,
   projects,
   selectedProjectID,
@@ -90,13 +81,11 @@ export function RecentToolbar({
   onExitSelectionMode,
   onArchiveSelected,
   onMoveSelectedToProject,
-  onRevokeSelectedShares,
   onRequestDeleteSelected,
   onExportAll,
   exportingAll,
   onStatusFilterChange,
   onStarredFilterChange,
-  onShareFilterChange,
 }: RecentToolbarProps) {
   const t = useTranslations("recent");
   const statusOptions = React.useMemo(
@@ -105,10 +94,6 @@ export function RecentToolbar({
   );
   const starredOptions = React.useMemo(
     () => RECENT_STARRED_FILTER_OPTIONS.map((item) => ({ ...item, label: t(item.value) })),
-    [t],
-  );
-  const shareOptions = React.useMemo(
-    () => RECENT_SHARE_FILTER_OPTIONS.map((item) => ({ ...item, label: t(item.value) })),
     [t],
   );
   const filterGroups = (
@@ -126,15 +111,6 @@ export function RecentToolbar({
         options={starredOptions}
         onChange={onStarredFilterChange}
       />
-
-      <FeatureGate feature="sharing">
-        <RecentFilterGroup
-          label={t("share")}
-          value={shareFilter}
-          options={shareOptions}
-          onChange={onShareFilterChange}
-        />
-      </FeatureGate>
     </div>
   );
 
@@ -195,26 +171,6 @@ export function RecentToolbar({
                   </DropdownMenuContent>
                 </DropdownMenu>
               </ToolbarActionTooltip>
-              <FeatureGate feature="sharing">
-                <ToolbarActionTooltip label={t("closeSelectedShares")}>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    className={cn(
-                      "transition-colors",
-                      selectedSharedCount > 0
-                        ? "text-foreground/60 hover:bg-accent hover:text-foreground"
-                        : "text-muted-foreground/50",
-                    )}
-                    onClick={() => void onRevokeSelectedShares()}
-                    disabled={selectedSharedCount === 0}
-                    aria-label={t("closeSelectedShares")}
-                  >
-                    <Link2Off className="size-4.5" strokeWidth={1} />
-                  </Button>
-                </ToolbarActionTooltip>
-              </FeatureGate>
               <ToolbarActionTooltip
                 label={allSelectedArchived ? t("unarchiveSelected") : t("archiveSelected")}
               >

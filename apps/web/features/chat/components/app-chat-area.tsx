@@ -15,7 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ConversationShareDialog, sharePatchFromDTO, useSidebarConversationField } from "@/entities/conversation";
+import { useSidebarConversationField } from "@/entities/conversation";
 import { ChatArea, ChatAreaLoadError, ChatAreaSkeleton } from "@/features/chat/components/sections/chat-area";
 import { ChatArtifactWorkspace } from "@/features/chat/components/sections/chat-artifact";
 import { ChatEmptyState } from "@/features/chat/components/sections/chat-empty";
@@ -526,9 +526,6 @@ export function AppChatArea() {
     activeConversationTitle,
     activeConversationStarred,
     activeConversationLabels,
-    activeConversationShared,
-    shareDialogOpen,
-    setShareDialogOpen,
     deleteDialogOpen,
     setDeleteDialogOpen,
     deleteFiles,
@@ -541,21 +538,12 @@ export function AppChatArea() {
     onRequestDeleteActiveConversation,
     onConfirmDeleteActiveConversation,
     onSetActiveConversationProject,
-    onShareActiveConversation,
     onExportActiveConversation,
   } = useChatConversationActions({
     conversationID,
     currentConversation,
     deleteFilesByDefault,
   });
-  const shareDefaultMessagePublicIDs = React.useMemo(
-    () =>
-      visibleMessages
-        .filter((item) => !item.isPending && Boolean(item.serverMessageID) && item.publicID.trim())
-        .map((item) => item.publicID.trim()),
-    [visibleMessages],
-  );
-
   const screenshotMessages = React.useMemo(
     () => ({
       emptySelection: tScreenshot("emptySelection"),
@@ -833,8 +821,6 @@ export function AppChatArea() {
                     projects,
                     onSelect: onSetActiveConversationProject,
                   }}
-                  onShare={temporaryMode ? undefined : onShareActiveConversation}
-                  shareActive={activeConversationShared}
                   onExport={temporaryMode ? undefined : onExportActiveConversation}
                   onDelete={temporaryMode ? undefined : onRequestDeleteActiveConversation}
                   markdownRender={markdownRender}
@@ -902,19 +888,7 @@ export function AppChatArea() {
       />
 
       {canOperateConversation ? (
-        <>
-          <ConversationShareDialog
-            open={shareDialogOpen}
-            onOpenChange={setShareDialogOpen}
-            conversationPublicID={actionConversationID}
-            conversationTitle={activeConversationTitle}
-            defaultMessagePublicIDs={shareDefaultMessagePublicIDs}
-            onShareChange={(share) => {
-              touchByPublicID(actionConversationID, sharePatchFromDTO(share));
-            }}
-          />
-
-          <AlertDialog
+        <AlertDialog
             open={deleteDialogOpen}
             onOpenChange={(open) => {
               setDeleteDialogOpen(open);
@@ -944,8 +918,7 @@ export function AppChatArea() {
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
-          </AlertDialog>
-        </>
+        </AlertDialog>
       ) : null}
     </div>
     </UIBlockRegistryProvider>

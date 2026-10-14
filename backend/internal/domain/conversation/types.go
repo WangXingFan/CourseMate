@@ -30,10 +30,6 @@ type Conversation struct {
 	LastCompactedAt       *time.Time
 	LastResponseID        string
 	LastPromptFingerprint string
-	ShareStatus           string
-	ShareID               string
-	SharedAt              *time.Time
-	LastShareAccessedAt   *time.Time
 	CreatedAt             time.Time
 	UpdatedAt             time.Time
 }
@@ -72,24 +68,6 @@ type ConversationProjectPatch struct {
 	Color                   *string
 	Icon                    *string
 	Status                  *string
-}
-
-// ConversationShare 表示会话公开分享快照。
-type ConversationShare struct {
-	ID                    uint
-	ShareID               string
-	ConversationID        uint
-	UserID                uint
-	Status                string
-	TitleSnapshot         string
-	ModelSnapshot         string
-	MessageIDsJSON        string
-	DefaultMessageIDsJSON string
-	RevokedAt             *time.Time
-	RegeneratedAt         *time.Time
-	LastAccessedAt        *time.Time
-	CreatedAt             time.Time
-	UpdatedAt             time.Time
 }
 
 // MessageTraceBlock 表示单个消息轨迹块。

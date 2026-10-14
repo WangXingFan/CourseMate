@@ -28,13 +28,6 @@ func (m *Module) RegisterRoutes(authRequired *gin.RouterGroup, gate middleware.F
 	authRequired.PATCH("/conversations/:id/archive", m.Handler.SetConversationArchive)
 	authRequired.PATCH("/conversations/:id/project", m.Handler.SetConversationProject)
 	authRequired.DELETE("/conversations/:id", m.Handler.DeleteConversation)
-	sharing := authRequired.Group("", gate.Require("sharing"))
-	sharing.POST("/conversations/shares/revoke", m.Handler.RevokeConversationShares)
-	sharing.GET("/conversations/:id/share", m.Handler.GetConversationShare)
-	sharing.POST("/conversations/:id/share", m.Handler.CreateConversationShare)
-	sharing.DELETE("/conversations/:id/share", m.Handler.RevokeConversationShare)
-	sharing.POST("/conversations/:id/share/regenerate", m.Handler.RegenerateConversationShare)
-	sharing.POST("/shared-conversations/:share_id/clone", m.Handler.CloneSharedConversation)
 	authRequired.GET("/conversations/:id/messages", m.Handler.ListMessages)
 	authRequired.GET("/conversations/:id/messages/preview", m.Handler.ListConversationPreviewMessages)
 	authRequired.GET("/conversations/:id/runs", m.Handler.ListConversationRuns)
@@ -67,9 +60,3 @@ func (m *Module) RegisterRoutes(authRequired *gin.RouterGroup, gate middleware.F
 	authRequired.GET("/runtime/chat-file-policy", m.Handler.GetChatFilePolicy)
 }
 
-// RegisterPublicRoutes 注册不需要登录的会话公开路由。
-func (m *Module) RegisterPublicRoutes(public *gin.RouterGroup, gate middleware.FeatureGate) {
-	sharing := public.Group("", gate.Require("sharing"))
-	sharing.GET("/shared-conversations/:share_id", m.Handler.GetPublicSharedConversation)
-	sharing.GET("/shared-conversations/:share_id/files/:file_id/content", m.Handler.GetPublicSharedFileContent)
-}

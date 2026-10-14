@@ -33,7 +33,6 @@ func Models() []any {
 		&models.MCPTool{},
 		&models.Conversation{},
 		&models.ConversationProject{},
-		&models.ConversationShare{},
 		&models.Message{},
 		&models.ConversationMessageFeedback{},
 		&models.Attachment{},

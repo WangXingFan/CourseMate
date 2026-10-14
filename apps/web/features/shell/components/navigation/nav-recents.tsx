@@ -26,8 +26,6 @@ import { Spinner } from "@/components/ui/spinner";
 import {
   ConversationLabelsManagerDialog,
   type ConversationLabelsTarget,
-  ConversationShareDialog,
-  sharePatchFromDTO,
   useConversationExport,
   useSidebarConversationField,
 } from "@/entities/conversation";
@@ -74,24 +72,18 @@ export function NavRecents() {
   const setStarByPublicID = useSidebarConversationField("setStarByPublicID");
   const archiveByPublicID = useSidebarConversationField("archiveByPublicID");
   const deleteByPublicID = useSidebarConversationField("deleteByPublicID");
-  const touchByPublicID = useSidebarConversationField("touchByPublicID");
   const setProjectByPublicID = useSidebarConversationField("setProjectByPublicID");
 
   const [deleteTarget, setDeleteTarget] = React.useState<SidebarConversationDeleteTarget>(null);
   const [deleteFiles, setDeleteFiles] = React.useState(false);
   const [renameTarget, setRenameTarget] = React.useState<SidebarConversationRenameTarget>(null);
   const [labelsTarget, setLabelsTarget] = React.useState<ConversationLabelsTarget | null>(null);
-  const [shareTarget, setShareTarget] = React.useState<{
-    publicID: string;
-    title: string;
-  } | null>(null);
   const [renameValue, setRenameValue] = React.useState("");
   const [autoRenamingPublicID, setAutoRenamingPublicID] = React.useState<string | null>(null);
   const [recentsOpen, setRecentsOpen] = useStoredBoolean(RECENTS_OPEN_STORAGE_KEY, true);
   const listContainerRef = React.useRef<HTMLDivElement | null>(null);
   const deleteFilesID = React.useId();
   const stableDeleteTarget = useDialogSnapshot(deleteTarget);
-  const stableShareTarget = useDialogSnapshot(shareTarget);
   const recentsContentID = React.useId();
   const onExport = useConversationExport({
     successMessage: t("exported"),
@@ -167,10 +159,6 @@ export function NavRecents() {
     setDeleteFiles(deleteFilesByDefault);
     setDeleteTarget({ publicID, title });
   }, [deleteFilesByDefault]);
-
-  const onShare = React.useCallback((publicID: string, title: string) => {
-    setShareTarget({ publicID, title });
-  }, []);
 
   const confirmDelete = React.useCallback(async () => {
     if (!deleteTarget) {
@@ -275,7 +263,6 @@ export function NavRecents() {
                                 publicID,
                                 title,
                                 url: `/chat?conversation_id=${publicID}`,
-                                shareActive: item.shareStatus === "active" && Boolean(item.shareID?.trim()),
                                 labelsJSON: item.labelsJSON,
                               }}
                               starAction={{
@@ -303,7 +290,6 @@ export function NavRecents() {
                               isAutoRenaming={autoRenamingPublicID === publicID}
                               onManageLabels={() => setLabelsTarget(item)}
                               onArchive={onArchive}
-                              onShare={onShare}
                               onExport={onExport}
                               onDelete={onDelete}
                               onNavigate={onNavigate}
@@ -382,17 +368,6 @@ export function NavRecents() {
         onUpdateLabels={updateLabelsByPublicID}
       />
 
-      {stableShareTarget ? (
-        <ConversationShareDialog
-          open={Boolean(shareTarget)}
-          onOpenChange={(open) => !open && setShareTarget(null)}
-          conversationPublicID={stableShareTarget.publicID}
-          conversationTitle={stableShareTarget.title}
-          onShareChange={(share) => {
-            touchByPublicID(stableShareTarget.publicID, sharePatchFromDTO(share));
-          }}
-        />
-      ) : null}
     </>
   );
 }

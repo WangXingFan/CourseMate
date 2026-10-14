@@ -17,11 +17,8 @@
   "archived": "已归档",
   "starred": "星标",
   "unstarred": "未星标",
-  "shared": "已分享",
-  "unshared": "未分享",
   "status": "状态",
   "star": "星标",
-  "share": "分享",
   "projects": {
     "title": "项目",
     "collapseSection": "折叠项目",
@@ -89,7 +86,6 @@
   "moveSelectedToProject": "移至项目",
   "moveSelectedSuccess": "已将 {count} 个会话移至「{project}」",
   "moveSelectedFailed": "移动所选会话失败",
-  "closeSelectedShares": "取消分享",
   "deleteSelected": "删除",
   "searchPlaceholder": "搜索对话",
   "empty": "暂无对话",
@@ -100,7 +96,6 @@
   "loadMoreFailed": "加载更多失败",
   "loadingMore": "加载更多...",
   "retry": "重试",
-  "shareClosed": "分享已关闭",
   "exported": "已导出对话 JSON",
   "exportFailed": "导出对话失败",
   "exportAll": "导出全部会话",
@@ -121,9 +116,7 @@
     "rename": "重新命名",
     "autoRename": "自动命名",
     "menu": "会话菜单",
-    "shareAndExport": "分享 & 导出",
-    "manageShare": "管理分享",
-    "share": "分享",
+    "exportAndScreenshot": "导出与截图",
     "moveToProject": "移至项目",
     "unarchive": "取消归档",
     "archive": "归档",
@@ -160,11 +153,6 @@
         "title": "取消归档所选会话",
         "description": "确认取消归档所选的 {count} 个会话吗？",
         "confirm": "取消归档"
-      },
-      "revokeShares": {
-        "title": "关闭所选分享",
-        "description": "确认关闭所选 {count} 个会话的分享吗？已有分享链接将不可访问。",
-        "confirm": "关闭分享"
       },
       "pending": "处理中..."
     },

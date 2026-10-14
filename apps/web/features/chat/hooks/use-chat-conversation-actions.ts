@@ -12,8 +12,8 @@ import {
 import type { ConversationDTO } from "@/shared/api/conversation-types";
 
 /**
- * Actions for the current conversation: title (manual/auto rename), star, tags, project, share, export and delete,
- * plus the open state of the share/delete confirmation dialogs.
+ * Actions for the current conversation: title (manual/auto rename), star, tags, project, export and delete,
+ * plus the open state of the delete confirmation dialog.
  */
 export function useChatConversationActions({
   conversationID,
@@ -34,7 +34,6 @@ export function useChatConversationActions({
   const deleteByPublicID = useSidebarConversationField("deleteByPublicID");
 
   const [manualConversationTitle, setManualConversationTitle] = React.useState("");
-  const [shareDialogOpen, setShareDialogOpen] = React.useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [deleteFiles, setDeleteFiles] = React.useState(false);
   const deleteFilesID = React.useId();
@@ -61,9 +60,6 @@ export function useChatConversationActions({
     () => parseConversationLabelsJSON(currentConversation?.labelsJSON ?? "[]"),
     [currentConversation?.labelsJSON],
   );
-  const activeConversationShared =
-    currentConversation?.shareStatus === "active" && Boolean(currentConversation.shareID?.trim());
-
   const onToggleActiveConversationStar = React.useCallback(async () => {
     if (!canOperateConversation) {
       return;
@@ -144,13 +140,6 @@ export function useChatConversationActions({
     [actionConversationID, canOperateConversation, setProjectByPublicID],
   );
 
-  const onShareActiveConversation = React.useCallback(() => {
-    if (!canOperateConversation) {
-      return;
-    }
-    setShareDialogOpen(true);
-  }, [canOperateConversation]);
-
   const exportActiveConversation = useConversationExport({
     successMessage: t("exportJSONSuccess"),
     failureMessage: t("exportJSONFailed"),
@@ -169,9 +158,6 @@ export function useChatConversationActions({
     activeConversationTitle,
     activeConversationStarred,
     activeConversationLabels,
-    activeConversationShared,
-    shareDialogOpen,
-    setShareDialogOpen,
     deleteDialogOpen,
     setDeleteDialogOpen,
     deleteFiles,
@@ -184,7 +170,6 @@ export function useChatConversationActions({
     onRequestDeleteActiveConversation,
     onConfirmDeleteActiveConversation,
     onSetActiveConversationProject,
-    onShareActiveConversation,
     onExportActiveConversation,
   };
 }

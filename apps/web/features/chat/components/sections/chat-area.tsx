@@ -37,7 +37,7 @@ import type { ChatModelOption } from "@/features/chat/types/chat-runtime";
 import type { ChatAreaMessage, MessageAttachment, UserMessageEditMode } from "@/features/chat/types/messages";
 import { cn } from "@/lib/utils";
 import { AppLogo, DeeixLogo } from "@/shared/components/app-logo";
-import { ConversationShareExportIconDropdown } from "@/entities/conversation";
+import { ConversationExportIconDropdown } from "@/entities/conversation";
 import { useCopyAction } from "@/shared/components/copy-action";
 import type { FileContentLoader } from "@/entities/file";
 import { StreamdownRender } from "@/shared/components/markdown/streamdown-render";
@@ -116,8 +116,6 @@ type ChatAreaProps = {
   labels?: string[];
   onUpdateLabels?: (labels: string[]) => void | Promise<void>;
   projectMenu?: React.ComponentProps<typeof ChatLabel>["projectMenu"];
-  onShare?: () => void;
-  shareActive?: boolean;
   onExport?: () => void | Promise<void>;
   onDelete?: () => void | Promise<void>;
   markdownRender?: boolean;
@@ -516,8 +514,6 @@ export function ChatArea({
   labels,
   onUpdateLabels,
   projectMenu,
-  onShare,
-  shareActive = false,
   onExport,
   onDelete,
   markdownRender = true,
@@ -560,8 +556,7 @@ export function ChatArea({
   const stableOnReactAssistantMessage = useStableEvent(onReactAssistantMessage);
   const editImageAttachmentHandler = onEditImageAttachment ? stableOnEditImageAttachment : undefined;
   const extendVideoAttachmentHandler = onExtendVideoAttachment ? stableOnExtendVideoAttachment : undefined;
-  const shareLabel = shareActive ? t("manageShare") : t("shareConversation");
-  const shareExportLabel = t("labelMenu.shareAndExport");
+  const exportMenuLabel = t("labelMenu.exportAndScreenshot");
   const tScreenshot = useTranslations("chat.screenshot");
   const modelDisplayNames = React.useMemo(
     () => new Map(modelOptions.map((model) => [model.platformModelName, model.displayName])),
@@ -616,8 +611,6 @@ export function ChatArea({
             labels={labels}
             onUpdateLabels={canOperateConversation ? onUpdateLabels : undefined}
             projectMenu={canOperateConversation ? projectMenu : undefined}
-            onShare={canOperateConversation ? onShare : undefined}
-            shareActive={shareActive}
             onExport={canOperateConversation ? onExport : undefined}
             onDelete={canOperateConversation ? onDelete : undefined}
             screenshotLatestLabel={tScreenshot("captureLatest")}
@@ -626,12 +619,9 @@ export function ChatArea({
             onScreenshotSelect={onScreenshotSelect}
           />
           {canOperateConversation ? (
-            <ConversationShareExportIconDropdown
-              label={shareExportLabel}
-              shareLabel={shareLabel}
+            <ConversationExportIconDropdown
+              label={exportMenuLabel}
               exportLabel={t("labelMenu.exportJSON")}
-              active={shareActive}
-              onShare={onShare}
               onExport={onExport}
               screenshotLatestLabel={tScreenshot("captureLatest")}
               screenshotSelectLabel={tScreenshot("captureSelect")}

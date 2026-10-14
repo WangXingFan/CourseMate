@@ -155,9 +155,6 @@ func NewEngine(cfg *config.Runtime, log *zap.Logger, modules Modules, hc HealthC
 		if modules.Channel != nil {
 			modules.Channel.RegisterPublicRoutes(publicAuth)
 		}
-		if modules.Conversation != nil {
-			modules.Conversation.RegisterPublicRoutes(publicAuth, gate)
-		}
 		if modules.Settings != nil {
 			modules.Settings.RegisterPublicRoutes(publicAuth)
 		}

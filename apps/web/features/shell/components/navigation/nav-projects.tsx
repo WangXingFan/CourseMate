@@ -66,8 +66,6 @@ import { Spinner } from "@/components/ui/spinner";
 import {
   ConversationLabelsManagerDialog,
   type ConversationLabelsTarget,
-  ConversationShareDialog,
-  sharePatchFromDTO,
   useConversationExport,
   useSidebarConversationField,
 } from "@/entities/conversation";
@@ -414,7 +412,6 @@ export function NavProjects() {
   const setProjectByPublicID = useSidebarConversationField("setProjectByPublicID");
   const archiveByPublicID = useSidebarConversationField("archiveByPublicID");
   const deleteByPublicID = useSidebarConversationField("deleteByPublicID");
-  const touchByPublicID = useSidebarConversationField("touchByPublicID");
   const [draft, setDraft] = React.useState<ProjectDraft | null>(null);
   const [deleteTarget, setDeleteTarget] = React.useState<ProjectActionTarget | null>(null);
   const [deleteProjectConversations, setDeleteProjectConversations] = React.useState(false);
@@ -423,10 +420,6 @@ export function NavProjects() {
   const [labelsTarget, setLabelsTarget] = React.useState<ConversationLabelsTarget | null>(null);
   const [conversationDeleteTarget, setConversationDeleteTarget] = React.useState<SidebarConversationDeleteTarget>(null);
   const [deleteConversationFiles, setDeleteConversationFiles] = React.useState(false);
-  const [shareTarget, setShareTarget] = React.useState<{
-    publicID: string;
-    title: string;
-  } | null>(null);
   const [renameValue, setRenameValue] = React.useState("");
   const [autoRenamingConversationID, setAutoRenamingConversationID] = React.useState<string | null>(null);
   const [openProjectMenuID, setOpenProjectMenuID] = React.useState<string | null>(null);
@@ -460,7 +453,6 @@ export function NavProjects() {
   const projectsContentID = React.useId();
   const stableDeleteTarget = useDialogSnapshot(deleteTarget);
   const stableConversationDeleteTarget = useDialogSnapshot(conversationDeleteTarget);
-  const stableShareTarget = useDialogSnapshot(shareTarget);
   const onExportConversation = useConversationExport({
     successMessage: tRecent("exported"),
     failureMessage: tRecent("exportFailed"),
@@ -911,8 +903,6 @@ export function NavProjects() {
                                                   publicID: conversation.publicID,
                                                   title,
                                                   url: `/chat?conversation_id=${conversation.publicID}`,
-                                                  shareActive:
-                                                    conversation.shareStatus === "active" && Boolean(conversation.shareID?.trim()),
                                                   labelsJSON: conversation.labelsJSON,
                                                 }}
                                                 starAction={{
@@ -946,7 +936,6 @@ export function NavProjects() {
                                                 onManageLabels={() => setLabelsTarget(conversation)}
                                                 onRename={onRenameConversation}
                                                 onArchive={onArchiveConversation}
-                                                onShare={(publicID, shareTitle) => setShareTarget({ publicID, title: shareTitle })}
                                                 onExport={onExportConversation}
                                                 onDelete={onDeleteConversation}
                                                 onNavigate={onNavigate}
@@ -1058,17 +1047,6 @@ export function NavProjects() {
         onUpdateLabels={updateLabelsByPublicID}
       />
 
-      {stableShareTarget ? (
-        <ConversationShareDialog
-          open={Boolean(shareTarget)}
-          onOpenChange={(open) => !open && setShareTarget(null)}
-          conversationPublicID={stableShareTarget.publicID}
-          conversationTitle={stableShareTarget.title}
-          onShareChange={(share) => {
-            touchByPublicID(stableShareTarget.publicID, sharePatchFromDTO(share));
-          }}
-        />
-      ) : null}
     </>
   );
 }

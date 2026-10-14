@@ -262,17 +262,6 @@ func normalizeConversationStarredFilter(value string) string {
 	}
 }
 
-func normalizeConversationShareFilter(value string) string {
-	switch strings.ToLower(strings.TrimSpace(value)) {
-	case "shared":
-		return "shared"
-	case "unshared":
-		return "unshared"
-	default:
-		return "all"
-	}
-}
-
 func normalizeFileSort(value string) string {
 	switch strings.ToLower(strings.TrimSpace(value)) {
 	case "created", "recent":

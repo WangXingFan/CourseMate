@@ -20,8 +20,6 @@ type Capabilities struct {
 	UsageMetering bool `json:"usageMetering"`
 	// ContentModeration 内容审核。
 	ContentModeration bool `json:"contentModeration"`
-	// Sharing 对话公开分享链接；只监听回环的服务器没有可分享的对象。
-	Sharing bool `json:"sharing"`
 }
 
 // Capabilities 从配置推导能力位；这是唯一的推导点。
@@ -40,7 +38,6 @@ func (c Config) Capabilities() Capabilities {
 		BillingGating:     true,
 		UsageMetering:     true,
 		ContentModeration: true,
-		Sharing:           true,
 	}
 }
 
@@ -62,8 +59,6 @@ func (c Capabilities) Enabled(name string) bool {
 		return c.UsageMetering
 	case "contentModeration":
 		return c.ContentModeration
-	case "sharing":
-		return c.Sharing
 	default:
 		return false
 	}

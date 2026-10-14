@@ -70,7 +70,6 @@ func (h *Handler) CreateConversation(c *gin.Context) {
 // @Param page_size query int false "每页数量（1-1000，默认 20）"
 // @Param status query string false "状态筛选: active|archived|all"
 // @Param starred query string false "星标筛选: all|starred|unstarred"
-// @Param share query string false "分享筛选: all|shared|unshared"
 // @Param project query string false "项目筛选: all|unassigned|项目 public_id"
 // @Param q query string false "搜索关键词，匹配会话元数据、项目名称和消息正文"
 // @Success 200 {object} ConversationListResponseDoc
@@ -82,7 +81,6 @@ func (h *Handler) ListConversations(c *gin.Context) {
 	page, pageSize := pagination.Parse(c.Query("page"), c.Query("page_size"))
 	statusFilter := normalizeConversationStatusFilter(c.Query("status"))
 	starredFilter := normalizeConversationStarredFilter(c.Query("starred"))
-	shareFilter := normalizeConversationShareFilter(c.Query("share"))
 	projectFilter := c.Query("project")
 	searchQuery := c.Query("q")
 
@@ -92,7 +90,6 @@ func (h *Handler) ListConversations(c *gin.Context) {
 		PageSize:      pageSize,
 		StatusFilter:  statusFilter,
 		StarredFilter: starredFilter,
-		ShareFilter:   shareFilter,
 		ProjectFilter: projectFilter,
 		SearchQuery:   searchQuery,
 	})

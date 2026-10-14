@@ -160,12 +160,6 @@
     "streamInterrupted": "生成连接已中断，请重试本条消息。",
     "streamNotFound": "生成流不存在。"
   },
-  "conversationShare": {
-    "invalid": "分享对话无效。",
-    "invalidId": "分享 ID 无效。",
-    "notFound": "分享不存在。",
-    "schemaOutdated": "分享数据结构已过期，请重建数据库。"
-  },
   "contextArtifact": {
     "invalidId": "上下文产物 ID 无效。",
     "notFound": "上下文产物不存在。"
@@ -414,12 +408,6 @@
   "run": {
     "invalidId": "运行 ID 无效。"
   },
-  "share": {
-    "invalidId": "分享 ID 无效。"
-  },
-  "sharedFile": {
-    "notFound": "共享文件不存在。"
-  },
   "logCleanup": {
     "beforeInFuture": "日志清理截止时间不能晚于当前时间。"
   },
@@ -529,8 +517,7 @@
       "accountSecurity": "此服务器不提供密码、邮箱、两步验证与会话管理。",
       "billingGating": "此服务器不提供套餐、余额与支付。",
       "usageMetering": "此服务器不提供用量统计。",
-      "contentModeration": "此服务器不提供内容审核。",
-      "sharing": "此服务器不提供公开分享。"
+      "contentModeration": "此服务器不提供内容审核。"
     }
   }
 }

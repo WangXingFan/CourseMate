@@ -1,8 +1,4 @@
-import type {
-  ConversationShareFilter,
-  ConversationStarredFilter,
-  ConversationStatusFilter,
-} from "@/shared/api/conversation-types";
+import type { ConversationStarredFilter, ConversationStatusFilter } from "@/shared/api/conversation-types";
 
 export const RECENT_PAGE_SIZE = 50;
 
@@ -22,21 +18,11 @@ export const RECENT_STARRED_FILTER_OPTIONS: Array<{
   { value: "unstarred" },
 ];
 
-export const RECENT_SHARE_FILTER_OPTIONS: Array<{
-  value: ConversationShareFilter;
-}> = [
-  { value: "all" },
-  { value: "shared" },
-  { value: "unshared" },
-];
-
 type RecentEmptyStateLabels = {
   archived: string;
   active: string;
   starred: string;
   unstarred: string;
-  shared: string;
-  unshared: string;
   conjunction: string;
   all: string;
   filtered: (filters: string) => string;
@@ -45,7 +31,6 @@ type RecentEmptyStateLabels = {
 export function recentEmptyStateTitle(
   statusFilter: ConversationStatusFilter,
   starredFilter: ConversationStarredFilter,
-  shareFilter: ConversationShareFilter,
   labels?: RecentEmptyStateLabels,
 ) {
   const parts: string[] = [];
@@ -59,11 +44,6 @@ export function recentEmptyStateTitle(
     parts.push(labels?.starred ?? "starred");
   } else if (starredFilter === "unstarred") {
     parts.push(labels?.unstarred ?? "unstarred");
-  }
-  if (shareFilter === "shared") {
-    parts.push(labels?.shared ?? "shared");
-  } else if (shareFilter === "unshared") {
-    parts.push(labels?.unshared ?? "unshared");
   }
   if (parts.length > 0) {
     const filters = parts.join(labels?.conjunction ?? " and ");

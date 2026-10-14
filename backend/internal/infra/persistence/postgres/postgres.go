@@ -123,7 +123,6 @@ func migrate(db *gorm.DB, cfg config.Config) error {
 		"mcp_tools":                      "MCP工具发现表",
 		"chat_conversations":             "聊天会话表",
 		"chat_conversation_projects":     "会话项目分组表",
-		"chat_conversation_shares":       "会话公开分享快照表",
 		"chat_messages":                  "会话消息表",
 		"chat_feedback":                  "会话消息反馈表",
 		"chat_attachments":               "多模态附件元信息表",
@@ -350,11 +349,6 @@ func applyConversationBaselineIndexes(db *gorm.DB) error {
 		`CREATE INDEX IF NOT EXISTS idx_chat_conversations_user_project_status_updated
 		ON "chat_conversations" ("user_id", "project_id", "status", "updated_at" DESC, "id" DESC)
 		WHERE deleted_at IS NULL`,
-		`CREATE INDEX IF NOT EXISTS idx_chat_conversation_shares_active_conversation
-		ON "chat_conversation_shares" ("conversation_id", "updated_at" DESC, "id" DESC)
-		WHERE status = 'active'`,
-		`CREATE INDEX IF NOT EXISTS idx_chat_conversation_shares_user_status_updated_at
-		ON "chat_conversation_shares" ("user_id", "status", "updated_at" DESC, "id" DESC)`,
 		`ALTER TABLE "chat_messages"
 		ADD COLUMN IF NOT EXISTS "reasoning_content" text NOT NULL DEFAULT ''`,
 		`COMMENT ON COLUMN "chat_messages"."reasoning_content" IS '上游推理内容回灌上下文'`,

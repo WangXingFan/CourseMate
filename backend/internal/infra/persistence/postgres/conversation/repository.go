@@ -95,20 +95,6 @@ func (r *Repo) ListConversationsByUser(ctx context.Context, input repository.Con
 		query = query.Where("is_starred = ?", false)
 	}
 
-	activeShareExistsSQL := `EXISTS (
-		SELECT 1
-		FROM chat_conversation_shares AS shares
-		WHERE shares.conversation_id = chat_conversations.id
-			AND shares.user_id = chat_conversations.user_id
-			AND shares.status = ?
-	)`
-	switch input.ShareFilter {
-	case "shared":
-		query = query.Where(activeShareExistsSQL, "active")
-	case "unshared":
-		query = query.Where("NOT "+activeShareExistsSQL, "active")
-	}
-
 	switch normalizedProjectFilter := strings.TrimSpace(input.ProjectFilter); normalizedProjectFilter {
 	case "", "all":
 		// 保留全部项目归属。
@@ -146,9 +132,6 @@ func (r *Repo) ListConversationsByUser(ctx context.Context, input repository.Con
 		return nil, 0, dberror.Translate(err)
 	}
 	results := toConversationDomains(items)
-	if err := r.hydrateConversationShareSummaries(ctx, results); err != nil {
-		return nil, 0, err
-	}
 	if err := r.hydrateConversationProjectSummaries(ctx, results); err != nil {
 		return nil, 0, err
 	}
@@ -178,9 +161,6 @@ func (r *Repo) ListConversationsForSearch(
 	}
 
 	results := toConversationDomains(items)
-	if err := r.hydrateConversationShareSummaries(ctx, results); err != nil {
-		return nil, err
-	}
 	if err := r.hydrateConversationProjectSummaries(ctx, results); err != nil {
 		return nil, err
 	}
@@ -241,61 +221,6 @@ func conversationSearchLikePattern(searchQuery string) string {
 		"_", "!_",
 	).Replace(keyword)
 	return "%" + keyword + "%"
-}
-
-func (r *Repo) hydrateConversationShareSummaries(ctx context.Context, items []domainconversation.Conversation) error {
-	if len(items) == 0 {
-		return nil
-	}
-	conversationIDs := make([]uint, 0, len(items))
-	for _, item := range items {
-		conversationIDs = append(conversationIDs, item.ID)
-	}
-	shares := make([]models.ConversationShare, 0)
-	if err := r.db.WithContext(ctx).
-		Where("conversation_id IN ?", conversationIDs).
-		Order("updated_at DESC").
-		Order("id DESC").
-		Find(&shares).Error; err != nil {
-		return dberror.Translate(err)
-	}
-	latestByConversationID := make(map[uint]models.ConversationShare, len(shares))
-	for _, share := range shares {
-		if _, exists := latestByConversationID[share.ConversationID]; exists {
-			continue
-		}
-		latestByConversationID[share.ConversationID] = share
-	}
-	for index := range items {
-		share, ok := latestByConversationID[items[index].ID]
-		if !ok {
-			items[index].ShareStatus = "none"
-			continue
-		}
-		items[index].ShareStatus = strings.TrimSpace(share.Status)
-		if items[index].ShareStatus == "" {
-			items[index].ShareStatus = "none"
-		}
-		if items[index].ShareStatus == "active" {
-			items[index].ShareID = share.ShareID
-			sharedAt := share.CreatedAt
-			items[index].SharedAt = &sharedAt
-			items[index].LastShareAccessedAt = share.LastAccessedAt
-		}
-	}
-	return nil
-}
-
-func (r *Repo) hydrateConversationShareSummary(ctx context.Context, item *domainconversation.Conversation) error {
-	if item == nil {
-		return nil
-	}
-	items := []domainconversation.Conversation{*item}
-	if err := r.hydrateConversationShareSummaries(ctx, items); err != nil {
-		return err
-	}
-	*item = items[0]
-	return nil
 }
 
 func (r *Repo) hydrateConversationProjectSummaries(ctx context.Context, items []domainconversation.Conversation) error {
@@ -363,9 +288,6 @@ func (r *Repo) GetConversationByUser(ctx context.Context, conversationID uint, u
 		return nil, dberror.Translate(err)
 	}
 	result := toConversationDomain(item)
-	if err := r.hydrateConversationShareSummary(ctx, &result); err != nil {
-		return nil, err
-	}
 	if err := r.hydrateConversationProjectSummary(ctx, &result); err != nil {
 		return nil, err
 	}
@@ -381,105 +303,10 @@ func (r *Repo) GetConversationByPublicID(ctx context.Context, publicID string, u
 		return nil, dberror.Translate(err)
 	}
 	result := toConversationDomain(item)
-	if err := r.hydrateConversationShareSummary(ctx, &result); err != nil {
-		return nil, err
-	}
 	if err := r.hydrateConversationProjectSummary(ctx, &result); err != nil {
 		return nil, err
 	}
 	return &result, nil
-}
-
-// GetLatestConversationShareByConversation 查询会话最近一次分享记录。
-func (r *Repo) GetLatestConversationShareByConversation(ctx context.Context, userID uint, conversationID uint) (*domainconversation.ConversationShare, error) {
-	var item models.ConversationShare
-	if err := r.db.WithContext(ctx).
-		Where("user_id = ? AND conversation_id = ?", userID, conversationID).
-		Order("updated_at DESC").
-		Order("id DESC").
-		First(&item).Error; err != nil {
-		return nil, dberror.Translate(err)
-	}
-	result := toConversationShareDomain(item)
-	return &result, nil
-}
-
-// GetActiveConversationShareByShareID 查询公开分享与未删除原会话。
-func (r *Repo) GetActiveConversationShareByShareID(ctx context.Context, shareID string) (*domainconversation.ConversationShare, *domainconversation.Conversation, error) {
-	var share models.ConversationShare
-	if err := r.db.WithContext(ctx).
-		Where("share_id = ? AND status = ?", shareID, "active").
-		First(&share).Error; err != nil {
-		return nil, nil, dberror.Translate(err)
-	}
-	var conversation models.Conversation
-	if err := r.db.WithContext(ctx).
-		Where("id = ? AND user_id = ?", share.ConversationID, share.UserID).
-		First(&conversation).Error; err != nil {
-		return nil, nil, dberror.Translate(err)
-	}
-	shareDomain := toConversationShareDomain(share)
-	conversationDomain := toConversationDomain(conversation)
-	return &shareDomain, &conversationDomain, nil
-}
-
-// ReplaceActiveConversationShare 在一个事务内撤销旧分享并创建新快照。
-func (r *Repo) ReplaceActiveConversationShare(ctx context.Context, item *domainconversation.ConversationShare) error {
-	if item == nil {
-		return nil
-	}
-	if r.db.Migrator().HasTable(&models.ConversationShare{}) &&
-		!r.db.Migrator().HasColumn(&models.ConversationShare{}, "default_message_ids_json") {
-		return repository.ErrConversationShareSchemaOutdated
-	}
-	var created models.ConversationShare
-	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		now := time.Now().UTC()
-		if err := tx.Model(&models.ConversationShare{}).
-			Where("user_id = ? AND conversation_id = ? AND status = ?", item.UserID, item.ConversationID, "active").
-			Updates(map[string]any{
-				"status":     "revoked",
-				"revoked_at": now,
-				"updated_at": now,
-			}).Error; err != nil {
-			return dberror.Translate(err)
-		}
-		created = toConversationShareModel(item)
-		if err := tx.Create(&created).Error; err != nil {
-			return dberror.Translate(err)
-		}
-		return nil
-	})
-	if err != nil {
-		return dberror.Translate(err)
-	}
-	*item = toConversationShareDomain(created)
-	return nil
-}
-
-// RevokeActiveConversationShares 撤销会话当前有效分享。
-func (r *Repo) RevokeActiveConversationShares(ctx context.Context, userID uint, conversationIDs []uint) error {
-	if len(conversationIDs) == 0 {
-		return nil
-	}
-	now := time.Now().UTC()
-	return dberror.Translate(r.db.WithContext(ctx).
-		Model(&models.ConversationShare{}).
-		Where("user_id = ? AND conversation_id IN ? AND status = ?", userID, conversationIDs, "active").
-		Updates(map[string]any{
-			"status":     "revoked",
-			"revoked_at": now,
-			"updated_at": now,
-		}).Error)
-}
-
-// TouchConversationShareAccess 记录公开分享访问时间。
-func (r *Repo) TouchConversationShareAccess(ctx context.Context, shareID string, accessedAt time.Time) error {
-	return dberror.Translate(r.db.WithContext(ctx).
-		Model(&models.ConversationShare{}).
-		Where("share_id = ? AND status = ?", shareID, "active").
-		Update("last_accessed_at", accessedAt).
-		Error)
 }
 
 // UpdateConversationTitleByPublicID 更新会话标题。
@@ -1485,41 +1312,6 @@ func (r *Repo) ListMessagesBeforeID(ctx context.Context, conversationID uint, be
 		return nil, 0, err
 	}
 	return toMessageDomains(items), total, nil
-}
-
-// ListMessagesForShare 查询分享快照可公开展示的消息。
-func (r *Repo) ListMessagesForShare(ctx context.Context, conversationID uint, publicIDs []string) ([]domainconversation.Message, error) {
-	items := make([]models.Message, 0)
-	query := r.db.WithContext(ctx).Where("conversation_id = ?", conversationID)
-	if len(publicIDs) > 0 {
-		query = query.Where("public_id IN ?", publicIDs)
-	}
-	if err := query.Order("id ASC").Find(&items).Error; err != nil {
-		return nil, dberror.Translate(err)
-	}
-	if err := r.hydrateMessageRefs(ctx, items); err != nil {
-		return nil, err
-	}
-	if err := r.hydrateMessageAttachments(ctx, items); err != nil {
-		return nil, err
-	}
-	result := toMessageDomains(items)
-	if len(publicIDs) == 0 {
-		return result, nil
-	}
-	byPublicID := make(map[string]domainconversation.Message, len(result))
-	for _, item := range result {
-		byPublicID[item.PublicID] = item
-	}
-	ordered := make([]domainconversation.Message, 0, len(publicIDs))
-	for _, publicID := range publicIDs {
-		item, ok := byPublicID[publicID]
-		if !ok {
-			continue
-		}
-		ordered = append(ordered, item)
-	}
-	return ordered, nil
 }
 
 // ListAllMessages 查询会话全部消息。
@@ -3840,25 +3632,6 @@ func toConversationDomains(items []models.Conversation) []domainconversation.Con
 	return results
 }
 
-func toConversationShareDomain(item models.ConversationShare) domainconversation.ConversationShare {
-	return domainconversation.ConversationShare{
-		ID:                    item.ID,
-		ShareID:               item.ShareID,
-		ConversationID:        item.ConversationID,
-		UserID:                item.UserID,
-		Status:                item.Status,
-		TitleSnapshot:         item.TitleSnapshot,
-		ModelSnapshot:         item.ModelSnapshot,
-		MessageIDsJSON:        item.MessageIDsJSON,
-		DefaultMessageIDsJSON: item.DefaultMessageIDsJSON,
-		RevokedAt:             item.RevokedAt,
-		RegeneratedAt:         item.RegeneratedAt,
-		LastAccessedAt:        item.LastAccessedAt,
-		CreatedAt:             item.CreatedAt,
-		UpdatedAt:             item.UpdatedAt,
-	}
-}
-
 func toConversationModel(item *domainconversation.Conversation) models.Conversation {
 	if item == nil {
 		return models.Conversation{}
@@ -3885,25 +3658,6 @@ func toConversationModel(item *domainconversation.Conversation) models.Conversat
 		LastCompactedAt:       item.LastCompactedAt,
 		LastResponseID:        item.LastResponseID,
 		LastPromptFingerprint: item.LastPromptFingerprint,
-	}
-}
-
-func toConversationShareModel(item *domainconversation.ConversationShare) models.ConversationShare {
-	if item == nil {
-		return models.ConversationShare{}
-	}
-	return models.ConversationShare{
-		ShareID:               item.ShareID,
-		ConversationID:        item.ConversationID,
-		UserID:                item.UserID,
-		Status:                item.Status,
-		TitleSnapshot:         item.TitleSnapshot,
-		ModelSnapshot:         item.ModelSnapshot,
-		MessageIDsJSON:        item.MessageIDsJSON,
-		DefaultMessageIDsJSON: item.DefaultMessageIDsJSON,
-		RevokedAt:             item.RevokedAt,
-		RegeneratedAt:         item.RegeneratedAt,
-		LastAccessedAt:        item.LastAccessedAt,
 	}
 }
 

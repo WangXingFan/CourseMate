@@ -72,16 +72,6 @@ type SetConversationArchiveRequest struct {
 	Archived *bool `json:"archived" binding:"required"`
 }
 
-// CreateConversationShareRequest 创建会话公开分享请求。
-type CreateConversationShareRequest struct {
-	DefaultMessagePublicIDs []string `json:"defaultMessagePublicIDs,omitempty" binding:"max=1000"`
-}
-
-// RevokeConversationSharesRequest 批量关闭会话公开分享请求。
-type RevokeConversationSharesRequest struct {
-	ConversationPublicIDs []string `json:"conversationPublicIDs,omitempty" binding:"max=1000"`
-}
-
 // RenameFileRequest 文件重命名请求。
 type RenameFileRequest struct {
 	FileName string `json:"fileName" binding:"required,max=255"`

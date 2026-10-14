@@ -30,8 +30,6 @@ import {
 import {
   ConversationLabelsManagerDialog,
   type ConversationLabelsTarget,
-  ConversationShareDialog,
-  sharePatchFromDTO,
   useConversationExport,
   useSidebarConversationField,
 } from "@/entities/conversation";
@@ -80,7 +78,6 @@ export function NavStarred() {
   const loadAllStarred = useSidebarConversationField("loadAllStarred");
   const archiveByPublicID = useSidebarConversationField("archiveByPublicID");
   const deleteByPublicID = useSidebarConversationField("deleteByPublicID");
-  const touchByPublicID = useSidebarConversationField("touchByPublicID");
   const setProjectByPublicID = useSidebarConversationField("setProjectByPublicID");
 
   const [showAllStarredDialog, setShowAllStarredDialog] = React.useState(false);
@@ -91,10 +88,6 @@ export function NavStarred() {
   const [deleteFiles, setDeleteFiles] = React.useState(false);
   const [renameTarget, setRenameTarget] = React.useState<SidebarConversationRenameTarget>(null);
   const [labelsTarget, setLabelsTarget] = React.useState<ConversationLabelsTarget | null>(null);
-  const [shareTarget, setShareTarget] = React.useState<{
-    publicID: string;
-    title: string;
-  } | null>(null);
   const [renameValue, setRenameValue] = React.useState("");
   const [autoRenamingPublicID, setAutoRenamingPublicID] = React.useState<string | null>(null);
   const [starredOpen, setStarredOpen] = useStoredBoolean(STARRED_OPEN_STORAGE_KEY, true);
@@ -103,7 +96,6 @@ export function NavStarred() {
   const deleteFilesID = React.useId();
   const starredContentID = React.useId();
   const stableDeleteTarget = useDialogSnapshot(deleteTarget);
-  const stableShareTarget = useDialogSnapshot(shareTarget);
   const onExport = useConversationExport({
     successMessage: t("exported"),
     failureMessage: t("exportFailed"),
@@ -242,10 +234,6 @@ export function NavStarred() {
     setDeleteTarget({ publicID, title });
   }, [deleteFilesByDefault]);
 
-  const onShare = React.useCallback((publicID: string, title: string) => {
-    setShareTarget({ publicID, title });
-  }, []);
-
   const confirmDelete = React.useCallback(async () => {
     if (!deleteTarget) {
       return;
@@ -321,15 +309,7 @@ export function NavStarred() {
                     {visibleStarredItems.map((item) => (
                       <SidebarConversationItem
                         key={item.publicID}
-                        item={{
-                          ...item,
-                          shareActive: starredItems.some(
-                            (conversation) =>
-                              conversation.publicID === item.publicID &&
-                              conversation.shareStatus === "active" &&
-                              Boolean(conversation.shareID?.trim()),
-                          ),
-                        }}
+                        item={item}
                         active={activeConversationID === item.publicID}
                         isTransferring={transferringStarPublicID === item.publicID}
                         starAction={{
@@ -356,7 +336,6 @@ export function NavStarred() {
                         isAutoRenaming={autoRenamingPublicID === item.publicID}
                         onManageLabels={() => setLabelsTarget(item)}
                         onArchive={onArchive}
-                        onShare={onShare}
                         onExport={onExport}
                         onDelete={onDelete}
                         onNavigate={onNavigate}
@@ -457,17 +436,6 @@ export function NavStarred() {
         onUpdateLabels={updateLabelsByPublicID}
       />
 
-      {stableShareTarget ? (
-        <ConversationShareDialog
-          open={Boolean(shareTarget)}
-          onOpenChange={(open) => !open && setShareTarget(null)}
-          conversationPublicID={stableShareTarget.publicID}
-          conversationTitle={stableShareTarget.title}
-          onShareChange={(share) => {
-            touchByPublicID(stableShareTarget.publicID, sharePatchFromDTO(share));
-          }}
-        />
-      ) : null}
     </>
   );
 }

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Archive, Check, PencilLine, Share2, Star, Tag, Trash } from "lucide-react";
+import { Archive, Check, PencilLine, Star, Tag, Trash } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Ellipsis } from "@/components/animate-ui/icons/ellipsis";
@@ -10,9 +10,9 @@ import { AnimatedText } from "@/components/ui/animated-text";
 import { LoadingReveal } from "@/shared/components/loading-reveal";
 import type { RecentRowState } from "@/features/recent/types/recent";
 import {
+  ConversationExportSubmenu,
   ConversationLabelsMenuItem,
   ConversationProjectSubmenu,
-  ConversationShareExportSubmenu,
   isArchivedConversation,
   parseConversationLabelsJSON,
 } from "@/entities/conversation";
@@ -37,7 +37,6 @@ import { useAppLocale } from "@/i18n/app-i18n-provider";
 import type {
   ConversationDTO,
   ConversationProjectDTO,
-  ConversationShareFilter,
   ConversationStarredFilter,
   ConversationStatusFilter,
 } from "@/shared/api/conversation-types";
@@ -105,7 +104,6 @@ function RecentConversationRow({
   onRename,
   onManageLabels,
   onArchive,
-  onShare,
   onSetProject,
   onExport,
   onDelete,
@@ -125,7 +123,6 @@ function RecentConversationRow({
   onRename: (item: ConversationDTO) => void;
   onManageLabels: (item: ConversationDTO) => void;
   onArchive: (publicID: string, archived: boolean) => void;
-  onShare: (item: ConversationDTO) => void;
   onSetProject: (publicID: string, projectID?: string) => void | Promise<void>;
   onExport: (item: ConversationDTO) => void | Promise<void>;
   onDelete: (item: ConversationDTO) => void;
@@ -134,7 +131,6 @@ function RecentConversationRow({
   const { locale } = useAppLocale();
   const [menuOpen, setMenuOpen] = React.useState(false);
   const archived = isArchivedConversation(item);
-  const shared = item.shareStatus === "active" && Boolean(item.shareID?.trim());
   const labels = parseConversationLabelsJSON(item.labelsJSON);
   const visibleLabels = labels.length > 3 ? labels.slice(0, 2) : labels.slice(0, 3);
   const hiddenLabelCount = labels.length > 3 ? labels.length - visibleLabels.length : 0;
@@ -173,7 +169,6 @@ function RecentConversationRow({
         <div className="ml-auto flex shrink-0 items-center gap-2">
           {archived ? <Archive className="size-3.5 fill-current text-foreground/45" /> : null}
           {item.isStarred ? <Star className="size-3.5 fill-current text-foreground/45" /> : null}
-          {shared ? <Share2 className="size-3.5 fill-current text-foreground/45" /> : null}
         </div>
       </div>
       <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
@@ -306,11 +301,9 @@ function RecentConversationRow({
               projects={projects}
               onSelect={(projectID) => onSetProject(item.publicID, projectID)}
             />
-            <ConversationShareExportSubmenu
-              label={t("row.shareAndExport")}
-              shareLabel={shared ? t("row.manageShare") : t("row.share")}
+            <ConversationExportSubmenu
+              label={t("row.exportAndScreenshot")}
               exportLabel={t("row.exportJSON")}
-              onShare={() => onShare(item)}
               onExport={() => onExport(item)}
               onCloseMenu={() => setMenuOpen(false)}
             />
@@ -348,7 +341,6 @@ type RecentListProps = {
   normalizedQuery: string;
   statusFilter: ConversationStatusFilter;
   starredFilter: ConversationStarredFilter;
-  shareFilter: ConversationShareFilter;
   rowStates: RecentRowState[];
   isSelectionMode: boolean;
   loadMoreRef: React.RefCallback<HTMLDivElement>;
@@ -361,7 +353,6 @@ type RecentListProps = {
   onRename: (item: ConversationDTO) => void;
   onManageLabels: (item: ConversationDTO) => void;
   onArchive: (publicID: string, archived: boolean) => void;
-  onShare: (item: ConversationDTO) => void;
   onSetProject: (publicID: string, projectID?: string) => void | Promise<void>;
   onExport: (item: ConversationDTO) => void | Promise<void>;
   onDelete: (item: ConversationDTO) => void;
@@ -436,7 +427,6 @@ export function RecentList({
   normalizedQuery,
   statusFilter,
   starredFilter,
-  shareFilter,
   rowStates,
   isSelectionMode,
   loadMoreRef,
@@ -449,7 +439,6 @@ export function RecentList({
   onRename,
   onManageLabels,
   onArchive,
-  onShare,
   onSetProject,
   onExport,
   onDelete,
@@ -469,13 +458,11 @@ export function RecentList({
   }, [rowStates]);
   const emptyState = (
     <CenteredEmptyState
-      title={normalizedQuery ? t("emptyState.searchTitle") : recentEmptyStateTitle(statusFilter, starredFilter, shareFilter, {
+      title={normalizedQuery ? t("emptyState.searchTitle") : recentEmptyStateTitle(statusFilter, starredFilter, {
         archived: t("archived"),
         active: t("active"),
         starred: t("starred"),
         unstarred: t("unstarred"),
-        shared: t("shared"),
-        unshared: t("unshared"),
         conjunction: t("emptyState.conjunction"),
         all: t("emptyState.allTitle"),
         filtered: (filters) => t("emptyState.filteredTitle", { filters }),
@@ -527,7 +514,6 @@ export function RecentList({
                     onRename={onRename}
                     onManageLabels={onManageLabels}
                     onArchive={onArchive}
-                    onShare={onShare}
                     onSetProject={onSetProject}
                     onExport={onExport}
                     onDelete={onDelete}

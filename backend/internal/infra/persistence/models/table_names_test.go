@@ -39,7 +39,6 @@ func TestTableNamesUseRestructuredDomains(t *testing.T) {
 		ModelPricing{},
 		UsageLedger{},
 		Conversation{},
-		ConversationShare{},
 		Message{},
 		ConversationMessageFeedback{},
 		Attachment{},

@@ -33,10 +33,6 @@ type ConversationResponse struct {
 	ContextPolicy       string     `json:"contextPolicyJSON"`
 	LastCompactedAt     *time.Time `json:"lastCompactedAt" extensions:"x-nullable,!x-omitempty"`
 	LastResponseID      string     `json:"lastResponseID"`
-	ShareStatus         string     `json:"shareStatus"`
-	ShareID             string     `json:"shareID"`
-	SharedAt            *time.Time `json:"sharedAt" extensions:"x-nullable,!x-omitempty"`
-	LastShareAccessedAt *time.Time `json:"lastShareAccessedAt" extensions:"x-nullable,!x-omitempty"`
 	CreatedAt           time.Time  `json:"createdAt"`
 	UpdatedAt           time.Time  `json:"updatedAt"`
 }
@@ -98,10 +94,6 @@ func toConversationResponse(item *model.Conversation) ConversationResponse {
 	if labelsJSON == "" || labelsJSON == "null" {
 		labelsJSON = "[]"
 	}
-	shareStatus := strings.TrimSpace(item.ShareStatus)
-	if shareStatus == "" {
-		shareStatus = "none"
-	}
 	return ConversationResponse{
 		PublicID:            item.PublicID,
 		UserID:              item.UserID,
@@ -119,10 +111,6 @@ func toConversationResponse(item *model.Conversation) ConversationResponse {
 		ContextPolicy:       item.ContextPolicy,
 		LastCompactedAt:     item.LastCompactedAt,
 		LastResponseID:      item.LastResponseID,
-		ShareStatus:         shareStatus,
-		ShareID:             item.ShareID,
-		SharedAt:            item.SharedAt,
-		LastShareAccessedAt: item.LastShareAccessedAt,
 		CreatedAt:           item.CreatedAt,
 		UpdatedAt:           item.UpdatedAt,
 	}
@@ -270,144 +258,6 @@ func toConversationProjectResponse(item *model.ConversationProject) Conversation
 // BatchSetConversationProjectResponse 批量设置会话项目归属响应 DTO。
 type BatchSetConversationProjectResponse struct {
 	Updated int64 `json:"updated"`
-}
-
-// ConversationShareResponse 会话分享响应 DTO。
-type ConversationShareResponse struct {
-	ShareID        string     `json:"shareID"`
-	Status         string     `json:"status"`
-	TitleSnapshot  string     `json:"titleSnapshot"`
-	ModelSnapshot  string     `json:"modelSnapshot"`
-	MessageCount   int        `json:"messageCount"`
-	CreatedAt      time.Time  `json:"createdAt"`
-	UpdatedAt      time.Time  `json:"updatedAt"`
-	RevokedAt      *time.Time `json:"revokedAt" extensions:"x-nullable,!x-omitempty"`
-	LastAccessedAt *time.Time `json:"lastAccessedAt" extensions:"x-nullable,!x-omitempty"`
-}
-
-func toConversationShareResponse(item *appconversation.ConversationShareResult) ConversationShareResponse {
-	if item == nil {
-		return ConversationShareResponse{Status: "none"}
-	}
-	return ConversationShareResponse{
-		ShareID:        item.ShareID,
-		Status:         item.Status,
-		TitleSnapshot:  item.TitleSnapshot,
-		ModelSnapshot:  item.ModelSnapshot,
-		MessageCount:   item.MessageCount,
-		CreatedAt:      item.CreatedAt,
-		UpdatedAt:      item.UpdatedAt,
-		RevokedAt:      item.RevokedAt,
-		LastAccessedAt: item.LastAccessedAt,
-	}
-}
-
-// RevokeConversationSharesResponse 批量关闭会话分享响应 DTO。
-type RevokeConversationSharesResponse struct {
-	Revoked bool `json:"revoked"`
-}
-
-// PublicSharedMessageResponse 公开分享消息响应 DTO。
-type PublicSharedMessageResponse struct {
-	PublicID          string                       `json:"publicID"`
-	ParentPublicID    string                       `json:"parentPublicID"`
-	SourcePublicID    string                       `json:"sourcePublicID"`
-	RunID             string                       `json:"runID"`
-	Role              string                       `json:"role"`
-	ContentType       string                       `json:"contentType"`
-	Content           string                       `json:"content"`
-	BranchReason      string                       `json:"branchReason"`
-	TokenUsage        int64                        `json:"tokenUsage"`
-	InputTokens       int64                        `json:"inputTokens"`
-	OutputTokens      int64                        `json:"outputTokens"`
-	CacheReadTokens   int64                        `json:"cacheReadTokens"`
-	CacheWriteTokens  int64                        `json:"cacheWriteTokens"`
-	ReasoningTokens   int64                        `json:"reasoningTokens"`
-	LatencyMS         int64                        `json:"latencyMS"`
-	Status            string                       `json:"status"`
-	ErrorCode         string                       `json:"errorCode"`
-	ErrorMessage      string                       `json:"errorMessage"`
-	Attachments       string                       `json:"attachments"`
-	PlatformModelName string                       `json:"platformModelName"`
-	UpstreamModelName string                       `json:"upstreamModelName"`
-	ModelVendor       string                       `json:"modelVendor"`
-	ModelIcon         string                       `json:"modelIcon"`
-	ProcessTrace      *MessageProcessTraceResponse `json:"processTrace,omitempty"`
-	EditedAt          *time.Time                   `json:"editedAt" extensions:"x-nullable,!x-omitempty"`
-	CreatedAt         time.Time                    `json:"createdAt"`
-	UpdatedAt         time.Time                    `json:"updatedAt"`
-}
-
-func toPublicSharedMessageResponse(
-	item model.Message,
-	runModel appconversation.PublicSharedRunModel,
-	fallbackModel string,
-) PublicSharedMessageResponse {
-	platformModelName := strings.TrimSpace(runModel.PlatformModelName)
-	if platformModelName == "" {
-		platformModelName = strings.TrimSpace(fallbackModel)
-	}
-	return PublicSharedMessageResponse{
-		PublicID:          item.PublicID,
-		ParentPublicID:    item.ParentPublicID,
-		SourcePublicID:    item.SourcePublicID,
-		RunID:             item.RunID,
-		Role:              item.Role,
-		ContentType:       item.ContentType,
-		Content:           item.Content,
-		BranchReason:      item.BranchReason,
-		TokenUsage:        item.TokenUsage,
-		InputTokens:       item.InputTokens,
-		OutputTokens:      item.OutputTokens,
-		CacheReadTokens:   item.CacheReadTokens,
-		CacheWriteTokens:  item.CacheWriteTokens,
-		ReasoningTokens:   item.ReasoningTokens,
-		LatencyMS:         item.LatencyMS,
-		Status:            item.Status,
-		ErrorCode:         item.ErrorCode,
-		ErrorMessage:      item.ErrorMessage,
-		Attachments:       item.Attachments,
-		PlatformModelName: platformModelName,
-		UpstreamModelName: runModel.UpstreamModelName,
-		ModelVendor:       runModel.ModelVendor,
-		ModelIcon:         runModel.ModelIcon,
-		ProcessTrace:      toPublicMessageProcessTraceResponse(item.ProcessTrace),
-		EditedAt:          item.EditedAt,
-		CreatedAt:         item.CreatedAt,
-		UpdatedAt:         item.UpdatedAt,
-	}
-}
-
-// PublicSharedConversationResponse 公开分享会话响应 DTO。
-type PublicSharedConversationResponse struct {
-	ShareID                 string                        `json:"shareID"`
-	Title                   string                        `json:"title"`
-	Model                   string                        `json:"model"`
-	CreatedAt               time.Time                     `json:"createdAt"`
-	LastAccessedAt          *time.Time                    `json:"lastAccessedAt" extensions:"x-nullable,!x-omitempty"`
-	DefaultMessagePublicIDs []string                      `json:"defaultMessagePublicIDs"`
-	Messages                []PublicSharedMessageResponse `json:"messages"`
-
-	// UIComponentsEnabled 为 false 时，分享页不渲染 deeix-ui 组件块。
-	UIComponentsEnabled bool `json:"uiComponentsEnabled"`
-}
-
-func toPublicSharedConversationResponse(item *appconversation.PublicSharedConversationResult) PublicSharedConversationResponse {
-	messages := make([]PublicSharedMessageResponse, 0, len(item.Messages))
-	for _, message := range item.Messages {
-		messages = append(messages, toPublicSharedMessageResponse(message, item.RunModels[message.RunID], item.Model))
-	}
-	return PublicSharedConversationResponse{
-		ShareID:                 item.ShareID,
-		Title:                   item.Title,
-		Model:                   item.Model,
-		CreatedAt:               item.CreatedAt,
-		LastAccessedAt:          item.LastAccessedAt,
-		DefaultMessagePublicIDs: item.DefaultMessageIDs,
-		Messages:                messages,
-
-		UIComponentsEnabled: item.UIComponentsEnabled,
-	}
 }
 
 // ConversationDeleteResponse 删除会话响应 DTO。
@@ -655,21 +505,6 @@ func toMessageProcessTraceResponse(trace *model.MessageProcessTrace) *MessagePro
 	}
 }
 
-func toPublicMessageProcessTraceResponse(trace *model.MessageProcessTrace) *MessageProcessTraceResponse {
-	if trace == nil {
-		return nil
-	}
-	return &MessageProcessTraceResponse{
-		Enabled:       trace.Enabled,
-		Status:        trace.Status,
-		Process:       toPublicTraceBlockResponse(trace.Process),
-		Tools:         toPublicTraceBlockResponse(trace.Tools),
-		UpstreamThink: toPublicTraceBlockResponse(trace.UpstreamThink),
-		PromptTrace:   toPromptTraceResponse(trace.PromptTrace),
-		Events:        toPublicTraceEventResponses(trace.Events),
-	}
-}
-
 func toPromptTraceResponse(trace *model.MessagePromptTrace) *MessagePromptTraceResponse {
 	if trace == nil {
 		return nil
@@ -800,33 +635,6 @@ func toTraceEventResponses(events []model.MessageTraceEvent) []MessageTraceEvent
 	return result
 }
 
-func toPublicTraceEventResponses(events []model.MessageTraceEvent) []MessageTraceEventResponse {
-	if len(events) == 0 {
-		return nil
-	}
-	result := make([]MessageTraceEventResponse, 0, len(events))
-	for _, event := range events {
-		result = append(result, MessageTraceEventResponse{
-			EventID:         event.EventID,
-			EventType:       event.EventType,
-			Phase:           event.Phase,
-			Stage:           event.Stage,
-			RoundID:         event.RoundID,
-			ParentEventID:   event.ParentEventID,
-			Title:           event.Title,
-			Summary:         event.Summary,
-			ContentMarkdown: event.ContentMarkdown,
-			Status:          event.Status,
-			Seq:             event.Seq,
-			StartedAt:       event.StartedAt,
-			EndedAt:         event.EndedAt,
-			UpdatedAt:       event.UpdatedAt,
-			PayloadJSON:     sanitizePublicTracePayloadJSON(event.PayloadJSON),
-		})
-	}
-	return result
-}
-
 // MessageKnowledgeSourceResponse 消息引用的知识库来源 DTO。
 type MessageKnowledgeSourceResponse struct {
 	FileName   string  `json:"fileName"`
@@ -912,24 +720,6 @@ func toTraceBlockResponse(b *model.MessageTraceBlock) *MessageTraceBlockResponse
 	}
 }
 
-func toPublicTraceBlockResponse(b *model.MessageTraceBlock) *MessageTraceBlockResponse {
-	if b == nil {
-		return nil
-	}
-	return &MessageTraceBlockResponse{
-		Title:           b.Title,
-		Summary:         b.Summary,
-		ContentMarkdown: b.ContentMarkdown,
-		Status:          b.Status,
-		Stage:           b.Stage,
-		RoundID:         b.RoundID,
-		ParentEventID:   b.ParentEventID,
-		StartedAt:       toOptionalTraceTime(b.StartedAt),
-		UpdatedAt:       b.UpdatedAt,
-		PayloadJSON:     sanitizePublicTracePayloadJSON(b.PayloadJSON),
-	}
-}
-
 func sanitizeTracePayloadJSON(raw string) string {
 	value := strings.TrimSpace(raw)
 	if value == "" {
@@ -940,26 +730,6 @@ func sanitizeTracePayloadJSON(raw string) string {
 		return value
 	}
 	deleteUpstreamNameFields(payload, "")
-	if len(payload) == 0 {
-		return ""
-	}
-	data, err := json.Marshal(payload)
-	if err != nil {
-		return ""
-	}
-	return string(data)
-}
-
-func sanitizePublicTracePayloadJSON(raw string) string {
-	value := sanitizeTracePayloadJSON(raw)
-	if value == "" {
-		return ""
-	}
-	payload := map[string]any{}
-	if err := json.Unmarshal([]byte(value), &payload); err != nil {
-		return ""
-	}
-	deletePublicSensitiveTraceFields(payload)
 	if len(payload) == 0 {
 		return ""
 	}
@@ -986,38 +756,6 @@ func deleteUpstreamNameFields(payload map[string]any, parentKey string) {
 				}
 			}
 		}
-	}
-}
-
-func deletePublicSensitiveTraceFields(payload map[string]any) {
-	for key, value := range payload {
-		if isPublicSensitiveTraceField(key) {
-			delete(payload, key)
-			continue
-		}
-		switch child := value.(type) {
-		case map[string]any:
-			deletePublicSensitiveTraceFields(child)
-		case []any:
-			for _, item := range child {
-				if itemMap, ok := item.(map[string]any); ok {
-					deletePublicSensitiveTraceFields(itemMap)
-				}
-			}
-		}
-	}
-}
-
-func isPublicSensitiveTraceField(key string) bool {
-	normalized := strings.ToLower(strings.NewReplacer("_", "", "-", "").Replace(strings.TrimSpace(key)))
-	switch normalized {
-	case "upstreamdebug", "authorization", "proxyauthorization", "cookie", "setcookie",
-		"citations", "fileid", "filename", "filenames", "preview":
-		return true
-	default:
-		return strings.Contains(normalized, "apikey") ||
-			strings.Contains(normalized, "secretkey") ||
-			strings.Contains(normalized, "accesskey")
 	}
 }
 
@@ -1673,24 +1411,6 @@ type ConversationDeleteResponseDoc struct {
 type MessageDeleteResponseDoc struct {
 	ErrorMsg string                `json:"errorMsg"`
 	Data     MessageDeleteResponse `json:"data"`
-}
-
-// ConversationShareResponseDoc 会话分享响应文档。
-type ConversationShareResponseDoc struct {
-	ErrorMsg string                    `json:"errorMsg"`
-	Data     ConversationShareResponse `json:"data"`
-}
-
-// RevokeConversationSharesResponseDoc 批量关闭会话分享响应文档。
-type RevokeConversationSharesResponseDoc struct {
-	ErrorMsg string                           `json:"errorMsg"`
-	Data     RevokeConversationSharesResponse `json:"data"`
-}
-
-// PublicSharedConversationResponseDoc 公开分享会话响应文档。
-type PublicSharedConversationResponseDoc struct {
-	ErrorMsg string                           `json:"errorMsg"`
-	Data     PublicSharedConversationResponse `json:"data"`
 }
 
 // ErrorDoc 错误响应文档。

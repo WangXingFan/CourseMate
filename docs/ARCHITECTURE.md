@@ -102,7 +102,6 @@ apps/*  →  packages/core  →  packages/api-contract  →  backend/docs/swagge
 | `billingGating` | 计费规则可以拒绝请求 | ❌ | `/billing/plans*`、`/billing/redemption*`、`/billing/payments/*`、`/billing/subscriptions`、`/admin/billing/accounts/*/balance`、`/admin/payment-orders`、`/admin/redemptions`；`billing.mode` 与 `billing.payment_providers` 两个设置项锁定 |
 | `usageMetering` | 记录用量与费用 | ✅ | —— |
 | `contentModeration` | 内容审核 | ❌ | `/admin/content-moderation*` |
-| `sharing` | 对话公开分享 | ❌ | `/conversations/:id/share*`、`/conversations/shares/revoke`、`/shared-conversations/*` |
 
 服务器模式全部为 `true`；"当前是否配置了 X"由各功能自己的端点回答，不进能力位。
 
@@ -114,7 +113,7 @@ apps/*  →  packages/core  →  packages/api-contract  →  backend/docs/swagge
 
 **演进规则**：只增不删；新键的默认值必须是"与今天行为一致"的值（通常 `true`）；不表达"为什么"（不加 `mode`、`edition`）；不表达"多少"（配额有自己的端点）。
 
-**键的移除**：仅当某个业务域连同其路由、服务、存储与前端入口一起从本仓库删除时，才移除对应键（`announcements` 已随公告模块整体删除）。只把功能"默认关闭"不构成移除理由：那会留下一个客户端无处消费的键。删除前必须确认没有其它模块仍按该键做门禁。
+**键的移除**：仅当某个业务域连同其路由、服务、存储与前端入口一起从本仓库删除时，才移除对应键（`announcements` 已随公告模块整体删除，`sharing` 已随对话公开分享模块整体删除）。只把功能"默认关闭"不构成移除理由：那会留下一个客户端无处消费的键。删除前必须确认没有其它模块仍按该键做门禁。
 
 **计量与门禁分离**：本地用户要看自己的花费，但不需要被计费规则拦住。`billing.mode = self` 下 `AuthorizeUsage` 直接放行、`RecordUsage` 照常记账，本地模式锁定该值即得"记账但不拦"；价格表保留可编辑。数据模型不变：本地 owner 仍在默认权限组，本地库可被远程服务器直接接管。
 
