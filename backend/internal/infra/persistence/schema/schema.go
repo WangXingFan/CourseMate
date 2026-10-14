@@ -42,7 +42,6 @@ func Models() []any {
 		&models.ContentModerationDailyStat{},
 		&models.ChatRunEvent{},
 		&models.ChatContextRecord{},
-		&models.UserMemory{},
 		&models.BillingPlan{},
 		&models.BillingPrice{},
 		&models.Subscription{},

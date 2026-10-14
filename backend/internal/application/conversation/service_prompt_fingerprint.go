@@ -7,9 +7,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-	"time"
 
-	domainmemory "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/memory"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/ports/llm"
 )
@@ -82,10 +80,9 @@ func buildPromptStateFingerprint(input promptStateFingerprintInput) string {
 }
 
 // buildPromptContextStateSignature 显式记录稳定上下文来源版本，补足纯文本指纹无法表达的状态边界。
-func buildPromptContextStateSignature(stableAttachments []AttachmentInput, preferenceMemories []domainmemory.UserMemory) string {
+func buildPromptContextStateSignature(stableAttachments []AttachmentInput) string {
 	payload := map[string]any{
-		"files":    promptContextFileState(stableAttachments),
-		"memories": promptContextMemoryState(preferenceMemories),
+		"files": promptContextFileState(stableAttachments),
 	}
 	raw, err := json.Marshal(payload)
 	if err != nil {
@@ -127,44 +124,9 @@ func promptContextFileState(attachments []AttachmentInput) []map[string]any {
 	return result
 }
 
-func promptContextMemoryState(memories []domainmemory.UserMemory) []map[string]any {
-	if len(memories) == 0 {
-		return nil
-	}
-	items := make([]domainmemory.UserMemory, len(memories))
-	copy(items, memories)
-	sort.SliceStable(items, func(i, j int) bool {
-		left := strings.TrimSpace(items[i].Scope) + ":" + strings.TrimSpace(items[i].MemoryKey)
-		right := strings.TrimSpace(items[j].Scope) + ":" + strings.TrimSpace(items[j].MemoryKey)
-		return left < right
-	})
-	result := make([]map[string]any, 0, len(items))
-	for _, item := range items {
-		key := strings.TrimSpace(item.MemoryKey)
-		value := strings.TrimSpace(item.Value)
-		if key == "" || value == "" {
-			continue
-		}
-		result = append(result, map[string]any{
-			"key":        key,
-			"scope":      strings.TrimSpace(item.Scope),
-			"value_hash": promptTextHash(value),
-			"updated_at": promptTimeUnixNano(item.UpdatedAt),
-		})
-	}
-	return result
-}
-
 func promptTextHash(text string) string {
 	sum := sha256.Sum256([]byte(strings.TrimSpace(text)))
 	return hex.EncodeToString(sum[:])
-}
-
-func promptTimeUnixNano(value time.Time) int64 {
-	if value.IsZero() {
-		return 0
-	}
-	return value.UnixNano()
 }
 
 // buildPromptContextConfigSignature 提取会影响上下文规划和证据含义的稳定配置。

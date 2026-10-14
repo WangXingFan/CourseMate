@@ -11,7 +11,6 @@ import (
 	appcm "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/contentmoderation"
 	apprag "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/rag"
 	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
-	domainmemory "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/memory"
 	platformtracing "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/observability/tracing"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/pkg/textutil"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/pkg/traceid"
@@ -393,19 +392,15 @@ func (s *Service) sendMessageInternal(
 	cfg := s.cfg.Snapshot()
 	compactPolicy := s.resolveContextCompactionPolicy(ctx, cfg, input.UserID)
 
-	// 并行预取：Snapshot + UserMemory 提前加载，隐藏 DB 延迟。
+	// 并行预取：Snapshot 提前加载，隐藏 DB 延迟。
 	type prefetchData struct {
-		snapshot     *model.ContextSnapshot
-		userMemories []domainmemory.UserMemory
+		snapshot *model.ContextSnapshot
 	}
 	prefetchCh := make(chan prefetchData, 1)
 	go func() {
 		var r prefetchData
 		if compactPolicy.EffectiveEnabled() {
 			r.snapshot, _ = s.getCachedSnapshot(ctx, input.ConversationID)
-		}
-		if s.memoryRecorder != nil {
-			r.userMemories, _ = s.getCachedUserMemories(ctx, input.UserID)
 		}
 		prefetchCh <- r
 	}()
@@ -576,8 +571,6 @@ func (s *Service) sendMessageInternal(
 
 	contextAssembler := NewContextAssembler(0)
 	userCtx := userContextInput{ImageAnalyses: imageProcessing.Analyses}
-	var prefixMemories []domainmemory.UserMemory
-	preferencePrompt := ""
 	if promptScope.Snapshot != nil {
 		if snapshotSummary := strings.TrimSpace(promptScope.Snapshot.SummaryText); snapshotSummary != "" {
 			userCtx.Snapshot = &snapshotContext{
@@ -586,17 +579,6 @@ func (s *Service) sendMessageInternal(
 				ToTurn:   promptScope.Snapshot.ToTurn,
 				Strategy: promptScope.Snapshot.Strategy,
 			}
-		}
-	}
-	if len(prefetch.userMemories) > 0 {
-		prefMems := filterMemoriesByScope(prefetch.userMemories, "preference")
-		if len(prefMems) > 0 {
-			prefixMemories = prefMems
-			preferencePrompt = buildPreferencePrompt(prefMems, 400)
-		}
-		otherMems := filterMemoriesByScope(prefetch.userMemories, "profile", "custom")
-		if len(otherMems) > 0 {
-			userCtx.Memory = s.selectRelevantUserMemories(ctx, input.UserID, input.Content, otherMems, 5)
 		}
 	}
 	processTraceAttachments := attachmentProcessTraceItems(fileContextPlan.Attachments)
@@ -657,7 +639,6 @@ func (s *Service) sendMessageInternal(
 		RAGChunks:      ragContextChunks,
 		RAGFallbacks:   ragFallbacks,
 		RecallChunks:   userCtx.RecallChunks,
-		Memories:       userCtx.Memory,
 	})
 	skillPrompts, err := s.resolveSkillPrompts(ctx, input)
 	if err != nil {
@@ -672,7 +653,6 @@ func (s *Service) sendMessageInternal(
 		DomainMessages:          promptScope.activeMessages(),
 		StableAttachments:       stableFullContextAttachments,
 		DynamicContext:          userCtx,
-		PreferencePrompt:        preferencePrompt,
 		SkillPrompts:            skillPrompts,
 		ToolRuntime:             toolRuntime,
 		SkipImageAttachments:    imageAttachmentRoutingActive,
@@ -696,7 +676,7 @@ func (s *Service) sendMessageInternal(
 		tools:                  toolRuntime.definitions,
 		promptCacheSessionKey:  promptCacheSessionKey,
 		statefulContextConfig:  buildPromptContextConfigSignature(cfg),
-		statefulContextState:   buildPromptContextStateSignature(stableFullContextAttachments, prefixMemories),
+		statefulContextState:   buildPromptContextStateSignature(stableFullContextAttachments),
 		normalizedBranchReason: normalizedBranchReason,
 		attributionReferer:     attributionReferer,
 		attributionTitle:       attributionTitle,

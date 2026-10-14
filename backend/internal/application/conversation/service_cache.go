@@ -5,7 +5,6 @@ import (
 	"time"
 
 	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
-	domainmemory "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/memory"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/background"
 	"go.uber.org/zap"
 )
@@ -13,8 +12,6 @@ import (
 const (
 	// snapshotCacheTTL：Snapshot 仅在压缩后变化，缓存 2 分钟可大幅减少 DB 查询。
 	snapshotCacheTTL = 2 * time.Minute
-	// userMemCacheTTL：用户记忆在会话期间极少变化，缓存 3 分钟。
-	userMemCacheTTL = 3 * time.Minute
 	// userSettingCacheTTL：用户设置在会话期间几乎不变，缓存 10 分钟。
 	userSettingCacheTTL = 10 * time.Minute
 	// inMemoryCacheSweepInterval：主动清理过期内存缓存，避免冷 key 长期驻留。
@@ -23,11 +20,6 @@ const (
 
 type cachedSnapshot struct {
 	snapshot  *model.ContextSnapshot
-	expiresAt time.Time
-}
-
-type cachedUserMemories struct {
-	memories  []domainmemory.UserMemory
 	expiresAt time.Time
 }
 
@@ -116,26 +108,6 @@ func (s *Service) RefreshUserSettingCache(ctx context.Context, userID uint, keys
 	}
 }
 
-// getCachedUserMemories 从内存缓存读取用户长期记忆，未命中时回退到 DB 查询。
-func (s *Service) getCachedUserMemories(ctx context.Context, userID uint) ([]domainmemory.UserMemory, error) {
-	if v, ok := s.userMemCache.Load(userID); ok {
-		entry := v.(*cachedUserMemories)
-		if time.Now().Before(entry.expiresAt) {
-			return entry.memories, nil
-		}
-		s.userMemCache.Delete(userID)
-	}
-	mems, err := s.memoryRecorder.ListUserMemories(ctx, userID)
-	if err != nil {
-		return nil, err
-	}
-	s.userMemCache.Store(userID, &cachedUserMemories{
-		memories:  mems,
-		expiresAt: time.Now().Add(userMemCacheTTL),
-	})
-	return mems, nil
-}
-
 func (s *Service) startInMemoryCacheCleanupWorker(ctx context.Context) {
 	if s == nil {
 		return
@@ -159,13 +131,6 @@ func (s *Service) cleanupExpiredInMemoryCaches(now time.Time) {
 		entry, ok := value.(*cachedSnapshot)
 		if !ok || !now.Before(entry.expiresAt) {
 			s.snapshotCache.Delete(key)
-		}
-		return true
-	})
-	s.userMemCache.Range(func(key, value any) bool {
-		entry, ok := value.(*cachedUserMemories)
-		if !ok || !now.Before(entry.expiresAt) {
-			s.userMemCache.Delete(key)
 		}
 		return true
 	})

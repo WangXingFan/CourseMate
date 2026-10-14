@@ -26,7 +26,6 @@ import (
 	appknowledgebase "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/knowledgebase"
 	applogcleanup "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/logcleanup"
 	appmcp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/mcp"
-	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/memory"
 	appstorage "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/objectstorage"
 	appprocessing "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/processing"
 	apprag "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/rag"
@@ -63,7 +62,6 @@ import (
 	knowledgebaserepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/knowledgebase"
 	logcleanuprepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/logcleanup"
 	mcprepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/mcp"
-	memoryrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/memory"
 	settingsrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/settings"
 	skillrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/skill"
 	userrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/user"
@@ -80,7 +78,6 @@ import (
 	conversationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/conversation"
 	knowledgebasehttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/knowledgebase"
 	mcphttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/mcp"
-	memoryhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/memory"
 	settingshttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/settings"
 	skillhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/skill"
 	userhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/user"
@@ -323,11 +320,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	}
 	authHandler := authhttp.NewHandler(authService)
 	authModule := authhttp.NewModule(authHandler)
-	memoryRepo := memoryrepo.NewRepo(db)
-	memoryService := memory.NewService(memoryRepo)
-	memoryService.SetAuditWriter(auditService)
-	memoryHandler := memoryhttp.NewHandler(memoryService)
-	memoryModule := memoryhttp.NewModule(memoryHandler)
 	channelRepo := channelrepo.NewRepo(db)
 	channelCache := cacheBackend.Channel()
 	trustedOutboundPolicy := cfg.TrustedOutboundPolicy()
@@ -360,7 +352,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	extractionService := extraction.NewServiceWithRuntime(runtimeCfg, extractionFactories)
 	extractionService.SetObjectStoreProvider(objectStoreProvider)
 	embeddingService := appembedding.NewServiceWithRuntime(runtimeCfg, conversationRepo, extractionService, embedClient, log)
-	memoryService.SetEmbeddingProvider(embeddingService)
 	settingsHandler.SetEmbeddingService(embeddingService)
 	processingService := appprocessing.NewServiceWithRuntime(appprocessing.Dependencies{
 		Config:           runtimeCfg,
@@ -386,7 +377,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 		Repository:        conversationRepo,
 		Cache:             conversationCache,
 		RouteResolver:     channelService,
-		MemoryRecorder:    memoryService,
 		LLMClient:         llmClient,
 		MediaDownloader:   mediaArtifactClient,
 		MCPClient:         mcpClient,
@@ -414,7 +404,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	userService.SetAvatarFileValidator(uploadService)
 	userService.SetActivityStatsRepository(billingRepo)
 	authService.SetAvatarFileValidator(uploadService)
-	memoryService.SetCacheInvalidator(conversationService.InvalidateMemoryCache)
 	shutdownSignal := lifecycle.NewShutdown()
 	conversationHandler := conversationhttp.NewHandler(conversationService, uploadService, processingService, runtimeCfg, shutdownSignal)
 	conversationModule := conversationhttp.NewModule(conversationHandler)
@@ -470,7 +459,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 		Channel:           channelModule,
 		Conversation:      conversationModule,
 		MCP:               mcpModule,
-		Memory:            memoryModule,
 		Billing:           billingModule,
 		Admin:             adminModule,
 		ContentModeration: contentModerationModule,

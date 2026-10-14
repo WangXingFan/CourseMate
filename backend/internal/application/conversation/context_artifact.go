@@ -11,7 +11,6 @@ import (
 	"time"
 
 	domainconversation "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
-	domainmemory "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/memory"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/pkg/textutil"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/pkg/traceid"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/repository"
@@ -35,7 +34,6 @@ type promptContextArtifactInput struct {
 	RAGChunks      []domainconversation.RAGChunk
 	RAGFallbacks   []ragFallbackEvidence
 	RecallChunks   []domainconversation.MessageChunk
-	Memories       []domainmemory.UserMemory
 }
 
 type toolContextArtifactInput struct {
@@ -216,7 +214,7 @@ func (s *Service) recallHistoricalContextArtifacts(ctx context.Context, input hi
 
 // buildPromptContextArtifacts 将 RAG、全文回退和语义召回统一转换为上下文证据。
 func buildPromptContextArtifacts(input promptContextArtifactInput) []domainconversation.ContextArtifact {
-	items := make([]domainconversation.ContextArtifact, 0, len(input.RAGChunks)+len(input.RAGFallbacks)+len(input.RecallChunks)+len(input.Memories))
+	items := make([]domainconversation.ContextArtifact, 0, len(input.RAGChunks)+len(input.RAGFallbacks)+len(input.RecallChunks))
 	for _, chunk := range input.RAGChunks {
 		content := strings.TrimSpace(chunk.Content)
 		if content == "" {
@@ -275,34 +273,6 @@ func buildPromptContextArtifacts(input promptContextArtifactInput) []domainconve
 				"chunk_count":    file.ChunkCount,
 				"embed_status":   strings.TrimSpace(file.EmbedStatus),
 				"extract_status": strings.TrimSpace(file.ExtractStatus),
-			}),
-		})
-	}
-
-	for _, memory := range input.Memories {
-		key := strings.TrimSpace(memory.MemoryKey)
-		content := strings.TrimSpace(memory.Value)
-		if key == "" || content == "" {
-			continue
-		}
-		scope := strings.TrimSpace(memory.Scope)
-		items = append(items, domainconversation.ContextArtifact{
-			ConversationID: input.ConversationID,
-			MessageID:      input.MessageID,
-			UserID:         input.UserID,
-			RunID:          input.RunID,
-			Kind:           domainconversation.ContextArtifactUserMemory,
-			SourceType:     "user_memory",
-			SourceID:       key,
-			SourceTitle:    textutil.FirstNonEmpty(scope, key),
-			Content:        contextArtifactExcerpt(content, contextArtifactExcerptChars),
-			ContentHash:    contextArtifactHash(domainconversation.ContextArtifactUserMemory, key, content),
-			TokenEstimate:  tokenestimate.Estimate(content),
-			Score:          1,
-			MetadataJSON: contextArtifactMetadata(map[string]any{
-				"memory_key": strings.TrimSpace(memory.MemoryKey),
-				"scope":      scope,
-				"updated_by": strings.TrimSpace(memory.UpdatedBy),
 			}),
 		})
 	}

@@ -296,15 +296,6 @@
     "deleteConfirmAction": "Delete",
     "deleteCancelAction": "Cancel",
     "forkTitle": "{title} (Fork)",
-    "rememberPreference": "Remember preference",
-    "memorySaved": "Remembered",
-    "memorySavedDescription": "This preference will apply to future conversations.",
-    "memorySaveFailed": "Failed to save. Please try again later.",
-    "authTokenMissing": "Unable to get authentication token. Please sign in again.",
-    "memoryNamePlaceholder": "Preference name, e.g. response style",
-    "memoryValuePlaceholder": "Preference content, e.g. answer concisely",
-    "savingPreference": "Saving...",
-    "savePreference": "Save preference",
     "positionRail": "Message position"
   },
   "loadError": {

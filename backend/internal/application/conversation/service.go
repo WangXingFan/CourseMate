@@ -22,7 +22,6 @@ import (
 	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
 	domainknowledgebase "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/knowledgebase"
 	domainmcp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/mcp"
-	domainmemory "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/memory"
 	domainskill "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/skill"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/ports/llm"
@@ -52,13 +51,6 @@ type defaultRouteResolver interface {
 // 项目默认模型校验不应依赖瞬时路由健康或熔断状态。
 type activeModelCatalogResolver interface {
 	ListActiveModels(ctx context.Context, userID uint) ([]channel.ModelView, error)
-}
-
-type memoryRecorder interface {
-	UpsertUserMemory(ctx context.Context, userID uint, memoryKey string, value string, scope string, updatedBy string) error
-	ListUserMemories(ctx context.Context, userID uint) ([]domainmemory.UserMemory, error)
-	SearchUserMemoriesByEmbedding(ctx context.Context, userID uint, queryEmbedding []float32, embeddingSignature string, topK int, minSimilarity float64) ([]domainmemory.UserMemory, error)
-	UpsertUserMemoryEmbedding(ctx context.Context, userID uint, memoryKey string, expectedValue string, embedding []float32, embeddingSignature string) error
 }
 
 type skillResolver interface {
@@ -123,7 +115,6 @@ type Service struct {
 	repo                  repository.ConversationRepository
 	cache                 repository.UserSettingCacheRepository
 	routeResolver         routeResolver
-	memoryRecorder        memoryRecorder
 	mcpRepo               mcpToolResolver
 	llmClient             llmGateway
 	mediaDownloader       generatedMediaDownloader
@@ -144,7 +135,6 @@ type Service struct {
 	toolLimiters          sync.Map
 	generationStreams     *generationStreamRegistry
 	snapshotCache         sync.Map // conversationID (uint) → *cachedSnapshot
-	userMemCache          sync.Map // userID (uint) → *cachedUserMemories
 	imageContextCache     *preparedConversationImageCache
 }
 
@@ -269,7 +259,6 @@ type Dependencies struct {
 	Repository        repository.ConversationRepository
 	Cache             repository.ConversationCacheRepository
 	RouteResolver     routeResolver
-	MemoryRecorder    memoryRecorder
 	LLMClient         llmGateway
 	MediaDownloader   generatedMediaDownloader
 	MCPClient         mcpToolCaller
@@ -290,7 +279,6 @@ func NewServiceWithRuntime(deps Dependencies) *Service {
 		repo:              deps.Repository,
 		cache:             deps.Cache,
 		routeResolver:     deps.RouteResolver,
-		memoryRecorder:    deps.MemoryRecorder,
 		llmClient:         deps.LLMClient,
 		mediaDownloader:   deps.MediaDownloader,
 		mcpClient:         deps.MCPClient,
@@ -329,12 +317,6 @@ func UploadErrorSet() appupload.ErrorSet {
 		MIMEBlocked:          ErrMIMEBlocked,
 		DangerousMIMEType:    ErrDangerousMIMEType,
 	}
-}
-
-// InvalidateMemoryCache 清除指定用户的记忆缓存，使下一次请求重新从 DB 加载。
-// 由外部（memory handler 写入后）通过回调触发，避免循环依赖。
-func (s *Service) InvalidateMemoryCache(userID uint) {
-	s.userMemCache.Delete(userID)
 }
 
 // SetBillingService 注入计费服务，用于记录标题、标签、上下文压缩等基础 LLM 服务用量。

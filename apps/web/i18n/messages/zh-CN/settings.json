@@ -202,7 +202,6 @@
   "profile": "个人资料",
   "security": "安全",
   "notifications": "通知",
-  "memory": "AI 偏好记忆",
   "accountPage": {
     "title": "账户",
     "password": "登录密码",
@@ -526,32 +525,6 @@
         "fullContext": "当前：全文注入 — 后续每轮尽量将会话文件内容放入上下文，适合小文件精确分析。",
         "rag": "当前：RAG — 后续每轮优先检索会话文件相关片段；检索不可用时回退全文注入。"
       }
-    },
-    "memory": {
-      "sectionTitle": "AI 偏好记忆",
-      "save": "保存",
-      "cancel": "取消",
-      "delete": "删除",
-      "edit": "编辑偏好",
-      "confirmDelete": "确认删除此偏好？",
-      "separator": "：",
-      "addTitle": "添加偏好",
-      "addDescription": "保存后会作为 AI 回复时的长期偏好参考。",
-      "name": "名称",
-      "namePlaceholder": "例如：回复风格",
-      "content": "偏好内容",
-      "contentPlaceholder": "例如：简短直接，避免废话",
-      "adding": "添加中",
-      "add": "添加",
-      "added": "已添加偏好",
-      "addFailed": "添加失败",
-      "updated": "已更新",
-      "updateFailed": "更新失败",
-      "deleted": "已删除",
-      "deleteFailed": "删除失败",
-      "full": "已满",
-      "addPreference": "添加偏好",
-      "empty": "还没有偏好记忆。"
     },
     "toasts": {
       "saveFailed": "保存失败",

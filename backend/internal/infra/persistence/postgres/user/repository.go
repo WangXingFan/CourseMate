@@ -1031,12 +1031,6 @@ func (r *Repo) DeleteAccountHard(ctx context.Context, userID uint) error {
 				},
 			},
 			{
-				label: "user_memories",
-				run: func(db *gorm.DB) error {
-					return db.Unscoped().Where("user_id = ?", userID).Delete(&models.UserMemory{}).Error
-				},
-			},
-			{
 				label: "user_settings",
 				run: func(db *gorm.DB) error {
 					return db.Unscoped().Where("user_id = ?", userID).Delete(&models.UserSetting{}).Error

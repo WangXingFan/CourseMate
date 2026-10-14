@@ -16,7 +16,6 @@ import (
 	apprag "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/rag"
 	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
 	domainknowledgebase "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/knowledgebase"
-	domainmemory "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/memory"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/objectstorage"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/ports/llm"
@@ -678,10 +677,6 @@ func TestInjectUserContextCombinesDataContexts(t *testing.T) {
 			ToTurn:   4,
 			Strategy: "auto",
 		},
-		Memory: []domainmemory.UserMemory{{
-			MemoryKey: "team",
-			Value:     "prefers short answers",
-		}},
 		HistoricalArtifacts: []model.ContextArtifact{{
 			Kind:        model.ContextArtifactFileRAGChunk,
 			SourceTitle: "部署文档",
@@ -697,7 +692,6 @@ func TestInjectUserContextCombinesDataContexts(t *testing.T) {
 	got := injectUserContext(t.Context(), messages, input, config.Config{}, nil)
 	for _, want := range []string{
 		`<sum from="1" to="4" strategy="auto">之前讨论了部署流程。</sum>`,
-		`<mem k="team">prefers short answers</mem>`,
 		`<ev k="file_rag_chunk" src="部署文档">旧轮 RAG 证据提到先执行迁移。</ev>`,
 		`<msg role="assistant" i="2">历史里提到需要先跑测试。</msg>`,
 		"<q>继续</q>",

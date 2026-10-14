@@ -202,7 +202,6 @@
   "profile": "Profile",
   "security": "Security",
   "notifications": "Notifications",
-  "memory": "AI preference memory",
   "accountPage": {
     "title": "Account",
     "password": "Sign-in password",
@@ -526,32 +525,6 @@
         "fullContext": "Current: Full context. Later turns try to include conversation file content directly, which works best for precise analysis of small files.",
         "rag": "Current: RAG. Later turns retrieve relevant file chunks first, then fall back to full-context injection when retrieval is unavailable."
       }
-    },
-    "memory": {
-      "sectionTitle": "AI preference memory",
-      "save": "Save",
-      "cancel": "Cancel",
-      "delete": "Delete",
-      "edit": "Edit preference",
-      "confirmDelete": "Delete this preference?",
-      "separator": ": ",
-      "addTitle": "Add preference",
-      "addDescription": "Saved preferences are used as long-term guidance for AI replies.",
-      "name": "Name",
-      "namePlaceholder": "Example: Reply style",
-      "content": "Preference content",
-      "contentPlaceholder": "Example: concise and direct, avoid filler",
-      "adding": "Adding",
-      "add": "Add",
-      "added": "Preference added",
-      "addFailed": "Failed to add preference",
-      "updated": "Updated",
-      "updateFailed": "Failed to update",
-      "deleted": "Deleted",
-      "deleteFailed": "Failed to delete",
-      "full": "Full",
-      "addPreference": "Add preference",
-      "empty": "No preference memory yet."
     },
     "toasts": {
       "saveFailed": "Failed to save",

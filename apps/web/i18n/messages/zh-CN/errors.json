@@ -272,10 +272,6 @@
       "invalidId": "MCP 工具 ID 无效。"
     }
   },
-  "memory": {
-    "keyRequired": "记忆键不能为空。",
-    "limitExceeded": "已达到记忆数量上限。"
-  },
   "media": {
     "imagePromptRequired": "请输入图片提示词。",
     "imageGenerationRejectsInputs": "图片生成不支持携带输入图片，请移除附件或选择图片编辑。",
