@@ -1548,6 +1548,8 @@ export interface Envelope {
 }
 
 export interface FeaturePolicyResponse {
+  /** DefaultKnowledgeBaseIDs 是服务端为未显式选择范围的新会话应用的默认知识库 public_id 列表。 */
+  defaultKnowledgeBaseIDs: string[];
   /** DesktopDownloadEnabled 为 true 时网页端用户菜单展示「下载桌面端」入口；桌面端内由前端自行隐藏。 */
   desktopDownloadEnabled: boolean;
   /** DesktopDownloadURL 为桌面端下载页地址；入口关闭时为空串。 */

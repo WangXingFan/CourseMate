@@ -22078,12 +22078,20 @@ const docTemplate = `{
         "FeaturePolicyResponse": {
             "type": "object",
             "required": [
+                "defaultKnowledgeBaseIDs",
                 "desktopDownloadEnabled",
                 "desktopDownloadURL",
                 "knowledgeBaseEnabled",
                 "processTraceEnabled"
             ],
             "properties": {
+                "defaultKnowledgeBaseIDs": {
+                    "description": "DefaultKnowledgeBaseIDs 是服务端为未显式选择范围的新会话应用的默认知识库 public_id 列表。",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "desktopDownloadEnabled": {
                     "description": "DesktopDownloadEnabled 为 true 时网页端用户菜单展示「下载桌面端」入口；桌面端内由前端自行隐藏。",
                     "type": "boolean"
