@@ -51,8 +51,3 @@ func (g FeatureGate) Require(feature string) gin.HandlerFunc {
 	}
 	return RequireFeature(g.runtime, feature)
 }
-
-// Enabled 查询当前能力位；只给契约里明确写出的例外用，其余一律 Require。
-func (g FeatureGate) Enabled(feature string) bool {
-	return g.runtime.Snapshot().Capabilities().Enabled(feature)
-}
