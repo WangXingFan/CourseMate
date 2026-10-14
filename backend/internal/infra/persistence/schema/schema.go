@@ -63,7 +63,6 @@ func Models() []any {
 		&models.SystemSetting{},
 		&models.UserSetting{},
 		&models.FileChunk{},
-		&models.MessageChunk{},
 		&models.PermissionGroup{},
 		&models.PermissionGroupModelAccess{},
 		&models.PermissionGroupModelRule{},

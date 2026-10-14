@@ -16,7 +16,6 @@ type ConversationRepository interface {
 	MessageFeedbackRepository
 	ConversationTraceRepository
 	ContextArtifactRepository
-	MessageEmbeddingRepository
 	ModerationFileRepository
 	FileBatchRepository
 	UploadRepository

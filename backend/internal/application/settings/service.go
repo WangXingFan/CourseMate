@@ -662,8 +662,6 @@ func (s *Service) applyEmbeddingDependentCascades(ctx context.Context, patches [
 	}
 
 	hasRAGPatch := false
-	hasMessagePatch := false
-	hasSemanticPatch := false
 	for _, item := range patches {
 		if item.Namespace != "chat" {
 			continue
@@ -671,20 +669,10 @@ func (s *Service) applyEmbeddingDependentCascades(ctx context.Context, patches [
 		switch item.Key {
 		case "rag_enabled":
 			hasRAGPatch = true
-		case "message_embedding_enabled":
-			hasMessagePatch = true
-		case "semantic_context_enabled":
-			hasSemanticPatch = true
 		}
 	}
 	if !hasRAGPatch {
 		patches = append(patches, PatchItem{Namespace: "chat", Key: "rag_enabled", Value: "false"})
-	}
-	if !hasMessagePatch {
-		patches = append(patches, PatchItem{Namespace: "chat", Key: "message_embedding_enabled", Value: "false"})
-	}
-	if !hasSemanticPatch {
-		patches = append(patches, PatchItem{Namespace: "chat", Key: "semantic_context_enabled", Value: "false"})
 	}
 	return patches, nil
 }
@@ -720,7 +708,7 @@ func (s *Service) validateEmbeddingDependentSettings(ctx context.Context, patche
 		}
 		if item.Namespace == "chat" {
 			switch item.Key {
-			case "rag_enabled", "message_embedding_enabled", "semantic_context_enabled":
+			case "rag_enabled":
 				requiresValidation = true
 			}
 		}
@@ -737,14 +725,7 @@ func (s *Service) validateEmbeddingDependentSettings(ctx context.Context, patche
 
 	embeddingEnabled, _ := strconv.ParseBool(next["file:embedding_enabled"])
 	ragEnabled, _ := strconv.ParseBool(next["chat:rag_enabled"])
-	messageEmbeddingEnabled, _ := strconv.ParseBool(next["chat:message_embedding_enabled"])
-	semanticContextEnabled, _ := strconv.ParseBool(next["chat:semantic_context_enabled"])
-	if semanticContextEnabled && !messageEmbeddingEnabled {
-		return newSettingValidationError(settingCodeEmbeddingInvalid, SettingValidationDetails{
-			Field: "chat:message_embedding_enabled", Rule: "dependency", Param: "chat:semantic_context_enabled=true",
-		})
-	}
-	if embeddingEnabled || ragEnabled || messageEmbeddingEnabled || semanticContextEnabled {
+	if embeddingEnabled || ragEnabled {
 		if !embeddingServiceReady(next) {
 			return newSettingValidationError(settingCodeEmbeddingInvalid, SettingValidationDetails{
 				Field: "file:embedding_enabled", Rule: "dependency", Param: "embedding_service_ready",

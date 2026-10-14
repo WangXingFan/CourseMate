@@ -565,7 +565,6 @@ type userContextInput struct {
 	HistoricalArtifacts []domainconversation.ContextArtifact
 	CurrentArtifacts    []domainconversation.ContextArtifact
 	Snapshot            *snapshotContext
-	RecallChunks        []domainconversation.MessageChunk
 }
 
 type snapshotContext struct {
@@ -819,8 +818,7 @@ func injectUserContext(
 		len(input.RAGChunks) == 0 &&
 		strings.TrimSpace(input.RAGNotice) == "" &&
 		len(input.HistoricalArtifacts) == 0 &&
-		input.Snapshot == nil &&
-		len(input.RecallChunks) == 0 {
+		input.Snapshot == nil {
 		return messages
 	}
 
@@ -947,7 +945,6 @@ type userContextXML struct {
 	evidence  []string
 	rag       []string
 	ragNotice string
-	recall    []string
 }
 
 func (x userContextXML) empty() bool {
@@ -956,8 +953,7 @@ func (x userContextXML) empty() bool {
 		len(x.images) == 0 &&
 		len(x.evidence) == 0 &&
 		len(x.rag) == 0 &&
-		strings.TrimSpace(x.ragNotice) == "" &&
-		len(x.recall) == 0
+		strings.TrimSpace(x.ragNotice) == ""
 }
 
 func buildUserContextXML(input userContextInput) userContextXML {
@@ -967,7 +963,6 @@ func buildUserContextXML(input userContextInput) userContextXML {
 		evidence:  formatHistoricalEvidenceContext(input.HistoricalArtifacts),
 		rag:       formatRAGFileContext(input.RAGChunks),
 		ragNotice: strings.TrimSpace(input.RAGNotice),
-		recall:    formatRecallContext(input.RecallChunks),
 	}
 }
 
@@ -1056,29 +1051,6 @@ func formatHistoricalEvidenceContext(artifacts []domainconversation.ContextArtif
 	return items
 }
 
-func formatRecallContext(chunks []domainconversation.MessageChunk) []string {
-	if len(chunks) == 0 {
-		return nil
-	}
-	items := make([]string, 0, len(chunks))
-	for index, chunk := range chunks {
-		content := strings.TrimSpace(chunk.Content)
-		if content == "" {
-			continue
-		}
-		role := strings.TrimSpace(chunk.Role)
-		if role == "" {
-			role = "unknown"
-		}
-		chunkIndex := chunk.ChunkIndex
-		if chunkIndex <= 0 {
-			chunkIndex = index + 1
-		}
-		items = append(items, `<msg role="`+xmlEscapeAttr(role)+`" i="`+xmlEscapeAttr(fmt.Sprintf("%d", chunkIndex))+`">`+xmlEscapeText(textutil.CompactSnippet(content, 300))+`</msg>`)
-	}
-	return items
-}
-
 func buildUserContextPrompt(userRequest string, contextXML userContextXML) string {
 	var builder strings.Builder
 	builder.WriteString("<ctx>")
@@ -1110,11 +1082,6 @@ func buildUserContextPrompt(userRequest string, contextXML userContextXML) strin
 		builder.WriteString("\n<rag_status>")
 		builder.WriteString(xmlEscapeText(contextXML.ragNotice))
 		builder.WriteString("</rag_status>")
-	}
-	if len(contextXML.recall) > 0 {
-		builder.WriteString("\n<recall>\n")
-		builder.WriteString(strings.Join(contextXML.recall, "\n"))
-		builder.WriteString("\n</recall>")
 	}
 	builder.WriteString("\n</ctx>")
 

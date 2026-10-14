@@ -682,18 +682,12 @@ func TestInjectUserContextCombinesDataContexts(t *testing.T) {
 			SourceTitle: "部署文档",
 			Content:     "旧轮 RAG 证据提到先执行迁移。",
 		}},
-		RecallChunks: []model.MessageChunk{{
-			Role:       "assistant",
-			ChunkIndex: 2,
-			Content:    "历史里提到需要先跑测试。",
-		}},
 	}
 
 	got := injectUserContext(t.Context(), messages, input, config.Config{}, nil)
 	for _, want := range []string{
 		`<sum from="1" to="4" strategy="auto">之前讨论了部署流程。</sum>`,
 		`<ev k="file_rag_chunk" src="部署文档">旧轮 RAG 证据提到先执行迁移。</ev>`,
-		`<msg role="assistant" i="2">历史里提到需要先跑测试。</msg>`,
 		"<q>继续</q>",
 	} {
 		if !strings.Contains(got[0].Content, want) {

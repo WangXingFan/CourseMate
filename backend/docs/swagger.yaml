@@ -4470,20 +4470,6 @@ definitions:
     required:
     - prompt
     type: object
-  MemoryErrorDoc:
-    properties:
-      data: {}
-      details: {}
-      errorCode:
-        type: string
-      errorMsg:
-        type: string
-      requestId:
-        type: string
-    required:
-    - data
-    - errorMsg
-    type: object
   MessageBillingCostResponse:
     properties:
       billedCurrency:
@@ -8631,13 +8617,6 @@ definitions:
     - name
     - type
     type: object
-  UpsertMemoryResponse:
-    properties:
-      saved:
-        type: boolean
-    required:
-    - saved
-    type: object
   UpsertModelPricingRequest:
     properties:
       cacheReadUSDPerMTokens:
@@ -8756,35 +8735,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/UpstreamModelDataResponse'
-      errorMsg:
-        type: string
-    required:
-    - data
-    - errorMsg
-    type: object
-  UpsertUserMemoryRequest:
-    properties:
-      memoryKey:
-        maxLength: 128
-        type: string
-      scope:
-        enum:
-        - profile
-        - preference
-        - custom
-        type: string
-      value:
-        maxLength: 10000
-        type: string
-    required:
-    - memoryKey
-    - scope
-    - value
-    type: object
-  UpsertUserMemoryResponseDoc:
-    properties:
-      data:
-        $ref: '#/definitions/UpsertMemoryResponse'
       errorMsg:
         type: string
     required:
@@ -9948,46 +9898,6 @@ definitions:
     required:
     - data
     - errorMsg
-    type: object
-  UserMemoryListResponseDoc:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/UserMemoryResponse'
-        type: array
-      errorMsg:
-        type: string
-    required:
-    - data
-    - errorMsg
-    type: object
-  UserMemoryResponse:
-    properties:
-      createdAt:
-        type: string
-      id:
-        type: integer
-      memoryKey:
-        type: string
-      scope:
-        type: string
-      updatedAt:
-        type: string
-      updatedBy:
-        type: string
-      userID:
-        type: integer
-      value:
-        type: string
-    required:
-    - createdAt
-    - id
-    - memoryKey
-    - scope
-    - updatedAt
-    - updatedBy
-    - userID
-    - value
     type: object
   UserSettingsPatchSettingsRequest:
     properties:
@@ -19100,89 +19010,6 @@ paths:
       summary: 修改当前用户用户名
       tags:
       - auth
-  /memories/profile:
-    get:
-      consumes:
-      - application/json
-      description: 查询当前用户的长期个性化记忆
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/UserMemoryListResponseDoc'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/MemoryErrorDoc'
-      security:
-      - BearerAuth: []
-      summary: 查询用户个性化记忆
-      tags:
-      - memory
-    put:
-      consumes:
-      - application/json
-      description: 新增或更新当前用户的长期个性化记忆
-      parameters:
-      - description: 用户记忆参数
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/UpsertUserMemoryRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/UpsertUserMemoryResponseDoc'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/MemoryErrorDoc'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/MemoryErrorDoc'
-      security:
-      - BearerAuth: []
-      summary: 更新用户个性化记忆
-      tags:
-      - memory
-  /memories/profile/{memory_key}:
-    delete:
-      consumes:
-      - application/json
-      description: 删除当前用户的指定 key 长期记忆
-      parameters:
-      - description: 记忆 Key
-        in: path
-        name: memory_key
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/UpsertUserMemoryResponseDoc'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/MemoryErrorDoc'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/MemoryErrorDoc'
-      security:
-      - BearerAuth: []
-      summary: 删除用户个性化记忆
-      tags:
-      - memory
   /messages/{id}:
     patch:
       consumes:

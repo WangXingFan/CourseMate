@@ -30,11 +30,6 @@ import (
 	"go.uber.org/zap"
 )
 
-const (
-	// semanticRecallDeadline：语义召回截止时限，超时后优雅跳过，不阻塞 LLM 关键路径。
-	semanticRecallDeadline = 200 * time.Millisecond
-)
-
 type routeResolver interface {
 	ResolveRoute(ctx context.Context, input channel.ResolveRouteInput) (*channel.ResolvedRoute, error)
 	MarkRouteFailure(ctx context.Context, route *channel.ResolvedRoute, cause error)

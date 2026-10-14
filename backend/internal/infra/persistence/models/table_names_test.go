@@ -47,7 +47,6 @@ func TestTableNamesUseRestructuredDomains(t *testing.T) {
 		ChatContextRecord{},
 		FileObject{},
 		FileChunk{},
-		MessageChunk{},
 		UserStorageQuota{},
 		MCPServer{},
 		MCPTool{},

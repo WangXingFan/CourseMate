@@ -579,18 +579,3 @@ type RAGChunk struct {
 	Modality   string
 	Score      float32
 }
-
-// MessageChunk 表示消息向量分片，用于历史对话语义检索。
-type MessageChunk struct {
-	ID                 uint
-	ConversationID     uint
-	MessageID          uint
-	UserID             uint
-	Role               string
-	ChunkIndex         int
-	Content            string
-	TokenCount         int
-	EmbeddingSignature string
-	Similarity         float64 // 检索时附加的相似度分数（写入时为 0）
-	CreatedAt          time.Time
-}

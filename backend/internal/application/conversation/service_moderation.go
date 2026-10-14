@@ -40,7 +40,6 @@ type completeModerationAfterSuccessInput struct {
 	Result           *SendMessageResult
 	OutputText       string
 	OutputImages     []appcm.OutputImageSource
-	EmbedInput       SendMessageInput
 	ReuseUserMessage bool
 }
 
@@ -176,12 +175,6 @@ func (s *Service) completeModerationAfterSuccess(ctx context.Context, input comp
 	applyBarrierOutcome(input.Result, barrier)
 	if input.Result.IsModerationBlocked() {
 		return
-	}
-	// 通过 / fail-open：立即向量化（屏障活动期间持久化路径跳过了向量化）。
-	if input.ReuseUserMessage {
-		s.embedMessagePairAsync(ctx, input.EmbedInput, nil, &input.Result.AssistantMessage)
-	} else {
-		s.embedMessagePairAsync(ctx, input.EmbedInput, &input.Result.UserMessage, &input.Result.AssistantMessage)
 	}
 }
 

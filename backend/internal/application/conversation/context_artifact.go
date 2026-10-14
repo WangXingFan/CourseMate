@@ -33,7 +33,6 @@ type promptContextArtifactInput struct {
 	Query          string
 	RAGChunks      []domainconversation.RAGChunk
 	RAGFallbacks   []ragFallbackEvidence
-	RecallChunks   []domainconversation.MessageChunk
 }
 
 type toolContextArtifactInput struct {
@@ -59,7 +58,6 @@ type historicalContextArtifactInput struct {
 	Candidates         []domainconversation.ContextArtifact
 	CurrentRAGChunks   []domainconversation.RAGChunk
 	CurrentFallbacks   []AttachmentInput
-	CurrentRecall      []domainconversation.MessageChunk
 	MaxItems           int
 	MaxTokens          int64
 }
@@ -70,7 +68,6 @@ type historicalContextRecallInput struct {
 	Query              string
 	CurrentRAGChunks   []domainconversation.RAGChunk
 	CurrentFallbacks   []AttachmentInput
-	CurrentRecall      []domainconversation.MessageChunk
 }
 
 type historicalScoredArtifact struct {
@@ -208,13 +205,12 @@ func (s *Service) recallHistoricalContextArtifacts(ctx context.Context, input hi
 		Candidates:         candidates,
 		CurrentRAGChunks:   input.CurrentRAGChunks,
 		CurrentFallbacks:   input.CurrentFallbacks,
-		CurrentRecall:      input.CurrentRecall,
 	})
 }
 
-// buildPromptContextArtifacts 将 RAG、全文回退和语义召回统一转换为上下文证据。
+// buildPromptContextArtifacts 将 RAG 与全文回退统一转换为上下文证据。
 func buildPromptContextArtifacts(input promptContextArtifactInput) []domainconversation.ContextArtifact {
-	items := make([]domainconversation.ContextArtifact, 0, len(input.RAGChunks)+len(input.RAGFallbacks)+len(input.RecallChunks))
+	items := make([]domainconversation.ContextArtifact, 0, len(input.RAGChunks)+len(input.RAGFallbacks))
 	for _, chunk := range input.RAGChunks {
 		content := strings.TrimSpace(chunk.Content)
 		if content == "" {
@@ -273,34 +269,6 @@ func buildPromptContextArtifacts(input promptContextArtifactInput) []domainconve
 				"chunk_count":    file.ChunkCount,
 				"embed_status":   strings.TrimSpace(file.EmbedStatus),
 				"extract_status": strings.TrimSpace(file.ExtractStatus),
-			}),
-		})
-	}
-
-	for _, chunk := range input.RecallChunks {
-		content := strings.TrimSpace(chunk.Content)
-		if content == "" {
-			continue
-		}
-		sourceID := fmt.Sprintf("%d:%d", chunk.MessageID, chunk.ChunkIndex)
-		items = append(items, domainconversation.ContextArtifact{
-			ConversationID: input.ConversationID,
-			MessageID:      input.MessageID,
-			UserID:         input.UserID,
-			RunID:          input.RunID,
-			Kind:           domainconversation.ContextArtifactSemanticRecall,
-			SourceType:     "message_chunk",
-			SourceID:       sourceID,
-			SourceTitle:    chunk.Role,
-			Content:        contextArtifactExcerpt(content, contextArtifactExcerptChars),
-			ContentHash:    contextArtifactHash(domainconversation.ContextArtifactSemanticRecall, sourceID, content),
-			TokenEstimate:  tokenestimate.Estimate(content),
-			Score:          chunk.Similarity,
-			MetadataJSON: contextArtifactMetadata(map[string]any{
-				"source_message_id": chunk.MessageID,
-				"chunk_index":       chunk.ChunkIndex,
-				"role":              strings.TrimSpace(chunk.Role),
-				"similarity":        chunk.Similarity,
 			}),
 		})
 	}
@@ -577,11 +545,6 @@ func currentArtifactContentFingerprints(input historicalContextArtifactInput) ma
 	}
 	for _, file := range input.CurrentFallbacks {
 		if fingerprint := normalizedContentFingerprint(file.ExtractedText); fingerprint != "" {
-			seen[fingerprint] = struct{}{}
-		}
-	}
-	for _, chunk := range input.CurrentRecall {
-		if fingerprint := normalizedContentFingerprint(chunk.Content); fingerprint != "" {
 			seen[fingerprint] = struct{}{}
 		}
 	}

@@ -45,24 +45,12 @@ func TestBuildPromptPlanLayersStableDynamicAndToolGuidance(t *testing.T) {
 				ChunkIndex: 2,
 				Content:    "本轮 RAG 片段",
 			}},
-			RecallChunks: []model.MessageChunk{{
-				MessageID:  5,
-				Role:       "assistant",
-				ChunkIndex: 1,
-				Content:    "本轮语义召回",
-			}},
 			CurrentArtifacts: []model.ContextArtifact{
 				{
 					ID:          84,
 					Kind:        model.ContextArtifactFileRAGChunk,
 					SourceID:    "file_a:2",
 					SourceTitle: "A.md",
-				},
-				{
-					ID:          85,
-					Kind:        model.ContextArtifactSemanticRecall,
-					SourceID:    "5:1",
-					SourceTitle: "assistant",
 				},
 			},
 		},
@@ -120,10 +108,6 @@ func TestBuildPromptPlanLayersStableDynamicAndToolGuidance(t *testing.T) {
 	}
 	if ragRef.ArtifactID != 84 {
 		t.Fatalf("expected current rag trace source to carry artifact id, got %#v", ragRef)
-	}
-	recallRef := dynamicBlock.SourceRefs[1]
-	if recallRef.SourceType != "semantic_recall" || recallRef.SourceID != "5:1" || recallRef.ArtifactID != 85 {
-		t.Fatalf("expected current recall trace source to carry artifact id, got %#v", recallRef)
 	}
 	historicalBlock := promptTraceBlock(plan.Trace, PromptBlockHistoricalEvidence)
 	if historicalBlock == nil || len(historicalBlock.SourceRefs) == 0 {

@@ -27,7 +27,7 @@ func (r *toolArtifactCaptureRepository) CreateContextArtifacts(_ context.Context
 	return nil
 }
 
-func TestBuildPromptContextArtifactsRecordsRAGFallbackAndRecall(t *testing.T) {
+func TestBuildPromptContextArtifactsRecordsRAGFallback(t *testing.T) {
 	items := buildPromptContextArtifacts(promptContextArtifactInput{
 		ConversationID: 7,
 		UserID:         11,
@@ -52,26 +52,16 @@ func TestBuildPromptContextArtifactsRecordsRAGFallbackAndRecall(t *testing.T) {
 				ExtractedText: "全文回退证据",
 			},
 		}},
-		RecallChunks: []model.MessageChunk{{
-			MessageID:  3,
-			Role:       "assistant",
-			ChunkIndex: 1,
-			Content:    "历史语义召回证据",
-			Similarity: 0.82,
-		}},
 	})
 
-	if len(items) != 3 {
-		t.Fatalf("expected 3 artifacts, got %#v", items)
+	if len(items) != 2 {
+		t.Fatalf("expected 2 artifacts, got %#v", items)
 	}
 	if items[0].Kind != model.ContextArtifactFileRAGChunk || items[0].SourceID != "file_a:2" {
 		t.Fatalf("expected file rag artifact, got %#v", items[0])
 	}
 	if items[1].Kind != model.ContextArtifactFileRAGFallback || items[1].SourceID != "file_b" {
 		t.Fatalf("expected fallback artifact, got %#v", items[1])
-	}
-	if !hasContextArtifact(items, model.ContextArtifactSemanticRecall, "3:1") {
-		t.Fatalf("expected recall artifact, got %#v", items)
 	}
 	for _, item := range items {
 		if item.ConversationID != 7 || item.UserID != 11 || item.MessageID != 13 || item.RunID != "run_1" {
@@ -114,15 +104,6 @@ func TestPersistMessageToolCallsAnchorsEvidenceToAssistantMessage(t *testing.T) 
 	}
 }
 
-func hasContextArtifact(items []model.ContextArtifact, kind model.ContextArtifactKind, sourceID string) bool {
-	for _, item := range items {
-		if item.Kind == kind && item.SourceID == sourceID {
-			return true
-		}
-	}
-	return false
-}
-
 func TestBuildPromptContextArtifactsSkipsEmptyEvidence(t *testing.T) {
 	items := buildPromptContextArtifacts(promptContextArtifactInput{
 		RAGChunks: []model.RAGChunk{{
@@ -135,10 +116,6 @@ func TestBuildPromptContextArtifactsSkipsEmptyEvidence(t *testing.T) {
 				FileID:        "file_b",
 				ExtractedText: "",
 			},
-		}},
-		RecallChunks: []model.MessageChunk{{
-			MessageID: 1,
-			Content:   "",
 		}},
 	})
 	if len(items) != 0 {
