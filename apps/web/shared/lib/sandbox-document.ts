@@ -1,7 +1,7 @@
 import type { HTMLVisualThemeSnapshot } from "@/shared/lib/html-visual-theme";
 
 // Shared primitives for every model-generated document rendered in a sandboxed
-// iframe (chat artifacts, custom ui-blocks). Keep the CSP and permission list
+// iframe (chat artifacts). Keep the CSP and permission list
 // in one place so the two surfaces cannot drift apart.
 
 const SCRIPT_CLOSE_RE = /<\/script/gi;

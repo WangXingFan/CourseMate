@@ -36,7 +36,6 @@ export type ChatSubmissionPlan = {
   selectedToolIDs: number[];
   selectedSkills: SkillSummaryDTO[];
   selectedKnowledgeBaseIDs: string[];
-  uiComponentIDs: number[];
   htmlVisualPromptEnabled: boolean;
   sanitizedOptions: ConversationOptions;
   submitTask: ChatSubmitTask;
@@ -78,7 +77,6 @@ export function planChatSubmission(input: {
   selectedToolIDs: number[];
   selectedSkills: SkillSummaryDTO[];
   selectedKnowledgeBaseIDs: string[];
-  uiComponentIDs: number[];
   htmlVisualPromptEnabled: boolean;
   visibleConversationScopeKey: string;
   visibleBranchScopePath: readonly string[];
@@ -93,7 +91,6 @@ export function planChatSubmission(input: {
   const selectedToolIDs = queuedSubmission?.selectedToolIDs ?? input.selectedToolIDs;
   const selectedSkills = queuedSubmission?.selectedSkills ?? input.selectedSkills;
   const selectedKnowledgeBaseIDs = queuedSubmission?.selectedKnowledgeBaseIDs ?? input.selectedKnowledgeBaseIDs;
-  const uiComponentIDs = queuedSubmission?.uiComponentIDs ?? input.uiComponentIDs;
   const htmlVisualPromptEnabled = queuedSubmission?.htmlVisualPromptEnabled ?? input.htmlVisualPromptEnabled;
   const targetConversationScopeKey = queuedSubmission?.conversationScopeKey ?? input.visibleConversationScopeKey;
   const resolvedParentPublicID = resolvePersistedPublicID(input.parentMessagePublicID);
@@ -208,7 +205,6 @@ export function planChatSubmission(input: {
       selectedToolIDs,
       selectedSkills,
       selectedKnowledgeBaseIDs,
-      uiComponentIDs,
       htmlVisualPromptEnabled,
       sanitizedOptions,
       submitTask,
