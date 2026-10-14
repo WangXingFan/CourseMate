@@ -89,7 +89,6 @@ var gatedRoutes = []struct {
 
 	{"contentModeration", "GET", "/admin/content-moderation/config"},
 	{"contentModeration", "GET", "/admin/content-moderation/events"},
-
 }
 
 // openRoutes 在本地模式下也必须可达：门禁不能误伤。它们没有数据库，所以只断言

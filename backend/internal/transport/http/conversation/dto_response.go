@@ -17,24 +17,24 @@ import (
 
 // ConversationResponse 对外会话响应 DTO。
 type ConversationResponse struct {
-	PublicID            string     `json:"publicID"`
-	UserID              uint       `json:"userID"`
-	ProjectID           string     `json:"projectID"`
-	ProjectName         string     `json:"projectName"`
-	Title               string     `json:"title"`
-	LabelsJSON          string     `json:"labelsJSON"`
-	Model               string     `json:"model"`
-	Provider            string     `json:"provider"`
-	SessionKey          string     `json:"sessionKey"`
-	IsStarred           bool       `json:"isStarred"`
-	StarredAt           *time.Time `json:"starredAt" extensions:"x-nullable,!x-omitempty"`
-	MessageCount        int        `json:"messageCount"`
-	Status              string     `json:"status"`
-	ContextPolicy       string     `json:"contextPolicyJSON"`
-	LastCompactedAt     *time.Time `json:"lastCompactedAt" extensions:"x-nullable,!x-omitempty"`
-	LastResponseID      string     `json:"lastResponseID"`
-	CreatedAt           time.Time  `json:"createdAt"`
-	UpdatedAt           time.Time  `json:"updatedAt"`
+	PublicID        string     `json:"publicID"`
+	UserID          uint       `json:"userID"`
+	ProjectID       string     `json:"projectID"`
+	ProjectName     string     `json:"projectName"`
+	Title           string     `json:"title"`
+	LabelsJSON      string     `json:"labelsJSON"`
+	Model           string     `json:"model"`
+	Provider        string     `json:"provider"`
+	SessionKey      string     `json:"sessionKey"`
+	IsStarred       bool       `json:"isStarred"`
+	StarredAt       *time.Time `json:"starredAt" extensions:"x-nullable,!x-omitempty"`
+	MessageCount    int        `json:"messageCount"`
+	Status          string     `json:"status"`
+	ContextPolicy   string     `json:"contextPolicyJSON"`
+	LastCompactedAt *time.Time `json:"lastCompactedAt" extensions:"x-nullable,!x-omitempty"`
+	LastResponseID  string     `json:"lastResponseID"`
+	CreatedAt       time.Time  `json:"createdAt"`
+	UpdatedAt       time.Time  `json:"updatedAt"`
 }
 
 // ConversationSearchResultResponse 会话搜索结果 DTO。
@@ -95,24 +95,24 @@ func toConversationResponse(item *model.Conversation) ConversationResponse {
 		labelsJSON = "[]"
 	}
 	return ConversationResponse{
-		PublicID:            item.PublicID,
-		UserID:              item.UserID,
-		ProjectID:           item.ProjectPublicID,
-		ProjectName:         item.ProjectName,
-		Title:               item.Title,
-		LabelsJSON:          labelsJSON,
-		Model:               item.Model,
-		Provider:            item.Provider,
-		SessionKey:          item.SessionKey,
-		IsStarred:           item.IsStarred,
-		StarredAt:           item.StarredAt,
-		MessageCount:        item.MessageCount,
-		Status:              item.Status,
-		ContextPolicy:       item.ContextPolicy,
-		LastCompactedAt:     item.LastCompactedAt,
-		LastResponseID:      item.LastResponseID,
-		CreatedAt:           item.CreatedAt,
-		UpdatedAt:           item.UpdatedAt,
+		PublicID:        item.PublicID,
+		UserID:          item.UserID,
+		ProjectID:       item.ProjectPublicID,
+		ProjectName:     item.ProjectName,
+		Title:           item.Title,
+		LabelsJSON:      labelsJSON,
+		Model:           item.Model,
+		Provider:        item.Provider,
+		SessionKey:      item.SessionKey,
+		IsStarred:       item.IsStarred,
+		StarredAt:       item.StarredAt,
+		MessageCount:    item.MessageCount,
+		Status:          item.Status,
+		ContextPolicy:   item.ContextPolicy,
+		LastCompactedAt: item.LastCompactedAt,
+		LastResponseID:  item.LastResponseID,
+		CreatedAt:       item.CreatedAt,
+		UpdatedAt:       item.UpdatedAt,
 	}
 }
 

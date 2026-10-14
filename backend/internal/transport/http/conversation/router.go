@@ -59,4 +59,3 @@ func (m *Module) RegisterRoutes(authRequired *gin.RouterGroup, gate middleware.F
 	authRequired.DELETE("/files/:file_id", m.Handler.DeleteFile)
 	authRequired.GET("/runtime/chat-file-policy", m.Handler.GetChatFilePolicy)
 }
-
