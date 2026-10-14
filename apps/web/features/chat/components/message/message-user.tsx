@@ -25,7 +25,7 @@ import { StreamdownRender } from "@/shared/components/markdown/streamdown-render
 
 // Long user messages collapse to this many lines (leading-6 → 24px each).
 const USER_MESSAGE_COLLAPSED_LINES = 6;
-const EDIT_MESSAGE_MENTION_KINDS: readonly ChatMentionMenuKind[] = ["model", "prompt"];
+const EDIT_MESSAGE_MENTION_KINDS: readonly ChatMentionMenuKind[] = ["model"];
 const EDIT_MESSAGE_EMPTY_ATTACHMENTS: PendingAttachment[] = [];
 const EDIT_MESSAGE_EMPTY_TOOLS: MCPToolDTO[] = [];
 const EDIT_MESSAGE_EMPTY_TOOL_IDS: number[] = [];

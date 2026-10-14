@@ -57,7 +57,6 @@ func Models() []any {
 		&models.ModelPricing{},
 		&models.UsageLedger{},
 		&models.AuditLog{},
-		&models.PromptPreset{},
 		&models.Skill{},
 		&models.UIComponent{},
 		&models.KnowledgeBase{},
@@ -258,9 +257,6 @@ func backfillUsageLedgerBillingAt(db *gorm.DB) error {
 
 // CleanupRemovedColumns 删除已从 Gorm 模型中移除的列。
 func CleanupRemovedColumns(db *gorm.DB) error {
-	if err := dropColumns(db, &models.PromptPreset{}, []string{"use_count", "last_used_at", "category", "tags_json"}); err != nil {
-		return err
-	}
 	if err := dropColumns(db, &models.Skill{}, []string{"content", "sections_json"}); err != nil {
 		return err
 	}

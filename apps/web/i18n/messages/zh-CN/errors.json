@@ -367,7 +367,6 @@
     "invalidModelOrder": "模型排序无效。",
     "invalidModelVendor": "模型厂商无效。",
     "invalidOverwriteCustomizedMetadata": "元数据覆盖选项无效。",
-    "invalidPromptPreset": "提示词预设无效。",
     "invalidRunIds": "运行 ID 无效。",
     "invalidSkill": "技能无效。",
     "invalidUiComponent": "组件参数无效。",
@@ -403,13 +402,6 @@
   },
   "plan": {
     "invalidId": "套餐 ID 无效。"
-  },
-  "promptPreset": {
-    "invalidId": "提示词预设 ID 无效。",
-    "notFound": "提示词预设不存在。"
-  },
-  "promptPresetTrigger": {
-    "alreadyExists": "提示词预设触发器已存在。"
   },
   "redemptionCode": {
     "invalidId": "兑换码 ID 无效。",

@@ -37,7 +37,6 @@ apps/web/
 │   ├── identity-provider/     # 身份源图标
 │   ├── mcp/                   # MCP 工具选择规则
 │   ├── model/                 # 模型：身份与图标、选择器、选项展示与参数策略、原生工具
-│   ├── prompt-preset/         # 提示词预设约束
 │   ├── skill/                 # 技能表单模型
 │   └── user-settings/         # 用户设置存储与对话内容宽度
 ├── features/                  # 按业务域组织页面组件、hooks 和模型

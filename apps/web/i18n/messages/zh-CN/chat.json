@@ -595,16 +595,14 @@
         "file": "文件",
         "tool": "MCP",
         "model": "模型",
-        "skill": "技能",
-        "prompt": "提示词"
+        "skill": "技能"
       },
       "tabs": {
         "all": "全部",
         "file": "文件",
         "tool": "MCP",
         "model": "模型",
-        "skill": "技能",
-        "prompt": "提示词"
+        "skill": "技能"
       },
       "recent": "最近使用",
       "groups": {
@@ -617,8 +615,7 @@
         "file": "没有匹配的文件",
         "tool": "没有匹配的工具",
         "model": "没有匹配的模型",
-        "skill": "没有匹配的技能",
-        "prompt": "没有匹配的提示词"
+        "skill": "没有匹配的技能"
       }
     },
     "mediaMode": {

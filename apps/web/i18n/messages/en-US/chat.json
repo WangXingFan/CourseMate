@@ -595,16 +595,14 @@
         "file": "Files",
         "tool": "MCP",
         "model": "Models",
-        "skill": "Skills",
-        "prompt": "Prompts"
+        "skill": "Skills"
       },
       "tabs": {
         "all": "All",
         "file": "Files",
         "tool": "MCP",
         "model": "Models",
-        "skill": "Skills",
-        "prompt": "Prompts"
+        "skill": "Skills"
       },
       "recent": "Recent",
       "groups": {
@@ -617,8 +615,7 @@
         "file": "No matching files",
         "tool": "No matching tools",
         "model": "No matching models",
-        "skill": "No matching skills",
-        "prompt": "No matching prompts"
+        "skill": "No matching skills"
       }
     },
     "mediaMode": {

@@ -38,7 +38,6 @@ function namespaceName(name) {
     ? namespace.slice(namespace.lastIndexOf(httpMarker) + httpMarker.length)
     : namespace.split("_").at(-1);
   const aliases = {
-    promptpreset: "PromptPreset",
     usersettings: "UserSettings",
   };
 

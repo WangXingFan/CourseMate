@@ -86,7 +86,7 @@ const TEMPORARY_NOTICE_TRANSITION = {
   duration: 0.22,
   ease: [0.16, 1, 0.3, 1] as const,
 };
-const TEMPORARY_MENTION_KINDS = ["model", "tool", "skill", "prompt"] as const;
+const TEMPORARY_MENTION_KINDS = ["model", "tool", "skill"] as const;
 
 type QueuedComposerMessage = {
   id: string;
