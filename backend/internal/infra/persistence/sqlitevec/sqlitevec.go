@@ -18,7 +18,6 @@ const (
 
 	FileChunkVectorTable    = "file_chunk_vectors"
 	MessageChunkVectorTable = "chat_message_chunk_vectors"
-	UserMemoryVectorTable   = "user_memory_vectors"
 )
 
 var (
@@ -27,7 +26,6 @@ var (
 	vectorTableMigrationSpecs = []vectorTableSpec{
 		{name: FileChunkVectorTable, keyColumns: []string{"chunk_id", "user_id", "file_obj_id"}, partitionColumn: "user_id"},
 		{name: MessageChunkVectorTable, keyColumns: []string{"chunk_id", "user_id", "conversation_id", "message_id"}, partitionColumn: "user_id"},
-		{name: UserMemoryVectorTable, keyColumns: []string{"memory_id", "user_id"}, partitionColumn: "user_id"},
 	}
 )
 

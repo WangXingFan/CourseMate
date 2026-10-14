@@ -17,7 +17,6 @@ type messageRoutePromptInput struct {
 	DomainMessages           []model.Message
 	StableAttachments        []AttachmentInput
 	DynamicContext           userContextInput
-	PreferencePrompt         string
 	SkillPrompts             *skillPrompts
 	ToolRuntime              selectedToolRuntime
 	SkipImageAttachments     bool
@@ -90,9 +89,6 @@ func (s *Service) buildMessageRoutePrompt(ctx context.Context, route *channel.Re
 		} else {
 			assembler.Add(ContextSlot{Kind: SlotSystemPrompt, Content: systemPrompt.Content, Required: true})
 		}
-	}
-	if input.PreferencePrompt != "" {
-		assembler.Add(ContextSlot{Kind: SlotPreference, Content: input.PreferencePrompt})
 	}
 	baseMessages, _ := assembler.Assemble(historyMessages)
 	return buildPromptPlan(ctx, promptPlanInput{

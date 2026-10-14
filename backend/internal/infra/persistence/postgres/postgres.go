@@ -128,7 +128,6 @@ func migrate(db *gorm.DB, cfg config.Config) error {
 		"chat_runs":                      "会话运行日志表",
 		"chat_run_events":                "会话运行轨迹与工具事件表",
 		"chat_context_records":           "会话上下文快照与证据表",
-		"user_memories":                  "用户长期个性化记忆表",
 		"billing_plans":                  "订阅套餐定义表",
 		"billing_prices":                 "订阅价格版本表",
 		"billing_subscriptions":          "用户订阅表",
@@ -422,7 +421,6 @@ func applyVectorBaseline(db *gorm.DB, required bool) error {
 	}{
 		{table: "file_chunks", column: "embedding", indexName: "idx_file_chunks_embedding"},
 		{table: "chat_message_chunks", column: "embedding", indexName: "idx_chat_message_chunks_embedding"},
-		{table: "user_memories", column: "embedding", indexName: "idx_user_memories_embedding"},
 	}
 
 	err := withPostgresVectorMigrationLock(db, func(connection *gorm.DB) error {

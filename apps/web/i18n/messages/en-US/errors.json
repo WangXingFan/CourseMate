@@ -272,10 +272,6 @@
       "invalidId": "Invalid MCP tool ID."
     }
   },
-  "memory": {
-    "keyRequired": "Memory key is required.",
-    "limitExceeded": "The memory limit has been reached."
-  },
   "media": {
     "imagePromptRequired": "Enter an image prompt.",
     "imageGenerationRejectsInputs": "Image generation does not accept input images. Remove attachments or choose image editing.",

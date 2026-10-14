@@ -3,8 +3,6 @@
 import * as React from "react";
 import { useTranslations } from "next-intl";
 
-import { Pencil, Trash2, Plus } from "lucide-react";
-
 import { Switch } from "@/components/ui/switch";
 import {
   Select,
@@ -14,21 +12,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import type { ChatContentWidth } from "@/entities/user-settings";
 import { useSettingsAppearancePersistence } from "@/features/settings/hooks/use-settings-appearance-persistence";
 import { useSettingsChat } from "@/features/settings/hooks/use-settings-chat";
-import { useSettingsPreferenceMemories } from "@/features/settings/hooks/use-settings-preference-memories";
 import {
   type ChatFontOption,
   type ChatFontWeightOption,
@@ -37,8 +23,6 @@ import {
   writeChatFontPreference,
   writeChatFontWeightPreference,
 } from "@/features/settings/utils/chat-font";
-import type { UserMemoryDTO } from "@/shared/api/memory-types";
-import { useDialogSnapshot } from "@/shared/hooks/use-dialog-snapshot";
 import { useFeaturePolicy } from "@/shared/hooks/use-feature-policy";
 import {
   ModelSelect,
@@ -61,300 +45,6 @@ import { ChatDisplayAppearance } from "./chat-display-appearance";
 type ModelOption = ModelSelectOption;
 
 const SYSTEM_RECOMMENDED_MODEL = "none";
-
-// Preference memory section.
-
-const MAX_PREFERENCES = 20;
-
-function PreferenceCard({
-  item,
-  onEdit,
-  onDelete,
-}: {
-  item: UserMemoryDTO;
-  onEdit: (key: string, value: string) => void;
-  onDelete: (key: string) => void;
-}) {
-  const t = useTranslations("settings.chatPage.memory");
-  const [editingValue, setEditingValue] = React.useState<string | null>(null);
-  const [confirmDelete, setConfirmDelete] = React.useState(false);
-  const [saving, setSaving] = React.useState(false);
-
-  const startEdit = () => {
-    setConfirmDelete(false);
-    setEditingValue(item.value);
-  };
-
-  const cancelEdit = () => setEditingValue(null);
-
-  const commitEdit = async () => {
-    const v = (editingValue ?? "").trim();
-    if (!v || v === item.value) { setEditingValue(null); return; }
-    setSaving(true);
-    await onEdit(item.memoryKey, v);
-    setSaving(false);
-    setEditingValue(null);
-  };
-
-  const commitDelete = () => onDelete(item.memoryKey);
-
-  if (editingValue !== null) {
-    return (
-      <div className="rounded-md border border-border/60 bg-background px-2.5 py-2">
-        <div className="flex gap-2">
-          <div className="min-w-0 flex-1">
-            <p className="mb-1 text-[11px] font-medium text-foreground/80">{item.memoryKey}</p>
-            <textarea
-              autoFocus
-              rows={2}
-              value={editingValue}
-              className="min-h-14 w-full resize-none rounded-md border border-input bg-background px-2.5 py-1.5 text-xs leading-relaxed outline-none focus:border-ring"
-              onChange={(e) => setEditingValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void commitEdit(); }
-                if (e.key === "Escape") cancelEdit();
-              }}
-            />
-          </div>
-          <div className="flex shrink-0 flex-col gap-1 pt-5">
-            <Button size="sm" className="h-6 px-2 text-[11px]" onClick={() => void commitEdit()} disabled={saving || !(editingValue ?? "").trim()}>
-              {t("save")}
-            </Button>
-            <Button size="sm" variant="ghost" className="h-6 px-2 text-[11px]" onClick={cancelEdit}>
-              {t("cancel")}
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (confirmDelete) {
-    return (
-      <div className="flex items-center justify-between gap-3 rounded-md bg-destructive/8 px-2.5 py-2">
-        <div className="min-w-0">
-          <p className="truncate text-xs font-medium">{item.memoryKey}</p>
-          <p className="mt-0.5 text-[11px] text-destructive">{t("confirmDelete")}</p>
-        </div>
-        <div className="flex shrink-0 gap-1">
-          <Button size="sm" variant="ghost" className="h-6 px-2 text-[11px]" onClick={() => setConfirmDelete(false)}>{t("cancel")}</Button>
-          <Button size="sm" variant="destructive" className="h-6 px-2 text-[11px]" onClick={commitDelete}>{t("delete")}</Button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="group flex min-h-9 items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/40">
-      <p className="min-w-0 flex-1 truncate text-xs leading-5">
-        <span className="font-medium text-foreground/80">{item.memoryKey}</span>
-        <span className="text-muted-foreground">{t("separator")}{item.value}</span>
-      </p>
-
-      <div className="flex shrink-0 gap-0.5 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
-        <button
-          type="button"
-          className="inline-flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          onClick={startEdit}
-          aria-label={t("edit")}
-        >
-          <Pencil className="h-3 w-3" />
-        </button>
-        <button
-          type="button"
-          className="inline-flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-destructive"
-          onClick={() => setConfirmDelete(true)}
-          aria-label={t("delete")}
-        >
-          <Trash2 className="h-3 w-3" />
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function AddPreferenceDialog({
-  open,
-  addKey,
-  addValue,
-  adding,
-  atLimit,
-  onOpenChange,
-  onKeyChange,
-  onValueChange,
-  onAdd,
-}: {
-  open: boolean;
-  addKey: string;
-  addValue: string;
-  adding: boolean;
-  atLimit: boolean;
-  onOpenChange: (open: boolean) => void;
-  onKeyChange: (value: string) => void;
-  onValueChange: (value: string) => void;
-  onAdd: () => void;
-}) {
-  const t = useTranslations("settings.chatPage.memory");
-  const stableAddKey = useDialogSnapshot(open ? addKey : null) ?? "";
-  const stableAddValue = useDialogSnapshot(open ? addValue : null) ?? "";
-
-  return (
-    <Dialog open={open} onOpenChange={(nextOpen) => {
-      if (!adding) {
-        onOpenChange(nextOpen);
-      }
-    }}>
-      <DialogContent className="sm:max-w-[460px]">
-        <form
-          className="space-y-4"
-          onSubmit={(event) => {
-            event.preventDefault();
-            onAdd();
-          }}
-        >
-          <DialogHeader>
-            <DialogTitle>{t("addTitle")}</DialogTitle>
-            <DialogDescription>
-              {t("addDescription")}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-3">
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">{t("name")}</p>
-              <Input
-                id="preference-key"
-                autoFocus
-                placeholder={t("namePlaceholder")}
-                value={stableAddKey}
-                disabled={adding || atLimit}
-                onChange={(event) => onKeyChange(event.target.value)}
-              />
-            </div>
-
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">{t("content")}</p>
-              <Textarea
-                id="preference-value"
-                placeholder={t("contentPlaceholder")}
-                value={stableAddValue}
-                disabled={adding || atLimit}
-                className="h-24 resize-none overflow-y-auto [field-sizing:fixed]"
-                onChange={(event) => onValueChange(event.target.value)}
-              />
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="ghost"
-              disabled={adding}
-              onClick={() => onOpenChange(false)}
-            >
-              {t("cancel")}
-            </Button>
-            <Button
-              type="submit"
-              disabled={adding || atLimit || !addKey.trim() || !addValue.trim()}
-            >
-              {adding ? t("adding") : t("add")}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function PreferenceMemorySection() {
-  const t = useTranslations("settings.chatPage.memory");
-  const {
-    items,
-    loading: loadingMems,
-    adding,
-    addPreference,
-    editPreference: handleEdit,
-    deletePreference: handleDelete,
-  } = useSettingsPreferenceMemories();
-  const [addKey, setAddKey] = React.useState("");
-  const [addValue, setAddValue] = React.useState("");
-  const [addDialogOpen, setAddDialogOpen] = React.useState(false);
-
-  const handleAdd = React.useCallback(
-    () => addPreference(addKey, addValue, () => {
-      setAddKey("");
-      setAddValue("");
-      setAddDialogOpen(false);
-    }),
-    [addKey, addPreference, addValue],
-  );
-
-  const preferenceCount = items.length;
-  const atLimit = preferenceCount >= MAX_PREFERENCES;
-
-  return (
-    <SettingsSection title={t("sectionTitle")}>
-      <div className="space-y-2">
-        <div className="flex h-8 items-center justify-between gap-3">
-          <span className="text-[11px] tabular-nums text-muted-foreground">
-            {loadingMems ? `-- / ${MAX_PREFERENCES}` : `${preferenceCount} / ${MAX_PREFERENCES}`}
-          </span>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="h-7 gap-1.5 px-2 text-xs"
-            disabled={loadingMems || atLimit}
-            onClick={() => setAddDialogOpen(true)}
-          >
-            <Plus className="h-3.5 w-3.5" />
-            {atLimit ? t("full") : t("addPreference")}
-          </Button>
-        </div>
-
-        <AddPreferenceDialog
-          open={addDialogOpen}
-          addKey={addKey}
-          addValue={addValue}
-          adding={adding}
-          atLimit={atLimit}
-          onOpenChange={(open) => {
-            setAddDialogOpen(open);
-            if (!open) {
-              setAddKey("");
-              setAddValue("");
-            }
-          }}
-          onKeyChange={setAddKey}
-          onValueChange={setAddValue}
-          onAdd={() => void handleAdd()}
-        />
-
-        {loadingMems ? (
-          <div className="space-y-1">
-            <Skeleton className="h-9 w-full rounded-md" />
-            <Skeleton className="h-9 w-4/5 rounded-md" />
-          </div>
-        ) : items.length === 0 ? (
-          <div className="flex h-9 items-center rounded-md bg-muted/30 px-2.5">
-            <p className="text-xs text-muted-foreground">{t("empty")}</p>
-          </div>
-        ) : items.length > 0 ? (
-          <div className="space-y-1">
-            {items.map((item) => (
-              <PreferenceCard
-                key={item.memoryKey}
-                item={item}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
-        ) : null}
-      </div>
-    </SettingsSection>
-  );
-}
 
 // Main component.
 
@@ -787,9 +477,6 @@ export function SettingsChat() {
         </SettingsFieldList>
       </SettingsSection>
 
-      <SettingsSectionSeparator />
-
-      <PreferenceMemorySection />
     </SettingsPage>
   );
 }

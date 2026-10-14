@@ -4432,10 +4432,8 @@ func (r *Repo) VectorStoreAvailable(ctx context.Context) (bool, error) {
 		{query: `SELECT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'vector')`},
 		{query: columnQuery, args: []any{"file_chunks", expectedType}},
 		{query: columnQuery, args: []any{"chat_message_chunks", expectedType}},
-		{query: columnQuery, args: []any{"user_memories", expectedType}},
 		{query: indexQuery, args: []any{"idx_file_chunks_embedding", indexPattern}},
 		{query: indexQuery, args: []any{"idx_chat_message_chunks_embedding", indexPattern}},
-		{query: indexQuery, args: []any{"idx_user_memories_embedding", indexPattern}},
 	}
 	for _, check := range checks {
 		available := false

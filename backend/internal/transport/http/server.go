@@ -23,7 +23,6 @@ import (
 	conversationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/conversation"
 	knowledgebasehttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/knowledgebase"
 	mcphttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/mcp"
-	memoryhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/memory"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/middleware"
 	settingshttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/settings"
 	skillhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/skill"
@@ -55,7 +54,6 @@ type Modules struct {
 	Channel           *channelhttp.Module
 	Conversation      *conversationhttp.Module
 	MCP               *mcphttp.Module
-	Memory            *memoryhttp.Module
 	Billing           *billinghttp.Module
 	Admin             *adminhttp.Module
 	ContentModeration *contentmoderationhttp.Module
@@ -172,9 +170,6 @@ func NewEngine(cfg *config.Runtime, log *zap.Logger, modules Modules, hc HealthC
 	}
 	if modules.Channel != nil {
 		modules.Channel.RegisterRoutes(authRequired)
-	}
-	if modules.Memory != nil {
-		modules.Memory.RegisterRoutes(authRequired)
 	}
 	if modules.MCP != nil {
 		modules.MCP.RegisterRoutes(authRequired)

@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
-	domainmemory "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/memory"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/repository"
 )
@@ -60,16 +59,10 @@ func TestBuildPromptContextArtifactsRecordsRAGFallbackAndRecall(t *testing.T) {
 			Content:    "历史语义召回证据",
 			Similarity: 0.82,
 		}},
-		Memories: []domainmemory.UserMemory{{
-			MemoryKey: "language",
-			Value:     "优先使用中文回答",
-			Scope:     "profile",
-			UpdatedBy: "manual",
-		}},
 	})
 
-	if len(items) != 4 {
-		t.Fatalf("expected 4 artifacts, got %#v", items)
+	if len(items) != 3 {
+		t.Fatalf("expected 3 artifacts, got %#v", items)
 	}
 	if items[0].Kind != model.ContextArtifactFileRAGChunk || items[0].SourceID != "file_a:2" {
 		t.Fatalf("expected file rag artifact, got %#v", items[0])
@@ -79,9 +72,6 @@ func TestBuildPromptContextArtifactsRecordsRAGFallbackAndRecall(t *testing.T) {
 	}
 	if !hasContextArtifact(items, model.ContextArtifactSemanticRecall, "3:1") {
 		t.Fatalf("expected recall artifact, got %#v", items)
-	}
-	if !hasContextArtifact(items, model.ContextArtifactUserMemory, "language") {
-		t.Fatalf("expected memory artifact, got %#v", items)
 	}
 	for _, item := range items {
 		if item.ConversationID != 7 || item.UserID != 11 || item.MessageID != 13 || item.RunID != "run_1" {
@@ -149,10 +139,6 @@ func TestBuildPromptContextArtifactsSkipsEmptyEvidence(t *testing.T) {
 		RecallChunks: []model.MessageChunk{{
 			MessageID: 1,
 			Content:   "",
-		}},
-		Memories: []domainmemory.UserMemory{{
-			MemoryKey: "empty",
-			Value:     "",
 		}},
 	})
 	if len(items) != 0 {
