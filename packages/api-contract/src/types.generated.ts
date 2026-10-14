@@ -69,14 +69,6 @@ export interface AddKnowledgeBaseFilesRequest {
   fileIDs: string[];
 }
 
-export interface AdminAnnouncementListResponseDoc {
-  data: {
-    results: AnnouncementResponse[];
-    total: number;
-  };
-  errorMsg: string;
-}
-
 export interface AdminErrorDoc {
   data: any;
   details?: any;
@@ -127,78 +119,6 @@ export interface AdminUserResponse {
   twoFactorRequired: boolean;
   updatedAt: string;
   username: string;
-}
-
-export interface AnnouncementCloseDataResponse {
-  closed: boolean;
-}
-
-export interface AnnouncementCloseResponseDoc {
-  data: AnnouncementCloseDataResponse;
-  errorMsg: string;
-}
-
-export interface AnnouncementDataResponse {
-  announcement: AnnouncementResponse;
-}
-
-export interface AnnouncementDeleteDataResponse {
-  deleted: boolean;
-}
-
-export interface AnnouncementDeleteResponseDoc {
-  data: AnnouncementDeleteDataResponse;
-  errorMsg: string;
-}
-
-export interface AnnouncementDismissDataResponse {
-  dismissed: boolean;
-}
-
-export interface AnnouncementDismissResponseDoc {
-  data: AnnouncementDismissDataResponse;
-  errorMsg: string;
-}
-
-export interface AnnouncementErrorDoc {
-  data: any;
-  details?: any;
-  /** @example "invalid_request" */
-  errorCode?: string;
-  /** @example "invalid request" */
-  errorMsg: string;
-  /** @example "" */
-  requestId?: string;
-}
-
-export interface AnnouncementListResponseDoc {
-  data: AnnouncementResponse[];
-  errorMsg: string;
-}
-
-export interface AnnouncementResponse {
-  closedAt: string | null;
-  contentMarkdown: string;
-  createdAt: string;
-  createdByUserID: number;
-  expiresAt: string | null;
-  id: number;
-  pinned: boolean;
-  priority: number;
-  startsAt: string | null;
-  status: string;
-  title: string;
-  type: string;
-  updatedAt: string;
-}
-
-export interface AnnouncementResponseDoc {
-  data: AnnouncementDataResponse;
-  errorMsg: string;
-}
-
-export interface AnnouncementStateRequest {
-  updatedAt: string;
 }
 
 export interface AuditLogListResponseDoc {
@@ -540,8 +460,6 @@ export interface BrandingResponseDoc {
 export interface Capabilities {
   /** AccountSecurity 密码、邮箱、两步验证、会话、注销账号。 */
   accountSecurity: boolean;
-  /** Announcements 系统公告。 */
-  announcements: boolean;
   /** BillingGating 计费规则可以拒绝请求：套餐、余额、兑换码、支付。 */
   billingGating: boolean;
   /** ContentModeration 内容审核。 */
@@ -1119,25 +1037,6 @@ export interface ConversationToolCallDetailResponseDoc {
 export interface ConversationUpdateResponseDoc {
   data: ConversationResponse;
   errorMsg: string;
-}
-
-export interface CreateAnnouncementRequest {
-  /**
-   * @minLength 1
-   * @maxLength 20000
-   */
-  contentMarkdown: string;
-  expiresAt?: string | null;
-  pinned?: boolean;
-  priority?: number;
-  startsAt?: string | null;
-  status?: "active" | "inactive";
-  /**
-   * @minLength 1
-   * @maxLength 120
-   */
-  title: string;
-  type?: "critical" | "warning" | "info" | "normal" | "general";
 }
 
 export interface CreateCheckoutRequest {
@@ -2726,19 +2625,6 @@ export interface PasswordResetStartResponse {
 export interface PasswordResetStartResponseDoc {
   data: PasswordResetStartResponse;
   errorMsg: string;
-}
-
-export interface PatchAnnouncementRequestDoc {
-  /** @maxLength 20000 */
-  contentMarkdown?: string;
-  expiresAt?: string | null;
-  pinned?: boolean;
-  priority?: number;
-  startsAt?: string | null;
-  status?: "active" | "inactive";
-  /** @maxLength 120 */
-  title?: string;
-  type?: "critical" | "warning" | "info" | "normal" | "general";
 }
 
 export interface PatchItem {
@@ -4875,89 +4761,6 @@ export interface WriteUIComponentRequest {
 }
 
 export namespace Admin {
-  /**
-   * @description 分页查询站点公告
-   * @tags admin-announcements
-   * @name AnnouncementsList
-   * @summary 管理员查询公告
-   * @request GET:/admin/announcements
-   * @secure
-   */
-  export namespace AnnouncementsList {
-    export type RequestParams = {};
-    export type RequestQuery = {
-      /** 页码（从 1 开始，默认 1） */
-      page?: number;
-      /** 每页数量（1-1000，默认 20） */
-      page_size?: number;
-      /** 是否置顶 */
-      pinned?: boolean;
-      /** 搜索关键词 */
-      q?: string;
-      /** 状态：active/inactive */
-      status?: string;
-      /** 类型：critical/warning/info/normal/general */
-      type?: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = AdminAnnouncementListResponseDoc;
-  }
-
-  /**
-   * @description 创建一条 Markdown 站点公告
-   * @tags admin-announcements
-   * @name AnnouncementsCreate
-   * @summary 管理员创建公告
-   * @request POST:/admin/announcements
-   * @secure
-   */
-  export namespace AnnouncementsCreate {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = CreateAnnouncementRequest;
-    export type RequestHeaders = {};
-    export type ResponseBody = AnnouncementResponseDoc;
-  }
-
-  /**
-   * @description 软删除公告
-   * @tags admin-announcements
-   * @name AnnouncementsDelete
-   * @summary 管理员删除公告
-   * @request DELETE:/admin/announcements/{id}
-   * @secure
-   */
-  export namespace AnnouncementsDelete {
-    export type RequestParams = {
-      /** 公告ID */
-      id: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = AnnouncementDeleteResponseDoc;
-  }
-
-  /**
-   * @description 更新公告标题、内容、状态、优先级和有效期
-   * @tags admin-announcements
-   * @name AnnouncementsPartialUpdate
-   * @summary 管理员更新公告
-   * @request PATCH:/admin/announcements/{id}
-   * @secure
-   */
-  export namespace AnnouncementsPartialUpdate {
-    export type RequestParams = {
-      /** 公告ID */
-      id: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = PatchAnnouncementRequestDoc;
-    export type RequestHeaders = {};
-    export type ResponseBody = AnnouncementResponseDoc;
-  }
-
   /**
    * @description 管理员分页查看全量可追溯审计日志
    * @tags admin
@@ -8049,65 +7852,6 @@ export namespace Admin {
     export type RequestBody = UpdateUserStatusRequest;
     export type RequestHeaders = {};
     export type ResponseBody = UpdateUserStatusResponseDoc;
-  }
-}
-
-export namespace Announcements {
-  /**
-   * @description 登录用户获取当前可展示的站点公告列表
-   * @tags announcements
-   * @name AnnouncementsList
-   * @summary 获取当前公告
-   * @request GET:/announcements
-   * @secure
-   */
-  export namespace AnnouncementsList {
-    export type RequestParams = {};
-    export type RequestQuery = {
-      /** 是否包含今日不再显示的公告 */
-      include_dismissed?: boolean;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = AnnouncementListResponseDoc;
-  }
-
-  /**
-   * @description 登录用户关闭当前公告版本；公告更新后会重新展示
-   * @tags announcements
-   * @name CloseCreate
-   * @summary 关闭公告
-   * @request POST:/announcements/{id}/close
-   * @secure
-   */
-  export namespace CloseCreate {
-    export type RequestParams = {
-      /** 公告ID */
-      id: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = AnnouncementStateRequest;
-    export type RequestHeaders = {};
-    export type ResponseBody = AnnouncementCloseResponseDoc;
-  }
-
-  /**
-   * @description 登录用户对当前公告版本记录今日不再显示
-   * @tags announcements
-   * @name DismissTodayCreate
-   * @summary 今日不再显示公告
-   * @request POST:/announcements/{id}/dismiss-today
-   * @secure
-   */
-  export namespace DismissTodayCreate {
-    export type RequestParams = {
-      /** 公告ID */
-      id: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = AnnouncementStateRequest;
-    export type RequestHeaders = {};
-    export type ResponseBody = AnnouncementDismissResponseDoc;
   }
 }
 
