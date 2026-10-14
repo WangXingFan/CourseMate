@@ -15,19 +15,17 @@ import {
 import type { ChatModelOption, PendingAttachment } from "@/features/chat/types/chat-runtime";
 import type { FileObjectDTO } from "@/shared/api/file-types";
 import type { MCPToolDTO } from "@/shared/api/mcp-types";
-import { listVisiblePromptPresets } from "@/shared/api/prompt-presets";
-import type { PromptPresetDTO } from "@/shared/api/prompt-presets-types";
 import { listVisibleSkills } from "@/shared/api/skills";
 import type { SkillSummaryDTO } from "@/shared/api/skills-types";
 import { resolveAccessToken } from "@/shared/auth/resolve-access-token";
 import { readSessionRevision } from "@/shared/auth/session";
 import { resolveModelOptionLabel, resolveModelPresentationGroup } from "@/entities/model";
 
-const DEFAULT_MENTION_MENU_KINDS: readonly ChatMentionMenuKind[] = ["model", "file", "tool", "skill", "prompt"];
+const DEFAULT_MENTION_MENU_KINDS: readonly ChatMentionMenuKind[] = ["model", "file", "tool", "skill"];
 const MENTION_TRIGGER_KINDS: readonly ChatMentionMenuKind[] = ["model", "file", "tool"];
-const PROMPT_TRIGGER_KINDS: readonly ChatMentionMenuKind[] = ["skill", "prompt"];
+const PROMPT_TRIGGER_KINDS: readonly ChatMentionMenuKind[] = ["skill"];
 
-export type ChatMentionMenuKind = "file" | "tool" | "model" | "skill" | "prompt";
+export type ChatMentionMenuKind = "file" | "tool" | "model" | "skill";
 export type ChatMentionMenuTab = "all" | ChatMentionMenuKind;
 
 type ChatMentionFileMenuItem = {
@@ -57,15 +55,6 @@ type ChatMentionModelMenuItem = {
   selected: boolean;
 };
 
-type ChatMentionPromptMenuItem = {
-  id: string;
-  kind: "prompt";
-  label: string;
-  description: string;
-  prompt: PromptPresetDTO;
-  selected: boolean;
-};
-
 type ChatMentionSkillMenuItem = {
   id: string;
   kind: "skill";
@@ -79,8 +68,7 @@ export type ChatMentionMenuItem =
   | ChatMentionFileMenuItem
   | ChatMentionToolMenuItem
   | ChatMentionModelMenuItem
-  | ChatMentionSkillMenuItem
-  | ChatMentionPromptMenuItem;
+  | ChatMentionSkillMenuItem;
 
 export type ChatMentionMenuRow =
   | { type: "header"; key: string; labelKey?: string; label?: string }
@@ -294,29 +282,6 @@ function removeTriggerRange(value: string, range: ChatMentionTriggerQuery["range
   };
 }
 
-function replaceTriggerRange(value: string, range: ChatMentionTriggerQuery["range"], content: string): {
-  caretIndex: number;
-  value: string;
-} {
-  const nextContent = content.trim();
-  return {
-    caretIndex: range.start + nextContent.length,
-    value: `${value.slice(0, range.start)}${nextContent}${value.slice(range.end)}`,
-  };
-}
-
-function insertAtCaret(value: string, caretIndex: number, content: string): {
-  caretIndex: number;
-  value: string;
-} {
-  const index = Math.min(Math.max(caretIndex, 0), value.length);
-  const nextContent = content.trim();
-  return {
-    caretIndex: index + nextContent.length,
-    value: `${value.slice(0, index)}${nextContent}${value.slice(index)}`,
-  };
-}
-
 function itemMatchesQuery(values: Array<string | undefined>, query: string): boolean {
   const normalizedQuery = query.trim().toLowerCase();
   if (!normalizedQuery) {
@@ -363,17 +328,6 @@ function filterModels(
       model,
       selected: model.platformModelName === selectedPlatformModelName,
     }));
-}
-
-function promptsToItems(prompts: PromptPresetDTO[]): ChatMentionPromptMenuItem[] {
-  return prompts.map((prompt) => ({
-    id: `prompt:${prompt.id}`,
-    kind: "prompt" as const,
-    label: prompt.trigger || prompt.title,
-    description: prompt.description || prompt.content,
-    prompt,
-    selected: false,
-  }));
 }
 
 function skillsToItems(skills: SkillSummaryDTO[], selectedSkills: SkillSummaryDTO[]): ChatMentionSkillMenuItem[] {
@@ -434,8 +388,6 @@ function mentionItemRecentsID(item: ChatMentionMenuItem): string {
       return String(item.tool.id);
     case "skill":
       return String(item.skill.id);
-    case "prompt":
-      return String(item.prompt.id);
   }
 }
 
@@ -595,11 +547,6 @@ function buildKindTabRows(
 
   if (kind === "skill") {
     buildScopeGroupedRows(rows, data.items, (item) => (item.kind === "skill" ? item.skill.scope : "user"));
-    return rows;
-  }
-
-  if (kind === "prompt") {
-    buildScopeGroupedRows(rows, data.items, (item) => (item.kind === "prompt" ? item.prompt.scope : "user"));
     return rows;
   }
 
@@ -814,9 +761,6 @@ export function useChatMentionMenu({
   const [filesLoading, setFilesLoading] = React.useState(false);
   const [filesLoadingMore, setFilesLoadingMore] = React.useState(false);
   const [filesQueryKey, setFilesQueryKey] = React.useState<string | null>(null);
-  const [prompts, setPrompts] = React.useState<PromptPresetDTO[]>([]);
-  const [promptsTotal, setPromptsTotal] = React.useState(0);
-  const [promptsLoading, setPromptsLoading] = React.useState(false);
   const [skills, setSkills] = React.useState<SkillSummaryDTO[]>([]);
   const [skillsTotal, setSkillsTotal] = React.useState(0);
   const [skillsLoading, setSkillsLoading] = React.useState(false);
@@ -891,7 +835,6 @@ export function useChatMentionMenu({
       file: readCommandRecents("file"),
       tool: readCommandRecents("tool"),
       skill: readCommandRecents("skill"),
-      prompt: readCommandRecents("prompt"),
     });
   }, [sessionActive]);
 
@@ -1024,50 +967,6 @@ export function useChatMentionMenu({
     })();
   }, [fileSearchKey, files.length, filesLoading, filesLoadingMore, filesPage, filesQueryKey, filesTotal]);
 
-  const promptSearchKey =
-    sessionKind === "prompt" && enabledKindSet.has("prompt") && !disabled ? normalizedQuery : null;
-
-  React.useEffect(() => {
-    if (promptSearchKey === null) {
-      setPrompts([]);
-      setPromptsTotal(0);
-      setPromptsLoading(false);
-      return;
-    }
-
-    const controller = new AbortController();
-    const timer = window.setTimeout(() => {
-      setPromptsLoading(true);
-      void (async () => {
-        try {
-          const token = await resolveAccessToken();
-          if (!token || controller.signal.aborted) {
-            return;
-          }
-          const data = await listVisiblePromptPresets(token, { query: promptSearchKey, page: 1, pageSize: 50 });
-          if (!controller.signal.aborted) {
-            setPrompts(data.results);
-            setPromptsTotal(data.total ?? data.results.length);
-          }
-        } catch {
-          if (!controller.signal.aborted) {
-            setPrompts([]);
-            setPromptsTotal(0);
-          }
-        } finally {
-          if (!controller.signal.aborted) {
-            setPromptsLoading(false);
-          }
-        }
-      })();
-    }, 180);
-
-    return () => {
-      controller.abort();
-      window.clearTimeout(timer);
-    };
-  }, [promptSearchKey]);
-
   const skillSearchKey =
     sessionKind === "prompt" && enabledKindSet.has("skill") && !disabled ? normalizedQuery : null;
 
@@ -1141,10 +1040,7 @@ export function useChatMentionMenu({
       if (kind === "skill") {
         const items = skillsToItems(skills, selectedSkills);
         data.skill = { items, total: Math.max(skillsTotal, items.length), loading: skillsLoading };
-        continue;
       }
-      const items = promptsToItems(prompts);
-      data.prompt = { items, total: Math.max(promptsTotal, items.length), loading: promptsLoading };
     }
     return data;
   }, [
@@ -1158,9 +1054,6 @@ export function useChatMentionMenu({
     filesTotal,
     modelOptions,
     normalizedQuery,
-    prompts,
-    promptsLoading,
-    promptsTotal,
     query,
     selectedPlatformModelName,
     selectedSkills,
@@ -1343,24 +1236,6 @@ export function useChatMentionMenu({
         recordCommandRecentUsage("model", item.model.platformModelName);
         onModelChange(item.model.platformModelName);
         closeSession();
-        return;
-      }
-
-      if (item.kind === "prompt") {
-        recordCommandRecentUsage("prompt", String(item.prompt.id));
-        if (triggerQuery) {
-          const nextDraft = replaceTriggerRange(draft, triggerQuery.range, item.prompt.content);
-          onDraftChange(nextDraft.value);
-          setDismissedTriggerKey(null);
-          setBrowseKind(null);
-          focusTextarea(nextDraft.caretIndex);
-          return;
-        }
-        const caret = readTextareaSelection(textareaRef.current, draft.length).start;
-        const nextDraft = insertAtCaret(draft, caret, item.prompt.content);
-        onDraftChange(nextDraft.value);
-        setBrowseKind(null);
-        focusTextarea(nextDraft.caretIndex);
         return;
       }
 

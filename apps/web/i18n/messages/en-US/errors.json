@@ -367,7 +367,6 @@
     "invalidModelOrder": "Invalid model order.",
     "invalidModelVendor": "Invalid model vendor.",
     "invalidOverwriteCustomizedMetadata": "Invalid metadata overwrite option.",
-    "invalidPromptPreset": "Invalid prompt preset.",
     "invalidRunIds": "Invalid run IDs.",
     "invalidSkill": "Invalid skill.",
     "invalidUiComponent": "Invalid component.",
@@ -403,13 +402,6 @@
   },
   "plan": {
     "invalidId": "Invalid plan ID."
-  },
-  "promptPreset": {
-    "invalidId": "Invalid prompt preset ID.",
-    "notFound": "Prompt preset not found."
-  },
-  "promptPresetTrigger": {
-    "alreadyExists": "Prompt preset trigger already exists."
   },
   "redemptionCode": {
     "invalidId": "Invalid redemption code ID.",

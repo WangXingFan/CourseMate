@@ -29,7 +29,6 @@ import (
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/memory"
 	appstorage "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/objectstorage"
 	appprocessing "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/processing"
-	apppromptpreset "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/promptpreset"
 	apprag "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/rag"
 	appruntime "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/runtime"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/settings"
@@ -66,7 +65,6 @@ import (
 	logcleanuprepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/logcleanup"
 	mcprepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/mcp"
 	memoryrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/memory"
-	promptpresetrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/promptpreset"
 	settingsrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/settings"
 	skillrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/skill"
 	uicomponentrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/uicomponent"
@@ -85,7 +83,6 @@ import (
 	knowledgebasehttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/knowledgebase"
 	mcphttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/mcp"
 	memoryhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/memory"
-	promptpresethttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/promptpreset"
 	settingshttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/settings"
 	skillhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/skill"
 	uicomponenthttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/uicomponent"
@@ -450,11 +447,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	userSettingsService.SetCacheRefresher(conversationService.RefreshUserSettingCache)
 	userSettingsHandler := usersettingshttp.NewHandler(userSettingsService)
 	userSettingsModule := usersettingshttp.NewModule(userSettingsHandler)
-	promptPresetRepo := promptpresetrepo.NewRepo(db)
-	promptPresetService := apppromptpreset.NewService(promptPresetRepo)
-	promptPresetService.SetAuditWriter(auditService)
-	promptPresetHandler := promptpresethttp.NewHandler(promptPresetService)
-	promptPresetModule := promptpresethttp.NewModule(promptPresetHandler)
 	skillRepo := skillrepo.NewRepo(db)
 	skillService := appskill.NewService(skillRepo)
 	skillService.SetAuditWriter(auditService)
@@ -490,7 +482,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 		Billing:           billingModule,
 		Admin:             adminModule,
 		ContentModeration: contentModerationModule,
-		PromptPreset:      promptPresetModule,
 		Skill:             skillModule,
 		UIComponent:       uiComponentModule,
 		KnowledgeBase:     knowledgeBaseModule,

@@ -25,7 +25,6 @@ import (
 	mcphttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/mcp"
 	memoryhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/memory"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/middleware"
-	promptpresethttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/promptpreset"
 	settingshttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/settings"
 	skillhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/skill"
 	systemhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/system"
@@ -61,7 +60,6 @@ type Modules struct {
 	Billing           *billinghttp.Module
 	Admin             *adminhttp.Module
 	ContentModeration *contentmoderationhttp.Module
-	PromptPreset      *promptpresethttp.Module
 	Skill             *skillhttp.Module
 	UIComponent       *uicomponenthttp.Module
 	KnowledgeBase     *knowledgebasehttp.Module
@@ -81,7 +79,6 @@ func (m Modules) hasAdminRoutes() bool {
 		m.Channel != nil ||
 		m.MCP != nil ||
 		m.Settings != nil ||
-		m.PromptPreset != nil ||
 		m.Skill != nil ||
 		m.UIComponent != nil ||
 		m.KnowledgeBase != nil ||
@@ -191,9 +188,6 @@ func NewEngine(cfg *config.Runtime, log *zap.Logger, modules Modules, hc HealthC
 	if modules.Billing != nil {
 		modules.Billing.RegisterRoutes(authRequired, gate)
 	}
-	if modules.PromptPreset != nil {
-		modules.PromptPreset.RegisterRoutes(authRequired)
-	}
 	if modules.Skill != nil {
 		modules.Skill.RegisterRoutes(authRequired)
 	}
@@ -235,9 +229,6 @@ func NewEngine(cfg *config.Runtime, log *zap.Logger, modules Modules, hc HealthC
 		}
 		if modules.Settings != nil {
 			modules.Settings.RegisterAdminRoutes(adminGroup)
-		}
-		if modules.PromptPreset != nil {
-			modules.PromptPreset.RegisterAdminRoutes(adminGroup)
 		}
 		if modules.Skill != nil {
 			modules.Skill.RegisterAdminRoutes(adminGroup)
