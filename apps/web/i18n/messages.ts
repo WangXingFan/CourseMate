@@ -13,7 +13,6 @@ import enErrors from "@/i18n/messages/en-US/errors.json";
 import enGuide from "@/i18n/messages/en-US/guide.json";
 import enKnowledgeBases from "@/i18n/messages/en-US/knowledge-bases.json";
 import enLogin from "@/i18n/messages/en-US/login.json";
-import enUIComponents from "@/i18n/messages/en-US/ui-components.json";
 import enRecent from "@/i18n/messages/en-US/recent.json";
 import enSettings from "@/i18n/messages/en-US/settings.json";
 import { replaceDefaultBrandTitle } from "@/shared/config/branding";
@@ -23,7 +22,6 @@ const ENGLISH_MESSAGES = {
   conversation: enConversation,
   errors: enErrors,
   login: enLogin,
-  uiComponents: enUIComponents,
   guide: enGuide,
   chat: enChat,
   desktopSetup: enDesktopSetup,
@@ -96,7 +94,6 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
     conversation,
     errors,
     login,
-    uiComponents,
     guide,
     chat,
     recent,
@@ -114,7 +111,6 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
     import("@/i18n/messages/zh-CN/conversation.json"),
     import("@/i18n/messages/zh-CN/errors.json"),
     import("@/i18n/messages/zh-CN/login.json"),
-    import("@/i18n/messages/zh-CN/ui-components.json"),
     import("@/i18n/messages/zh-CN/guide.json"),
     import("@/i18n/messages/zh-CN/chat.json"),
     import("@/i18n/messages/zh-CN/recent.json"),
@@ -134,7 +130,6 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
     conversation: conversation.default,
     errors: errors.default,
     login: login.default,
-    uiComponents: uiComponents.default,
     guide: guide.default,
     chat: chat.default,
     recent: recent.default,

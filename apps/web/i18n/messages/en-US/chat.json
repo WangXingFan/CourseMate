@@ -465,13 +465,6 @@
     "knowledgeBasesSelected": "{count} knowledge bases selected",
     "knowledgeBaseDefaultScope": "Default scope: {names}",
     "knowledgeBaseDefaultScopeCount": "Default scope: {count} knowledge bases",
-    "uiComponents": "Interactive components",
-    "uiComponentsRestoreDefault": "Restore default",
-    "uiComponentScope": {
-      "builtin": "Built-in",
-      "platform": "Platform",
-      "user": "Mine"
-    },
     "searchKnowledgeBases": "Search knowledge bases",
     "knowledgeBaseReadyFiles": "{count} files ready",
     "knowledgeBaseNotReady": "No searchable files yet",

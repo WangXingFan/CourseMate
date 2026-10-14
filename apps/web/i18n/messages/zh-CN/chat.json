@@ -465,13 +465,6 @@
     "knowledgeBasesSelected": "已选择 {count} 个知识库",
     "knowledgeBaseDefaultScope": "默认范围：{names}",
     "knowledgeBaseDefaultScopeCount": "默认范围：{count} 个知识库",
-    "uiComponents": "交互式组件",
-    "uiComponentsRestoreDefault": "恢复默认",
-    "uiComponentScope": {
-      "builtin": "内置",
-      "platform": "平台",
-      "user": "我的"
-    },
     "searchKnowledgeBases": "搜索知识库",
     "knowledgeBaseReadyFiles": "{count} 个文件可检索",
     "knowledgeBaseNotReady": "暂无可检索文件",

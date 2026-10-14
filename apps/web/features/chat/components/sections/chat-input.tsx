@@ -39,7 +39,7 @@ import { PlusIcon } from "@/components/ui/plus";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ChatKnowledgeBases } from "@/features/chat/components/sections/chat-knowledge-bases";
 import { ChatMCP } from "@/features/chat/components/sections/chat-mcp";
-import { ChatUIComponents } from "@/features/chat/components/sections/chat-ui-components";
+import { ChatOutputOptions } from "@/features/chat/components/sections/chat-output-options";
 import { ChatModelConfig } from "@/features/chat/components/sections/chat-model-config";
 import { ChatModelPicker } from "@/features/chat/components/sections/chat-model-picker";
 import { ChatMentionMenuPortal } from "@/features/chat/components/shared/chat-mention-menu";
@@ -66,7 +66,6 @@ import type { ConversationOptions } from "@/shared/api/conversation-types";
 import type { FileObjectDTO } from "@/shared/api/file-types";
 import type { MCPToolDTO } from "@/shared/api/mcp-types";
 import type { SkillSummaryDTO } from "@/shared/api/skills-types";
-import type { UIComponentDTO } from "@/shared/api/ui-components-types";
 import { StreamdownRender } from "@/shared/components/markdown/streamdown-render";
 import { useDialogSnapshot } from "@/shared/hooks/use-dialog-snapshot";
 import { useScrollFadeFallbackRef } from "@/shared/hooks/use-scroll-fade-fallback-ref";
@@ -116,10 +115,6 @@ type ChatInputProps = {
   selectedSkills: SkillSummaryDTO[];
   selectedKnowledgeBaseIDs: string[];
   defaultToolIDs: number[];
-  uiComponents: UIComponentDTO[];
-  uiComponentsLoading: boolean;
-  selectedUIComponentIDs: number[];
-  defaultUIComponentIDs: number[];
   queuedMessages: QueuedComposerMessage[];
   htmlVisualPromptEnabled: boolean;
   maxSelectedTools: number;
@@ -139,7 +134,6 @@ type ChatInputProps = {
   onSelectedToolsChange: (toolIDs: number[]) => void;
   onSelectedSkillsChange: (skills: SkillSummaryDTO[]) => void;
   onSelectedKnowledgeBasesChange: (ids: string[]) => void;
-  onSelectedUIComponentsChange: (ids: number[]) => void;
   onDefaultToolsChange: (toolIDs: number[]) => void | Promise<void>;
   onHTMLVisualPromptChange: (enabled: boolean) => void;
   onOptionsChange: React.Dispatch<React.SetStateAction<ConversationOptions>>;
@@ -278,10 +272,6 @@ function ChatInputComponent({
   selectedSkills,
   selectedKnowledgeBaseIDs,
   defaultToolIDs,
-  uiComponents,
-  uiComponentsLoading,
-  selectedUIComponentIDs,
-  defaultUIComponentIDs,
   queuedMessages,
   htmlVisualPromptEnabled,
   maxSelectedTools,
@@ -301,7 +291,6 @@ function ChatInputComponent({
   onSelectedToolsChange,
   onSelectedSkillsChange,
   onSelectedKnowledgeBasesChange,
-  onSelectedUIComponentsChange,
   onDefaultToolsChange,
   onHTMLVisualPromptChange,
   onOptionsChange,
@@ -1077,14 +1066,9 @@ function ChatInputComponent({
               ) : null}
 
               {!isMediaMode ? (
-                <ChatUIComponents
-                  components={uiComponents}
-                  selectedIDs={selectedUIComponentIDs}
-                  defaultIDs={defaultUIComponentIDs}
-                  loading={uiComponentsLoading}
+                <ChatOutputOptions
                   placementPreference={isConversationMode ? "top" : "bottom"}
                   disabled={loading || uploading}
-                  onChange={onSelectedUIComponentsChange}
                   htmlVisual={showHTMLVisualPromptButton ? { enabled: htmlVisualPromptEnabled, onChange: onHTMLVisualPromptChange } : undefined}
                 />
               ) : null}

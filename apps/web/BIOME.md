@@ -82,7 +82,6 @@ Vendored registry code (`components/ui`, `components/animate-ui`, `components/re
 | `components/ui/sidebar.tsx` | `suspicious/noDocumentCookie` | shadcn sidebar state cookie; same Cookie Store API constraint. |
 | `features/auth/components/shared/turnstile-widget.tsx`, `components/ui/live-waveform.tsx`, `types/tauri-globals.d.ts` | `style/useConsistentTypeDefinitions` | Augmenting the global `Window` requires `interface` declaration merging. |
 | `shared/components/theme-bootstrap-script.tsx` | `security/noDangerouslySetInnerHtml` | Build-time constant inline `<script>` that must run before paint; no user input. |
-| `shared/components/markdown/ui-blocks/function-plot.tsx` | `security/noDangerouslySetInnerHtml` | KaTeX markup rendered from a parsed expression AST. |
 
 ## Exception policy
 
