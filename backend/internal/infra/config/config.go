@@ -485,6 +485,8 @@ type Config struct {
 	ModelOptionDeniedPaths       string
 	// 知识库配置
 	KnowledgeBaseEnabled bool
+	// 学生新建会话默认检索的平台知识库 public_id 列表（逗号分隔），留空表示不预置。
+	KnowledgeBaseDefaultIDs string
 	// 桌面端下载入口配置
 	DesktopDownloadEnabled bool   // 是否在网页端用户菜单展示「下载桌面端」入口
 	DesktopDownloadURL     string // 桌面端下载页地址
@@ -729,6 +731,7 @@ func Load() Config {
 		ModelOptionAllowedPaths:           DefaultModelOptionAllowedPathsJSON(),
 		ModelOptionDeniedPaths:            DefaultModelOptionDeniedPathsJSON(),
 		KnowledgeBaseEnabled:              true,
+		KnowledgeBaseDefaultIDs:           "",
 		DesktopDownloadEnabled:            true,
 		DesktopDownloadURL:                DefaultDesktopDownloadURL,
 		UserStorageQuotaBytes:             104857600,
@@ -1220,6 +1223,25 @@ func envOrBoolPtr(envKey string, yamlVal *bool, defaultVal bool) bool {
 // TrustedProxyList 返回受信代理列表，支持逗号分隔。
 func (c Config) TrustedProxyList() []string {
 	return splitCommaSeparated(c.TrustedProxies)
+}
+
+// DefaultKnowledgeBaseIDs 返回默认检索知识库的 public_id 列表，按出现顺序去重。
+// 列表只保存稳定 ID，知识库本身是否启用、是否存在仍由解析阶段校验。
+func (c Config) DefaultKnowledgeBaseIDs() []string {
+	raw := splitCommaSeparated(c.KnowledgeBaseDefaultIDs)
+	if len(raw) == 0 {
+		return nil
+	}
+	seen := make(map[string]struct{}, len(raw))
+	result := make([]string, 0, len(raw))
+	for _, id := range raw {
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		result = append(result, id)
+	}
+	return result
 }
 
 // TrustedOutboundPolicy 返回部署级集成和可信私网重定向使用的全局 SSRF 白名单策略。

@@ -84,6 +84,13 @@
     "embeddingHostRequired": "Embedding 服务地址不能为空。"
   },
   "fields": {
+    "knowledgebase": {
+      "default_knowledge_base_ids": {
+        "label": "默认知识库",
+        "description": "新会话默认检索的平台知识库 public_id 列表，逗号分隔，最多 8 个；留空表示不预置默认检索范围。",
+        "placeholder": "逗号分隔的知识库 ID"
+      }
+    },
     "storage": {
       "max_message_files": {
         "label": "附件数量上限",

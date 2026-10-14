@@ -327,3 +327,23 @@ func validPaymentSettingToken(value string) bool {
 	}
 	return true
 }
+
+// validateKnowledgeBaseIDList 校验默认检索知识库的 public_id 列表：逗号分隔，最多 8 项，
+// 每项 1..32 字符且不重复。空值合法，表示不预置默认知识库。
+func validateKnowledgeBaseIDList(value string, key string) error {
+	ids := splitList(value)
+	if len(ids) > 8 {
+		return settingRule("list_count", "0,8")
+	}
+	seen := make(map[string]struct{}, len(ids))
+	for _, id := range ids {
+		if len(id) > 32 || strings.TrimSpace(id) != id {
+			return settingRule("public_id", "")
+		}
+		if _, ok := seen[id]; ok {
+			return settingRule("duplicate", id)
+		}
+		seen[id] = struct{}{}
+	}
+	return nil
+}
