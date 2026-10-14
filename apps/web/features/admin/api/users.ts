@@ -10,8 +10,8 @@ import type {
   ResetAdminUserTwoFactorData,
   RevokeAdminUserSessionsData,
   UpdateAdminUserStatusRequest,
-  ImportOpenWebUIUsersData,
-  ImportOpenWebUIUsersRequest,
+  AdminRosterImportRequest,
+  AdminRosterImportResult,
 } from "@/features/admin/api/admin-types";
 import type { PagePayload } from "@/shared/api/common-types";
 
@@ -154,16 +154,21 @@ export async function deleteAdminUser(
   );
 }
 
-export async function importOpenWebUIUsers(
+export async function importRosterUsers(
   accessToken: string,
-  payload: ImportOpenWebUIUsersRequest,
-): Promise<ImportOpenWebUIUsersData> {
-  return authedRequest<ImportOpenWebUIUsersData>(
-    "/api/v1/admin/users/import/openwebui",
+  payload: AdminRosterImportRequest,
+): Promise<AdminRosterImportResult> {
+  const formData = new FormData();
+  formData.append("file", payload.file);
+  if (payload.dryRun) {
+    formData.append("dryRun", "true");
+  }
+  return authedRequest<AdminRosterImportResult>(
+    "/api/v1/admin/users/import/roster",
     {
       method: "POST",
       accessToken,
-      body: payload,
+      body: formData,
     },
     true,
   );

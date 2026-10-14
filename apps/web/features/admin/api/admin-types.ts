@@ -5,8 +5,9 @@ import type {
   ConversationEventResponse,
   CreateUserRequest,
   DeleteUserResponse,
-  ImportOpenWebUIUsersRequest as ContractImportOpenWebUIUsersRequest,
-  ImportOpenWebUIUsersResponse,
+  ImportRosterUsersCredentialResponse,
+  ImportRosterUsersResponse,
+  ImportRosterUsersRowResponse,
   PatchUserRequest,
   PaymentOrderResponse,
   RedemptionRecordResponse,
@@ -38,7 +39,11 @@ export type PatchAdminUserRequest = Omit<PatchUserRequest, "role" | "status"> & 
 
 export type ResetAdminUserPasswordRequest = ResetUserPasswordRequest;
 
-export type ImportOpenWebUIUsersRequest = ContractImportOpenWebUIUsersRequest;
+// Client-side roster import payload: the CSV file plus an optional preview flag.
+export type AdminRosterImportRequest = {
+  file: File;
+  dryRun?: boolean;
+};
 
 export type AdminUserData = Omit<UserDataResponse, "user"> & {
   user: AdminUserDTO;
@@ -54,9 +59,25 @@ export type ResetAdminUserTwoFactorData = {
 
 export type DeleteAdminUserData = DeleteUserResponse;
 
-export type ImportOpenWebUIUsersData = Omit<ImportOpenWebUIUsersResponse, "dedupeField" | "source"> & {
-  source: "openwebui";
-  dedupeField: "email";
+export type AdminRosterImportRowStatus =
+  | "ready"
+  | "imported"
+  | "skipped_existing"
+  | "duplicate_in_file"
+  | "invalid"
+  | "conflict"
+  | "failed";
+
+export type AdminRosterImportRow = Omit<ImportRosterUsersRowResponse, "status"> & {
+  status: AdminRosterImportRowStatus;
+};
+
+export type AdminRosterImportCredential = ImportRosterUsersCredentialResponse;
+
+// Contracts report credentials as optional, so a successful import of zero rows
+// is indistinguishable from a preview; callers keep the phase they requested.
+export type AdminRosterImportResult = Omit<ImportRosterUsersResponse, "rows"> & {
+  rows: AdminRosterImportRow[];
 };
 
 export type AdminUserAuthEventDTO = AuthEventResponse;
