@@ -8216,16 +8216,16 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/users/import/openwebui": {
+        "/admin/users/import/roster": {
             "post": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "从 OpenWebUI SQLite 或 PostgreSQL 数据库读取用户，按 email 去重导入；已存在用户不会修改",
+                "description": "上传 UTF-8 CSV 名单（列为 username,displayName,email），可先预览校验再正式创建学生账号；正式导入返回一次性初始密码，已存在用户默认跳过且不覆盖",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -8233,23 +8233,27 @@ const docTemplate = `{
                 "tags": [
                     "admin"
                 ],
-                "summary": "管理员导入 OpenWebUI 用户",
+                "summary": "管理员导入学生名单",
                 "parameters": [
                     {
-                        "description": "OpenWebUI 导入参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/ImportOpenWebUIUsersRequest"
-                        }
+                        "type": "file",
+                        "description": "UTF-8 CSV 名单，表头为 username,displayName,email",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "仅预览校验，不写入账号",
+                        "name": "dryRun",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/ImportOpenWebUIUsersResponseDoc"
+                            "$ref": "#/definitions/ImportRosterUsersResponseDoc"
                         }
                     },
                     "400": {
@@ -8260,6 +8264,12 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/AdminErrorDoc"
+                        }
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large",
                         "schema": {
                             "$ref": "#/definitions/AdminErrorDoc"
                         }
@@ -22823,69 +22833,74 @@ const docTemplate = `{
                 }
             }
         },
-        "ImportOpenWebUIUsersRequest": {
+        "ImportRosterUsersCredentialResponse": {
             "type": "object",
             "required": [
-                "creditMultiplier",
-                "dsn"
+                "displayName",
+                "initialPassword",
+                "username"
             ],
             "properties": {
-                "creditMultiplier": {
-                    "type": "number"
+                "displayName": {
+                    "type": "string"
                 },
-                "dryRun": {
-                    "type": "boolean"
+                "initialPassword": {
+                    "type": "string"
                 },
-                "dsn": {
-                    "type": "string",
-                    "maxLength": 2048
+                "username": {
+                    "type": "string"
                 }
             }
         },
-        "ImportOpenWebUIUsersResponse": {
+        "ImportRosterUsersResponse": {
             "type": "object",
             "required": [
-                "dedupeField",
-                "dedupeRule",
+                "failed",
                 "imported",
-                "scanned",
-                "skippedDuplicateSourceEmail",
-                "skippedExistingEmail",
-                "skippedInvalidEmail",
-                "skippedInvalidRow",
-                "source"
+                "invalid",
+                "ready",
+                "rows",
+                "skipped",
+                "total",
+                "truncated"
             ],
             "properties": {
-                "dedupeField": {
-                    "type": "string"
+                "credentials": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ImportRosterUsersCredentialResponse"
+                    }
                 },
-                "dedupeRule": {
-                    "type": "string"
+                "failed": {
+                    "type": "integer"
                 },
                 "imported": {
                     "type": "integer"
                 },
-                "scanned": {
+                "invalid": {
                     "type": "integer"
                 },
-                "skippedDuplicateSourceEmail": {
+                "ready": {
                     "type": "integer"
                 },
-                "skippedExistingEmail": {
+                "rows": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ImportRosterUsersRowResponse"
+                    }
+                },
+                "skipped": {
                     "type": "integer"
                 },
-                "skippedInvalidEmail": {
+                "total": {
                     "type": "integer"
                 },
-                "skippedInvalidRow": {
-                    "type": "integer"
-                },
-                "source": {
-                    "type": "string"
+                "truncated": {
+                    "type": "boolean"
                 }
             }
         },
-        "ImportOpenWebUIUsersResponseDoc": {
+        "ImportRosterUsersResponseDoc": {
             "type": "object",
             "required": [
                 "data",
@@ -22893,9 +22908,40 @@ const docTemplate = `{
             ],
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/ImportOpenWebUIUsersResponse"
+                    "$ref": "#/definitions/ImportRosterUsersResponse"
                 },
                 "errorMsg": {
+                    "type": "string"
+                }
+            }
+        },
+        "ImportRosterUsersRowResponse": {
+            "type": "object",
+            "required": [
+                "displayName",
+                "email",
+                "line",
+                "message",
+                "status",
+                "username"
+            ],
+            "properties": {
+                "displayName": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "line": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
