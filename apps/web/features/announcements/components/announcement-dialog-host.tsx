@@ -2,7 +2,6 @@
 
 import { Pin } from "lucide-react";
 import dynamic from "next/dynamic";
-import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -76,7 +75,6 @@ function announcementTypeAccentClassName(value: string): string {
 export function AnnouncementDialogHost() {
   const t = useTranslations("announcements");
   const locale = useLocale();
-  const pathname = usePathname();
   const {
     open,
     dialogMode,
@@ -92,7 +90,7 @@ export function AnnouncementDialogHost() {
     closeManualDialog,
     dismissAllToday,
     closeAll,
-  } = useAnnouncementDialog(pathname);
+  } = useAnnouncementDialog();
 
   const renderMode = useDialogSnapshot(open ? dialogMode : null) ?? dialogMode;
   const renderQueue = useDialogSnapshot(open ? sortedQueue : null) ?? sortedQueue;

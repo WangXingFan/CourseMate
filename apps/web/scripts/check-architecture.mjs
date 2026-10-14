@@ -21,12 +21,9 @@ const FEATURE_DOMAINS = {
   auth: "auth",
   chat: "chat",
   desktop: "desktop",
-  files: "file",
   "knowledge-bases": "knowledge-base",
-  library: "library",
   recent: "recent",
   settings: "settings",
-  share: "share",
   shell: "shell",
 };
 
