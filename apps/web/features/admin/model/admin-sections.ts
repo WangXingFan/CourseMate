@@ -4,28 +4,20 @@ import type { Feature } from "@deeix/core";
 // route guard both read this table, so a hidden entry is never reachable by URL
 // either (docs/ARCHITECTURE.md §4). Each id equals its route segment and its
 // sections/<id>/ component directory.
+//
+// This branch serves a student knowledge-base Q&A deployment, so the admin
+// surface is limited to accounts, upstreams, models and knowledge bases.
 export const ADMIN_SECTIONS = [
-  { id: "statistics", label: "Statistics", href: "/statistics" },
   { id: "users", label: "Accounts", href: "/users", feature: "multiUser" },
-  { id: "groups", label: "Permission Groups", href: "/groups", feature: "multiUser" },
   { id: "upstreams", label: "Upstreams", href: "/upstreams" },
   { id: "models", label: "Models", href: "/models" },
-  { id: "tools", label: "Tools", href: "/tools" },
-  { id: "billing", label: "Billing", href: "/billing" },
-  { id: "announcements", label: "Announcements", href: "/announcements", feature: "announcements" },
-  { id: "logs", label: "Logs", href: "/logs" },
-  { id: "content-moderation", label: "Content moderation", href: "/content-moderation", feature: "contentModeration" },
-  { id: "login", label: "Login & auth", href: "/login", feature: "identityProviders" },
-  { id: "conversation", label: "Conversation", href: "/conversation" },
-  { id: "files", label: "Files & retrieval", href: "/files" },
   { id: "knowledge-bases", label: "Knowledge bases", href: "/knowledge-bases" },
-  { id: "about", label: "About", href: "/about" },
 ] as const satisfies readonly { id: string; label: string; href: string; feature?: Feature }[];
 
 export type AdminSection = (typeof ADMIN_SECTIONS)[number]["id"];
 export type AdminSectionEntry = (typeof ADMIN_SECTIONS)[number];
 
-export const DEFAULT_ADMIN_SECTION: AdminSection = "statistics";
+export const DEFAULT_ADMIN_SECTION: AdminSection = "users";
 
 /** The section that owns `pathname` under `basePath`, or null for none. */
 export function resolveAdminSectionFromPath(pathname: string, basePath: string): AdminSectionEntry | null {

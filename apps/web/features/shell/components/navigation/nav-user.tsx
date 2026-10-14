@@ -163,14 +163,6 @@ export function NavUser({
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
             </DropdownMenuGroup>
-            <FeatureGate feature="billingGating">
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem onSelect={navigateFromMenu("/settings/subscription")}>
-                  {t("upgradePlan")}
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </FeatureGate>
             {/* Outside the billing gate: servers without billing still offer the download. */}
             <NavDesktopDownload onOpenPage={closeAfterExternalOpen} />
             <DropdownMenuSeparator />

@@ -109,7 +109,6 @@
     },
     {
       "includes": [
-        "features/admin/components/sections/billing/billing-redemption.tsx",
         "features/chat/components/message/message-meta.tsx"
       ],
       "linter": {
