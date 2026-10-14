@@ -19,12 +19,6 @@ import { ShellConversationNavigationProvider } from "@/features/shell/context/sh
 import { MobileHeaderActionProvider } from "@/features/shell/context/mobile-header-action-context";
 import { AppearancePreferencesSync } from "@/features/settings";
 import { UserLocaleSync } from "@/i18n/user-locale-sync";
-import { FeatureGate } from "@/shared/capabilities";
-
-const AnnouncementDialogHost = dynamic(
-  () => import("@/features/announcements").then((mod) => mod.AnnouncementDialogHost),
-  { ssr: false },
-);
 
 const InitialSecurityGuard = dynamic(
   () => import("@/features/auth").then((mod) => mod.InitialSecurityGuard),
@@ -93,9 +87,6 @@ export function ProjectLayout({
       <UserLocaleSync />
       <AppearancePreferencesSync />
       <InitialSecurityGuard />
-      <FeatureGate feature="announcements">
-        <AnnouncementDialogHost />
-      </FeatureGate>
       <SidebarProvider className="h-svh overflow-hidden" defaultOpen={defaultSidebarOpen}>
         <ShellConversationNavigationProvider>
           <SidebarConversationsProvider

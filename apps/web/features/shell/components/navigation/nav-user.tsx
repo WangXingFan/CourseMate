@@ -37,8 +37,6 @@ import { SpinnerLabel } from "@/components/ui/spinner";
 import { NavDesktopDownload } from "@/features/shell/components/navigation/nav-desktop-download";
 import { useShellUserMenuActions } from "@/features/shell/hooks/use-shell-user-menu-actions";
 import { APP_LOCALE_LABELS, APP_LOCALES } from "@/i18n/config";
-import { dispatchOpenAnnouncements, getAnnouncementUnread, subscribeAnnouncementUnreadChanged } from "@/entities/announcement";
-import { FeatureGate } from "@/shared/capabilities";
 
 export function NavUser({
   user,
@@ -54,13 +52,10 @@ export function NavUser({
   const router = useRouter();
   const { locale, loggingOut, savingLocale, onLogout, onLocaleSelect } = useShellUserMenuActions();
   const [open, setOpen] = React.useState(false);
-  const [hasUnreadAnnouncement, setHasUnreadAnnouncement] = React.useState(() => getAnnouncementUnread());
   const skipTriggerFocusRef = React.useRef(false);
   const isAdmin = user.role === "admin" || user.role === "superadmin";
 
   useSidebarHoverExpansionLock(open);
-
-  React.useEffect(() => subscribeAnnouncementUnreadChanged(setHasUnreadAnnouncement), []);
 
   const navigateFromMenu = React.useCallback(
     (href: string) => (event: Event) => {
@@ -75,13 +70,6 @@ export function NavUser({
   const closeAfterExternalOpen = React.useCallback(() => {
     skipTriggerFocusRef.current = true;
     setOpen(false);
-  }, []);
-
-  const openAnnouncementsFromMenu = React.useCallback((event: Event) => {
-    event.preventDefault();
-    skipTriggerFocusRef.current = true;
-    setOpen(false);
-    dispatchOpenAnnouncements();
   }, []);
 
   return (
@@ -134,14 +122,6 @@ export function NavUser({
               <DropdownMenuItem onSelect={navigateFromMenu("/settings/general")}>
                 {t("settings")}
               </DropdownMenuItem>
-              <FeatureGate feature="announcements">
-                <DropdownMenuItem onSelect={openAnnouncementsFromMenu}>
-                  <span className="min-w-0 flex-1 truncate">{t("announcements")}</span>
-                  <span className="ml-auto flex size-4 shrink-0 items-center justify-center">
-                    {hasUnreadAnnouncement ? <span aria-hidden="true" className="size-1.5 rounded-full bg-destructive" /> : null}
-                  </span>
-                </DropdownMenuItem>
-              </FeatureGate>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger className="focus:bg-accent/40 data-[state=open]:bg-accent/40">
                   {t("language")}

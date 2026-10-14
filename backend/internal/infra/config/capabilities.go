@@ -14,8 +14,6 @@ type Capabilities struct {
 	IdentityProviders bool `json:"identityProviders"`
 	// AccountSecurity 密码、邮箱、两步验证、会话、注销账号。
 	AccountSecurity bool `json:"accountSecurity"`
-	// Announcements 系统公告。
-	Announcements bool `json:"announcements"`
 	// BillingGating 计费规则可以拒绝请求：套餐、余额、兑换码、支付。
 	BillingGating bool `json:"billingGating"`
 	// UsageMetering 记录用量与费用。
@@ -39,7 +37,6 @@ func (c Config) Capabilities() Capabilities {
 		Registration:      true,
 		IdentityProviders: true,
 		AccountSecurity:   true,
-		Announcements:     true,
 		BillingGating:     true,
 		UsageMetering:     true,
 		ContentModeration: true,
@@ -59,8 +56,6 @@ func (c Capabilities) Enabled(name string) bool {
 		return c.IdentityProviders
 	case "accountSecurity":
 		return c.AccountSecurity
-	case "announcements":
-		return c.Announcements
 	case "billingGating":
 		return c.BillingGating
 	case "usageMetering":

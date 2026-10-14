@@ -10,10 +10,6 @@
     "permissionGroupReferencedByPlan": "该权限组已被计费套餐引用，请先解除绑定再删除。",
     "permissionGroupRepoUnavailable": "权限组服务暂不可用，请稍后重试。"
   },
-  "announcement": {
-    "invalidId": "公告 ID 无效。",
-    "notFound": "公告不存在。"
-  },
   "avatar": {
     "notFound": "头像不存在。"
   },
@@ -353,7 +349,6 @@
     "invalidId": "ID 无效。",
     "invalidQuery": "查询参数无效。",
     "required": "缺少必填参数。",
-    "invalidAnnouncement": "公告请求无效。",
     "invalidAppearancePreferences": "外观偏好设置无效。",
     "invalidConversationLabels": "对话标签无效。",
     "invalidConversationProject": "对话项目请求无效。",
@@ -540,7 +535,6 @@
       "registration": "此服务器不开放注册。",
       "identityProviders": "此服务器不提供第三方登录。",
       "accountSecurity": "此服务器不提供密码、邮箱、两步验证与会话管理。",
-      "announcements": "此服务器不提供公告。",
       "billingGating": "此服务器不提供套餐、余额与支付。",
       "usageMetering": "此服务器不提供用量统计。",
       "contentModeration": "此服务器不提供内容审核。",

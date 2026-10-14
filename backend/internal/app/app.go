@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/admin"
-	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/announcement"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/audit"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/auth"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
@@ -58,7 +57,6 @@ import (
 	stripepayment "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/payment/stripe"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence"
 	filecache "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/filecache"
-	announcementrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/announcement"
 	auditrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/audit"
 	billingrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/billing"
 	channelrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/channel"
@@ -79,7 +77,6 @@ import (
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/lifecycle"
 	platformhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http"
 	adminhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/admin"
-	announcementhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/announcement"
 	authhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/auth"
 	billinghttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/billing"
 	channelhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/channel"
@@ -453,10 +450,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	userSettingsService.SetCacheRefresher(conversationService.RefreshUserSettingCache)
 	userSettingsHandler := usersettingshttp.NewHandler(userSettingsService)
 	userSettingsModule := usersettingshttp.NewModule(userSettingsHandler)
-	announcementRepo := announcementrepo.NewRepo(db)
-	announcementService := announcement.NewService(announcementRepo)
-	announcementHandler := announcementhttp.NewHandler(announcementService)
-	announcementModule := announcementhttp.NewModule(announcementHandler)
 	promptPresetRepo := promptpresetrepo.NewRepo(db)
 	promptPresetService := apppromptpreset.NewService(promptPresetRepo)
 	promptPresetService.SetAuditWriter(auditService)
@@ -497,7 +490,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 		Billing:           billingModule,
 		Admin:             adminModule,
 		ContentModeration: contentModerationModule,
-		Announcement:      announcementModule,
 		PromptPreset:      promptPresetModule,
 		Skill:             skillModule,
 		UIComponent:       uiComponentModule,

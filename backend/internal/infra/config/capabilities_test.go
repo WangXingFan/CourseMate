@@ -21,7 +21,6 @@ func TestCapabilitiesLocalModeKeepsOnlyMetering(t *testing.T) {
 		"registration":      false,
 		"identityProviders": false,
 		"accountSecurity":   false,
-		"announcements":     false,
 		"billingGating":     false,
 		"usageMetering":     true,
 		"contentModeration": false,

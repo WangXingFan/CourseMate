@@ -1,5 +1,4 @@
 import type { AppLocale } from "@/i18n/config";
-import enAdminAnnouncements from "@/i18n/messages/en-US/admin-announcements.json";
 import enAdminBilling from "@/i18n/messages/en-US/admin-billing.json";
 import enAdminContentModeration from "@/i18n/messages/en-US/admin-content-moderation.json";
 import enAdminConversation from "@/i18n/messages/en-US/admin-conversation.json";
@@ -13,7 +12,6 @@ import enAdminStatistics from "@/i18n/messages/en-US/admin-statistics.json";
 import enAdminTools from "@/i18n/messages/en-US/admin-tools.json";
 import enAdminUpstreams from "@/i18n/messages/en-US/admin-upstreams.json";
 import enAdminUsers from "@/i18n/messages/en-US/admin-users.json";
-import enAnnouncements from "@/i18n/messages/en-US/announcements.json";
 import enDesktopSetup from "@/i18n/messages/en-US/desktop-setup.json";
 import enDesktopTabs from "@/i18n/messages/en-US/desktop-tabs.json";
 import enDesktopUpdate from "@/i18n/messages/en-US/desktop-update.json";
@@ -41,7 +39,6 @@ const ENGLISH_MESSAGES = {
   uiComponents: enUIComponents,
   guide: enGuide,
   chat: enChat,
-  announcements: enAnnouncements,
   desktopSetup: enDesktopSetup,
   desktopTabs: enDesktopTabs,
   desktopUpdate: enDesktopUpdate,
@@ -50,7 +47,6 @@ const ENGLISH_MESSAGES = {
   files: enFiles,
   knowledgeBases: enKnowledgeBases,
   settings: enSettings,
-  adminAnnouncements: enAdminAnnouncements,
   adminBilling: enAdminBilling,
   adminConversation: enAdminConversation,
   adminFiles: enAdminFiles,
@@ -132,13 +128,11 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
     uiComponents,
     guide,
     chat,
-    announcements,
     recent,
     share,
     files,
     knowledgeBases,
     settings,
-    adminAnnouncements,
     adminBilling,
     adminConversation,
     adminFiles,
@@ -164,13 +158,11 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
     import("@/i18n/messages/zh-CN/ui-components.json"),
     import("@/i18n/messages/zh-CN/guide.json"),
     import("@/i18n/messages/zh-CN/chat.json"),
-    import("@/i18n/messages/zh-CN/announcements.json"),
     import("@/i18n/messages/zh-CN/recent.json"),
     import("@/i18n/messages/zh-CN/share.json"),
     import("@/i18n/messages/zh-CN/files.json"),
     import("@/i18n/messages/zh-CN/knowledge-bases.json"),
     import("@/i18n/messages/zh-CN/settings.json"),
-    import("@/i18n/messages/zh-CN/admin-announcements.json"),
     import("@/i18n/messages/zh-CN/admin-billing.json"),
     import("@/i18n/messages/zh-CN/admin-conversation.json"),
     import("@/i18n/messages/zh-CN/admin-files.json"),
@@ -198,13 +190,11 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
     uiComponents: uiComponents.default,
     guide: guide.default,
     chat: chat.default,
-    announcements: announcements.default,
     recent: recent.default,
     share: share.default,
     files: files.default,
     knowledgeBases: knowledgeBases.default,
     settings: settings.default,
-    adminAnnouncements: adminAnnouncements.default,
     adminBilling: adminBilling.default,
     adminConversation: adminConversation.default,
     adminFiles: adminFiles.default,

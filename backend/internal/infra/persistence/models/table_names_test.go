@@ -54,8 +54,6 @@ func TestTableNamesUseRestructuredDomains(t *testing.T) {
 		MCPTool{},
 		UserMemory{},
 		AuditLog{},
-		Announcement{},
-		AnnouncementUserState{},
 		SystemSetting{},
 		UserSetting{},
 	}

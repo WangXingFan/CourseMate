@@ -18,8 +18,8 @@ describe("resolveCapabilities", () => {
   });
 
   it("accepts the response envelope as well as the bare object", () => {
-    const flags = resolveCapabilities({ errorMsg: "", data: { features: { announcements: false } } });
-    assert.equal(flags.announcements, false);
+    const flags = resolveCapabilities({ errorMsg: "", data: { features: { contentModeration: false } } });
+    assert.equal(flags.contentModeration, false);
   });
 
   it("falls back to enabled for anything it cannot read", () => {
