@@ -63,6 +63,8 @@ var (
 	ErrKnowledgeBaseUnavailable = apperr.NewMasked(MessageErrorCodeKnowledgeBaseUnavailable, "knowledge base retrieval is unavailable", "knowledge base retrieval unavailable")
 	// ErrKnowledgeBaseNotReady 所选知识库尚无可检索文件。
 	ErrKnowledgeBaseNotReady = apperr.NewMasked(MessageErrorCodeKnowledgeBaseNotReady, "selected knowledge base has no ready files", "knowledge base not ready")
+	// ErrKnowledgeBaseScopeEmpty 知识库已启用，但既未显式选择知识库，也未配置默认检索范围。
+	ErrKnowledgeBaseScopeEmpty = apperr.New(MessageErrorCodeKnowledgeBaseScopeEmpty, "no knowledge base scope is configured")
 	// ErrTooManyMessageFiles 单条消息文件数超限。
 	ErrTooManyMessageFiles = apperr.NewMasked("message.too_many_files", "too many files in one message", "too many message files")
 	// ErrTooManySelectedTools 单条消息选择的 MCP 工具数超限。

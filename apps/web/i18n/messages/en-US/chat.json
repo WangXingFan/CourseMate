@@ -467,6 +467,8 @@
     "mcpToolsSelected": "{count} tools enabled",
     "knowledgeBases": "Knowledge bases",
     "knowledgeBasesSelected": "{count} knowledge bases selected",
+    "knowledgeBaseDefaultScope": "Default scope: {names}",
+    "knowledgeBaseDefaultScopeCount": "Default scope: {count} knowledge bases",
     "uiComponents": "Interactive components",
     "uiComponentsRestoreDefault": "Restore default",
     "uiComponentScope": {

@@ -142,6 +142,41 @@ func TestResolveKnowledgeBaseRAGFilesSkipsWhenFeatureDisabled(t *testing.T) {
 	}
 }
 
+func TestResolveKnowledgeBaseScope(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		cfg      config.Config
+		selected []string
+		want     []string
+		wantErr  error
+	}{
+		{name: "feature disabled ignores selection", cfg: config.Config{KnowledgeBaseEnabled: false}, selected: []string{"kb-one"}},
+		{name: "explicit selection wins", cfg: config.Config{KnowledgeBaseEnabled: true, KnowledgeBaseDefaultIDs: "kb-default"}, selected: []string{"kb-explicit"}, want: []string{"kb-explicit"}},
+		{name: "empty selection falls back to defaults", cfg: config.Config{KnowledgeBaseEnabled: true, KnowledgeBaseDefaultIDs: "kb-a, kb-b"}, want: []string{"kb-a", "kb-b"}},
+		{name: "missing default scope is rejected", cfg: config.Config{KnowledgeBaseEnabled: true}, wantErr: ErrKnowledgeBaseScopeEmpty},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got, err := resolveKnowledgeBaseScope(tt.selected, tt.cfg)
+			if !errors.Is(err, tt.wantErr) {
+				t.Fatalf("resolveKnowledgeBaseScope() error = %v, want %v", err, tt.wantErr)
+			}
+			if len(got) != len(tt.want) {
+				t.Fatalf("resolveKnowledgeBaseScope() = %#v, want %#v", got, tt.want)
+			}
+			for i := range got {
+				if got[i] != tt.want[i] {
+					t.Fatalf("resolveKnowledgeBaseScope() = %#v, want %#v", got, tt.want)
+				}
+			}
+		})
+	}
+}
+
 func TestConversationImageRefsPreferRecentImagesWithinBudget(t *testing.T) {
 	messages := make([]model.Message, 0, maxConversationImageContextCount+1)
 	attachments := make([]AttachmentInput, 0, maxConversationImageContextCount+1)

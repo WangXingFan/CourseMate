@@ -286,8 +286,9 @@ func (h *Handler) GetFeaturePolicy(c *gin.Context) {
 // featurePolicyResponse 把运行时配置映射为用户侧功能开关；下载地址不合法时一并关闭下载入口。
 func featurePolicyResponse(cfg config.Config) FeaturePolicyResponse {
 	resp := FeaturePolicyResponse{
-		KnowledgeBaseEnabled: cfg.KnowledgeBaseEnabled,
-		ProcessTraceEnabled:  cfg.ProcessTraceEnabled,
+		KnowledgeBaseEnabled:    cfg.KnowledgeBaseEnabled,
+		ProcessTraceEnabled:     cfg.ProcessTraceEnabled,
+		DefaultKnowledgeBaseIDs: cfg.DefaultKnowledgeBaseIDs(),
 	}
 	downloadURL := strings.TrimSpace(cfg.DesktopDownloadURL)
 	if cfg.DesktopDownloadEnabled && appsettings.IsValidDesktopDownloadURL(downloadURL) {

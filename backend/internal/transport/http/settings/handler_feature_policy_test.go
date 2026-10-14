@@ -47,6 +47,18 @@ func TestGetFeaturePolicyReturnsDesktopDownloadEntry(t *testing.T) {
 }
 
 func TestGetFeaturePolicyHidesDesktopDownloadEntry(t *testing.T) {
+func TestGetFeaturePolicyReturnsDefaultKnowledgeBaseIDs(t *testing.T) {
+	data := getFeaturePolicyForTest(t, config.Config{
+		KnowledgeBaseEnabled:    true,
+		KnowledgeBaseDefaultIDs: "kb-b, kb-a, kb-b",
+	})
+	ids, ok := data["defaultKnowledgeBaseIDs"].([]any)
+	if !ok || len(ids) != 2 || ids[0] != "kb-b" || ids[1] != "kb-a" {
+		t.Fatalf("unexpected default knowledge base ids: %+v", data["defaultKnowledgeBaseIDs"])
+	}
+}
+
+func TestGetFeaturePolicyHidesDesktopDownloadEntry(t *testing.T) {
 	cases := map[string]config.Config{
 		"disabled":        {DesktopDownloadEnabled: false, DesktopDownloadURL: "https://example.com/download"},
 		"invalid url":     {DesktopDownloadEnabled: true, DesktopDownloadURL: "javascript:alert(1)"},

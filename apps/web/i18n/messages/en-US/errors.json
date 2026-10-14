@@ -219,6 +219,7 @@
     "notReady": "The selected knowledge base has no searchable files yet. Wait for indexing to finish.",
     "ownerFileReference": "This account still owns files referenced by a built-in knowledge base. Remove them or have another administrator upload replacements first.",
     "platformFileInUse": "This platform source is still referenced by another resource. Remove the reference before deleting.",
+    "scopeEmpty": "No default knowledge base is configured, so knowledge base Q&A cannot start yet. Ask an administrator to configure one.",
     "unavailable": "Knowledge base retrieval is temporarily unavailable. Try again later, or ask an administrator to check the embedding service if the issue persists."
   },
   "toolRun": {
