@@ -30,7 +30,7 @@
   "adminWelcomeTitle": "欢迎进入 DEEIX Chat 管理端",
   "userWelcomeTitle": "欢迎使用 DEEIX Chat",
   "adminWelcomeDescription": "先完成管理账户安全设置，再进入后台配置上游、平台模型、计费、日志、身份源和系统策略。",
-  "userWelcomeDescription": "先完成个人资料与安全设置，再开始使用对话、文件、工具、记忆和分享能力。",
+  "userWelcomeDescription": "先完成个人资料与安全设置，再开始使用对话、文件、工具和记忆能力。",
   "adminAccountTitle": "完善管理账户",
   "userAccountTitle": "设置账户",
   "adminTwoFactorTitle": "保护管理账户",
@@ -125,7 +125,7 @@
     "profile": "设置个人资料、时区与安全选项，让聊天、文件、工具和记忆能力符合你的使用习惯。",
     "models": "在对话中使用平台已开放的模型，系统会根据管理员配置自动完成路由、限额和计费。",
     "files": "上传图片和文件后，可以预览、提取文本、检索上下文，并在对话链路里追踪使用过程。",
-    "conversation": "对话支持分支、分享、星标、归档、上下文规划、思考链路和工具调用明细。",
+    "conversation": "对话支持分支、星标、归档、上下文规划、思考链路和工具调用明细。",
     "twoFactor": "开启两步验证后，账户登录会多一层保护，恢复码可用于设备遗失时找回访问能力。"
   }
 }

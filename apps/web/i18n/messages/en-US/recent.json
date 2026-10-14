@@ -17,11 +17,8 @@
   "archived": "Archived",
   "starred": "Starred",
   "unstarred": "Unstarred",
-  "shared": "Shared",
-  "unshared": "Unshared",
   "status": "Status",
   "star": "Starred",
-  "share": "Share",
   "projects": {
     "title": "Projects",
     "collapseSection": "Collapse projects",
@@ -89,7 +86,6 @@
   "moveSelectedToProject": "Move to project",
   "moveSelectedSuccess": "Moved {count} conversations to \"{project}\"",
   "moveSelectedFailed": "Failed to move selected conversations",
-  "closeSelectedShares": "Stop sharing",
   "deleteSelected": "Delete",
   "searchPlaceholder": "Search conversations",
   "empty": "No conversations yet",
@@ -100,7 +96,6 @@
   "loadMoreFailed": "Failed to load more",
   "loadingMore": "Loading more...",
   "retry": "Retry",
-  "shareClosed": "Share closed",
   "exported": "Conversation JSON exported",
   "exportFailed": "Failed to export conversation",
   "exportAll": "Export all conversations",
@@ -121,9 +116,7 @@
     "rename": "Rename",
     "autoRename": "Auto rename",
     "menu": "Conversation menu",
-    "shareAndExport": "Share & Export",
-    "manageShare": "Manage share",
-    "share": "Share",
+    "exportAndScreenshot": "Export & Screenshot",
     "moveToProject": "Move",
     "unarchive": "Unarchive",
     "archive": "Archive",
@@ -160,11 +153,6 @@
         "title": "Unarchive selected conversations",
         "description": "Unarchive the selected {count} conversations?",
         "confirm": "Unarchive"
-      },
-      "revokeShares": {
-        "title": "Close selected shares",
-        "description": "Close shares for the selected {count} conversations? Existing share links will stop working.",
-        "confirm": "Close shares"
       },
       "pending": "Processing..."
     },

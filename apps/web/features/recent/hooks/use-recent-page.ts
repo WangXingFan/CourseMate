@@ -20,17 +20,10 @@ import type { RecentDeleteTarget, RecentRowState } from "@/features/recent/types
 import { RECENT_PAGE_SIZE } from "@/features/recent/utils/recent-display";
 import { useSettingsChatPreferences } from "@/features/settings";
 import { useLocalizedErrorMessage } from "@/i18n/use-localized-error";
-import {
-  exportAllConversations,
-  exportConversation,
-  listConversations,
-  revokeConversationShares,
-} from "@/shared/api/conversation";
+import { exportAllConversations, exportConversation, listConversations } from "@/shared/api/conversation";
 import type {
   ConversationDTO,
   ConversationProjectFilter,
-  ConversationShareDTO,
-  ConversationShareFilter,
   ConversationStarredFilter,
   ConversationStatusFilter,
 } from "@/shared/api/conversation-types";
@@ -42,25 +35,10 @@ import { downloadBlob, readExportManifest } from "@/shared/lib/export-download";
 
 const RECENT_SEARCH_DEBOUNCE_MS = 250;
 
-function isSharedConversation(item: ConversationDTO): boolean {
-  return item.shareStatus === "active" && Boolean(item.shareID?.trim());
-}
-
-function conversationMatchesShareFilter(item: ConversationDTO, shareFilter: ConversationShareFilter): boolean {
-  if (shareFilter === "shared") {
-    return isSharedConversation(item);
-  }
-  if (shareFilter === "unshared") {
-    return !isSharedConversation(item);
-  }
-  return true;
-}
-
 function conversationMatchesRecentFilters(
   item: ConversationDTO,
   statusFilter: ConversationStatusFilter,
   starredFilter: ConversationStarredFilter,
-  shareFilter: ConversationShareFilter,
   projectFilter: ConversationProjectFilter,
 ): boolean {
   if (statusFilter === "archived" && !isArchivedConversation(item)) {
@@ -75,9 +53,6 @@ function conversationMatchesRecentFilters(
   if (starredFilter === "unstarred" && item.isStarred) {
     return false;
   }
-  if (!conversationMatchesShareFilter(item, shareFilter)) {
-    return false;
-  }
   if (projectFilter === "unassigned") {
     return !item.projectID;
   }
@@ -85,16 +60,6 @@ function conversationMatchesRecentFilters(
     return item.projectID === projectFilter;
   }
   return true;
-}
-
-function sharePatchFromResult(share: ConversationShareDTO): Partial<ConversationDTO> {
-  const active = share.status === "active" && Boolean(share.shareID.trim());
-  return {
-    shareStatus: share.status,
-    shareID: active ? share.shareID : "",
-    sharedAt: active ? share.createdAt : null,
-    lastShareAccessedAt: share.lastAccessedAt,
-  };
 }
 
 export function useRecentPage() {
@@ -111,7 +76,6 @@ export function useRecentPage() {
   const projects = useSidebarConversationField("projects");
   const setProjectByPublicID = useSidebarConversationField("setProjectByPublicID");
   const batchSetProjectByPublicIDs = useSidebarConversationField("batchSetProjectByPublicIDs");
-  const touchByPublicID = useSidebarConversationField("touchByPublicID");
   const lastChange = useSidebarConversationField("lastChange");
   const [items, setItems] = React.useState<ConversationDTO[]>([]);
   const [loadingInitial, setLoadingInitial] = React.useState(true);
@@ -120,7 +84,6 @@ export function useRecentPage() {
   const [loadMoreFailed, setLoadMoreFailed] = React.useState(false);
   const [statusFilter, setStatusFilter] = React.useState<ConversationStatusFilter>("all");
   const [starredFilter, setStarredFilter] = React.useState<ConversationStarredFilter>("all");
-  const [shareFilter, setShareFilter] = React.useState<ConversationShareFilter>("all");
   const searchParams = useSearchParams();
   const [projectFilter, setProjectFilter] = React.useState<ConversationProjectFilter>(() => searchParams.get("project") || "all");
   const [query, setQuery] = React.useState("");
@@ -135,7 +98,6 @@ export function useRecentPage() {
   const [deleteTarget, setDeleteTarget] = React.useState<RecentDeleteTarget>(null);
   const [deleteFiles, setDeleteFiles] = React.useState(false);
   const { deleteFilesByDefault } = useSettingsChatPreferences();
-  const [shareTarget, setShareTarget] = React.useState<ConversationDTO | null>(null);
   const [exportingAll, setExportingAll] = React.useState(false);
   const [movingSelectedToProject, setMovingSelectedToProject] = React.useState(false);
   const pageRef = React.useRef(1);
@@ -177,7 +139,7 @@ export function useRecentPage() {
       setItems((current) =>
         current
           .map((item) => (item.publicID === lastChange.publicID ? { ...item, ...lastChange.patch } : item))
-          .filter((item) => conversationMatchesRecentFilters(item, statusFilter, starredFilter, shareFilter, projectFilter)),
+          .filter((item) => conversationMatchesRecentFilters(item, statusFilter, starredFilter, projectFilter)),
       );
       return;
     }
@@ -187,7 +149,7 @@ export function useRecentPage() {
       return;
     }
 
-    if (!conversationMatchesRecentFilters(changedItem, statusFilter, starredFilter, shareFilter, projectFilter)) {
+    if (!conversationMatchesRecentFilters(changedItem, statusFilter, starredFilter, projectFilter)) {
       setItems((current) => removeByPublicID(current, lastChange.publicID));
       setSelectedConversationIDs((current) => current.filter((item) => item !== lastChange.publicID));
       return;
@@ -198,7 +160,7 @@ export function useRecentPage() {
     }
 
     setItems((current) => upsertByPublicID(current, changedItem));
-  }, [items, lastChange, normalizedQuery, projectFilter, shareFilter, starredFilter, statusFilter]);
+  }, [items, lastChange, normalizedQuery, projectFilter, starredFilter, statusFilter]);
 
   const loadPage = React.useCallback(
     async (page: number, options?: { replace?: boolean; version?: number }) => {
@@ -217,7 +179,6 @@ export function useRecentPage() {
         pageSize: RECENT_PAGE_SIZE,
         status: statusFilter,
         starred: starredFilter,
-        share: shareFilter,
         project: projectFilter,
         query: normalizedQuery,
       });
@@ -238,7 +199,7 @@ export function useRecentPage() {
       loadMoreFailedRef.current = false;
       pageRef.current = page;
     },
-    [normalizedQuery, projectFilter, shareFilter, starredFilter, statusFilter],
+    [normalizedQuery, projectFilter, starredFilter, statusFilter],
   );
 
   React.useEffect(() => {
@@ -359,12 +320,12 @@ export function useRecentPage() {
         return;
       }
       setItems((current) => (
-        conversationMatchesRecentFilters(updated, statusFilter, starredFilter, shareFilter, projectFilter)
+        conversationMatchesRecentFilters(updated, statusFilter, starredFilter, projectFilter)
           ? upsertByPublicID(current, updated)
           : removeByPublicID(current, publicID)
       ));
     },
-    [projectFilter, setStarByPublicID, shareFilter, starredFilter, statusFilter],
+    [projectFilter, setStarByPublicID, starredFilter, statusFilter],
   );
 
   const onRename = React.useCallback((item: ConversationDTO) => {
@@ -397,39 +358,14 @@ export function useRecentPage() {
       }
 
       setItems((current) => {
-        if (!conversationMatchesRecentFilters(updated, statusFilter, starredFilter, shareFilter, projectFilter)) {
+        if (!conversationMatchesRecentFilters(updated, statusFilter, starredFilter, projectFilter)) {
           return removeByPublicID(current, publicID);
         }
         return upsertByPublicID(current, updated);
       });
     },
-    [archiveByPublicID, projectFilter, shareFilter, starredFilter, statusFilter],
+    [archiveByPublicID, projectFilter, starredFilter, statusFilter],
   );
-
-  const patchConversationShare = React.useCallback(
-    (publicID: string, patch: Partial<ConversationDTO>) => {
-      setItems((current) =>
-        current
-          .map((item) => (item.publicID === publicID ? { ...item, ...patch } : item))
-          .filter((item) => conversationMatchesRecentFilters(item, statusFilter, starredFilter, shareFilter, projectFilter)),
-      );
-      const activeAfterPatch = patch.shareStatus === "active" && Boolean(patch.shareID?.trim());
-      const keepSelected =
-        shareFilter === "all" ||
-        (shareFilter === "shared" && activeAfterPatch) ||
-        (shareFilter === "unshared" && !activeAfterPatch);
-      if (!keepSelected) {
-        setSelectedConversationIDs((current) => current.filter((item) => item !== publicID));
-      }
-      touchByPublicID(publicID, patch);
-      setShareTarget((current) => (current?.publicID === publicID ? { ...current, ...patch } : current));
-    },
-    [projectFilter, shareFilter, starredFilter, statusFilter, touchByPublicID],
-  );
-
-  const onShare = React.useCallback((item: ConversationDTO) => {
-    setShareTarget(item);
-  }, []);
 
   const onSetProject = React.useCallback(
     async (publicID: string, projectID?: string) => {
@@ -438,31 +374,17 @@ export function useRecentPage() {
         return;
       }
       setItems((current) =>
-        conversationMatchesRecentFilters(updated, statusFilter, starredFilter, shareFilter, projectFilter)
+        conversationMatchesRecentFilters(updated, statusFilter, starredFilter, projectFilter)
           ? upsertByPublicID(current, updated)
           : removeByPublicID(current, publicID),
       );
       setSelectedConversationIDs((current) => (
-        conversationMatchesRecentFilters(updated, statusFilter, starredFilter, shareFilter, projectFilter)
+        conversationMatchesRecentFilters(updated, statusFilter, starredFilter, projectFilter)
           ? current
           : current.filter((item) => item !== publicID)
       ));
     },
-    [projectFilter, setProjectByPublicID, shareFilter, starredFilter, statusFilter],
-  );
-
-  const closeShareDialog = React.useCallback(() => {
-    setShareTarget(null);
-  }, []);
-
-  const onShareChange = React.useCallback(
-    (share: ConversationShareDTO) => {
-      if (!shareTarget) {
-        return;
-      }
-      patchConversationShare(shareTarget.publicID, sharePatchFromResult(share));
-    },
-    [patchConversationShare, shareTarget],
+    [projectFilter, setProjectByPublicID, starredFilter, statusFilter],
   );
 
   const onDelete = React.useCallback((item: ConversationDTO) => {
@@ -619,7 +541,7 @@ export function useRecentPage() {
       }
       setItems((current) => current
         .map((item) => (targetIDSet.has(item.publicID) ? { ...item, ...patch } : item))
-        .filter((item) => conversationMatchesRecentFilters(item, statusFilter, starredFilter, shareFilter, projectFilter)));
+        .filter((item) => conversationMatchesRecentFilters(item, statusFilter, starredFilter, projectFilter)));
       setSelectedConversationIDs([]);
       setSelectionMode(false);
       toast.success(t("moveSelectedSuccess", {
@@ -640,16 +562,10 @@ export function useRecentPage() {
     projects,
     resolveErrorMessage,
     selectedConversationIDs,
-    shareFilter,
     starredFilter,
     statusFilter,
     t,
   ]);
-
-  const selectedSharedItems = React.useMemo(
-    () => selectedItems.filter(isSharedConversation),
-    [selectedItems],
-  );
 
   const allSelectedArchived = React.useMemo(
     () => selectedItems.length > 0 && selectedItems.every((item) => isArchivedConversation(item)),
@@ -688,7 +604,7 @@ export function useRecentPage() {
           next = removeByPublicID(next, target.publicID);
           continue;
         }
-        next = conversationMatchesRecentFilters(updated, statusFilter, starredFilter, shareFilter, projectFilter)
+        next = conversationMatchesRecentFilters(updated, statusFilter, starredFilter, projectFilter)
           ? upsertByPublicID(next, updated)
           : removeByPublicID(next, target.publicID);
       }
@@ -696,40 +612,7 @@ export function useRecentPage() {
     });
     setSelectedConversationIDs([]);
     setSelectionMode(false);
-  }, [allSelectedArchived, archiveByPublicID, projectFilter, selectedItems, shareFilter, starredFilter, statusFilter, t]);
-
-  const revokeSelectedShares = React.useCallback(async () => {
-    if (selectedSharedItems.length === 0) {
-      return;
-    }
-    const token = await resolveAccessToken();
-    if (!token) {
-      return;
-    }
-    const ids = selectedSharedItems.map((item) => item.publicID);
-    await runBulkActionInChunks({
-      items: ids,
-      title: t("dialogs.bulk.pending"),
-      runChunk: (conversationPublicIDs) => revokeConversationShares(token, { conversationPublicIDs }),
-    });
-    const patch: Partial<ConversationDTO> = {
-      shareStatus: "revoked",
-      shareID: "",
-      sharedAt: null,
-      lastShareAccessedAt: null,
-    };
-    setItems((current) =>
-      current
-        .map((item) => (ids.includes(item.publicID) ? { ...item, ...patch } : item))
-        .filter((item) => conversationMatchesRecentFilters(item, statusFilter, starredFilter, shareFilter, projectFilter)),
-    );
-    for (const id of ids) {
-      touchByPublicID(id, patch);
-    }
-    setSelectedConversationIDs([]);
-    setSelectionMode(false);
-    toast.success(t("shareClosed"));
-  }, [projectFilter, selectedSharedItems, shareFilter, starredFilter, statusFilter, t, touchByPublicID]);
+  }, [allSelectedArchived, archiveByPublicID, projectFilter, selectedItems, starredFilter, statusFilter, t]);
 
   const requestDeleteSelected = React.useCallback(() => {
     if (selectedConversationIDs.length === 0) {
@@ -785,7 +668,6 @@ export function useRecentPage() {
     loadMoreFailed,
     statusFilter,
     starredFilter,
-    shareFilter,
     projectFilter,
     projects,
     query,
@@ -800,17 +682,14 @@ export function useRecentPage() {
     labelsTarget,
     deleteTarget,
     deleteFiles,
-    shareTarget,
     rowStates,
     allSelectedArchived,
-    selectedSharedCount: selectedSharedItems.length,
     pageSelectionState,
     loadMoreRef,
     onCreateConversation,
     setQuery,
     setStatusFilter,
     setStarredFilter,
-    setShareFilter,
     setProjectFilter: onProjectFilterChange,
     setHoveredConversationID,
     onToggleSelected,
@@ -819,7 +698,6 @@ export function useRecentPage() {
     onManageLabels,
     onUpdateLabels,
     onArchive,
-    onShare,
     onSetProject,
     onExport,
     onDelete,
@@ -834,12 +712,9 @@ export function useRecentPage() {
     confirmDelete,
     closeDeleteDialog,
     setDeleteFiles,
-    closeShareDialog,
-    onShareChange,
     toggleSelectionMode,
     archiveSelected,
     moveSelectedToProject,
-    revokeSelectedShares,
     requestDeleteSelected,
     exitSelectionMode,
     enterSelectionMode: () => setSelectionMode(true),

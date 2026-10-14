@@ -18,12 +18,6 @@ var (
 	ErrConversationEventNotFound = apperr.New("conversation_event.not_found", "conversation event not found")
 	// ErrToolCallNotFound 工具调用不存在或当前用户无权访问。
 	ErrToolCallNotFound = apperr.New("tool_call.not_found", "tool call not found")
-	// ErrConversationShareNotFound 会话分享不存在、已关闭或原会话已删除。
-	ErrConversationShareNotFound = apperr.New("conversation_share.not_found", "conversation share not found")
-	// ErrInvalidConversationShare 会话分享请求不合法。
-	ErrInvalidConversationShare = apperr.New("conversation_share.invalid", "invalid conversation share")
-	// ErrConversationShareSchemaOutdated 会话分享表结构未更新。
-	ErrConversationShareSchemaOutdated = apperr.NewMasked("conversation_share.schema_outdated", "conversation share schema is outdated", "conversation share schema outdated")
 	// ErrInvalidConversationTitle 会话标题不合法。
 	ErrInvalidConversationTitle = apperr.New("conversation.invalid_title", "invalid conversation title")
 	// ErrInvalidConversationLabels 会话标签不合法。

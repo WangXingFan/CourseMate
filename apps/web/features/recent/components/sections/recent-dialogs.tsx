@@ -6,11 +6,10 @@ import { useTranslations } from "next-intl";
 import type { RecentBulkConfirmAction, RecentDeleteTarget } from "@/features/recent/types/recent";
 import {
   ConversationLabelsDialog,
-  ConversationShareDialog,
   parseConversationLabelsJSON,
 } from "@/entities/conversation";
 import { DeleteFilesOption } from "@/entities/file";
-import type { ConversationDTO, ConversationShareDTO } from "@/shared/api/conversation-types";
+import type { ConversationDTO } from "@/shared/api/conversation-types";
 import { Sparkles } from "@/components/animate-ui/icons/sparkles";
 import {
   AlertDialog,
@@ -42,7 +41,6 @@ type RecentDialogsProps = {
   labelsTarget: ConversationDTO | null;
   deleteTarget: RecentDeleteTarget;
   deleteFiles: boolean;
-  shareTarget: ConversationDTO | null;
   bulkConfirmAction: RecentBulkConfirmAction | null;
   bulkConfirmCount: number;
   bulkConfirmPending: boolean;
@@ -55,8 +53,6 @@ type RecentDialogsProps = {
   onDeleteFilesChange: (checked: boolean) => void;
   onConfirmDelete: () => void | Promise<void>;
   onCloseDeleteDialog: () => void;
-  onCloseShareDialog: () => void;
-  onShareChange: (share: ConversationShareDTO) => void;
   onCloseBulkConfirm: () => void;
   onConfirmBulkAction: () => void | Promise<void>;
 };
@@ -68,7 +64,6 @@ export function RecentDialogs({
   labelsTarget,
   deleteTarget,
   deleteFiles,
-  shareTarget,
   bulkConfirmAction,
   bulkConfirmCount,
   bulkConfirmPending,
@@ -81,8 +76,6 @@ export function RecentDialogs({
   onDeleteFilesChange,
   onConfirmDelete,
   onCloseDeleteDialog,
-  onCloseShareDialog,
-  onShareChange,
   onCloseBulkConfirm,
   onConfirmBulkAction,
 }: RecentDialogsProps) {
@@ -91,7 +84,6 @@ export function RecentDialogs({
   const stableRenameValue = useDialogSnapshot(renameTarget ? renameValue : null) ?? "";
   const stableLabelsTarget = useDialogSnapshot(labelsTarget);
   const stableDeleteTarget = useDialogSnapshot(deleteTarget);
-  const stableShareTarget = useDialogSnapshot(shareTarget);
   const bulkConfirmSnapshot = React.useMemo(
     () => bulkConfirmAction ? { action: bulkConfirmAction, count: bulkConfirmCount } : null,
     [bulkConfirmAction, bulkConfirmCount],
@@ -110,12 +102,6 @@ export function RecentDialogs({
           title: t("bulk.unarchive.title"),
           description: t("bulk.unarchive.description", { count: stableBulkConfirm.count }),
           confirm: t("bulk.unarchive.confirm"),
-        };
-      case "revokeShares":
-        return {
-          title: t("bulk.revokeShares.title"),
-          description: t("bulk.revokeShares.description", { count: stableBulkConfirm.count }),
-          confirm: t("bulk.revokeShares.confirm"),
         };
       default:
         return { title: "", description: "", confirm: "" };
@@ -228,15 +214,6 @@ export function RecentDialogs({
         </AlertDialogContent>
       </AlertDialog>
 
-      {stableShareTarget ? (
-        <ConversationShareDialog
-          open={Boolean(shareTarget)}
-          onOpenChange={(open) => !open && onCloseShareDialog()}
-          conversationPublicID={stableShareTarget.publicID}
-          conversationTitle={stableShareTarget.title || t("untitled")}
-          onShareChange={onShareChange}
-        />
-      ) : null}
     </>
   );
 }

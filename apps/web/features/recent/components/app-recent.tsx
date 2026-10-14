@@ -14,23 +14,15 @@ export function AppRecent() {
   const {
     allSelectedArchived,
     archiveSelected,
-    revokeSelectedShares,
     selectedConversationIDs,
-    selectedSharedCount,
   } = controller;
   const [bulkConfirmAction, setBulkConfirmAction] = React.useState<RecentBulkConfirmAction | null>(null);
   const [bulkConfirmPending, setBulkConfirmPending] = React.useState(false);
-  const bulkConfirmCount = bulkConfirmAction === "revokeShares"
-    ? selectedSharedCount
-    : selectedConversationIDs.length;
+  const bulkConfirmCount = selectedConversationIDs.length;
 
   const requestArchiveSelected = React.useCallback(() => {
     setBulkConfirmAction(allSelectedArchived ? "unarchive" : "archive");
   }, [allSelectedArchived]);
-
-  const requestRevokeSelectedShares = React.useCallback(() => {
-    setBulkConfirmAction("revokeShares");
-  }, []);
 
   const confirmBulkAction = React.useCallback(async () => {
     if (!bulkConfirmAction) {
@@ -39,16 +31,12 @@ export function AppRecent() {
 
     setBulkConfirmPending(true);
     try {
-      if (bulkConfirmAction === "revokeShares") {
-        await revokeSelectedShares();
-      } else {
-        await archiveSelected();
-      }
+      await archiveSelected();
       setBulkConfirmAction(null);
     } finally {
       setBulkConfirmPending(false);
     }
-  }, [archiveSelected, bulkConfirmAction, revokeSelectedShares]);
+  }, [archiveSelected, bulkConfirmAction]);
 
   return (
     <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden">
@@ -62,11 +50,9 @@ export function AppRecent() {
         <RecentToolbar
           isSelectionMode={controller.isSelectionMode}
           selectedCount={controller.selectedConversationIDs.length}
-          selectedSharedCount={controller.selectedSharedCount}
           pageSelectionState={controller.pageSelectionState}
           statusFilter={controller.statusFilter}
           starredFilter={controller.starredFilter}
-          shareFilter={controller.shareFilter}
           allSelectedArchived={controller.allSelectedArchived}
           projects={controller.projects}
           selectedProjectID={controller.selectedProjectID}
@@ -76,13 +62,11 @@ export function AppRecent() {
           onExitSelectionMode={controller.exitSelectionMode}
           onArchiveSelected={requestArchiveSelected}
           onMoveSelectedToProject={controller.moveSelectedToProject}
-          onRevokeSelectedShares={requestRevokeSelectedShares}
           onRequestDeleteSelected={controller.requestDeleteSelected}
           onExportAll={controller.onExportAll}
           exportingAll={controller.exportingAll}
           onStatusFilterChange={controller.setStatusFilter}
           onStarredFilterChange={controller.setStarredFilter}
-          onShareFilterChange={controller.setShareFilter}
         />
 
         <RecentList
@@ -91,7 +75,6 @@ export function AppRecent() {
           normalizedQuery={controller.normalizedQuery}
           statusFilter={controller.statusFilter}
           starredFilter={controller.starredFilter}
-          shareFilter={controller.shareFilter}
           projects={controller.projects}
           rowStates={controller.rowStates}
           isSelectionMode={controller.isSelectionMode}
@@ -105,7 +88,6 @@ export function AppRecent() {
           onRename={controller.onRename}
           onManageLabels={controller.onManageLabels}
           onArchive={controller.onArchive}
-          onShare={controller.onShare}
           onSetProject={controller.onSetProject}
           onExport={controller.onExport}
           onDelete={controller.onDelete}
@@ -120,7 +102,6 @@ export function AppRecent() {
         labelsTarget={controller.labelsTarget}
         deleteTarget={controller.deleteTarget}
         deleteFiles={controller.deleteFiles}
-        shareTarget={controller.shareTarget}
         bulkConfirmAction={bulkConfirmAction}
         bulkConfirmCount={bulkConfirmCount}
         bulkConfirmPending={bulkConfirmPending}
@@ -133,8 +114,6 @@ export function AppRecent() {
         onDeleteFilesChange={controller.setDeleteFiles}
         onConfirmDelete={controller.confirmDelete}
         onCloseDeleteDialog={controller.closeDeleteDialog}
-        onCloseShareDialog={controller.closeShareDialog}
-        onShareChange={controller.onShareChange}
         onCloseBulkConfirm={() => setBulkConfirmAction(null)}
         onConfirmBulkAction={confirmBulkAction}
       />

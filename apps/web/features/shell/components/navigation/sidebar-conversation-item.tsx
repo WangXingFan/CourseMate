@@ -22,9 +22,9 @@ import {
 import { SIDEBAR_TRANSFER_TRANSITION } from "@/features/shell/model/sidebar-motion";
 import { useConversationRunning } from "@/features/chat";
 import {
+  ConversationExportSubmenu,
   ConversationLabelsMenuItem,
   ConversationProjectSubmenu,
-  ConversationShareExportSubmenu,
   parseConversationLabelsJSON,
 } from "@/entities/conversation";
 import { cn } from "@/lib/utils";
@@ -33,7 +33,6 @@ type SidebarConversationViewModel = {
   publicID: string;
   title: string;
   url: string;
-  shareActive?: boolean;
   labelsJSON?: string;
 };
 
@@ -73,7 +72,6 @@ type SidebarConversationItemProps = {
   isAutoRenaming?: boolean;
   onManageLabels?: () => void;
   onArchive: (publicID: string) => void;
-  onShare?: (publicID: string, title: string) => void;
   onExport?: (publicID: string) => void | Promise<void>;
   onDelete: (publicID: string, title: string) => void;
   onNavigate?: (conversationID: string, url: string, event: React.MouseEvent<HTMLAnchorElement>) => void;
@@ -127,7 +125,6 @@ export function SidebarConversationItem({
   isAutoRenaming = false,
   onManageLabels,
   onArchive,
-  onShare,
   onExport,
   onDelete,
   onNavigate,
@@ -281,11 +278,9 @@ export function SidebarConversationItem({
               onSelect={(projectID) => projectMenu.onSelect(item.publicID, projectID)}
             />
           ) : null}
-          <ConversationShareExportSubmenu
-            label={t("shareAndExport")}
-            shareLabel={item.shareActive ? t("manageShare") : t("share")}
+          <ConversationExportSubmenu
+            label={t("exportAndScreenshot")}
             exportLabel={t("exportJSON")}
-            onShare={onShare ? () => onShare(item.publicID, item.title) : undefined}
             onExport={onExport ? () => onExport(item.publicID) : undefined}
             onCloseMenu={() => setIsMenuOpen(false)}
           />

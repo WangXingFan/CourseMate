@@ -9,12 +9,7 @@ import type {
   FileProcessingStatusDTO,
   UploadFileResult,
 } from "@/shared/api/file-types";
-import {
-  ApiNetworkError,
-  apiFetch,
-  pathParam,
-  resolveAbortError,
-} from "@/shared/api/http-client";
+import { ApiNetworkError, pathParam, resolveAbortError } from "@/shared/api/http-client";
 
 type UploadFileOptions = {
   purpose?: string;
@@ -211,19 +206,6 @@ export async function fetchFileContent(
       signal,
     },
     true,
-  );
-
-  return readFileContentResponse(response);
-}
-
-export async function fetchSharedFileContent(
-  shareID: string,
-  fileID: string,
-  signal?: AbortSignal,
-): Promise<FileContentResult> {
-  const response = await apiFetch(
-    `/api/v1/shared-conversations/${pathParam(shareID)}/files/${pathParam(fileID)}/content`,
-    { signal },
   );
 
   return readFileContentResponse(response);

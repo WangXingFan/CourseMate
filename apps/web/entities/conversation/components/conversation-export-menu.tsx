@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Camera, Download, MousePointerClick, Share2 } from "lucide-react";
+import { Camera, Download, MousePointerClick } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,12 +16,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { FeatureGate } from "@/shared/capabilities";
 
-type ConversationShareExportActionsProps = {
-  shareLabel: string;
+type ConversationExportActionsProps = {
   exportLabel: string;
-  onShare?: () => void;
   onExport?: () => void | Promise<void>;
   screenshotLatestLabel?: string;
   screenshotSelectLabel?: string;
@@ -29,40 +26,22 @@ type ConversationShareExportActionsProps = {
   onScreenshotSelect?: () => void;
 };
 
-type ConversationShareExportMenuItemsProps = ConversationShareExportActionsProps & {
+type ConversationExportMenuItemsProps = ConversationExportActionsProps & {
   onCloseMenu?: () => void;
 };
 
-export function ConversationShareExportMenuItems({
-  shareLabel,
+export function ConversationExportMenuItems({
   exportLabel,
-  onShare,
   onExport,
   screenshotLatestLabel,
   screenshotSelectLabel,
   onScreenshotLatest,
   onScreenshotSelect,
   onCloseMenu,
-}: ConversationShareExportMenuItemsProps) {
+}: ConversationExportMenuItemsProps) {
   const hasScreenshot = Boolean(onScreenshotLatest || onScreenshotSelect);
   return (
     <>
-      <FeatureGate feature="sharing">
-        <DropdownMenuItem
-          disabled={!onShare}
-          onSelect={(event) => {
-            event.preventDefault();
-            if (!onShare) {
-              return;
-            }
-            onCloseMenu?.();
-            onShare();
-          }}
-        >
-          <DropdownMenuItemIcon icon={Share2} className="text-current" />
-          {shareLabel}
-        </DropdownMenuItem>
-      </FeatureGate>
       <DropdownMenuItem
         disabled={!onExport}
         onSelect={(event) => {
@@ -114,27 +93,23 @@ export function ConversationShareExportMenuItems({
   );
 }
 
-type ConversationShareExportIconDropdownProps = {
+type ConversationExportIconDropdownProps = {
   label: string;
-  active?: boolean;
   className?: string;
-} & ConversationShareExportActionsProps;
+} & ConversationExportActionsProps;
 
-export function ConversationShareExportIconDropdown({
+export function ConversationExportIconDropdown({
   label,
-  shareLabel,
   exportLabel,
-  active = false,
   className,
-  onShare,
   onExport,
   screenshotLatestLabel,
   screenshotSelectLabel,
   onScreenshotLatest,
   onScreenshotSelect,
-}: ConversationShareExportIconDropdownProps) {
+}: ConversationExportIconDropdownProps) {
   const [open, setOpen] = React.useState(false);
-  const hasAction = Boolean(onShare || onExport || onScreenshotLatest || onScreenshotSelect);
+  const hasAction = Boolean(onExport || onScreenshotLatest || onScreenshotSelect);
 
   return (
     <DropdownMenu modal={false} open={open} onOpenChange={setOpen}>
@@ -145,21 +120,18 @@ export function ConversationShareExportIconDropdown({
           size="icon"
           className={cn(
             "size-8 shrink-0 rounded-lg text-muted-foreground shadow-none hover:bg-muted hover:text-foreground",
-            active && "text-foreground",
             className,
           )}
           disabled={!hasAction}
           aria-label={label}
           title={label}
         >
-          <Share2 className="size-4 stroke-[1.8]" />
+          <Download className="size-4 stroke-[1.8]" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={8} className="min-w-40">
-        <ConversationShareExportMenuItems
-          shareLabel={shareLabel}
+        <ConversationExportMenuItems
           exportLabel={exportLabel}
-          onShare={onShare}
           onExport={onExport}
           screenshotLatestLabel={screenshotLatestLabel}
           screenshotSelectLabel={screenshotSelectLabel}
@@ -172,30 +144,26 @@ export function ConversationShareExportIconDropdown({
   );
 }
 
-export function ConversationShareExportSubmenu({
+export function ConversationExportSubmenu({
   label,
-  shareLabel,
   exportLabel,
-  onShare,
   onExport,
   screenshotLatestLabel,
   screenshotSelectLabel,
   onScreenshotLatest,
   onScreenshotSelect,
   onCloseMenu,
-}: { label: string } & ConversationShareExportMenuItemsProps) {
-  const hasAction = Boolean(onShare || onExport || onScreenshotLatest || onScreenshotSelect);
+}: { label: string } & ConversationExportMenuItemsProps) {
+  const hasAction = Boolean(onExport || onScreenshotLatest || onScreenshotSelect);
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger disabled={!hasAction}>
-        <DropdownMenuItemIcon icon={Share2} className="text-current" />
+        <DropdownMenuItemIcon icon={Download} className="text-current" />
         {label}
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className="min-w-40 p-1.5">
-        <ConversationShareExportMenuItems
-          shareLabel={shareLabel}
+        <ConversationExportMenuItems
           exportLabel={exportLabel}
-          onShare={onShare}
           onExport={onExport}
           screenshotLatestLabel={screenshotLatestLabel}
           screenshotSelectLabel={screenshotSelectLabel}

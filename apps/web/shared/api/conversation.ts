@@ -17,14 +17,11 @@ import type {
   ConversationProjectStatusFilter,
   ConversationRunDTO,
   ConversationSearchPageDTO,
-  ConversationShareDTO,
-  ConversationShareFilter,
   ConversationStarredFilter,
   ConversationStatusFilter,
   ConversationToolCallDetailDTO,
   CreateConversationProjectRequest,
   CreateConversationRequest,
-  CreateConversationShareRequest,
   DeleteConversationData,
   MediaImageRequest,
   MediaVideoExtensionRequest,
@@ -36,11 +33,8 @@ import type {
   PromptTraceBlockDTO,
   PromptTraceDTO,
   PromptTraceSourceDTO,
-  PublicSharedConversationDTO,
   RenameConversationRequest,
   ReorderConversationProjectsRequest,
-  RevokeConversationSharesRequest,
-  RevokeConversationSharesResult,
   SendMessageRequest,
   SendMessageResult,
   SetConversationArchiveRequest,
@@ -55,7 +49,7 @@ import type {
   UpdateConversationProjectRequest,
   UpdateMessageRequest,
 } from "@/shared/api/conversation-types";
-import { ApiError, apiRequest, pathParam } from "@/shared/api/http-client";
+import { ApiError, pathParam } from "@/shared/api/http-client";
 import {
   isOneOf,
   isRecord,
@@ -406,7 +400,6 @@ type ListConversationsOptions = {
   pageSize?: number;
   status?: ConversationStatusFilter;
   starred?: ConversationStarredFilter;
-  share?: ConversationShareFilter;
   project?: ConversationProjectFilter;
   query?: string;
 };
@@ -445,7 +438,6 @@ export async function listConversations(
   const pageSize = options.pageSize && options.pageSize > 0 ? options.pageSize : 20;
   const status = options.status?.trim() || "active";
   const starred = options.starred?.trim() || "all";
-  const share = options.share?.trim() || "all";
   const project = options.project?.trim() || "all";
   const query = options.query?.trim() || "";
   const params = new URLSearchParams({
@@ -453,7 +445,6 @@ export async function listConversations(
     page_size: String(pageSize),
     status,
     starred,
-    share,
     project,
   });
   if (query) {
@@ -776,100 +767,6 @@ export async function deleteConversation(
     `/api/v1/conversations/${pathParam(conversationPublicID)}${query ? `?${query}` : ""}`,
     {
       method: "DELETE",
-      accessToken,
-    },
-    true,
-  );
-}
-
-export async function getConversationShare(
-  accessToken: string,
-  conversationPublicID: string,
-): Promise<ConversationShareDTO> {
-  return authedRequest<ConversationShareDTO>(
-    `/api/v1/conversations/${pathParam(conversationPublicID)}/share`,
-    {
-      accessToken,
-    },
-    true,
-  );
-}
-
-export async function createConversationShare(
-  accessToken: string,
-  conversationPublicID: string,
-  payload: CreateConversationShareRequest = {},
-): Promise<ConversationShareDTO> {
-  return authedRequest<ConversationShareDTO>(
-    `/api/v1/conversations/${pathParam(conversationPublicID)}/share`,
-    {
-      method: "POST",
-      accessToken,
-      body: payload,
-    },
-    true,
-  );
-}
-
-export async function regenerateConversationShare(
-  accessToken: string,
-  conversationPublicID: string,
-  payload: CreateConversationShareRequest = {},
-): Promise<ConversationShareDTO> {
-  return authedRequest<ConversationShareDTO>(
-    `/api/v1/conversations/${pathParam(conversationPublicID)}/share/regenerate`,
-    {
-      method: "POST",
-      accessToken,
-      body: payload,
-    },
-    true,
-  );
-}
-
-export async function revokeConversationShare(
-  accessToken: string,
-  conversationPublicID: string,
-): Promise<ConversationShareDTO> {
-  return authedRequest<ConversationShareDTO>(
-    `/api/v1/conversations/${pathParam(conversationPublicID)}/share`,
-    {
-      method: "DELETE",
-      accessToken,
-    },
-    true,
-  );
-}
-
-export async function revokeConversationShares(
-  accessToken: string,
-  payload: RevokeConversationSharesRequest,
-): Promise<RevokeConversationSharesResult> {
-  return authedRequest<RevokeConversationSharesResult>(
-    "/api/v1/conversations/shares/revoke",
-    {
-      method: "POST",
-      accessToken,
-      body: payload,
-    },
-    true,
-  );
-}
-
-export async function getSharedConversation(shareID: string): Promise<PublicSharedConversationDTO> {
-  return apiRequest<PublicSharedConversationDTO>(
-    `/api/v1/shared-conversations/${pathParam(shareID)}`,
-  );
-}
-
-export async function cloneSharedConversation(
-  accessToken: string,
-  shareID: string,
-): Promise<ConversationDTO> {
-  return authedRequest<ConversationDTO>(
-    `/api/v1/shared-conversations/${pathParam(shareID)}/clone`,
-    {
-      method: "POST",
       accessToken,
     },
     true,

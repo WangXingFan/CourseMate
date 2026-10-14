@@ -3,6 +3,7 @@ package conversation
 import (
 	"context"
 	"errors"
+	"sort"
 	"strings"
 	"time"
 
@@ -44,7 +45,6 @@ type ListConversationsInput struct {
 	PageSize      int
 	StatusFilter  string
 	StarredFilter string
-	ShareFilter   string
 	ProjectFilter string
 	SearchQuery   string
 }
@@ -118,7 +118,6 @@ func (s *Service) ListConversations(ctx context.Context, input ListConversations
 		Limit:         limit,
 		StatusFilter:  input.StatusFilter,
 		StarredFilter: input.StarredFilter,
-		ShareFilter:   input.ShareFilter,
 		ProjectFilter: normalizeConversationProjectFilter(input.ProjectFilter),
 		SearchQuery:   input.SearchQuery,
 	})
@@ -289,6 +288,52 @@ func (s *Service) ExportConversationData(ctx context.Context, conversation *mode
 
 func exportDefaultMessagePublicIDs(items []model.Message) []string {
 	return publicIDsFromMessages(buildLatestVisibleMessages(items))
+}
+
+func publicIDsFromMessages(messages []model.Message) []string {
+	result := make([]string, 0, len(messages))
+	for _, item := range messages {
+		publicID := strings.TrimSpace(item.PublicID)
+		if publicID != "" {
+			result = append(result, publicID)
+		}
+	}
+	return result
+}
+
+func buildLatestVisibleMessages(messages []model.Message) []model.Message {
+	children := make(map[string][]model.Message)
+	for _, item := range messages {
+		parentKey := strings.TrimSpace(item.ParentPublicID)
+		children[parentKey] = append(children[parentKey], item)
+	}
+	for parentKey := range children {
+		sort.SliceStable(children[parentKey], func(i, j int) bool {
+			return children[parentKey][i].ID < children[parentKey][j].ID
+		})
+	}
+
+	visible := make([]model.Message, 0, len(messages))
+	visited := make(map[string]struct{}, len(messages))
+	parentKey := ""
+	for {
+		siblings := children[parentKey]
+		if len(siblings) == 0 {
+			break
+		}
+		selected := siblings[len(siblings)-1]
+		publicID := strings.TrimSpace(selected.PublicID)
+		if publicID == "" {
+			break
+		}
+		if _, exists := visited[publicID]; exists {
+			break
+		}
+		visited[publicID] = struct{}{}
+		visible = append(visible, selected)
+		parentKey = publicID
+	}
+	return visible
 }
 
 // ListRecentMessages 查询会话最近消息窗口，供对话页恢复最新上下文。
