@@ -1172,9 +1172,6 @@ definitions:
       registration:
         description: Registration 可自行注册账号。
         type: boolean
-      sharing:
-        description: Sharing 对话公开分享链接；只监听回环的服务器没有可分享的对象。
-        type: boolean
       usageMetering:
         description: UsageMetering 记录用量与费用。
         type: boolean
@@ -1185,7 +1182,6 @@ definitions:
     - identityProviders
     - multiUser
     - registration
-    - sharing
     - usageMetering
     type: object
   CapabilitiesResponse:
@@ -2312,10 +2308,6 @@ definitions:
         x-omitempty: false
       lastResponseID:
         type: string
-      lastShareAccessedAt:
-        type: string
-        x-nullable: true
-        x-omitempty: false
       messageCount:
         type: integer
       model:
@@ -2330,14 +2322,6 @@ definitions:
         type: string
       sessionKey:
         type: string
-      shareID:
-        type: string
-      shareStatus:
-        type: string
-      sharedAt:
-        type: string
-        x-nullable: true
-        x-omitempty: false
       starredAt:
         type: string
         x-nullable: true
@@ -2357,7 +2341,6 @@ definitions:
     - labelsJSON
     - lastCompactedAt
     - lastResponseID
-    - lastShareAccessedAt
     - messageCount
     - model
     - projectID
@@ -2365,9 +2348,6 @@ definitions:
     - provider
     - publicID
     - sessionKey
-    - shareID
-    - shareStatus
-    - sharedAt
     - starredAt
     - status
     - title
@@ -2456,51 +2436,6 @@ definitions:
     - status
     - title
     - updatedAt
-    type: object
-  ConversationShareResponse:
-    properties:
-      createdAt:
-        type: string
-      lastAccessedAt:
-        type: string
-        x-nullable: true
-        x-omitempty: false
-      messageCount:
-        type: integer
-      modelSnapshot:
-        type: string
-      revokedAt:
-        type: string
-        x-nullable: true
-        x-omitempty: false
-      shareID:
-        type: string
-      status:
-        type: string
-      titleSnapshot:
-        type: string
-      updatedAt:
-        type: string
-    required:
-    - createdAt
-    - lastAccessedAt
-    - messageCount
-    - modelSnapshot
-    - revokedAt
-    - shareID
-    - status
-    - titleSnapshot
-    - updatedAt
-    type: object
-  ConversationShareResponseDoc:
-    properties:
-      data:
-        $ref: '#/definitions/ConversationShareResponse'
-      errorMsg:
-        type: string
-    required:
-    - data
-    - errorMsg
     type: object
   ConversationToolCallDetailResponse:
     properties:
@@ -2643,14 +2578,6 @@ definitions:
       title:
         maxLength: 255
         type: string
-    type: object
-  CreateConversationShareRequest:
-    properties:
-      defaultMessagePublicIDs:
-        items:
-          type: string
-        maxItems: 1000
-        type: array
     type: object
   CreateModelDisplayGroupRequest:
     properties:
@@ -6717,137 +6644,6 @@ definitions:
     - start
     - weekdays
     type: object
-  PublicSharedConversationResponse:
-    properties:
-      createdAt:
-        type: string
-      defaultMessagePublicIDs:
-        items:
-          type: string
-        type: array
-      lastAccessedAt:
-        type: string
-        x-nullable: true
-        x-omitempty: false
-      messages:
-        items:
-          $ref: '#/definitions/PublicSharedMessageResponse'
-        type: array
-      model:
-        type: string
-      shareID:
-        type: string
-      title:
-        type: string
-      uiComponentsEnabled:
-        description: UIComponentsEnabled 为 false 时，分享页不渲染 deeix-ui 组件块。
-        type: boolean
-    required:
-    - createdAt
-    - defaultMessagePublicIDs
-    - lastAccessedAt
-    - messages
-    - model
-    - shareID
-    - title
-    - uiComponentsEnabled
-    type: object
-  PublicSharedConversationResponseDoc:
-    properties:
-      data:
-        $ref: '#/definitions/PublicSharedConversationResponse'
-      errorMsg:
-        type: string
-    required:
-    - data
-    - errorMsg
-    type: object
-  PublicSharedMessageResponse:
-    properties:
-      attachments:
-        type: string
-      branchReason:
-        type: string
-      cacheReadTokens:
-        type: integer
-      cacheWriteTokens:
-        type: integer
-      content:
-        type: string
-      contentType:
-        type: string
-      createdAt:
-        type: string
-      editedAt:
-        type: string
-        x-nullable: true
-        x-omitempty: false
-      errorCode:
-        type: string
-      errorMessage:
-        type: string
-      inputTokens:
-        type: integer
-      latencyMS:
-        type: integer
-      modelIcon:
-        type: string
-      modelVendor:
-        type: string
-      outputTokens:
-        type: integer
-      parentPublicID:
-        type: string
-      platformModelName:
-        type: string
-      processTrace:
-        $ref: '#/definitions/MessageProcessTraceResponse'
-      publicID:
-        type: string
-      reasoningTokens:
-        type: integer
-      role:
-        type: string
-      runID:
-        type: string
-      sourcePublicID:
-        type: string
-      status:
-        type: string
-      tokenUsage:
-        type: integer
-      updatedAt:
-        type: string
-      upstreamModelName:
-        type: string
-    required:
-    - attachments
-    - branchReason
-    - cacheReadTokens
-    - cacheWriteTokens
-    - content
-    - contentType
-    - createdAt
-    - editedAt
-    - errorCode
-    - errorMessage
-    - inputTokens
-    - latencyMS
-    - modelIcon
-    - modelVendor
-    - outputTokens
-    - parentPublicID
-    - platformModelName
-    - publicID
-    - reasoningTokens
-    - role
-    - runID
-    - sourcePublicID
-    - status
-    - tokenUsage
-    - updatedAt
-    - upstreamModelName
-    type: object
   RedeemCodeRequest:
     properties:
       code:
@@ -7272,31 +7068,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/ResetUserTwoFactorResponse'
-      errorMsg:
-        type: string
-    required:
-    - data
-    - errorMsg
-    type: object
-  RevokeConversationSharesRequest:
-    properties:
-      conversationPublicIDs:
-        items:
-          type: string
-        maxItems: 1000
-        type: array
-    type: object
-  RevokeConversationSharesResponse:
-    properties:
-      revoked:
-        type: boolean
-    required:
-    - revoked
-    type: object
-  RevokeConversationSharesResponseDoc:
-    properties:
-      data:
-        $ref: '#/definitions/RevokeConversationSharesResponse'
       errorMsg:
         type: string
     required:
@@ -17022,10 +16793,6 @@ paths:
         in: query
         name: starred
         type: string
-      - description: '分享筛选: all|shared|unshared'
-        in: query
-        name: share
-        type: string
       - description: '项目筛选: all|unassigned|项目 public_id'
         in: query
         name: project
@@ -17866,154 +17633,6 @@ paths:
       summary: 查询会话运行日志
       tags:
       - chat
-  /conversations/{id}/share:
-    delete:
-      consumes:
-      - application/json
-      description: 关闭当前会话的有效公开分享链接
-      parameters:
-      - description: 会话 public_id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/ConversationShareResponseDoc'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-      security:
-      - BearerAuth: []
-      summary: 关闭会话公开分享
-      tags:
-      - chat
-    get:
-      consumes:
-      - application/json
-      description: 查询当前用户指定会话的最近分享状态
-      parameters:
-      - description: 会话 public_id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/ConversationShareResponseDoc'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-      security:
-      - BearerAuth: []
-      summary: 查询会话分享状态
-      tags:
-      - chat
-    post:
-      consumes:
-      - application/json
-      description: 创建当前会话全部分支的公开快照分享链接
-      parameters:
-      - description: 会话 public_id
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: 分享参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/CreateConversationShareRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/ConversationShareResponseDoc'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-      security:
-      - BearerAuth: []
-      summary: 创建会话公开分享
-      tags:
-      - chat
-  /conversations/{id}/share/regenerate:
-    post:
-      consumes:
-      - application/json
-      description: 关闭当前有效分享并创建新的公开快照链接
-      parameters:
-      - description: 会话 public_id
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: 分享参数
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/CreateConversationShareRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/ConversationShareResponseDoc'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-      security:
-      - BearerAuth: []
-      summary: 重新生成会话分享链接
-      tags:
-      - chat
   /conversations/{id}/star:
     patch:
       consumes:
@@ -18243,42 +17862,6 @@ paths:
       security:
       - BearerAuth: []
       summary: 搜索会话
-      tags:
-      - chat
-  /conversations/shares/revoke:
-    post:
-      consumes:
-      - application/json
-      description: 批量关闭当前用户会话的公开分享链接
-      parameters:
-      - description: 批量关闭参数
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/RevokeConversationSharesRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/RevokeConversationSharesResponseDoc'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-      security:
-      - BearerAuth: []
-      summary: 批量关闭会话公开分享
       tags:
       - chat
   /files:
@@ -20130,114 +19713,6 @@ paths:
       summary: 查询模型 options 透传策略
       tags:
       - settings
-  /shared-conversations/{share_id}:
-    get:
-      consumes:
-      - application/json
-      description: 公开读取会话分享快照
-      parameters:
-      - description: 分享 ID
-        in: path
-        name: share_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/PublicSharedConversationResponseDoc'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-      summary: 查询公开分享会话
-      tags:
-      - chat
-  /shared-conversations/{share_id}/clone:
-    post:
-      consumes:
-      - application/json
-      description: 将公开分享快照克隆到当前登录用户账户，包含全部分支消息和分享内附件
-      parameters:
-      - description: 分享 ID
-        in: path
-        name: share_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/ConversationUpdateResponseDoc'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-      security:
-      - BearerAuth: []
-      summary: 克隆公开分享会话
-      tags:
-      - chat
-  /shared-conversations/{share_id}/files/{file_id}/content:
-    get:
-      description: 只允许读取公开分享快照中实际引用的附件内容
-      parameters:
-      - description: 分享 ID
-        in: path
-        name: share_id
-        required: true
-        type: string
-      - description: 文件 ID
-        in: path
-        name: file_id
-        required: true
-        type: string
-      produces:
-      - application/octet-stream
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: file
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/ConversationErrorDoc'
-      summary: 获取公开分享附件内容
-      tags:
-      - chat
   /skills:
     get:
       consumes:

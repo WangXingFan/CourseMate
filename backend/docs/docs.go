@@ -10317,12 +10317,6 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "分享筛选: all|shared|unshared",
-                        "name": "share",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
                         "description": "项目筛选: all|unassigned|项目 public_id",
                         "name": "project",
                         "in": "query"
@@ -10568,63 +10562,6 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    }
-                }
-            }
-        },
-        "/conversations/shares/revoke": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "批量关闭当前用户会话的公开分享链接",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "chat"
-                ],
-                "summary": "批量关闭会话公开分享",
-                "parameters": [
-                    {
-                        "description": "批量关闭参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/RevokeConversationSharesRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/RevokeConversationSharesResponseDoc"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/ConversationErrorDoc"
                         }
@@ -11833,238 +11770,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/ConversationRunListResponseDoc"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    }
-                }
-            }
-        },
-        "/conversations/{id}/share": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "查询当前用户指定会话的最近分享状态",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "chat"
-                ],
-                "summary": "查询会话分享状态",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "会话 public_id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationShareResponseDoc"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "创建当前会话全部分支的公开快照分享链接",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "chat"
-                ],
-                "summary": "创建会话公开分享",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "会话 public_id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "分享参数",
-                        "name": "body",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/CreateConversationShareRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationShareResponseDoc"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "关闭当前会话的有效公开分享链接",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "chat"
-                ],
-                "summary": "关闭会话公开分享",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "会话 public_id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationShareResponseDoc"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    }
-                }
-            }
-        },
-        "/conversations/{id}/share/regenerate": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "关闭当前有效分享并创建新的公开快照链接",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "chat"
-                ],
-                "summary": "重新生成会话分享链接",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "会话 public_id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "分享参数",
-                        "name": "body",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/CreateConversationShareRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationShareResponseDoc"
                         }
                     },
                     "400": {
@@ -15197,171 +14902,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/shared-conversations/{share_id}": {
-            "get": {
-                "description": "公开读取会话分享快照",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "chat"
-                ],
-                "summary": "查询公开分享会话",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "分享 ID",
-                        "name": "share_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/PublicSharedConversationResponseDoc"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    }
-                }
-            }
-        },
-        "/shared-conversations/{share_id}/clone": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "将公开分享快照克隆到当前登录用户账户，包含全部分支消息和分享内附件",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "chat"
-                ],
-                "summary": "克隆公开分享会话",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "分享 ID",
-                        "name": "share_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationUpdateResponseDoc"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    }
-                }
-            }
-        },
-        "/shared-conversations/{share_id}/files/{file_id}/content": {
-            "get": {
-                "description": "只允许读取公开分享快照中实际引用的附件内容",
-                "produces": [
-                    "application/octet-stream"
-                ],
-                "tags": [
-                    "chat"
-                ],
-                "summary": "获取公开分享附件内容",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "分享 ID",
-                        "name": "share_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "文件 ID",
-                        "name": "file_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "file"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/ConversationErrorDoc"
-                        }
-                    }
-                }
-            }
-        },
         "/skills": {
             "get": {
                 "security": [
@@ -17859,7 +17399,6 @@ const docTemplate = `{
                 "identityProviders",
                 "multiUser",
                 "registration",
-                "sharing",
                 "usageMetering"
             ],
             "properties": {
@@ -17885,10 +17424,6 @@ const docTemplate = `{
                 },
                 "registration": {
                     "description": "Registration 可自行注册账号。",
-                    "type": "boolean"
-                },
-                "sharing": {
-                    "description": "Sharing 对话公开分享链接；只监听回环的服务器没有可分享的对象。",
                     "type": "boolean"
                 },
                 "usageMetering": {
@@ -19491,7 +19026,6 @@ const docTemplate = `{
                 "labelsJSON",
                 "lastCompactedAt",
                 "lastResponseID",
-                "lastShareAccessedAt",
                 "messageCount",
                 "model",
                 "projectID",
@@ -19499,9 +19033,6 @@ const docTemplate = `{
                 "provider",
                 "publicID",
                 "sessionKey",
-                "shareID",
-                "shareStatus",
-                "sharedAt",
                 "starredAt",
                 "status",
                 "title",
@@ -19529,11 +19060,6 @@ const docTemplate = `{
                 "lastResponseID": {
                     "type": "string"
                 },
-                "lastShareAccessedAt": {
-                    "type": "string",
-                    "x-nullable": true,
-                    "x-omitempty": false
-                },
                 "messageCount": {
                     "type": "integer"
                 },
@@ -19554,17 +19080,6 @@ const docTemplate = `{
                 },
                 "sessionKey": {
                     "type": "string"
-                },
-                "shareID": {
-                    "type": "string"
-                },
-                "shareStatus": {
-                    "type": "string"
-                },
-                "sharedAt": {
-                    "type": "string",
-                    "x-nullable": true,
-                    "x-omitempty": false
                 },
                 "starredAt": {
                     "type": "string",
@@ -19702,68 +19217,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "ConversationShareResponse": {
-            "type": "object",
-            "required": [
-                "createdAt",
-                "lastAccessedAt",
-                "messageCount",
-                "modelSnapshot",
-                "revokedAt",
-                "shareID",
-                "status",
-                "titleSnapshot",
-                "updatedAt"
-            ],
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "lastAccessedAt": {
-                    "type": "string",
-                    "x-nullable": true,
-                    "x-omitempty": false
-                },
-                "messageCount": {
-                    "type": "integer"
-                },
-                "modelSnapshot": {
-                    "type": "string"
-                },
-                "revokedAt": {
-                    "type": "string",
-                    "x-nullable": true,
-                    "x-omitempty": false
-                },
-                "shareID": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "titleSnapshot": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "ConversationShareResponseDoc": {
-            "type": "object",
-            "required": [
-                "data",
-                "errorMsg"
-            ],
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/ConversationShareResponse"
-                },
-                "errorMsg": {
                     "type": "string"
                 }
             }
@@ -19964,18 +19417,6 @@ const docTemplate = `{
                 "title": {
                     "type": "string",
                     "maxLength": 255
-                }
-            }
-        },
-        "CreateConversationShareRequest": {
-            "type": "object",
-            "properties": {
-                "defaultMessagePublicIDs": {
-                    "type": "array",
-                    "maxItems": 1000,
-                    "items": {
-                        "type": "string"
-                    }
                 }
             }
         },
@@ -25771,185 +25212,6 @@ const docTemplate = `{
                 }
             }
         },
-        "PublicSharedConversationResponse": {
-            "type": "object",
-            "required": [
-                "createdAt",
-                "defaultMessagePublicIDs",
-                "lastAccessedAt",
-                "messages",
-                "model",
-                "shareID",
-                "title",
-                "uiComponentsEnabled"
-            ],
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "defaultMessagePublicIDs": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "lastAccessedAt": {
-                    "type": "string",
-                    "x-nullable": true,
-                    "x-omitempty": false
-                },
-                "messages": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/PublicSharedMessageResponse"
-                    }
-                },
-                "model": {
-                    "type": "string"
-                },
-                "shareID": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "uiComponentsEnabled": {
-                    "description": "UIComponentsEnabled 为 false 时，分享页不渲染 deeix-ui 组件块。",
-                    "type": "boolean"
-                }
-            }
-        },
-        "PublicSharedConversationResponseDoc": {
-            "type": "object",
-            "required": [
-                "data",
-                "errorMsg"
-            ],
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/PublicSharedConversationResponse"
-                },
-                "errorMsg": {
-                    "type": "string"
-                }
-            }
-        },
-        "PublicSharedMessageResponse": {
-            "type": "object",
-            "required": [
-                "attachments",
-                "branchReason",
-                "cacheReadTokens",
-                "cacheWriteTokens",
-                "content",
-                "contentType",
-                "createdAt",
-                "editedAt",
-                "errorCode",
-                "errorMessage",
-                "inputTokens",
-                "latencyMS",
-                "modelIcon",
-                "modelVendor",
-                "outputTokens",
-                "parentPublicID",
-                "platformModelName",
-                "publicID",
-                "reasoningTokens",
-                "role",
-                "runID",
-                "sourcePublicID",
-                "status",
-                "tokenUsage",
-                "updatedAt",
-                "upstreamModelName"
-            ],
-            "properties": {
-                "attachments": {
-                    "type": "string"
-                },
-                "branchReason": {
-                    "type": "string"
-                },
-                "cacheReadTokens": {
-                    "type": "integer"
-                },
-                "cacheWriteTokens": {
-                    "type": "integer"
-                },
-                "content": {
-                    "type": "string"
-                },
-                "contentType": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "editedAt": {
-                    "type": "string",
-                    "x-nullable": true,
-                    "x-omitempty": false
-                },
-                "errorCode": {
-                    "type": "string"
-                },
-                "errorMessage": {
-                    "type": "string"
-                },
-                "inputTokens": {
-                    "type": "integer"
-                },
-                "latencyMS": {
-                    "type": "integer"
-                },
-                "modelIcon": {
-                    "type": "string"
-                },
-                "modelVendor": {
-                    "type": "string"
-                },
-                "outputTokens": {
-                    "type": "integer"
-                },
-                "parentPublicID": {
-                    "type": "string"
-                },
-                "platformModelName": {
-                    "type": "string"
-                },
-                "processTrace": {
-                    "$ref": "#/definitions/MessageProcessTraceResponse"
-                },
-                "publicID": {
-                    "type": "string"
-                },
-                "reasoningTokens": {
-                    "type": "integer"
-                },
-                "role": {
-                    "type": "string"
-                },
-                "runID": {
-                    "type": "string"
-                },
-                "sourcePublicID": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "tokenUsage": {
-                    "type": "integer"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "upstreamModelName": {
-                    "type": "string"
-                }
-            }
-        },
         "RedeemCodeRequest": {
             "type": "object",
             "required": [
@@ -26562,44 +25824,6 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/ResetUserTwoFactorResponse"
-                },
-                "errorMsg": {
-                    "type": "string"
-                }
-            }
-        },
-        "RevokeConversationSharesRequest": {
-            "type": "object",
-            "properties": {
-                "conversationPublicIDs": {
-                    "type": "array",
-                    "maxItems": 1000,
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "RevokeConversationSharesResponse": {
-            "type": "object",
-            "required": [
-                "revoked"
-            ],
-            "properties": {
-                "revoked": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "RevokeConversationSharesResponseDoc": {
-            "type": "object",
-            "required": [
-                "data",
-                "errorMsg"
-            ],
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/RevokeConversationSharesResponse"
                 },
                 "errorMsg": {
                     "type": "string"
