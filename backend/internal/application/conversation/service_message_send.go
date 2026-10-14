@@ -560,6 +560,11 @@ func (s *Service) sendMessageInternal(
 		// 知识库功能已被后台关闭：视同未选择知识库，检索与后续“知识库未命中/不可用”的
 		// 判定、提示一并跳过，避免存量引用阻塞发送或注入误导性提示。
 		input.KnowledgeBaseIDs = nil
+	} else if len(input.KnowledgeBaseIDs) == 0 {
+		// 学生未手动选择知识库：套用后台配置的默认检索范围。
+		// 默认范围与显式选择走同一解析路径，因此已禁用或不存在的知识库会在此处被拒绝，
+		// 不会静默退化为“无知识库”聊天。
+		input.KnowledgeBaseIDs = cfg.DefaultKnowledgeBaseIDs()
 	}
 	knowledgeBaseFiles, err := s.resolveKnowledgeBaseRAGFiles(
 		ctx,
