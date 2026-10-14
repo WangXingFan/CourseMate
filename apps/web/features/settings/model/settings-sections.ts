@@ -2,11 +2,12 @@ import type { Feature } from "@deeix/core";
 
 // Which server capability a section depends on, if any. The sidebar and the
 // route guard both read this table (docs/ARCHITECTURE.md §4).
+//
+// This branch serves a student knowledge-base Q&A deployment: subscription and
+// private-upstream settings are intentionally absent.
 export const SETTINGS_SECTIONS = [
   { id: "general", labelKey: "general", href: "/general" },
   { id: "chat", labelKey: "chat", href: "/chat" },
-  { id: "upstreams", labelKey: "upstreams", href: "/upstreams" },
-  { id: "subscription", labelKey: "subscription", href: "/subscription", feature: "billingGating" },
   { id: "account", labelKey: "account", href: "/account" },
   { id: "about", labelKey: "about", href: "/about" },
 ] as const satisfies readonly { id: string; labelKey: string; href: string; feature?: Feature }[];
