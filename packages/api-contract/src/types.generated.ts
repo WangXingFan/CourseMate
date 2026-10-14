@@ -1776,28 +1776,36 @@ export interface IdentityProviderResponseDoc {
   errorMsg: string;
 }
 
-export interface ImportOpenWebUIUsersRequest {
-  creditMultiplier: number;
-  dryRun?: boolean;
-  /** @maxLength 2048 */
-  dsn: string;
+export interface ImportRosterUsersCredentialResponse {
+  displayName: string;
+  initialPassword: string;
+  username: string;
 }
 
-export interface ImportOpenWebUIUsersResponse {
-  dedupeField: string;
-  dedupeRule: string;
+export interface ImportRosterUsersResponse {
+  credentials?: ImportRosterUsersCredentialResponse[];
+  failed: number;
   imported: number;
-  scanned: number;
-  skippedDuplicateSourceEmail: number;
-  skippedExistingEmail: number;
-  skippedInvalidEmail: number;
-  skippedInvalidRow: number;
-  source: string;
+  invalid: number;
+  ready: number;
+  rows: ImportRosterUsersRowResponse[];
+  skipped: number;
+  total: number;
+  truncated: boolean;
 }
 
-export interface ImportOpenWebUIUsersResponseDoc {
-  data: ImportOpenWebUIUsersResponse;
+export interface ImportRosterUsersResponseDoc {
+  data: ImportRosterUsersResponse;
   errorMsg: string;
+}
+
+export interface ImportRosterUsersRowResponse {
+  displayName: string;
+  email: string;
+  line: number;
+  message: string;
+  status: string;
+  username: string;
 }
 
 export interface ImportUpstreamModelItemRequest {
@@ -7904,19 +7912,27 @@ export namespace Admin {
   }
 
   /**
-   * @description 从 OpenWebUI SQLite 或 PostgreSQL 数据库读取用户，按 email 去重导入；已存在用户不会修改
+   * @description 上传 UTF-8 CSV 名单（列为 username,displayName,email），可先预览校验再正式创建学生账号；正式导入返回一次性初始密码，已存在用户默认跳过且不覆盖
    * @tags admin
-   * @name UsersImportOpenwebuiCreate
-   * @summary 管理员导入 OpenWebUI 用户
-   * @request POST:/admin/users/import/openwebui
+   * @name UsersImportRosterCreate
+   * @summary 管理员导入学生名单
+   * @request POST:/admin/users/import/roster
    * @secure
    */
-  export namespace UsersImportOpenwebuiCreate {
+  export namespace UsersImportRosterCreate {
     export type RequestParams = {};
     export type RequestQuery = {};
-    export type RequestBody = ImportOpenWebUIUsersRequest;
+    export type RequestBody = {
+      /** 仅预览校验，不写入账号 */
+      dryRun?: boolean;
+      /**
+       * UTF-8 CSV 名单，表头为 username,displayName,email
+       * @format binary
+       */
+      file: File;
+    };
     export type RequestHeaders = {};
-    export type ResponseBody = ImportOpenWebUIUsersResponseDoc;
+    export type ResponseBody = ImportRosterUsersResponseDoc;
   }
 
   /**

@@ -3996,59 +3996,84 @@ definitions:
     - data
     - errorMsg
     type: object
-  ImportOpenWebUIUsersRequest:
+  ImportRosterUsersCredentialResponse:
     properties:
-      creditMultiplier:
-        type: number
-      dryRun:
-        type: boolean
-      dsn:
-        maxLength: 2048
+      displayName:
+        type: string
+      initialPassword:
+        type: string
+      username:
         type: string
     required:
-    - creditMultiplier
-    - dsn
+    - displayName
+    - initialPassword
+    - username
     type: object
-  ImportOpenWebUIUsersResponse:
+  ImportRosterUsersResponse:
     properties:
-      dedupeField:
-        type: string
-      dedupeRule:
-        type: string
+      credentials:
+        items:
+          $ref: '#/definitions/ImportRosterUsersCredentialResponse'
+        type: array
+      failed:
+        type: integer
       imported:
         type: integer
-      scanned:
+      invalid:
         type: integer
-      skippedDuplicateSourceEmail:
+      ready:
         type: integer
-      skippedExistingEmail:
+      rows:
+        items:
+          $ref: '#/definitions/ImportRosterUsersRowResponse'
+        type: array
+      skipped:
         type: integer
-      skippedInvalidEmail:
+      total:
         type: integer
-      skippedInvalidRow:
-        type: integer
-      source:
-        type: string
+      truncated:
+        type: boolean
     required:
-    - dedupeField
-    - dedupeRule
+    - failed
     - imported
-    - scanned
-    - skippedDuplicateSourceEmail
-    - skippedExistingEmail
-    - skippedInvalidEmail
-    - skippedInvalidRow
-    - source
+    - invalid
+    - ready
+    - rows
+    - skipped
+    - total
+    - truncated
     type: object
-  ImportOpenWebUIUsersResponseDoc:
+  ImportRosterUsersResponseDoc:
     properties:
       data:
-        $ref: '#/definitions/ImportOpenWebUIUsersResponse'
+        $ref: '#/definitions/ImportRosterUsersResponse'
       errorMsg:
         type: string
     required:
     - data
     - errorMsg
+    type: object
+  ImportRosterUsersRowResponse:
+    properties:
+      displayName:
+        type: string
+      email:
+        type: string
+      line:
+        type: integer
+      message:
+        type: string
+      status:
+        type: string
+      username:
+        type: string
+    required:
+    - displayName
+    - email
+    - line
+    - message
+    - status
+    - username
     type: object
   ImportUpstreamModelItemRequest:
     properties:
@@ -16290,25 +16315,28 @@ paths:
       summary: 管理员更新用户状态
       tags:
       - admin
-  /admin/users/import/openwebui:
+  /admin/users/import/roster:
     post:
       consumes:
-      - application/json
-      description: 从 OpenWebUI SQLite 或 PostgreSQL 数据库读取用户，按 email 去重导入；已存在用户不会修改
+      - multipart/form-data
+      description: 上传 UTF-8 CSV 名单（列为 username,displayName,email），可先预览校验再正式创建学生账号；正式导入返回一次性初始密码，已存在用户默认跳过且不覆盖
       parameters:
-      - description: OpenWebUI 导入参数
-        in: body
-        name: body
+      - description: UTF-8 CSV 名单，表头为 username,displayName,email
+        in: formData
+        name: file
         required: true
-        schema:
-          $ref: '#/definitions/ImportOpenWebUIUsersRequest'
+        type: file
+      - description: 仅预览校验，不写入账号
+        in: formData
+        name: dryRun
+        type: boolean
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/ImportOpenWebUIUsersResponseDoc'
+            $ref: '#/definitions/ImportRosterUsersResponseDoc'
         "400":
           description: Bad Request
           schema:
@@ -16317,13 +16345,17 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/AdminErrorDoc'
+        "413":
+          description: Request Entity Too Large
+          schema:
+            $ref: '#/definitions/AdminErrorDoc'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/AdminErrorDoc'
       security:
       - BearerAuth: []
-      summary: 管理员导入 OpenWebUI 用户
+      summary: 管理员导入学生名单
       tags:
       - admin
   /announcements:
