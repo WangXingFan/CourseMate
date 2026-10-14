@@ -46,7 +46,6 @@ func TestGetFeaturePolicyReturnsDesktopDownloadEntry(t *testing.T) {
 	}
 }
 
-func TestGetFeaturePolicyHidesDesktopDownloadEntry(t *testing.T) {
 func TestGetFeaturePolicyReturnsDefaultKnowledgeBaseIDs(t *testing.T) {
 	data := getFeaturePolicyForTest(t, config.Config{
 		KnowledgeBaseEnabled:    true,
