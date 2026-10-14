@@ -1,16 +1,20 @@
 name: API contract
 
 # Manual maintenance job: regenerate backend Swagger and the TypeScript API
-# contract from the Go handler annotations, then push the result back to the
-# triggering branch. The Web CI job verifies freshness with `generate.mjs
-# --check`, which needs a Go toolchain, so this keeps the generated files
-# authoritative without requiring a local Go install.
+# contract from the Go handler annotations and publish them on a dedicated
+# side branch. The Web CI job verifies freshness with `generate.mjs --check`,
+# which needs a Go toolchain, so this keeps the generated files authoritative
+# without requiring a local Go install. Merge the side branch into the working
+# branch together with the handler changes so a single push stays green.
 
 on:
   workflow_dispatch:
 
 permissions:
   contents: write
+
+env:
+  OUTPUT_BRANCH: regen/api-contract
 
 concurrency:
   group: api-contract-${{ github.ref }}
@@ -40,14 +44,15 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Regenerate API contract
         run: pnpm api:generate
-      - name: Commit and push
+      - name: Publish to side branch
         run: |
-          if [[ -z "$(git status --porcelain)" ]]; then
-            echo "API contract already up to date."
-            exit 0
-          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add backend/docs packages/api-contract/src/types.generated.ts
-          git commit -m "chore: regenerate api contract"
-          git push origin "HEAD:${{ github.ref_name }}"
+          if git diff --cached --quiet; then
+            echo "API contract already up to date."
+            git commit --allow-empty -m "chore: regenerate api contract"
+          else
+            git commit -m "chore: regenerate api contract"
+          fi
+          git push --force origin "HEAD:refs/heads/${{ env.OUTPUT_BRANCH }}"
