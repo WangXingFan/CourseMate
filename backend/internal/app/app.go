@@ -54,7 +54,6 @@ import (
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/objectstorage"
 	platformlogger "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/observability/logger"
 	platformtracing "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/observability/tracing"
-	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/openwebui"
 	epaypayment "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/payment/epay"
 	stripepayment "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/payment/stripe"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence"
@@ -442,7 +441,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	adminService.SetConversationEventService(conversationService)
 	adminService.SetLogCleanupService(logCleanupService)
 	adminService.SetSubscriptionResolver(billingService)
-	adminService.SetOpenWebUIRowLoader(openwebui.NewRowLoader())
 	adminService.SetPermissionGroupRepo(channelRepo)
 	adminService.SetPermissionGroupModelLookup(channelRepo)
 	adminService.SetPermissionGroupBillingPlanReferenceChecker(billingService)

@@ -426,40 +426,84 @@ func TestDeletePermissionGroupRejectsBillingPlanReference(t *testing.T) {
 	}
 }
 
-func TestImportOpenWebUIUsersRequiresRowLoader(t *testing.T) {
+func TestImportRosterDryRunValidatesWithoutWriting(t *testing.T) {
 	service := NewService(newAdminUserServiceFake(map[uint]domainuser.User{
 		1: {ID: 1, Role: domainuser.RoleAdmin},
 	}), auditServiceFake{})
+	csv := "username,displayName,email\n" +
+		"s20260001,Student 01,\n" +
+		"s20260001,Student Duplicate,s1@example.edu\n" +
+		"bad name!,Student 02,student02@example.edu\n" +
+		"s20260003,Student 03,not-an-email\n"
 
-	_, err := service.ImportOpenWebUIUsers(
+	result, err := service.ImportRoster(
 		context.Background(),
 		"req_1",
 		1,
-		OpenWebUIImportInput{DSN: "sqlite:///tmp/openwebui.db", CreditMultiplier: 1},
+		RosterImportInput{CSV: []byte(csv), DryRun: true},
 		"127.0.0.1",
 		"test",
 	)
-	if !errors.Is(err, ErrOpenWebUIImportFailed) {
-		t.Fatalf("expected missing row loader to fail import, got %v", err)
+	if err != nil {
+		t.Fatalf("dry run should not fail: %v", err)
+	}
+	if result.Total != 4 || result.Ready != 1 || result.Imported != 0 {
+		t.Fatalf("unexpected dry run summary: %+v", result)
+	}
+	if len(result.Credentials) != 0 {
+		t.Fatalf("dry run must not return credentials, got %d", len(result.Credentials))
+	}
+	if result.Skipped != 0 || result.Invalid != 3 {
+		t.Fatalf("expected 3 invalid rows and no skips, got %+v", result)
 	}
 }
 
-func TestImportOpenWebUIUsersMapsInvalidLoaderInputToDSNError(t *testing.T) {
+func TestImportRosterRejectsUnexpectedHeader(t *testing.T) {
 	service := NewService(newAdminUserServiceFake(map[uint]domainuser.User{
 		1: {ID: 1, Role: domainuser.RoleAdmin},
 	}), auditServiceFake{})
-	service.SetOpenWebUIRowLoader(openWebUIRowLoaderFake{err: repository.ErrInvalidInput})
 
-	_, err := service.ImportOpenWebUIUsers(
+	_, err := service.ImportRoster(
 		context.Background(),
 		"req_1",
 		1,
-		OpenWebUIImportInput{DSN: "bad", CreditMultiplier: 1},
+		RosterImportInput{CSV: []byte("name,email\nStudent,student@example.edu\n"), DryRun: true},
 		"127.0.0.1",
 		"test",
 	)
-	if !errors.Is(err, ErrInvalidImportDSN) {
-		t.Fatalf("expected invalid loader input to map to DSN error, got %v", err)
+	if !errors.Is(err, ErrInvalidRosterHeader) {
+		t.Fatalf("expected invalid header error, got %v", err)
+	}
+}
+
+func TestImportRosterSkipsExistingUsernameAndReturnsCredentials(t *testing.T) {
+	service := NewService(newAdminUserServiceFake(map[uint]domainuser.User{
+		1: {ID: 1, Role: domainuser.RoleAdmin},
+		2: {ID: 2, Role: domainuser.RoleUser, Username: "s20260001"},
+	}), auditServiceFake{})
+	csv := "username,displayName,email\n" +
+		"s20260001,Existing Student,\n" +
+		"s20260002,New Student,student02@example.edu\n"
+
+	result, err := service.ImportRoster(
+		context.Background(),
+		"req_1",
+		1,
+		RosterImportInput{CSV: []byte(csv)},
+		"127.0.0.1",
+		"test",
+	)
+	if err != nil {
+		t.Fatalf("import should not fail: %v", err)
+	}
+	if result.Imported != 1 || result.Skipped != 1 {
+		t.Fatalf("unexpected import summary: %+v", result)
+	}
+	if len(result.Credentials) != 1 || result.Credentials[0].Username != "s20260002" {
+		t.Fatalf("expected one credential for the new account, got %+v", result.Credentials)
+	}
+	if result.Credentials[0].InitialPassword == "" {
+		t.Fatal("expected a generated initial password")
 	}
 }
 
@@ -739,18 +783,8 @@ func (f permissionGroupBillingPlanReferenceCheckerFake) CountPlansWithPermission
 	return f.count, f.err
 }
 
-type openWebUIRowLoaderFake struct {
-	rows []repository.OpenWebUIUserRow
-	err  error
-}
-
-func (f openWebUIRowLoaderFake) LoadOpenWebUIRows(context.Context, string) ([]repository.OpenWebUIUserRow, error) {
-	return f.rows, f.err
-}
-
 var _ userService = (*adminUserServiceFake)(nil)
-var _ openWebUIImportUserService = (*adminUserServiceFake)(nil)
-var _ openWebUIRowLoader = openWebUIRowLoaderFake{}
+var _ rosterImportUserService = (*adminUserServiceFake)(nil)
 var _ auditService = auditServiceFake{}
 var _ subscriptionResolver = subscriptionResolverFake{}
 var _ permissionGroupRepo = permissionGroupRepoFake{}

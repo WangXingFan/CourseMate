@@ -516,7 +516,7 @@ func (r *Repo) ImportUsersWithCredentialsAndBalances(ctx context.Context, record
 					Description:         strings.TrimSpace(record.BillingBalanceDescription),
 				}
 				if transaction.Description == "" {
-					transaction.Description = "OpenWebUI import"
+					transaction.Description = "Admin import"
 				}
 				if err := tx.Create(transaction).Error; err != nil {
 					return translateError(err)

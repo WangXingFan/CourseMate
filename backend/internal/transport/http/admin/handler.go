@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -168,55 +169,83 @@ func (h *Handler) CreateUser(c *gin.Context) {
 	response.Success(c, UserDataResponse{User: toUserResponse(view)})
 }
 
-// ImportOpenWebUIUsers godoc
-// @Summary 管理员导入 OpenWebUI 用户
-// @Description 从 OpenWebUI SQLite 或 PostgreSQL 数据库读取用户，按 email 去重导入；已存在用户不会修改
+// multipartImportOverheadBytes 为 multipart 边界与字段头预留固定开销。
+const multipartImportOverheadBytes = 1 << 20
+
+// ImportRosterUsers godoc
+// @Summary 管理员导入学生名单
+// @Description 上传 UTF-8 CSV 名单（列为 username,displayName,email），可先预览校验再正式创建学生账号；正式导入返回一次性初始密码，已存在用户默认跳过且不覆盖
 // @Tags admin
-// @Accept json
+// @Accept multipart/form-data
 // @Produce json
 // @Security BearerAuth
-// @Param body body ImportOpenWebUIUsersRequest true "OpenWebUI 导入参数"
-// @Success 200 {object} ImportOpenWebUIUsersResponseDoc
+// @Param file formData file true "UTF-8 CSV 名单，表头为 username,displayName,email"
+// @Param dryRun formData bool false "仅预览校验，不写入账号"
+// @Success 200 {object} ImportRosterUsersResponseDoc
 // @Failure 400 {object} ErrorDoc
 // @Failure 403 {object} ErrorDoc
+// @Failure 413 {object} ErrorDoc
 // @Failure 500 {object} ErrorDoc
-// @Router /admin/users/import/openwebui [post]
-func (h *Handler) ImportOpenWebUIUsers(c *gin.Context) {
+// @Router /admin/users/import/roster [post]
+func (h *Handler) ImportRosterUsers(c *gin.Context) {
 	actorUserID := middleware.MustUserID(c)
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, appadmin.RosterMaxBytes+multipartImportOverheadBytes)
 
-	var req ImportOpenWebUIUsersRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.InvalidRequestBody(c, err)
+	fileHeader, err := c.FormFile("file")
+	if err != nil {
+		response.ErrorFrom(c, http.StatusBadRequest, appadmin.ErrInvalidRosterCSV)
 		return
 	}
-	if req.CreditMultiplier == nil || *req.CreditMultiplier < 0 {
-		response.ErrorFrom(c, http.StatusBadRequest, appadmin.ErrInvalidImportMultiplier)
+	if fileHeader.Size > appadmin.RosterMaxBytes {
+		response.ErrorFrom(c, http.StatusRequestEntityTooLarge, appadmin.ErrRosterFileTooLarge)
+		return
+	}
+	reader, err := fileHeader.Open()
+	if err != nil {
+		response.ErrorFrom(c, http.StatusBadRequest, appadmin.ErrInvalidRosterCSV)
+		return
+	}
+	defer reader.Close() //nolint:errcheck
+	payload, err := io.ReadAll(io.LimitReader(reader, appadmin.RosterMaxBytes+1))
+	if err != nil {
+		response.ErrorFrom(c, http.StatusBadRequest, appadmin.ErrInvalidRosterCSV)
+		return
+	}
+	if int64(len(payload)) > appadmin.RosterMaxBytes {
+		response.ErrorFrom(c, http.StatusRequestEntityTooLarge, appadmin.ErrRosterFileTooLarge)
 		return
 	}
 
-	result, err := h.service.ImportOpenWebUIUsers(
+	dryRun := false
+	if raw := strings.TrimSpace(c.PostForm("dryRun")); raw != "" {
+		parsed, parseErr := strconv.ParseBool(raw)
+		if parseErr != nil {
+			response.InvalidRequestBody(c, parseErr)
+			return
+		}
+		dryRun = parsed
+	}
+
+	result, err := h.service.ImportRoster(
 		c.Request.Context(),
 		middleware.MustRequestID(c),
 		actorUserID,
-		appadmin.OpenWebUIImportInput{
-			DSN:              req.DSN,
-			CreditMultiplier: *req.CreditMultiplier,
-			DryRun:           req.DryRun,
-		},
+		appadmin.RosterImportInput{CSV: payload, DryRun: dryRun},
 		c.ClientIP(),
 		c.Request.UserAgent(),
 	)
 	if err != nil {
 		switch {
-		case errors.Is(err, appadmin.ErrInvalidImportDSN),
-			errors.Is(err, appadmin.ErrInvalidImportMultiplier):
+		case errors.Is(err, appadmin.ErrInvalidRosterCSV),
+			errors.Is(err, appadmin.ErrInvalidRosterHeader),
+			errors.Is(err, appadmin.ErrRosterTooManyRows):
 			response.ErrorFrom(c, http.StatusBadRequest, err)
+			return
+		case errors.Is(err, appadmin.ErrRosterFileTooLarge):
+			response.ErrorFrom(c, http.StatusRequestEntityTooLarge, err)
 			return
 		case errors.Is(err, appadmin.ErrAdminPermissionRequired):
 			response.ErrorFrom(c, http.StatusForbidden, err)
-			return
-		case errors.Is(err, appadmin.ErrOpenWebUIImportFailed):
-			response.InternalError(c)
 			return
 		default:
 			response.InternalError(c)
@@ -224,7 +253,9 @@ func (h *Handler) ImportOpenWebUIUsers(c *gin.Context) {
 		}
 	}
 
-	response.Success(c, toImportOpenWebUIUsersResponse(result))
+	// 初始密码是一次性敏感凭据，禁止任何中间层缓存。
+	c.Header("Cache-Control", "no-store")
+	response.Success(c, toImportRosterUsersResponse(result))
 }
 
 // PatchUser godoc

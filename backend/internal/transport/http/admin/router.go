@@ -24,7 +24,7 @@ func (m *Module) RegisterRoutes(adminGroup *gin.RouterGroup, gate middleware.Fea
 	multiUser := adminGroup.Group("", gate.Require("multiUser"))
 	multiUser.POST("/users", m.Handler.CreateUser)
 	multiUser.GET("/users", m.Handler.ListUsers)
-	multiUser.POST("/users/import/openwebui", m.Handler.ImportOpenWebUIUsers)
+	multiUser.POST("/users/import/roster", m.Handler.ImportRosterUsers)
 	multiUser.PATCH("/users/:id", m.Handler.PatchUser)
 	multiUser.PATCH("/users/:id/status", m.Handler.UpdateUserStatus)
 	multiUser.POST("/users/:id/reset-password", m.Handler.ResetUserPassword)

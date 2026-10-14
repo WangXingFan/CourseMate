@@ -57,13 +57,6 @@ type ResetUserPasswordRequest struct {
 	MustResetPassword *bool  `json:"mustResetPassword,omitempty"`
 }
 
-// ImportOpenWebUIUsersRequest 从 OpenWebUI 数据库导入用户请求。
-type ImportOpenWebUIUsersRequest struct {
-	DSN              string   `json:"dsn" binding:"required,max=2048"`
-	CreditMultiplier *float64 `json:"creditMultiplier" binding:"required"`
-	DryRun           bool     `json:"dryRun,omitempty"`
-}
-
 // CleanupLogsRequest 管理员日志清理请求。
 type CleanupLogsRequest struct {
 	Type   string `json:"type" binding:"required"`
@@ -183,19 +176,6 @@ type CleanupLogsResponse struct {
 	Type         string    `json:"type"`
 	Before       time.Time `json:"before"`
 	DeletedCount int64     `json:"deletedCount"`
-}
-
-// ImportOpenWebUIUsersResponse 从 OpenWebUI 导入用户响应。
-type ImportOpenWebUIUsersResponse struct {
-	Source                      string `json:"source"`
-	DedupeField                 string `json:"dedupeField"`
-	DedupeRule                  string `json:"dedupeRule"`
-	Scanned                     int    `json:"scanned"`
-	Imported                    int    `json:"imported"`
-	SkippedExistingEmail        int    `json:"skippedExistingEmail"`
-	SkippedDuplicateSourceEmail int    `json:"skippedDuplicateSourceEmail"`
-	SkippedInvalidEmail         int    `json:"skippedInvalidEmail"`
-	SkippedInvalidRow           int    `json:"skippedInvalidRow"`
 }
 
 // AuthEventResponse 认证事件响应。
@@ -586,10 +566,40 @@ type CleanupLogsResponseDoc struct {
 	Data     CleanupLogsResponse `json:"data"`
 }
 
-// ImportOpenWebUIUsersResponseDoc 从 OpenWebUI 导入用户响应。
-type ImportOpenWebUIUsersResponseDoc struct {
-	ErrorMsg string                       `json:"errorMsg"`
-	Data     ImportOpenWebUIUsersResponse `json:"data"`
+// ImportRosterUsersRowResponse 是名单导入中单行的处理结论。
+type ImportRosterUsersRowResponse struct {
+	Line        int    `json:"line"`
+	Username    string `json:"username"`
+	DisplayName string `json:"displayName"`
+	Email       string `json:"email"`
+	Status      string `json:"status"`
+	Message     string `json:"message"`
+}
+
+// ImportRosterUsersCredentialResponse 是正式导入后一次性返回的初始凭据。
+type ImportRosterUsersCredentialResponse struct {
+	Username        string `json:"username"`
+	DisplayName     string `json:"displayName"`
+	InitialPassword string `json:"initialPassword"`
+}
+
+// ImportRosterUsersResponse 学生名单导入结果。
+type ImportRosterUsersResponse struct {
+	Total       int                                   `json:"total"`
+	Ready       int                                   `json:"ready"`
+	Imported    int                                   `json:"imported"`
+	Skipped     int                                   `json:"skipped"`
+	Invalid     int                                   `json:"invalid"`
+	Failed      int                                   `json:"failed"`
+	Truncated   bool                                  `json:"truncated"`
+	Rows        []ImportRosterUsersRowResponse        `json:"rows"`
+	Credentials []ImportRosterUsersCredentialResponse `json:"credentials,omitempty"`
+}
+
+// ImportRosterUsersResponseDoc 学生名单导入响应。
+type ImportRosterUsersResponseDoc struct {
+	ErrorMsg string                    `json:"errorMsg"`
+	Data     ImportRosterUsersResponse `json:"data"`
 }
 
 // UserAuthEventListResponseDoc 用户认证事件分页响应。
@@ -721,20 +731,39 @@ func toUserIdentityProviderSummaryResponses(items []userview.IdentityProviderSum
 	return results
 }
 
-func toImportOpenWebUIUsersResponse(result *appadmin.OpenWebUIImportResult) ImportOpenWebUIUsersResponse {
+func toImportRosterUsersResponse(result *appadmin.RosterImportResult) ImportRosterUsersResponse {
 	if result == nil {
-		return ImportOpenWebUIUsersResponse{}
+		return ImportRosterUsersResponse{Rows: []ImportRosterUsersRowResponse{}}
 	}
-	return ImportOpenWebUIUsersResponse{
-		Source:                      result.Source,
-		DedupeField:                 result.DedupeField,
-		DedupeRule:                  result.DedupeRule,
-		Scanned:                     result.Scanned,
-		Imported:                    result.Imported,
-		SkippedExistingEmail:        result.SkippedExistingEmail,
-		SkippedDuplicateSourceEmail: result.SkippedDuplicateSourceEmail,
-		SkippedInvalidEmail:         result.SkippedInvalidEmail,
-		SkippedInvalidRow:           result.SkippedInvalidRow,
+	rows := make([]ImportRosterUsersRowResponse, 0, len(result.Rows))
+	for _, row := range result.Rows {
+		rows = append(rows, ImportRosterUsersRowResponse{
+			Line:        row.Line,
+			Username:    row.Username,
+			DisplayName: row.DisplayName,
+			Email:       row.Email,
+			Status:      string(row.Status),
+			Message:     row.Message,
+		})
+	}
+	credentials := make([]ImportRosterUsersCredentialResponse, 0, len(result.Credentials))
+	for _, credential := range result.Credentials {
+		credentials = append(credentials, ImportRosterUsersCredentialResponse{
+			Username:        credential.Username,
+			DisplayName:     credential.DisplayName,
+			InitialPassword: credential.InitialPassword,
+		})
+	}
+	return ImportRosterUsersResponse{
+		Total:       result.Total,
+		Ready:       result.Ready,
+		Imported:    result.Imported,
+		Skipped:     result.Skipped,
+		Invalid:     result.Invalid,
+		Failed:      result.Failed,
+		Truncated:   result.Truncated,
+		Rows:        rows,
+		Credentials: credentials,
 	}
 }
 
