@@ -6,8 +6,6 @@ import (
 	"strings"
 
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/channel"
-	appuicomponent "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/uicomponent"
-	domainuicomponent "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/uicomponent"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/ports/llm"
 )
@@ -100,17 +98,12 @@ type systemPromptCapabilities struct {
 // requestPromptOptions 是本次请求由客户端声明的输出格式能力。
 type requestPromptOptions struct {
 	HTMLVisual bool
-	// UIComponents 是本次会话可用的交互式组件，为空时不注入目录层。
-	UIComponents []domainuicomponent.Component
 }
 
 // resolveMessageSystemPromptInjection 合并平台、模型、项目和本次请求级系统提示词，并按路由能力决定注入方式。
 func resolveMessageSystemPromptInjection(cfg config.Config, route *channel.ResolvedRoute, projectPrompt string, options requestPromptOptions) systemPromptInjection {
 	if route == nil {
 		return systemPromptInjection{}
-	}
-	if !cfg.UIComponentsEnabled {
-		options.UIComponents = nil
 	}
 	content := buildResolvedMessageSystemPrompt(cfg.DefaultSystemPrompt, route.ModelSystemPrompt, projectPrompt, options)
 	if content == "" {
@@ -139,13 +132,6 @@ func buildResolvedMessageSystemPrompt(globalPrompt string, modelPrompt string, p
 			tag:     "format",
 			scope:   "request",
 			content: buildHTMLVisualPromptInstruction(),
-		})
-	}
-	if len(options.UIComponents) > 0 {
-		layers = append(layers, systemPromptLayer{
-			tag:     "ui-components",
-			scope:   "request",
-			content: appuicomponent.CatalogPrompt(options.UIComponents),
 		})
 	}
 	return buildSystemPromptLayers(layers)

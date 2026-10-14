@@ -33,7 +33,6 @@ import (
 	appruntime "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/runtime"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/settings"
 	appskill "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/skill"
-	appuicomponent "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/uicomponent"
 	appupload "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/upload"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/user"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/usersettings"
@@ -67,7 +66,6 @@ import (
 	memoryrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/memory"
 	settingsrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/settings"
 	skillrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/skill"
-	uicomponentrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/uicomponent"
 	userrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/user"
 	usersettingsrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/usersettings"
 	platformruntime "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/runtime"
@@ -85,7 +83,6 @@ import (
 	memoryhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/memory"
 	settingshttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/settings"
 	skillhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/skill"
-	uicomponenthttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/uicomponent"
 	userhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/user"
 	usersettingshttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/usersettings"
 	"github.com/gin-gonic/gin"
@@ -453,11 +450,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	conversationService.SetSkillResolver(skillService)
 	skillHandler := skillhttp.NewHandler(skillService)
 	skillModule := skillhttp.NewModule(skillHandler)
-	uiComponentService := appuicomponent.NewService(uicomponentrepo.NewRepo(db))
-	uiComponentService.SetFeatureEnabled(func() bool { return runtimeCfg.Snapshot().UIComponentsEnabled })
-	uiComponentService.SetAuditWriter(auditService)
-	conversationService.SetUIComponentResolver(uiComponentService)
-	uiComponentModule := uicomponenthttp.NewModule(uicomponenthttp.NewHandler(uiComponentService))
 	knowledgeBaseRepo := knowledgebaserepo.NewRepo(db)
 	knowledgeBaseService := appknowledgebase.NewService(knowledgeBaseRepo)
 	knowledgeBaseService.SetAuditWriter(auditService)
@@ -483,7 +475,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 		Admin:             adminModule,
 		ContentModeration: contentModerationModule,
 		Skill:             skillModule,
-		UIComponent:       uiComponentModule,
 		KnowledgeBase:     knowledgeBaseModule,
 		Settings:          settingsModule,
 		UserSettings:      userSettingsModule,

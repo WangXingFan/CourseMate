@@ -1,7 +1,6 @@
 package conversation
 
 import (
-	domainuicomponent "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/uicomponent"
 	"strings"
 	"testing"
 
@@ -205,42 +204,5 @@ func TestInlineSystemPromptIntoLatestUserMessage(t *testing.T) {
 	}
 	if !strings.Contains(got[2].Content, "<system_instructions>") || !strings.Contains(got[2].Content, "system rule") || !strings.Contains(got[2].Content, "second") {
 		t.Fatalf("expected latest user message to include inline system prompt and original content, got %q", got[2].Content)
-	}
-}
-
-func TestResolveMessageSystemPromptInjectionAddsUIComponentsCatalog(t *testing.T) {
-	route := &channel.ResolvedRoute{Protocol: llm.AdapterOpenAIResponses}
-
-	got := resolveMessageSystemPromptInjection(config.Config{UIComponentsEnabled: true}, route, "", requestPromptOptions{UIComponents: domainuicomponent.Builtin()})
-
-	for _, want := range []string{`<ui-components p="100" scope="request">`, "`deeix-ui`", `<component name="card-grid">`, `<component name="data-table">`, `<component name="chart">`, "<props>"} {
-		if !strings.Contains(got.Content, want) {
-			t.Fatalf("expected content to contain %q, got %q", want, got.Content)
-		}
-	}
-	if strings.Contains(got.Content, "html-visual") {
-		t.Fatal("ui-components alone must not enable the html-visual layer")
-	}
-}
-
-func TestResolveMessageSystemPromptInjectionOrdersFormatBeforeUIComponents(t *testing.T) {
-	route := &channel.ResolvedRoute{Protocol: llm.AdapterOpenAIResponses}
-
-	got := resolveMessageSystemPromptInjection(config.Config{UIComponentsEnabled: true}, route, "", requestPromptOptions{HTMLVisual: true, UIComponents: domainuicomponent.Builtin()})
-
-	format := strings.Index(got.Content, "<format p=")
-	components := strings.Index(got.Content, "<ui-components p=")
-	if format < 0 || components < 0 || format > components {
-		t.Fatalf("expected format layer before ui-components layer, got %q", got.Content)
-	}
-}
-
-func TestResolveMessageSystemPromptInjectionHonorsUIComponentsSetting(t *testing.T) {
-	route := &channel.ResolvedRoute{Protocol: llm.AdapterOpenAIResponses}
-
-	got := resolveMessageSystemPromptInjection(config.Config{UIComponentsEnabled: false}, route, "", requestPromptOptions{UIComponents: domainuicomponent.Builtin()})
-
-	if strings.Contains(got.Content, "<ui-components") {
-		t.Fatal("admin setting off must suppress the catalog even when the client declares support")
 	}
 }

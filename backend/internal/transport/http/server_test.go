@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
-	uicomponenthttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/uicomponent"
+	knowledgebasehttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/knowledgebase"
 	"github.com/gin-gonic/gin"
 )
 
@@ -172,19 +172,17 @@ func TestSwaggerEnabledByEnvironment(t *testing.T) {
 	}
 }
 
-func TestAdminRoutesRegisteredWhenUIComponentIsOnlyAdminModule(t *testing.T) {
+func TestAdminRoutesRegisteredWhenKnowledgeBaseIsOnlyAdminModule(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	modules := Modules{UIComponent: uicomponenthttp.NewModule(uicomponenthttp.NewHandler(nil))}
+	modules := Modules{KnowledgeBase: knowledgebasehttp.NewModule(knowledgebasehttp.NewHandler(nil, config.NewRuntime(config.Config{})))}
 	engine, err := NewEngine(config.NewRuntime(config.Config{AppName: "test", JWTSecret: "test-jwt-secret-value"}), nil, modules, nil, nil)
 	if err != nil {
 		t.Fatalf("create engine: %v", err)
 	}
 
 	want := map[string]bool{
-		http.MethodGet + " /api/v1/admin/ui-components":        false,
-		http.MethodPost + " /api/v1/admin/ui-components":       false,
-		http.MethodPatch + " /api/v1/admin/ui-components/:id":  false,
-		http.MethodDelete + " /api/v1/admin/ui-components/:id": false,
+		http.MethodGet + " /api/v1/admin/knowledge-bases":  false,
+		http.MethodPost + " /api/v1/admin/knowledge-bases": false,
 	}
 	for _, route := range engine.Routes() {
 		key := route.Method + " " + route.Path
