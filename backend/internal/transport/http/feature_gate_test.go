@@ -49,7 +49,7 @@ var gatedRoutes = []struct {
 	{"multiUser", "POST", "/admin/users"},
 	{"multiUser", "PATCH", "/admin/users/1"},
 	{"multiUser", "DELETE", "/admin/users/1"},
-	{"multiUser", "POST", "/admin/users/import/openwebui"},
+	{"multiUser", "POST", "/admin/users/import/roster"},
 	{"multiUser", "GET", "/admin/user-auth-events"},
 	{"multiUser", "GET", "/admin/permission-groups"},
 	{"multiUser", "PUT", "/admin/permission-groups/1/users"},

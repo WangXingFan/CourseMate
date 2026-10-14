@@ -84,7 +84,6 @@ type Service struct {
 	logCleanupService                          logCleanupService
 	authSecurityService                        authSecurityService
 	subscriptionResolver                       subscriptionResolver
-	openWebUIRowLoader                         openWebUIRowLoader
 	permissionGroupRepo                        permissionGroupRepo
 	permissionGroupModelLookup                 permissionGroupModelLookup
 	permissionGroupBillingPlanReferenceChecker permissionGroupBillingPlanReferenceChecker
@@ -182,11 +181,6 @@ func NewService(userService userService, auditService auditService) *Service {
 		userService:  userService,
 		auditService: auditService,
 	}
-}
-
-// SetOpenWebUIRowLoader 注入 OpenWebUI 外部数据读取能力。
-func (s *Service) SetOpenWebUIRowLoader(loader openWebUIRowLoader) {
-	s.openWebUIRowLoader = loader
 }
 
 // SetAuthSecurityService 注入认证安全校验能力。

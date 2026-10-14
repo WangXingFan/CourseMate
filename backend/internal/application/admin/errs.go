@@ -37,12 +37,16 @@ var (
 	ErrSuperAdminDeleteNotAllowed = apperr.NewMasked("user.superadmin_delete_protected", "superadmin account deletion is not allowed", "superadmin delete not allowed")
 	// ErrSelfDeleteNotAllowed 不允许通过管理接口删除自己。
 	ErrSelfDeleteNotAllowed = apperr.NewMasked("user.self_delete_not_allowed", "self delete is not allowed", "self delete not allowed")
-	// ErrInvalidImportDSN 表示导入数据源地址不合法。
-	ErrInvalidImportDSN = apperr.New("request.invalid_import_dsn", "invalid import dsn")
-	// ErrInvalidImportMultiplier 表示导入积分转换比例不合法。
-	ErrInvalidImportMultiplier = apperr.New("request.invalid_import_credit_multiplier", "invalid import credit multiplier")
-	// ErrOpenWebUIImportFailed 表示 OpenWebUI 导入失败。
-	ErrOpenWebUIImportFailed = apperr.NewMasked("internal.error", "internal server error", "openwebui import failed")
+	// ErrInvalidRosterCSV 表示名单文件不是合法的 CSV。
+	ErrInvalidRosterCSV = apperr.New("request.invalid_roster_csv", "invalid roster csv")
+	// ErrInvalidRosterHeader 表示名单表头不符合约定。
+	ErrInvalidRosterHeader = apperr.New("request.invalid_roster_header", "invalid roster header")
+	// ErrRosterFileTooLarge 表示名单文件超过大小上限。
+	ErrRosterFileTooLarge = apperr.New("request.roster_file_too_large", "roster file too large")
+	// ErrRosterTooManyRows 表示名单行数超过上限。
+	ErrRosterTooManyRows = apperr.New("request.roster_too_many_rows", "roster has too many rows")
+	// ErrRosterImportFailed 表示名单导入失败。
+	ErrRosterImportFailed = apperr.NewMasked("internal.error", "internal server error", "roster import failed")
 	// ErrPermissionGroupRepoUnavailable 表示权限组仓储未注入。
 	ErrPermissionGroupRepoUnavailable = apperr.NewMasked("internal.error", "internal server error", "permission group repo unavailable")
 	// ErrPermissionGroupNotFound 表示权限组不存在。
