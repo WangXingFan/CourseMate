@@ -117,30 +117,15 @@ Next.js 的 route group（`(app)`、`(auth)`、`(project)`、`(shell)`）只用�
 | `/auth/callback` | OAuth/OIDC 回调 |
 | `/chat` | 对话工作区 |
 | `/recent` | 最近会话 |
-| `/files` | 文件管理 |
 | `/knowledge-bases` | 知识库管理 |
-| `/library` | 指令库（技能与提示词） |
-| `/share` | 公开分享内容 |
 | `/preview/image-loading` | 开发用图片生成加载态预览 |
 | `/settings/general` | 通用偏好 |
 | `/settings/chat` | 对话偏好 |
-| `/settings/subscription` | 订阅与用量 |
 | `/settings/account` | 账户与身份源 |
 | `/settings/about` | 产品信息 |
 | `/admin` | 管理后台首页 |
-| `/admin/about` | 版本信息和更新检查 |
-| `/admin/announcements` | 公告管理 |
-| `/admin/billing` | 计费与支付 |
-| `/admin/content-moderation` | 内容审核 |
-| `/admin/conversation` | 会话配置与参数策略 |
-| `/admin/files` | 文件、提取、OCR、RAG 和存储配额 |
-| `/admin/groups` | 权限组 |
 | `/admin/knowledge-bases` | 平台知识库 |
-| `/admin/login` | 管理员登录与登录策略 |
-| `/admin/logs` | 日志与审计信息 |
 | `/admin/models` | 模型、路由、能力和官方原生工具 |
-| `/admin/statistics` | 统计信息 |
-| `/admin/tools` | MCP 工具 |
 | `/admin/upstreams` | 上游渠道 |
 | `/admin/users` | 用户与账户 |
 | `/desktop/tabs` | 桌面端壳 UI：标签栏 |

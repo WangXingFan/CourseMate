@@ -18,20 +18,13 @@ export type AnnouncementDialogMode = "auto" | "manual";
 
 const isAnnouncementSortMode = isOneOf(ANNOUNCEMENT_SORT_MODES);
 
-function isSkippedPath(pathname: string | null): boolean {
-  if (!pathname) {
-    return false;
-  }
-  return pathname === "/share" || pathname.startsWith("/share/");
-}
-
 /**
  * Owns both announcement queues: the automatic one loaded on navigation (unread
  * only) and the manual one opened from the nav (including dismissed items).
  * Each load is guarded by its own request ID so a stale response never
  * overwrites a newer queue.
  */
-export function useAnnouncementDialog(pathname: string | null) {
+export function useAnnouncementDialog() {
   const t = useTranslations("announcements");
   const { accessToken, user, userStatus } = useAuthSession();
   const [autoQueue, setAutoQueue] = React.useState<AnnouncementDTO[]>([]);
@@ -48,7 +41,7 @@ export function useAnnouncementDialog(pathname: string | null) {
 
   React.useEffect(() => {
     let cancelled = false;
-    if (userStatus !== "ready" || !accessToken || user?.initialSecurityRequired || isSkippedPath(pathname)) {
+    if (userStatus !== "ready" || !accessToken || user?.initialSecurityRequired) {
       autoLoadRequestIDRef.current += 1;
       manualLoadRequestIDRef.current += 1;
       setAutoQueue([]);
@@ -85,12 +78,12 @@ export function useAnnouncementDialog(pathname: string | null) {
     return () => {
       cancelled = true;
     };
-  }, [accessToken, pathname, user?.initialSecurityRequired, userStatus]);
+  }, [accessToken, user?.initialSecurityRequired, userStatus]);
 
   React.useEffect(() => {
     let cancelled = false;
     const unsubscribe = subscribeOpenAnnouncements(() => {
-      if (userStatus !== "ready" || !accessToken || user?.initialSecurityRequired || isSkippedPath(pathname)) {
+      if (userStatus !== "ready" || !accessToken || user?.initialSecurityRequired) {
         return;
       }
       const requestID = manualLoadRequestIDRef.current + 1;
@@ -127,7 +120,7 @@ export function useAnnouncementDialog(pathname: string | null) {
       cancelled = true;
       unsubscribe();
     };
-  }, [accessToken, pathname, t, user?.initialSecurityRequired, userStatus]);
+  }, [accessToken, t, user?.initialSecurityRequired, userStatus]);
 
   const queue = dialogMode === "manual" ? manualQueue : autoQueue;
   const sortedQueue = React.useMemo(() => sortAnnouncements(queue, sortMode), [queue, sortMode]);
