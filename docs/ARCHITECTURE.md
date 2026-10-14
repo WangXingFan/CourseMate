@@ -99,7 +99,6 @@ apps/*  →  packages/core  →  packages/api-contract  →  backend/docs/swagge
 | `registration` | 自行注册 | ❌ | `/auth/register/*` |
 | `identityProviders` | 第三方登录与身份绑定 | ❌ | `/auth/providers*`（公开与管理）、`/me/identities*` |
 | `accountSecurity` | 密码、邮箱、两步验证、会话、注销 | ❌ | `/auth/password/*`、`/auth/2fa/*`、`/me/2fa*`、`/me/email/*`、`/me/delete/*`、`DELETE /me`、`/auth/sessions*`、`/auth/logout-all` |
-| `announcements` | 系统公告 | ❌ | `/admin/announcements*`、`/announcements/:id/*`；**例外**：`GET /announcements` 返回空列表（老客户端轮询它） |
 | `billingGating` | 计费规则可以拒绝请求 | ❌ | `/billing/plans*`、`/billing/redemption*`、`/billing/payments/*`、`/billing/subscriptions`、`/admin/billing/accounts/*/balance`、`/admin/payment-orders`、`/admin/redemptions`；`billing.mode` 与 `billing.payment_providers` 两个设置项锁定 |
 | `usageMetering` | 记录用量与费用 | ✅ | —— |
 | `contentModeration` | 内容审核 | ❌ | `/admin/content-moderation*` |
@@ -114,6 +113,8 @@ apps/*  →  packages/core  →  packages/api-contract  →  backend/docs/swagge
 **前端消费**：`packages/core` 的 `resolveCapabilities` 容错解析（缺失或非布尔的键一律视为 `true`）；`shared/capabilities` 的 `CapabilitiesProvider` 按服务器地址缓存一次，收到 `feature.disabled` 自动重拉；组件只通过 `useFeature` / `<FeatureGate>` 读取；侧栏与路由守卫共用同一张 section 表（`isSectionAvailable` / `useSectionGuard`），被隐藏的页面 URL 直达时重定向。
 
 **演进规则**：只增不删；新键的默认值必须是"与今天行为一致"的值（通常 `true`）；不表达"为什么"（不加 `mode`、`edition`）；不表达"多少"（配额有自己的端点）。
+
+**键的移除**：仅当某个业务域连同其路由、服务、存储与前端入口一起从本仓库删除时，才移除对应键（`announcements` 已随公告模块整体删除）。只把功能"默认关闭"不构成移除理由：那会留下一个客户端无处消费的键。删除前必须确认没有其它模块仍按该键做门禁。
 
 **计量与门禁分离**：本地用户要看自己的花费，但不需要被计费规则拦住。`billing.mode = self` 下 `AuthorizeUsage` 直接放行、`RecordUsage` 照常记账，本地模式锁定该值即得"记账但不拦"；价格表保留可编辑。数据模型不变：本地 owner 仍在默认权限组，本地库可被远程服务器直接接管。
 

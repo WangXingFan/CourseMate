@@ -10,10 +10,6 @@
     "permissionGroupReferencedByPlan": "This permission group is referenced by a billing plan. Unbind it before deleting.",
     "permissionGroupRepoUnavailable": "The permission group service is temporarily unavailable."
   },
-  "announcement": {
-    "invalidId": "Invalid announcement ID.",
-    "notFound": "Announcement not found."
-  },
   "avatar": {
     "notFound": "Avatar not found."
   },
@@ -353,7 +349,6 @@
     "invalidId": "Invalid ID.",
     "invalidQuery": "Invalid query parameter.",
     "required": "A required field is missing.",
-    "invalidAnnouncement": "Invalid announcement request.",
     "invalidAppearancePreferences": "Invalid appearance preferences.",
     "invalidConversationLabels": "Invalid conversation labels.",
     "invalidConversationProject": "Invalid conversation project request.",
@@ -540,7 +535,6 @@
       "registration": "Registration is not available on this server.",
       "identityProviders": "Third-party sign-in is not available on this server.",
       "accountSecurity": "Password, email, two-factor and session management are not available on this server.",
-      "announcements": "Announcements are not available on this server.",
       "billingGating": "Plans, balances and payments are not available on this server.",
       "usageMetering": "Usage metering is not available on this server.",
       "contentModeration": "Content moderation is not available on this server.",

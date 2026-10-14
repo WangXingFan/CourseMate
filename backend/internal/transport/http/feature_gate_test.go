@@ -13,7 +13,6 @@ import (
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/pkg/token"
 	adminhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/admin"
-	announcementhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/announcement"
 	authhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/auth"
 	billinghttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/billing"
 	contentmoderationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/contentmoderation"
@@ -77,11 +76,6 @@ var gatedRoutes = []struct {
 	{"accountSecurity", "GET", "/auth/sessions"},
 	{"accountSecurity", "POST", "/auth/logout-all"},
 
-	{"announcements", "POST", "/announcements/1/close"},
-	{"announcements", "POST", "/announcements/1/dismiss-today"},
-	{"announcements", "GET", "/admin/announcements"},
-	{"announcements", "POST", "/admin/announcements"},
-
 	{"billingGating", "GET", "/billing/plans"},
 	{"billingGating", "POST", "/billing/subscriptions"},
 	{"billingGating", "POST", "/billing/payments/checkout"},
@@ -112,7 +106,6 @@ var openRoutes = []struct{ method, path string }{
 	{"GET", "/me"},
 	{"PATCH", "/me"},
 	{"POST", "/auth/logout"},
-	{"GET", "/announcements"},
 	{"GET", "/billing/config"},
 	{"GET", "/billing/usage"},
 	{"GET", "/billing/overview"},
@@ -137,7 +130,6 @@ func gatedEngine(t *testing.T, cfg config.Config) *gin.Engine {
 		Auth:              &authhttp.Module{Handler: &authhttp.Handler{}},
 		Admin:             &adminhttp.Module{Handler: &adminhttp.Handler{}},
 		Billing:           &billinghttp.Module{Handler: &billinghttp.Handler{}},
-		Announcement:      &announcementhttp.Module{Handler: &announcementhttp.Handler{}},
 		ContentModeration: &contentmoderationhttp.Module{Handler: &contentmoderationhttp.Handler{}},
 		Conversation:      &conversationhttp.Module{Handler: &conversationhttp.Handler{}},
 	}, nil, nil)

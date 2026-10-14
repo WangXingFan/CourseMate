@@ -17,7 +17,6 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 // A new feature must be registered here before the naming rules accept it.
 const FEATURE_DOMAINS = {
   admin: "admin",
-  announcements: "announcement",
   auth: "auth",
   chat: "chat",
   desktop: "desktop",

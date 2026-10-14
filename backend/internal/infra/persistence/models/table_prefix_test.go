@@ -11,7 +11,6 @@ import (
 // 表名须以 "<域>_" 开头，或恰为 "<域>s"（如 skills、knowledge_bases、permission_groups）。
 // 新增业务域时须在此显式登记，避免表名前缀随意扩散。
 var allowedTableDomains = []string{
-	"announcement",
 	"audit",
 	"billing",
 	"chat",

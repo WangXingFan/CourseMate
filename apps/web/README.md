@@ -31,7 +31,6 @@ apps/web/
 │   ├── animate-ui/            # 第三方动画组件与图标
 │   └── reactbits/             # 第三方视觉效果组件
 ├── entities/                  # 被多个 feature 复用的业务实体，每个实体只经 index.ts 对外
-│   ├── announcement/          # 公告事件（打开公告、未读状态）
 │   ├── billing/               # 计费展示与分时定价
 │   ├── conversation/          # 会话：标签、分享/导出菜单、项目子菜单、搜索、默认模型、侧栏列表
 │   ├── file/                  # 文件：预览、展示、处理状态与轮询、删除选项、文件库事件
@@ -43,7 +42,6 @@ apps/web/
 │   └── user-settings/         # 用户设置存储与对话内容宽度
 ├── features/                  # 按业务域组织页面组件、hooks 和模型
 │   ├── admin/                 # 管理后台
-│   ├── announcements/         # 公告
 │   ├── auth/                  # 登录和会话流程
 │   ├── chat/                  # 对话工作区
 │   ├── desktop/               # 桌面端启动、服务器设置、更新提示、标签栏
@@ -96,7 +94,7 @@ apps/web/
 
 - `components/`：页面外壳、section、表格、弹窗、图表和编辑器等业务组件。`components/` 根目录只放 feature 的顶层入口（如 `app-files.tsx`、`admin-shell.tsx`）；其余组件放在 `components/sections/`，被多个 section 复用的放在 `components/shared/`（按职责命名，不加 feature 前缀，如 `sortable-list.tsx`）。多页面 feature（`admin`、`settings`）按 `components/sections/<section>/` 组织：入口为 `<domain>-<section>.tsx`（如 `admin-users.tsx`、`settings-account.tsx`），其余文件以 `<section>-` 为前缀（如 `tools-mcp-order-sheet.tsx`）。
 - `context/`：业务域内部共享的上下文状态。
-- `hooks/`：加载、筛选、提交、乐观更新、轮询和批量操作等状态编排；组件不直接调用 API 函数。文件名为 `use-<domain>-<purpose>.ts`，导出的 hook 以 `use<Domain>` 开头；`<domain>` 取 feature 目录名的单数（`files` → `file`、`knowledge-bases` → `knowledge-base`、`announcements` → `announcement`，`library` 为不可数的区域名、保持原样，`settings` 作为产品术语保留复数），`entities/<entity>` 取实体名。管理侧 hook 还需带上 section：`use-admin-<section>-<purpose>.ts`，导出 `useAdmin<Section>...`。映射表见 `scripts/check-architecture.mjs` 的 `FEATURE_DOMAINS`。
+- `hooks/`：加载、筛选、提交、乐观更新、轮询和批量操作等状态编排；组件不直接调用 API 函数。文件名为 `use-<domain>-<purpose>.ts`，导出的 hook 以 `use<Domain>` 开头；`<domain>` 取 feature 目录名的单数（`files` → `file`、`knowledge-bases` → `knowledge-base`、`library` 为不可数的区域名、保持原样，`settings` 作为产品术语保留复数），`entities/<entity>` 取实体名。管理侧 hook 还需带上 section：`use-admin-<section>-<purpose>.ts`，导出 `useAdmin<Section>...`。映射表见 `scripts/check-architecture.mjs` 的 `FEATURE_DOMAINS`。
 - `model/`：纯业务模型、常量、映射和排序规则，不放 React 副作用和展示文案。
 - `types/`：业务域内部的 UI 状态和表单类型，不重复定义后端传输契约。
 - `utils/`：业务域内部的格式化和展示工具。

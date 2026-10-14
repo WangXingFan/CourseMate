@@ -7,7 +7,6 @@ export const FEATURE_NAMES = [
   "registration",
   "identityProviders",
   "accountSecurity",
-  "announcements",
   "billingGating",
   "usageMetering",
   "contentModeration",
