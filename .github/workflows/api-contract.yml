@@ -1,0 +1,53 @@
+name: API contract
+
+# Manual maintenance job: regenerate backend Swagger and the TypeScript API
+# contract from the Go handler annotations, then push the result back to the
+# triggering branch. The Web CI job verifies freshness with `generate.mjs
+# --check`, which needs a Go toolchain, so this keeps the generated files
+# authoritative without requiring a local Go install.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: api-contract-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  regenerate:
+    name: Regenerate
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Regenerate API contract
+        run: pnpm api:generate
+      - name: Commit and push
+        run: |
+          if [[ -z "$(git status --porcelain)" ]]; then
+            echo "API contract already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend/docs packages/api-contract/src/types.generated.ts
+          git commit -m "chore: regenerate api contract"
+          git push origin "HEAD:${{ github.ref_name }}"
