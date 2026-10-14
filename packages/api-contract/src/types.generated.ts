@@ -1992,14 +1992,6 @@ export interface MediaVideoRequest {
   sourceMessagePublicID?: string;
 }
 
-export interface MemoryErrorDoc {
-  data: any;
-  details?: any;
-  errorCode?: string;
-  errorMsg: string;
-  requestId?: string;
-}
-
 export interface MessageBillingCostResponse {
   billedCurrency: string;
   billedNanousd: number;
@@ -3928,10 +3920,6 @@ export interface UpsertIdentityProviderRequest {
   userinfoURL?: string;
 }
 
-export interface UpsertMemoryResponse {
-  saved: boolean;
-}
-
 export interface UpsertModelPricingRequest {
   /** @min 0 */
   cacheReadUSDPerMTokens: number;
@@ -4003,19 +3991,6 @@ export interface UpsertUpstreamModelRequest {
 
 export interface UpsertUpstreamModelResponseDoc {
   data: UpstreamModelDataResponse;
-  errorMsg: string;
-}
-
-export interface UpsertUserMemoryRequest {
-  /** @maxLength 128 */
-  memoryKey: string;
-  scope: "profile" | "preference" | "custom";
-  /** @maxLength 10000 */
-  value: string;
-}
-
-export interface UpsertUserMemoryResponseDoc {
-  data: UpsertMemoryResponse;
   errorMsg: string;
 }
 
@@ -4448,22 +4423,6 @@ export interface UserListResponseDoc {
     total: number;
   };
   errorMsg: string;
-}
-
-export interface UserMemoryListResponseDoc {
-  data: UserMemoryResponse[];
-  errorMsg: string;
-}
-
-export interface UserMemoryResponse {
-  createdAt: string;
-  id: number;
-  memoryKey: string;
-  scope: string;
-  updatedAt: string;
-  updatedBy: string;
-  userID: number;
-  value: string;
 }
 
 export interface UserSettingsPatchSettingsRequest {
@@ -9624,59 +9583,6 @@ export namespace Me {
     export type RequestBody = PatchUsernameRequest;
     export type RequestHeaders = {};
     export type ResponseBody = PatchMeResponseDoc;
-  }
-}
-
-export namespace Memories {
-  /**
-   * @description 查询当前用户的长期个性化记忆
-   * @tags memory
-   * @name ProfileList
-   * @summary 查询用户个性化记忆
-   * @request GET:/memories/profile
-   * @secure
-   */
-  export namespace ProfileList {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = UserMemoryListResponseDoc;
-  }
-
-  /**
-   * @description 新增或更新当前用户的长期个性化记忆
-   * @tags memory
-   * @name ProfileUpdate
-   * @summary 更新用户个性化记忆
-   * @request PUT:/memories/profile
-   * @secure
-   */
-  export namespace ProfileUpdate {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = UpsertUserMemoryRequest;
-    export type RequestHeaders = {};
-    export type ResponseBody = UpsertUserMemoryResponseDoc;
-  }
-
-  /**
-   * @description 删除当前用户的指定 key 长期记忆
-   * @tags memory
-   * @name ProfileDelete
-   * @summary 删除用户个性化记忆
-   * @request DELETE:/memories/profile/{memory_key}
-   * @secure
-   */
-  export namespace ProfileDelete {
-    export type RequestParams = {
-      /** 记忆 Key */
-      memoryKey: string;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = UpsertUserMemoryResponseDoc;
   }
 }
 

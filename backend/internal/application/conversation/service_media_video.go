@@ -546,7 +546,6 @@ func (s *Service) StreamMediaVideo(ctx context.Context, input MediaVideoInput) (
 		s.completeModerationAfterSuccess(ctx, completeModerationAfterSuccessInput{
 			Coordinator:      moderationCoord,
 			Result:           result,
-			EmbedInput:       SendMessageInput{UserID: input.UserID, ConversationID: input.ConversationID},
 			ReuseUserMessage: reuseUserMessage,
 		})
 	}

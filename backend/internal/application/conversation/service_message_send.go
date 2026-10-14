@@ -488,19 +488,6 @@ func (s *Service) sendMessageInternal(
 	promptMessages := promptScope.activeMessages()
 	ragQuery := buildRAGQuery(promptMessages, input.Content, cfg.RAGQueryHistoryTurns)
 	historicalScope := promptScope.historicalMessageScope(input.ConversationID, input.UserID, userMessage.ID)
-
-	// 语义召回必须先限定到当前活跃分支，再由向量存储执行 Top-K，避免 sibling 分支占用名额。
-	// 召回仍与附件和 RAG 处理并行，200ms 超时后按原行为优雅跳过。
-	var recallCh chan []model.MessageChunk
-	if cfg.EmbeddingEnabled && cfg.SemanticContextEnabled && historicalScope.Valid() {
-		recallCh = make(chan []model.MessageChunk, 1)
-		go func() {
-			recallCtx, cancel := context.WithTimeout(ctx, semanticRecallDeadline)
-			defer cancel()
-			recallCh <- s.recallSemanticContext(recallCtx, historicalScope, input.Content)
-		}()
-	}
-
 	conversationFileIDs := collectConversationFileIDs(promptMessages, input.FileIDs)
 	conversationAttachments, err := s.resolveConversationFileContext(ctx, input.UserID, conversationFileIDs, input.FileIDs)
 	if err != nil {
@@ -610,25 +597,12 @@ func (s *Service) sendMessageInternal(
 	userCtx.Attachments = imageAttachmentsForCurrentUser(turnImageAttachments)
 	userCtx.RAGChunks = ragContextChunks
 	assistantMessage.KnowledgeSources = messageKnowledgeSourcesFromRAGChunks(ragContextChunks)
-	// 语义召回注入：收集异步结果（与 RAG 解耦，独立运行）。
-	// recallCh 为 nil 时（未启用语义召回或当前分支没有历史消息）直接跳过。
-	//
-	// 必须阻塞等待（不用 select default），原因：
-	//   - 无附件时 hydrateAttachmentsForSend 几乎瞬间返回（~5ms），
-	//     非阻塞会在 goroutine 完成前（~50-200ms）直接跳过，导致召回永远触发不了。
-	//   - goroutine 持有 200ms context deadline，recallSemanticContext 失败时返回空列表，
-	//     因此 <-recallCh 最多阻塞 semanticRecallDeadline（200ms），不会死锁。
-	//   - 有附件时 goroutine 早已完成（附件处理 >1s >> 200ms），等待开销为零。
-	if recallCh != nil {
-		userCtx.RecallChunks = <-recallCh // 阻塞等待，最多 semanticRecallDeadline（200ms）
-	}
 	userCtx.HistoricalArtifacts = s.recallHistoricalContextArtifacts(ctx, historicalContextRecallInput{
 		Scope:              historicalScope,
 		HasCurrentSnapshot: promptScope.Snapshot != nil,
 		Query:              input.Content,
 		CurrentRAGChunks:   ragContextChunks,
 		CurrentFallbacks:   ragFallbackEvidenceAttachments(ragFallbacks),
-		CurrentRecall:      userCtx.RecallChunks,
 	})
 	userCtx.CurrentArtifacts = s.persistPromptContextArtifacts(ctx, promptContextArtifactInput{
 		ConversationID: input.ConversationID,
@@ -638,7 +612,6 @@ func (s *Service) sendMessageInternal(
 		Query:          ragQuery,
 		RAGChunks:      ragContextChunks,
 		RAGFallbacks:   ragFallbacks,
-		RecallChunks:   userCtx.RecallChunks,
 	})
 	skillPrompts, err := s.resolveSkillPrompts(ctx, input)
 	if err != nil {
@@ -1091,7 +1064,6 @@ func (s *Service) sendMessageInternal(
 		PersistedToolCallKeys:     persistedToolCallKeys,
 		Route:                     runState.route,
 		ReuseUserMessage:          reuseUserMessage,
-		SkipEmbed:                 moderationCoord != nil,
 	})
 	platformtracing.RecordError(persistSpan, err)
 	persistSpan.End()
@@ -1194,7 +1166,6 @@ func (s *Service) sendMessageInternal(
 			Result:           result,
 			OutputText:       moderationOutputText(assistantText, assistantReasoningContent, traceRecorder.upstreamThinkContent()),
 			OutputImages:     outputImages,
-			EmbedInput:       input,
 			ReuseUserMessage: reuseUserMessage,
 		})
 	}

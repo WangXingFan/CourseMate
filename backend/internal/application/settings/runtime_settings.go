@@ -115,11 +115,6 @@ func (r *RuntimeSettings) normalizeConfig(cfg *config.Config) {
 	}
 	if !cfg.EmbeddingEnabled || strings.TrimSpace(cfg.EmbeddingHost) == "" || strings.TrimSpace(cfg.RAGModel) == "" {
 		cfg.RAGEnabled = false
-		cfg.MessageEmbeddingEnabled = false
-		cfg.SemanticContextEnabled = false
-	}
-	if !cfg.MessageEmbeddingEnabled {
-		cfg.SemanticContextEnabled = false
 	}
 	if cfg.TokenTTLHours <= 0 {
 		cfg.TokenTTLHours = 24

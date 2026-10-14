@@ -16,8 +16,7 @@ import (
 const (
 	EmbeddingDimensions = vectorutil.MaxDimensions
 
-	FileChunkVectorTable    = "file_chunk_vectors"
-	MessageChunkVectorTable = "chat_message_chunk_vectors"
+	FileChunkVectorTable = "file_chunk_vectors"
 )
 
 var (
@@ -25,7 +24,6 @@ var (
 	vectorDimensionPattern    = regexp.MustCompile(`(?i)embedding\s+FLOAT\[(\d+)\]`)
 	vectorTableMigrationSpecs = []vectorTableSpec{
 		{name: FileChunkVectorTable, keyColumns: []string{"chunk_id", "user_id", "file_obj_id"}, partitionColumn: "user_id"},
-		{name: MessageChunkVectorTable, keyColumns: []string{"chunk_id", "user_id", "conversation_id", "message_id"}, partitionColumn: "user_id"},
 	}
 )
 

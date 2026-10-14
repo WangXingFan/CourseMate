@@ -16,10 +16,6 @@
       "title": "Vector retrieval",
       "description": "Configures whether the external Embedding service is enabled. Changing the model marks old vectors stale."
     },
-    "semantic": {
-      "title": "Semantic enhancement",
-      "description": "Semantic recall for historical messages based on vector retrieval. Requires message embedding to be ready."
-    },
     "rag": {
       "title": "RAG",
       "description": "Controls retrieval, similarity thresholds, injection budget, and readiness wait strategy."
@@ -65,8 +61,6 @@
   },
   "validation": {
     "embeddingRequired": "Enable vector retrieval and configure both the Embedding service URL and model first.",
-    "messageEmbeddingRequired": "Enable message embedding first.",
-    "messageEmbeddingRequiredBeforeSemantic": "Enable message embedding before semantic context recall.",
     "tikaBaseURLRequired": "Tika service URL is required.",
     "doclingBaseURLRequired": "Docling service URL is required.",
     "mineruBaseURLRequired": "MinerU service URL is required.",
@@ -456,14 +450,6 @@
       }
     },
     "chat": {
-      "message_embedding_enabled": {
-        "label": "Message embedding",
-        "description": "Generate message vectors asynchronously after each conversation turn. Requires an available Embedding service."
-      },
-      "semantic_context_enabled": {
-        "label": "Semantic context recall",
-        "description": "Recall historically relevant snippets and inject them into context before sending a message."
-      },
       "rag_enabled": {
         "label": "RAG",
         "description": "Allow files to enter the retrieval-augmented pipeline. Requires an available Embedding service."

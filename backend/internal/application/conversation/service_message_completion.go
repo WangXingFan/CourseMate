@@ -36,8 +36,6 @@ type persistMessageGenerationInput struct {
 	PersistedToolCallKeys     map[string]struct{}
 	Route                     *channel.ResolvedRoute
 	ReuseUserMessage          bool
-	// SkipEmbed 将消息向量化推迟到审核屏障通过之后。
-	SkipEmbed bool
 }
 
 type persistInterruptedMessageGenerationInput struct {
@@ -307,15 +305,6 @@ func (s *Service) finishSuccessfulMessageGeneration(ctx context.Context, input p
 	if normalizeBranchReason(input.SendInput.BranchReason) == "default" {
 		s.updateStatefulResponseAsync(ctx, input.SendInput.ConversationID, input.ResponseID, input.StatefulPromptFingerprint)
 	}
-	if input.SkipEmbed {
-		return nil
-	}
-	if input.ReuseUserMessage {
-		s.embedMessagePairAsync(ctx, input.SendInput, nil, input.AssistantMessage)
-	} else {
-		s.embedMessagePairAsync(ctx, input.SendInput, input.UserMessage, input.AssistantMessage)
-	}
-
 	return nil
 }
 
@@ -627,17 +616,5 @@ func (s *Service) updateStatefulResponseAsync(ctx context.Context, conversationI
 		bgCtx, cancel := background.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 		_ = s.repo.UpdateConversationStatefulResponse(bgCtx, conversationID, respID, fingerprint)
-	})
-}
-
-func (s *Service) embedMessagePairAsync(ctx context.Context, input SendMessageInput, userMessage *model.Message, assistantMessage *model.Message) {
-	cfg := s.cfg.Snapshot()
-	if !cfg.EmbeddingEnabled || !cfg.MessageEmbeddingEnabled {
-		return
-	}
-	background.Go(s.logger, "message_pair_embedding", func() {
-		asyncCtx, cancel := background.WithTimeout(ctx, 30*time.Second)
-		defer cancel()
-		s.embedMessagePair(asyncCtx, input.ConversationID, input.UserID, userMessage, assistantMessage)
 	})
 }

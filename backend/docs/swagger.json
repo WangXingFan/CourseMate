@@ -14200,138 +14200,6 @@
                 }
             }
         },
-        "/memories/profile": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "查询当前用户的长期个性化记忆",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "memory"
-                ],
-                "summary": "查询用户个性化记忆",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/UserMemoryListResponseDoc"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/MemoryErrorDoc"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "新增或更新当前用户的长期个性化记忆",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "memory"
-                ],
-                "summary": "更新用户个性化记忆",
-                "parameters": [
-                    {
-                        "description": "用户记忆参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/UpsertUserMemoryRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/UpsertUserMemoryResponseDoc"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/MemoryErrorDoc"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/MemoryErrorDoc"
-                        }
-                    }
-                }
-            }
-        },
-        "/memories/profile/{memory_key}": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "删除当前用户的指定 key 长期记忆",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "memory"
-                ],
-                "summary": "删除用户个性化记忆",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "记忆 Key",
-                        "name": "memory_key",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/UpsertUserMemoryResponseDoc"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/MemoryErrorDoc"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/MemoryErrorDoc"
-                        }
-                    }
-                }
-            }
-        },
         "/messages/{id}": {
             "patch": {
                 "security": [
@@ -21582,26 +21450,6 @@
                 }
             }
         },
-        "MemoryErrorDoc": {
-            "type": "object",
-            "required": [
-                "data",
-                "errorMsg"
-            ],
-            "properties": {
-                "data": {},
-                "details": {},
-                "errorCode": {
-                    "type": "string"
-                },
-                "errorMsg": {
-                    "type": "string"
-                },
-                "requestId": {
-                    "type": "string"
-                }
-            }
-        },
         "MessageBillingCostResponse": {
             "type": "object",
             "required": [
@@ -27502,17 +27350,6 @@
                 }
             }
         },
-        "UpsertMemoryResponse": {
-            "type": "object",
-            "required": [
-                "saved"
-            ],
-            "properties": {
-                "saved": {
-                    "type": "boolean"
-                }
-            }
-        },
         "UpsertModelPricingRequest": {
             "type": "object",
             "required": [
@@ -27673,47 +27510,6 @@
             "properties": {
                 "data": {
                     "$ref": "#/definitions/UpstreamModelDataResponse"
-                },
-                "errorMsg": {
-                    "type": "string"
-                }
-            }
-        },
-        "UpsertUserMemoryRequest": {
-            "type": "object",
-            "required": [
-                "memoryKey",
-                "scope",
-                "value"
-            ],
-            "properties": {
-                "memoryKey": {
-                    "type": "string",
-                    "maxLength": 128
-                },
-                "scope": {
-                    "type": "string",
-                    "enum": [
-                        "profile",
-                        "preference",
-                        "custom"
-                    ]
-                },
-                "value": {
-                    "type": "string",
-                    "maxLength": 10000
-                }
-            }
-        },
-        "UpsertUserMemoryResponseDoc": {
-            "type": "object",
-            "required": [
-                "data",
-                "errorMsg"
-            ],
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/UpsertMemoryResponse"
                 },
                 "errorMsg": {
                     "type": "string"
@@ -29338,63 +29134,6 @@
                     }
                 },
                 "errorMsg": {
-                    "type": "string"
-                }
-            }
-        },
-        "UserMemoryListResponseDoc": {
-            "type": "object",
-            "required": [
-                "data",
-                "errorMsg"
-            ],
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/UserMemoryResponse"
-                    }
-                },
-                "errorMsg": {
-                    "type": "string"
-                }
-            }
-        },
-        "UserMemoryResponse": {
-            "type": "object",
-            "required": [
-                "createdAt",
-                "id",
-                "memoryKey",
-                "scope",
-                "updatedAt",
-                "updatedBy",
-                "userID",
-                "value"
-            ],
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "memoryKey": {
-                    "type": "string"
-                },
-                "scope": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "updatedBy": {
-                    "type": "string"
-                },
-                "userID": {
-                    "type": "integer"
-                },
-                "value": {
                     "type": "string"
                 }
             }

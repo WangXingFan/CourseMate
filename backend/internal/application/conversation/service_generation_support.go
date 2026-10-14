@@ -12,66 +12,11 @@ import (
 	domainbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/billing"
 	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/ports/llm"
-	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/repository"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/background"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/tokenestimate"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
-
-// embedMessagePair 异步将用户和助手消息向量化并存入 chat_message_chunks。
-func (s *Service) embedMessagePair(ctx context.Context, conversationID uint, userID uint, userMsg *model.Message, assistantMsg *model.Message) {
-	if s.embeddingSvc == nil {
-		return
-	}
-	chunks := make([]model.MessageChunk, 0, 2)
-	texts := make([]string, 0, 2)
-	if userMsg != nil && strings.TrimSpace(userMsg.Content) != "" {
-		chunks = append(chunks, model.MessageChunk{
-			ConversationID: conversationID,
-			MessageID:      userMsg.ID,
-			UserID:         userID,
-			Role:           "user",
-			ChunkIndex:     0,
-			Content:        userMsg.Content,
-			TokenCount:     int(tokenestimate.Estimate(userMsg.Content)),
-		})
-		texts = append(texts, userMsg.Content)
-	}
-	if assistantMsg != nil && strings.TrimSpace(assistantMsg.Content) != "" {
-		chunks = append(chunks, model.MessageChunk{
-			ConversationID: conversationID,
-			MessageID:      assistantMsg.ID,
-			UserID:         userID,
-			Role:           "assistant",
-			ChunkIndex:     0,
-			Content:        assistantMsg.Content,
-			TokenCount:     int(tokenestimate.Estimate(assistantMsg.Content)),
-		})
-		texts = append(texts, assistantMsg.Content)
-	}
-	if len(chunks) == 0 {
-		return
-	}
-	embeddings, embeddingSignature, err := s.embeddingSvc.EmbedTextsWithSignature(ctx, texts)
-	if err != nil {
-		s.logger.Warn("embed_message_pair_failed", zap.Error(err))
-		return
-	}
-	if len(embeddings) != len(chunks) {
-		s.logger.Warn("embed_message_pair_length_mismatch",
-			zap.Int("chunks", len(chunks)),
-			zap.Int("embeddings", len(embeddings)),
-		)
-		return
-	}
-	for index := range chunks {
-		chunks[index].EmbeddingSignature = embeddingSignature
-	}
-	if err := s.repo.UpsertMessageChunks(ctx, chunks, embeddings); err != nil {
-		s.logger.Warn("upsert_message_chunks_failed", zap.Error(err))
-	}
-}
 
 func reasoningPayload(delta *llm.ReasoningDelta) *tracePayload {
 	if delta == nil {
@@ -85,28 +30,6 @@ func reasoningPayload(delta *llm.ReasoningDelta) *tracePayload {
 		payload.Reasoning.EncryptedContent = strings.TrimSpace(delta.EncryptedContent)
 	}
 	return payload
-}
-
-// recallSemanticContext 语义召回历史消息；无结果时返回空列表。
-func (s *Service) recallSemanticContext(ctx context.Context, scope repository.HistoricalMessageScope, query string) []model.MessageChunk {
-	if s.embeddingSvc == nil || !scope.Valid() || strings.TrimSpace(query) == "" {
-		return nil
-	}
-	embeddings, embeddingSignature, err := s.embeddingSvc.EmbedQueriesWithSignature(ctx, []string{query})
-	if err != nil || len(embeddings) == 0 {
-		return nil
-	}
-	chunks, err := s.repo.SearchMessageChunks(ctx, repository.MessageChunkSearchInput{
-		Scope:              scope,
-		QueryEmbedding:     embeddings[0],
-		EmbeddingSignature: embeddingSignature,
-		TopK:               5,
-		MinSimilarity:      0.75,
-	})
-	if err != nil || len(chunks) == 0 {
-		return nil
-	}
-	return chunks
 }
 
 // callCompactLLM 是注入到 compact.Service 的 LLM 摘要回调。

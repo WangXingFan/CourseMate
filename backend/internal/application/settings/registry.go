@@ -335,7 +335,7 @@ var settingSpecs = []settingSpec{
 	{Namespace: "chat", Key: "rag_hybrid_enabled", ValueType: "bool", Default: "false", Description: "启用混合检索（BM25+向量 RRF 合并），可提升召回率",
 		Validate: boolValue(), Apply: applyField(func(c *config.Config) *bool { return &c.RAGHybridEnabled }, toBool)},
 
-	// 上下文压缩与语义增强
+	// 上下文压缩
 	{Namespace: "chat", Key: "context_compact_highlights_per_role", ValueType: "int", Default: "6", Description: "上下文压缩每个角色保留亮点数",
 		Validate: integerValue(), Apply: applyField(func(c *config.Config) *int { return &c.ContextCompactHighlightsPerRole }, toInt)},
 	{Namespace: "chat", Key: "context_compact_snippet_chars", ValueType: "int", Default: "140", Description: "上下文压缩片段最大字符数",
@@ -354,10 +354,6 @@ var settingSpecs = []settingSpec{
 		Apply: applyField(func(c *config.Config) *string { return &c.CompactLightPrompt }, rawText)},
 	{Namespace: "chat", Key: "context_token_budget_enabled", ValueType: "bool", Default: "true", Description: "按模型 Token 预算截断上下文（替代消息数截断），更精准地利用上下文窗口",
 		Validate: boolValue(), Apply: applyField(func(c *config.Config) *bool { return &c.ContextTokenBudgetEnabled }, toBool)},
-	{Namespace: "chat", Key: "message_embedding_enabled", ValueType: "bool", Default: "false", Description: "每轮对话结束后异步生成消息向量（需 Embedding 服务就绪）",
-		Validate: boolValue(), Apply: applyField(func(c *config.Config) *bool { return &c.MessageEmbeddingEnabled }, toBool)},
-	{Namespace: "chat", Key: "semantic_context_enabled", ValueType: "bool", Default: "false", Description: "发送消息时语义召回历史相关片段注入上下文（需 message_embedding_enabled 开启）",
-		Validate: boolValue(), Apply: applyField(func(c *config.Config) *bool { return &c.SemanticContextEnabled }, toBool)},
 	{Namespace: "chat", Key: "process_trace_enabled", ValueType: "bool", Default: "true", Description: "启用聊天页处理轨迹",
 		Validate: boolValue(), Apply: applyField(func(c *config.Config) *bool { return &c.ProcessTraceEnabled }, toBool)},
 	{Namespace: "chat", Key: "process_trace_persist_inflight", ValueType: "bool", Default: "true", Description: "流式阶段增量持久化处理轨迹",

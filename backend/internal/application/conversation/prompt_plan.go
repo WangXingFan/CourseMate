@@ -274,17 +274,11 @@ func stableAttachmentSourceRefs(attachments []AttachmentInput, currentArtifacts 
 
 // dynamicContextSourceRefs 提取本轮动态上下文的来源引用。
 func dynamicContextSourceRefs(input userContextInput) []PromptSourceRef {
-	refs := make([]PromptSourceRef, 0, len(input.RAGChunks)+len(input.RecallChunks)+len(input.Attachments)+1)
+	refs := make([]PromptSourceRef, 0, len(input.RAGChunks)+len(input.Attachments)+1)
 	ragArtifacts := contextArtifactsByKindAndSourceID(input.CurrentArtifacts, domainconversation.ContextArtifactFileRAGChunk)
-	recallArtifacts := contextArtifactsByKindAndSourceID(input.CurrentArtifacts, domainconversation.ContextArtifactSemanticRecall)
 	for _, chunk := range input.RAGChunks {
 		artifact := ragArtifacts[fileRAGChunkSourceID(chunk)]
 		refs = appendPromptSourceRefWithArtifactID(refs, string(domainconversation.ContextArtifactFileRAGChunk), chunk.FileID, ragChunkSourceTitle(chunk), artifact.ID)
-	}
-	for _, chunk := range input.RecallChunks {
-		sourceID := messageChunkSourceID(chunk)
-		artifact := recallArtifacts[sourceID]
-		refs = appendPromptSourceRefWithArtifactID(refs, string(domainconversation.ContextArtifactSemanticRecall), sourceID, chunk.Role, artifact.ID)
 	}
 	if input.Snapshot != nil && strings.TrimSpace(input.Snapshot.Summary) != "" {
 		refs = appendPromptSourceRef(refs, "summary", input.Snapshot.Strategy, "上下文摘要")
@@ -382,14 +376,6 @@ func stableAttachmentSourceID(att AttachmentInput) string {
 		return sha
 	}
 	return strings.TrimSpace(att.FileName)
-}
-
-// messageChunkSourceID 生成消息语义分片的来源标识。
-func messageChunkSourceID(chunk domainconversation.MessageChunk) string {
-	if chunk.MessageID > 0 {
-		return fmt.Sprintf("%d:%d", chunk.MessageID, chunk.ChunkIndex)
-	}
-	return fmt.Sprintf("%s:%d", strings.TrimSpace(chunk.Role), chunk.ChunkIndex)
 }
 
 // estimateContextArtifactsTokens 估算历史证据块的 token 消耗。

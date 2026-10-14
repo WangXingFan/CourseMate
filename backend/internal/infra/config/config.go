@@ -581,10 +581,7 @@ type Config struct {
 	CompactSystemPrompt string // 全量摘要提示词（空串用内置默认值）；支持占位符 {{FROM_TURN}}、{{TO_TURN}}
 	CompactLightPrompt  string // 轻量摘要提示词（空串用内置默认值）；支持占位符 {{FROM_TURN}}、{{TO_TURN}}
 	// Token 预算感知上下文截断
-	ContextTokenBudgetEnabled bool // 是否按 Token 预算截断上下文（替代消息数截断）
-	// 消息历史 Embedding（语义上下文召回）
-	MessageEmbeddingEnabled      bool // 是否对每轮消息异步生成向量嵌入
-	SemanticContextEnabled       bool // 是否在上下文组装时加入语义召回片段
+	ContextTokenBudgetEnabled    bool // 是否按 Token 预算截断上下文（替代消息数截断）
 	ProcessTraceEnabled          bool // 是否启用消息处理轨迹
 	ProcessTracePersistInflight  bool // 是否在流式阶段持久化轨迹
 	ContextArtifactRetentionDays int  // 上下文证据保留天数，<=0 表示不自动过期
@@ -816,8 +813,6 @@ func Load() Config {
 		CompactAsyncEnabled:               true,
 		CompactMaxFailures:                3,
 		ContextTokenBudgetEnabled:         true,
-		MessageEmbeddingEnabled:           false, // 默认关闭，需要 embedding 服务就绪后开启
-		SemanticContextEnabled:            false,
 		ProcessTraceEnabled:               true,
 		ProcessTracePersistInflight:       true,
 		ContextArtifactRetentionDays:      90,

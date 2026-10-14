@@ -146,8 +146,6 @@ func buildPromptContextConfigSignature(cfg config.Config) string {
 		"context_window_fallback":     cfg.ContextWindowFallbackTokens,
 		"context_compact_percent":     cfg.ContextCompactTriggerPercent,
 		"context_compact_preserve":    cfg.ContextCompactPreserve,
-		"message_embedding_enabled":   cfg.MessageEmbeddingEnabled,
-		"semantic_context_enabled":    cfg.SemanticContextEnabled,
 	}
 	raw, err := json.Marshal(payload)
 	if err != nil {

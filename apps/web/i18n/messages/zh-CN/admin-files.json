@@ -16,10 +16,6 @@
       "title": "向量化检索",
       "description": "配置外部 Embedding 服务是否启用；变更模型会将旧向量标记为失效。"
     },
-    "semantic": {
-      "title": "语义增强",
-      "description": "基于向量检索召回历史消息语义片段，需要消息向量化就绪。"
-    },
     "rag": {
       "title": "RAG",
       "description": "控制检索、相似度阈值、注入预算和就绪等待策略。"
@@ -65,8 +61,6 @@
   },
   "validation": {
     "embeddingRequired": "请先在「向量化检索」中开启并配置 Embedding 服务地址和请求模型。",
-    "messageEmbeddingRequired": "请先开启消息向量化。",
-    "messageEmbeddingRequiredBeforeSemantic": "开启语义上下文召回前，请先开启消息向量化。",
     "tikaBaseURLRequired": "Tika 服务地址不能为空。",
     "doclingBaseURLRequired": "Docling 服务地址不能为空。",
     "mineruBaseURLRequired": "MinerU 服务地址不能为空。",
@@ -456,14 +450,6 @@
       }
     },
     "chat": {
-      "message_embedding_enabled": {
-        "label": "消息向量化",
-        "description": "开启后会在每轮对话完成后异步生成消息向量，依赖可用的 Embedding 服务。"
-      },
-      "semantic_context_enabled": {
-        "label": "语义上下文召回",
-        "description": "开启后会在发送消息时自动召回历史相关片段并注入上下文，依赖消息向量数据可用。"
-      },
       "rag_enabled": {
         "label": "RAG 开关",
         "description": "开启后允许文件进入检索增强链路，依赖可用的 Embedding 服务。"

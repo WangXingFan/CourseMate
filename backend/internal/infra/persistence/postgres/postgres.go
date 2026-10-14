@@ -144,7 +144,6 @@ func migrate(db *gorm.DB, cfg config.Config) error {
 		"system_settings":                "系统动态配置表",
 		"user_settings":                  "用户个人偏好配置表",
 		"file_chunks":                    "RAG文件分片表",
-		"chat_message_chunks":            "会话消息向量分片表(历史对话语义检索)",
 	}
 	tableComments["chat_conversation_project_mcp_tools"] = "项目默认 MCP 工具关联表"
 	tableComments["chat_conversation_project_skills"] = "项目默认 Skill 关联表"
@@ -400,7 +399,7 @@ func applyConversationBaselineIndexes(db *gorm.DB) error {
 }
 
 func vectorBaselineRequired(cfg config.Config) bool {
-	return cfg.EmbeddingEnabled || cfg.RAGEnabled || cfg.MessageEmbeddingEnabled || cfg.SemanticContextEnabled
+	return cfg.EmbeddingEnabled || cfg.RAGEnabled
 }
 
 // applyVectorBaseline 确保 pgvector 扩展、原生维度向量列和候选索引存在。
@@ -420,7 +419,6 @@ func applyVectorBaseline(db *gorm.DB, required bool) error {
 		indexName string
 	}{
 		{table: "file_chunks", column: "embedding", indexName: "idx_file_chunks_embedding"},
-		{table: "chat_message_chunks", column: "embedding", indexName: "idx_chat_message_chunks_embedding"},
 	}
 
 	err := withPostgresVectorMigrationLock(db, func(connection *gorm.DB) error {

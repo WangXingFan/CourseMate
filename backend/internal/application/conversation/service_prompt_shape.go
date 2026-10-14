@@ -23,7 +23,6 @@ type promptShape struct {
 	HasEvidence        bool
 	HasRAG             bool
 	HasSummary         bool
-	HasRecall          bool
 	PreviousResponse   bool
 	FullMessageCount   int
 	FullPromptTokens   int64
@@ -89,7 +88,6 @@ func summarizePromptShape(mode string, sent []llm.Message, full []llm.Message, p
 			shape.HasEvidence = shape.HasEvidence || strings.Contains(content, "<evs>")
 			shape.HasRAG = shape.HasRAG || strings.Contains(content, "<rag>")
 			shape.HasSummary = shape.HasSummary || strings.Contains(content, "<sum")
-			shape.HasRecall = shape.HasRecall || strings.Contains(content, "<recall>")
 		}
 	}
 	if len(full) > 0 {
@@ -130,7 +128,6 @@ func promptShapeTraceAttributes(prefix string, shape promptShape) []attribute.Ke
 		attribute.Bool(key("has_evidence"), shape.HasEvidence),
 		attribute.Bool(key("has_rag"), shape.HasRAG),
 		attribute.Bool(key("has_summary"), shape.HasSummary),
-		attribute.Bool(key("has_recall"), shape.HasRecall),
 		attribute.Int(key("stateful_saved_messages"), shape.StatefulSavedMsgs),
 		attribute.Int64(key("stateful_saved_tokens"), shape.StatefulSavedToken),
 	}
@@ -150,7 +147,6 @@ func promptShapeLogFields(shape promptShape) []zap.Field {
 		zap.Bool("has_evidence", shape.HasEvidence),
 		zap.Bool("has_rag", shape.HasRAG),
 		zap.Bool("has_summary", shape.HasSummary),
-		zap.Bool("has_recall", shape.HasRecall),
 		zap.Int("stateful_saved_messages", shape.StatefulSavedMsgs),
 		zap.Int64("stateful_saved_tokens_estimated", shape.StatefulSavedToken),
 	}

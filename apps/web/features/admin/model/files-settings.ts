@@ -886,27 +886,6 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
     ],
   },
   {
-    key: "semantic",
-    title: "Semantic enhancement",
-    description: "Semantic recall for historical messages based on vector retrieval. Requires message embedding to be ready.",
-    fields: [
-      {
-        namespace: "chat",
-        key: "message_embedding_enabled",
-        label: "Message embedding",
-        description: "Generate message vectors asynchronously after each conversation turn. Requires an available Embedding service.",
-        type: "bool",
-      },
-      {
-        namespace: "chat",
-        key: "semantic_context_enabled",
-        label: "Semantic context recall",
-        description: "Recall historically relevant snippets and inject them into context before sending a message.",
-        type: "bool",
-      },
-    ],
-  },
-  {
     key: "rag",
     title: "RAG",
     description: "Controls retrieval, similarity thresholds, injection budget, and readiness wait strategy.",
@@ -1186,12 +1165,6 @@ export function applySettingsDefaults(next: Record<string, string>): Record<stri
   if (!["true", "false"].includes(result["chat.rag_enabled"] ?? "")) {
     result["chat.rag_enabled"] = "false";
   }
-  if (!["true", "false"].includes(result["chat.message_embedding_enabled"] ?? "")) {
-    result["chat.message_embedding_enabled"] = "false";
-  }
-  if (!["true", "false"].includes(result["chat.semantic_context_enabled"] ?? "")) {
-    result["chat.semantic_context_enabled"] = "false";
-  }
   if (usesTika(result["extract.engine"] ?? "")) {
     if (!(result["extract.tika_timeout_seconds"] ?? "").trim()) {
       result["extract.tika_timeout_seconds"] = "60";
@@ -1288,11 +1261,6 @@ export function applySettingsDefaults(next: Record<string, string>): Record<stri
   }
   if (!isEmbeddingServiceConfigured(result)) {
     result["chat.rag_enabled"] = "false";
-    result["chat.message_embedding_enabled"] = "false";
-    result["chat.semantic_context_enabled"] = "false";
-  }
-  if (result["chat.message_embedding_enabled"] !== "true") {
-    result["chat.semantic_context_enabled"] = "false";
   }
   if (result["chat.rag_enabled"] === "true") {
     if (!(result["file.rag_top_k"] ?? "").trim()) {

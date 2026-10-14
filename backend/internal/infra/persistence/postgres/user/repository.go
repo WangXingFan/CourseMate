@@ -943,12 +943,6 @@ func (r *Repo) DeleteAccountHard(ctx context.Context, userID uint) error {
 				},
 			},
 			{
-				label: "chat_message_chunks",
-				run: func(db *gorm.DB) error {
-					return db.Unscoped().Where("user_id = ?", userID).Delete(&models.MessageChunk{}).Error
-				},
-			},
-			{
 				label: "chat_feedback",
 				run: func(db *gorm.DB) error {
 					return db.Unscoped().Where("user_id = ?", userID).Delete(&models.ConversationMessageFeedback{}).Error

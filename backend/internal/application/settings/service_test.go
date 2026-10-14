@@ -45,12 +45,10 @@ func (r *testSettingsRepo) Delete(ctx context.Context, namespace, key string) er
 	return nil
 }
 
-func TestApplyEmbeddingDependentCascadesDisablesRAGAndSemanticFeatures(t *testing.T) {
+func TestApplyEmbeddingDependentCascadesDisablesRAG(t *testing.T) {
 	repo := &testSettingsRepo{byNamespace: map[string][]domainsettings.SystemSetting{
 		"chat": {
 			{Key: "rag_enabled", Value: "true"},
-			{Key: "message_embedding_enabled", Value: "true"},
-			{Key: "semantic_context_enabled", Value: "true"},
 		},
 		"file": {
 			{Key: "embedding_enabled", Value: "true"},
@@ -68,9 +66,7 @@ func TestApplyEmbeddingDependentCascadesDisablesRAGAndSemanticFeatures(t *testin
 	}
 
 	want := map[string]string{
-		"chat:rag_enabled":               "false",
-		"chat:message_embedding_enabled": "false",
-		"chat:semantic_context_enabled":  "false",
+		"chat:rag_enabled": "false",
 	}
 	got := make(map[string]string)
 	for _, item := range patches {
@@ -85,10 +81,7 @@ func TestApplyEmbeddingDependentCascadesDisablesRAGAndSemanticFeatures(t *testin
 
 func TestValidateEmbeddingDependentSettingsRejectsRAGWithoutEmbedding(t *testing.T) {
 	repo := &testSettingsRepo{byNamespace: map[string][]domainsettings.SystemSetting{
-		"chat": {
-			{Key: "message_embedding_enabled", Value: "false"},
-			{Key: "semantic_context_enabled", Value: "false"},
-		},
+		"chat": {},
 		"file": {
 			{Key: "embedding_enabled", Value: "false"},
 			{Key: "embedding_host", Value: ""},
@@ -109,8 +102,6 @@ func TestValidateEmbeddingDependentSettingsRejectsEmbeddingWithoutVectorStore(t 
 	repo := &testSettingsRepo{byNamespace: map[string][]domainsettings.SystemSetting{
 		"chat": {
 			{Namespace: "chat", Key: "rag_enabled", Value: "false"},
-			{Namespace: "chat", Key: "message_embedding_enabled", Value: "false"},
-			{Namespace: "chat", Key: "semantic_context_enabled", Value: "false"},
 		},
 		"file": {
 			{Namespace: "file", Key: "embedding_enabled", Value: "false"},
@@ -133,8 +124,6 @@ func TestValidateEmbeddingDependentSettingsAllowsEmbeddingWithVectorStore(t *tes
 	repo := &testSettingsRepo{byNamespace: map[string][]domainsettings.SystemSetting{
 		"chat": {
 			{Namespace: "chat", Key: "rag_enabled", Value: "false"},
-			{Namespace: "chat", Key: "message_embedding_enabled", Value: "false"},
-			{Namespace: "chat", Key: "semantic_context_enabled", Value: "false"},
 		},
 		"file": {
 			{Namespace: "file", Key: "embedding_enabled", Value: "false"},
@@ -156,18 +145,16 @@ func TestValidateEmbeddingDependentSettingsAllowsEmbeddingWithVectorStore(t *tes
 func TestRuntimeSettingsNormalizeConfigDisablesEmbeddingDependentFeatures(t *testing.T) {
 	runtimeSettings := NewRuntimeSettings(nil, nil, "test-data-encryption-key")
 	cfg := config.Config{
-		EmbeddingEnabled:        false,
-		EmbeddingHost:           "",
-		RAGModel:                "embed-model",
-		RAGEnabled:              true,
-		MessageEmbeddingEnabled: true,
-		SemanticContextEnabled:  true,
+		EmbeddingEnabled: false,
+		EmbeddingHost:    "",
+		RAGModel:         "embed-model",
+		RAGEnabled:       true,
 	}
 
 	runtimeSettings.normalizeConfig(&cfg)
 
-	if cfg.RAGEnabled || cfg.MessageEmbeddingEnabled || cfg.SemanticContextEnabled {
-		t.Fatalf("expected embedding dependent features disabled, got rag=%v message=%v semantic=%v", cfg.RAGEnabled, cfg.MessageEmbeddingEnabled, cfg.SemanticContextEnabled)
+	if cfg.RAGEnabled {
+		t.Fatalf("expected embedding dependent features disabled, got rag=%v", cfg.RAGEnabled)
 	}
 }
 

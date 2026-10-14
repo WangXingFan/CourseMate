@@ -173,27 +173,11 @@ export function useAdminKnowledgeBasesSettings({
         next = {
           ...next,
           "chat.rag_enabled": "false",
-          "chat.message_embedding_enabled": "false",
-          "chat.semantic_context_enabled": "false",
         };
       }
       if (fieldID === "chat.rag_enabled" && value === "true" && !isEmbeddingServiceConfigured(next)) {
         toast.error(t("toast.cannotEnable"), { description: t("validation.embeddingRequired") });
         return prev;
-      }
-      if ((fieldID === "chat.message_embedding_enabled" || fieldID === "chat.semantic_context_enabled") && value === "true" && !isEmbeddingServiceConfigured(next)) {
-        toast.error(t("toast.cannotEnable"), { description: t("validation.embeddingRequired") });
-        return prev;
-      }
-      if (fieldID === "chat.semantic_context_enabled" && value === "true" && next["chat.message_embedding_enabled"] !== "true") {
-        toast.error(t("toast.cannotEnable"), { description: t("validation.messageEmbeddingRequired") });
-        return prev;
-      }
-      if (next["chat.message_embedding_enabled"] !== "true") {
-        next = {
-          ...next,
-          "chat.semantic_context_enabled": "false",
-        };
       }
       return next;
     });
@@ -300,15 +284,6 @@ export function useAdminKnowledgeBasesSettings({
         toast.error(t("toast.saveFailed"), { description: t("validation.embeddingRequired") });
         return;
       }
-      const savingSemanticEnhancement = group.fields.some((field) => field.namespace === "chat" && (field.key === "message_embedding_enabled" || field.key === "semantic_context_enabled"));
-      if (savingSemanticEnhancement && draftSettingsMap["chat.message_embedding_enabled"] === "true" && !isEmbeddingServiceConfigured(draftSettingsMap)) {
-        toast.error(t("toast.saveFailed"), { description: t("validation.embeddingRequired") });
-        return;
-      }
-      if (savingSemanticEnhancement && draftSettingsMap["chat.semantic_context_enabled"] === "true" && draftSettingsMap["chat.message_embedding_enabled"] !== "true") {
-        toast.error(t("toast.saveFailed"), { description: t("validation.messageEmbeddingRequiredBeforeSemantic") });
-        return;
-      }
       const nextSettingsMap = applySettingsDefaults(draftSettingsMap);
 
       const items: PatchSettingItem[] = resolveVisibleFields(group, nextSettingsMap)
@@ -325,8 +300,6 @@ export function useAdminKnowledgeBasesSettings({
         const existingKeys = new Set(items.map((item) => `${item.namespace}.${item.key}`));
         for (const item of [
           { namespace: "chat", key: "rag_enabled", value: "false" },
-          { namespace: "chat", key: "message_embedding_enabled", value: "false" },
-          { namespace: "chat", key: "semantic_context_enabled", value: "false" },
         ] satisfies PatchSettingItem[]) {
           if (!existingKeys.has(`${item.namespace}.${item.key}`)) items.push(item);
         }
