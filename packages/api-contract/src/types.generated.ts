@@ -2673,19 +2673,6 @@ export interface PatchMyKnowledgeBaseRequest {
   name?: string;
 }
 
-export interface PatchPromptPresetRequest {
-  /** @maxLength 10000 */
-  content?: string;
-  /** @maxLength 256 */
-  description?: string;
-  enabled?: boolean;
-  sortOrder?: number;
-  /** @maxLength 64 */
-  title?: string;
-  /** @maxLength 64 */
-  trigger?: string;
-}
-
 export interface PatchRedemptionCodeRequestDoc {
   /** @maxLength 255 */
   description?: string;
@@ -2873,51 +2860,6 @@ export interface PlatformFileDeleteDataResponse {
 
 export interface PlatformFileDeleteResponseDoc {
   data: PlatformFileDeleteDataResponse;
-  errorMsg: string;
-}
-
-export interface PromptPresetDataResponse {
-  promptPreset: PromptPresetResponse;
-}
-
-export interface PromptPresetDeleteDataResponse {
-  deleted: boolean;
-}
-
-export interface PromptPresetDeleteResponseDoc {
-  data: PromptPresetDeleteDataResponse;
-  errorMsg: string;
-}
-
-export interface PromptPresetErrorDoc {
-  errorMsg: string;
-}
-
-export interface PromptPresetPageResponseDoc {
-  data: {
-    results: PromptPresetResponse[];
-    total: number;
-  };
-  errorMsg: string;
-}
-
-export interface PromptPresetResponse {
-  content: string;
-  createdAt: string;
-  createdByUserID: number;
-  description: string;
-  enabled: boolean;
-  id: number;
-  scope: string;
-  sortOrder: number;
-  title: string;
-  trigger: string;
-  updatedAt: string;
-  updatedByUserID: number;
-}
-
-export interface PromptPresetResponseDoc {
-  data: PromptPresetDataResponse;
   errorMsg: string;
 }
 
@@ -4715,19 +4657,6 @@ export interface WriteMyKnowledgeBaseRequest {
   description?: string;
   /** @maxLength 80 */
   name: string;
-}
-
-export interface WritePromptPresetRequest {
-  /** @maxLength 10000 */
-  content: string;
-  /** @maxLength 256 */
-  description?: string;
-  enabled?: boolean;
-  sortOrder?: number;
-  /** @maxLength 64 */
-  title: string;
-  /** @maxLength 64 */
-  trigger: string;
 }
 
 export interface WriteSkillRequest {
@@ -7057,85 +6986,6 @@ export namespace Admin {
     export type RequestBody = SetGroupUsersRequest;
     export type RequestHeaders = {};
     export type ResponseBody = GroupUsersResponseDoc;
-  }
-
-  /**
-   * No description
-   * @tags admin-prompt-presets
-   * @name PromptPresetsList
-   * @summary 管理员查询内置提示词
-   * @request GET:/admin/prompt-presets
-   * @secure
-   */
-  export namespace PromptPresetsList {
-    export type RequestParams = {};
-    export type RequestQuery = {
-      /** 是否启用 */
-      enabled?: boolean;
-      /** 页码（从 1 开始，默认 1） */
-      page?: number;
-      /** 每页数量（1-1000，默认 20） */
-      page_size?: number;
-      /** 搜索关键词 */
-      q?: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = PromptPresetPageResponseDoc;
-  }
-
-  /**
-   * No description
-   * @tags admin-prompt-presets
-   * @name PromptPresetsCreate
-   * @summary 管理员创建内置提示词
-   * @request POST:/admin/prompt-presets
-   * @secure
-   */
-  export namespace PromptPresetsCreate {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = WritePromptPresetRequest;
-    export type RequestHeaders = {};
-    export type ResponseBody = PromptPresetResponseDoc;
-  }
-
-  /**
-   * No description
-   * @tags admin-prompt-presets
-   * @name PromptPresetsDelete
-   * @summary 管理员删除内置提示词
-   * @request DELETE:/admin/prompt-presets/{id}
-   * @secure
-   */
-  export namespace PromptPresetsDelete {
-    export type RequestParams = {
-      /** 提示词ID */
-      id: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = PromptPresetDeleteResponseDoc;
-  }
-
-  /**
-   * No description
-   * @tags admin-prompt-presets
-   * @name PromptPresetsPartialUpdate
-   * @summary 管理员更新内置提示词
-   * @request PATCH:/admin/prompt-presets/{id}
-   * @secure
-   */
-  export namespace PromptPresetsPartialUpdate {
-    export type RequestParams = {
-      /** 提示词ID */
-      id: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = PatchPromptPresetRequest;
-    export type RequestHeaders = {};
-    export type ResponseBody = PromptPresetResponseDoc;
   }
 
   /**
@@ -10241,110 +10091,6 @@ export namespace Models {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = PublicModelListResponseDoc;
-  }
-}
-
-export namespace PromptPresets {
-  /**
-   * @description 返回管理员内置和当前用户自定义的已启用提示词，用于 slash 选择器
-   * @tags prompt-presets
-   * @name PromptPresetsList
-   * @summary 查询当前用户可用预制提示词
-   * @request GET:/prompt-presets
-   * @secure
-   */
-  export namespace PromptPresetsList {
-    export type RequestParams = {};
-    export type RequestQuery = {
-      /** 页码（从 1 开始，默认 1） */
-      page?: number;
-      /** 每页数量（1-1000，默认 20） */
-      page_size?: number;
-      /** 搜索关键词 */
-      q?: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = PromptPresetPageResponseDoc;
-  }
-
-  /**
-   * @description 分页查询当前用户自定义提示词
-   * @tags prompt-presets
-   * @name MineList
-   * @summary 查询我的自定义提示词
-   * @request GET:/prompt-presets/mine
-   * @secure
-   */
-  export namespace MineList {
-    export type RequestParams = {};
-    export type RequestQuery = {
-      /** 是否启用 */
-      enabled?: boolean;
-      /** 页码（从 1 开始，默认 1） */
-      page?: number;
-      /** 每页数量（1-1000，默认 20） */
-      page_size?: number;
-      /** 搜索关键词 */
-      q?: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = PromptPresetPageResponseDoc;
-  }
-
-  /**
-   * No description
-   * @tags prompt-presets
-   * @name MineCreate
-   * @summary 创建我的自定义提示词
-   * @request POST:/prompt-presets/mine
-   * @secure
-   */
-  export namespace MineCreate {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = WritePromptPresetRequest;
-    export type RequestHeaders = {};
-    export type ResponseBody = PromptPresetResponseDoc;
-  }
-
-  /**
-   * No description
-   * @tags prompt-presets
-   * @name MineDelete
-   * @summary 删除我的自定义提示词
-   * @request DELETE:/prompt-presets/mine/{id}
-   * @secure
-   */
-  export namespace MineDelete {
-    export type RequestParams = {
-      /** 提示词ID */
-      id: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = PromptPresetDeleteResponseDoc;
-  }
-
-  /**
-   * No description
-   * @tags prompt-presets
-   * @name MinePartialUpdate
-   * @summary 更新我的自定义提示词
-   * @request PATCH:/prompt-presets/mine/{id}
-   * @secure
-   */
-  export namespace MinePartialUpdate {
-    export type RequestParams = {
-      /** 提示词ID */
-      id: number;
-    };
-    export type RequestQuery = {};
-    export type RequestBody = PatchPromptPresetRequest;
-    export type RequestHeaders = {};
-    export type ResponseBody = PromptPresetResponseDoc;
   }
 }
 
