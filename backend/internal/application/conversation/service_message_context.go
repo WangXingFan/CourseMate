@@ -28,6 +28,7 @@ const (
 	MessageErrorCodeKnowledgeBaseInvalidReference = "knowledge_base.invalid_reference"
 	MessageErrorCodeKnowledgeBaseUnavailable      = "knowledge_base.unavailable"
 	MessageErrorCodeKnowledgeBaseNotReady         = "knowledge_base.not_ready"
+	MessageErrorCodeKnowledgeBaseScopeEmpty       = "knowledge_base.scope_empty"
 	MessageErrorCodeUpstreamRateLimited           = "upstream.rate_limited"
 	MessageErrorCodeUpstreamEmptyResponse         = "llm.empty_response"
 	MessageErrorCodeUpstreamUnavailable           = "upstream.unavailable"

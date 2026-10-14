@@ -198,6 +198,7 @@ func TestDescribeSendMessageErrorContract(t *testing.T) {
 		{appconversation.ErrInvalidKnowledgeBaseReference, http.StatusBadRequest, "knowledge_base.invalid_reference", "invalid knowledge base reference"},
 		{appconversation.ErrKnowledgeBaseUnavailable, http.StatusServiceUnavailable, "knowledge_base.unavailable", "knowledge base retrieval is unavailable"},
 		{appconversation.ErrKnowledgeBaseNotReady, http.StatusConflict, "knowledge_base.not_ready", "selected knowledge base has no ready files"},
+		{appconversation.ErrKnowledgeBaseScopeEmpty, http.StatusConflict, "knowledge_base.scope_empty", "no knowledge base scope is configured"},
 		{appconversation.ErrModelRouteNotConfigured, http.StatusServiceUnavailable, "llm.model_route_not_configured", "model route is not configured"},
 		{appconversation.ErrModelAccessDenied, http.StatusForbidden, "llm.model_access_denied", "you do not have access to this model"},
 		{appconversation.ErrStorageQuotaExceeded, http.StatusConflict, "quota.exceeded", "quota exceeded"},

@@ -115,6 +115,7 @@ var sendMessageErrorStatuses = []sendMessageErrorStatus{
 	{err: appconversation.ErrInvalidKnowledgeBaseReference, status: http.StatusBadRequest},
 	{err: appconversation.ErrKnowledgeBaseUnavailable, status: http.StatusServiceUnavailable},
 	{err: appconversation.ErrKnowledgeBaseNotReady, status: http.StatusConflict},
+	{err: appconversation.ErrKnowledgeBaseScopeEmpty, status: http.StatusConflict},
 	{err: appconversation.ErrModelRouteNotConfigured, status: http.StatusServiceUnavailable},
 	{err: appconversation.ErrModelAccessDenied, status: http.StatusForbidden},
 	{err: appconversation.ErrStorageQuotaExceeded, status: http.StatusConflict},

@@ -467,6 +467,8 @@
     "mcpToolsSelected": "已启用 {count} 个工具",
     "knowledgeBases": "知识库",
     "knowledgeBasesSelected": "已选择 {count} 个知识库",
+    "knowledgeBaseDefaultScope": "默认范围：{names}",
+    "knowledgeBaseDefaultScopeCount": "默认范围：{count} 个知识库",
     "uiComponents": "交互式组件",
     "uiComponentsRestoreDefault": "恢复默认",
     "uiComponentScope": {

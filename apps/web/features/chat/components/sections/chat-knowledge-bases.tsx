@@ -33,7 +33,7 @@ export function ChatKnowledgeBases({
   onChange: (ids: string[]) => void;
 }) {
   const t = useTranslations("chat.composer");
-  const { knowledgeBaseEnabled } = useFeaturePolicy();
+  const { knowledgeBaseEnabled, defaultKnowledgeBaseIDs } = useFeaturePolicy();
   const { open, handleOpenChange, query, setQuery, items, loading, loadingMore, hasMore, loadMore } =
     useChatKnowledgeBaseCatalog({ selectedIDs, onChange });
 
@@ -44,6 +44,14 @@ export function ChatKnowledgeBases({
   }, [available, onChange, selectedIDs.length]);
 
   const selectedSet = React.useMemo(() => new Set(selectedIDs), [selectedIDs]);
+  // 学生未显式选择时，服务端套用管理员配置的默认范围；这里把它显示出来，
+  // 避免界面看起来像“无知识库聊天”。
+  const usingDefaultScope = available !== false && selectedIDs.length === 0 && defaultKnowledgeBaseIDs.length > 0;
+  const defaultScopeNames = React.useMemo(() => {
+    const nameByID = new Map(items.map((item) => [item.publicID, item.name]));
+    const names = defaultKnowledgeBaseIDs.map((id) => nameByID.get(id));
+    return names.every((name): name is string => Boolean(name)) ? names.join(", ") : "";
+  }, [items, defaultKnowledgeBaseIDs]);
   const normalizedQuery = query.trim().toLocaleLowerCase();
   const filteredItems = normalizedQuery
     ? items.filter((item) => `${item.name} ${item.description}`.toLowerCase().includes(normalizedQuery))
@@ -146,6 +154,16 @@ export function ChatKnowledgeBases({
         {available === false ? (
           <p className="mx-1 mb-1 shrink-0 rounded-md bg-muted/45 px-2.5 py-2 text-[11px] leading-4 text-muted-foreground dark:bg-muted/35">
             {unavailableDescription}
+          </p>
+        ) : null}
+        {usingDefaultScope ? (
+          <p
+            className="mx-1 mb-1 shrink-0 rounded-md bg-muted/45 px-2.5 py-1.5 text-[11px] leading-4 text-muted-foreground dark:bg-muted/35"
+            data-default-knowledge-scope
+          >
+            {defaultScopeNames
+              ? t("knowledgeBaseDefaultScope", { names: defaultScopeNames })
+              : t("knowledgeBaseDefaultScopeCount", { count: defaultKnowledgeBaseIDs.length })}
           </p>
         ) : null}
         <div className="mx-1 mb-1 shrink-0">

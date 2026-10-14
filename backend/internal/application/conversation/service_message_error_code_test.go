@@ -26,6 +26,7 @@ func TestClassifyRunErrorCode(t *testing.T) {
 		{name: "invalid reference", err: ErrInvalidKnowledgeBaseReference, want: MessageErrorCodeKnowledgeBaseInvalidReference},
 		{name: "unavailable", err: ErrKnowledgeBaseUnavailable, want: MessageErrorCodeKnowledgeBaseUnavailable},
 		{name: "not ready", err: ErrKnowledgeBaseNotReady, want: MessageErrorCodeKnowledgeBaseNotReady},
+		{name: "scope empty", err: ErrKnowledgeBaseScopeEmpty, want: MessageErrorCodeKnowledgeBaseScopeEmpty},
 		{name: "wrapped unavailable", err: fmt.Errorf("retrieve: %w", ErrKnowledgeBaseUnavailable), want: MessageErrorCodeKnowledgeBaseUnavailable},
 		{name: "route not configured", err: ErrModelRouteNotConfigured, want: "llm.model_route_not_configured"},
 		{name: "empty response", err: ErrUpstreamEmptyResponse, want: MessageErrorCodeUpstreamEmptyResponse},

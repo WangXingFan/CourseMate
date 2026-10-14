@@ -1,6 +1,6 @@
 import { authedRequest } from "@/shared/api/authed-client";
 import type { ModelOptionPolicy, NativeToolDefinition } from "@/shared/api/settings-types";
-import { isRecord, readBoolean, readString } from "@/shared/lib/type-guards";
+import { isRecord, isStringArray, readBoolean, readString } from "@/shared/lib/type-guards";
 
 type ModelOptionPolicyResponse = {
   mode: string;
@@ -22,6 +22,8 @@ export const DEFAULT_DESKTOP_DOWNLOAD_URL = "https://deeix.com/download";
 
 export type FeaturePolicy = {
   knowledgeBaseEnabled: boolean;
+  /** Public IDs of the platform knowledge bases the server applies when a conversation has no explicit scope. */
+  defaultKnowledgeBaseIDs: string[];
   processTraceEnabled: boolean;
   /** Whether the web user menu offers the desktop app download entry. */
   desktopDownloadEnabled: boolean;
@@ -80,6 +82,8 @@ function parseFeaturePolicy(data: unknown): Partial<FeaturePolicy> {
   const policy: Partial<FeaturePolicy> = {};
   const knowledgeBaseEnabled = readBoolean(data, "knowledgeBaseEnabled");
   if (knowledgeBaseEnabled !== undefined) policy.knowledgeBaseEnabled = knowledgeBaseEnabled;
+  const defaultKnowledgeBaseIDs = data.defaultKnowledgeBaseIDs;
+  if (isStringArray(defaultKnowledgeBaseIDs)) policy.defaultKnowledgeBaseIDs = defaultKnowledgeBaseIDs;
   const processTraceEnabled = readBoolean(data, "processTraceEnabled");
   if (processTraceEnabled !== undefined) policy.processTraceEnabled = processTraceEnabled;
   const desktopDownloadEnabled = readBoolean(data, "desktopDownloadEnabled");

@@ -136,6 +136,9 @@ type FeaturePolicyResponse struct {
 	DesktopDownloadEnabled bool `json:"desktopDownloadEnabled"`
 	// DesktopDownloadURL 为桌面端下载页地址；入口关闭时为空串。
 	DesktopDownloadURL string `json:"desktopDownloadURL"`
+
+	// DefaultKnowledgeBaseIDs 是服务端为未显式选择范围的新会话应用的默认知识库 public_id 列表。
+	DefaultKnowledgeBaseIDs []string `json:"defaultKnowledgeBaseIDs"`
 }
 
 // FeaturePolicyResponseDoc 是用户侧功能开关策略的响应包裹，仅用于 Swagger。
