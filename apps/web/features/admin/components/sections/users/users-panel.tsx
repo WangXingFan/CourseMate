@@ -2,17 +2,11 @@
 
 import * as React from "react";
 import dynamic from "next/dynamic";
-import { Database, Globe, Plus, Settings, ShieldCheck, ShieldX, Trash2, Upload, UserCheck, WalletCards } from "lucide-react";
+import { Globe, Plus, Settings, ShieldCheck, ShieldX, Trash2, Upload, UserCheck, WalletCards } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -51,12 +45,12 @@ import type { BillingDisplayOptions } from "@/entities/billing";
 
 import { UserAvatarEditorDialog } from "./users-avatar-dialog";
 import { UserConfirmationDialog } from "./users-confirm-dialog";
-import { UserOpenWebUIImportDialog } from "./users-import-dialog";
+import { UserRosterImportDialog } from "./users-import-dialog";
 import { UserPasswordResetDialog } from "./users-password-dialog";
 import { TablePagination, TableToolbar } from "@/components/ui/table-tools";
 import { AdminBulkConfirmDialog } from "@/features/admin/components/shared/bulk-confirm-dialog";
 import { useAdminUsersPage } from "@/features/admin/hooks/use-admin-users-page";
-import { useAdminUsersOpenWebUIImport } from "@/features/admin/hooks/use-admin-users-openwebui-import";
+import { useAdminUsersRosterImport } from "@/features/admin/hooks/use-admin-users-roster-import";
 import {
   COMPACT_COMBOBOX_CLASSNAME,
   DEFAULT_CREATE_USER_PAYLOAD,
@@ -528,13 +522,13 @@ export function UsersPanel({
   const showRows = filteredItems.length > 0;
   const [bulkConfirmAction, setBulkConfirmAction] = React.useState<AccountBulkAction | null>(null);
   const {
-    openWebUIImportOpen,
-    setOpenWebUIImportOpen,
-    openWebUIImportPending,
-    openWebUIImportResult,
-    setOpenWebUIImportResult,
-    handleImportOpenWebUI,
-  } = useAdminUsersOpenWebUIImport({ page, setPage, onLoadUsers });
+    rosterImportOpen,
+    setRosterImportOpen,
+    rosterImportPending,
+    rosterImportResult,
+    setRosterImportResult,
+    handleRosterImport,
+  } = useAdminUsersRosterImport({ page, setPage, onLoadUsers });
   const bulkConfirmOpen = bulkConfirmAction !== null;
   const hasSelectableFilteredItems = React.useMemo(
     () => filteredItems.some(canManageUser),
@@ -724,42 +718,31 @@ export function UsersPanel({
               onClick: () => setBulkConfirmAction("delete"),
             },
           ]}
-          loading={loading || Boolean(pendingAction) || openWebUIImportPending}
+          loading={loading || Boolean(pendingAction) || rosterImportPending}
           onRefresh={() => void refreshUsers(page)}
-          refreshDisabled={loading || Boolean(pendingAction) || openWebUIImportPending}
+          refreshDisabled={loading || Boolean(pendingAction) || rosterImportPending}
           refreshLoading={pendingAction === "refresh"}
         >
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                className="h-7 gap-1 px-2 text-xs"
-                disabled={Boolean(pendingAction) || openWebUIImportPending}
-              >
-                <Upload className="size-3.5 stroke-1" />
-                {t("importOpenWebUI.import")}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => {
-                  setOpenWebUIImportResult(null);
-                  setOpenWebUIImportOpen(true);
-                }}
-              >
-                <Database className="size-3.5 stroke-1" />
-                OpenWebUI
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="h-7 gap-1 px-2 text-xs"
+            onClick={() => {
+              setRosterImportResult(null);
+              setRosterImportOpen(true);
+            }}
+            disabled={Boolean(pendingAction) || rosterImportPending}
+          >
+            <Upload className="size-3.5 stroke-1" />
+            {t("rosterImport.import")}
+          </Button>
           <Button
             type="button"
             size="sm"
             className="h-7 gap-1 px-2 text-xs"
             onClick={() => setCreateDialogOpen(true)}
-            disabled={Boolean(pendingAction) || openWebUIImportPending}
+            disabled={Boolean(pendingAction) || rosterImportPending}
           >
             <Plus className="size-3.5 stroke-1" />
             {t("create")}
@@ -834,7 +817,7 @@ export function UsersPanel({
           pageSize={pageSize}
           onPageChange={setPage}
           onPageSizeChange={setPageSize}
-          loading={loading || Boolean(pendingAction) || openWebUIImportPending}
+          loading={loading || Boolean(pendingAction) || rosterImportPending}
         />
       </div>
 
@@ -909,21 +892,21 @@ export function UsersPanel({
         />
       ) : null}
 
-      <UserOpenWebUIImportDialog
-        open={openWebUIImportOpen}
-        pending={openWebUIImportPending}
-        result={openWebUIImportResult}
+      <UserRosterImportDialog
+        open={rosterImportOpen}
+        pending={rosterImportPending}
+        result={rosterImportResult}
         onOpenChange={(open) => {
-          if (!open && openWebUIImportPending) {
+          if (!open && rosterImportPending) {
             return;
           }
-          setOpenWebUIImportOpen(open);
+          setRosterImportOpen(open);
           if (open) {
-            setOpenWebUIImportResult(null);
+            setRosterImportResult(null);
           }
         }}
-        onPreviewReset={() => setOpenWebUIImportResult(null)}
-        onSubmit={handleImportOpenWebUI}
+        onPreviewReset={() => setRosterImportResult(null)}
+        onSubmit={handleRosterImport}
       />
 
       {stableEditDialogTarget ? (
