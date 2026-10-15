@@ -29,7 +29,7 @@
   "bootstrapTitle": "Admin setup",
   "adminWelcomeTitle": "Welcome to CourseMate Admin",
   "userWelcomeTitle": "Welcome to CourseMate",
-  "adminWelcomeDescription": "Finish admin account security first, then configure upstreams, platform models, billing, logs, identity providers, and system policies.",
+  "adminWelcomeDescription": "Finish admin account security first, then configure upstreams, platform models, logs, identity providers, and system policies.",
   "userWelcomeDescription": "Finish your profile and security setup before using chats, files, and tools.",
   "adminAccountTitle": "Complete admin account",
   "userAccountTitle": "Set up account",
@@ -116,13 +116,12 @@
     "files": "Cover uploads, previews, downloads, text extraction, OCR, RAG retrieval, and original image context injection.",
     "context": "Combine historical evidence, context truncation, and summary compression for stable continuity.",
     "trace": "Render processing traces, model thinking, tool calls, inline errors, Markdown, formulas, tables, code blocks, and file cards.",
-    "billing": "Support subscriptions, balances, usage, per-call, per-second, and tiered billing with aggregated multi-tool run costs.",
-    "admin": "Provide unified admin entry points for accounts, identity providers, upstreams, models, billing, logs, chats, files, and audit logs.",
+    "admin": "Provide unified admin entry points for accounts, identity providers, upstreams, models, logs, chats, files, and audit logs.",
     "ops": "Include structured logs, request IDs, Swagger docs, Docker builds, static asset hosting, GeoIP audit, and OpenTelemetry traces."
   },
   "userTips": {
     "profile": "Set profile, timezone, and security options so chats, files, and tools match your usage habits.",
-    "models": "Use available platform models while routing, quotas, and billing are handled by administrator configuration.",
+    "models": "Use available platform models; routing and quotas are handled by administrator configuration.",
     "files": "Upload images and files, preview them, extract text, retrieve context, and trace their usage in the conversation.",
     "conversation": "Conversations support branches, stars, archives, context planning, thinking traces, and tool call details.",
     "twoFactor": "After enabling two-factor authentication, sign-in gets another protection layer and recovery codes protect device loss."
