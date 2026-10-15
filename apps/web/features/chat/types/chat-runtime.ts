@@ -4,7 +4,6 @@ import type {
   MessageAttachment,
 } from "@/features/chat/types/messages";
 import type { ConversationOptions } from "@/shared/api/conversation-types";
-import type { PublicModelPricingDTO } from "@/shared/api/model-types";
 
 export type ViewerProfile = {
   name: string;
@@ -26,7 +25,6 @@ export type ChatModelOption = {
   defaultOptions: ConversationOptions;
   optionControls: ModelOptionControl[];
   lockedOptionPaths: string[];
-  pricing: PublicModelPricingDTO | null;
 };
 
 export const MODEL_OPTION_CONTROL_TYPES = ["boolean", "number", "select", "text"] as const;

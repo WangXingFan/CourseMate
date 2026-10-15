@@ -188,10 +188,7 @@ export function AppChatArea() {
     showModelInfo,
     showLatency,
     showTokenUsage,
-    showBillingCost,
     showProcessTrace,
-    billingDisplayCurrency,
-    billingDisplayUsdToCnyRate,
     modelOptionPolicy,
     selectedPlatformModelName,
     setSelectedPlatformModelName,
@@ -502,8 +499,6 @@ export function AppChatArea() {
     attachments,
     uploadingAttachments,
     modelOptions,
-    billingDisplayCurrency,
-    billingDisplayUsdToCnyRate,
     selectedPlatformModelName,
     selectedKnowledgeBaseIDs,
     queuedMessages,
@@ -607,10 +602,7 @@ export function AppChatArea() {
                   showModelInfo={showModelInfo}
                   showLatency={showLatency}
                   showTokenUsage={showTokenUsage}
-                  showBillingCost={showBillingCost}
                   showProcessTrace={showProcessTrace}
-                  billingDisplayCurrency={billingDisplayCurrency}
-                  billingDisplayUsdToCnyRate={billingDisplayUsdToCnyRate}
                   splitRightInset={hasInlineArtifact}
                   contentWidthClassName={chatContentWidthClassName}
                   onScreenshotLatest={screenshot.captureLatestMessages}

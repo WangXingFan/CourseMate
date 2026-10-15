@@ -1,4 +1,3 @@
-import { MODERATION_BLOCKED_BILLED_REASON, parseBillingSnapshot } from "@/features/chat/model/billing-snapshot";
 import type { ChatAreaMessage, MessageAttachment } from "@/features/chat/types/messages";
 import type { MessageDTO, UpstreamDebugInfo } from "@/shared/api/conversation-types";
 import { isRecord, parseJSON } from "@/shared/lib/type-guards";
@@ -166,8 +165,6 @@ type MessageLabels = {
   moderationBlockedDescription?: string;
   moderationEventID?: (eventID: string) => string;
   moderationCategories?: (categories: string[]) => string;
-  /** Notice that upstream usage incurred before a block is still billed; appended to the block notice when the ledger snapshot has `billed_reason`. */
-  moderationBilled?: string;
   resolveErrorMessage?: (errorCode: string, fallback: string, details?: UpstreamDebugInfo) => string;
 };
 
@@ -233,7 +230,6 @@ export function mapServerMessage(
     msg.cacheWriteTokens = item.cacheWriteTokens ?? 0;
     msg.reasoningTokens = item.reasoningTokens ?? 0;
     msg.latencyMS = item.latencyMS ?? 0;
-    msg.billingCost = item.billingCost;
     msg.knowledgeSources = item.knowledgeSources?.map((source) => ({
       file_name: source.fileName,
       file_id: source.fileID,
@@ -248,8 +244,6 @@ export function mapServerMessage(
     if (moderationBlocked) {
       const eventID = item.moderation?.eventID?.trim() || "";
       const categories = item.moderation?.categories?.filter(Boolean) ?? [];
-      const billedAfterBlock =
-        parseBillingSnapshot(item.billingCost?.pricingSnapshotJSON).billed_reason === MODERATION_BLOCKED_BILLED_REASON;
       msg.inlineAlert = {
         title: labels.moderationBlocked || "Content blocked",
         message: [
@@ -260,7 +254,6 @@ export function mapServerMessage(
           categories.length > 0 && labels.moderationCategories
             ? labels.moderationCategories(categories)
             : "",
-          billedAfterBlock ? labels.moderationBilled || "" : "",
         ]
           .filter(Boolean)
           .join("\n"),

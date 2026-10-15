@@ -11,16 +11,12 @@ import {
 import {
   createAdminUser,
   deleteAdminUser,
-  getAdminBillingConfig,
-  listAdminBillingPlans,
   patchAdminUser,
   resetAdminUserPassword,
   resetAdminUserTwoFactor,
   revokeAdminUserSessions,
-  updateAdminBillingAccountBalance,
 } from "@/features/admin/api";
 import type { AdminUserDTO, AdminUserRole, AdminUserStatus } from "@/features/admin/api/admin-types";
-import type { AdminBillingMode, AdminBillingPlanDTO } from "@/features/admin/api/billing-types";
 import {
   isDisplayNameLengthValid,
   isPasswordPolicyValid,
@@ -35,18 +31,12 @@ import {
   type PendingAction,
   type UserSortValue,
 } from "@/features/admin/types/users";
-import {
-  resolveSubscriptionExpiryInputValue,
-  resolveSubscriptionExpiryDate,
-  resolveSubscriptionExpiryISO,
-} from "@/features/admin/utils/user-display";
 import { isAdminUserRole, isAdminUserStatus } from "@/features/admin/model/admin-unions";
 import { resolveAdminErrorMessage } from "@/features/admin/utils/admin-error";
 import { isFiniteNumber, isRecord, isString } from "@/shared/lib/type-guards";
 import { patchByID, removeByID, removeManyByID, replaceByID, restoreAt, restoreManyAt } from "@/shared/lib/optimistic-list";
 import { runBulkActionInChunks, runSettledBulkItems } from "@/shared/lib/bulk-action";
 import { resolveTimeZoneOptions } from "@/shared/lib/time-zone";
-import { normalizeBillingDisplayCurrency, type BillingDisplayOptions } from "@/entities/billing";
 import { useAdminUsersFilters } from "./use-admin-users-filters";
 import { useAdminUsersSelection } from "./use-admin-users-selection";
 
@@ -88,8 +78,6 @@ type UseAdminUsersPageState = {
   setRoleFilter: (value: string) => void;
   statusFilter: string;
   setStatusFilter: (value: string) => void;
-  tierFilter: string;
-  setTierFilter: (value: string) => void;
   sortValue: UserSortValue;
   setSortValue: (value: UserSortValue) => void;
   selectedUserIDs: Set<number>;
@@ -99,17 +87,12 @@ type UseAdminUsersPageState = {
   setBatchStatus: (value: AdminUserStatus | "") => void;
   batchTimezone: string;
   setBatchTimezone: (value: string) => void;
-  batchBalance: string;
-  setBatchBalance: (value: string) => void;
   createPayload: CreateUserPayload;
   setCreatePayload: React.Dispatch<React.SetStateAction<CreateUserPayload>>;
   editPayload: EditUserPayload;
   setEditPayload: React.Dispatch<React.SetStateAction<EditUserPayload>>;
   resetPasswordDraft: string;
   setResetPasswordDraft: (value: string) => void;
-  billingMode: AdminBillingMode;
-  billingDisplay: BillingDisplayOptions;
-  billingPlans: AdminBillingPlanDTO[];
   createAvatarSource: Pick<CreateUserPayload, "username" | "displayName">;
   avatarDialogPreviewSrc: string | undefined;
   editStatusChanged: boolean;
@@ -140,7 +123,6 @@ type UseAdminUsersPageState = {
   onBulkApplyStatus: () => Promise<void>;
   onBulkDeleteUsers: () => Promise<void>;
   onBulkApplyTimezone: () => Promise<void>;
-  onBulkApplyBalance: () => Promise<void>;
   handleRandomizeAvatarDialog: () => void;
 };
 
@@ -154,13 +136,10 @@ type AdminUserPatchPayload = {
   timezone?: string;
   locale?: string;
   profilePreferences?: string;
-  subscriptionTier?: string;
-  subscriptionExpiresAt?: string;
   reason?: string;
 };
 
-function createEditPayload(user: AdminUserDTO, fallbackSubscriptionTier = "free"): EditUserPayload {
-  const subscriptionTier = user.subscriptionTier.trim() || fallbackSubscriptionTier;
+function createEditPayload(user: AdminUserDTO): EditUserPayload {
   return {
     avatarURL: user.avatarURL.trim(),
     displayName: user.displayName,
@@ -170,9 +149,6 @@ function createEditPayload(user: AdminUserDTO, fallbackSubscriptionTier = "free"
     status: user.status,
     timezone: user.timezone.trim() || "Etc/UTC",
     locale: user.locale.trim() || "en-US",
-    subscriptionTier,
-    subscriptionExpiresAt: resolveSubscriptionExpiryInputValue(user.subscriptionExpiresAt),
-    billingBalanceUSD: String(user.billingBalanceUSD ?? 0),
     profilePreferences: user.profilePreferences,
     reason: "",
   };
@@ -180,10 +156,6 @@ function createEditPayload(user: AdminUserDTO, fallbackSubscriptionTier = "free"
 
 function hasPatchChanges(payload: AdminUserPatchPayload): boolean {
   return Object.keys(payload).some((key) => key !== "reason");
-}
-
-function roundBillingBalance(value: number): number {
-  return Math.round(value * 1_000_000) / 1_000_000;
 }
 
 // Minimal shape check for a user echoed back by an admin endpoint; anything
@@ -230,8 +202,6 @@ export function useAdminUsersPage({
     setRoleFilter,
     statusFilter,
     setStatusFilter,
-    tierFilter,
-    setTierFilter,
     sortValue,
     setSortValue,
     filteredItems,
@@ -255,7 +225,6 @@ export function useAdminUsersPage({
   const [batchRole, setBatchRole] = React.useState<AdminUserRole | "">("");
   const [batchStatus, setBatchStatus] = React.useState<AdminUserStatus | "">("");
   const [batchTimezone, setBatchTimezone] = React.useState("");
-  const [batchBalance, setBatchBalance] = React.useState("");
 
   const [createPayload, setCreatePayload] = React.useState<CreateUserPayload>(DEFAULT_CREATE_USER_PAYLOAD);
   const [editPayload, setEditPayload] = React.useState<EditUserPayload>({
@@ -267,16 +236,10 @@ export function useAdminUsersPage({
     status: "active",
     timezone: "Etc/UTC",
     locale: "en-US",
-    subscriptionTier: "free",
-    subscriptionExpiresAt: "",
-    billingBalanceUSD: "0",
     profilePreferences: "",
     reason: "",
   });
   const [resetPasswordDraft, setResetPasswordDraft] = React.useState("");
-  const [billingMode, setBillingMode] = React.useState<AdminBillingMode>("self");
-  const [billingDisplay, setBillingDisplay] = React.useState<BillingDisplayOptions>({ currency: "USD" });
-  const [billingPlans, setBillingPlans] = React.useState<AdminBillingPlanDTO[]>([]);
 
   const createAvatarSource = React.useMemo(
     () => ({ username: createPayload.username, displayName: createPayload.displayName }),
@@ -301,55 +264,6 @@ export function useAdminUsersPage({
 
   const resolveInlineKey = React.useCallback((userID: number, field: InlineEditableField) => `${userID}:${field}`, []);
 
-  React.useEffect(() => {
-    let cancelled = false;
-    void resolveAccessToken()
-      .then((token) => {
-        if (!token) {
-          return null;
-        }
-        return Promise.allSettled([
-          getAdminBillingConfig(token),
-          listAdminBillingPlans(token),
-        ]);
-      })
-      .then((results) => {
-        if (!cancelled && results) {
-          const [configResult, plansResult] = results;
-          if (configResult.status === "fulfilled") {
-            setBillingMode(configResult.value.config.mode);
-            setBillingDisplay({
-              currency: normalizeBillingDisplayCurrency(configResult.value.config.displayCurrency),
-              usdToCnyRate: configResult.value.config.usdToCNYRate,
-            });
-          }
-          if (plansResult.status === "fulfilled") {
-            setBillingPlans(plansResult.value);
-          }
-        }
-      })
-      .catch((): undefined => undefined);
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  React.useEffect(() => {
-    if (billingMode !== "period") {
-      setTierFilter("");
-      return;
-    }
-    const firstPlan = billingPlans[0];
-    if (!firstPlan) {
-      return;
-    }
-    setCreatePayload((current) =>
-      current.subscriptionTier && billingPlans.some((plan) => plan.code === current.subscriptionTier)
-        ? current
-        : { ...current, subscriptionTier: firstPlan.code },
-    );
-  }, [billingMode, billingPlans, setTierFilter]);
-
   const refreshUsers = React.useCallback(
     async (nextPage = page) => {
       setPendingAction("refresh");
@@ -370,10 +284,9 @@ export function useAdminUsersPage({
     if (!canManageUser(user)) {
       return;
     }
-    const fallbackSubscriptionTier = billingPlans[0]?.code || "free";
     setEditDialogTarget(user);
-    setEditPayload(createEditPayload(user, fallbackSubscriptionTier));
-  }, [billingPlans, canManageUser]);
+    setEditPayload(createEditPayload(user));
+  }, [canManageUser]);
 
   const handleOpenAvatarDialog = React.useCallback((user: AdminUserDTO) => {
     if (!canManageUser(user)) {
@@ -450,16 +363,6 @@ export function useAdminUsersPage({
         return;
       }
 
-      if (billingMode === "period" && createPayload.subscriptionTier !== "free" && !createPayload.subscriptionExpiresAt.trim()) {
-        toast.error(t("toast.createFailed"), { description: t("validation.nonFreeRequiresExpiry") });
-        return;
-      }
-
-      if (billingMode === "period" && createPayload.subscriptionTier !== "free" && !resolveSubscriptionExpiryDate(createPayload.subscriptionExpiresAt)) {
-        toast.error(t("toast.createFailed"), { description: t("validation.invalidSubscriptionExpiry") });
-        return;
-      }
-
       setPendingAction("create");
       try {
         const token = await resolveAccessToken();
@@ -476,11 +379,6 @@ export function useAdminUsersPage({
           email: createPayload.email.trim(),
           timezone: createPayload.timezone.trim(),
           locale: createPayload.locale.trim(),
-          subscriptionTier: billingMode === "period" ? createPayload.subscriptionTier : undefined,
-          subscriptionExpiresAt:
-            billingMode !== "period" || createPayload.subscriptionTier === "free" || !createPayload.subscriptionExpiresAt.trim()
-              ? undefined
-              : resolveSubscriptionExpiryISO(createPayload.subscriptionExpiresAt),
         });
 
         setCreatePayload(DEFAULT_CREATE_USER_PAYLOAD);
@@ -498,7 +396,7 @@ export function useAdminUsersPage({
         setPendingAction("");
       }
     },
-    [billingMode, createPayload, onLoadUsers, onSetPage, page, pendingAction, t],
+    [createPayload, onLoadUsers, onSetPage, page, pendingAction, t],
   );
 
   const handleSaveAvatarDialog = React.useCallback(async () => {
@@ -560,8 +458,6 @@ export function useAdminUsersPage({
     const nextEmail = editPayload.email.trim();
     const nextPhone = editPayload.phone.trim();
     const nextLocale = editPayload.locale.trim() || "en-US";
-    const nextSubscriptionTier = editPayload.subscriptionTier.trim();
-    const nextBillingBalance = Number(editPayload.billingBalanceUSD);
     const nextProfilePreferences = editPayload.profilePreferences.trim();
     const patchPayload: AdminUserPatchPayload = {};
 
@@ -599,49 +495,11 @@ export function useAdminUsersPage({
     if (nextProfilePreferences !== editDialogTarget.profilePreferences.trim()) {
       patchPayload.profilePreferences = nextProfilePreferences;
     }
-    if (billingMode === "period") {
-      if (!nextSubscriptionTier) {
-        toast.error(t("toast.editFailed"), { description: t("validation.selectSubscriptionPlan") });
-        return;
-      }
-      if (nextSubscriptionTier !== "free" && !editPayload.subscriptionExpiresAt.trim()) {
-        toast.error(t("toast.editFailed"), { description: t("validation.nonFreeRequiresExpiry") });
-        return;
-      }
-      if (nextSubscriptionTier !== "free" && !resolveSubscriptionExpiryDate(editPayload.subscriptionExpiresAt)) {
-        toast.error(t("toast.editFailed"), { description: t("validation.invalidSubscriptionExpiry") });
-        return;
-      }
-
-      const currentSubscriptionTier = editDialogTarget.subscriptionTier.trim() || "free";
-      const currentSubscriptionExpiresAt = resolveSubscriptionExpiryInputValue(editDialogTarget.subscriptionExpiresAt);
-      const nextSubscriptionExpiresAt = nextSubscriptionTier === "free" ? "" : editPayload.subscriptionExpiresAt.trim();
-      if (nextSubscriptionTier !== currentSubscriptionTier || nextSubscriptionExpiresAt !== currentSubscriptionExpiresAt) {
-        patchPayload.subscriptionTier = nextSubscriptionTier;
-        if (nextSubscriptionTier !== "free") {
-          patchPayload.subscriptionExpiresAt = resolveSubscriptionExpiryISO(nextSubscriptionExpiresAt);
-        }
-      }
-    }
     if (editPayload.status !== editDialogTarget.status && editPayload.reason.trim()) {
       patchPayload.reason = editPayload.reason.trim();
     }
 
-    const billingBalanceChanged =
-      billingMode !== "self" &&
-      Number.isFinite(nextBillingBalance) &&
-      roundBillingBalance(nextBillingBalance) !== roundBillingBalance(editDialogTarget.billingBalanceUSD ?? 0);
-
-    if (billingMode !== "self" && !Number.isFinite(nextBillingBalance)) {
-      toast.error(t("toast.editFailed"), { description: t("validation.invalidUsageBalance") });
-      return;
-    }
-    if (billingBalanceChanged && nextBillingBalance < 0) {
-      toast.error(t("toast.editFailed"), { description: t("validation.invalidUsageBalance") });
-      return;
-    }
-
-    if (!hasPatchChanges(patchPayload) && !billingBalanceChanged) {
+    if (!hasPatchChanges(patchPayload)) {
       setEditDialogTarget(null);
       return;
     }
@@ -655,22 +513,8 @@ export function useAdminUsersPage({
         return;
       }
 
-      let nextUser: AdminUserDTO = editDialogTarget;
-      if (hasPatchChanges(patchPayload)) {
-        const response = await patchAdminUser(token, editDialogTarget.id, patchPayload);
-        nextUser = response.user;
-      }
-      if (billingBalanceChanged) {
-        const response = await updateAdminBillingAccountBalance(token, editDialogTarget.id, {
-          balanceUSD: roundBillingBalance(nextBillingBalance),
-          description: t("toast.balanceAdjustmentDescription"),
-        });
-        nextUser = {
-          ...nextUser,
-          billingBalanceUSD: response.account.balanceUSD,
-          billingAccountStatus: response.account.status,
-        };
-      }
+      const response = await patchAdminUser(token, editDialogTarget.id, patchPayload);
+      const nextUser: AdminUserDTO = response.user;
       onSetUsers((current) => replaceByID(current, editDialogTarget.id, (user) => user.id, nextUser));
       toast.success(t("toast.userUpdated"));
       setEditDialogTarget(null);
@@ -680,7 +524,7 @@ export function useAdminUsersPage({
       setPendingAction("");
       setActionUserID(null);
     }
-  }, [billingMode, canManageUser, editDialogTarget, editPayload, onSetUsers, pendingAction, t]);
+  }, [canManageUser, editDialogTarget, editPayload, onSetUsers, pendingAction, t]);
 
   const onResetPassword = React.useCallback(async () => {
     if (pendingAction || !resetDialogTarget) {
@@ -1047,84 +891,6 @@ export function useAdminUsersPage({
     }
   }, [batchTimezone, items, onSetUsers, pendingAction, resolveSelectedUsers, setSelectedUserIDs, t]);
 
-  const onBulkApplyBalance = React.useCallback(async () => {
-    const selectedUsers = resolveSelectedUsers();
-    const nextBalance = Number(batchBalance);
-    if (!selectedUsers.length || !batchBalance.trim() || pendingAction) {
-      return;
-    }
-    if (billingMode === "self") {
-      return;
-    }
-    if (!Number.isFinite(nextBalance) || nextBalance < 0) {
-      toast.error(t("toast.bulkBalanceFailed"), { description: t("validation.invalidUsageBalance") });
-      return;
-    }
-
-    const roundedBalance = roundBillingBalance(nextBalance);
-    const targets = selectedUsers.filter((item) => roundBillingBalance(item.billingBalanceUSD ?? 0) !== roundedBalance);
-    if (!targets.length) {
-      toast.info(t("toast.bulkBalanceAlreadyApplied"));
-      return;
-    }
-
-    setPendingAction("bulk-balance");
-    setActionUserID(null);
-    const targetIDs = new Set(targets.map((item) => item.id));
-    const rollbackUsers = targets.map((item) => ({ item, index: items.findIndex((current) => current.id === item.id) }));
-    try {
-      const token = await resolveAccessToken();
-      if (!token) {
-        toast.error(t("toast.sessionExpired"), { description: t("toast.signInAgain") });
-        return;
-      }
-
-      onSetUsers((current) =>
-        current.map((item) => (targetIDs.has(item.id) ? { ...item, billingBalanceUSD: roundedBalance } : item)),
-      );
-      const results = await runSettledBulkItems({
-        items: targets,
-        title: t("toast.bulkBalanceUpdated", { count: targets.length }),
-        runItem: (item) =>
-          updateAdminBillingAccountBalance(token, item.id, {
-            balanceUSD: roundedBalance,
-            description: t("toast.bulkBalanceAdjustmentDescription"),
-          }),
-      });
-      const failedUsers = results.filter((result) => result.status === "rejected").map((result) => result.item);
-      const successUsers = results.filter((result) => result.status === "fulfilled").map((result) => result.item);
-      const successResponses = results
-        .filter((result): result is Extract<typeof result, { status: "fulfilled" }> => result.status === "fulfilled")
-        .map((result) => result.value.account);
-      onSetUsers((current) =>
-        successResponses.reduce(
-          (next, account) =>
-            patchByID(next, account.userID, (item) => item.id, {
-              billingBalanceUSD: account.balanceUSD,
-              billingAccountStatus: account.status,
-            }),
-          current,
-        ),
-      );
-      if (failedUsers.length > 0) {
-        const failedRollbackUsers = failedUsers.map((item) => ({ item, index: items.findIndex((current) => current.id === item.id) }));
-        onSetUsers((current) => restoreManyAt(current, failedRollbackUsers, (item) => item.id));
-        setSelectedUserIDs(new Set(failedUsers.map((item) => item.id)));
-        toast.error(t("toast.bulkBalancePartialFailed"), { description: t("toast.bulkPartialDescription", { success: successUsers.length, failed: failedUsers.length }) });
-        return;
-      }
-
-      toast.success(t("toast.bulkBalanceUpdated", { count: targets.length }));
-      setSelectedUserIDs(new Set());
-      setBatchBalance("");
-    } catch (error) {
-      onSetUsers((current) => restoreManyAt(current, rollbackUsers, (item) => item.id));
-      toast.error(t("toast.bulkBalanceFailed"), { description: resolveAdminErrorMessage(error) });
-    } finally {
-      setPendingAction("");
-    }
-  }, [batchBalance, billingMode, items, onSetUsers, pendingAction, resolveSelectedUsers, setSelectedUserIDs, t]);
-
   const handleRandomizeAvatarDialog = React.useCallback(() => {
     const nextValue = createGeneratedGithubAvatarRef(generateAvatarVariant());
     setAvatarDialog((current) => (current.mode === "closed" ? current : { ...current, value: nextValue }));
@@ -1155,8 +921,6 @@ export function useAdminUsersPage({
     setRoleFilter,
     statusFilter,
     setStatusFilter,
-    tierFilter,
-    setTierFilter,
     sortValue,
     setSortValue,
     selectedUserIDs,
@@ -1166,17 +930,12 @@ export function useAdminUsersPage({
     setBatchStatus,
     batchTimezone,
     setBatchTimezone,
-    batchBalance,
-    setBatchBalance,
     createPayload,
     setCreatePayload,
     editPayload,
     setEditPayload,
     resetPasswordDraft,
     setResetPasswordDraft,
-    billingMode,
-    billingDisplay,
-    billingPlans,
     createAvatarSource,
     avatarDialogPreviewSrc,
     editStatusChanged,
@@ -1203,7 +962,6 @@ export function useAdminUsersPage({
     onBulkApplyStatus,
     onBulkDeleteUsers,
     onBulkApplyTimezone,
-    onBulkApplyBalance,
     handleRandomizeAvatarDialog,
   };
 }

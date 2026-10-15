@@ -118,14 +118,6 @@ export type ChatInlineAlert = {
   details?: UpstreamDebugInfo;
 };
 
-export type ChatBillingCost = {
-  billingMode: string;
-  billedCurrency: string;
-  billedNanousd: number;
-  billedUSD: number;
-  pricingSnapshotJSON: string;
-};
-
 /**
  * How an edited user message is applied: "regenerate" starts a new branch and
  * asks the model again; "save" rewrites the message in place and keeps every
@@ -166,7 +158,6 @@ export type ChatAreaMessage = {
   cacheWriteTokens?: number;
   reasoningTokens?: number;
   latencyMS?: number;
-  billingCost?: ChatBillingCost;
   knowledgeSources?: RAGCitation[];
   processTrace?: ChatMessageProcessTrace;
   inlineAlert?: ChatInlineAlert;

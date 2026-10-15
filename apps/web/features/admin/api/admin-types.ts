@@ -9,14 +9,11 @@ import type {
   ImportRosterUsersResponse,
   ImportRosterUsersRowResponse,
   PatchUserRequest,
-  PaymentOrderResponse,
-  RedemptionRecordResponse,
   ResetUserPasswordRequest,
   ResetUserPasswordResponse,
   RevokeUserSessionsResponse,
   UpdateUserStatusRequest,
   UserDataResponse,
-  UsageLogResponse,
 } from "@deeix/api-contract";
 import type { PagePayload } from "@/shared/api/common-types";
 import type { ADMIN_USER_ROLES, ADMIN_USER_STATUSES } from "@/features/admin/model/admin-unions";
@@ -84,21 +81,11 @@ export type AdminUserAuthEventDTO = AuthEventResponse;
 
 export type AdminAuditLogDTO = AuditLogResponse;
 
-
-export type AdminUsageLogDTO = Omit<UsageLogResponse, "billingAt">;
-
-export type AdminPaymentOrderDTO = PaymentOrderResponse;
-
-export type AdminRedemptionRecordDTO = RedemptionRecordResponse;
-
 export type AdminConversationEventDTO = ConversationEventResponse;
 
 export type ListAdminUsersResult = PagePayload<AdminUserDTO>;
 export type ListAdminUserAuthEventsResult = PagePayload<AdminUserAuthEventDTO>;
 export type ListAdminAuditLogsResult = PagePayload<AdminAuditLogDTO>;
-export type ListAdminUsageLogsResult = PagePayload<AdminUsageLogDTO>;
-export type ListAdminPaymentOrdersResult = PagePayload<AdminPaymentOrderDTO>;
-export type ListAdminRedemptionsResult = PagePayload<AdminRedemptionRecordDTO>;
 export type ListAdminConversationEventsResult = PagePayload<AdminConversationEventDTO>;
 
 export type TikaRuntimeStatus =

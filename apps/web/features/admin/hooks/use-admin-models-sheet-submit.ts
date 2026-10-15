@@ -10,7 +10,6 @@ import {
   invalidateAdminReferenceDataCache,
   updateAdminLLMModel,
 } from "@/features/admin/api";
-import type { AdminOfficialPricingCatalogItemDTO } from "@/features/admin/api/billing-types";
 import type {
   AdminLLMModelAccessScope,
   AdminLLMModelCbPolicyMode,
@@ -19,13 +18,10 @@ import type {
   AdminLLMStatus,
   UpdateAdminLLMModelRequest,
 } from "@/features/admin/api/llm-types";
-import type { OpenRouterCatalogState } from "@/features/admin/hooks/use-admin-models-openrouter-catalog";
-import { setAutomaticModelContextWindowInCapabilities } from "@/features/admin/model/model-context-window";
 import {
   type ModelSourceBindDraftRow,
   resolveModelSourceBindDraftRows,
 } from "@/features/admin/model/models-source-binding";
-import { resolveAutomaticModelContextWindow } from "@/features/admin/model/openrouter-model-catalog";
 import { resolveAdminErrorMessage } from "@/features/admin/utils/admin-error";
 import { resolveAccessToken } from "@/shared/auth/resolve-access-token";
 import { stringifyKinds } from "@/entities/model";
@@ -69,8 +65,6 @@ export function isSameContextWindowTarget(
 type UseAdminModelsSheetSubmitOptions = {
   mode: "create" | "edit";
   target: AdminLLMModelDTO | null;
-  openRouterCatalog: OpenRouterCatalogState;
-  loadOpenRouterCatalog: (accessToken?: string) => Promise<AdminOfficialPricingCatalogItemDTO[] | null>;
   manualPermissionGroupIDs: number[];
   saveModelPermissionGroups: (accessToken: string, modelID: number) => Promise<void>;
   onClose: () => void;
@@ -79,7 +73,6 @@ type UseAdminModelsSheetSubmitOptions = {
 
 type AdminModelSheetSubmitInput = {
   form: AdminModelSheetForm;
-  contextWindowOverride: number | null;
   bindRows: ModelSourceBindDraftRow[];
   /** Capability JSON normalisation lives with the capability editor; the sheet passes it in. */
   normalizeCapabilities: (capabilitiesJSON: string) => string;
@@ -90,8 +83,6 @@ type AdminModelSheetSubmitInput = {
 export function useAdminModelsSheetSubmit({
   mode,
   target,
-  openRouterCatalog,
-  loadOpenRouterCatalog,
   manualPermissionGroupIDs,
   saveModelPermissionGroups,
   onClose,
@@ -100,7 +91,7 @@ export function useAdminModelsSheetSubmit({
   const t = useTranslations("adminModels");
   const [pending, setPending] = React.useState(false);
 
-  async function submit({ form, contextWindowOverride, bindRows, normalizeCapabilities, onCreated }: AdminModelSheetSubmitInput) {
+  async function submit({ form, bindRows, normalizeCapabilities, onCreated }: AdminModelSheetSubmitInput) {
     if (pending || (mode === "edit" && !target)) return;
 
     const bindDraftResult = mode === "create"
@@ -121,40 +112,7 @@ export function useAdminModelsSheetSubmit({
     setPending(true);
     try {
       const token = await resolveAccessToken();
-      let capabilitiesJSON = form.capabilitiesJSON;
-      if (contextWindowOverride === null) {
-        const catalog = openRouterCatalog.status === "loaded"
-          ? openRouterCatalog.items
-          : await loadOpenRouterCatalog(token);
-        if (catalog) {
-          const catalogContextWindow = resolveAutomaticModelContextWindow(
-            catalog,
-            form.platformModelName,
-            form.vendor,
-          );
-          const nextCapabilitiesJSON = setAutomaticModelContextWindowInCapabilities(
-            capabilitiesJSON,
-            catalogContextWindow,
-          );
-          if (nextCapabilitiesJSON === null) {
-            toast.error(t("sheet.capabilitiesQuick.invalidJSON"));
-            return;
-          }
-          capabilitiesJSON = nextCapabilitiesJSON;
-        } else if (!isSameContextWindowTarget(target, form.platformModelName, form.vendor)) {
-          // Auto values belong only to the model identity matched at save time. If the model or vendor changes and the catalog is temporarily
-          // unavailable, the old value must be removed so the backend built-in catalog or global fallback takes over.
-          const nextCapabilitiesJSON = setAutomaticModelContextWindowInCapabilities(
-            capabilitiesJSON,
-            null,
-          );
-          if (nextCapabilitiesJSON === null) {
-            toast.error(t("sheet.capabilitiesQuick.invalidJSON"));
-            return;
-          }
-          capabilitiesJSON = nextCapabilitiesJSON;
-        }
-      }
+      const capabilitiesJSON = form.capabilitiesJSON;
       const normalizedCapabilitiesJSON = normalizeCapabilities(capabilitiesJSON);
       const kindsJson =
         form.kinds.length > 0 ? stringifyKinds(form.kinds) : undefined;

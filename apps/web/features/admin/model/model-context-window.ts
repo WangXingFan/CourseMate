@@ -77,26 +77,3 @@ export function setModelContextWindowInCapabilities(
   }
   return Object.keys(payload).length > 0 ? JSON.stringify(payload, null, 2) : "";
 }
-
-export function setAutomaticModelContextWindowInCapabilities(
-  value: string | null | undefined,
-  contextWindow: number | null,
-): string | null {
-  const payload = parseCapabilitiesObject(value);
-  if (!payload) {
-    return null;
-  }
-  delete payload.context_window;
-  delete payload.contextWindowTokens;
-  delete payload.context_window_tokens;
-  if (contextWindow === null) {
-    if (payload._deeixContextWindowMode === "auto") {
-      delete payload.contextWindow;
-      delete payload._deeixContextWindowMode;
-    }
-  } else {
-    payload.contextWindow = contextWindow;
-    payload._deeixContextWindowMode = "auto";
-  }
-  return Object.keys(payload).length > 0 ? JSON.stringify(payload, null, 2) : "";
-}

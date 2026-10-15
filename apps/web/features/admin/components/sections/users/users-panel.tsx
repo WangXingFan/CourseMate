@@ -2,12 +2,11 @@
 
 import * as React from "react";
 import dynamic from "next/dynamic";
-import { Globe, Plus, Settings, ShieldCheck, ShieldX, Trash2, Upload, UserCheck, WalletCards } from "lucide-react";
+import { Globe, Plus, Settings, ShieldCheck, ShieldX, Trash2, Upload, UserCheck } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -40,8 +39,6 @@ import { useAuthSession } from "@/shared/auth/auth-session-context";
 import { useDialogSnapshot } from "@/shared/hooks/use-dialog-snapshot";
 import { TimeZoneSelect } from "@/shared/components/time-zone-select";
 import type { AdminUserDTO, AdminUserRole, AdminUserStatus } from "@/features/admin/api/admin-types";
-import type { AdminBillingMode } from "@/features/admin/api/billing-types";
-import type { BillingDisplayOptions } from "@/entities/billing";
 
 import { UserAvatarEditorDialog } from "./users-avatar-dialog";
 import { UserConfirmationDialog } from "./users-confirm-dialog";
@@ -57,12 +54,10 @@ import {
   USER_ROLE_OPTIONS,
   USER_SORT_OPTIONS,
   USER_STATUS_OPTIONS,
-  USER_TIER_OPTIONS,
   isUserSortValue,
 } from "@/features/admin/types/users";
 import { isAdminUserRole, isAdminUserStatus } from "@/features/admin/model/admin-unions";
 import {
-  formatBillingBalance,
   formatDateTime,
   resolveCreateUserInitial,
   resolveUserInitial,
@@ -83,7 +78,7 @@ const EditUserSheet = dynamic(
   },
 );
 
-type AccountBulkAction = "role" | "status" | "timezone" | "balance" | "delete";
+type AccountBulkAction = "role" | "status" | "timezone" | "delete";
 
 function useUserStatusLabel() {
   const t = useTranslations("adminUsers.status");
@@ -100,56 +95,6 @@ function useUserStatusLabel() {
           return t("suspended");
         case "deactivated":
           return t("deactivated");
-        default:
-          return value?.trim() || "-";
-      }
-    },
-    [t],
-  );
-}
-
-function useSubscriptionStatusLabel() {
-  const t = useTranslations("adminUsers.subscriptionStatus");
-  return React.useCallback(
-    (value: string | null | undefined) => {
-      switch (value?.trim()) {
-        case "active":
-          return t("active");
-        case "trialing":
-          return t("trialing");
-        case "past_due":
-          return t("pastDue");
-        case "canceled":
-          return t("canceled");
-        case "unpaid":
-          return t("unpaid");
-        case "incomplete":
-          return t("incomplete");
-        case "incomplete_expired":
-          return t("incompleteExpired");
-        case "paused":
-          return t("paused");
-        default:
-          return value?.trim() || "-";
-      }
-    },
-    [t],
-  );
-}
-
-function useBillingAccountStatusLabel() {
-  const t = useTranslations("adminUsers.billingAccountStatus");
-  return React.useCallback(
-    (value: string | null | undefined) => {
-      switch (value?.trim()) {
-        case "active":
-          return t("active");
-        case "frozen":
-          return t("frozen");
-        case "closed":
-          return t("closed");
-        case "suspended":
-          return t("suspended");
         default:
           return value?.trim() || "-";
       }
@@ -207,8 +152,6 @@ type AccountsUsersProps = {
 type UserTableRowProps = {
   item: AdminUserDTO;
   checked: boolean;
-  billingMode: AdminBillingMode;
-  billingDisplay: BillingDisplayOptions;
   inlineRolePending: boolean;
   inlineStatusPending: boolean;
   pendingAction: string;
@@ -228,8 +171,6 @@ type UserTableRowProps = {
 const UserTableRow = React.memo(function UserTableRow({
   item,
   checked,
-  billingMode,
-  billingDisplay,
   inlineRolePending,
   inlineStatusPending,
   pendingAction,
@@ -244,8 +185,6 @@ const UserTableRow = React.memo(function UserTableRow({
   const t = useTranslations("adminUsers");
   const locale = useLocale();
   const resolveUserStatusLabel = useUserStatusLabel();
-  const resolveSubscriptionStatusLabel = useSubscriptionStatusLabel();
-  const resolveBillingAccountStatusLabel = useBillingAccountStatusLabel();
   const avatarAlt = item.displayName.trim() || item.username.trim() || item.publicID.trim() || t("fallbackUser");
   const disabled = Boolean(pendingAction) || !canManage;
   const rowRoleOptions = React.useMemo(
@@ -349,27 +288,6 @@ const UserTableRow = React.memo(function UserTableRow({
           </Combobox>
         </div>
       </TableCell>
-      {billingMode === "period" ? (
-        <TableCell className="text-foreground">
-          <div
-            className="max-w-[10rem] truncate"
-            title={resolveValue(
-              item.subscriptionPlanName.trim() || item.subscriptionTier.trim() || resolveSubscriptionStatusLabel(item.subscriptionStatus),
-            )}
-          >
-            {resolveValue(
-              item.subscriptionPlanName.trim() || item.subscriptionTier.trim() || resolveSubscriptionStatusLabel(item.subscriptionStatus),
-            )}
-          </div>
-        </TableCell>
-      ) : null}
-      {billingMode !== "self" ? (
-        <TableCell className="whitespace-nowrap text-foreground">
-          <span title={resolveBillingAccountStatusLabel(item.billingAccountStatus || "active")}>
-            {formatBillingBalance(item.billingBalanceUSD, billingDisplay)}
-          </span>
-        </TableCell>
-      ) : null}
       <TableCell className="text-muted-foreground">
         <div className="flex items-center justify-center">
           {item.twoFactorEnabled ? <ShieldCheck className="size-3.5" /> : <ShieldX className="size-3.5" />}
@@ -451,8 +369,6 @@ export function UsersPanel({
     setRoleFilter,
     statusFilter,
     setStatusFilter,
-    tierFilter,
-    setTierFilter,
     sortValue,
     setSortValue,
     selectedUserIDs,
@@ -462,17 +378,12 @@ export function UsersPanel({
     setBatchStatus,
     batchTimezone,
     setBatchTimezone,
-    batchBalance,
-    setBatchBalance,
     createPayload,
     setCreatePayload,
     editPayload,
     setEditPayload,
     resetPasswordDraft,
     setResetPasswordDraft,
-    billingMode,
-    billingDisplay,
-    billingPlans,
     createAvatarSource,
     avatarDialogPreviewSrc,
     editStatusChanged,
@@ -498,7 +409,6 @@ export function UsersPanel({
     onBulkApplyStatus,
     onBulkDeleteUsers,
     onBulkApplyTimezone,
-    onBulkApplyBalance,
     handleRandomizeAvatarDialog,
   } = useAdminUsersPage({
     items,
@@ -546,19 +456,13 @@ export function UsersPanel({
       case "timezone":
         void onBulkApplyTimezone().then(() => setBulkConfirmAction(null));
         break;
-      case "balance":
-        void onBulkApplyBalance().then(() => setBulkConfirmAction(null));
-        break;
       case "delete":
         void onBulkDeleteUsers().then(() => setBulkConfirmAction(null));
         break;
     }
   }
 
-  const showBalanceColumn = billingMode !== "self";
-  const baseColumnCount = 9;
-  const billingColumnCount = (billingMode === "period" ? 1 : 0) + (showBalanceColumn ? 1 : 0);
-  const tableColSpan = baseColumnCount + billingColumnCount;
+  const tableColSpan = 9;
 
   return (
     <>
@@ -592,24 +496,6 @@ export function UsersPanel({
                 ...USER_STATUS_OPTIONS.map((item) => ({ label: resolveUserStatusLabel(item), value: item })),
               ],
             },
-            ...(billingMode === "period"
-              ? [
-                  {
-                    key: "tier",
-                    label: t("fields.subscription"),
-                    value: tierFilter,
-                    onValueChange: setTierFilter,
-                    options: [
-                      { label: t("table.allSubscriptions"), value: "" },
-                      ...billingPlans.map((item) => ({ label: item.name || item.code, value: item.code })),
-                      ...USER_TIER_OPTIONS.filter((tier) => !billingPlans.some((plan) => plan.code === tier)).map((item) => ({
-                        label: item,
-                        value: item,
-                      })),
-                    ],
-                  },
-                ]
-              : []),
           ]}
           sort={{
             value: sortValue,
@@ -688,26 +574,6 @@ export function UsersPanel({
                   onChange={setBatchTimezone}
                 />
               </BulkActionControlRow>
-
-              {showBalanceColumn ? (
-                <BulkActionControlRow
-                  icon={<WalletCards className="size-3 stroke-1" />}
-                  label={t("actions.apply")}
-                  onApply={() => setBulkConfirmAction("balance")}
-                  disabled={loading || Boolean(pendingAction) || selectedUserIDs.size === 0 || !batchBalance.trim()}
-                >
-                  <Input
-                    type="number"
-                    min="0"
-                    step="0.000001"
-                    value={batchBalance}
-                    placeholder={t("fields.balanceUSDInput")}
-                    onChange={(event) => setBatchBalance(event.target.value)}
-                    disabled={loading || Boolean(pendingAction) || selectedUserIDs.size === 0}
-                    className="h-7 px-2 text-[11px]"
-                  />
-                </BulkActionControlRow>
-              ) : null}
             </div>
           }
           bulkActions={[
@@ -769,8 +635,6 @@ export function UsersPanel({
                 <TableHead>{t("fields.info")}</TableHead>
                 <TableHead>{t("fields.role")}</TableHead>
                 <TableHead>{t("fields.status")}</TableHead>
-                {billingMode === "period" ? <TableHead>{t("fields.subscription")}</TableHead> : null}
-                {showBalanceColumn ? <TableHead>{t("fields.balance")}</TableHead> : null}
                 <TableHead className="text-center">2FA</TableHead>
                 <TableHead>{t("fields.timezone")}</TableHead>
                 <TableHead>{t("fields.lastActive")}</TableHead>
@@ -788,8 +652,6 @@ export function UsersPanel({
                       key={item.id}
                       item={item}
                       checked={selectedUserIDs.has(item.id)}
-                      billingMode={billingMode}
-                      billingDisplay={billingDisplay}
                       inlineRolePending={Boolean(inlinePending[resolveInlineKey(item.id, "role")])}
                       inlineStatusPending={Boolean(inlinePending[resolveInlineKey(item.id, "status")])}
                       pendingAction={pendingAction}
@@ -883,8 +745,6 @@ export function UsersPanel({
           createDialogContentRef={createDialogContentRef}
           createPayload={createPayload}
           setCreatePayload={setCreatePayload}
-          billingMode={billingMode}
-          billingPlans={billingPlans}
           createAvatarSource={createAvatarSource}
           onOpenCreateAvatarDialog={handleOpenCreateAvatarDialog}
           onCreateSubmit={onCreateUser}
@@ -921,9 +781,6 @@ export function UsersPanel({
           editDialogTarget={stableEditDialogTarget}
           editPayload={editPayload}
           setEditPayload={setEditPayload}
-          billingMode={billingMode}
-          billingDisplay={billingDisplay}
-          billingPlans={billingPlans}
           statusChanged={editStatusChanged}
           timeZoneOptions={timeZoneOptions}
           roleOptions={roleOptions}

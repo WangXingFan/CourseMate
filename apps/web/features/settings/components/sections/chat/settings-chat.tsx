@@ -53,14 +53,12 @@ export function SettingsChat() {
   const {
     settings,
     loading,
-    billingMode,
     contextCompressionEnabled,
     modelGroups,
     handleBool,
     handleEnum,
     handleDefaultModel,
   } = useSettingsChat();
-  const billingEnabled = billingMode !== "self";
   const { processTraceEnabled } = useFeaturePolicy();
   const chatFont = useChatFontPreference();
   const chatFontWeight = useChatFontWeightPreference();
@@ -379,20 +377,6 @@ export function SettingsChat() {
                 onCheckedChange={handleBool("chat.show_latency")}
                 disabled={loading}
                 aria-label={t("display.latencyTitle")}
-              />
-            </SettingsFieldRow>
-          </div>
-
-          <div className="pt-4">
-            <SettingsFieldRow
-              title={t("display.costTitle")}
-              description={t("display.costDescription")}
-            >
-              <Switch
-                checked={billingEnabled && settings.showBillingCost}
-                onCheckedChange={handleBool("chat.show_billing_cost")}
-                disabled={loading || !billingEnabled}
-                aria-label={t("display.costTitle")}
               />
             </SettingsFieldRow>
           </div>

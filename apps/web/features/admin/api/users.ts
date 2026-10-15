@@ -18,7 +18,6 @@ import type { PagePayload } from "@/shared/api/common-types";
 import { normalizeAdminPagePayload, resolveAdminPage, type AdminListQueryOptions } from "./shared";
 
 type ListAdminUsersOptions = AdminListQueryOptions & {
-  subscriptionStatus?: string;
   identityProvider?: string;
 };
 
@@ -33,9 +32,6 @@ export async function listAdminUsers(
   });
   if (options.query?.trim()) {
     params.set("q", options.query.trim());
-  }
-  if (options.subscriptionStatus?.trim()) {
-    params.set("subscription_status", options.subscriptionStatus.trim());
   }
   if (options.identityProvider?.trim()) {
     params.set("identity_provider", options.identityProvider.trim());

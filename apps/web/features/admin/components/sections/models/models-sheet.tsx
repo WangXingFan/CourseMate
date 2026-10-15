@@ -53,9 +53,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { FeatureGate, useFeature } from "@/shared/capabilities";
-import { resolveAutomaticModelContextWindow } from "@/features/admin/model/openrouter-model-catalog";
 import { useAdminModelsCapabilityContext } from "@/features/admin/hooks/use-admin-models-capability-context";
-import { useAdminModelsOpenrouterCatalog } from "@/features/admin/hooks/use-admin-models-openrouter-catalog";
 import { useAdminModelsPermissionGroups } from "@/features/admin/hooks/use-admin-models-permission-groups";
 import { useAdminModelsSheetSources } from "@/features/admin/hooks/use-admin-models-sheet-sources";
 import {
@@ -246,7 +244,6 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
   const [showCapabilitiesJSONAdvanced, setShowCapabilitiesJSONAdvanced] = useState(false);
   const sheetContentRef = useRef<HTMLDivElement | null>(null);
   const { capabilitySourceModels, contextWindowFallbackTokens } = useAdminModelsCapabilityContext({ open, models });
-  const { openRouterCatalog, loadOpenRouterCatalog } = useAdminModelsOpenrouterCatalog(open);
   const [bindRows, setBindRows] = useState<ModelSourceBindDraftRow[]>(() => [createModelSourceBindDraftRow()]);
   const {
     sources,
@@ -271,8 +268,6 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
   const { pending, submit } = useAdminModelsSheetSubmit({
     mode,
     target,
-    openRouterCatalog,
-    loadOpenRouterCatalog,
     manualPermissionGroupIDs,
     saveModelPermissionGroups,
     onClose,
@@ -295,23 +290,12 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
     if (targetUnchanged && target?.contextWindow) {
       return target.contextWindow;
     }
-    if (openRouterCatalog.status === "loaded") {
-      const resolved = resolveAutomaticModelContextWindow(
-        openRouterCatalog.items,
-        form.platformModelName,
-        form.vendor,
-      );
-      if (resolved !== null) {
-        return resolved;
-      }
-    }
     return contextWindowFallbackTokens;
   }, [
     contextWindowFallbackTokens,
     contextWindowOverride,
     form.platformModelName,
     form.vendor,
-    openRouterCatalog,
     target,
   ]);
   function updateContextWindowOverride(value: number | null): boolean {
@@ -515,7 +499,6 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
     if (iconUploading) return;
     await submit({
       form,
-      contextWindowOverride,
       bindRows,
       normalizeCapabilities: (capabilitiesJSON) => normalizeModelCapabilitiesJSON(capabilitiesJSON),
       onCreated: (model) => {

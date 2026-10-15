@@ -10,14 +10,12 @@ import {
   type ModelOptionControlType,
 } from "@/features/chat/types/chat-runtime";
 import { parseSendShortcut, type SendShortcut } from "@/features/settings";
-import { getBillingConfig } from "@/shared/api/billing";
 import { listConversationRuns } from "@/shared/api/conversation";
 import type { ConversationOptions } from "@/shared/api/conversation-types";
 import { listPublicModels, MODEL_CATALOG_CHANGED_EVENT } from "@/shared/api/model";
 import type { PublicModelDTO } from "@/shared/api/model-types";
 import { getModelOptionPolicy } from "@/shared/api/settings";
 import { resolveAccessToken } from "@/shared/auth/resolve-access-token";
-import { type BillingDisplayCurrency, normalizeBillingDisplayCurrency } from "@/entities/billing";
 import {
   type ModelOptionPolicy,
   parseKindsJSON,
@@ -176,7 +174,6 @@ function toChatModelOption(item: PublicModelDTO): ChatModelOption {
     defaultOptions: resolveDefaultOptions(item.capabilitiesJSON),
     optionControls: resolveOptionControls(item.capabilitiesJSON),
     lockedOptionPaths: resolveLockedOptionPaths(item.capabilitiesJSON),
-    pricing: item.pricing,
   };
 }
 
@@ -196,9 +193,6 @@ export function useChatModelOptions({
   const [defaultModelResolving, setDefaultModelResolving] = React.useState(false);
   const [modelsErrorMsg, setModelsErrorMsg] = React.useState("");
   const [selectedPlatformModelName, setSelectedPlatformModelName] = React.useState("");
-  const [billingCostAvailable, setBillingCostAvailable] = React.useState(false);
-  const [billingDisplayCurrency, setBillingDisplayCurrency] = React.useState<BillingDisplayCurrency>("USD");
-  const [billingDisplayUsdToCnyRate, setBillingDisplayUsdToCnyRate] = React.useState<number | null>(null);
   const [modelOptionPolicy, setModelOptionPolicy] = React.useState<ModelOptionPolicy | null>(null);
   const activeConversationRef = React.useRef<string | null>(null);
   const userSelectedModelRef = React.useRef(false);
@@ -218,7 +212,6 @@ export function useChatModelOptions({
   const showModelInfo = userSettings["chat.show_model_info"] !== "false";
   const showLatency = userSettings["chat.show_latency"] !== "false";
   const showTokenUsage = userSettings["chat.show_token_usage"] !== "false";
-  const showBillingCost = billingCostAvailable && userSettings["chat.show_billing_cost"] !== "false";
   const showProcessTrace = userSettings["chat.show_process_trace"] !== "false";
 
   const selectPlatformModelName = React.useCallback((platformModelName: string) => {
@@ -296,17 +289,11 @@ export function useChatModelOptions({
           setModelsErrorMsg(t("signInRequired"));
           return;
         }
-        const [catalog, billingConfig] = await Promise.all([
-          loadModelCatalog(token),
-          getBillingConfig(token).catch((): null => null),
-        ]);
+        const catalog = await loadModelCatalog(token);
         if (cancelled) {
           return;
         }
         applyModelCatalog(catalog);
-        setBillingCostAvailable((billingConfig?.config.mode ?? "self") !== "self");
-        setBillingDisplayCurrency(normalizeBillingDisplayCurrency(billingConfig?.config.displayCurrency));
-        setBillingDisplayUsdToCnyRate(billingConfig?.config.usdToCNYRate ?? null);
       } catch {
         if (!cancelled) {
           setModelsErrorMsg(t("loadFailed"));
@@ -442,10 +429,7 @@ export function useChatModelOptions({
     showModelInfo,
     showLatency,
     showTokenUsage,
-    showBillingCost,
     showProcessTrace,
-    billingDisplayCurrency,
-    billingDisplayUsdToCnyRate,
     modelOptionPolicy,
     selectedPlatformModelName,
     setSelectedPlatformModelName: selectPlatformModelName,
