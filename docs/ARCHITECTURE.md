@@ -6,7 +6,7 @@
 
 ```text
 DEEIX-Chat/
-├── backend/                  Go 服务，唯一的业务真相（鉴权、授权、模型路由、文件、计费、审计）
+├── backend/                  Go 服务，唯一的业务真相（鉴权、授权、模型路由、文件、审计）
 ├── apps/                     客户端应用，每个平台一个目录
 │   ├── web/                  Next.js 静态导出（现有）
 │   ├── desktop/              ✅ Tauri 2 壳，加载 apps/web 的构建产物（Rust + keychain + 托盘 + 更新）
@@ -52,7 +52,7 @@ apps/*  →  packages/core  →  packages/api-contract  →  backend/docs/swagge
 - **grant 单次、两分钟、只在 Rust 手里。** 桌面壳用它换会话并把 refresh token 存入 keychain，webview 从头到尾看不到 grant。要拿新 grant 只能重启 sidecar 进程——这是刻意的，grant 不可通过网络签发。
 - **本地用户无密码。** `PasswordEnabled=false`，密码登录对它天然不可用；也不会触发首次登录引导。
 - **模式切换即登出。** 本地与远程各自一个 keychain 条目，切换时删除另一方，token 不会被重放到另一家运营方。
-- **功能边界由服务器声明，客户端不判断平台。** 本地模式没有对象的功能（账号管理、权限组、公告、身份提供商、账户安全、计费门禁、内容审核）由 `GET /api/v1/capabilities` 声明为关闭，对应端点返回 `404 feature.disabled`，前端据此隐藏入口；用量计量保留。桌面端连远程服务器时能力来自远程，与 Web 端完全一致。详见第 4 节「服务器能力声明」。
+- **功能边界由服务器声明，客户端不判断平台。** 本地模式没有对象的功能（账号管理、权限组、身份提供商、账户安全、内容审核）由 `GET /api/v1/capabilities` 声明为关闭，对应端点返回 `404 feature.disabled`，前端据此隐藏入口；用量计量保留。桌面端连远程服务器时能力来自远程，与 Web 端完全一致。详见第 4 节「服务器能力声明」。
 
 ### 多标签页（桌面端）
 
@@ -99,8 +99,8 @@ apps/*  →  packages/core  →  packages/api-contract  →  backend/docs/swagge
 | `registration` | 自行注册 | ❌ | `/auth/register/*` |
 | `identityProviders` | 第三方登录与身份绑定 | ❌ | `/auth/providers*`（公开与管理）、`/me/identities*` |
 | `accountSecurity` | 密码、邮箱、两步验证、会话、注销 | ❌ | `/auth/password/*`、`/auth/2fa/*`、`/me/2fa*`、`/me/email/*`、`/me/delete/*`、`DELETE /me`、`/auth/sessions*`、`/auth/logout-all` |
-| `billingGating` | 计费规则可以拒绝请求 | ❌ | `/billing/plans*`、`/billing/redemption*`、`/billing/payments/*`、`/billing/subscriptions`、`/admin/billing/accounts/*/balance`、`/admin/payment-orders`、`/admin/redemptions`；`billing.mode` 与 `billing.payment_providers` 两个设置项锁定 |
-| `usageMetering` | 记录用量与费用 | ✅ | —— |
+| `billingGating` | 计费门禁（业务域已随精简整体删除，键按契约保留且恒为 `false`） | ❌ | 无：计费、支付、套餐、价格表及计费设置已从仓库删除 |
+| `usageMetering` | 记录 token 用量与请求追踪 | ✅ | —— |
 | `contentModeration` | 内容审核 | ❌ | `/admin/content-moderation*` |
 
 服务器模式全部为 `true`；"当前是否配置了 X"由各功能自己的端点回答，不进能力位。
@@ -113,9 +113,9 @@ apps/*  →  packages/core  →  packages/api-contract  →  backend/docs/swagge
 
 **演进规则**：只增不删；新键的默认值必须是"与今天行为一致"的值（通常 `true`）；不表达"为什么"（不加 `mode`、`edition`）；不表达"多少"（配额有自己的端点）。
 
-**键的移除**：仅当某个业务域连同其路由、服务、存储与前端入口一起从本仓库删除时，才移除对应键（`announcements` 已随公告模块整体删除，`sharing` 已随对话公开分享模块整体删除）。只把功能"默认关闭"不构成移除理由：那会留下一个客户端无处消费的键。删除前必须确认没有其它模块仍按该键做门禁。
+**键的移除**：仅当某个业务域连同其路由、服务、存储与前端入口一起从本仓库删除时，才移除对应键（`announcements` 已随公告模块整体删除，`sharing` 已随对话公开分享模块整体删除）。只把功能"默认关闭"不构成移除理由：那会留下一个客户端无处消费的键。删除前必须确认没有其它模块仍按该键做门禁。计费是例外：`billingGating` 的业务域、路由、服务、存储与前端入口均已整体删除，但为兼容契约保留该键并恒为 `false`，它不再对应任何路由或设置。
 
-**计量与门禁分离**：本地用户要看自己的花费，但不需要被计费规则拦住。`billing.mode = self` 下 `AuthorizeUsage` 直接放行、`RecordUsage` 照常记账，本地模式锁定该值即得"记账但不拦"；价格表保留可编辑。数据模型不变：本地 owner 仍在默认权限组，本地库可被远程服务器直接接管。
+**计量与门禁分离**：用量只作轻量运行记录（token 用量与请求追踪），不存在任何可以拒绝请求的计费规则。价格表、计费账户、结算与支付实现已从本仓库删除，`billingGating` 键仅按契约保留并恒为 `false`。数据模型不变：本地 owner 仍在默认权限组，本地库可被远程服务器直接接管。
 
 ## 5. 安全约束
 

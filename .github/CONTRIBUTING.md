@@ -31,7 +31,7 @@ Use the example configuration files for local development. Do not commit local s
 ## Pull Request Guidelines
 
 - Explain the problem and the approach.
-- Tests: backend changes to security, authentication, billing, quotas, protocol adapters, streaming lifecycles, or any public contract need focused regression tests. `packages/core` changes need Node tests. `apps/web` has no unit tests by design; describe the manual verification you performed instead.
+- Tests: backend changes to security, authentication, quotas, protocol adapters, streaming lifecycles, or any public contract need focused regression tests. `packages/core` changes need Node tests. `apps/web` has no unit tests by design; describe the manual verification you performed instead.
 - Update documentation when user-facing behavior, deployment steps, API contracts, or configuration changes.
 - Commit generated artifacts only when the project requires them. API contract changes must include the generated Swagger files and `packages/api-contract/src/types.generated.ts`.
 - Do not commit caches, build output, `.pyc` files, `.env` files, or local storage data.
@@ -66,15 +66,15 @@ Commit message subjects that do not match this format will fail CI.
 ## Architecture Boundaries
 
 - `apps/web/` owns the user interface, client-side state, message rendering, and admin/user workflows. `apps/desktop/` is a Tauri shell around the same web build and contains no business UI. `packages/core` holds platform-neutral client logic (auth state machine, server address resolution, capabilities).
-- `backend/` owns business APIs, authentication, authorization, model routing, file processing, billing, audit logs, and persistence.
+- `backend/` owns business APIs, authentication, authorization, model routing, file processing, audit logs, and persistence.
 - `deploy/` contains Docker Compose setups, config templates, and optional services for document extraction, OCR, and related runtime dependencies.
-- The frontend should not duplicate backend authorization, billing, provider routing, or file-processing business rules.
+- The frontend should not duplicate backend authorization, provider routing, or file-processing business rules.
 - Keep cross-cutting concerns such as security, tracing, storage, and provider clients behind backend infrastructure boundaries.
 - Backend startup flows through `cmd -> internal/cli -> internal/app`.
 - Backend requests flow through `transport/http -> application -> repository / ports interfaces -> infra implementations`.
 - Domain packages own core business types and constants. Shared packages provide reusable response, request metadata, and security helpers.
-- Database tables are grouped by domain, including identity, conversations, files/RAG, model routing, tools, billing, settings, audit logs, and system events.
-- Financial records, audit logs, system events, file objects, and vector data should remain separate sources of truth.
+- Database tables are grouped by domain, including identity, conversations, files/RAG, model routing, settings, audit logs, and system events.
+- Audit logs, system events, file objects, and vector data should remain separate sources of truth.
 - Standard HTTP responses use `errorMsg + data`; do not introduce alternate response envelopes.
 - User data access must be scoped by authenticated user context unless an admin-only path explicitly requires broader access.
 - Request IDs, structured logs, audit records, and generated Swagger files are part of the operational contract.

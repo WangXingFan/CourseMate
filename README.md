@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  An integrated AI platform for enterprise model routing, chat, files, tools, billing, identity, and operations.
+  An integrated AI platform for enterprise model routing, chat, files, identity, and operations.
 </p>
 
 <p align="center">
@@ -26,7 +26,7 @@
 
 ## Overview
 
-CourseMate is an open-source, deployable AI platform for individuals, teams, and enterprises that need long-term, stable, and unified access to multiple model providers. It provides one clear entry point for multiple upstream models and providers, integrating multimodal chat, model routing, files and RAG, usage billing, identity, audit logs, and operational controls into one product.
+CourseMate is an open-source, deployable AI platform for individuals, teams, and enterprises that need long-term, stable, and unified access to multiple model providers. It provides one clear entry point for multiple upstream models and providers, integrating multimodal chat, model routing, files and RAG, identity, audit logs, and operational controls into one product.
 
 The system is designed around simple deployment, efficient static delivery, and a low runtime resource footprint: lightweight without feeling limited, restrained without losing capability, and open without becoming disorderly.
 
@@ -38,12 +38,11 @@ The system is designed around simple deployment, efficient static delivery, and 
 | --- | --- |
 | Conversations | A multimodal chat interface for daily use, with streaming, branches, retries, edits, feedback, rich rendering, and traceable model execution metadata. |
 | Models and routing | A platform-model layer for upstream channels, real models, route bindings, priority, weights, circuit breaking, vendor mapping, and capability configuration. Users can add private upstreams and models themselves; private model keys are isolated per user and always route only to their owning upstream. |
-| Protocols and adaptation | Unified support for OpenAI, Anthropic, Google/Gemini, xAI, OpenRouter, and OpenAI-compatible protocols across text, tools, and provider-native capability differences. |
+| Protocols and adaptation | Unified support for OpenAI, Anthropic, Google/Gemini, xAI, OpenRouter, and OpenAI-compatible protocols across text and provider-native capability differences. |
 | Files and retrieval | File upload, preview, extraction, OCR, storage quota, full-context injection, chunking, embeddings, and semantic retrieval so file content can naturally enter the conversation context. |
-| Context and memory | Message windows, token budgets, summary compression, conversation memory, long-term memory, and RAG evidence records for controlled-cost continuity. |
-| Billing and payments | Model pricing, per-call tool pricing, subscriptions, top-ups, balances, usage ledgers, billing snapshots, Stripe Checkout, EPay, and webhook validation. |
+| Context management | Message windows, token budgets, summary compression, and RAG evidence records for controlled-cost continuity. |
 | Identity and security | Local accounts, session management, HttpOnly refresh cookies, 2FA/TOTP, trusted devices, SSO/OIDC/OAuth, contact verification, and encrypted sensitive data. |
-| Administration and audit | Centralized management for users, roles, upstreams, models, routes, pricing, subscriptions, balances, usage logs, audit logs, auth events, and system events. |
+| Administration and audit | Centralized management for users, roles, upstreams, models, routes, usage logs, audit logs, auth events, and system events. |
 | Deployment and operations | Single-runtime frontend/API serving, Docker deployment, SQLite or PostgreSQL, in-memory cache or Redis, S3-compatible storage, Swagger, structured logs, version endpoint, GeoIP, and OpenTelemetry. |
 
 <p align="center">
@@ -51,14 +50,14 @@ The system is designed around simple deployment, efficient static delivery, and 
 </p>
 
 <p align="center">
-  <img src="./docs/assets/screenshots/DEEIX-Chat-Usage.png" alt="CourseMate usage and billing" width="32.3%" />
+  <img src="./docs/assets/screenshots/DEEIX-Chat-Usage.png" alt="CourseMate usage statistics" width="32.3%" />
   <img src="./docs/assets/screenshots/DEEIX-Chat-Artifacts.png" alt="CourseMate artifacts" width="32.3%" />
   <img src="./docs/assets/screenshots/DEEIX-Chat-Html.png" alt="CourseMate HTML rendering" width="32.3%" />
 </p>
 
 ## Architecture and Tech Stack
 
-CourseMate uses a split frontend/backend development model with a single-runtime deployment path. The frontend is built into static assets and served by the Go service, while APIs, authorization, model routing, files, billing, and audit capabilities run in the same backend runtime. Heavy document extraction and OCR capabilities are optional services, keeping the base deployment lightweight.
+CourseMate uses a split frontend/backend development model with a single-runtime deployment path. The frontend is built into static assets and served by the Go service, while APIs, authorization, model routing, files, and audit capabilities run in the same backend runtime. Heavy document extraction and OCR capabilities are optional services, keeping the base deployment lightweight.
 
 ```mermaid
 flowchart TB
@@ -71,7 +70,7 @@ flowchart TB
   subgraph Backend["Go Single Runtime"]
     Static["Static Asset Serving"]
     HTTP["Gin HTTP API"]
-    App["Application<br/>Auth / Routing / Files / Billing / Audit"]
+    App["Application<br/>Auth / Routing / Files / Audit"]
     Infra["Infra Adapters<br/>Protocols / Data / Cache / Storage"]
   end
 
@@ -384,7 +383,7 @@ If a superadmin already exists, the service does not regenerate or print the ini
 
 > Full configuration guide: [Configuration](https://deeix.com/docs/deeix-chat/configuration).
 
-Backend configuration is split into static runtime configuration and runtime business settings. Static runtime configuration describes branding and the infrastructure, security, and storage parameters required to start the service, and is provided through `config.yaml` and environment variables. Runtime business settings cover product capabilities such as authentication, conversations, models, files, and billing; they are stored in `system_settings` and maintained from the admin console. Environment variables override matching config-file values, which is useful for containerized deployments, separated deployments, and secret injection.
+Backend configuration is split into static runtime configuration and runtime business settings. Static runtime configuration describes branding and the infrastructure, security, and storage parameters required to start the service, and is provided through `config.yaml` and environment variables. Runtime business settings cover product capabilities such as authentication, conversations, models, and files; they are stored in `system_settings` and maintained from the admin console. Environment variables override matching config-file values, which is useful for containerized deployments, separated deployments, and secret injection.
 
 At startup, the backend resolves the default config file from the working directory: starting from the repository root reads `config.yaml`, while starting from `backend/` reads `../config.yaml`. Docker deployments mount `deploy/config.yaml` as read-only `/app/config.yaml` inside the container. If the config file is stored elsewhere, set `CONFIG_FILE` to a path accessible from the running process or container. The effective priority is `environment variables > config.yaml > built-in defaults`.
 
@@ -459,7 +458,7 @@ Static configuration environment variables:
 | OpenTelemetry | `OTEL_EXPORTER_OTLP_PROTOCOL` | OTLP exporter protocol: `grpc`, `http`, or `http/protobuf`; defaults to `grpc`. |
 | OpenTelemetry | `OTEL_TRACES_SAMPLER_ARG` / `OTEL_SAMPLING_RATE` | Trace sampling rate from `0` to `1`; `OTEL_TRACES_SAMPLER_ARG` takes priority. |
 
-Authentication, registration, conversation settings, model option policies, file processing, RAG, embedding, billing, and payments are runtime business settings, not static YAML configuration. Their defaults are seeded by the backend and maintained in the admin console.
+Authentication, registration, conversation settings, model option policies, file processing, RAG, and embedding are runtime business settings, not static YAML configuration. Their defaults are seeded by the backend and maintained in the admin console.
 
 When SSRF protection is enabled in production, administrator-saved model, Embedding, OIDC/OAuth2, and custom Turnstile endpoints are authorized locally by exact origin (`scheme + host + port`) and do not require entries in the global allowlist. Model and Embedding redirects retain standard compatibility: public cross-origin targets are allowed, while private cross-origin targets must match `SSRF_ALLOWED_HOSTS` or `SSRF_ALLOWED_CIDRS`; OIDC/OAuth2 and Turnstile keep their stricter identity boundary. The global allowlist also remains available for deployment-level integrations that cannot be tied to an administrator-saved endpoint, such as selected GeoIP or extraction deployments. Link-local, multicast, unspecified, and known metadata targets always remain blocked. Invalid allowlist entries stop backend startup, and global allowlist changes require a restart.
 
@@ -477,7 +476,6 @@ Sign-in, registration, and account identity binding on Web, App, and Desktop all
 
 - [User Guide](https://deeix.com/docs/deeix-chat/new-chat)
 - [Admin Guide](https://deeix.com/docs/deeix-chat/admin-accounts)
-- [Advanced Guide](https://deeix.com/docs/deeix-chat/advanced-capabilities-passthrough-tools)
 
 ## Security Notes
 
@@ -486,7 +484,7 @@ Sign-in, registration, and account identity binding on Web, App, and Desktop all
 - Refresh tokens and recovery-style secrets are stored as hashes.
 - Upstream API keys, SSO client secrets, sensitive settings, and TOTP secrets are encrypted with AES-GCM using `DATA_ENCRYPTION_KEY`.
 - Access tokens are short-lived and held client-side in memory; refresh tokens are issued through HttpOnly cookies.
-- User-supplied model options are filtered before provider requests. System-generated fields such as model, messages, tools, system prompts, headers, and previous-response identifiers are not user-overridable.
+- User-supplied model options are filtered before provider requests. System-generated fields such as model, messages, system prompts, headers, and previous-response identifiers are not user-overridable.
 
 ## Documentation
 
@@ -494,7 +492,6 @@ Sign-in, registration, and account identity binding on Web, App, and Desktop all
 - [Configuration](https://deeix.com/docs/deeix-chat/configuration)
 - [User Guide](https://deeix.com/docs/deeix-chat/new-chat)
 - [Admin Guide](https://deeix.com/docs/deeix-chat/admin-accounts)
-- [Advanced Guide](https://deeix.com/docs/deeix-chat/advanced-capabilities-passthrough-tools)
 - Backend guide: [backend/README.md](./backend/README.md)
 - API documentation index: [backend/docs/README.md](./backend/docs/README.md)
 - Frontend guide: [apps/web/README.md](./apps/web/README.md)
