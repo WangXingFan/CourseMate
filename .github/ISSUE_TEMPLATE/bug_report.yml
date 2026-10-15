@@ -20,8 +20,6 @@ body:
         - Conversations / streaming
         - Files / RAG / extraction
         - Model routing / providers
-        - MCP / tools
-        - Billing / payments
         - Admin console
         - Deployment / Docker / configuration
         - Documentation

@@ -1,6 +1,6 @@
 # CourseMate Frontend
 
-`@deeix/web` 是 CourseMate 的浏览器端工作区，基于 Next.js App Router 实现对话、文件、知识库、提示词、用户设置和管理员后台。前端负责界面、客户端状态和展示层流程；认证授权、模型路由、文件处理、计费、持久化和审计等业务规则由 Go 后端负责。
+`@deeix/web` 是 CourseMate 的浏览器端工作区，基于 Next.js App Router 实现对话、文件、知识库、用户设置和管理员后台。前端负责界面、客户端状态和展示层流程；认证授权、模型路由、文件处理、持久化和审计等业务规则由 Go 后端负责。
 
 前端采用 Next.js 静态导出模式（`output: "export"`）。开发时使用 Next.js 开发服务器，构建后生成 `apps/web/out`，生产环境可由 Go 服务托管，也可以交给 Nginx、CDN 或其他静态文件服务。
 
@@ -23,7 +23,6 @@ apps/web/
 │   ├── (app)/                 # 主应用根布局（Web 与桌面内容标签页）
 │   │   ├── (auth)/            # 登录和 OAuth 回调
 │   │   ├── (project)/         # 需登录的工作区、设置和管理员后台
-│   │   └── share/             # 公开分享页（无鉴权）
 │   └── (shell)/               # 桌面端壳 UI 根布局
 │       └── desktop/tabs/      # 桌面端标签栏
 ├── components/                # 无业务语义的基础和视觉组件
@@ -31,8 +30,7 @@ apps/web/
 │   ├── animate-ui/            # 第三方动画组件与图标
 │   └── reactbits/             # 第三方视觉效果组件
 ├── entities/                  # 被多个 feature 复用的业务实体，每个实体只经 index.ts 对外
-│   ├── billing/               # 计费展示与分时定价
-│   ├── conversation/          # 会话：标签、分享/导出菜单、项目子菜单、搜索、默认模型、侧栏列表
+│   ├── conversation/          # 会话：标签、搜索、默认模型、侧栏列表
 │   ├── file/                  # 文件：预览、展示、处理状态与轮询、删除选项、文件库事件
 │   ├── identity-provider/     # 身份源图标
 │   ├── model/                 # 模型：身份与图标、选择器、选项展示与参数策略
@@ -42,12 +40,9 @@ apps/web/
 │   ├── auth/                  # 登录和会话流程
 │   ├── chat/                  # 对话工作区
 │   ├── desktop/               # 桌面端启动、服务器设置、更新提示、标签栏
-│   ├── files/                 # 文件管理与处理状态
 │   ├── knowledge-bases/       # 知识库
-│   ├── library/               # 指令库：技能与提示词
 │   ├── recent/                # 最近会话
 │   ├── settings/              # 用户设置
-│   ├── share/                 # 分享页
 │   └── shell/                 # 应用外壳：导航、Provider、工作区布局
 ├── shared/                    # 跨业务复用、无业务实体语义的基础能力
 │   ├── api/                   # HTTP client、鉴权 client、按资源拆分的请求函数与传输类型

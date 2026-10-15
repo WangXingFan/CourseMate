@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  企业级模型路由、对话、文件、工具、计费、身份和运维的一体化 AI 平台。
+  企业级模型路由、对话、文件、身份和运维的一体化 AI 平台。
 </p>
 
 <p align="center">
@@ -26,7 +26,7 @@
 
 ## 项目简介
 
-课知伴 是一款开源可部署的 AI 平台，面向需要长期、稳定、统一使用多模型能力的个人、团队与企业。它用一个清晰的使用入口承载多个上游模型和服务商，将多模态对话、模型路由、文件与 RAG、用量计费、身份认证、审计日志和运维控制整合到同一个产品中。
+课知伴 是一款开源可部署的 AI 平台，面向需要长期、稳定、统一使用多模型能力的个人、团队与企业。它用一个清晰的使用入口承载多个上游模型和服务商，将多模态对话、模型路由、文件与 RAG、身份认证、审计日志和运维控制整合到同一个产品中。
 
 系统围绕简单部署、高效静态分发和低资源的运行时占用设计，轻量而不简陋、克制而不缺能力、开放而不失秩序。
 
@@ -36,14 +36,13 @@
 
 | 模块 | 能力 |
 | --- | --- |
-| 对话体验 | 面向日常高频使用的多模态对话界面，支持流式响应、多分支、重试、编辑、反馈、分享、富文本渲染和可追踪的模型执行信息。 |
+| 对话体验 | 面向日常高频使用的多模态对话界面，支持流式响应、多分支、重试、编辑、反馈、富文本渲染和可追踪的模型执行信息。 |
 | 模型与路由 | 以平台模型为统一入口管理上游渠道、真实模型、路由绑定、优先级、权重、熔断、厂商映射和能力配置，降低多供应商接入后的维护成本。 |
-| 协议与适配 | 统一适配 OpenAI、Anthropic、Google/Gemini、xAI、OpenRouter 和 OpenAI 兼容协议，覆盖文本、工具和不同厂商的原生能力差异。 |
+| 协议与适配 | 统一适配 OpenAI、Anthropic、Google/Gemini、xAI、OpenRouter 和 OpenAI 兼容协议，覆盖文本和不同厂商的原生能力差异。 |
 | 文件与检索 | 提供文件上传、预览、提取、OCR、存储配额、全文注入、分片、向量嵌入和语义检索能力，让文件内容自然进入对话上下文。 |
-| 上下文与记忆 | 支持消息窗口、Token 预算、压缩摘要、会话记忆、长期记忆和 RAG 证据记录，在可控成本下维持连续对话体验。 |
-| 计费与支付 | 内置模型定价、工具按次定价、订阅、充值、余额、用量账本、计费快照、Stripe Checkout、易支付和 Webhook 校验。 |
+| 上下文管理 | 支持消息窗口、Token 预算、压缩摘要和 RAG 证据记录，在可控成本下维持连续对话体验。 |
 | 身份与安全 | 覆盖本地账号、会话管理、HttpOnly Refresh Cookie、2FA/TOTP、可信设备、SSO/OIDC/OAuth、联系方式验证和敏感信息加密。 |
-| 管理与审计 | 后台集中管理用户、角色、上游、模型、路由、价格、订阅、余额、调用日志、审计日志、认证事件和系统事件。 |
+| 管理与审计 | 后台集中管理用户、角色、上游、模型、路由、调用日志、审计日志、认证事件和系统事件。 |
 | 部署与运维 | 支持单运行时托管前端与 API、Docker 部署、SQLite 或 PostgreSQL、内存缓存或 Redis、S3 兼容存储、Swagger、结构化日志、版本接口、GeoIP 和 OpenTelemetry。 |
 
 <p align="center">
@@ -51,14 +50,14 @@
 </p>
 
 <p align="center">
-  <img src="./assets/screenshots/DEEIX-Chat-Usage.png" alt="课知伴 用量与计费" width="32.3%" />
+  <img src="./assets/screenshots/DEEIX-Chat-Usage.png" alt="课知伴 用量统计" width="32.3%" />
   <img src="./assets/screenshots/DEEIX-Chat-Artifacts.png" alt="课知伴 Artifacts" width="32.3%" />
   <img src="./assets/screenshots/DEEIX-Chat-Html.png" alt="课知伴 HTML 渲染" width="32.3%" />
 </p>
 
 ## 系统架构与技术栈
 
-课知伴 采用前后端分离开发、单运行时部署的结构。前端构建为静态资源后由 Go 服务统一托管，API、权限、模型路由、文件、计费和审计等后端能力由同一个运行时提供；文档提取、OCR 等重型能力以可选服务接入，避免基础部署过重。
+课知伴 采用前后端分离开发、单运行时部署的结构。前端构建为静态资源后由 Go 服务统一托管，API、权限、模型路由、文件和审计等后端能力由同一个运行时提供；文档提取、OCR 等重型能力以可选服务接入，避免基础部署过重。
 
 ```mermaid
 flowchart TB
@@ -71,7 +70,7 @@ flowchart TB
   subgraph Backend["Go 单运行时"]
     Static["静态资源托管"]
     HTTP["Gin HTTP API"]
-    App["Application<br/>权限 / 路由 / 文件 / 计费 / 审计"]
+    App["Application<br/>权限 / 路由 / 文件 / 审计"]
     Infra["Infra Adapters<br/>协议 / 数据 / 缓存 / 存储"]
   end
 
@@ -381,7 +380,7 @@ docker compose logs app
 
 > 完整配置说明：[配置说明](https://deeix.com/zh/docs/deeix-chat/configuration)。
 
-后端配置分为静态运行配置和运行时业务配置。静态运行配置用于描述品牌以及服务启动所需的基础设施、安全和存储参数，由 `config.yaml` 与环境变量提供；运行时业务配置用于认证、会话、模型、文件、计费等产品能力，写入 `system_settings` 并通过后台管理维护。环境变量会覆盖配置文件中的同名项，适合容器化、分离部署和密钥注入场景。
+后端配置分为静态运行配置和运行时业务配置。静态运行配置用于描述品牌以及服务启动所需的基础设施、安全和存储参数，由 `config.yaml` 与环境变量提供；运行时业务配置用于认证、会话、模型、文件等产品能力，写入 `system_settings` 并通过后台管理维护。环境变量会覆盖配置文件中的同名项，适合容器化、分离部署和密钥注入场景。
 
 后端启动时会按运行目录解析默认配置文件：从仓库根目录启动读取 `config.yaml`，从 `backend/` 目录启动读取 `../config.yaml`。Docker 部署将 `deploy/config.yaml` 只读挂载到容器内 `/app/config.yaml`；如果配置文件放在其他位置，请使用 `CONFIG_FILE` 指向实际运行环境可访问的路径。最终生效优先级是 `环境变量 > config.yaml > 代码内置默认值`。
 
@@ -456,7 +455,7 @@ docker compose logs app
 | OpenTelemetry | `OTEL_EXPORTER_OTLP_PROTOCOL` | OTLP exporter 协议：`grpc`、`http` 或 `http/protobuf`；默认 `grpc`。 |
 | OpenTelemetry | `OTEL_TRACES_SAMPLER_ARG` / `OTEL_SAMPLING_RATE` | Trace 采样率，范围 `0~1`；`OTEL_TRACES_SAMPLER_ARG` 优先。 |
 
-认证、注册、会话配置、模型参数策略、文件处理、RAG、Embedding、计费、支付和公告等运行时业务配置不属于静态 YAML 配置，默认值由后端种子初始化，并在后台管理中维护。
+认证、注册、会话配置、模型参数策略、文件处理、RAG、Embedding 等运行时业务配置不属于静态 YAML 配置，默认值由后端种子初始化，并在后台管理中维护。
 
 生产环境启用 SSRF 防护后，管理员保存的模型、Embedding、OIDC/OAuth2 和自定义 Turnstile endpoint 均按精确 origin（协议、主机和端口）获得局部授权，不需要加入全局白名单。模型与 Embedding 保留标准重定向兼容性：跨 origin 的公网目标可以继续访问，跨 origin 的私网目标必须命中 `SSRF_ALLOWED_HOSTS` 或 `SSRF_ALLOWED_CIDRS`；OIDC/OAuth2 与 Turnstile 继续维持更严格的身份边界。全局白名单也继续用于无法绑定管理员保存 endpoint 的部署级集成，例如部分 GeoIP 或提取服务部署。链路本地、组播、未指定地址和已知云元数据目标始终禁止。白名单配置不合法会阻止后端启动；全局白名单修改后需重启生效。
 
@@ -474,7 +473,6 @@ Web、App 与桌面端的登录、注册和账号身份绑定都走这一个回�
 
 - [用户指南](https://deeix.com/zh/docs/deeix-chat/new-chat)
 - [管理指南](https://deeix.com/zh/docs/deeix-chat/admin-accounts)
-- [进阶指南](https://deeix.com/zh/docs/deeix-chat/advanced-capabilities-passthrough-tools)
 
 ## 安全说明
 
@@ -483,7 +481,7 @@ Web、App 与桌面端的登录、注册和账号身份绑定都走这一个回�
 - Refresh Token 和恢复类凭证只存储哈希。
 - 上游 API Key、SSO Client Secret、敏感系统设置和 TOTP Secret 使用 `DATA_ENCRYPTION_KEY` 通过 AES-GCM 加密。
 - Access Token 为短期令牌并保存在前端内存中；Refresh Token 由后端写入 HttpOnly Cookie。
-- 用户输入的模型参数会在请求上游前经过白名单/黑名单过滤。模型名、消息、工具、系统提示词、请求头和 previous response 标识等系统链路字段不允许被用户 options 覆盖。
+- 用户输入的模型参数会在请求上游前经过白名单/黑名单过滤。模型名、消息、系统提示词、请求头和 previous response 标识等系统链路字段不允许被用户 options 覆盖。
 
 ## 文档入口
 
@@ -491,7 +489,6 @@ Web、App 与桌面端的登录、注册和账号身份绑定都走这一个回�
 - [配置说明](https://deeix.com/zh/docs/deeix-chat/configuration)
 - [用户指南](https://deeix.com/zh/docs/deeix-chat/new-chat)
 - [管理指南](https://deeix.com/zh/docs/deeix-chat/admin-accounts)
-- [进阶指南](https://deeix.com/zh/docs/deeix-chat/advanced-capabilities-passthrough-tools)
 - 后端说明：[backend/README.md](../backend/README.md)
 - API 文档索引：[backend/docs/README.md](../backend/docs/README.md)
 - 前端说明：[apps/web/README.md](../apps/web/README.md)

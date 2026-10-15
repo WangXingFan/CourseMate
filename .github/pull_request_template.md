@@ -20,8 +20,6 @@
 - [ ] Conversations / streaming
 - [ ] Files / RAG / extraction
 - [ ] Model routing / providers
-- [ ] MCP / tools
-- [ ] Billing / payments
 - [ ] Admin console
 - [ ] Deployment / Docker / configuration
 - [ ] Documentation
@@ -50,7 +48,7 @@
 
 - [ ] No secrets, tokens, credentials, local config, or personal data are included.
 - [ ] User data access remains scoped by authenticated user context unless an admin-only path explicitly requires broader access.
-- [ ] Security-sensitive behavior was reviewed, including authentication, authorization, provider routing, file processing, billing, and admin APIs where relevant.
+- [ ] Security-sensitive behavior was reviewed, including authentication, authorization, provider routing, file processing, and admin APIs where relevant.
 
 ## Checklist
 

@@ -20,8 +20,6 @@ body:
         - Conversations / streaming
         - Files / RAG / extraction
         - Model routing / providers
-        - MCP / tools
-        - Billing / payments
         - Admin console
         - Deployment / Docker / configuration
         - Documentation
@@ -54,7 +52,7 @@ body:
     id: compatibility
     attributes:
       label: Compatibility, deployment, or migration impact
-      description: Note whether this affects configuration, Docker deployment, API contracts, database schema, existing conversations, billing, or authentication.
+      description: Note whether this affects configuration, Docker deployment, API contracts, database schema, existing conversations, or authentication.
       placeholder: |
         Configuration changes:
         API changes:
