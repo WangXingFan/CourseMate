@@ -4,7 +4,7 @@
 >
 > DEEIX Chat Copyright 2026 DEEIX。源代码依据 [Apache License 2.0](../LICENSE) 授权。品牌配置不会移除或替换仓库及分发产物中的 [NOTICE](../NOTICE)、许可证副本或版权声明。Apache License 2.0 不授予 DEEIX 名称、Logo 或其他商标的使用权。
 
-DEEIX Chat 的产品标题、HTML Meta Description、Logo、浏览器图标和 PWA 图标由根目录 `config.yaml` 统一配置。后端启动时读取配置并通过公开品牌接口提供给静态前端，因此修改品牌不需要重新构建前端或 Docker 镜像，只需更新配置并重启应用。
+CourseMate 的产品标题、HTML Meta Description、Logo、浏览器图标和 PWA 图标由根目录 `config.yaml` 统一配置。后端启动时读取配置并通过公开品牌接口提供给静态前端，因此修改品牌不需要重新构建前端或 Docker 镜像，只需更新配置并重启应用。
 
 未配置或配置为空时，对应位置使用仓库内置品牌资源。品牌接口不可用时，前端也会保留内置品牌，不阻塞页面加载。
 
@@ -29,15 +29,17 @@ branding:
 
 | YAML 配置 | 使用位置 | 推荐格式与尺寸 | 内置资源 |
 | --- | --- | --- | --- |
-| `branding.title` | HTML 标题、PWA 名称及前端默认产品名称 | 简短的纯文本产品名称 | `DEEIX Chat` |
-| `branding.short_name` | PWA 短名称、生成占位动画和 Artifact 标识 | 推荐不超过 12 个字符 | `DEEIX` |
-| `branding.description` | HTML Meta Description 和 PWA description | 简洁的纯文本页面摘要 | `DEEIX Chat is a multi-model AI conversation system.` |
+| `branding.title` | HTML 标题、PWA 名称及前端默认产品名称 | 简短的纯文本产品名称 | `CourseMate` |
+| `branding.short_name` | PWA 短名称、生成占位动画和 Artifact 标识 | 推荐不超过 12 个字符 | `CourseMate` |
+| `branding.description` | HTML Meta Description 和 PWA description | 简洁的纯文本页面摘要 | `CourseMate is a multi-model AI conversation system.` |
 | `branding.logo_url` | 登录页、侧边栏、移动端标题、公开分享页和聊天截图 | SVG 优先；PNG/WebP 至少 `1200 x 369`，推荐约 `3.25:1` | 浅色使用 `apps/web/public/logo.svg`，深色使用 `apps/web/public/logo-white.svg` |
 | `branding.favicon_url` | 浏览器标签页、书签 | SVG、ICO，或至少 `64 x 64` 的 PNG | `apps/web/public/favicon.ico` |
 | `branding.pwa_icon_192_url` | PWA manifest、浏览器通知 | `192 x 192` PNG | `apps/web/public/pwa/icon-192.png` |
 | `branding.pwa_icon_512_url` | PWA manifest、高分辨率安装图标 | `512 x 512` PNG | `apps/web/public/pwa/icon-512.png` |
 | `branding.pwa_maskable_icon_512_url` | Android 等平台的自适应 PWA 图标 | `512 x 512` PNG，背景铺满画布 | `apps/web/public/pwa/icon-maskable-512.png` |
 | `branding.apple_touch_icon_180_url` | iOS/iPadOS 主屏幕图标 | `180 x 180` PNG，背景铺满画布 | `apps/web/public/pwa/apple-touch-icon.png` |
+
+未设置 `branding.title` 时，界面按当前语言显示内置产品名：英文为 `CourseMate`，中文为 `课知伴`。
 
 品牌资源可以使用浏览器可访问的绝对 HTTPS URL，也可以使用当前前端站点下的根相对路径。前后端分离部署时，推荐使用绝对 HTTPS URL，并正确设置 `server.public_web_base_url`，确保 Web App Manifest 的启动地址、作用域和内置图标指向前端站点。
 

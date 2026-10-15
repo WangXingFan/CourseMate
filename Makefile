@@ -1,4 +1,4 @@
-# DEEIX Chat — single entry point for local development.
+# CourseMate — single entry point for local development.
 # `make` / `make help` lists targets. Package-level tooling (pnpm, turbo, cargo,
 # go) stays where it is; this file only routes to it so nothing needs a `cd`.
 

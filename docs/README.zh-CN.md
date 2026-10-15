@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../apps/web/public/logo-white.svg" />
-    <img src="../apps/web/public/logo-black.svg" alt="DEEIX Chat" width="160" />
+    <img src="../apps/web/public/logo-black.svg" alt="课知伴" width="160" />
   </picture>
 </p>
 
@@ -26,11 +26,11 @@
 
 ## 项目简介
 
-DEEIX Chat 是一款开源可部署的 AI 平台，面向需要长期、稳定、统一使用多模型能力的个人、团队与企业。它用一个清晰的使用入口承载多个上游模型和服务商，将多模态对话、模型路由、文件与 RAG、用量计费、身份认证、审计日志和运维控制整合到同一个产品中。
+课知伴 是一款开源可部署的 AI 平台，面向需要长期、稳定、统一使用多模型能力的个人、团队与企业。它用一个清晰的使用入口承载多个上游模型和服务商，将多模态对话、模型路由、文件与 RAG、用量计费、身份认证、审计日志和运维控制整合到同一个产品中。
 
 系统围绕简单部署、高效静态分发和低资源的运行时占用设计，轻量而不简陋、克制而不缺能力、开放而不失秩序。
 
-![DEEIX Chat 工作区](./assets/screenshots/DEEIX-Chat.jpg)
+![课知伴 工作区](./assets/screenshots/DEEIX-Chat.jpg)
 
 ## 核心能力
 
@@ -47,18 +47,18 @@ DEEIX Chat 是一款开源可部署的 AI 平台，面向需要长期、稳定�
 | 部署与运维 | 支持单运行时托管前端与 API、Docker 部署、SQLite 或 PostgreSQL、内存缓存或 Redis、S3 兼容存储、Swagger、结构化日志、版本接口、GeoIP 和 OpenTelemetry。 |
 
 <p align="center">
-  <img src="./assets/screenshots/DEEIX-Chat-Dark.png" alt="DEEIX Chat 深色模式" width="49.45%" />
+  <img src="./assets/screenshots/DEEIX-Chat-Dark.png" alt="课知伴 深色模式" width="49.45%" />
 </p>
 
 <p align="center">
-  <img src="./assets/screenshots/DEEIX-Chat-Usage.png" alt="DEEIX Chat 用量与计费" width="32.3%" />
-  <img src="./assets/screenshots/DEEIX-Chat-Artifacts.png" alt="DEEIX Chat Artifacts" width="32.3%" />
-  <img src="./assets/screenshots/DEEIX-Chat-Html.png" alt="DEEIX Chat HTML 渲染" width="32.3%" />
+  <img src="./assets/screenshots/DEEIX-Chat-Usage.png" alt="课知伴 用量与计费" width="32.3%" />
+  <img src="./assets/screenshots/DEEIX-Chat-Artifacts.png" alt="课知伴 Artifacts" width="32.3%" />
+  <img src="./assets/screenshots/DEEIX-Chat-Html.png" alt="课知伴 HTML 渲染" width="32.3%" />
 </p>
 
 ## 系统架构与技术栈
 
-DEEIX Chat 采用前后端分离开发、单运行时部署的结构。前端构建为静态资源后由 Go 服务统一托管，API、权限、模型路由、文件、计费和审计等后端能力由同一个运行时提供；文档提取、OCR 等重型能力以可选服务接入，避免基础部署过重。
+课知伴 采用前后端分离开发、单运行时部署的结构。前端构建为静态资源后由 Go 服务统一托管，API、权限、模型路由、文件、计费和审计等后端能力由同一个运行时提供；文档提取、OCR 等重型能力以可选服务接入，避免基础部署过重。
 
 ```mermaid
 flowchart TB
@@ -284,7 +284,7 @@ docker compose -f docker-compose.full.yml up -d
 | PostgreSQL 数据 | `/var/lib/postgresql/data`，仅全量安装 |
 | Redis 数据 | `/data`，仅全量安装 |
 
-默认应用镜像为 `ghcr.io/deeix-ai/deeix-chat:latest`。Compose 文件只引用镜像，不定义构建步骤。测试本地构建时先在仓库根目录生成镜像，再通过 `DEEIX_CHAT_IMAGE` 选择它：
+默认应用镜像为 `ghcr.io/wangxingfan/coursemate:latest`。Compose 文件只引用镜像，不定义构建步骤。测试本地构建时先在仓库根目录生成镜像，再通过 `DEEIX_CHAT_IMAGE` 选择它：
 
 ```bash
 docker build -t deeix-chat:local .
@@ -502,7 +502,7 @@ Web、App 与桌面端的登录、注册和账号身份绑定都走这一个回�
 
 ## 鸣谢
 
-DEEIX Chat 基于开源生态构建，感谢所有 AI 工具生态中的维护者和社区。
+课知伴 基于开源生态构建，感谢所有 AI 工具生态中的维护者和社区。
 
 - [Next.js](https://nextjs.org)
 - [Go](https://go.dev)
@@ -518,4 +518,4 @@ DEEIX Chat 基于开源生态构建，感谢所有 AI 工具生态中的维护�
 
 ## 开源协议
 
-DEEIX Chat 使用 [Apache License 2.0](../LICENSE) 授权。
+课知伴 使用 [Apache License 2.0](../LICENSE) 授权。
