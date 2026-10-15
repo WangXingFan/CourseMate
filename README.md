@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./apps/web/public/logo-white.svg" />
-    <img src="./apps/web/public/logo-black.svg" alt="DEEIX Chat" width="160" />
+    <img src="./apps/web/public/logo-black.svg" alt="CourseMate" width="160" />
   </picture>
 </p>
 
@@ -26,11 +26,11 @@
 
 ## Overview
 
-DEEIX Chat is an open-source, deployable AI platform for individuals, teams, and enterprises that need long-term, stable, and unified access to multiple model providers. It provides one clear entry point for multiple upstream models and providers, integrating multimodal chat, model routing, files and RAG, usage billing, identity, audit logs, and operational controls into one product.
+CourseMate is an open-source, deployable AI platform for individuals, teams, and enterprises that need long-term, stable, and unified access to multiple model providers. It provides one clear entry point for multiple upstream models and providers, integrating multimodal chat, model routing, files and RAG, usage billing, identity, audit logs, and operational controls into one product.
 
 The system is designed around simple deployment, efficient static delivery, and a low runtime resource footprint: lightweight without feeling limited, restrained without losing capability, and open without becoming disorderly.
 
-![DEEIX Chat workspace](./docs/assets/screenshots/DEEIX-Chat.jpg)
+![CourseMate workspace](./docs/assets/screenshots/DEEIX-Chat.jpg)
 
 ## Features
 
@@ -47,18 +47,18 @@ The system is designed around simple deployment, efficient static delivery, and 
 | Deployment and operations | Single-runtime frontend/API serving, Docker deployment, SQLite or PostgreSQL, in-memory cache or Redis, S3-compatible storage, Swagger, structured logs, version endpoint, GeoIP, and OpenTelemetry. |
 
 <p align="center">
-  <img src="./docs/assets/screenshots/DEEIX-Chat-Dark.png" alt="DEEIX Chat dark mode" width="49.45%" />
+  <img src="./docs/assets/screenshots/DEEIX-Chat-Dark.png" alt="CourseMate dark mode" width="49.45%" />
 </p>
 
 <p align="center">
-  <img src="./docs/assets/screenshots/DEEIX-Chat-Usage.png" alt="DEEIX Chat usage and billing" width="32.3%" />
-  <img src="./docs/assets/screenshots/DEEIX-Chat-Artifacts.png" alt="DEEIX Chat artifacts" width="32.3%" />
-  <img src="./docs/assets/screenshots/DEEIX-Chat-Html.png" alt="DEEIX Chat HTML rendering" width="32.3%" />
+  <img src="./docs/assets/screenshots/DEEIX-Chat-Usage.png" alt="CourseMate usage and billing" width="32.3%" />
+  <img src="./docs/assets/screenshots/DEEIX-Chat-Artifacts.png" alt="CourseMate artifacts" width="32.3%" />
+  <img src="./docs/assets/screenshots/DEEIX-Chat-Html.png" alt="CourseMate HTML rendering" width="32.3%" />
 </p>
 
 ## Architecture and Tech Stack
 
-DEEIX Chat uses a split frontend/backend development model with a single-runtime deployment path. The frontend is built into static assets and served by the Go service, while APIs, authorization, model routing, files, billing, and audit capabilities run in the same backend runtime. Heavy document extraction and OCR capabilities are optional services, keeping the base deployment lightweight.
+CourseMate uses a split frontend/backend development model with a single-runtime deployment path. The frontend is built into static assets and served by the Go service, while APIs, authorization, model routing, files, billing, and audit capabilities run in the same backend runtime. Heavy document extraction and OCR capabilities are optional services, keeping the base deployment lightweight.
 
 ```mermaid
 flowchart TB
@@ -287,7 +287,7 @@ The default compose files persist application data:
 | PostgreSQL data | `/var/lib/postgresql/data`, full installation only |
 | Redis data | `/data`, full installation only |
 
-The default application image is `ghcr.io/deeix-ai/deeix-chat:latest`. Compose files reference an image and do not define a build step. Build a local image from the repository root first, then select it with `DEEIX_CHAT_IMAGE`:
+The default application image is `ghcr.io/wangxingfan/coursemate:latest`. Compose files reference an image and do not define a build step. Build a local image from the repository root first, then select it with `DEEIX_CHAT_IMAGE`:
 
 ```bash
 docker build -t deeix-chat:local .
@@ -505,7 +505,7 @@ Sign-in, registration, and account identity binding on Web, App, and Desktop all
 
 ## Acknowledgements
 
-DEEIX Chat is built on the open-source ecosystem. Thanks to all maintainers and communities in the AI tooling ecosystem.
+CourseMate is built on the open-source ecosystem. Thanks to all maintainers and communities in the AI tooling ecosystem.
 
 - [Next.js](https://nextjs.org)
 - [Go](https://go.dev)
@@ -521,4 +521,4 @@ DEEIX Chat is built on the open-source ecosystem. Thanks to all maintainers and 
 
 ## License
 
-DEEIX Chat is licensed under the [Apache License 2.0](./LICENSE).
+CourseMate is licensed under the [Apache License 2.0](./LICENSE).

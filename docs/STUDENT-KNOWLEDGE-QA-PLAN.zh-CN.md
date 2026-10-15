@@ -264,6 +264,7 @@ s20260002,Student02,student02@example.edu
 > 临时对话与导出切片验证：后端 `go test ./...`（仅 3 项既有 Windows 环境失败）、`go vet ./...`、`staticcheck`、`deadcode`、`gofmt` 与 `go build ./...` 通过；网页端 `tsc --noEmit`、`biome lint .`、`check-architecture.mjs` 通过；`packages/api-contract` 生成结果与实现一致，`--check` 无差异。对话截图与基础复制回答保留。
 > 对话项目切片验证：后端 `go test`（`application/conversation`、`transport/http/conversation`、`infra/persistence/postgres/{conversation,knowledgebase,user}`，仅 1 项既有 Windows 环境失败）、`go build ./...`、`go vet ./...`、`staticcheck`、`deadcode` 与 `gofmt` 通过；网页端 `tsc --noEmit`、`biome lint .`、`check-architecture.mjs` 通过；`packages/api-contract` 生成结果与实现一致，`--check` 无差异。历史会话与 `project_id` 列保留为归档数据，运行代码不再读写项目。
 > 技能切片验证：后端 `go test ./internal/application/... ./internal/transport/... ./internal/infra/persistence/... ./internal/app/...`（仅 2 项既有 Windows 环境失败）、`go build ./...`、`go vet ./...`、`staticcheck`、`deadcode`、`gofmt` 与 `interface{}`/`context` 基线检查通过；网页端 `tsc --noEmit`、`biome lint .`、`check-architecture.mjs` 通过；`packages/api-contract` 生成结果与实现一致，`--check` 无差异。技能表保留为归档数据，运行代码不再读写技能。
+> 仓库迁移与品牌：代码已上传到新仓库 `WangXingFan/CourseMate`（中文名「课知伴」），界面产品名按语言显示为 CourseMate / 课知伴；新仓库非 fork 仓库，GitHub Actions 可直接构建并推送 `ghcr.io/wangxingfan/coursemate:latest`。原 DEEIX-Chat fork 仅作历史参考。
 
 - [ ] 删除多余 HTTP 路由和 handler，收紧资料读取及来源访问边界。
 - [ ] 从主装配及 auth、channel、admin、conversation 拆除订阅解析、余额校验、费用预占和结算。

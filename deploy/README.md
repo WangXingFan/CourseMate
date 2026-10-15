@@ -1,6 +1,6 @@
 # Deployment
 
-Everything needed to run DEEIX Chat with Docker lives in this directory. Copy it to your
+Everything needed to run CourseMate with Docker lives in this directory. Copy it to your
 server as-is; the application source is not required.
 
 ```
