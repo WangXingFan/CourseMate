@@ -342,8 +342,7 @@
     "moderationBlocked": "内容已拦截",
     "moderationBlockedDescription": "安全检查后已撤回本轮回答。",
     "moderationEventId": "事件编号：{id}",
-    "moderationCategories": "命中分类：{categories}",
-    "moderationBlockedBilled": "拦截前上游已产生的用量照常计费。"
+    "moderationCategories": "命中分类：{categories}"
   },
   "data": {
     "signInRequired": "未登录，无法加载会话消息",
@@ -361,41 +360,7 @@
     "cacheWriteTokens": "缓存(写) tokens",
     "generationDuration": "生成用时",
     "totalDuration": "总用时",
-    "model": "模型",
-    "billingCost": "本次调用费用",
-    "billing": {
-      "cacheWrite": "缓存(写)",
-      "cacheWrite5m": "缓存(写 5m)",
-      "cacheWrite1h": "缓存(写 1h)",
-      "cacheWrite5m1h": "缓存(写 5m/1h)",
-      "cacheWritePricingLabel": "缓存(写 5m)",
-      "cacheWritePricingNote": "Claude 缓存读按后台配置；缓存写 5m 按后台配置价 1.25x，1h 按 2x；Fast Mode 会基于此再 6x。",
-      "claudeCacheWriteMixedNote": "Claude 缓存写按后台配置价 {multiplier} 计费。",
-      "claudeCacheWriteNote": "Claude {timeout} 缓存写按后台配置价 {multiplier} 计费。",
-      "claudeFastModeNote": "Claude Fast Mode：输入、输出和缓存费用按 {multiplier} 计费。",
-      "openaiServiceTierNote": "OpenAI service_tier={tier}：按 {multiplier} 计费。",
-      "scheduleRateNote": "时段「{period}」：按 {multiplier} 计费。",
-      "input": "输入",
-      "output": "输出",
-      "cacheRead": "缓存(读)",
-      "rateNote": "倍率说明",
-      "cacheNote": "缓存说明",
-      "total": "总计",
-      "freeModelNoBilling": "免费模型，不计费",
-      "perCall": "每次",
-      "perSecond": "每秒",
-      "callUnit": "次",
-      "secondUnit": "秒",
-      "tieredRangeBounded": "原始输入区间 {from}-{upTo}",
-      "tieredRangeOpen": "原始输入区间 {from}+",
-      "table": {
-        "item": "计费项目",
-        "usage": "用量",
-        "unitPrice": "单价",
-        "amount": "金额",
-        "total": "总计"
-      }
-    }
+    "model": "模型"
   },
   "composer": {
     "uploadFile": "上传文件",
@@ -512,44 +477,7 @@
   "modelPicker": {
     "selectModel": "选择模型",
     "empty": "暂无模型",
-    "group": "分组",
-    "viewPricing": "查看价格",
-    "freeModel": "免费模型",
-    "freeModelDescription": "不会扣除按量余额",
-    "tieredPricing": "阶梯计费",
-    "callPricing": "按次计费",
-    "durationPricing": "按秒计费",
-    "tokenPricing": "按量计费",
-    "input": "输入",
-    "output": "输出",
-    "cacheRead": "缓存(读)",
-    "cacheWrite": "缓存(写)",
-    "cacheWrite5m": "缓存(写 5m)",
-    "cacheWrite1h": "缓存(写 1h)",
-    "cacheWrite5m1h": "缓存(写 5m/1h)",
-    "cacheWritePricingLabel": "缓存(写 5m)",
-    "cacheWritePricingNote": "Claude 缓存读按后台配置；缓存写 5m 按后台配置价 1.25x，1h 按 2x；Fast Mode 会基于此再 6x。",
-    "claudeCacheWriteMixedNote": "Claude 缓存写按后台配置价 {multiplier} 计费。",
-    "claudeCacheWriteNote": "Claude {timeout} 缓存写按后台配置价 {multiplier} 计费。",
-    "claudeFastModeNote": "Claude Fast Mode：输入、输出和缓存费用按 {multiplier} 计费。",
-    "openaiServiceTierNote": "OpenAI service_tier={tier}：按 {multiplier} 计费。",
-    "scheduleRateNote": "时段「{period}」：按 {multiplier} 计费。",
-    "perCall": "每次",
-    "perSecond": "每秒",
-    "callUnit": "次",
-    "secondUnit": "秒",
-    "schedule": {
-      "title": "时段倍率",
-      "now": "当前",
-      "mon": "周一",
-      "tue": "周二",
-      "wed": "周三",
-      "thu": "周四",
-      "fri": "周五",
-      "sat": "周六",
-      "sun": "周日",
-      "everyDay": "每天"
-    }
+    "group": "分组"
   },
   "processTrace": {
     "fileBadges": {

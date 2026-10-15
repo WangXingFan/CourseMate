@@ -87,12 +87,11 @@
       "delete": "Delete"
     }
   },
-  "subscription": "Subscription",
   "about": "About",
   "navigation": "Settings navigation",
   "aboutPage": {
     "title": "About",
-    "description": "CourseMate is a model access and conversation operations platform for multi-user AI applications. It unifies the model catalog, multi-provider routing, parameter governance, files and RAG, usage billing, identity security, audit, and operational settings in a single control plane.",
+    "description": "CourseMate is a model access and conversation operations platform for multi-user AI applications. It unifies the model catalog, multi-provider routing, parameter governance, files and RAG, identity security, audit, and operational settings in a single control plane.",
     "details": "Product information",
     "product": "Product",
     "version": "Version",
@@ -480,8 +479,6 @@
       "tokenDescription": "Controls whether token usage for the request appears below AI replies.",
       "latencyTitle": "Show total latency",
       "latencyDescription": "Controls whether total call latency appears below AI replies.",
-      "costTitle": "Show total cost",
-      "costDescription": "Controls whether total call cost appears below AI replies.",
       "processTraceTitle": "Show processing steps",
       "processTraceDescription": "Controls whether the processing steps for a reply, such as context planning, retrieval, and tool summaries, appear above AI replies.",
       "widthTitle": "Chat area width",
@@ -529,225 +526,6 @@
     "toasts": {
       "saveFailed": "Failed to save",
       "retryLater": "Please try again later."
-    }
-  },
-  "subscriptionPage": {
-    "title": "Subscription",
-    "actions": {
-      "cancel": "Cancel",
-      "processing": "Processing"
-    },
-    "interval": {
-      "lifetime": "lifetime",
-      "year": "year",
-      "month": "month"
-    },
-    "currentSubscription": {
-      "title": "Current subscription",
-      "none": "No subscription",
-      "empty": "No subscription plan is available.",
-      "subscribe": "Subscribe"
-    },
-    "periodUsage": {
-      "title": "Plan usage",
-      "currentPeriod": "Current billing period",
-      "used": "Used {value}",
-      "total": "Total {value}"
-    },
-    "periodOverage": {
-      "title": "Overage billing",
-      "balance": "Available balance {value}"
-    },
-    "entitlements": {
-      "title": "Subscription entitlements",
-      "count": "{count} segments",
-      "current": "Current",
-      "upcoming": "Upcoming",
-      "range": "{start} - {end}",
-      "credit": "{credit} credit"
-    },
-    "usageBilling": {
-      "title": "Usage billing",
-      "balanceLabel": "Account balance",
-      "totalSpentLabel": "Total spent",
-      "topUp": "Top up"
-    },
-    "selfMode": {
-      "title": "Billing mode",
-      "value": "Self-use mode"
-    },
-    "activity": {
-      "title": "Activity over the past year",
-      "tokens": "Tokens",
-      "requests": "Requests",
-      "peakDayTokens": "Highest daily tokens",
-      "currentStreak": "Current streak",
-      "longestStreak": "Longest streak",
-      "totalActiveDays": "Active days",
-      "dayCount": "{count, plural, one {# day} other {# days}}",
-      "totalRequests": "Made {count} model requests in the past year",
-      "less": "Less",
-      "more": "More",
-      "empty": "No activity in the past year",
-      "loadFailed": "Failed to load activity",
-      "tooltip": {
-        "requests": "Requests",
-        "tokens": "Tokens"
-      }
-    },
-    "usageTrend": {
-      "dailyTitle": "Daily usage trend",
-      "monthlyTitle": "Monthly usage trend",
-      "daily": "Daily",
-      "monthly": "Monthly",
-      "dailyUsage": "Daily usage",
-      "monthlyUsage": "Monthly usage",
-      "otherModels": "Other",
-      "empty": "No usage data.",
-      "metrics": {
-        "periodCost": "Period cost",
-        "yearCost": "12-month cost",
-        "totalTokens": "Total tokens",
-        "totalCalls": "Total calls",
-        "averageLatency": "Average latency"
-      },
-      "tooltip": {
-        "cost": "Cost",
-        "calls": "Calls",
-        "latency": "Average latency"
-      }
-    },
-    "usageLog": {
-      "title": "Usage logs",
-      "searchModel": "Search models",
-      "type": "Type",
-      "filters": {
-        "all": "All",
-        "free": "Free models",
-        "billable": "Billable models"
-      },
-      "sort": {
-        "newest": "Newest calls",
-        "oldest": "Oldest calls",
-        "tokensDesc": "Most tokens",
-        "costDesc": "Highest cost",
-        "latencyDesc": "Longest latency"
-      },
-      "columns": {
-        "time": "Time",
-        "model": "Model",
-        "baseBilling": "Base billing",
-        "serviceBilling": "Service billing",
-        "balanceAfter": "Balance after settlement",
-        "latency": "Latency"
-      },
-      "empty": "No usage logs."
-    },
-    "billingTooltip": {
-      "cacheWrite": "Cache write",
-      "cacheWrite5m": "Cache write 5m",
-      "cacheWrite1h": "Cache write 1h",
-      "cacheWrite5m1h": "Cache write 5m/1h",
-      "cacheWritePricingLabel": "Cache write 5m",
-      "cacheWritePricingNote": "Claude cache read uses configured pricing; cache write 5m uses 1.25x, 1h uses 2x, and Fast Mode applies another 6x on top.",
-      "claudeCacheWriteMixedNote": "Claude cache write uses configured pricing at {multiplier}.",
-      "claudeCacheWriteNote": "Claude {timeout} cache write uses configured pricing at {multiplier}.",
-      "claudeFastModeNote": "Claude Fast Mode bills input, output, and cache usage at {multiplier}.",
-      "openaiServiceTierNote": "OpenAI service_tier={tier} bills at {multiplier}.",
-      "scheduleRateNote": "Time-of-day rate \"{period}\": billed at {multiplier}.",
-      "baseService": "Base service",
-      "input": "Input",
-      "output": "Output",
-      "cacheRead": "Cache read",
-      "rateNote": "Multiplier",
-      "cacheNote": "Cache",
-      "total": "Total",
-      "subtotal": "Subtotal",
-      "freeModelNoBilling": "free model, not billed",
-      "perCall": "Per call",
-      "perSecond": "Per second",
-      "callUnit": "call",
-      "secondUnit": "second",
-      "tieredRangeBounded": "Original input range {from}-{upTo}",
-      "tieredRangeOpen": "Original input range {from}+",
-      "table": {
-        "item": "Billing item",
-        "usage": "Usage",
-        "unitPrice": "Unit price",
-        "amount": "Amount"
-      }
-    },
-    "plans": {
-      "title": "Subscription plans",
-      "actions": {
-        "current": "Current plan",
-        "unavailable": "Unavailable",
-        "renew": "Renew",
-        "subscribe": "Subscribe",
-        "switch": "Switch",
-        "upgrade": "Upgrade",
-        "freeBlocked": "Base plan"
-      },
-      "features": {
-        "monthlyCredit": "{credit} monthly credit",
-        "freeModelsNotIncluded": "Free models do not count toward the credit."
-      }
-    },
-    "payment": {
-      "title": "Payment method",
-      "renewTitle": "Renew subscription",
-      "upgradeTitle": "Upgrade subscription",
-      "description": "Confirm the payment method to continue.",
-      "renewDescription": "Renewal adds time to your current plan.",
-      "renewAfterHigherDescription": "This renews with the selected plan. Your current higher-tier entitlement and credit stay unchanged, and the new plan starts after the higher-tier entitlement ends.",
-      "upgradeDescription": "The higher plan starts immediately and unused entitlement is preserved after it.",
-      "method": "Payment method",
-      "card": "Card",
-      "disabled": "Disabled",
-      "continue": "Continue",
-      "epay": {
-        "alipay": "Alipay",
-        "wxpay": "WeChat Pay",
-        "qqpay": "QQ Wallet",
-        "custom": "Custom · {type}"
-      }
-    },
-    "topUp": {
-      "title": "Top up",
-      "description": "Enter a top-up amount and confirm the payment method.",
-      "currentBalance": "Current balance {value}",
-      "amount": "Top-up amount",
-      "amountAria": "Top-up amount",
-      "confirm": "Top up"
-    },
-    "redemption": {
-      "open": "Redeem",
-      "title": "Redemption code",
-      "description": "Enter the redemption code provided by an administrator.",
-      "code": "Redemption code",
-      "confirm": "Redeem"
-    },
-    "toasts": {
-      "retryLater": "Please try again later.",
-      "subscriptionLoadFailed": "Failed to load subscription information",
-      "usageLogLoadFailed": "Failed to load usage logs",
-      "checkoutCreateFailed": "Failed to create payment",
-      "checkoutURLMissing": "The payment provider did not return a checkout URL.",
-      "planUpdated": "Subscription plan updated",
-      "subscribeFailed": "Subscription failed",
-      "invalidTopUpAmount": "Invalid top-up amount",
-      "invalidTopUpAmountDescription": "Enter a USD amount greater than 0.",
-      "planUnavailable": "Plan unavailable",
-      "planUnavailableDescription": "This plan has no available price. Ask an administrator to check the billing configuration.",
-      "paymentDisabled": "Payment provider is disabled",
-      "paymentDisabledDescription": "Configure a payment provider in the admin console before subscribing to a paid plan.",
-      "freeSwitchBlocked": "Active subscription entitlement",
-      "freeSwitchBlockedDescription": "You cannot switch to Free before paid entitlements expire. Renew or choose another paid plan instead.",
-      "noPlanSelected": "No plan selected",
-      "noPlanSelectedDescription": "Select a plan before subscribing.",
-      "invalidRedemptionCode": "Enter a redemption code.",
-      "redemptionSucceeded": "Redemption applied",
-      "redemptionFailed": "Redemption failed"
     }
   }
 }

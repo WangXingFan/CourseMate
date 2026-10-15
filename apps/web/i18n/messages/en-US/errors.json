@@ -3,11 +3,9 @@
     "defaultPermissionGroupDeleteNotAllowed": "The default permission group cannot be deleted.",
     "permissionGroupNotFound": "Permission group not found.",
     "invalidPermissionGroupName": "Permission group name is required.",
-    "invalidPermissionGroupRateMultiplier": "Invalid rate multiplier. Must be between 1 and 10000.",
     "invalidPermissionGroupModels": "Permission group model configuration is invalid.",
     "invalidPermissionGroupUsers": "Permission group member configuration is invalid.",
     "defaultPermissionGroupUsersImplicit": "Default permission group members are managed automatically.",
-    "permissionGroupReferencedByPlan": "This permission group is referenced by a billing plan. Unbind it before deleting.",
     "permissionGroupRepoUnavailable": "The permission group service is temporarily unavailable."
   },
   "avatar": {
@@ -86,48 +84,6 @@
     "verificationCodeInvalid": "Verification code is invalid or expired.",
     "verificationCodeRecent": "A verification code was sent recently. Try again later.",
     "verificationMethodUnavailable": "The selected verification method is unavailable."
-  },
-  "billing": {
-    "insufficientBalance": "Insufficient balance.",
-    "insufficientFunds": "Insufficient balance.",
-    "concurrencyLimitExceeded": "Up to 5 paid requests can run at the same time.",
-    "reservationConflict": "This request has already been submitted.",
-    "invalidPlan": "Invalid billing plan.",
-    "planNotFound": "Billing plan not found.",
-    "invalidPermissionGroup": "Invalid permission group.",
-    "invalidDailyUsageDateRange": "Invalid usage date range.",
-    "invalidDailyUsageDays": "Invalid usage day count.",
-    "invalidModelPricing": "Invalid model pricing.",
-    "invalidAccountBalance": "Invalid billing account balance.",
-    "subscribeFailed": "Subscription failed. Please try again later.",
-    "subscriptionEntitlementActive": "A paid subscription entitlement is still active, so Free cannot be selected.",
-    "invalidRedemptionCode": "Invalid redemption code.",
-    "redemptionCodeConflict": "This redemption code already exists.",
-    "redemptionCodeUnavailable": "The redemption code is unavailable or expired.",
-    "redemptionCodePlaintextUnavailable": "This code has no copyable encrypted content, so the full code cannot be copied.",
-    "redemptionCodeExhausted": "The redemption code has no remaining uses.",
-    "redemptionSecretUnavailable": "The redemption code service is unavailable.",
-    "redemptionUserLimitExceeded": "This account has reached the per-user limit for this code.",
-    "redemptionValidation": {
-      "codeFormat": "Code must be 3-64 uppercase letters, numbers, hyphens, or underscores.",
-      "quantity": "Quantity must be an integer from 1 to 100.",
-      "manualQuantity": "A manual code can only be created once.",
-      "mode": "Billing mode is invalid.",
-      "credit": "Credit amount must be greater than 0.",
-      "plan": "Choose an active non-Free plan.",
-      "duration": "Duration days must be greater than 0.",
-      "expiresAt": "Expiration must be later than the current time.",
-      "maxRedemptions": "Total uses must be a positive integer, or empty for unlimited.",
-      "perUserLimit": "Per-user uses must be a positive integer.",
-      "limitRelationship": "Per-user limit cannot exceed the total limit.",
-      "status": "Redemption code status is invalid."
-    },
-    "invalidSubscriptionExpiry": "Invalid subscription expiry.",
-    "invalidSubscriptionTier": "Invalid subscription tier.",
-    "paymentRequired": "Payment is required.",
-    "periodCreditExceeded": "Period credit has been exhausted.",
-    "pricingRequired": "Model pricing is required.",
-    "subscriptionExpiryRequired": "Subscription expiry is required."
   },
   "config": {
     "invalidJson": "Invalid JSON configuration."
@@ -262,24 +218,6 @@
   "messageGenerationRun": {
     "alreadyExists": "This message generation has already been submitted."
   },
-  "payment": {
-    "checkoutFailed": "Failed to create checkout.",
-    "epayGatewayInvalid": "The EPay redirect gateway URL is invalid.",
-    "epayTypeUnsupported": "This EPay payment type is not supported.",
-    "invalidEvent": "Invalid payment event.",
-    "invalidOrder": "Invalid payment order.",
-    "invalidSignature": "Invalid payment signature.",
-    "invalidWebhookBody": "Invalid webhook body.",
-    "notificationMismatch": "Payment notification does not match the order.",
-    "orderNoRequired": "Order number is required.",
-    "orderNotFound": "Payment order not found.",
-    "orderStateInvalid": "Payment order state is invalid.",
-    "providerUnavailable": "Payment provider is unavailable.",
-    "returnUrlCrossOrigin": "Payment return URL must use the configured public web origin.",
-    "returnUrlInvalid": "Invalid payment return URL.",
-    "webhookBodyTooLarge": "Webhook body is too large.",
-    "webhookNotConfigured": "Payment webhook is not configured."
-  },
   "quota": {
     "exceeded": "Quota exceeded."
   },
@@ -301,7 +239,6 @@
     "invalidDailyActivityDays": "Invalid daily activity day count.",
     "invalidFile": "Invalid file.",
     "invalidImageIndex": "Invalid image index.",
-    "invalidImportCreditMultiplier": "Invalid import credit multiplier.",
     "invalidImportDsn": "Invalid import data source.",
     "invalidLocationPayload": "Invalid location data.",
     "invalidLogCleanupBefore": "Invalid log cleanup cutoff.",
@@ -340,13 +277,6 @@
   "permissionGroup": {
     "invalidId": "Invalid permission group ID."
   },
-  "plan": {
-    "invalidId": "Invalid plan ID."
-  },
-  "redemptionCode": {
-    "invalidId": "Invalid redemption code ID.",
-    "notFound": "Redemption code not found."
-  },
   "route": {
     "invalidId": "Invalid route ID.",
     "notFound": "Route not found."
@@ -368,7 +298,6 @@
     "unavailable": "Service is unavailable. Try again later."
   },
   "settings": {
-    "billingPaymentInvalid": "Invalid billing payment settings.",
     "embeddingInvalid": "Invalid embedding settings.",
     "extractInvalid": "Invalid file extraction settings.",
     "invalidKey": "Invalid setting key.",
@@ -391,13 +320,6 @@
   },
   "upstreamModel": {
     "notFound": "Upstream model not found."
-  },
-  "usageStatistics": {
-    "invalidBillingScope": "Invalid billing scope.",
-    "invalidDateRange": "Invalid usage statistics date range.",
-    "invalidRankBy": "Invalid usage ranking field.",
-    "invalidSection": "Invalid usage statistics section.",
-    "subjectConflict": "User and permission group filters cannot be used together."
   },
   "upstreamEmptyResponse": "The upstream returned an empty response. Try again later or ask an administrator to check the model route.",
   "upstreamRequestFailed": "The upstream request failed. Try again later or ask an administrator to check the model route.",
@@ -447,7 +369,6 @@
       "registration": "Registration is not available on this server.",
       "identityProviders": "Third-party sign-in is not available on this server.",
       "accountSecurity": "Password, email, two-factor and session management are not available on this server.",
-      "billingGating": "Plans, balances and payments are not available on this server.",
       "usageMetering": "Usage metering is not available on this server.",
       "contentModeration": "Content moderation is not available on this server."
     }

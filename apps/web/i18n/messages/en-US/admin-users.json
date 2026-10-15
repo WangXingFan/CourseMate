@@ -7,7 +7,6 @@
     "models": "Models",
     "groups": "Permission Groups",
     "toolSettings": "Tools",
-    "billing": "Billing",
     "logs": "Logs",
     "loginSettings": "Sign-in & auth",
     "conversationSettings": "Conversation",
@@ -18,7 +17,7 @@
   },
   "aboutPage": {
     "title": "About",
-    "description": "CourseMate is a model access and conversation operations platform for multi-user AI applications. It unifies the model catalog, multi-provider routing, parameter governance, files and RAG, usage billing, identity security, audit, and operational settings in a single control plane.",
+    "description": "CourseMate is a model access and conversation operations platform for multi-user AI applications. It unifies the model catalog, multi-provider routing, parameter governance, files and RAG, identity security, audit, and operational settings in a single control plane.",
     "details": "Product information",
     "product": "Product",
     "version": "Version",
@@ -122,9 +121,6 @@
     "info": "Info",
     "role": "Role",
     "status": "Status",
-    "subscription": "Subscription",
-    "balance": "Balance",
-    "balanceUSDInput": "Balance (USD)",
     "timezone": "Timezone",
     "lastLogin": "Last login",
     "lastActive": "Last active"
@@ -153,27 +149,10 @@
     "suspended": "Suspended",
     "deactivated": "Deactivated"
   },
-  "subscriptionStatus": {
-    "active": "Active",
-    "trialing": "Trialing",
-    "pastDue": "Past due",
-    "canceled": "Canceled",
-    "unpaid": "Unpaid",
-    "incomplete": "Incomplete",
-    "incompleteExpired": "Incomplete expired",
-    "paused": "Paused"
-  },
-  "billingAccountStatus": {
-    "active": "Active",
-    "frozen": "Frozen",
-    "closed": "Closed",
-    "suspended": "Suspended"
-  },
   "table": {
     "searchPlaceholder": "Search username, display name, email, or public ID",
     "allRoles": "All",
     "allStatus": "All",
-    "allSubscriptions": "All",
     "selectRole": "Select role",
     "selectStatus": "Select status",
     "noMatchingRoles": "No matching roles",
@@ -242,19 +221,11 @@
     "preferencesPlaceholder": "For example response style, language habits, output format, or common workflows.",
     "profileSection": "Profile",
     "accessSection": "Access & region",
-    "billingSection": "Billing",
     "securitySection": "Security",
     "systemSection": "System",
-    "subscriptionPlan": "Subscription plan",
-    "selectSubscriptionPlan": "Select subscription plan",
-    "noMatchingSubscriptionPlans": "No matching subscription plans",
-    "expiryTime": "Expiration",
-    "selectExpiryDate": "Select expiration date",
     "language": "Language",
     "reason": "Reason",
     "reasonPlaceholder": "Record the reason for this status change (optional)",
-    "accountBalance": "Account balance (USD)",
-    "billingStatus": "Billing status",
     "twoFactor": "Two-factor authentication",
     "twoFactorEnabled": "Enabled (recovery codes {count})",
     "twoFactorDisabled": "Disabled",
@@ -268,10 +239,6 @@
     "createUser": "Create"
   },
   "validation": {
-    "nonFreeRequiresExpiry": "Non-Free subscriptions require an expiration time.",
-    "invalidSubscriptionExpiry": "Enter a valid subscription expiration time.",
-    "selectSubscriptionPlan": "Select a subscription plan.",
-    "invalidUsageBalance": "Enter a valid usage balance.",
     "passwordMinLength": "The new password must be at least 8 characters and not digits only.",
     "usernameLength": "Username must be 3-16 characters.",
     "displayNameLength": "Display name must be 3-16 characters."
@@ -287,7 +254,6 @@
     "avatarUpdated": "Avatar updated",
     "avatarUpdateFailed": "Failed to update avatar",
     "editFailed": "Failed to edit user",
-    "balanceAdjustmentDescription": "Balance set by an administrator in user management",
     "userUpdated": "User updated",
     "resetPasswordFailed": "Failed to reset password",
     "passwordReset": "Password reset",
@@ -313,11 +279,6 @@
     "timezoneAlreadyApplied": "Selected users already use this timezone",
     "bulkTimezonePartialFailed": "Some timezones could not be updated",
     "bulkTimezoneFailed": "Failed to update timezones",
-    "bulkTimezoneUpdated": "Updated timezone for {count} users",
-    "bulkBalanceAlreadyApplied": "Selected users already use this balance",
-    "bulkBalancePartialFailed": "Some balances could not be updated",
-    "bulkBalanceFailed": "Failed to update balances",
-    "bulkBalanceUpdated": "Updated balance for {count} users",
-    "bulkBalanceAdjustmentDescription": "Balance set in bulk by an administrator in user management"
+    "bulkTimezoneUpdated": "Updated timezone for {count} users"
   }
 }

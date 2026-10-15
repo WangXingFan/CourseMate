@@ -25,10 +25,6 @@ type RequestBodyErrorDetails = {
   fieldErrors?: unknown;
 };
 
-type RedemptionCodeErrorDetails = {
-  reason?: unknown;
-};
-
 type SettingsValidationDetails = {
   field?: unknown;
   fields?: unknown;
@@ -61,8 +57,6 @@ const REQUEST_FIELD_LABELS: Record<AppLocale, Record<string, string>> = {
     status: "Status",
     systemPrompt: "System prompt",
     streamIdleTimeoutMS: "Stream idle timeout",
-    subscriptionExpiresAt: "Subscription expiry",
-    subscriptionTier: "Subscription plan",
     timezone: "Timezone",
     username: "Username",
   },
@@ -90,8 +84,6 @@ const REQUEST_FIELD_LABELS: Record<AppLocale, Record<string, string>> = {
     status: "状态",
     systemPrompt: "系统提示词",
     streamIdleTimeoutMS: "流式空闲超时",
-    subscriptionExpiresAt: "订阅到期时间",
-    subscriptionTier: "订阅方案",
     timezone: "时区",
     username: "用户名",
   },
@@ -124,17 +116,6 @@ const SETTINGS_FIELD_LABELS: Record<AppLocale, Record<string, string>> = {
     "auth:turnstile_secret_key": "Turnstile Secret Key",
     "auth:turnstile_site_key": "Turnstile Site Key",
     "auth:username_login_enabled": "Username sign-in",
-    "billing:epay_gateway_url": "EPay gateway URL",
-    "billing:epay_key": "EPay key",
-    "billing:epay_pid": "EPay merchant ID",
-    "billing:epay_types": "EPay payment types",
-    "billing:mode": "Billing mode",
-    "billing:payment_providers": "Payment providers",
-    "billing:prepaid_amount_usd": "Per-request reservation",
-    "billing:stripe_publishable_key": "Stripe publishable key",
-    "billing:stripe_secret_key": "Stripe secret key",
-    "billing:stripe_webhook_secret": "Stripe webhook secret",
-    "billing:usd_to_cny_rate": "USD to CNY rate",
     "chat:model_option_allowed_paths": "Model option allowlist",
     "chat:default_system_prompt": "Global default system prompt",
     "chat:model_option_denied_paths": "Model option denylist",
@@ -173,17 +154,6 @@ const SETTINGS_FIELD_LABELS: Record<AppLocale, Record<string, string>> = {
     "auth:turnstile_secret_key": "Turnstile Secret Key",
     "auth:turnstile_site_key": "Turnstile Site Key",
     "auth:username_login_enabled": "用户名登录",
-    "billing:epay_gateway_url": "易支付网关地址",
-    "billing:epay_key": "易支付商户密钥",
-    "billing:epay_pid": "易支付商户 ID",
-    "billing:epay_types": "易支付支付方式",
-    "billing:mode": "计费模式",
-    "billing:payment_providers": "支付渠道",
-    "billing:prepaid_amount_usd": "单次预留金额",
-    "billing:stripe_publishable_key": "Stripe Publishable Key",
-    "billing:stripe_secret_key": "Stripe Secret Key",
-    "billing:stripe_webhook_secret": "Stripe Webhook Secret",
-    "billing:usd_to_cny_rate": "美元人民币汇率",
     "chat:model_option_allowed_paths": "模型参数白名单",
     "chat:default_system_prompt": "全局默认系统提示词",
     "chat:model_option_denied_paths": "模型参数黑名单",
@@ -363,8 +333,6 @@ function resolveSettingsValidationMessage(error: ApiError, locale: AppLocale): s
         return `${displayLabel}长度不能超过 ${param} 个字符。`;
       case "enum":
         return `${displayLabel}必须是以下值之一：${splitRuleParam(param).join("、")}。`;
-      case "payment_provider":
-        return `${displayLabel}只能包含：${splitRuleParam(param).join("、")}。`;
       case "http_url":
         return `${displayLabel}必须以 http:// 或 https:// 开头。`;
       case "trusted_http_url":
@@ -377,30 +345,16 @@ function resolveSettingsValidationMessage(error: ApiError, locale: AppLocale): s
         return `${displayLabel}必须是 JSON 对象。`;
       case "json_array":
         return `${displayLabel}必须是 JSON 数组。`;
-      case "payment_count":
-        return `${displayLabel}必须包含 ${first} 到 ${second} 个支付方式。`;
-      case "payment_fields":
-        return `${displayLabel}每一项都必须包含 ${param}。`;
-      case "payment_item_length":
-        return `${displayLabel}单项内容过长。`;
-      case "payment_type_chars":
-        return `${displayLabel}的 type 包含无效字符。`;
-      case "payment_type_unique":
-        return `${displayLabel}的 type 不能重复。`;
       case "model_option_protocol":
         return `${displayLabel}包含不支持的协议。`;
       case "model_option_path":
         return `${displayLabel}包含无效的参数路径。`;
-      case "native_tool_pricing":
-        return `${displayLabel}包含无效的原生工具计费配置。`;
       case "mime":
         return `${displayLabel}包含无效的 MIME 类型。`;
       case "file_type":
         return `${displayLabel}只能包含：${splitRuleParam(param).join("、")}。`;
       case "domain":
         return `${displayLabel}包含无效域名。`;
-      case "epay_url":
-        return `${displayLabel}必须是有效的 HTTP(S) 易支付地址。`;
       case "dependency":
         if (param === "username_or_email_login") {
           return "关闭用户名和邮箱登录前，必须先启用第三方登录。";
@@ -453,8 +407,6 @@ function resolveSettingsValidationMessage(error: ApiError, locale: AppLocale): s
       return `${displayLabel} length must be at most ${param} characters.`;
     case "enum":
       return `${displayLabel} must be one of: ${splitRuleParam(param).join(", ")}.`;
-    case "payment_provider":
-      return `${displayLabel} may contain only: ${splitRuleParam(param).join(", ")}.`;
     case "http_url":
       return `${displayLabel} must start with http:// or https://.`;
     case "trusted_http_url":
@@ -467,30 +419,16 @@ function resolveSettingsValidationMessage(error: ApiError, locale: AppLocale): s
       return `${displayLabel} must be a JSON object.`;
     case "json_array":
       return `${displayLabel} must be a JSON array.`;
-    case "payment_count":
-      return `${displayLabel} must contain ${first} to ${second} payment types.`;
-    case "payment_fields":
-      return `Each ${displayLabel} item must include ${param}.`;
-    case "payment_item_length":
-      return `${displayLabel} contains an item that is too long.`;
-    case "payment_type_chars":
-      return `${displayLabel} contains invalid type characters.`;
-    case "payment_type_unique":
-      return `${displayLabel} type values must be unique.`;
     case "model_option_protocol":
       return `${displayLabel} contains an unsupported protocol.`;
     case "model_option_path":
       return `${displayLabel} contains an invalid option path.`;
-    case "native_tool_pricing":
-      return `${displayLabel} contains invalid native tool pricing configuration.`;
     case "mime":
       return `${displayLabel} contains an invalid MIME type.`;
     case "file_type":
       return `${displayLabel} may contain only: ${splitRuleParam(param).join(", ")}.`;
     case "domain":
       return `${displayLabel} contains an invalid domain.`;
-    case "epay_url":
-      return `${displayLabel} must be a valid HTTP(S) EPay URL.`;
     case "dependency":
       if (param === "username_or_email_login") {
         return "Enable third-party sign-in before disabling both username and email sign-in.";
@@ -518,18 +456,6 @@ function resolveSettingsValidationMessage(error: ApiError, locale: AppLocale): s
   }
 }
 
-function isRedemptionCodeErrorDetails(details: unknown): details is RedemptionCodeErrorDetails {
-  return Boolean(details && typeof details === "object" && "reason" in details);
-}
-
-function resolveRedemptionCodeValidationMessage(error: ApiError, locale: AppLocale): string | undefined {
-  if (error.errorCode !== "billing.invalid_redemption_code") return undefined;
-  if (!isRedemptionCodeErrorDetails(error.details) || typeof error.details.reason !== "string") return undefined;
-  const reason = error.details.reason.trim();
-  if (!reason) return undefined;
-  return lookupErrorMessage(locale, `billing.redemption_validation.${reason}`);
-}
-
 // feature.disabled names the feature in details; prefer the per-feature text
 // over the generic one (docs/ARCHITECTURE.md §4).
 function resolveFeatureDisabledMessage(error: ApiError, locale: AppLocale): string | undefined {
@@ -554,11 +480,6 @@ export function resolveLocalizedErrorMessage(error: unknown, fallback?: string):
     const settingsValidationMessage = resolveSettingsValidationMessage(error, locale);
     if (settingsValidationMessage) {
       return settingsValidationMessage;
-    }
-
-    const redemptionCodeValidationMessage = resolveRedemptionCodeValidationMessage(error, locale);
-    if (redemptionCodeValidationMessage) {
-      return redemptionCodeValidationMessage;
     }
 
     const translated = lookupErrorMessage(locale, error.errorCode);
