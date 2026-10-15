@@ -14,9 +14,9 @@ type Capabilities struct {
 	IdentityProviders bool `json:"identityProviders"`
 	// AccountSecurity 密码、邮箱、两步验证、会话、注销账号。
 	AccountSecurity bool `json:"accountSecurity"`
-	// BillingGating 计费规则可以拒绝请求：套餐、余额、兑换码、支付。
+	// BillingGating 计费门禁能力。契约键保留，但本产品不含套餐、余额、兑换码与支付，恒为 false。
 	BillingGating bool `json:"billingGating"`
-	// UsageMetering 记录用量与费用。
+	// UsageMetering 记录对话 token 用量与请求追踪。
 	UsageMetering bool `json:"usageMetering"`
 	// ContentModeration 内容审核。
 	ContentModeration bool `json:"contentModeration"`
@@ -24,8 +24,8 @@ type Capabilities struct {
 
 // Capabilities 从配置推导能力位；这是唯一的推导点。
 // 本地模式只服务一个自动登录的用户，多用户、身份、门禁类功能没有对象；
-// 用量计量保留，本地用户要看自己的花费。服务器模式全部开启，
-// 更细的"当前是否配置了 X"由各功能自己的端点回答。
+// 用量计量保留，本地用户要看自己的 token 用量。服务器模式开启除计费门禁
+// 以外的全部能力，更细的"当前是否配置了 X"由各功能自己的端点回答。
 func (c Config) Capabilities() Capabilities {
 	if c.LocalMode {
 		return Capabilities{UsageMetering: true}
@@ -35,7 +35,6 @@ func (c Config) Capabilities() Capabilities {
 		Registration:      true,
 		IdentityProviders: true,
 		AccountSecurity:   true,
-		BillingGating:     true,
 		UsageMetering:     true,
 		ContentModeration: true,
 	}

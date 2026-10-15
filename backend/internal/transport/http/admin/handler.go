@@ -10,7 +10,6 @@ import (
 
 	appadmin "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/admin"
 	auditapp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/audit"
-	appbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
 	appconversation "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/conversation"
 	applogcleanup "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/logcleanup"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/user"
@@ -41,7 +40,6 @@ func NewHandler(service *appadmin.Service) *Handler {
 // @Param page query int false "页码（从 1 开始，默认 1）"
 // @Param page_size query int false "每页数量（1-1000，默认 20）"
 // @Param q query string false "搜索用户名、昵称、邮箱或公开ID"
-// @Param subscription_status query string false "订阅状态过滤(active/free)"
 // @Param identity_provider query string false "身份源 slug 过滤"
 // @Success 200 {object} UserListResponseDoc
 // @Failure 500 {object} ErrorDoc
@@ -50,9 +48,8 @@ func NewHandler(service *appadmin.Service) *Handler {
 func (h *Handler) ListUsers(c *gin.Context) {
 	page, pageSize := pagination.Parse(c.Query("page"), c.Query("page_size"))
 	items, total, err := h.service.ListUsers(c.Request.Context(), page, pageSize, appadmin.UserListFilter{
-		Query:              c.Query("q"),
-		SubscriptionStatus: c.Query("subscription_status"),
-		IdentityProvider:   c.Query("identity_provider"),
+		Query:            c.Query("q"),
+		IdentityProvider: c.Query("identity_provider"),
 	})
 	if err != nil {
 		response.InternalError(c)
@@ -89,16 +86,14 @@ func (h *Handler) CreateUser(c *gin.Context) {
 	}
 
 	item, err := h.service.CreateUser(c.Request.Context(), appadmin.CreateUserInput{
-		Username:              req.Username,
-		Password:              req.Password,
-		AvatarURL:             req.AvatarURL,
-		DisplayName:           req.DisplayName,
-		Email:                 req.Email,
-		Phone:                 req.Phone,
-		Timezone:              req.Timezone,
-		Locale:                req.Locale,
-		SubscriptionTier:      req.SubscriptionTier,
-		SubscriptionExpiresAt: req.SubscriptionExpiresAt,
+		Username:    req.Username,
+		Password:    req.Password,
+		AvatarURL:   req.AvatarURL,
+		DisplayName: req.DisplayName,
+		Email:       req.Email,
+		Phone:       req.Phone,
+		Timezone:    req.Timezone,
+		Locale:      req.Locale,
 	})
 	if err != nil {
 		switch {
@@ -114,10 +109,7 @@ func (h *Handler) CreateUser(c *gin.Context) {
 			errors.Is(err, user.ErrInvalidEmail),
 			errors.Is(err, user.ErrInvalidPhone),
 			errors.Is(err, user.ErrInvalidTimeZone),
-			errors.Is(err, user.ErrInvalidLocale),
-			errors.Is(err, user.ErrInvalidSubscriptionTier),
-			errors.Is(err, user.ErrSubscriptionExpiryRequired),
-			errors.Is(err, user.ErrInvalidSubscriptionExpiry):
+			errors.Is(err, user.ErrInvalidLocale):
 			response.ErrorFrom(c, http.StatusBadRequest, err)
 			return
 		default:
@@ -280,15 +272,9 @@ func (h *Handler) PatchUser(c *gin.Context) {
 			errors.Is(err, appadmin.ErrInvalidUserStatus),
 			errors.Is(err, appadmin.ErrInvalidUserRole),
 			errors.Is(err, appadmin.ErrInvalidUserTimeZone),
-			errors.Is(err, appbilling.ErrInvalidSubscriptionTier),
-			errors.Is(err, appbilling.ErrSubscriptionExpiryRequired),
-			errors.Is(err, appbilling.ErrInvalidSubscriptionExpiry),
 			errors.Is(err, user.ErrInvalidDisplayName),
 			errors.Is(err, appadmin.ErrEmptyAdminUserPatch):
 			response.ErrorFrom(c, http.StatusBadRequest, err)
-			return
-		case errors.Is(err, appbilling.ErrPaymentRequired):
-			response.ErrorFrom(c, http.StatusConflict, err)
 			return
 		case errors.Is(err, user.ErrUserNotFound):
 			response.ErrorFrom(c, http.StatusNotFound, err)
@@ -427,311 +413,6 @@ func (h *Handler) CleanupLogs(c *gin.Context) {
 		Before:       result.Before,
 		DeletedCount: result.DeletedCount,
 	})
-}
-
-// ListUsageLogs godoc
-// @Summary 管理员查询模型调用日志
-// @Description 管理员分页查看全量模型调用与计费用量账本
-// @Tags admin
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param page query int false "页码（从 1 开始，默认 1）"
-// @Param page_size query int false "每页数量（1-1000，默认 20）"
-// @Param query query string false "搜索模型、上游、绑定编码、协议"
-// @Param platform_model_name query string false "平台模型名筛选"
-// @Param billing_mode query string false "计费模式筛选：free/token/call/duration/tiered"
-// @Param user_id query int false "调用人用户ID"
-// @Param created_from query string false "创建时间起点(RFC3339)"
-// @Param created_to query string false "创建时间终点(RFC3339)"
-// @Param sort query string false "排序方式"
-// @Success 200 {object} UsageLogListResponseDoc
-// @Failure 400 {object} ErrorDoc
-// @Failure 500 {object} ErrorDoc
-// @Router /admin/call-logs [get]
-// ListUsageLogs 查询模型调用日志。
-func (h *Handler) ListUsageLogs(c *gin.Context) {
-	page, pageSize := pagination.Parse(c.Query("page"), c.Query("page_size"))
-	userID, ok := parseOptionalUintQuery(c, "user_id")
-	if !ok {
-		return
-	}
-	createdFrom, ok := parseOptionalTimeQuery(c, "created_from")
-	if !ok {
-		return
-	}
-	createdTo, ok := parseOptionalTimeQuery(c, "created_to")
-	if !ok {
-		return
-	}
-	items, total, err := h.service.ListUsageLogs(c.Request.Context(), page, pageSize, appbilling.UsageLogListFilter{
-		Query:             c.Query("query"),
-		PlatformModelName: c.Query("platform_model_name"),
-		BillingMode:       c.Query("billing_mode"),
-		UserID:            userID,
-		CreatedFrom:       createdFrom,
-		CreatedTo:         createdTo,
-		Sort:              c.Query("sort"),
-	})
-	if err != nil {
-		response.InternalError(c)
-		return
-	}
-	userIDs := make([]uint, 0, len(items))
-	for _, item := range items {
-		userIDs = append(userIDs, item.UserID)
-	}
-	userLabels := h.service.ResolveUserLabels(c.Request.Context(), userIDs)
-	logs := make([]UsageLogResponse, 0, len(items))
-	for _, item := range items {
-		logs = append(logs, toUsageLogResponse(item, userLabels[item.UserID]))
-	}
-	response.SuccessPage(c, total, logs)
-}
-
-// GetUsageStatistics godoc
-// @Summary 管理员查询全局用量统计
-// @Description 管理员按日期、统计对象、平台模型和计费范围查看全局费用、Token、调用次数及排名；用户与权限组筛选互斥
-// @Tags admin
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param start_date query string false "开始日期(YYYY-MM-DD)，默认近30天"
-// @Param end_date query string false "结束日期(YYYY-MM-DD，包含当日)"
-// @Param user_id query int false "用户ID"
-// @Param permission_group_id query int false "权限组ID，与 user_id 互斥"
-// @Param platform_model_name query string false "平台模型名"
-// @Param billing_scope query string false "计费范围：all/free/billable"
-// @Param section query string false "返回范围：all/models/users"
-// @Param model_rank_by query string false "模型排名指标：cost/tokens/calls"
-// @Param user_rank_by query string false "用户排名指标：cost/tokens/calls"
-// @Success 200 {object} UsageStatisticsResponseDoc
-// @Failure 400 {object} ErrorDoc
-// @Failure 404 {object} ErrorDoc
-// @Failure 500 {object} ErrorDoc
-// @Router /admin/usage-statistics [get]
-// GetUsageStatistics 查询管理员全局用量统计。
-func (h *Handler) GetUsageStatistics(c *gin.Context) {
-	userID, ok := parseOptionalUintQuery(c, "user_id")
-	if !ok {
-		return
-	}
-	permissionGroupID, ok := parseOptionalUintQuery(c, "permission_group_id")
-	if !ok {
-		return
-	}
-
-	startDateText := strings.TrimSpace(c.Query("start_date"))
-	endDateText := strings.TrimSpace(c.Query("end_date"))
-	now := time.Now()
-	endDate := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
-	startDate := endDate.AddDate(0, 0, -29)
-	if startDateText != "" || endDateText != "" {
-		if startDateText == "" || endDateText == "" {
-			response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.invalid_date_range")
-			return
-		}
-		parsedStartDate, startErr := time.Parse("2006-01-02", startDateText)
-		parsedEndDate, endErr := time.Parse("2006-01-02", endDateText)
-		if startErr != nil || endErr != nil {
-			response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.invalid_date_range")
-			return
-		}
-		startDate = parsedStartDate
-		endDate = parsedEndDate
-	}
-	if endDate.Before(startDate) || int(endDate.Sub(startDate).Hours()/24)+1 > 366 {
-		response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.invalid_date_range")
-		return
-	}
-
-	billingScope := strings.TrimSpace(c.Query("billing_scope"))
-	if billingScope == "" {
-		billingScope = "all"
-	}
-	if billingScope != "all" && billingScope != "free" && billingScope != "billable" {
-		response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.invalid_billing_scope")
-		return
-	}
-	section := strings.TrimSpace(c.Query("section"))
-	if section == "" {
-		section = "all"
-	}
-	if section != "all" && section != "models" && section != "users" {
-		response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.invalid_section")
-		return
-	}
-	modelRankBy := strings.TrimSpace(c.Query("model_rank_by"))
-	if modelRankBy == "" {
-		modelRankBy = "cost"
-	}
-	if modelRankBy != "cost" && modelRankBy != "tokens" && modelRankBy != "calls" {
-		response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.invalid_rank_by")
-		return
-	}
-	userRankBy := strings.TrimSpace(c.Query("user_rank_by"))
-	if userRankBy == "" {
-		userRankBy = "cost"
-	}
-	if userRankBy != "cost" && userRankBy != "tokens" && userRankBy != "calls" {
-		response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.invalid_rank_by")
-		return
-	}
-
-	statistics, err := h.service.GetUsageStatistics(c.Request.Context(), appbilling.UsageStatisticsFilter{
-		StartDate:         startDate,
-		EndDate:           endDate,
-		UserID:            userID,
-		PermissionGroupID: permissionGroupID,
-		PlatformModelName: c.Query("platform_model_name"),
-		BillingScope:      billingScope,
-		Section:           section,
-		ModelRankBy:       modelRankBy,
-		UserRankBy:        userRankBy,
-	})
-	if err != nil {
-		switch {
-		case errors.Is(err, appbilling.ErrInvalidUsageStatisticsSubject):
-			response.ErrorWithCode(c, http.StatusBadRequest, "usage_statistics.subject_conflict")
-		case errors.Is(err, appadmin.ErrPermissionGroupNotFound):
-			response.ErrorFrom(c, http.StatusNotFound, err)
-		default:
-			response.InternalError(c)
-		}
-		return
-	}
-	userIDs := make([]uint, 0, len(statistics.TopUsers))
-	for _, rankedUser := range statistics.TopUsers {
-		userIDs = append(userIDs, rankedUser.UserID)
-	}
-	userLabels := h.service.ResolveUserLabels(c.Request.Context(), userIDs)
-	response.Success(c, toUsageStatisticsResponse(statistics, startDate, endDate, section, userLabels))
-}
-
-// ListPaymentOrders godoc
-// @Summary 管理员查询支付订单记录
-// @Description 管理员分页查看订阅和充值支付单
-// @Tags admin
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param page query int false "页码（从 1 开始，默认 1）"
-// @Param page_size query int false "每页数量（1-1000，默认 20）"
-// @Param query query string false "搜索订单号、支付渠道、外部支付ID"
-// @Param order_type query string false "订单类型(subscription/topup)"
-// @Param provider query string false "支付渠道"
-// @Param status query string false "支付状态"
-// @Param user_id query int false "用户ID"
-// @Param created_from query string false "创建时间起点(RFC3339)"
-// @Param created_to query string false "创建时间终点(RFC3339)"
-// @Param sort query string false "排序方式"
-// @Success 200 {object} PaymentOrderListResponseDoc
-// @Failure 400 {object} ErrorDoc
-// @Failure 500 {object} ErrorDoc
-// @Router /admin/payment-orders [get]
-// ListPaymentOrders 查询支付订单记录。
-func (h *Handler) ListPaymentOrders(c *gin.Context) {
-	page, pageSize := pagination.Parse(c.Query("page"), c.Query("page_size"))
-	userID, ok := parseOptionalUintQuery(c, "user_id")
-	if !ok {
-		return
-	}
-	createdFrom, ok := parseOptionalTimeQuery(c, "created_from")
-	if !ok {
-		return
-	}
-	createdTo, ok := parseOptionalTimeQuery(c, "created_to")
-	if !ok {
-		return
-	}
-	items, total, err := h.service.ListPaymentOrders(c.Request.Context(), page, pageSize, appbilling.PaymentOrderListFilter{
-		Query:       c.Query("query"),
-		OrderType:   c.Query("order_type"),
-		Provider:    c.Query("provider"),
-		Status:      c.Query("status"),
-		UserID:      userID,
-		CreatedFrom: createdFrom,
-		CreatedTo:   createdTo,
-		Sort:        c.Query("sort"),
-	})
-	if err != nil {
-		response.InternalError(c)
-		return
-	}
-	userIDs := make([]uint, 0, len(items))
-	for _, item := range items {
-		userIDs = append(userIDs, item.UserID)
-	}
-	userLabels := h.service.ResolveUserLabels(c.Request.Context(), userIDs)
-	orders := make([]PaymentOrderResponse, 0, len(items))
-	for _, item := range items {
-		orders = append(orders, toPaymentOrderResponse(item, userLabels[item.UserID]))
-	}
-	response.SuccessPage(c, total, orders)
-}
-
-// ListRedemptions godoc
-// @Summary 管理员查询兑换记录
-// @Description 管理员分页查看兑换码兑换明细，含奖励内容与余额变动，已删除兑换码的历史仍可查询
-// @Tags admin
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param page query int false "页码（从 1 开始，默认 1）"
-// @Param page_size query int false "每页数量（1-1000，默认 20）"
-// @Param query query string false "搜索兑换流水号、兑换码摘要、兑换码备注"
-// @Param code_id query int false "兑换码ID"
-// @Param user_id query int false "用户ID"
-// @Param reward_type query string false "奖励类型(balance/subscription)"
-// @Param created_from query string false "兑换时间起点(RFC3339)"
-// @Param created_to query string false "兑换时间终点(RFC3339)"
-// @Param sort query string false "排序方式"
-// @Success 200 {object} RedemptionRecordListResponseDoc
-// @Failure 400 {object} ErrorDoc
-// @Failure 500 {object} ErrorDoc
-// @Router /admin/redemptions [get]
-// ListRedemptions 查询兑换码兑换记录。
-func (h *Handler) ListRedemptions(c *gin.Context) {
-	page, pageSize := pagination.Parse(c.Query("page"), c.Query("page_size"))
-	codeID, ok := parseOptionalUintQuery(c, "code_id")
-	if !ok {
-		return
-	}
-	userID, ok := parseOptionalUintQuery(c, "user_id")
-	if !ok {
-		return
-	}
-	createdFrom, ok := parseOptionalTimeQuery(c, "created_from")
-	if !ok {
-		return
-	}
-	createdTo, ok := parseOptionalTimeQuery(c, "created_to")
-	if !ok {
-		return
-	}
-	items, total, err := h.service.ListRedemptions(c.Request.Context(), page, pageSize, appbilling.RedemptionListFilter{
-		CodeID:      codeID,
-		UserID:      userID,
-		RewardType:  c.Query("reward_type"),
-		Query:       c.Query("query"),
-		CreatedFrom: createdFrom,
-		CreatedTo:   createdTo,
-		Sort:        c.Query("sort"),
-	})
-	if err != nil {
-		response.InternalError(c)
-		return
-	}
-	userIDs := make([]uint, 0, len(items))
-	for _, item := range items {
-		userIDs = append(userIDs, item.Redemption.UserID)
-	}
-	userLabels := h.service.ResolveUserLabels(c.Request.Context(), userIDs)
-	records := make([]RedemptionRecordResponse, 0, len(items))
-	for _, item := range items {
-		records = append(records, toRedemptionRecordResponse(item, userLabels[item.Redemption.UserID]))
-	}
-	response.SuccessPage(c, total, records)
 }
 
 // ListConversationEvents godoc

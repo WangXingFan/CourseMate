@@ -45,8 +45,10 @@ func TestCapabilitiesEndpoint(t *testing.T) {
 		t.Fatalf("expected %d features, got %d: %v", len(want), len(features), features)
 	}
 	for name, enabled := range features {
-		if !enabled {
-			t.Errorf("server mode: %s should be true", name)
+		// 契约键 billingGating 保留但本产品不含计费，服务器模式下同样恒为 false。
+		want := name != "billingGating"
+		if enabled != want {
+			t.Errorf("server mode: %s = %v, want %v", name, enabled, want)
 		}
 	}
 

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"testing"
 
-	appbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/ports/llm"
 )
 
@@ -401,27 +400,6 @@ func TestIsRouteAllowedForTaskAllowsConversationProtocols(t *testing.T) {
 	if IsRouteAllowedForTask(TaskTypeChat, `["chat"]`, "unknown_protocol") {
 		t.Fatalf("expected unknown protocol to be rejected")
 	}
-}
-
-func TestFilterPricedModelViewsUsesPlatformModelNameKey(t *testing.T) {
-	items := []ModelView{{
-		PlatformModelName: "gpt-5.5",
-	}}
-	pricing := map[string]appbilling.PublicModelPricing{
-		"gpt-5.5": {
-			Currency: "USD",
-			Mode:     "token",
-		},
-	}
-
-	results := filterPricedModelViews(items, pricing)
-	if len(results) != 1 {
-		t.Fatalf("expected model to match pricing by platform model name, got %d", len(results))
-	}
-	if results[0].Pricing == nil || results[0].Pricing.Currency != "USD" {
-		t.Fatalf("expected pricing attached by platform model name, got %#v", results[0].Pricing)
-	}
-
 }
 
 func TestNormalizePlatformModelNameAllowsDisplaySpaces(t *testing.T) {

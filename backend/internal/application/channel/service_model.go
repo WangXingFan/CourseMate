@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	appbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
 	domainchannel "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/channel"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/repository"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/apperr"
@@ -119,30 +118,21 @@ func (s *Service) filterModelsByUpstreamOwner(ctx context.Context, userID uint, 
 
 func (s *Service) listActiveModelViews(ctx context.Context) ([]ModelView, error) {
 	now := time.Now()
-	mode := "unfiltered"
-	if s.modelPricingFilter != nil {
-		var err error
-		mode, err = s.modelPricingFilter.GetBillingMode(ctx)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	s.modelCatalogMu.RLock()
 	generation := s.modelCatalogGeneration
-	if s.modelCatalog != nil && s.modelCatalogMode == mode && now.Before(s.modelCatalogValidUntil) {
+	if s.modelCatalog != nil && now.Before(s.modelCatalogValidUntil) {
 		result := cloneModelViews(s.modelCatalog)
 		s.modelCatalogMu.RUnlock()
 		return result, nil
 	}
 	s.modelCatalogMu.RUnlock()
 
-	resultCh := s.modelCatalogRequests.DoChan(mode+":"+strconv.FormatUint(generation, 10), func() (any, error) {
+	resultCh := s.modelCatalogRequests.DoChan(strconv.FormatUint(generation, 10), func() (any, error) {
 		refreshCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
 		defer cancel()
 		refreshStartedAt := time.Now()
 		s.modelCatalogMu.RLock()
-		if s.modelCatalog != nil && s.modelCatalogMode == mode && refreshStartedAt.Before(s.modelCatalogValidUntil) {
+		if s.modelCatalog != nil && refreshStartedAt.Before(s.modelCatalogValidUntil) {
 			result := cloneModelViews(s.modelCatalog)
 			s.modelCatalogMu.RUnlock()
 			return result, nil
@@ -154,14 +144,7 @@ func (s *Service) listActiveModelViews(ctx context.Context) ([]ModelView, error)
 			return nil, err
 		}
 		views := s.filterPublicRoutableModels(items)
-		if s.modelPricingFilter != nil && mode != "self" {
-			pricingByPlatformModelName, err := s.modelPricingFilter.ListPublicModelPricing(refreshCtx)
-			if err != nil {
-				return nil, err
-			}
-			views = filterPricedModelViews(views, pricingByPlatformModelName)
-		}
-		s.storeModelCatalog(refreshStartedAt, mode, generation, views)
+		s.storeModelCatalog(refreshStartedAt, generation, views)
 		return views, nil
 	})
 	select {
@@ -179,7 +162,7 @@ func (s *Service) listActiveModelViews(ctx context.Context) ([]ModelView, error)
 //
 // 未绑定到任何有效权限组的模型对用户隐藏；
 // 绑定到权限组的模型仅对归属权限组成员可见。
-// 用户归属权限组 = 手动权限组 + 默认权限组（is_default） + 订阅套餐绑定权限组。
+// 用户归属权限组 = 手动权限组 + 默认权限组（is_default）。
 func (s *Service) filterModelsByPermission(ctx context.Context, userID uint, views []ModelView) ([]ModelView, error) {
 	if s.permGroupRepo == nil || userID == 0 {
 		return views, nil
@@ -235,7 +218,7 @@ func (s *Service) listAllActiveModelRows(ctx context.Context) ([]repository.Chan
 	}
 }
 
-func (s *Service) storeModelCatalog(now time.Time, mode string, generation uint64, views []ModelView) {
+func (s *Service) storeModelCatalog(now time.Time, generation uint64, views []ModelView) {
 	if s == nil {
 		return
 	}
@@ -245,7 +228,6 @@ func (s *Service) storeModelCatalog(now time.Time, mode string, generation uint6
 		return
 	}
 	s.modelCatalog = cloneModelViews(views)
-	s.modelCatalogMode = mode
 	s.modelCatalogValidUntil = now.Add(modelCatalogCacheTTL)
 }
 
@@ -258,16 +240,6 @@ func cloneModelViews(items []ModelView) []ModelView {
 		if item.DisplayGroupID != nil {
 			displayGroupID := *item.DisplayGroupID
 			item.DisplayGroupID = &displayGroupID
-		}
-		if item.Pricing != nil {
-			pricing := *item.Pricing
-			if len(pricing.Tiers) > 0 {
-				pricing.Tiers = append([]appbilling.PublicModelPricingTier(nil), pricing.Tiers...)
-			}
-			if len(pricing.SchedulePeriods) > 0 {
-				pricing.SchedulePeriods = append([]appbilling.PublicSchedulePeriod(nil), pricing.SchedulePeriods...)
-			}
-			item.Pricing = &pricing
 		}
 		results = append(results, item)
 	}
@@ -285,19 +257,6 @@ func (s *Service) filterPublicRoutableModels(items []repository.ChannelModelList
 			continue
 		}
 		results = append(results, s.toModelView(item))
-	}
-	return results
-}
-
-func filterPricedModelViews(items []ModelView, pricingByPlatformModelName map[string]appbilling.PublicModelPricing) []ModelView {
-	results := make([]ModelView, 0, len(items))
-	for _, item := range items {
-		pricing, ok := pricingByPlatformModelName[strings.TrimSpace(item.PlatformModelName)]
-		if !ok {
-			continue
-		}
-		item.Pricing = &pricing
-		results = append(results, item)
 	}
 	return results
 }
@@ -338,25 +297,6 @@ func modelSourceAvailable(view ModelUpstreamSourceView) bool {
 		view.UpstreamStatus == "active" &&
 		view.UpstreamModelStatus == "active" &&
 		!view.CircuitOpen
-}
-
-// ResolvePlatformModelIdentity 将平台模型名解析为统一平台身份。
-func (s *Service) ResolvePlatformModelIdentity(ctx context.Context, platformModelName string) (appbilling.PlatformModelIdentity, error) {
-	name, err := normalizePlatformModelName(platformModelName)
-	if err != nil {
-		return appbilling.PlatformModelIdentity{}, ErrModelNotFound
-	}
-	item, err := s.repo.GetModelByName(ctx, name)
-	if err != nil {
-		return appbilling.PlatformModelIdentity{}, err
-	}
-	return appbilling.PlatformModelIdentity{
-		PlatformModelID:   item.ID,
-		OwnerUserID:       item.OwnerUserID,
-		PlatformModelName: item.PlatformModelName,
-		ModelVendor:       strings.TrimSpace(item.Vendor),
-		ModelIcon:         strings.TrimSpace(item.Icon),
-	}, nil
 }
 
 // ListActivePlatformModelNames 返回当前真实可路由的平台模型名集合。

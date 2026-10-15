@@ -20,7 +20,6 @@ type Service struct {
 	authSafety        authSafetyService
 	vectorStore       vectorStoreAvailabilityService
 	auditWriter       auditWriter
-	runtime           *config.Runtime
 }
 
 type authSafetyService interface {
@@ -335,10 +334,6 @@ func (s *Service) BatchUpdate(ctx context.Context, patches []PatchItem) (map[str
 		}
 	}
 
-	if err := s.rejectLockedSettings(ctx, patches); err != nil {
-		return nil, err
-	}
-
 	patches, err := s.applyAuthSettingDependencies(ctx, patches)
 	if err != nil {
 		return nil, err
@@ -352,9 +347,6 @@ func (s *Service) BatchUpdate(ctx context.Context, patches []PatchItem) (map[str
 		return nil, err
 	}
 	if err := s.validateEmbeddingDependentSettings(ctx, patches); err != nil {
-		return nil, err
-	}
-	if err := s.validateBillingPaymentSettings(ctx, patches); err != nil {
 		return nil, err
 	}
 	items, err := s.preparePatchItemsForStorage(patches)
@@ -738,78 +730,6 @@ func (s *Service) validateEmbeddingDependentSettings(ctx context.Context, patche
 				})
 			}
 		}
-	}
-	return nil
-}
-
-func (s *Service) validateBillingPaymentSettings(ctx context.Context, patches []PatchItem) error {
-	hasBillingPatch := false
-	for _, item := range patches {
-		if item.Namespace == "billing" {
-			hasBillingPatch = true
-			break
-		}
-	}
-	if !hasBillingPatch {
-		return nil
-	}
-
-	next, err := s.loadEffectiveSettings(ctx, "billing")
-	if err != nil {
-		return err
-	}
-	applyPatchesToEffectiveSettings(next, patches, "billing")
-
-	providers := normalizePaymentProvidersSetting(next["billing:payment_providers"])
-	if len(providers) == 0 {
-		return nil
-	}
-	for _, provider := range providers {
-		switch provider {
-		case "stripe":
-			if err := requireSettingFields(next, []requiredSettingField{
-				{key: "billing:stripe_secret_key"},
-				{key: "billing:stripe_webhook_secret"},
-			}); err != nil {
-				return err
-			}
-		case "epay":
-			if err := validateSettingValue("billing", "usd_to_cny_rate", next["billing:usd_to_cny_rate"]); err != nil {
-				return err
-			}
-			if err := requireSettingFields(next, []requiredSettingField{
-				{key: "billing:epay_gateway_url"},
-				{key: "billing:epay_types"},
-				{key: "billing:epay_pid"},
-				{key: "billing:epay_key"},
-			}); err != nil {
-				return err
-			}
-			if err := validateSettingValue("billing", "epay_gateway_url", next["billing:epay_gateway_url"]); err != nil {
-				return err
-			}
-		default:
-			return newSettingValidationError(settingCodeBillingPaymentInvalid, SettingValidationDetails{
-				Field: "billing:payment_providers", Rule: "payment_provider", Param: "stripe,epay",
-			})
-		}
-	}
-	return nil
-}
-
-type requiredSettingField struct {
-	key string
-}
-
-func requireSettingFields(values map[string]string, fields []requiredSettingField) error {
-	missing := make([]string, 0, len(fields))
-	for _, item := range fields {
-		if strings.TrimSpace(values[item.key]) == "" {
-			missing = append(missing, item.key)
-		}
-	}
-	if len(missing) > 0 {
-		return settingValidationForFields(settingCodeBillingPaymentInvalid, missing, "required_together", "billing:payment_providers")
 	}
 	return nil
 }

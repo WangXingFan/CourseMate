@@ -491,7 +491,7 @@ func (h *Handler) DeleteConversation(c *gin.Context) {
 
 // ForkConversationFromMessage godoc
 // @Summary 从指定消息 fork 新会话
-// @Description 仅允许从助手消息 fork；将会话从开头到指定助手消息（含）的祖先链复制为一个新会话，保留历史展示轨迹；不携带原会话的运行记录与计费，附件以引用方式复用
+// @Description 仅允许从助手消息 fork；将会话从开头到指定助手消息（含）的祖先链复制为一个新会话，保留历史展示轨迹；不携带原会话的运行记录，附件以引用方式复用
 // @Tags chat
 // @Accept json
 // @Produce json

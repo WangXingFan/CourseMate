@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	domainbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/billing"
 	domainuser "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/user"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/pkg/textutil"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/repository"
@@ -36,19 +35,16 @@ type avatarFileValidator interface {
 	ValidateImageFile(ctx context.Context, userID uint, fileID string) error
 }
 
-// CreateUserInput 描述管理员创建普通用户所需的账号与订阅信息。
+// CreateUserInput 描述管理员创建普通用户所需的账号信息。
 type CreateUserInput struct {
-	Username              string
-	Password              string
-	AvatarURL             string
-	DisplayName           string
-	Email                 string
-	Phone                 string
-	Timezone              string
-	Locale                string
-	BillingMode           string
-	SubscriptionTier      string
-	SubscriptionExpiresAt *time.Time
+	Username    string
+	Password    string
+	AvatarURL   string
+	DisplayName string
+	Email       string
+	Phone       string
+	Timezone    string
+	Locale      string
 }
 
 // AuthEventListInput 描述管理员查询认证事件的筛选与分页条件。
@@ -196,9 +192,9 @@ func (s *Service) ListAllUsernames(ctx context.Context) ([]string, error) {
 	return s.repo.ListAllUsernames(ctx)
 }
 
-// ImportUsersWithCredentialsAndBalances 批量导入用户、凭据与初始余额。
-func (s *Service) ImportUsersWithCredentialsAndBalances(ctx context.Context, records []repository.UserImportRecord) ([]domainuser.User, error) {
-	return s.repo.ImportUsersWithCredentialsAndBalances(ctx, records)
+// ImportUsersWithCredentials 批量导入用户与凭据。
+func (s *Service) ImportUsersWithCredentials(ctx context.Context, records []repository.UserImportRecord) ([]domainuser.User, error) {
+	return s.repo.ImportUsersWithCredentials(ctx, records)
 }
 
 // CreateUser 创建普通用户账号。
@@ -265,49 +261,6 @@ func (s *Service) CreateUser(ctx context.Context, input CreateUserInput) (*domai
 		return nil, err
 	}
 
-	normalizedBillingMode := strings.ToLower(strings.TrimSpace(input.BillingMode))
-	var subscriptionPlanID uint
-	var subscriptionPriceID uint
-	var normalizedSubscriptionEndAt *time.Time
-	autoRenew := false
-	if normalizedBillingMode == "period" {
-		normalizedSubscriptionTier := strings.ToLower(strings.TrimSpace(input.SubscriptionTier))
-		if normalizedSubscriptionTier == "" {
-			normalizedSubscriptionTier = defaultFreePlanCode
-		}
-
-		plan, planErr := s.repo.GetActivePlanByCode(ctx, normalizedSubscriptionTier)
-		if planErr != nil {
-			if errors.Is(planErr, repository.ErrNotFound) {
-				return nil, ErrInvalidSubscriptionTier
-			}
-			return nil, planErr
-		}
-
-		price, priceErr := s.repo.GetActiveDefaultPriceByPlanID(ctx, plan.ID)
-		if priceErr != nil {
-			if errors.Is(priceErr, repository.ErrNotFound) {
-				return nil, ErrInvalidSubscriptionTier
-			}
-			return nil, priceErr
-		}
-
-		subscriptionPlanID = plan.ID
-		subscriptionPriceID = price.ID
-		if plan.Code != defaultFreePlanCode {
-			if input.SubscriptionExpiresAt == nil {
-				return nil, ErrSubscriptionExpiryRequired
-			}
-			expiresAt := input.SubscriptionExpiresAt.UTC()
-			if !expiresAt.After(time.Now().UTC()) {
-				return nil, ErrInvalidSubscriptionExpiry
-			}
-			normalizedSubscriptionEndAt = &expiresAt
-		} else if price.BillingInterval != domainbilling.IntervalLifetime {
-			autoRenew = true
-		}
-	}
-
 	item := &domainuser.User{
 		PublicID:    normalizePublicID(uuid.NewString()),
 		Username:    normalizedUsername,
@@ -332,10 +285,6 @@ func (s *Service) CreateUser(ctx context.Context, input CreateUserInput) (*domai
 			PasswordSetAt:     &now,
 			PasswordOrigin:    domainuser.PasswordOriginAdminCreated,
 		},
-		SubscriptionPlanID:  subscriptionPlanID,
-		SubscriptionPriceID: subscriptionPriceID,
-		SubscriptionEndAt:   normalizedSubscriptionEndAt,
-		AutoRenew:           autoRenew,
 	}); err != nil {
 		return nil, err
 	}

@@ -252,12 +252,10 @@ func (s *Service) sendMessageInternal(
 				UpstreamCallStarted:      runner.upstreamCallStarted,
 				Usage:                    runner.usage.usage(),
 				UsageRecovered:           usageRecovered,
-				LLMCallCount:             runner.completedLLMCallCount,
 				AssistantLatency:         time.Since(startedAt).Milliseconds(),
 				Error:                    retErr,
 				TraceRecorder:            traceRecorder,
 				Route:                    runState.route,
-				EffectiveOptions:         plan.filteredOptions,
 				StartedAt:                startedAt,
 				ReuseUserMessage:         reuseUserMessage,
 			}); retained != nil {
@@ -272,7 +270,6 @@ func (s *Service) sendMessageInternal(
 					result = &SendMessageResult{
 						UserMessage:      *userMessage,
 						AssistantMessage: *assistantMessage,
-						Billable:         false,
 						StartedAt:        startedAt,
 					}
 				}
@@ -299,7 +296,6 @@ func (s *Service) sendMessageInternal(
 			result = &SendMessageResult{
 				UserMessage:      *userMessage,
 				AssistantMessage: *assistantMessage,
-				Billable:         false,
 				LatencyMS:        latencyMS,
 				StartedAt:        startedAt,
 			}
@@ -307,9 +303,7 @@ func (s *Service) sendMessageInternal(
 				result.UpstreamID = failedRoute.UpstreamID
 				result.UpstreamName = failedRoute.UpstreamName
 				result.PlatformModelName = failedRoute.PlatformModelName
-				result.RoutedBindingCode = failedRoute.BindingCode
 				result.UpstreamModelName = failedRoute.UpstreamModel
-				result.UpstreamProtocol = failedRoute.Protocol
 			}
 		}
 	}()
@@ -331,7 +325,7 @@ func (s *Service) sendMessageInternal(
 		return nil, err
 	}
 
-	pair, err := s.createMessagePair(ctx, input, runID, branchPreparation, resolvedAttachments, nil)
+	pair, err := s.createMessagePair(ctx, input, runID, branchPreparation, resolvedAttachments)
 	if err != nil {
 		retErr = err
 		return nil, err
@@ -618,15 +612,6 @@ func (s *Service) sendMessageInternal(
 		sendSpan.SetAttributes(attribute.String("conversation.stateful_disabled_reason", plan.statefulDecision.DisabledReason))
 	}
 	sendSpan.SetAttributes(promptShapeTraceAttributes("conversation.prompt", plan.promptShape)...)
-	// 提示词形状已确定但尚未调用上游：按预估成本抬高预算预留，余额不足在此终止，不产生任何上游费用。
-	if err := s.ensureUsageBudgetCoversEstimate(ctx, input.UsageAuthorization, route, plan.filteredOptions, usageBudgetEstimate{
-		InputTokens:  plan.estimatedPromptTokens,
-		OutputTokens: messageRequestMaxOutputTokens(plan.filteredOptions),
-	}); err != nil {
-		retErr = err
-		return nil, err
-	}
-
 	upstreamOutput, err := runner.runRouteAttempt(ctx, &plan, sendSpan)
 	if generationCanceled(ctx, err) {
 		retErr = ErrMessageGenerationCanceled
@@ -827,7 +812,7 @@ func (s *Service) sendMessageInternal(
 		ContextModelName:    route.UpstreamModel,
 		CapabilitiesJSON:    route.ModelCapabilitiesJSON,
 	}
-	var postBillingCompaction *postBillingCompactionTask
+	var postGenerationCompaction *postGenerationCompactionTask
 	if !compactPolicy.EffectiveEnabled() || !s.compactSvc.ShouldCompactConversation(compactInput) {
 		// 用户已关闭自动压缩，仅完成 trace 记录
 		if traceRecorder != nil {
@@ -843,7 +828,7 @@ func (s *Service) sendMessageInternal(
 			RequestID:         input.RequestID,
 		})
 		compactInput.PlatformModelName = compactPlatformModelName
-		postBillingCompaction = &postBillingCompactionTask{
+		postGenerationCompaction = &postGenerationCompactionTask{
 			Async:          compactCfg.CompactAsyncEnabled,
 			Input:          compactInput,
 			ConversationID: input.ConversationID,
@@ -859,7 +844,7 @@ func (s *Service) sendMessageInternal(
 			traceRecorder.setCompactionProcessStage(summary, "", payload)
 			traceRecorder.completeForBackgroundContinuation()
 			traceRecorder.attachToMessage(assistantMessage)
-			postBillingCompaction.OnEvent = nil
+			postGenerationCompaction.OnEvent = nil
 		}
 	}
 
@@ -875,26 +860,16 @@ func (s *Service) sendMessageInternal(
 	}
 
 	result = &SendMessageResult{
-		UserMessage:           *userMessage,
-		AssistantMessage:      *assistantMessage,
-		MetadataRefreshHint:   s.resolveConversationMetadataRefreshHint(ctx, *conversation, *userMessage),
-		Billable:              true,
-		UpstreamID:            run.UpstreamID,
-		UpstreamName:          run.UpstreamName,
-		PlatformModelName:     route.PlatformModelName,
-		RoutedBindingCode:     route.BindingCode,
-		UpstreamModelName:     route.UpstreamModel,
-		UpstreamProtocol:      route.Protocol,
-		EffectiveOptions:      filteredOptions,
-		UsageSpeed:            totalUsage.Speed,
-		UsageServiceTier:      totalUsage.ServiceTier,
-		RawUsageJSON:          totalUsage.RawUsageJSON,
-		CacheWrite5mTokens:    totalUsage.CacheWrite5mTokens,
-		CacheWrite1hTokens:    totalUsage.CacheWrite1hTokens,
-		LLMCallCount:          runner.completedLLMCallCount,
-		LatencyMS:             time.Since(startedAt).Milliseconds(),
-		StartedAt:             startedAt,
-		postBillingCompaction: postBillingCompaction,
+		UserMessage:              *userMessage,
+		AssistantMessage:         *assistantMessage,
+		MetadataRefreshHint:      s.resolveConversationMetadataRefreshHint(ctx, *conversation, *userMessage),
+		UpstreamID:               run.UpstreamID,
+		UpstreamName:             run.UpstreamName,
+		PlatformModelName:        route.PlatformModelName,
+		UpstreamModelName:        route.UpstreamModel,
+		LatencyMS:                time.Since(startedAt).Milliseconds(),
+		StartedAt:                startedAt,
+		postGenerationCompaction: postGenerationCompaction,
 	}
 	// 软审核屏障：先显示检查中，再拦截或放行。
 	if moderationCoord != nil {

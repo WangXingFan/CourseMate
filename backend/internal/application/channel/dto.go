@@ -1,8 +1,6 @@
 package channel
 
-import (
-	appbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
-)
+import ()
 
 const (
 	BatchDeleteStatusDeleted  = "deleted"
@@ -187,7 +185,6 @@ type ModelView struct {
 	ActiveSourceCount  int64
 	ProtocolsJSON      string
 	UpstreamNamesJSON  string
-	Pricing            *appbilling.PublicModelPricing
 	CreatedAt          string
 	UpdatedAt          string
 }

@@ -9,8 +9,8 @@ import (
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/background"
 )
 
-// postBillingCompactionTask 保存主调用结算后执行上下文压缩所需的运行信息。
-type postBillingCompactionTask struct {
+// postGenerationCompactionTask 保存主调用结束后执行上下文压缩所需的运行信息。
+type postGenerationCompactionTask struct {
 	Async          bool
 	Input          appcompact.MaybeCompactConversationInput
 	ConversationID uint
@@ -22,8 +22,8 @@ type postBillingCompactionTask struct {
 	TraceRecorder  *messageTraceRecorder
 }
 
-// runPostBillingCompaction 在独立超时内执行后置压缩任务。
-func (s *Service) runPostBillingCompaction(ctx context.Context, task *postBillingCompactionTask, message *model.Message) {
+// runPostGenerationCompaction 在独立超时内执行后置压缩任务。
+func (s *Service) runPostGenerationCompaction(ctx context.Context, task *postGenerationCompactionTask, message *model.Message) {
 	if task == nil {
 		return
 	}
@@ -31,18 +31,18 @@ func (s *Service) runPostBillingCompaction(ctx context.Context, task *postBillin
 		if task.TraceRecorder != nil {
 			task.TraceRecorder.removeProcessStage(processTraceKindCompaction)
 		}
-		s.completePostBillingCompactionTrace(task, message)
+		s.completePostGenerationCompactionTrace(task, message)
 		return
 	}
 	run := func(ctx context.Context) {
-		ctx = withBasicServiceBillingContext(ctx, task.UserID, task.ConversationID)
+		ctx = withTextTaskRouteContext(ctx, task.UserID, task.ConversationID)
 		snapshot, err := s.compactSvc.MaybeCompactConversation(ctx, task.Input)
 		if err != nil {
 			if task.TraceRecorder != nil {
 				summary, payload := buildFailedCompactionProcessTrace()
 				task.TraceRecorder.setCompactionProcessStage(summary, "", payload)
 			}
-			s.completePostBillingCompactionTrace(task, message)
+			s.completePostGenerationCompactionTrace(task, message)
 			return
 		}
 		if snapshot != nil {
@@ -74,7 +74,7 @@ func (s *Service) runPostBillingCompaction(ctx context.Context, task *postBillin
 		} else if task.Async && task.TraceRecorder != nil {
 			task.TraceRecorder.removeProcessStage(processTraceKindCompaction)
 		}
-		s.completePostBillingCompactionTrace(task, message)
+		s.completePostGenerationCompactionTrace(task, message)
 	}
 
 	ctx, cancel := background.WithTimeout(ctx, 60*time.Second)
@@ -82,42 +82,29 @@ func (s *Service) runPostBillingCompaction(ctx context.Context, task *postBillin
 	run(ctx)
 }
 
-// runPostBillingTasks 按配置串行或异步执行压缩，并在其后安排会话元数据。
-func (s *Service) runPostBillingTasks(ctx context.Context, input SendMessageBillingInput) {
+// runPostGenerationTasks 按配置串行或异步执行压缩，并在其后安排会话元数据。
+func (s *Service) runPostGenerationTasks(ctx context.Context, input SendMessageUsageInput) {
 	if input.Result == nil {
 		return
 	}
-	task := input.Result.postBillingCompaction
-	input.Result.postBillingCompaction = nil
+	task := input.Result.postGenerationCompaction
+	input.Result.postGenerationCompaction = nil
 	if task != nil && task.Async {
 		// 异步任务只读取请求完成时的快照，不能继续持有 handler 正在返回的结果对象。
 		result := *input.Result
 		input.Result = &result
-		background.Go(s.logger, "post_billing_compaction", func() {
-			s.runPostBillingCompaction(ctx, task, &result.AssistantMessage)
-			s.scheduleConversationMetadataAfterBilling(ctx, input)
+		background.Go(s.logger, "post_generation_compaction", func() {
+			s.runPostGenerationCompaction(ctx, task, &result.AssistantMessage)
+			s.scheduleConversationMetadataAfterGeneration(ctx, input)
 		})
 		return
 	}
-	s.runPostBillingCompaction(ctx, task, &input.Result.AssistantMessage)
-	s.scheduleConversationMetadataAfterBilling(ctx, input)
+	s.runPostGenerationCompaction(ctx, task, &input.Result.AssistantMessage)
+	s.scheduleConversationMetadataAfterGeneration(ctx, input)
 }
 
-// discardPostBillingCompaction 在主账单失败时终止尚未开始的压缩 trace。
-func (s *Service) discardPostBillingCompaction(result *SendMessageResult) {
-	if result == nil || result.postBillingCompaction == nil {
-		return
-	}
-	task := result.postBillingCompaction
-	result.postBillingCompaction = nil
-	if task.TraceRecorder != nil {
-		task.TraceRecorder.removeProcessStage(processTraceKindCompaction)
-	}
-	s.completePostBillingCompactionTrace(task, &result.AssistantMessage)
-}
-
-// completePostBillingCompactionTrace 将同步压缩 trace 回填到响应消息。
-func (s *Service) completePostBillingCompactionTrace(task *postBillingCompactionTask, message *model.Message) {
+// completePostGenerationCompactionTrace 将同步压缩 trace 回填到响应消息。
+func (s *Service) completePostGenerationCompactionTrace(task *postGenerationCompactionTask, message *model.Message) {
 	if task == nil || task.TraceRecorder == nil {
 		return
 	}

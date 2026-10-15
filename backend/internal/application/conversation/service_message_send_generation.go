@@ -369,7 +369,7 @@ func (c *generationCall) handleStreamEvent(generationCtx context.Context, curren
 }
 
 // generate 执行一次上游调用：优先流式，流式不受支持或在产生任何副作用前失败时回退到非流式。
-// fullMessages 是本次调用对应的完整上下文，有状态续传时用于估算上游实际计费的输入规模。
+// fullMessages 是本次调用对应的完整上下文，有状态续传时用于估算上游实际计量的输入规模。
 func (r *messageGenerationRunner) generate(ctx context.Context, currentInput llm.GenerateInput, fullMessages []llm.Message) (*llm.GenerateOutput, error) {
 	call := &generationCall{
 		runner:         r,

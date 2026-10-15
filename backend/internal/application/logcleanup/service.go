@@ -12,8 +12,6 @@ import (
 const (
 	TypeAudit        = repository.LogCleanupTypeAudit
 	TypeAuth         = repository.LogCleanupTypeAuth
-	TypeUsage        = repository.LogCleanupTypeUsage
-	TypeOrders       = repository.LogCleanupTypeOrders
 	TypeConversation = repository.LogCleanupTypeConversation
 	TypeModeration   = repository.LogCleanupTypeModeration
 )
@@ -94,7 +92,7 @@ func (s *Service) Cleanup(ctx context.Context, input Input) (*Result, error) {
 
 func validType(value string) bool {
 	switch value {
-	case TypeAudit, TypeAuth, TypeUsage, TypeOrders, TypeConversation, TypeModeration:
+	case TypeAudit, TypeAuth, TypeConversation, TypeModeration:
 		return true
 	default:
 		return false

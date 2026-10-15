@@ -39,10 +39,6 @@ func New(cfg config.Config) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	if err = schema.SeedBillingCatalog(db); err != nil {
-		return nil, err
-	}
-
 	return db, nil
 }
 
@@ -125,17 +121,6 @@ func migrate(db *gorm.DB, cfg config.Config) error {
 		"chat_runs":                      "会话运行日志表",
 		"chat_run_events":                "会话运行轨迹表",
 		"chat_context_records":           "会话上下文快照与证据表",
-		"billing_plans":                  "订阅套餐定义表",
-		"billing_prices":                 "订阅价格版本表",
-		"billing_subscriptions":          "用户订阅表",
-		"billing_payment_orders":         "支付订单表",
-		"billing_accounts":               "按量计费余额账户表",
-		"billing_balance_transactions":   "按量计费余额流水表",
-		"billing_usage_reservations":     "模型调用用量预算预留表",
-		"billing_redemption_codes":       "计费兑换码定义表",
-		"billing_redemptions":            "计费兑换记录表",
-		"billing_model_prices":           "平台模型按量单价配置表",
-		"billing_usage_ledgers":          "按量用量账本表",
 		"audit_logs":                     "可追溯审计日志表",
 		"system_settings":                "系统动态配置表",
 		"user_settings":                  "用户个人偏好配置表",
@@ -162,12 +147,6 @@ func migrate(db *gorm.DB, cfg config.Config) error {
 		return err
 	}
 	if err := applyLLMBaselineIndexes(db); err != nil {
-		return err
-	}
-	if err := applyBillingBaselineIndexes(db); err != nil {
-		return err
-	}
-	if err := schema.CleanupRemovedColumns(db); err != nil {
 		return err
 	}
 	if err := applyVectorBaseline(db, vectorBaselineRequired(cfg)); err != nil {
@@ -213,47 +192,6 @@ func applyLLMBaselineIndexes(db *gorm.DB) error {
 		`CREATE INDEX IF NOT EXISTS idx_llm_model_routes_routing
 			ON "llm_model_routes" ("platform_model_id", "status", "priority", "weight")
 			WHERE status = 'active'`,
-	}
-
-	for _, statement := range statements {
-		if err := db.Exec(statement).Error; err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func applyBillingBaselineIndexes(db *gorm.DB) error {
-	statements := []string{
-		`ALTER TABLE "billing_usage_ledgers"
-		ADD COLUMN IF NOT EXISTS "billing_at" timestamptz`,
-		`UPDATE "billing_usage_ledgers"
-		SET "billing_at" = "created_at"
-		WHERE "billing_at" IS NULL`,
-		`ALTER TABLE "billing_usage_ledgers"
-		ALTER COLUMN "billing_at" SET NOT NULL`,
-		`COMMENT ON COLUMN "billing_usage_ledgers"."billing_at" IS '计费归属时间'`,
-		`CREATE INDEX IF NOT EXISTS idx_billing_usage_ledgers_user_date_model
-		ON "billing_usage_ledgers" ("user_id", "usage_date", "platform_model_name")`,
-		`CREATE INDEX IF NOT EXISTS idx_billing_usage_ledgers_user_billing_billable
-		ON "billing_usage_ledgers" ("user_id", "billing_at")
-		WHERE is_free_model = FALSE`,
-		`CREATE INDEX IF NOT EXISTS idx_billing_usage_ledgers_user_created_billable
-		ON "billing_usage_ledgers" ("user_id", "created_at")
-		WHERE is_free_model = FALSE`,
-		`CREATE UNIQUE INDEX IF NOT EXISTS idx_billing_balance_transactions_usage_ref
-		ON "billing_balance_transactions" ("user_id", "type", "ref_no")
-		WHERE ref_no <> '' AND type IN ('usage_reserve', 'usage_refund')`,
-		`ALTER TABLE "billing_redemption_codes"
-		ADD COLUMN IF NOT EXISTS "code_encrypted" text NOT NULL DEFAULT ''`,
-		`COMMENT ON COLUMN "billing_redemption_codes"."code_encrypted" IS 'AES-GCM加密后的兑换码明文'`,
-		`UPDATE "billing_redemption_codes"
-		SET "code_hint" = replace("code_hint", '...', '***')
-		WHERE "code_hint" LIKE '%...%'`,
-		`CREATE INDEX IF NOT EXISTS idx_billing_redemption_codes_status_mode
-		ON "billing_redemption_codes" ("status", "mode", "id")`,
-		`CREATE INDEX IF NOT EXISTS idx_billing_redemptions_code_user_created
-		ON "billing_redemptions" ("code_id", "user_id", "created_at")`,
 	}
 
 	for _, statement := range statements {

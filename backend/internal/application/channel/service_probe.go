@@ -235,7 +235,7 @@ func (s *Service) buildProbeRouteFromBinding(ctx context.Context, upstreamID uin
 	}, nil
 }
 
-// probeRoute 校验并执行一次不会记录计费、消息和熔断状态的轻量模型调用。
+// probeRoute 校验并执行一次不会记录用量、消息和熔断状态的轻量模型调用。
 func (s *Service) probeRoute(ctx context.Context, row repository.ChannelUpstreamRouteRow) (*ModelProbeResult, error) {
 	if result, ok := s.prepareModelProbeRoute(row); !ok {
 		return result, nil

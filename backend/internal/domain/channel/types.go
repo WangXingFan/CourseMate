@@ -52,7 +52,7 @@ type Upstream struct {
 	UpdatedAt            time.Time
 }
 
-// PlatformModel 表示平台对用户提供和计费的模型。
+// PlatformModel 表示平台对用户提供的模型。
 type PlatformModel struct {
 	ID                 uint
 	OwnerUserID        uint
@@ -77,7 +77,7 @@ type PlatformModel struct {
 }
 
 // ModelVendor 表示平台模型的技术厂商目录项。
-// Key 是路由、权限与计费使用的稳定标识；Name 和 Icon 仅用于展示。
+// Key 是路由与权限使用的稳定标识；Name 和 Icon 仅用于展示。
 type ModelVendor struct {
 	ID        uint
 	Key       string

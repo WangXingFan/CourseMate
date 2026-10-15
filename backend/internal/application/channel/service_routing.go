@@ -600,7 +600,7 @@ func isCircuitFailure(cause error) bool {
 }
 
 // ShouldFailoverRoute 报告请求能否在其他路由上重试。
-// 校验、授权、计费及调用方取消类错误
+// 校验、授权及调用方取消类错误
 // 必须保留在原请求路径上。
 func ShouldFailoverRoute(cause error) bool {
 	if cause == nil || errors.Is(cause, context.Canceled) || llm.RequestWasAccepted(cause) {

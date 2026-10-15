@@ -21,12 +21,12 @@ import (
 )
 
 func TestDescribeUsesTypedErrorContract(t *testing.T) {
-	typed := apperr.NewMasked("billing.insufficient_funds", "insufficient balance", "usage balance is insufficient")
-	wrapped := fmt.Errorf("settle run 7: %w", typed)
+	typed := apperr.NewMasked(CodeQuotaExceeded, "quota exceeded", "workspace quota is exhausted")
+	wrapped := fmt.Errorf("persist message 7: %w", typed)
 
 	for _, err := range []error{typed, wrapped} {
-		got := Describe(http.StatusPaymentRequired, err)
-		want := Description{Status: http.StatusPaymentRequired, Code: "billing.insufficient_funds", Message: "insufficient balance"}
+		got := Describe(http.StatusConflict, err)
+		want := Description{Status: http.StatusConflict, Code: CodeQuotaExceeded, Message: "quota exceeded"}
 		if got != want {
 			t.Fatalf("Describe(%v) = %#v, want %#v", err, got, want)
 		}
@@ -129,13 +129,13 @@ func TestErrorWithDetailsUsesCanonicalMessage(t *testing.T) {
 	context, _ := gin.CreateTestContext(recorder)
 	details := map[string]string{"field": "code"}
 
-	ErrorWithDetails(context, http.StatusBadRequest, "billing.invalid_redemption_code", details)
+	ErrorWithDetails(context, http.StatusBadRequest, CodeFileNotReady, details)
 
 	var payload Envelope
 	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
-	if payload.ErrorCode != "billing.invalid_redemption_code" || payload.ErrorMsg != "invalid redemption code" {
+	if payload.ErrorCode != CodeFileNotReady || payload.ErrorMsg != "file is not ready" {
 		t.Fatalf("envelope = %#v", payload)
 	}
 	decodedDetails, ok := payload.Details.(map[string]any)

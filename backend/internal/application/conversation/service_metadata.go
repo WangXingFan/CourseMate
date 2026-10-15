@@ -11,7 +11,6 @@ import (
 
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/pkg/textutil"
 
-	domainbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/billing"
 	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/ports/llm"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/repository"
@@ -64,16 +63,7 @@ const (
 )
 
 type conversationMetadataLLMResult struct {
-	Text              string
-	Usage             llm.Usage
-	Messages          []llm.Message
-	PlatformModelName string
-	RoutedBindingCode string
-	ProviderProtocol  string
-	UpstreamName      string
-	UpstreamModel     string
-	LatencyMS         int64
-	Authorization     *domainbilling.UsageAuthorization
+	Text string
 }
 
 type conversationMetadataLLMInput struct {
@@ -162,26 +152,6 @@ func (s *Service) generateConversationMetadata(
 		if err != nil {
 			titleErr = err
 		} else {
-			if err = s.recordBasicServiceUsage(ctx, basicServiceUsageInput{
-				Authorization:     out.Authorization,
-				UserID:            conversation.UserID,
-				ConversationID:    conversation.ID,
-				ServiceCode:       "title",
-				ServiceName:       "标题",
-				PlatformModelName: out.PlatformModelName,
-				RoutedBindingCode: out.RoutedBindingCode,
-				ProviderProtocol:  out.ProviderProtocol,
-				UpstreamName:      out.UpstreamName,
-				UpstreamModelName: out.UpstreamModel,
-				CacheTimeout:      "5m",
-				Usage:             out.Usage,
-				FallbackMessages:  out.Messages,
-				FallbackOutput:    out.Text,
-				LatencyMS:         out.LatencyMS,
-			}); err != nil {
-				// 上游费用已经产生但账单未落地时立即终止后续辅助调用，避免继续扩大待核对金额。
-				return nil, err
-			}
 			title := resolveConversationMetadataTitle(shouldReplaceTitle, sanitizeGeneratedConversationTitle(parseGeneratedConversationTitle(out.Text)), userMsg.Content)
 			if title != "" {
 				updated, err = s.repo.UpdateConversationMetadata(ctx, conversation.ID, repository.ConversationMetadataPatch{
@@ -218,25 +188,6 @@ func (s *Service) generateConversationMetadata(
 		if err != nil {
 			labelsErr = err
 		} else {
-			if err = s.recordBasicServiceUsage(ctx, basicServiceUsageInput{
-				Authorization:     labelsOut.Authorization,
-				UserID:            conversation.UserID,
-				ConversationID:    conversation.ID,
-				ServiceCode:       "labels",
-				ServiceName:       "标签",
-				PlatformModelName: labelsOut.PlatformModelName,
-				RoutedBindingCode: labelsOut.RoutedBindingCode,
-				ProviderProtocol:  labelsOut.ProviderProtocol,
-				UpstreamName:      labelsOut.UpstreamName,
-				UpstreamModelName: labelsOut.UpstreamModel,
-				CacheTimeout:      "5m",
-				Usage:             labelsOut.Usage,
-				FallbackMessages:  labelsOut.Messages,
-				FallbackOutput:    labelsOut.Text,
-				LatencyMS:         labelsOut.LatencyMS,
-			}); err != nil {
-				return nil, err
-			}
 			labels := sanitizeGeneratedConversationLabels(parseGeneratedConversationLabels(labelsOut.Text))
 			if len(labels) > 0 {
 				raw, marshalErr := json.Marshal(labels)
@@ -313,30 +264,6 @@ func (s *Service) RegenerateConversationTitle(ctx context.Context, userID uint, 
 					zap.Uint("conversation_id", conversation.ID),
 					zap.String("model", conversation.Model),
 					zap.Error(generateErr),
-				)
-			}
-		} else if usageErr := s.recordBasicServiceUsage(ctx, basicServiceUsageInput{
-			Authorization:     out.Authorization,
-			UserID:            conversation.UserID,
-			ConversationID:    conversation.ID,
-			ServiceCode:       "title",
-			ServiceName:       "标题",
-			PlatformModelName: out.PlatformModelName,
-			RoutedBindingCode: out.RoutedBindingCode,
-			ProviderProtocol:  out.ProviderProtocol,
-			UpstreamName:      out.UpstreamName,
-			UpstreamModelName: out.UpstreamModel,
-			CacheTimeout:      "5m",
-			Usage:             out.Usage,
-			FallbackMessages:  out.Messages,
-			FallbackOutput:    out.Text,
-			LatencyMS:         out.LatencyMS,
-		}); usageErr != nil {
-			if s.logger != nil {
-				s.logger.Warn("conversation_title_billing_failed",
-					zap.Uint("conversation_id", conversation.ID),
-					zap.String("model", conversation.Model),
-					zap.Error(usageErr),
 				)
 			}
 		} else {
@@ -608,34 +535,13 @@ func (s *Service) callConversationMetadataLLM(ctx context.Context, input convers
 			AttributionReferer:  attributionReferer,
 			AttributionTitle:    attributionTitle,
 		}
-		startedAt := time.Now()
 		generateInput := buildTextTaskGenerateInput(route, s.cfg.Snapshot(), messages)
-		authorization, authorizeErr := s.authorizeBasicServiceUsage(ctx, input.UserID, route.PlatformModelName, input.ServiceCode)
-		if authorizeErr != nil {
-			lastErr = fmt.Errorf("metadata usage authorization: %w", authorizeErr)
-			continue
-		}
 		out, generateErr := s.llmClient.Generate(ctx, routeConfig, generateInput)
 		if generateErr != nil {
-			releaseErr := s.releaseBasicServiceUsageAuthorization(ctx, authorization)
 			lastErr = fmt.Errorf("metadata llm generate: %w", generateErr)
-			if releaseErr != nil {
-				lastErr = errors.Join(lastErr, fmt.Errorf("release metadata usage authorization: %w", releaseErr))
-			}
 			continue
 		}
-		return &conversationMetadataLLMResult{
-			Text:              strings.TrimSpace(out.Text),
-			Usage:             out.Usage,
-			Messages:          generateInput.Messages,
-			PlatformModelName: route.PlatformModelName,
-			RoutedBindingCode: route.BindingCode,
-			ProviderProtocol:  route.Protocol,
-			UpstreamName:      route.UpstreamName,
-			UpstreamModel:     route.UpstreamModel,
-			LatencyMS:         time.Since(startedAt).Milliseconds(),
-			Authorization:     authorization,
-		}, nil
+		return &conversationMetadataLLMResult{Text: strings.TrimSpace(out.Text)}, nil
 	}
 	if lastErr != nil {
 		return nil, lastErr

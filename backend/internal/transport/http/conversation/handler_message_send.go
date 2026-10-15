@@ -95,27 +95,28 @@ func (h *Handler) parseSendMessageInput(c *gin.Context) (appconversation.SendMes
 	return input, conversation, &req, nil
 }
 
-// beginMessageUsageSession 在预留失败时先把终态业务拒绝持久化为会话消息，再写出 HTTP 错误响应。
-func (h *Handler) beginMessageUsageSession(
+// scheduleSendMessagePostTasks 在运行收口后安排上下文压缩与会话元数据生成。
+// 未产生运行结果时不做任何事。
+func (h *Handler) scheduleSendMessagePostTasks(
 	c *gin.Context,
-	input appconversation.SendMessageInput,
-	billingInput appconversation.SendMessageBillingInput,
-) (*appconversation.UsageSession, bool) {
-	session, err := h.service.BeginUsageSession(c.Request.Context(), billingInput)
-	if err == nil {
-		return session, true
+	conversation *model.Conversation,
+	req *SendMessageRequest,
+	result *appconversation.SendMessageResult,
+) {
+	if result == nil {
+		return
 	}
-	if persistErr := h.service.PersistMessageUsageRejection(c.Request.Context(), input, err); persistErr != nil {
-		handleSendMessageError(c, persistErr)
-		return nil, false
+	input := appconversation.SendMessageUsageInput{
+		UserID:            middleware.MustUserID(c),
+		PlatformModelName: strings.TrimSpace(req.Model),
+		ClientRunID:       strings.TrimSpace(req.ClientRunID),
+		Result:            result,
 	}
-	handleSendMessageError(c, err)
-	return nil, false
-}
-
-// billableResult 判断运行是否产生了需要结算的上游用量。
-func billableResult(result *appconversation.SendMessageResult) bool {
-	return result != nil && result.Billable
+	if conversation != nil {
+		input.ConversationID = conversation.ID
+		input.Conversation = conversation
+	}
+	h.service.ScheduleSendMessagePostTasks(c.Request.Context(), input)
 }
 
 // recordSendMessageAudit 记录审计日志（同步，供非流式路径使用）。
@@ -168,7 +169,7 @@ func (h *Handler) recordSendMessageAuditCtx(ctx context.Context, input appconver
 	h.service.RecordSendMessageAudit(ctx, input)
 }
 
-// handleSendMessageError 把消息发送 / 生成 / 计费路径上的错误写成 HTTP 错误响应，映射规则见 describeSendMessageError。
+// handleSendMessageError 把消息发送 / 生成路径上的错误写成 HTTP 错误响应，映射规则见 describeSendMessageError。
 func handleSendMessageError(c *gin.Context, err error) {
 	response.ErrorDescribed(c, describeSendMessageError(err))
 }
@@ -194,25 +195,9 @@ func (h *Handler) SendMessage(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	session, ok := h.beginMessageUsageSession(c, input, buildBillingInput(billingRequestInput{
-		UserID:            middleware.MustUserID(c),
-		Conversation:      conversation,
-		PlatformModelName: req.Model,
-		ClientRunID:       req.ClientRunID,
-	}))
-	if !ok {
-		return
-	}
-	defer session.Close()
-	input.UsageAuthorization = session.Authorization()
-
 	result, err := h.service.SendMessage(c.Request.Context(), input)
-	if billingErr := session.Finish(c.Request.Context(), result); billingErr != nil {
-		handleSendMessageError(c, billingErr)
-		return
-	}
-	// 已产生可计费用量的失败运行仍以持久化结果返回，错误状态由消息本身承载。
-	if err != nil && !billableResult(result) {
+	h.scheduleSendMessagePostTasks(c, conversation, req, result)
+	if err != nil {
 		handleSendMessageError(c, err)
 		return
 	}
@@ -239,22 +224,10 @@ func (h *Handler) StreamMessage(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	session, ok := h.beginMessageUsageSession(c, input, buildBillingInput(billingRequestInput{
-		UserID:            middleware.MustUserID(c),
-		Conversation:      conversation,
-		PlatformModelName: req.Model,
-		ClientRunID:       req.ClientRunID,
-	}))
-	if !ok {
-		return
-	}
-	defer session.Close()
-	input.UsageAuthorization = session.Authorization()
 	generationCtx, releaseLifecycle, ok := h.service.AcquireMessageGenerationLifecycle(
 		background.Detach(c.Request.Context()),
 	)
 	if !ok {
-		_ = session.Finish(c.Request.Context(), nil)
 		response.ErrorWithCode(c, http.StatusServiceUnavailable, response.CodeServiceUnavailable)
 		return
 	}
@@ -310,22 +283,14 @@ func (h *Handler) StreamMessage(c *gin.Context) {
 		}
 		return flushErr
 	})
+	h.scheduleSendMessagePostTasks(c, conversation, req, result)
 
 	if err == nil && result != nil && result.IsModerationBlocked() {
 		// 即使实时 OnEvent 路径漏发，也要确保发送终止事件。
 		if !result.ModerationTerminalEmitted() {
-			_, _ = flushStreamEvent(moderationBlockedStreamPayload(result, session.Authorization()))
+			_, _ = flushStreamEvent(moderationBlockedStreamPayload(result))
 		}
-		// 终态事件已发出，结算/释放失败由应用层记日志并标记对账，不能再向流推送第二个终态事件。
-		_ = session.Finish(c.Request.Context(), result)
 		h.recordStreamSendMessageAuditAsync(c, conversation, req, result, "stream_message")
-		return
-	}
-	if billingErr := session.Finish(c.Request.Context(), result); billingErr != nil {
-		payload := streamErrorPayloadWithResult(billingErr, result)
-		if owned, _ := flushStreamEvent(payload); !owned {
-			_ = writeStreamEvent(payload)
-		}
 		return
 	}
 	if err != nil {

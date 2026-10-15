@@ -15,7 +15,7 @@ const forkAncestorMaxDepth = 2000
 
 // ForkConversationFromMessage 将会话从开头到指定消息（含）的祖先链复制为一个新会话。
 // 新会话保留历史消息的上下文规划、思考和工具展示轨迹，但不携带可执行的生成运行、
-// 原始工具审计日志、计费与压缩快照；附件以引用方式复用原文件对象（同用户，不重复
+// 原始工具审计日志与压缩快照；附件以引用方式复用原文件对象（同用户，不重复
 // 占用存储配额）。原会话保持不变。
 func (s *Service) ForkConversationFromMessage(ctx context.Context, userID uint, conversationPublicID string, messagePublicID string) (*model.Conversation, error) {
 	normalizedConversationID := strings.TrimSpace(conversationPublicID)
@@ -141,9 +141,6 @@ func buildForkedMessage(
 		CacheWriteTokens: source.CacheWriteTokens,
 		ReasoningTokens:  source.ReasoningTokens,
 		LatencyMS:        source.LatencyMS,
-		BilledCurrency:   "USD",
-		BilledNanousd:    0,
-		PricingSnapshot:  "",
 		Status:           normalizeForkedMessageStatus(source.Status),
 		ErrorCode:        source.ErrorCode,
 		ErrorMessage:     source.ErrorMessage,

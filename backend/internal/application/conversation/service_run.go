@@ -277,6 +277,12 @@ func (r *messageSendRunState) currentTraceRecorder() *messageTraceRecorder {
 	return *r.traceRecorder
 }
 
+// sendMessageResultUsesAssistantSideInput 报告本轮用量记在 assistant 消息侧。
+// 有状态 Responses 续传只在 assistant 消息上回写输入侧用量。
+func sendMessageResultUsesAssistantSideInput(result *SendMessageResult) bool {
+	return result != nil && result.AssistantMessage.SourceMessageID != nil
+}
+
 func (r *messageSendRunState) currentResult() *SendMessageResult {
 	if r.result == nil {
 		return nil

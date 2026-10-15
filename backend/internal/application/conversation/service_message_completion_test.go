@@ -9,7 +9,7 @@ import (
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/tokenestimate"
 )
 
-func TestCanceledGenerationWithObservedUsageIsRetainedForBilling(t *testing.T) {
+func TestCanceledGenerationWithObservedUsageIsRetained(t *testing.T) {
 	input := persistInterruptedMessageGenerationInput{
 		UserMessage:          &model.Message{},
 		AssistantMessage:     &model.Message{},
@@ -57,7 +57,7 @@ func TestCanceledGenerationWithoutUsageOrOutputIsNotRetained(t *testing.T) {
 	}
 
 	if shouldPersistInterruptedMessageGeneration(input) {
-		t.Fatal("expected empty canceled generation to stay non-billable")
+		t.Fatal("expected empty canceled generation to stay unretained")
 	}
 }
 
@@ -113,9 +113,6 @@ func TestCanceledGenerationEstimatesVisibleReasoningUsage(t *testing.T) {
 	if metrics.InputTokens != 12 || metrics.OutputTokens != 0 || metrics.ReasoningTokens != tokenestimate.Estimate(reasoningText) {
 		t.Fatalf("expected visible reasoning to be estimated separately, got %#v", metrics)
 	}
-	if source := interruptedUsageSource(input, metrics); source != interruptedUsageSourceEstimated {
-		t.Fatalf("usage source = %q, want estimated", source)
-	}
 }
 
 func TestCanceledGenerationDoesNotDoubleCountCombinedObservedOutput(t *testing.T) {
@@ -135,9 +132,6 @@ func TestCanceledGenerationDoesNotDoubleCountCombinedObservedOutput(t *testing.T
 	)
 	if metrics.OutputTokens != wantOutput || metrics.ReasoningTokens != 0 {
 		t.Fatalf("expected combined output without duplicated reasoning, got %#v", metrics)
-	}
-	if source := interruptedUsageSource(input, metrics); source != interruptedUsageSourceMixed {
-		t.Fatalf("usage source = %q, want mixed", source)
 	}
 }
 
@@ -162,9 +156,6 @@ func TestCanceledToolLoopOnlyEstimatesInterruptedCallTail(t *testing.T) {
 	if want := int64(6) + tokenestimate.Estimate(tailText); metrics.OutputTokens != want || metrics.ReasoningTokens != 0 {
 		t.Fatalf("expected reported first call output plus tail estimate (%d), got %#v", want, metrics)
 	}
-	if source := interruptedUsageSource(input, metrics); source != interruptedUsageSourceMixed {
-		t.Fatalf("usage source = %q, want mixed", source)
-	}
 }
 
 func TestCanceledGenerationRecoveredUsageIsAuthoritative(t *testing.T) {
@@ -183,9 +174,6 @@ func TestCanceledGenerationRecoveredUsageIsAuthoritative(t *testing.T) {
 	if metrics.InputTokens != 10 || metrics.OutputTokens != 48 || metrics.ReasoningTokens != 16 {
 		t.Fatalf("expected recovered usage to remain authoritative, got %#v", metrics)
 	}
-	if source := interruptedUsageSource(input, metrics); source != interruptedUsageSourceRecovered {
-		t.Fatalf("usage source = %q, want recovered", source)
-	}
 }
 
 func TestCanceledGenerationRecoveredUsageRetainsEarlierEstimatedInput(t *testing.T) {
@@ -202,9 +190,6 @@ func TestCanceledGenerationRecoveredUsageRetainsEarlierEstimatedInput(t *testing
 	metrics := resolveInterruptedMessageGenerationMetrics(input)
 	if metrics.InputTokens != 38 || metrics.OutputTokens != 12 {
 		t.Fatalf("expected recovered current-call usage plus earlier estimated input, got %#v", metrics)
-	}
-	if source := interruptedUsageSource(input, metrics); source != interruptedUsageSourceMixed {
-		t.Fatalf("usage source = %q, want mixed", source)
 	}
 }
 

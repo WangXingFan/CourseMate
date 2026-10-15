@@ -37,7 +37,7 @@ func TestSettingValidationErrorCarriesTypedContractAndDetails(t *testing.T) {
 }
 
 func TestSettingValidationErrorDoesNotExposeSubmittedValue(t *testing.T) {
-	err := settingValidationForKey("billing", "epay_gateway_url", settingRule("epay_url", ""))
+	err := settingValidationForKey("file", "embedding_key", settingRule("invalid", ""))
 	for _, value := range []string{"secret", "token", "https://"} {
 		if strings.Contains(err.Error(), value) {
 			t.Fatalf("validation error leaked submitted value: %q", err.Error())

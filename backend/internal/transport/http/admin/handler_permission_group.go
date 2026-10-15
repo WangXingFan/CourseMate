@@ -31,13 +31,11 @@ func (h *Handler) permissionGroupModelIDParam(c *gin.Context) (uint, bool) {
 func (h *Handler) writePermissionGroupError(c *gin.Context, err error) {
 	switch {
 	case errors.Is(err, appadmin.ErrInvalidPermissionGroupName),
-		errors.Is(err, appadmin.ErrInvalidPermissionGroupRateMultiplier),
 		errors.Is(err, appadmin.ErrInvalidPermissionGroupModels),
 		errors.Is(err, appadmin.ErrInvalidPermissionGroupUsers):
 		response.ErrorFrom(c, http.StatusBadRequest, err)
 	case errors.Is(err, appadmin.ErrDefaultPermissionGroupDeleteNotAllowed),
-		errors.Is(err, appadmin.ErrDefaultPermissionGroupUsersImmutable),
-		errors.Is(err, appadmin.ErrPermissionGroupReferencedByPlan):
+		errors.Is(err, appadmin.ErrDefaultPermissionGroupUsersImmutable):
 		response.ErrorFrom(c, http.StatusConflict, err)
 	case errors.Is(err, appadmin.ErrPermissionGroupNotFound):
 		response.ErrorFrom(c, http.StatusNotFound, err)
@@ -71,7 +69,7 @@ func (h *Handler) ListPermissionGroups(c *gin.Context) {
 
 // CreatePermissionGroup godoc
 // @Summary 管理员创建权限组
-// @Description 创建模型访问权限组并设置计费倍率
+// @Description 创建模型访问权限组
 // @Tags admin
 // @Accept json
 // @Produce json
@@ -87,7 +85,7 @@ func (h *Handler) CreatePermissionGroup(c *gin.Context) {
 		response.InvalidRequestBody(c, err)
 		return
 	}
-	item, err := h.service.CreatePermissionGroup(c.Request.Context(), req.Name, req.Description, req.RateMultiplierPercent)
+	item, err := h.service.CreatePermissionGroup(c.Request.Context(), req.Name, req.Description)
 	if err != nil {
 		h.writePermissionGroupError(c, err)
 		return
@@ -97,7 +95,7 @@ func (h *Handler) CreatePermissionGroup(c *gin.Context) {
 
 // UpdatePermissionGroup godoc
 // @Summary 管理员更新权限组
-// @Description 更新权限组名称、说明与计费倍率
+// @Description 更新权限组名称与说明
 // @Tags admin
 // @Accept json
 // @Produce json
@@ -119,7 +117,7 @@ func (h *Handler) UpdatePermissionGroup(c *gin.Context) {
 		response.InvalidRequestBody(c, err)
 		return
 	}
-	item, err := h.service.UpdatePermissionGroup(c.Request.Context(), groupID, req.Name, req.Description, req.RateMultiplierPercent)
+	item, err := h.service.UpdatePermissionGroup(c.Request.Context(), groupID, req.Name, req.Description)
 	if err != nil {
 		h.writePermissionGroupError(c, err)
 		return
@@ -129,7 +127,7 @@ func (h *Handler) UpdatePermissionGroup(c *gin.Context) {
 
 // DeletePermissionGroup godoc
 // @Summary 管理员删除权限组
-// @Description 删除权限组及其模型、用户关联；默认组和被套餐引用的权限组不可删除
+// @Description 删除权限组及其模型、用户关联；默认组不可删除
 // @Tags admin
 // @Accept json
 // @Produce json

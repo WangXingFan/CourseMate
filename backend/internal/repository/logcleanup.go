@@ -8,8 +8,6 @@ import (
 const (
 	LogCleanupTypeAudit        = "audit"
 	LogCleanupTypeAuth         = "auth"
-	LogCleanupTypeUsage        = "usage"
-	LogCleanupTypeOrders       = "orders"
 	LogCleanupTypeConversation = "conversation"
 	LogCleanupTypeModeration   = "moderation"
 )

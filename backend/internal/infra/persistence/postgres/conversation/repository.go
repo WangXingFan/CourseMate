@@ -1108,22 +1108,6 @@ func (r *Repo) CompleteAssistantMessageWithGeneratedAttachments(
 	}))
 }
 
-// UpdateMessageBilling 回填消息计费金额与计费快照。
-func (r *Repo) UpdateMessageBilling(ctx context.Context, messageID uint, billedCurrency string, billedNanousd int64, pricingSnapshot string) error {
-	if billedNanousd < 0 {
-		billedNanousd = 0
-	}
-	return dberror.Translate(r.db.WithContext(ctx).
-		Model(&models.Message{}).
-		Where("id = ?", messageID).
-		Updates(map[string]any{
-			"billed_currency":  billedCurrency,
-			"billed_nanousd":   billedNanousd,
-			"pricing_snapshot": pricingSnapshot,
-		}).
-		Error)
-}
-
 // ListMessages 查询会话消息。
 func (r *Repo) ListMessages(ctx context.Context, conversationID uint, offset int, limit int) ([]domainconversation.Message, int64, error) {
 	items := make([]models.Message, 0)
@@ -3482,9 +3466,6 @@ func toMessageDomain(item models.Message) domainconversation.Message {
 		CacheWriteTokens:         item.CacheWriteTokens,
 		ReasoningTokens:          item.ReasoningTokens,
 		LatencyMS:                item.LatencyMS,
-		BilledCurrency:           item.BilledCurrency,
-		BilledNanousd:            item.BilledNanousd,
-		PricingSnapshot:          item.PricingSnapshot,
 		Status:                   item.Status,
 		ErrorCode:                item.ErrorCode,
 		ErrorMessage:             item.ErrorMessage,
@@ -3534,9 +3515,6 @@ func toMessageModel(item *domainconversation.Message) models.Message {
 		CacheWriteTokens:         item.CacheWriteTokens,
 		ReasoningTokens:          item.ReasoningTokens,
 		LatencyMS:                item.LatencyMS,
-		BilledCurrency:           item.BilledCurrency,
-		BilledNanousd:            item.BilledNanousd,
-		PricingSnapshot:          item.PricingSnapshot,
 		Status:                   item.Status,
 		ErrorCode:                item.ErrorCode,
 		ErrorMessage:             item.ErrorMessage,

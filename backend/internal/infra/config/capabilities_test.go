@@ -8,6 +8,13 @@ import (
 func TestCapabilitiesServerModeEnablesEverything(t *testing.T) {
 	cfg := Config{}
 	for name, enabled := range cfg.Capabilities().Flags() {
+		if name == "billingGating" {
+			// 契约键保留；本产品不含计费，服务器模式下也必须保持关闭。
+			if enabled {
+				t.Errorf("server mode: %s must stay disabled", name)
+			}
+			continue
+		}
 		if !enabled {
 			t.Errorf("server mode: %s should be enabled", name)
 		}

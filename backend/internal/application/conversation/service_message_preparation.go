@@ -6,11 +6,8 @@ import (
 	"time"
 
 	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
-	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/pkg/textutil"
-	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/background"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/tokenestimate"
 	"github.com/google/uuid"
-	"go.uber.org/zap"
 )
 
 type messageSendBranchPreparation struct {
@@ -19,13 +16,8 @@ type messageSendBranchPreparation struct {
 	reuseUserMessage       bool
 }
 
-type rejectedMessageState struct {
-	errorCode    string
-	errorMessage string
-}
-
 // prepareMessageSendBranch 在消息落库前解析并规范化分支。
-// 正常生成与发送拒绝共用该准备过程，保证重试和编辑的祖先关系一致。
+// 正常生成与重试/编辑分支共用该准备过程，保证祖先关系一致。
 func (s *Service) prepareMessageSendBranch(ctx context.Context, input *SendMessageInput) (*messageSendBranchPreparation, error) {
 	if input == nil {
 		return nil, ErrInvalidMessageContent
@@ -76,27 +68,12 @@ func (s *Service) createMessagePair(
 	runID string,
 	preparation *messageSendBranchPreparation,
 	resolvedAttachments []AttachmentInput,
-	rejected *rejectedMessageState,
 ) (*messagePair, error) {
 	if preparation == nil || preparation.branchState == nil {
 		return nil, ErrInvalidMessageBranch
 	}
 
-	userStatus := "pending"
-	assistantStatus := "pending"
-	messageErrorCode := ""
-	messageErrorMessage := ""
-	if rejected != nil {
-		userStatus = "error"
-		assistantStatus = "error"
-		messageErrorCode = strings.TrimSpace(rejected.errorCode)
-		messageErrorMessage = textutil.TruncateTrimmed(strings.TrimSpace(rejected.errorMessage), 255)
-	}
-
 	userContentEstimatedInputTokens := tokenestimate.Estimate(input.Content)
-	if rejected != nil {
-		userContentEstimatedInputTokens = 0
-	}
 	assistantMessage := &model.Message{
 		ConversationID:   input.ConversationID,
 		UserID:           input.UserID,
@@ -113,9 +90,7 @@ func (s *Service) createMessagePair(
 		CacheWriteTokens: 0,
 		ReasoningTokens:  0,
 		LatencyMS:        0,
-		Status:           assistantStatus,
-		ErrorCode:        messageErrorCode,
-		ErrorMessage:     messageErrorMessage,
+		Status:           "pending",
 		Attachments:      "[]",
 	}
 
@@ -147,9 +122,7 @@ func (s *Service) createMessagePair(
 		TokenUsage:      userContentEstimatedInputTokens,
 		InputTokens:     userContentEstimatedInputTokens,
 		Attachments:     string(attachmentsJSON),
-		Status:          userStatus,
-		ErrorCode:       messageErrorCode,
-		ErrorMessage:    messageErrorMessage,
+		Status:          "pending",
 	}
 	attachmentRows := make([]model.Attachment, 0, len(resolvedAttachments))
 	now := time.Now()
@@ -177,92 +150,4 @@ func (s *Service) createMessagePair(
 	userMessage.SourcePublicID = preparation.branchState.SourcePublicID
 	assistantMessage.ParentPublicID = userMessage.PublicID
 	return &messagePair{user: userMessage, assistant: assistantMessage}, nil
-}
-
-// persistRejectedMessageSend 在上游请求开始前保存被业务规则拒绝的对话回合。
-// 消息创建和最终错误状态位于同一事务，刷新时不会出现半个回合或永久 pending 消息。
-func (s *Service) persistRejectedMessageSend(
-	ctx context.Context,
-	input SendMessageInput,
-	errorCode string,
-	errorMessage string,
-) (retErr error) {
-	conversation, err := s.repo.GetConversationByUser(ctx, input.ConversationID, input.UserID)
-	if err != nil {
-		return ErrConversationNotFound
-	}
-	preparation, err := s.prepareMessageSendBranch(ctx, &input)
-	if err != nil {
-		return err
-	}
-	resolvedAttachments, err := s.resolveAttachments(ctx, input.UserID, input.FileIDs)
-	if err != nil {
-		return err
-	}
-
-	runID := normalizeRunID(input.ClientRunID)
-	if runID == "" {
-		runID = "run_" + normalizePublicID(uuid.NewString())
-	}
-	requestedModelName := strings.TrimSpace(input.PlatformModelName)
-	if requestedModelName == "" {
-		requestedModelName = strings.TrimSpace(conversation.Model)
-	}
-	run := &model.Run{
-		RunID:              runID,
-		RequestID:          strings.TrimSpace(input.RequestID),
-		UserID:             input.UserID,
-		ConversationID:     input.ConversationID,
-		TaskType:           "chat",
-		Provider:           strings.TrimSpace(conversation.Provider),
-		RequestedModelName: requestedModelName,
-		Status:             "running",
-		StartedAt:          time.Now(),
-	}
-	if err = s.claimConversationRun(ctx, run); err != nil {
-		return err
-	}
-	defer func() {
-		finalizeCtx, cancel := background.WithTimeout(ctx, 5*time.Second)
-		defer cancel()
-
-		endedAt := time.Now()
-		run.EndedAt = &endedAt
-		run.TotalLatencyMS = endedAt.Sub(run.StartedAt).Milliseconds()
-		run.Status = "error"
-		if retErr == nil {
-			run.ErrorCode = strings.TrimSpace(errorCode)
-			run.ErrorMessage = textutil.TruncateTrimmed(strings.TrimSpace(errorMessage), 255)
-		} else {
-			run.ErrorCode = classifyRunErrorCode(retErr)
-			run.ErrorMessage = textutil.TruncateTrimmed(messageErrorSummary(retErr), 255)
-		}
-		if updateErr := s.repo.UpdateConversationRun(finalizeCtx, run); updateErr != nil {
-			if s.logger != nil {
-				s.logger.Error("update_rejected_conversation_run_failed",
-					zap.String("run_id", run.RunID),
-					zap.Error(updateErr),
-				)
-			}
-			if retErr == nil {
-				retErr = updateErr
-			}
-		}
-	}()
-	pair, err := s.createMessagePair(
-		ctx,
-		input,
-		runID,
-		preparation,
-		resolvedAttachments,
-		&rejectedMessageState{
-			errorCode:    errorCode,
-			errorMessage: errorMessage,
-		},
-	)
-	if err != nil {
-		return err
-	}
-	s.persistInitialConversationFallbackTitle(ctx, *conversation, *pair.user)
-	return nil
 }

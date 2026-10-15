@@ -387,11 +387,6 @@ type UserResponse struct {
 	LastActiveAt            *time.Time                            `json:"lastActiveAt" extensions:"x-nullable,!x-omitempty"`
 	CreatedAt               time.Time                             `json:"createdAt"`
 	UpdatedAt               time.Time                             `json:"updatedAt"`
-	SubscriptionTier        string                                `json:"subscriptionTier"`
-	SubscriptionPlanID      *uint                                 `json:"subscriptionPlanID" extensions:"x-nullable,!x-omitempty"`
-	SubscriptionPlanName    string                                `json:"subscriptionPlanName"`
-	SubscriptionStatus      string                                `json:"subscriptionStatus"`
-	SubscriptionExpiresAt   *time.Time                            `json:"subscriptionExpiresAt" extensions:"x-nullable,!x-omitempty"`
 	IdentityProviders       []UserIdentityProviderSummaryResponse `json:"identityProviders"`
 }
 
@@ -684,11 +679,6 @@ func toUserResponse(v userview.UserView) UserResponse {
 		LastActiveAt:            v.LastActiveAt,
 		CreatedAt:               v.CreatedAt,
 		UpdatedAt:               v.UpdatedAt,
-		SubscriptionTier:        v.SubscriptionTier,
-		SubscriptionPlanID:      v.SubscriptionPlanID,
-		SubscriptionPlanName:    v.SubscriptionPlanName,
-		SubscriptionStatus:      v.SubscriptionStatus,
-		SubscriptionExpiresAt:   v.SubscriptionExpiresAt,
 		IdentityProviders:       toUserIdentityProviderSummaryResponses(v.IdentityProviders),
 	}
 }

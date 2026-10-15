@@ -174,55 +174,6 @@ func TestBackfillContextArtifactMessageIDsUsesAssistantRunOwner(t *testing.T) {
 	}
 }
 
-func TestSeedBillingCatalogBindsDefaultPermissionGroup(t *testing.T) {
-	db := openSchemaTestDB(t)
-	if err := SeedPermissionGroups(db); err != nil {
-		t.Fatalf("SeedPermissionGroups() error = %v", err)
-	}
-	if err := SeedBillingCatalog(db); err != nil {
-		t.Fatalf("SeedBillingCatalog() error = %v", err)
-	}
-
-	var plans []models.BillingPlan
-	if err := db.Order("code ASC").Find(&plans).Error; err != nil {
-		t.Fatalf("list plans: %v", err)
-	}
-	if len(plans) == 0 {
-		t.Fatal("expected seeded billing plans")
-	}
-	for _, plan := range plans {
-		if plan.PermissionGroupID == nil {
-			t.Fatalf("plan %q PermissionGroupID is nil", plan.Code)
-		}
-	}
-}
-
-func TestSeedBillingCatalogBackfillsExistingPlans(t *testing.T) {
-	db := openSchemaTestDB(t)
-	if err := SeedPermissionGroups(db); err != nil {
-		t.Fatalf("SeedPermissionGroups() error = %v", err)
-	}
-	if err := db.Create(&models.BillingPlan{
-		Code:     "pro",
-		Name:     "Pro",
-		IsActive: true,
-	}).Error; err != nil {
-		t.Fatalf("seed plan: %v", err)
-	}
-
-	if err := SeedBillingCatalog(db); err != nil {
-		t.Fatalf("SeedBillingCatalog() error = %v", err)
-	}
-
-	var plan models.BillingPlan
-	if err := db.Where("code = ?", "pro").First(&plan).Error; err != nil {
-		t.Fatalf("get plan: %v", err)
-	}
-	if plan.PermissionGroupID == nil {
-		t.Fatal("expected existing plan to be bound to default permission group")
-	}
-}
-
 func TestSeedPermissionGroupsClearsDefaultGroupUserAccess(t *testing.T) {
 	db := openSchemaTestDB(t)
 	defaultGroup := models.PermissionGroup{Name: "Default", IsDefault: true}
@@ -379,8 +330,6 @@ func openSchemaTestDB(t *testing.T) *gorm.DB {
 		&models.PermissionGroupUserAccess{},
 		&models.PermissionGroupModelAccess{},
 		&models.PermissionGroupModelRule{},
-		&models.BillingPlan{},
-		&models.BillingPrice{},
 	); err != nil {
 		t.Fatalf("migrate: %v", err)
 	}

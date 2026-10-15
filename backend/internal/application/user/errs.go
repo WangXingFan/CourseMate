@@ -27,10 +27,4 @@ var (
 	ErrInvalidTimeZone = apperr.NewMasked("user.invalid_time_zone", "invalid time zone", "invalid timezone")
 	// ErrInvalidLocale 非法语言区域。
 	ErrInvalidLocale = apperr.New("user.invalid_locale", "invalid user locale")
-	// ErrInvalidSubscriptionTier 非法订阅等级。
-	ErrInvalidSubscriptionTier = apperr.New("billing.invalid_subscription_tier", "invalid subscription tier")
-	// ErrSubscriptionExpiryRequired 付费订阅必须指定到期时间。
-	ErrSubscriptionExpiryRequired = apperr.New("billing.subscription_expiry_required", "subscription expiry required")
-	// ErrInvalidSubscriptionExpiry 非法订阅到期时间。
-	ErrInvalidSubscriptionExpiry = apperr.New("billing.invalid_subscription_expiry", "invalid subscription expiry")
 )

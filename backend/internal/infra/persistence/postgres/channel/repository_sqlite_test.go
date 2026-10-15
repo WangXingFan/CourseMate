@@ -1477,137 +1477,24 @@ func TestListPermissionGroupsCountsDefaultGroupUsers(t *testing.T) {
 	}).Error; err != nil {
 		t.Fatalf("create user access: %v", err)
 	}
-	plan := model.BillingPlan{
-		Code:              "pro",
-		Name:              "Pro",
-		IsActive:          true,
-		PermissionGroupID: &groups[1].ID,
-	}
-	if err := db.Create(&plan).Error; err != nil {
-		t.Fatalf("create billing plan: %v", err)
-	}
-	inactivePlan := model.BillingPlan{
-		Code:              "legacy",
-		Name:              "Legacy",
-		IsActive:          false,
-		PermissionGroupID: &groups[1].ID,
-	}
-	if err := db.Create(&inactivePlan).Error; err != nil {
-		t.Fatalf("create inactive billing plan: %v", err)
-	}
-	now := time.Now()
-	endAt := now.Add(time.Hour)
-	if err := db.Create(&[]model.Subscription{
-		{
-			UserID:               users[0].ID,
-			PlanID:               plan.ID,
-			Status:               "active",
-			StartAt:              now.Add(-time.Hour),
-			CurrentPeriodStartAt: now.Add(-time.Hour),
-			CurrentPeriodEndAt:   &endAt,
-		},
-		{
-			UserID:               users[1].ID,
-			PlanID:               plan.ID,
-			Status:               "active",
-			StartAt:              now.Add(-time.Hour),
-			CurrentPeriodStartAt: now.Add(-time.Hour),
-			CurrentPeriodEndAt:   &endAt,
-		},
-		{
-			UserID:               users[2].ID,
-			PlanID:               inactivePlan.ID,
-			Status:               "active",
-			StartAt:              now.Add(-time.Hour),
-			CurrentPeriodStartAt: now.Add(-time.Hour),
-			CurrentPeriodEndAt:   &endAt,
-		},
-	}).Error; err != nil {
-		t.Fatalf("create subscriptions: %v", err)
-	}
-
 	items, err := NewRepo(db).ListPermissionGroups(ctx)
 	if err != nil {
 		t.Fatalf("ListPermissionGroups() error = %v", err)
 	}
 	userCounts := make(map[uint]int64, len(items))
 	manualCounts := make(map[uint]int64, len(items))
-	subscriptionCounts := make(map[uint]int64, len(items))
 	for _, item := range items {
 		userCounts[item.ID] = item.UserCount
 		manualCounts[item.ID] = item.ManualUserCount
-		subscriptionCounts[item.ID] = item.SubscriptionUserCount
 	}
 	if userCounts[groups[0].ID] != 3 {
 		t.Fatalf("expected default group user count 3, got %d", userCounts[groups[0].ID])
 	}
-	if userCounts[groups[1].ID] != 2 {
-		t.Fatalf("expected manual group distinct user count 2, got %d", userCounts[groups[1].ID])
+	if userCounts[groups[1].ID] != 1 {
+		t.Fatalf("expected manual group user count 1, got %d", userCounts[groups[1].ID])
 	}
 	if manualCounts[groups[1].ID] != 1 {
 		t.Fatalf("expected manual group manual user count 1, got %d", manualCounts[groups[1].ID])
-	}
-	if subscriptionCounts[groups[1].ID] != 2 {
-		t.Fatalf("expected manual group subscription user count 2, got %d", subscriptionCounts[groups[1].ID])
-	}
-}
-
-func TestGetUserModelGroupRateMultiplierUsesMatchedModelGroups(t *testing.T) {
-	db := openChannelSQLiteTestDB(t)
-	ctx := context.Background()
-
-	groups := []model.PermissionGroup{
-		{Name: "Default", IsDefault: true, RateMultiplierPercent: 100},
-		{Name: "Pro", RateMultiplierPercent: 80},
-	}
-	if err := db.Create(&groups).Error; err != nil {
-		t.Fatalf("create permission groups: %v", err)
-	}
-	user := model.User{PublicID: "user-alice", Username: "alice", DisplayName: "Alice"}
-	if err := db.Create(&user).Error; err != nil {
-		t.Fatalf("create user: %v", err)
-	}
-	platformModels := []model.LLMPlatformModel{
-		{Name: "gpt-3", Vendor: "openai", Status: "active", SortOrder: 100},
-		{Name: "gpt-4", Vendor: "openai", Status: "active", SortOrder: 200},
-		{Name: "gpt-5", Vendor: "openai", Status: "active", SortOrder: 300},
-		{Name: "unassigned", Vendor: "openai", Status: "active", SortOrder: 400},
-	}
-	if err := db.Create(&platformModels).Error; err != nil {
-		t.Fatalf("create platform models: %v", err)
-	}
-	accessRows := []model.PermissionGroupModelAccess{
-		{GroupID: groups[0].ID, PlatformModelID: platformModels[0].ID},
-		{GroupID: groups[0].ID, PlatformModelID: platformModels[1].ID},
-		{GroupID: groups[1].ID, PlatformModelID: platformModels[1].ID},
-		{GroupID: groups[1].ID, PlatformModelID: platformModels[2].ID},
-	}
-	if err := db.Create(&accessRows).Error; err != nil {
-		t.Fatalf("create model access rows: %v", err)
-	}
-
-	repo := NewRepo(db)
-	extraGroupIDs := []uint{groups[1].ID}
-	tests := []struct {
-		name            string
-		platformModelID uint
-		want            int
-	}{
-		{name: "default-only model keeps default rate", platformModelID: platformModels[0].ID, want: 100},
-		{name: "overlapped model uses lower matched rate", platformModelID: platformModels[1].ID, want: 80},
-		{name: "pro-only model uses pro rate", platformModelID: platformModels[2].ID, want: 80},
-		{name: "unassigned model ignores user group discount", platformModelID: platformModels[3].ID, want: 100},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := repo.GetUserModelGroupRateMultiplierPercent(ctx, user.ID, tt.platformModelID, extraGroupIDs)
-			if err != nil {
-				t.Fatalf("GetUserModelGroupRateMultiplierPercent() error = %v", err)
-			}
-			if got != tt.want {
-				t.Fatalf("expected rate percent %d, got %d", tt.want, got)
-			}
-		})
 	}
 }
 
@@ -1964,8 +1851,6 @@ func openChannelSQLiteTestDB(t *testing.T) *gorm.DB {
 		&model.PermissionGroupModelRule{},
 		&model.PermissionGroupUserAccess{},
 		&model.User{},
-		&model.BillingPlan{},
-		&model.Subscription{},
 	); err != nil {
 		t.Fatalf("migrate channel tables: %v", err)
 	}

@@ -150,7 +150,7 @@ func resolveObservedOrHigherEstimatedTokens(observedTokens int64, estimatedToken
 	return 0
 }
 
-// estimateBillableInputTokens 估算一次上游调用实际计费的输入规模。有状态 Responses 续传只发送
+// estimateBillableInputTokens 估算一次上游调用实际消耗的输入规模。有状态 Responses 续传只发送
 // 本轮增量消息，但上游仍按完整上下文计输入，因此估算必须基于完整消息形状而非实际发送的消息。
 func estimateBillableInputTokens(input llm.GenerateInput, fullMessages []llm.Message) int64 {
 	if strings.TrimSpace(input.PreviousResponseID) == "" {

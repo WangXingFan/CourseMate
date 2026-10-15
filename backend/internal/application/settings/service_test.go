@@ -241,38 +241,6 @@ func TestValidateModelOptionPolicySettings(t *testing.T) {
 	}
 }
 
-func TestValidateBillingDisplayCurrencySetting(t *testing.T) {
-	for _, currency := range []string{"USD", "CNY"} {
-		if err := validatePatchItem(PatchItem{Namespace: "billing", Key: "display_currency", Value: currency}); err != nil {
-			t.Fatalf("expected %s to pass, got %v", currency, err)
-		}
-	}
-	if err := validatePatchItem(PatchItem{Namespace: "billing", Key: "display_currency", Value: "EUR"}); err == nil {
-		t.Fatal("expected unsupported display currency to fail")
-	}
-}
-
-func TestValidateEPayGatewaySetting(t *testing.T) {
-	for _, gateway := range []string{
-		"https://pay.example.com",
-		"https://pay.example.com/epay/",
-		"https://pay.example.com/epay",
-		"https://pay.example.com/epay/submit.php",
-	} {
-		if err := validatePatchItem(PatchItem{Namespace: "billing", Key: "epay_gateway_url", Value: gateway}); err != nil {
-			t.Fatalf("expected %q to pass, got %v", gateway, err)
-		}
-	}
-	for _, gateway := range []string{
-		"https://user:secret@pay.example.com/",
-		"https://pay.example.com/?token=secret",
-	} {
-		if err := validatePatchItem(PatchItem{Namespace: "billing", Key: "epay_gateway_url", Value: gateway}); err == nil {
-			t.Fatalf("expected %q to fail", gateway)
-		}
-	}
-}
-
 func TestRuntimeSettingsAppliesConversationDefaultModel(t *testing.T) {
 	runtimeSettings := NewRuntimeSettings(nil, nil, "test-data-encryption-key")
 	cfg := config.Config{}
