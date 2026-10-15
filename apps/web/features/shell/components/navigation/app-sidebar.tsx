@@ -17,6 +17,7 @@ import { NavRecents } from "@/features/shell/components/navigation/nav-recents";
 import { NavStarred } from "@/features/shell/components/navigation/nav-starred";
 import { NavUser } from "@/features/shell/components/navigation/nav-user";
 import { useOptionalAuthSession } from "@/shared/auth/auth-session-context";
+import { localizedBrandTitle } from "@/shared/config/branding";
 import { useBranding } from "@/shared/config/branding-provider";
 import { resolveAvatarImageSrc } from "@/shared/lib/avatar";
 
@@ -27,6 +28,7 @@ export function AppSidebar({
   onCreateConversation: () => void;
 }) {
   const t = useTranslations("common.navigation");
+  const tCommon = useTranslations("common");
   const branding = useBranding();
   const sessionUser = useOptionalAuthSession()?.user;
   const username = sessionUser?.username.trim() ?? "";
@@ -38,7 +40,7 @@ export function AppSidebar({
         role: sessionUser.role,
       }
     : {
-        name: branding.title,
+        name: localizedBrandTitle(branding.title, tCommon("appName")),
         email: "deeix.com",
         avatar: "",
       };

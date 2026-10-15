@@ -1,6 +1,6 @@
 # Frontend Biome policy
 
-DEEIX Chat uses Biome as the frontend linter. TypeScript 7 (`tsc --noEmit`) is responsible for type checking, and `scripts/check-architecture.mjs` enforces architecture boundaries that lint rules cannot express. ESLint, `typescript-eslint`, and `eslint-config-next` are not part of the frontend toolchain.
+CourseMate uses Biome as the frontend linter. TypeScript 7 (`tsc --noEmit`) is responsible for type checking, and `scripts/check-architecture.mjs` enforces architecture boundaries that lint rules cannot express. ESLint, `typescript-eslint`, and `eslint-config-next` are not part of the frontend toolchain.
 
 Architecture and layering rules are summarized in [README.md](./README.md) and enforced by `scripts/check-architecture.mjs`; this file only covers Biome.
 
