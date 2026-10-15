@@ -19,7 +19,7 @@ import { fetchWithHeaderTimeout, isTimeoutError } from "@/shared/lib/fetch-timeo
 
 // Desktop first-run screen, styled as a sibling of the login page:
 //   local   the bundled server, data on this machine, no account needed;
-//   remote  a DEEIX Chat server you or your team operate.
+//   remote  a CourseMate server you or your team operate.
 // Enterprise policy (enforced by the shell) can prefill or lock the address and
 // turn local mode off; this screen only reflects it.
 

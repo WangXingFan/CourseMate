@@ -150,6 +150,7 @@
     "format": "格式化",
     "loading": "加载编辑器…"
   },
+  "appName": "课知伴",
   "appVersion": {
     "title": "检测到新版本",
     "description": "刷新网页后即可使用最新版本。",

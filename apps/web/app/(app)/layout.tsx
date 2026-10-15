@@ -6,7 +6,10 @@ import { AppVersionGuard } from "@/features/shell";
 import { AppearancePreferencesProvider } from "@/features/settings";
 import { AppI18nProvider } from "@/i18n/app-i18n-provider";
 import { CapabilitiesProvider } from "@/shared/capabilities";
-import { BrandingProvider } from "@/shared/config/branding-provider";
+import {
+  BrandingDocumentMetadata,
+  BrandingProvider,
+} from "@/shared/config/branding-provider";
 import { DevtoolsBrandBanner } from "@/shared/components/devtools-brand-banner";
 import { ThemeBootstrapScript } from "@/shared/components/theme-bootstrap-script";
 import { ThemeProvider } from "@/shared/components/theme-provider";
@@ -78,6 +81,7 @@ export default function RootLayout({
       >
         <BrandingProvider>
           <AppI18nProvider>
+            <BrandingDocumentMetadata />
             <ThemeProvider>
               <AppearancePreferencesProvider>
                 <DesktopBootstrap>

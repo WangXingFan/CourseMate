@@ -92,7 +92,7 @@
   "navigation": "Settings navigation",
   "aboutPage": {
     "title": "About",
-    "description": "DEEIX Chat is a model access and conversation operations platform for multi-user AI applications. It unifies the model catalog, multi-provider routing, parameter governance, files and RAG, usage billing, identity security, audit, and operational settings in a single control plane.",
+    "description": "CourseMate is a model access and conversation operations platform for multi-user AI applications. It unifies the model catalog, multi-provider routing, parameter governance, files and RAG, usage billing, identity security, audit, and operational settings in a single control plane.",
     "details": "Product information",
     "product": "Product",
     "version": "Version",
@@ -104,7 +104,7 @@
     "social": "X",
     "blog": "Blog",
     "contact": "Contact & support",
-    "copyright": "© 2026 DEEIX. DEEIX Chat.",
+    "copyright": "© 2026 CourseMate.",
     "license": "Code licensed under the Apache License 2.0."
   },
   "appearance": "Appearance",
@@ -323,7 +323,7 @@
         "description": {
           "bootstrapVerified": "Setting your first email requires verifying ownership of the new address.",
           "saveOnly": "The email address will be updated after saving.",
-          "change": "DEEIX Chat will ask for the verification required by your account before saving this change."
+          "change": "CourseMate will ask for the verification required by your account before saving this change."
         },
         "labels": {
           "newEmail": "New email"

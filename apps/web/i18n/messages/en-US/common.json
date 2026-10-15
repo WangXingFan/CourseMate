@@ -150,6 +150,7 @@
     "format": "Format",
     "loading": "Loading editor..."
   },
+  "appName": "CourseMate",
   "appVersion": {
     "title": "New version available",
     "description": "Refresh the page to use the latest version.",

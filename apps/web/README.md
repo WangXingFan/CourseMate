@@ -1,6 +1,6 @@
-# DEEIX Chat Frontend
+# CourseMate Frontend
 
-`@deeix/web` 是 DEEIX Chat 的浏览器端工作区，基于 Next.js App Router 实现对话、文件、知识库、提示词、用户设置和管理员后台。前端负责界面、客户端状态和展示层流程；认证授权、模型路由、文件处理、计费、持久化和审计等业务规则由 Go 后端负责。
+`@deeix/web` 是 CourseMate 的浏览器端工作区，基于 Next.js App Router 实现对话、文件、知识库、提示词、用户设置和管理员后台。前端负责界面、客户端状态和展示层流程；认证授权、模型路由、文件处理、计费、持久化和审计等业务规则由 Go 后端负责。
 
 前端采用 Next.js 静态导出模式（`output: "export"`）。开发时使用 Next.js 开发服务器，构建后生成 `apps/web/out`，生产环境可由 Go 服务托管，也可以交给 Nginx、CDN 或其他静态文件服务。
 
