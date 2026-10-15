@@ -665,7 +665,7 @@ func (h *Handler) DeleteCurrentUserIdentity(c *gin.Context) {
 
 // StartProviderBindBridge godoc
 // @Summary 创建第三方身份绑定授权桥事务
-// @Description 为当前登录用户创建 PKCE 保护的绑定事务；外部身份源仅回调当前 DEEIX 实例，绑定在兑换时才生效
+// @Description 为当前登录用户创建 PKCE 保护的绑定事务；外部身份源仅回调当前 CourseMate 实例，绑定在兑换时才生效
 // @Tags auth
 // @Accept json
 // @Produce json
@@ -753,7 +753,7 @@ func (h *Handler) ExchangeProviderBindBridgeGrant(c *gin.Context) {
 
 // StartProviderAuthBridge godoc
 // @Summary 创建第三方登录授权桥事务
-// @Description 为 Web、App 或桌面公共客户端创建 PKCE 保护的 OAuth 授权事务；外部身份源仅回调当前 DEEIX 实例
+// @Description 为 Web、App 或桌面公共客户端创建 PKCE 保护的 OAuth 授权事务；外部身份源仅回调当前 CourseMate 实例
 // @Tags auth
 // @Accept json
 // @Produce json
