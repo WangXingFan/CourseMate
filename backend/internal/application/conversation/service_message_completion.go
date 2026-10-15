@@ -53,8 +53,6 @@ type persistInterruptedMessageGenerationInput struct {
 	Error                    error
 	TraceRecorder            *messageTraceRecorder
 	Route                    *channel.ResolvedRoute
-	EffectiveOptions         map[string]any
-	LLMCallCount             int
 	StartedAt                time.Time
 	ReuseUserMessage         bool
 }
@@ -69,13 +67,6 @@ type interruptedMessageGenerationMetrics struct {
 	CacheWriteTokens int64
 	ReasoningTokens  int64
 }
-
-const (
-	interruptedUsageSourceObserved  = "observed"
-	interruptedUsageSourceRecovered = "recovered"
-	interruptedUsageSourceEstimated = "estimated"
-	interruptedUsageSourceMixed     = "mixed"
-)
 
 func (s *Service) persistSuccessfulMessageGeneration(ctx context.Context, input persistMessageGenerationInput) error {
 	if input.ReuseUserMessage {
@@ -284,27 +275,6 @@ func resolveInterruptedMessageGenerationMetrics(input persistInterruptedMessageG
 	}
 }
 
-func interruptedUsageSource(input persistInterruptedMessageGenerationInput, metrics interruptedMessageGenerationMetrics) string {
-	hasObserved := input.Usage != (llm.Usage{})
-	hasEstimated := metrics.InputTokens > input.Usage.InputTokens ||
-		metrics.OutputTokens > input.Usage.OutputTokens ||
-		metrics.ReasoningTokens > input.Usage.ReasoningTokens
-	if input.UsageRecovered {
-		if hasEstimated {
-			return interruptedUsageSourceMixed
-		}
-		return interruptedUsageSourceRecovered
-	}
-	switch {
-	case hasObserved && hasEstimated:
-		return interruptedUsageSourceMixed
-	case hasObserved:
-		return interruptedUsageSourceObserved
-	default:
-		return interruptedUsageSourceEstimated
-	}
-}
-
 func interruptedCompletionInputTokens(input persistInterruptedMessageGenerationInput, metrics interruptedMessageGenerationMetrics) int64 {
 	if input.ReuseUserMessage {
 		return metrics.InputTokens
@@ -364,30 +334,19 @@ func retainedGenerationStatus(err error) string {
 	return "interrupted"
 }
 
-// buildInterruptedSendMessageResult 构造中断回复响应，供 handler 继续走计费和前端展示链路。
+// buildInterruptedSendMessageResult 构造中断回复响应，供 handler 继续走前端展示链路。
 func buildInterruptedSendMessageResult(input persistInterruptedMessageGenerationInput, metrics interruptedMessageGenerationMetrics) *SendMessageResult {
 	result := &SendMessageResult{
-		UserMessage:        *input.UserMessage,
-		AssistantMessage:   *input.AssistantMessage,
-		Billable:           true,
-		EffectiveOptions:   input.EffectiveOptions,
-		UsageSpeed:         input.Usage.Speed,
-		UsageServiceTier:   input.Usage.ServiceTier,
-		UsageSource:        interruptedUsageSource(input, metrics),
-		RawUsageJSON:       input.Usage.RawUsageJSON,
-		CacheWrite5mTokens: input.Usage.CacheWrite5mTokens,
-		CacheWrite1hTokens: input.Usage.CacheWrite1hTokens,
-		LLMCallCount:       input.LLMCallCount,
-		LatencyMS:          metrics.LatencyMS,
-		StartedAt:          input.StartedAt,
+		UserMessage:      *input.UserMessage,
+		AssistantMessage: *input.AssistantMessage,
+		LatencyMS:        metrics.LatencyMS,
+		StartedAt:        input.StartedAt,
 	}
 	if input.Route != nil {
 		result.UpstreamID = input.Route.UpstreamID
 		result.UpstreamName = input.Route.UpstreamName
 		result.PlatformModelName = input.Route.PlatformModelName
-		result.RoutedBindingCode = input.Route.BindingCode
 		result.UpstreamModelName = input.Route.UpstreamModel
-		result.UpstreamProtocol = input.Route.Protocol
 	}
 	return result
 }

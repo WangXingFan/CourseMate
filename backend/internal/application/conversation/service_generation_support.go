@@ -5,17 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
-	appbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/channel"
-	domainbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/billing"
 	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/ports/llm"
-	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/background"
-	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/tokenestimate"
-	"github.com/google/uuid"
-	"go.uber.org/zap"
 )
 
 func reasoningPayload(delta *llm.ReasoningDelta) *tracePayload {
@@ -43,14 +36,14 @@ func (s *Service) callCompactLLM(ctx context.Context, platformModelName string, 
 	if strings.TrimSpace(code) == "" {
 		return "", errors.New("compact model not configured")
 	}
-	billingCtx, hasBillingContext := ctx.Value(basicServiceBillingContextKey{}).(basicServiceBillingContext)
+	routeCtx, _ := ctx.Value(textTaskRouteContextKey{}).(textTaskRouteContext)
 
 	route, err := s.routeResolver.ResolveRoute(ctx, channel.ResolveRouteInput{
 		PlatformModelName: code,
 		TaskType:          channel.TaskTypeChat,
 		Scope:             channel.RouteScopeInternal,
-		UserID:            billingCtx.UserID,
-		ConversationID:    billingCtx.ConversationID,
+		UserID:            routeCtx.UserID,
+		ConversationID:    routeCtx.ConversationID,
 	})
 	if err != nil {
 		return "", fmt.Errorf("compact route resolve: %w", err)
@@ -87,179 +80,26 @@ func (s *Service) callCompactLLM(ctx context.Context, platformModelName string, 
 		AttributionReferer:  attributionReferer,
 		AttributionTitle:    attributionTitle,
 	}
-	startedAt := time.Now()
 	generateInput := buildTextTaskGenerateInput(route, s.cfg.Snapshot(), llmMsgs)
-	var authorization *domainbilling.UsageAuthorization
-	if hasBillingContext {
-		authorization, err = s.authorizeBasicServiceUsage(ctx, billingCtx.UserID, route.PlatformModelName, "compact")
-		if err != nil {
-			return "", fmt.Errorf("compact usage authorization: %w", err)
-		}
-	}
 	out, err := s.llmClient.Generate(ctx, routeConfig, generateInput)
 	if err != nil {
-		if releaseErr := s.releaseBasicServiceUsageAuthorization(ctx, authorization); releaseErr != nil {
-			return "", errors.Join(fmt.Errorf("compact llm generate: %w", err), fmt.Errorf("release compact usage authorization: %w", releaseErr))
-		}
 		return "", fmt.Errorf("compact llm generate: %w", err)
 	}
-	text := strings.TrimSpace(out.Text)
-	if hasBillingContext {
-		if err = s.recordBasicServiceUsage(ctx, basicServiceUsageInput{
-			Authorization:     authorization,
-			UserID:            billingCtx.UserID,
-			ConversationID:    billingCtx.ConversationID,
-			ServiceCode:       "compact",
-			ServiceName:       "上下文压缩",
-			PlatformModelName: route.PlatformModelName,
-			RoutedBindingCode: route.BindingCode,
-			ProviderProtocol:  route.Protocol,
-			UpstreamName:      route.UpstreamName,
-			UpstreamModelName: route.UpstreamModel,
-			CacheTimeout:      "5m",
-			Usage:             out.Usage,
-			FallbackMessages:  generateInput.Messages,
-			FallbackOutput:    text,
-			LatencyMS:         time.Since(startedAt).Milliseconds(),
-		}); err != nil {
-			return "", fmt.Errorf("compact usage settlement: %w", err)
-		}
-	}
-	return text, nil
+	return strings.TrimSpace(out.Text), nil
 }
 
-func withBasicServiceBillingContext(ctx context.Context, userID uint, conversationID uint) context.Context {
-	return context.WithValue(ctx, basicServiceBillingContextKey{}, basicServiceBillingContext{
+// textTaskRouteContextKey 承载内部文本任务（标题、标签、压缩）的路由上下文。
+type textTaskRouteContextKey struct{}
+
+type textTaskRouteContext struct {
+	UserID         uint
+	ConversationID uint
+}
+
+// withTextTaskRouteContext 为内部文本任务附带路由所需的用户与会话信息。
+func withTextTaskRouteContext(ctx context.Context, userID uint, conversationID uint) context.Context {
+	return context.WithValue(ctx, textTaskRouteContextKey{}, textTaskRouteContext{
 		UserID:         userID,
 		ConversationID: conversationID,
 	})
-}
-
-// authorizeBasicServiceUsage 为标题、标签和压缩等内部模型调用分配独立预算。
-func (s *Service) authorizeBasicServiceUsage(ctx context.Context, userID uint, platformModelName string, serviceCode string) (*domainbilling.UsageAuthorization, error) {
-	if s.billingSvc == nil {
-		return &domainbilling.UsageAuthorization{Mode: "self"}, nil
-	}
-	refNo := "basic_" + strings.TrimSpace(serviceCode) + "_" + uuid.NewString()
-	return s.billingSvc.AuthorizeUsage(ctx, userID, platformModelName, refNo)
-}
-
-// releaseBasicServiceUsageAuthorization 释放未产生可计费用量的内部调用预算。
-func (s *Service) releaseBasicServiceUsageAuthorization(ctx context.Context, authorization *domainbilling.UsageAuthorization) error {
-	if s.billingSvc == nil || authorization == nil {
-		return nil
-	}
-	return s.billingSvc.ReleaseUsageAuthorization(ctx, authorization)
-}
-
-type basicServiceUsageInput struct {
-	Authorization     *domainbilling.UsageAuthorization
-	UserID            uint
-	ConversationID    uint
-	ServiceCode       string
-	ServiceName       string
-	PlatformModelName string
-	RoutedBindingCode string
-	ProviderProtocol  string
-	UpstreamName      string
-	UpstreamModelName string
-	CacheTimeout      string
-	Usage             llm.Usage
-	FallbackMessages  []llm.Message
-	FallbackOutput    string
-	LatencyMS         int64
-}
-
-func (s *Service) recordBasicServiceUsage(ctx context.Context, input basicServiceUsageInput) error {
-	if s.billingSvc == nil || input.UserID == 0 || input.ConversationID == 0 || strings.TrimSpace(input.PlatformModelName) == "" {
-		return nil
-	}
-	billingCtx, cancel := background.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
-	// 基础服务常与主对话共享系统前缀，提示词全部命中缓存时非缓存输入为 0 是合法观测值，
-	// 只有上游完全没上报输入侧用量才用预估补齐。
-	inputTokens := input.Usage.InputTokens
-	if !input.Usage.HasObservedInput() {
-		inputTokens = estimatePromptTokens(input.FallbackMessages)
-	}
-	outputTokens := input.Usage.OutputTokens
-	if outputTokens <= 0 {
-		outputTokens = tokenestimate.Estimate(input.FallbackOutput)
-	}
-	item := appbilling.ServiceUsageInput{
-		ServiceCode:        strings.TrimSpace(input.ServiceCode),
-		ServiceName:        strings.TrimSpace(input.ServiceName),
-		PlatformModelName:  strings.TrimSpace(input.PlatformModelName),
-		UpstreamModelName:  strings.TrimSpace(input.UpstreamModelName),
-		ProviderProtocol:   strings.TrimSpace(input.ProviderProtocol),
-		CacheTimeout:       input.CacheTimeout,
-		UsageSpeed:         strings.TrimSpace(input.Usage.Speed),
-		UsageServiceTier:   strings.TrimSpace(input.Usage.ServiceTier),
-		InputTokens:        inputTokens,
-		CacheReadTokens:    input.Usage.CacheReadTokens,
-		CacheWriteTokens:   input.Usage.CacheWriteTokens,
-		CacheWrite5mTokens: input.Usage.CacheWrite5mTokens,
-		CacheWrite1hTokens: input.Usage.CacheWrite1hTokens,
-		OutputTokens:       outputTokens,
-		ReasoningTokens:    input.Usage.ReasoningTokens,
-		CallCount:          1,
-	}
-	pricingInput := appbilling.UsagePricingInput{
-		Authorization:      input.Authorization,
-		UserID:             input.UserID,
-		ConversationID:     input.ConversationID,
-		PlatformModelName:  item.PlatformModelName,
-		RoutedBindingCode:  strings.TrimSpace(input.RoutedBindingCode),
-		ProviderProtocol:   item.ProviderProtocol,
-		UpstreamName:       strings.TrimSpace(input.UpstreamName),
-		UpstreamModelName:  strings.TrimSpace(input.UpstreamModelName),
-		CacheTimeout:       item.CacheTimeout,
-		UsageSpeed:         strings.TrimSpace(input.Usage.Speed),
-		UsageServiceTier:   strings.TrimSpace(input.Usage.ServiceTier),
-		ServiceOnly:        true,
-		InputTokens:        item.InputTokens,
-		CacheReadTokens:    item.CacheReadTokens,
-		CacheWriteTokens:   item.CacheWriteTokens,
-		CacheWrite5mTokens: item.CacheWrite5mTokens,
-		CacheWrite1hTokens: item.CacheWrite1hTokens,
-		OutputTokens:       item.OutputTokens,
-		ReasoningTokens:    item.ReasoningTokens,
-		CallCount:          item.CallCount,
-		LatencyMS:          input.LatencyMS,
-		ServiceItems:       []appbilling.ServiceUsageInput{item},
-		RawUsageJSON:       input.Usage.RawUsageJSON,
-	}
-	var ledger *domainbilling.UsageLedger
-	err := retryUsageBillingOperation(billingCtx, func() error {
-		var buildErr error
-		ledger, buildErr = s.billingSvc.BuildUsageLedger(billingCtx, pricingInput)
-		return buildErr
-	})
-	if err != nil {
-		err = s.markUsageAuthorizationForReconciliation(billingCtx, input.Authorization, "basic_build_usage_failed", err)
-		if s.logger != nil {
-			s.logger.Warn("basic_service_usage_build_failed",
-				zap.Uint("user_id", input.UserID),
-				zap.Uint("conversation_id", input.ConversationID),
-				zap.String("service", item.ServiceCode),
-				zap.String("model", item.PlatformModelName),
-				zap.Error(err),
-			)
-		}
-		return err
-	}
-	if err := s.recordUsageWithRetry(billingCtx, ledger, input.Authorization); err != nil {
-		err = s.markUsageAuthorizationForReconciliation(billingCtx, input.Authorization, "basic_settle_usage_failed", err)
-		if s.logger != nil {
-			s.logger.Warn("basic_service_usage_record_failed",
-				zap.Uint("user_id", input.UserID),
-				zap.Uint("conversation_id", input.ConversationID),
-				zap.String("service", item.ServiceCode),
-				zap.String("model", item.PlatformModelName),
-				zap.Error(err),
-			)
-		}
-		return err
-	}
-	return nil
 }

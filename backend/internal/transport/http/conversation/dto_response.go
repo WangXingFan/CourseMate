@@ -338,14 +338,6 @@ type MessageProcessTraceResponse struct {
 	Events        []MessageTraceEventResponse `json:"events,omitempty"`
 }
 
-type MessageBillingCostResponse struct {
-	BillingMode         string  `json:"billingMode"`
-	BilledCurrency      string  `json:"billedCurrency"`
-	BilledNanousd       int64   `json:"billedNanousd"`
-	BilledUSD           float64 `json:"billedUSD"`
-	PricingSnapshotJSON string  `json:"pricingSnapshotJSON"`
-}
-
 func toMessageProcessTraceResponse(trace *model.MessageProcessTrace) *MessageProcessTraceResponse {
 	if trace == nil {
 		return nil
@@ -505,7 +497,6 @@ type MessageResponse struct {
 	MyFeedback        string                           `json:"myFeedback"`
 	ThumbsUpCount     int64                            `json:"thumbsUpCount"`
 	ThumbsDownCount   int64                            `json:"thumbsDownCount"`
-	BillingCost       *MessageBillingCostResponse      `json:"billingCost,omitempty"`
 	KnowledgeSources  []MessageKnowledgeSourceResponse `json:"knowledgeSources,omitempty"`
 	ProcessTrace      *MessageProcessTraceResponse     `json:"processTrace,omitempty"`
 	Moderation        *MessageModerationResponse       `json:"moderation,omitempty"`
@@ -597,41 +588,6 @@ func isUpstreamNameField(key string, parentKey string) bool {
 	return false
 }
 
-func messageBillingMode(snapshotJSON string) string {
-	snapshot := map[string]any{}
-	if err := json.Unmarshal([]byte(strings.TrimSpace(snapshotJSON)), &snapshot); err != nil {
-		return ""
-	}
-	mode, _ := snapshot["billing_mode"].(string)
-	return strings.TrimSpace(mode)
-}
-
-func messageNanousdToUSD(value int64) float64 {
-	return float64(value) / 1_000_000_000
-}
-
-func toMessageBillingCostResponse(m model.Message) *MessageBillingCostResponse {
-	snapshotJSON := strings.TrimSpace(m.PricingSnapshot)
-	if snapshotJSON == "" {
-		return nil
-	}
-	billingMode := messageBillingMode(snapshotJSON)
-	if billingMode == "self" {
-		return nil
-	}
-	currency := strings.TrimSpace(m.BilledCurrency)
-	if currency == "" {
-		currency = "USD"
-	}
-	return &MessageBillingCostResponse{
-		BillingMode:         billingMode,
-		BilledCurrency:      currency,
-		BilledNanousd:       m.BilledNanousd,
-		BilledUSD:           messageNanousdToUSD(m.BilledNanousd),
-		PricingSnapshotJSON: snapshotJSON,
-	}
-}
-
 // toMessageResponseWithRun 将消息和同 run 的模型快照合并成前端展示 DTO。
 func toMessageResponseWithRun(m model.Message, run model.Run) MessageResponse {
 	return toMessageResponseWithRunAndFallback(m, run, "")
@@ -688,7 +644,6 @@ func toMessageResponseWithRunAndFallback(m model.Message, run model.Run, fallbac
 		MyFeedback:        m.MyFeedback,
 		ThumbsUpCount:     m.ThumbsUpCount,
 		ThumbsDownCount:   m.ThumbsDownCount,
-		BillingCost:       toMessageBillingCostResponse(m),
 		KnowledgeSources:  toMessageKnowledgeSourceResponses(knowledgeSources),
 		ProcessTrace:      toMessageProcessTraceResponse(processTrace),
 		Moderation:        toMessageModerationResponse(m, run),

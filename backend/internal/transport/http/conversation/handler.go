@@ -7,11 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
 	appconversation "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/conversation"
 	appprocessing "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/processing"
 	appupload "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/upload"
-	domainbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/billing"
 	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/lifecycle"
@@ -117,10 +115,6 @@ var sendMessageErrorStatuses = []sendMessageErrorStatus{
 	{err: appconversation.ErrMessageGenerationCanceled, status: http.StatusBadRequest},
 	{err: appconversation.ErrMessageGenerationInterrupted, status: http.StatusServiceUnavailable},
 	{err: appconversation.ErrDuplicateMessageGenerationRun, status: http.StatusConflict},
-	{err: billing.ErrUsageConcurrencyLimitExceeded, status: http.StatusTooManyRequests},
-	{err: billing.ErrUsageReservationConflict, status: http.StatusConflict},
-	{err: billing.ErrUsageBalanceInsufficient, status: http.StatusPaymentRequired},
-	{err: billing.ErrModelPricingRequired, status: http.StatusPaymentRequired},
 }
 
 func describeSendMessageError(err error) response.Description {
@@ -173,16 +167,12 @@ func streamErrorPayloadWithResult(err error, result *appconversation.SendMessage
 
 // moderationBlockedStreamPayload 仅保留用于恢复/重连时的组装。
 // 实时流在 ApplyRunBlock 提交后通过 OnEvent 接收 moderation_blocked。
-// 此时运行已定稿，可直接按结算结论标注"拦截后上游用量照常计费"。
-func moderationBlockedStreamPayload(result *appconversation.SendMessageResult, authorization *domainbilling.UsageAuthorization) map[string]any {
+func moderationBlockedStreamPayload(result *appconversation.SendMessageResult) map[string]any {
 	payload := map[string]any{
 		"type": "moderation_blocked",
 	}
 	if result == nil {
 		return payload
-	}
-	if billedReason := appconversation.ModerationBlockedBilledReason(result, authorization); billedReason != "" {
-		payload["billedReason"] = billedReason
 	}
 	if result.Moderation != nil && result.Moderation.Blocked {
 		payload["eventID"] = result.Moderation.EventID

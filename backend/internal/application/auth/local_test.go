@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
 	domainuser "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/user"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/repository"
@@ -66,12 +65,6 @@ func (r *localRepo) RecordAuthEvent(_ context.Context, input repository.AuthEven
 	return nil
 }
 
-type noSubscription struct{}
-
-func (noSubscription) GetCurrentSubscriptionSnapshot(_ context.Context, _ uint, _ time.Time) (*billing.UserSubscriptionSnapshot, error) {
-	return nil, nil
-}
-
 func newLocalFixture(t *testing.T) (*Service, *localRepo) {
 	t.Helper()
 	repo := &localRepo{users: map[string]*domainuser.User{}}
@@ -80,7 +73,6 @@ func newLocalFixture(t *testing.T) (*Service, *localRepo) {
 		t.Fatal(err)
 	}
 	service := newTestService(cfg, repo, nil)
-	service.SetSubscriptionResolver(noSubscription{})
 	return service, repo
 }
 

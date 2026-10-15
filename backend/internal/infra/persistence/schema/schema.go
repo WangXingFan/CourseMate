@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"errors"
-
 	domainchannel "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/channel"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/models"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/channelconfig"
@@ -39,17 +37,6 @@ func Models() []any {
 		&models.ContentModerationDailyStat{},
 		&models.ChatRunEvent{},
 		&models.ChatContextRecord{},
-		&models.BillingPlan{},
-		&models.BillingPrice{},
-		&models.Subscription{},
-		&models.PaymentOrder{},
-		&models.BillingAccount{},
-		&models.BalanceTransaction{},
-		&models.UsageReservation{},
-		&models.RedemptionCode{},
-		&models.Redemption{},
-		&models.ModelPricing{},
-		&models.UsageLedger{},
 		&models.AuditLog{},
 		&models.KnowledgeBase{},
 		&models.KnowledgeBaseFile{},
@@ -121,11 +108,11 @@ func Migrate(db *gorm.DB) error {
 	if err := backfillContextArtifactMessageIDs(db); err != nil {
 		return err
 	}
-	return backfillUsageLedgerBillingAt(db)
+	return nil
 }
 
 // invalidateUnsignedFileEmbeddings 使旧版向量进入现有的重建索引流程。
-// 无签名的消息与记忆向量在自然重新生成前保持隐藏。
+// 无签名的向量在自然重新生成前保持隐藏。
 func invalidateUnsignedFileEmbeddings(db *gorm.DB) error {
 	return db.Exec(`
 		UPDATE file_objects
@@ -185,39 +172,6 @@ func backfillContextArtifactMessageIDs(db *gorm.DB) error {
 				WHERE owners.record_id = chat_context_records.id
 			)
 	`).Error
-}
-
-func backfillUsageLedgerBillingAt(db *gorm.DB) error {
-	if !db.Migrator().HasTable(&models.UsageLedger{}) || !db.Migrator().HasColumn(&models.UsageLedger{}, "billing_at") {
-		return nil
-	}
-	return db.Model(&models.UsageLedger{}).
-		Where("billing_at IS NULL").
-		Update("billing_at", gorm.Expr("created_at")).Error
-}
-
-// CleanupRemovedColumns 删除已从 Gorm 模型中移除的列。
-func CleanupRemovedColumns(db *gorm.DB) error {
-	// discount_percent 从未进入任何计价路径，随字段移除一并清理。
-	if err := dropColumns(db, &models.BillingPlan{}, []string{"discount_percent"}); err != nil {
-		return err
-	}
-	return nil
-}
-
-func dropColumns(db *gorm.DB, table any, columns []string) error {
-	if !db.Migrator().HasTable(table) {
-		return nil
-	}
-	for _, column := range columns {
-		if !db.Migrator().HasColumn(table, column) {
-			continue
-		}
-		if err := db.Migrator().DropColumn(table, column); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 // SeedLLMSettings 在默认 LLM 运行时设置不存在时插入它们。
@@ -333,118 +287,10 @@ func seedInitialDefaultModelAccessRule(db *gorm.DB, defaultGroupID uint) error {
 	return db.Where(rule).FirstOrCreate(&rule).Error
 }
 
-// SeedBillingCatalog 在计费目录为空时插入默认套餐与价格。
-func SeedBillingCatalog(db *gorm.DB) error {
-	defaultGroupID, err := defaultPermissionGroupID(db)
-	if err != nil {
-		return err
-	}
-	var planCount int64
-	if err := db.Model(&models.BillingPlan{}).Count(&planCount).Error; err != nil {
-		return err
-	}
-	var priceCount int64
-	if err := db.Model(&models.BillingPrice{}).Count(&priceCount).Error; err != nil {
-		return err
-	}
-	if planCount > 0 || priceCount > 0 {
-		return bindBillingPlansToDefaultGroup(db, defaultGroupID)
-	}
-
-	plans := []models.BillingPlan{
-		{
-			Code:                "free",
-			Name:                "Free",
-			Description:         "默认免费套餐",
-			FeatureJSON:         `{"priority":"shared"}`,
-			PeriodCreditNanousd: 1000000000,
-			SortOrder:           10,
-			IsActive:            true,
-			PermissionGroupID:   copyUintPointer(defaultGroupID),
-		},
-		{
-			Code:                "pro",
-			Name:                "Pro",
-			Description:         "轻度使用套餐",
-			FeatureJSON:         `{"priority":"standard"}`,
-			PeriodCreditNanousd: 30000000000,
-			SortOrder:           20,
-			IsActive:            true,
-			PermissionGroupID:   copyUintPointer(defaultGroupID),
-		},
-		{
-			Code:                "max",
-			Name:                "Max",
-			Description:         "中度使用套餐",
-			FeatureJSON:         `{"priority":"advanced"}`,
-			PeriodCreditNanousd: 75000000000,
-			SortOrder:           30,
-			IsActive:            true,
-			PermissionGroupID:   copyUintPointer(defaultGroupID),
-		},
-		{
-			Code:                "ultra",
-			Name:                "Ultra",
-			Description:         "重度使用套餐",
-			FeatureJSON:         `{"priority":"premium"}`,
-			PeriodCreditNanousd: 300000000000,
-			SortOrder:           40,
-			IsActive:            true,
-			PermissionGroupID:   copyUintPointer(defaultGroupID),
-		},
-	}
-	return db.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Create(&plans).Error; err != nil {
-			return err
-		}
-
-		planIDByCode := make(map[string]uint, len(plans))
-		for _, item := range plans {
-			planIDByCode[item.Code] = item.ID
-		}
-
-		prices := []models.BillingPrice{
-			{PlanID: planIDByCode["free"], Code: "free-default", BillingInterval: models.BillingIntervalLifetime, Currency: "USD", AmountCents: 0, IsActive: true, IsDefault: true},
-			{PlanID: planIDByCode["pro"], Code: "pro-monthly", BillingInterval: models.BillingIntervalMonth, Currency: "USD", AmountCents: 2000, IsActive: true, IsDefault: true},
-			{PlanID: planIDByCode["max"], Code: "max-monthly", BillingInterval: models.BillingIntervalMonth, Currency: "USD", AmountCents: 5000, IsActive: true, IsDefault: true},
-			{PlanID: planIDByCode["ultra"], Code: "ultra-monthly", BillingInterval: models.BillingIntervalMonth, Currency: "USD", AmountCents: 20000, IsActive: true, IsDefault: true},
-		}
-		return tx.Create(&prices).Error
-	})
-}
-
-func defaultPermissionGroupID(db *gorm.DB) (*uint, error) {
-	var group models.PermissionGroup
-	if err := db.Where("is_default = ?", true).Order("id ASC").First(&group).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return &group.ID, nil
-}
-
-func bindBillingPlansToDefaultGroup(db *gorm.DB, defaultGroupID *uint) error {
-	if defaultGroupID == nil {
-		return nil
-	}
-	return db.Model(&models.BillingPlan{}).
-		Where("permission_group_id IS NULL").
-		Update("permission_group_id", *defaultGroupID).Error
-}
-
 func clearDefaultPermissionGroupUsers(db *gorm.DB) error {
 	defaultGroupIDs := db.Model(&models.PermissionGroup{}).
 		Select("id").
 		Where("is_default = ?", true)
 	return db.Where("group_id IN (?)", defaultGroupIDs).
 		Delete(&models.PermissionGroupUserAccess{}).Error
-}
-
-func copyUintPointer(value *uint) *uint {
-	if value == nil {
-		return nil
-	}
-	copied := *value
-	return &copied
 }

@@ -15,7 +15,6 @@ const (
 	settingCodeInvalidKey               = "settings.invalid_key"
 	settingCodeInvalidValue             = "settings.invalid_value"
 	settingCodeSMTPInvalid              = "settings.smtp_invalid"
-	settingCodeBillingPaymentInvalid    = "settings.billing_payment_invalid"
 	settingCodeEmbeddingInvalid         = "settings.embedding_invalid"
 	settingCodeExtractInvalid           = "settings.extract_invalid"
 	settingCodeModelOptionPolicyInvalid = "settings.model_option_policy_invalid"
@@ -88,7 +87,6 @@ var settingContracts = map[string]*apperr.Error{
 	settingCodeInvalidKey:               apperr.NewMasked(settingCodeInvalidKey, "invalid setting key", "invalid setting key"),
 	settingCodeInvalidValue:             apperr.NewMasked(settingCodeInvalidValue, "invalid setting value", "invalid setting value"),
 	settingCodeSMTPInvalid:              apperr.NewMasked(settingCodeSMTPInvalid, "invalid SMTP settings", "invalid SMTP settings"),
-	settingCodeBillingPaymentInvalid:    apperr.NewMasked(settingCodeBillingPaymentInvalid, "invalid billing payment settings", "invalid billing payment settings"),
 	settingCodeEmbeddingInvalid:         apperr.NewMasked(settingCodeEmbeddingInvalid, "invalid embedding settings", "invalid embedding settings"),
 	settingCodeExtractInvalid:           apperr.NewMasked(settingCodeExtractInvalid, "invalid file extraction settings", "invalid file extraction settings"),
 	settingCodeModelOptionPolicyInvalid: apperr.NewMasked(settingCodeModelOptionPolicyInvalid, "invalid model option policy settings", "invalid model option policy settings"),
@@ -152,8 +150,6 @@ func settingValidationCode(namespace string, key string) string {
 	switch namespace + ":" + key {
 	case "auth:smtp_host", "auth:smtp_port", "auth:smtp_username", "auth:smtp_password", "auth:smtp_from":
 		return settingCodeSMTPInvalid
-	case "billing:payment_providers", "billing:epay_gateway_url", "billing:epay_types", "billing:epay_pid", "billing:epay_key", "billing:stripe_publishable_key", "billing:stripe_secret_key", "billing:stripe_webhook_secret":
-		return settingCodeBillingPaymentInvalid
 	case "chat:model_option_policy_mode", "chat:model_option_allowed_paths", "chat:model_option_denied_paths":
 		return settingCodeModelOptionPolicyInvalid
 	case "file:embedding_enabled", "file:embedding_host", "file:embedding_protocol", "file:embedding_key", "file:embedding_timeout_seconds", "file:embedding_output_dimensions", "file:embedding_normalize", "file:embedding_model_signature", "file:embed_trigger_on_upload", "file:embed_chunk_size_tokens", "file:embed_chunk_overlap_tokens", "file:embed_batch_size":

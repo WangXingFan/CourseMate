@@ -17,16 +17,6 @@ var (
 	ErrInvalidInput = errors.New("invalid input")
 	// ErrRefreshTokenReuse 表示检测到已轮换的刷新令牌在宽限期外被再次使用；会话已被整体吊销。
 	ErrRefreshTokenReuse = errors.New("refresh token reuse detected")
-	// ErrInsufficientBalance 表示余额不足，无法完成扣费。
-	ErrInsufficientBalance = errors.New("insufficient balance")
-	// ErrUsageReservationLimitExceeded 表示用户活跃付费调用数量达到上限。
-	ErrUsageReservationLimitExceeded = errors.New("usage reservation limit exceeded")
-	// ErrRedemptionUnavailable 表示兑换码不可用。
-	ErrRedemptionUnavailable = errors.New("redemption unavailable")
-	// ErrRedemptionExhausted 表示兑换码总次数耗尽。
-	ErrRedemptionExhausted = errors.New("redemption exhausted")
-	// ErrRedemptionUserLimitExceeded 表示用户达到兑换次数上限。
-	ErrRedemptionUserLimitExceeded = errors.New("redemption user limit exceeded")
 	// ErrLastSuperAdminRoleChange 表示操作会移除最后一个超级管理员。
 	ErrLastSuperAdminRoleChange = errors.New("last superadmin role change not allowed")
 	// ErrFileProcessingQueueFull 表示文件处理队列已达容量上限，暂时无法接收新任务。

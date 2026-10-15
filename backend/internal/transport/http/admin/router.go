@@ -7,18 +7,12 @@ import (
 )
 
 // RegisterRoutes 注册后台管理路由（由管理员中间件保护）。
-// 订单与兑换记录属于计费门禁，账号与权限组只在多用户部署里有对象；能力键的含义见 docs/ARCHITECTURE.md §4。
+// 账号与权限组只在多用户部署里有对象；能力键的含义见 docs/ARCHITECTURE.md §4。
 func (m *Module) RegisterRoutes(adminGroup *gin.RouterGroup, gate middleware.FeatureGate) {
 	adminGroup.GET("/audit-logs", m.Handler.ListAuditLogs)
-	adminGroup.GET("/usage-statistics", m.Handler.GetUsageStatistics)
-	adminGroup.GET("/call-logs", m.Handler.ListUsageLogs)
 	adminGroup.GET("/conversation-events", m.Handler.ListConversationEvents)
 	adminGroup.GET("/conversation-events/:id", m.Handler.GetConversationEvent)
 	adminGroup.POST("/logs/cleanup", m.Handler.CleanupLogs)
-
-	billingGating := adminGroup.Group("", gate.Require("billingGating"))
-	billingGating.GET("/payment-orders", m.Handler.ListPaymentOrders)
-	billingGating.GET("/redemptions", m.Handler.ListRedemptions)
 
 	multiUser := adminGroup.Group("", gate.Require("multiUser"))
 	multiUser.POST("/users", m.Handler.CreateUser)

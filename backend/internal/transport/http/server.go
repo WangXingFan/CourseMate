@@ -17,7 +17,6 @@ import (
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/response"
 	adminhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/admin"
 	authhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/auth"
-	billinghttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/billing"
 	channelhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/channel"
 	contentmoderationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/contentmoderation"
 	conversationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/conversation"
@@ -51,7 +50,6 @@ type Modules struct {
 	AuthService       middleware.SessionValidator
 	Channel           *channelhttp.Module
 	Conversation      *conversationhttp.Module
-	Billing           *billinghttp.Module
 	Admin             *adminhttp.Module
 	ContentModeration *contentmoderationhttp.Module
 	KnowledgeBase     *knowledgebasehttp.Module
@@ -67,7 +65,6 @@ type Modules struct {
 func (m Modules) hasAdminRoutes() bool {
 	return m.Admin != nil ||
 		m.Auth != nil ||
-		m.Billing != nil ||
 		m.Channel != nil ||
 		m.Settings != nil ||
 		m.KnowledgeBase != nil ||
@@ -147,9 +144,6 @@ func NewEngine(cfg *config.Runtime, log *zap.Logger, modules Modules, hc HealthC
 		if modules.Settings != nil {
 			modules.Settings.RegisterPublicRoutes(publicAuth)
 		}
-		if modules.Billing != nil {
-			modules.Billing.RegisterPublicRoutes(publicAuth, gate)
-		}
 	}
 
 	authRequired := api.Group("")
@@ -164,9 +158,6 @@ func NewEngine(cfg *config.Runtime, log *zap.Logger, modules Modules, hc HealthC
 	}
 	if modules.Channel != nil {
 		modules.Channel.RegisterRoutes(authRequired)
-	}
-	if modules.Billing != nil {
-		modules.Billing.RegisterRoutes(authRequired, gate)
 	}
 	if modules.KnowledgeBase != nil {
 		modules.KnowledgeBase.RegisterRoutes(authRequired)
@@ -191,9 +182,6 @@ func NewEngine(cfg *config.Runtime, log *zap.Logger, modules Modules, hc HealthC
 		}
 		if modules.ContentModeration != nil {
 			modules.ContentModeration.RegisterRoutes(adminGroup, gate)
-		}
-		if modules.Billing != nil {
-			modules.Billing.RegisterAdminRoutes(adminGroup, gate)
 		}
 		if modules.Channel != nil {
 			modules.Channel.RegisterAdminRoutes(adminGroup)

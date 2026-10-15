@@ -19,14 +19,10 @@ type AuthEventInput struct {
 	DetailJSON string
 }
 
-// CreateWithCredentialInput 描述原子创建用户、凭据与订阅的输入。
+// CreateWithCredentialInput 描述原子创建用户与凭据的输入。
 type CreateWithCredentialInput struct {
-	User                *domainuser.User
-	Credential          domainuser.Credential
-	SubscriptionPlanID  uint
-	SubscriptionPriceID uint
-	SubscriptionEndAt   *time.Time
-	AutoRenew           bool
+	User       *domainuser.User
+	Credential domainuser.Credential
 }
 
 // CreateWithCredentialAndIdentityInput 描述原子创建用户、凭据与第三方身份的输入。

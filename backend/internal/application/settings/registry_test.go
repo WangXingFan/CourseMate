@@ -125,7 +125,7 @@ func changedConfigFields(cfg config.Config) []string {
 }
 
 func TestSettingRegistryDerivedViews(t *testing.T) {
-	for _, namespace := range []string{"auth", "billing", "chat", "storage", "file", "extract", "circuit", "knowledgebase", "desktop"} {
+	for _, namespace := range []string{"auth", "chat", "storage", "file", "extract", "circuit", "knowledgebase", "desktop"} {
 		if !IsValidNamespace(namespace) {
 			t.Fatalf("expected namespace %q to be valid", namespace)
 		}
@@ -137,7 +137,7 @@ func TestSettingRegistryDerivedViews(t *testing.T) {
 	if !IsSensitiveSetting("auth", "smtp_password") || !IsSensitiveSetting(" file ", " embedding_key ") {
 		t.Fatalf("expected credential settings to be sensitive")
 	}
-	if IsSensitiveSetting("auth", "turnstile_site_key") || IsSensitiveSetting("billing", "stripe_publishable_key") {
+	if IsSensitiveSetting("auth", "turnstile_site_key") {
 		t.Fatalf("public keys must not be classified as sensitive")
 	}
 	if IsSensitiveSetting("auth", "unknown_secret") {
@@ -170,13 +170,11 @@ func TestValidatePatchItemUsesRegistry(t *testing.T) {
 		{name: "int out of range", item: PatchItem{Namespace: "auth", Key: "token_ttl_hours", Value: "0"}, wantCode: settingCodeInvalidValue, wantRule: "integer_range"},
 		{name: "int trimmed", item: PatchItem{Namespace: "auth", Key: "token_ttl_hours", Value: " 24 "}},
 		{name: "bool garbage", item: PatchItem{Namespace: "chat", Key: "context_compact_enabled", Value: "yes"}, wantCode: settingCodeInvalidValue, wantRule: "bool"},
-		{name: "enum", item: PatchItem{Namespace: "billing", Key: "mode", Value: "free"}, wantCode: settingCodeInvalidValue, wantRule: "enum"},
 		{name: "embedding dimensions policy send", item: PatchItem{Namespace: "file", Key: "embedding_dimensions_policy", Value: config.EmbeddingDimensionsPolicySend}},
 		{name: "embedding dimensions policy omit", item: PatchItem{Namespace: "file", Key: "embedding_dimensions_policy", Value: config.EmbeddingDimensionsPolicyOmit}},
 		{name: "embedding dimensions policy invalid", item: PatchItem{Namespace: "file", Key: "embedding_dimensions_policy", Value: "auto"}, wantCode: settingCodeInvalidValue, wantRule: "enum"},
 		{name: "optional empty int64", item: PatchItem{Namespace: "file", Key: "image_max_bytes", Value: ""}},
 		{name: "optional int64 below min", item: PatchItem{Namespace: "file", Key: "image_max_bytes", Value: "0"}, wantCode: settingCodeInvalidValue, wantRule: "optional_integer_min"},
-		{name: "epay gateway", item: PatchItem{Namespace: "billing", Key: "epay_gateway_url", Value: "ftp://pay.example.com"}, wantCode: settingCodeBillingPaymentInvalid, wantRule: "epay_url"},
 		{name: "login path", item: PatchItem{Namespace: "auth", Key: "login_default_next_path", Value: "//evil"}, wantCode: settingCodeInvalidValue, wantRule: "local_path"},
 		{name: "desktop download url", item: PatchItem{Namespace: "desktop", Key: "download_url", Value: " https://example.com/download?ref=web "}},
 		{name: "desktop download url empty", item: PatchItem{Namespace: "desktop", Key: "download_url", Value: " "}, wantCode: settingCodeInvalidValue, wantRule: "required"},

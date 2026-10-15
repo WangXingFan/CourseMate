@@ -76,14 +76,14 @@ func TestForkConversationFromMessageBuildsAtomicFork(t *testing.T) {
 			{
 				ID: rootID, ConversationID: 10, UserID: 7, PublicID: "msg_root",
 				Role: "user", ContentType: "text", Content: "hello", BranchReason: "retry",
-				SourceMessageID: &sourceID, RunID: "run-root", BilledNanousd: 50, PricingSnapshot: `{"input":1}`,
+				SourceMessageID: &sourceID, RunID: "run-root",
 				Status: "success",
 			},
 			{
 				ID: leafID, ConversationID: 10, UserID: 7, PublicID: "msg_leaf", ParentMessageID: &rootID,
 				Role: "assistant", ContentType: "text", Content: "world", ReasoningContent: "reasoning",
 				BranchReason: "edit", SourceMessageID: &sourceID, RunID: "run-leaf",
-				InputTokens: 10, OutputTokens: 20, BilledNanousd: 100, PricingSnapshot: `{"output":1}`,
+				InputTokens: 10, OutputTokens: 20,
 				Status: "interrupted", EditedAt: &editedAt,
 			},
 		},
@@ -114,9 +114,6 @@ func TestForkConversationFromMessageBuildsAtomicFork(t *testing.T) {
 		}
 		if item.Message.BranchReason != "default" || item.Message.SourceMessageID != nil || item.Message.RunID != "" {
 			t.Fatalf("message %d retained source branch metadata: %+v", index, item.Message)
-		}
-		if item.Message.BilledNanousd != 0 || item.Message.PricingSnapshot != "" {
-			t.Fatalf("message %d retained source billing data: %+v", index, item.Message)
 		}
 	}
 	if repo.createInput.Messages[0].SourceParentMessageID != nil {

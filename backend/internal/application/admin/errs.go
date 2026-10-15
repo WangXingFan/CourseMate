@@ -57,10 +57,6 @@ var (
 	ErrDefaultPermissionGroupDeleteNotAllowed = apperr.NewMasked("admin.default_permission_group_delete_not_allowed", "default permission group cannot be deleted", "default permission group delete not allowed")
 	// ErrDefaultPermissionGroupUsersImmutable 表示默认权限组成员由系统隐式维护，不可手动配置。
 	ErrDefaultPermissionGroupUsersImmutable = apperr.New("admin.default_permission_group_users_implicit", "default permission group users are implicit")
-	// ErrInvalidPermissionGroupRateMultiplier 表示权限组计费倍率不合法。
-	ErrInvalidPermissionGroupRateMultiplier = apperr.New("admin.invalid_permission_group_rate_multiplier", "invalid permission group rate multiplier")
-	// ErrPermissionGroupReferencedByPlan 表示权限组被计费套餐引用，不可删除。
-	ErrPermissionGroupReferencedByPlan = apperr.NewMasked("admin.permission_group_referenced_by_plan", "permission group is referenced by a billing plan", "permission group is referenced by billing plan")
 	// ErrInvalidPermissionGroupModels 表示权限组绑定的平台模型集合非法。
 	ErrInvalidPermissionGroupModels = apperr.New("admin.invalid_permission_group_models", "invalid permission group models")
 	// ErrInvalidPermissionGroupUsers 表示权限组绑定的用户集合非法。

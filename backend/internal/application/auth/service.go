@@ -16,7 +16,6 @@ import (
 	"time"
 
 	appaudit "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/audit"
-	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
 	appstorage "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/objectstorage"
 	userapp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/user"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/userview"
@@ -38,16 +37,15 @@ const accessTokenSessionClockSkew = 2 * time.Minute
 
 // Service 封装认证业务能力。
 type Service struct {
-	cfg                  *config.Runtime
-	repo                 repository.AuthRepository
-	geoResolver          GeoResolver
-	subscriptionResolver subscriptionResolver
-	providerHTTPClient   identityProviderClient
-	logger               *zap.Logger
-	storeProvider        appstorage.Provider
-	auditWriter          auditWriter
-	avatarFileValidator  avatarFileValidator
-	providerAuthBridge   repository.ProviderAuthBridgeRepository
+	cfg                 *config.Runtime
+	repo                repository.AuthRepository
+	geoResolver         GeoResolver
+	providerHTTPClient  identityProviderClient
+	logger              *zap.Logger
+	storeProvider       appstorage.Provider
+	auditWriter         auditWriter
+	avatarFileValidator avatarFileValidator
+	providerAuthBridge  repository.ProviderAuthBridgeRepository
 }
 
 // GeoResolver 解析客户端 IP 的地理与网络归属信息。
@@ -60,14 +58,6 @@ type GeoResolver interface {
 type identityProviderClient interface {
 	Get(ctx context.Context, targetURL string, trustedEndpoints []string, headers map[string]string) (idpport.Response, error)
 	PostForm(ctx context.Context, targetURL string, trustedEndpoints []string, form url.Values, headers map[string]string) (idpport.Response, error)
-}
-
-type subscriptionResolver interface {
-	GetCurrentSubscriptionSnapshot(
-		ctx context.Context,
-		userID uint,
-		now time.Time,
-	) (*billing.UserSubscriptionSnapshot, error)
 }
 
 type auditWriter interface {
@@ -91,11 +81,6 @@ func NewServiceWithRuntime(
 		geoResolver:        geoResolver,
 		providerHTTPClient: providerHTTPClient,
 	}
-}
-
-// SetSubscriptionResolver 注入订阅派生解析能力。
-func (s *Service) SetSubscriptionResolver(resolver subscriptionResolver) {
-	s.subscriptionResolver = resolver
 }
 
 // SetLogger 注入结构化日志记录器。
@@ -487,41 +472,13 @@ func (s *Service) GetProfile(ctx context.Context, userID uint) (*domainuser.User
 	return s.repo.GetByID(ctx, userID)
 }
 
-// buildUserView 内部构建带订阅快照的用户视图。
+// buildUserView 内部构建用户视图。
 func (s *Service) buildUserView(ctx context.Context, item domainuser.User) (userview.UserView, error) {
 	credential, credentialErr := s.repo.GetCredentialByUserID(ctx, item.ID)
 	if credentialErr != nil && !errors.Is(credentialErr, repository.ErrNotFound) {
 		return userview.UserView{}, credentialErr
 	}
-	if s.subscriptionResolver == nil {
-		view := userview.FromUser(item, nil)
-		s.applyCredentialView(&view, item, credential)
-		if err := s.applyTwoFactorView(ctx, &view); err != nil {
-			return userview.UserView{}, err
-		}
-		return view, nil
-	}
-
-	subscription, err := s.subscriptionResolver.GetCurrentSubscriptionSnapshot(ctx, item.ID, time.Now())
-	if err != nil {
-		return userview.UserView{}, err
-	}
-	if subscription == nil {
-		view := userview.FromUser(item, nil)
-		s.applyCredentialView(&view, item, credential)
-		if err := s.applyTwoFactorView(ctx, &view); err != nil {
-			return userview.UserView{}, err
-		}
-		return view, nil
-	}
-
-	view := userview.FromUser(item, &userview.SubscriptionState{
-		PlanID:    subscription.PlanID,
-		PlanName:  subscription.PlanName,
-		Tier:      subscription.Tier,
-		Status:    subscription.Status,
-		ExpiresAt: subscription.ExpiresAt,
-	})
+	view := userview.FromUser(item)
 	s.applyCredentialView(&view, item, credential)
 	if err := s.applyTwoFactorView(ctx, &view); err != nil {
 		return userview.UserView{}, err

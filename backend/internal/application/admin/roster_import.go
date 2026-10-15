@@ -100,7 +100,7 @@ type rosterCandidate struct {
 type rosterImportUserService interface {
 	ListUsersByLowerEmails(ctx context.Context, emails []string) (map[string]domainuser.User, error)
 	ListAllUsernames(ctx context.Context) ([]string, error)
-	ImportUsersWithCredentialsAndBalances(ctx context.Context, records []repository.UserImportRecord) ([]domainuser.User, error)
+	ImportUsersWithCredentials(ctx context.Context, records []repository.UserImportRecord) ([]domainuser.User, error)
 }
 
 // ImportRoster 导入管理员提供的学生名单 CSV。
@@ -248,7 +248,7 @@ func (s *Service) createRosterAccount(
 			MustResetPassword: true,
 		},
 	}
-	if _, err := importUserService.ImportUsersWithCredentialsAndBalances(ctx, []repository.UserImportRecord{record}); err != nil {
+	if _, err := importUserService.ImportUsersWithCredentials(ctx, []repository.UserImportRecord{record}); err != nil {
 		return RosterCredential{}, err
 	}
 	return RosterCredential{

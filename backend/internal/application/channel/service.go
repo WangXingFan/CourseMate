@@ -5,7 +5,6 @@ import (
 	"sync"
 	"time"
 
-	appbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
 	appstorage "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/objectstorage"
 	domainchannel "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/channel"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
@@ -15,11 +14,6 @@ import (
 	"golang.org/x/sync/singleflight"
 )
 
-type billingModelPricingFilter interface {
-	GetBillingMode(ctx context.Context) (string, error)
-	ListPublicModelPricing(ctx context.Context) (map[string]appbilling.PublicModelPricing, error)
-}
-
 // permissionGroupRepo 提供模型访问权限组的查询能力。
 type permissionGroupRepo interface {
 	ListModelsWithGroupAccess(ctx context.Context) (map[uint][]uint, error)
@@ -28,17 +22,13 @@ type permissionGroupRepo interface {
 	ListModelGroupIDs(ctx context.Context, platformModelID uint) ([]uint, error)
 }
 
-type subscriptionGroupResolver interface {
-	GetUserSubscriptionGroupID(ctx context.Context, userID uint) (*uint, error)
-}
-
 type modelPermissionGroupWriter interface {
 	PermissionGroupExists(ctx context.Context, id uint) (bool, error)
 	ListModelManualGroupIDs(ctx context.Context, platformModelID uint) ([]uint, error)
 	SetModelManualGroups(ctx context.Context, platformModelID uint, groupIDs []uint) error
 }
 
-// resolveUserGroupIDs 返回用户的全部归属权限组 ID（手动权限组 + 默认权限组 + 订阅绑定权限组）。
+// resolveUserGroupIDs 返回用户的全部归属权限组 ID（手动权限组 + 默认权限组）。
 func (s *Service) resolveUserGroupIDs(ctx context.Context, userID uint) (map[uint]struct{}, error) {
 	groups := make(map[uint]struct{})
 	if s.permGroupRepo == nil || userID == 0 {
@@ -57,15 +47,6 @@ func (s *Service) resolveUserGroupIDs(ctx context.Context, userID uint) (map[uin
 	}
 	for _, id := range defaultIDs {
 		groups[id] = struct{}{}
-	}
-	if s.subGroupResolver != nil {
-		subGroupID, err := s.subGroupResolver.GetUserSubscriptionGroupID(ctx, userID)
-		if err != nil {
-			return nil, err
-		}
-		if subGroupID != nil {
-			groups[*subGroupID] = struct{}{}
-		}
 	}
 	return groups, nil
 }
@@ -108,16 +89,13 @@ type Service struct {
 	iconAssetRepo       repository.ModelIconAssetRepository
 	cache               repository.ChannelCacheRepository
 	llmClient           llmGateway
-	modelPricingFilter  billingModelPricingFilter
 	permGroupRepo       permissionGroupRepo
-	subGroupResolver    subscriptionGroupResolver
 	logger              *zap.Logger
 	objectStoreProvider appstorage.Provider
 	localAPIKeyCounters sync.Map
 
 	modelCatalogMu         sync.RWMutex
 	modelCatalog           []ModelView
-	modelCatalogMode       string
 	modelCatalogValidUntil time.Time
 	modelCatalogGeneration uint64
 	modelCatalogRequests   singleflight.Group
@@ -233,19 +211,9 @@ func NewServiceWithRuntime(cfg *config.Runtime, repo repository.ChannelRepositor
 	}
 }
 
-// SetBillingModelPricingFilter 注入计费模型过滤器，用于用户侧模型选择列表。
-func (s *Service) SetBillingModelPricingFilter(filter billingModelPricingFilter) {
-	s.modelPricingFilter = filter
-}
-
 // SetPermissionGroupRepo 注入模型访问权限组仓储，用于按用户过滤模型访问。
 func (s *Service) SetPermissionGroupRepo(repo permissionGroupRepo) {
 	s.permGroupRepo = repo
-}
-
-// SetSubscriptionGroupResolver 注入订阅绑定权限组解析能力。
-func (s *Service) SetSubscriptionGroupResolver(resolver subscriptionGroupResolver) {
-	s.subGroupResolver = resolver
 }
 
 // SetLogger 注入结构化日志记录器。
@@ -267,7 +235,6 @@ func (s *Service) InvalidateModelCatalog() {
 	}
 	s.modelCatalogMu.Lock()
 	s.modelCatalog = nil
-	s.modelCatalogMode = ""
 	s.modelCatalogValidUntil = time.Time{}
 	s.modelCatalogGeneration++
 	s.modelCatalogMu.Unlock()

@@ -9,7 +9,6 @@ import (
 	"strings"
 	"testing"
 
-	appbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
 	appconversation "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/conversation"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/ports/llm"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/response"
@@ -28,19 +27,6 @@ func TestStreamErrorPayloadWithResultPreservesPersistedResult(t *testing.T) {
 	}
 	if _, ok := streamErrorPayloadWithResult(errors.New("no result"), nil)["data"]; ok {
 		t.Fatal("stream error payload must not carry data without a result")
-	}
-}
-
-func TestBillingStreamErrorPayloadCarriesResultWhenPresent(t *testing.T) {
-	withResult := streamErrorPayloadWithResult(appbilling.ErrUsageBalanceInsufficient, &appconversation.SendMessageResult{})
-	if withResult["type"] != "error" || withResult["errorCode"] != "billing.insufficient_funds" {
-		t.Fatalf("billing error payload = %#v", withResult)
-	}
-	if _, ok := withResult["data"]; !ok {
-		t.Fatalf("billing error payload lost persisted result: %#v", withResult)
-	}
-	if _, ok := streamErrorPayloadWithResult(appbilling.ErrUsageBalanceInsufficient, nil)["data"]; ok {
-		t.Fatal("billing error payload must not carry data without a result")
 	}
 }
 
@@ -187,10 +173,6 @@ func TestDescribeSendMessageErrorContract(t *testing.T) {
 		{appconversation.ErrMessageGenerationCanceled, http.StatusBadRequest, "conversation_run.canceled", "message generation canceled"},
 		{appconversation.ErrMessageGenerationInterrupted, http.StatusServiceUnavailable, "conversation_run.stream_interrupted", "generation stream was interrupted; retry this message"},
 		{appconversation.ErrDuplicateMessageGenerationRun, http.StatusConflict, "message_generation_run.already_exists", "message generation run already exists"},
-		{appbilling.ErrUsageConcurrencyLimitExceeded, http.StatusTooManyRequests, "billing.concurrency_limit_exceeded", "too many concurrent paid requests"},
-		{appbilling.ErrUsageReservationConflict, http.StatusConflict, "billing.reservation_conflict", "usage request already exists"},
-		{appbilling.ErrUsageBalanceInsufficient, http.StatusPaymentRequired, "billing.insufficient_funds", "insufficient balance"},
-		{appbilling.ErrModelPricingRequired, http.StatusPaymentRequired, "billing.pricing_required", "model pricing is required"},
 		{errors.New("pq: duplicate key value already exists"), http.StatusInternalServerError, "internal.error", "internal server error"},
 	}
 	for _, tc := range cases {
@@ -271,7 +253,6 @@ func TestStreamAndHTTPErrorContractsAgree(t *testing.T) {
 	for _, err := range []error{
 		appconversation.ErrKnowledgeBaseNotReady,
 		appconversation.ErrMessageGenerationInterrupted,
-		appbilling.ErrUsageConcurrencyLimitExceeded,
 		errors.Join(appconversation.ErrUpstreamRequestFailed, &llm.UpstreamError{StatusCode: http.StatusTooManyRequests}),
 	} {
 		described := describeSendMessageError(err)

@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	domainbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/billing"
 	domainknowledgebase "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/knowledgebase"
 	domainuser "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/user"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/dberror"
@@ -19,11 +18,6 @@ import (
 )
 
 var userListSearchEscaper = strings.NewReplacer(`\`, `\\`, `%`, `\%`, `_`, `\_`)
-
-const (
-	userListSubscriptionStatusActive = "active"
-	userListSubscriptionStatusFree   = "free"
-)
 
 // translateError 将 gorm 底层错误统一映射为仓储语义错误。
 func translateError(err error) error {
@@ -337,37 +331,6 @@ func (r *Repo) ListUsers(ctx context.Context, offset int, limit int, filter repo
 			providerSlug,
 		)
 	}
-	if subscriptionStatus := strings.TrimSpace(filter.SubscriptionStatus); subscriptionStatus != "" {
-		now := time.Now()
-		currentPaidSubscriptionSQL := `EXISTS (
-			SELECT 1
-			FROM billing_subscriptions subscription_filter
-			INNER JOIN billing_plans subscription_plan_filter
-				ON subscription_plan_filter.id = subscription_filter.plan_id
-			WHERE subscription_filter.user_id = identity_users.id
-				AND subscription_filter.status = ?
-				AND subscription_filter.current_period_start_at <= ?
-				AND (subscription_filter.current_period_end_at IS NULL OR subscription_filter.current_period_end_at > ?)
-				AND subscription_plan_filter.code <> ?
-		)`
-		switch subscriptionStatus {
-		case userListSubscriptionStatusFree:
-			query = query.Where("NOT "+currentPaidSubscriptionSQL, userListSubscriptionStatusActive, now, now, userListSubscriptionStatusFree)
-		case userListSubscriptionStatusActive:
-			query = query.Where(currentPaidSubscriptionSQL, userListSubscriptionStatusActive, now, now, userListSubscriptionStatusFree)
-		default:
-			query = query.Where(
-				`EXISTS (
-					SELECT 1
-					FROM billing_subscriptions subscription_filter
-					WHERE subscription_filter.user_id = identity_users.id
-						AND subscription_filter.status = ?
-				)`,
-				subscriptionStatus,
-			)
-		}
-	}
-
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, translateError(err)
 	}
@@ -391,28 +354,6 @@ func (r *Repo) CountSuperAdmins(ctx context.Context) (int64, error) {
 		return 0, translateError(err)
 	}
 	return count, nil
-}
-
-// GetActivePlanByCode 按编码查询启用套餐。
-func (r *Repo) GetActivePlanByCode(ctx context.Context, code string) (*domainbilling.Plan, error) {
-	var item models.BillingPlan
-	if err := r.db.WithContext(ctx).
-		Where("code = ? AND is_active = ?", code, true).
-		First(&item).Error; err != nil {
-		return nil, translateError(err)
-	}
-	return toDomainPlan(item), nil
-}
-
-// GetActiveDefaultPriceByPlanID 查询套餐默认启用价格。
-func (r *Repo) GetActiveDefaultPriceByPlanID(ctx context.Context, planID uint) (*domainbilling.Price, error) {
-	var item models.BillingPrice
-	if err := r.db.WithContext(ctx).
-		Where("plan_id = ? AND is_active = ? AND is_default = ?", planID, true, true).
-		First(&item).Error; err != nil {
-		return nil, translateError(err)
-	}
-	return toDomainPrice(item), nil
 }
 
 // CreateWithCredential 在同一事务中创建用户与凭据。
@@ -443,8 +384,8 @@ func (r *Repo) CreateWithCredentialAndIdentity(ctx context.Context, input reposi
 	}))
 }
 
-// ImportUsersWithCredentialsAndBalances 在同一事务中导入用户、凭据与初始余额账户。
-func (r *Repo) ImportUsersWithCredentialsAndBalances(ctx context.Context, records []repository.UserImportRecord) ([]domainuser.User, error) {
+// ImportUsersWithCredentials 在同一事务中导入用户与凭据。
+func (r *Repo) ImportUsersWithCredentials(ctx context.Context, records []repository.UserImportRecord) ([]domainuser.User, error) {
 	results := make([]domainuser.User, 0, len(records))
 	if len(records) == 0 {
 		return results, nil
@@ -490,38 +431,6 @@ func (r *Repo) ImportUsersWithCredentialsAndBalances(ctx context.Context, record
 				return translateError(err)
 			}
 
-			balanceNanousd := record.BillingBalanceNanousd
-			if balanceNanousd < 0 {
-				balanceNanousd = 0
-			}
-			account := &models.BillingAccount{
-				UserID:         dbUser.ID,
-				Currency:       "USD",
-				BalanceNanousd: balanceNanousd,
-				Status:         "active",
-			}
-			if err := tx.Create(account).Error; err != nil {
-				return translateError(err)
-			}
-			if balanceNanousd > 0 {
-				transaction := &models.BalanceTransaction{
-					AccountID:           account.ID,
-					UserID:              dbUser.ID,
-					Type:                domainbilling.BalanceTransactionTypeAdminSet,
-					AmountNanousd:       balanceNanousd,
-					BalanceAfterNanousd: balanceNanousd,
-					RefType:             "admin_import",
-					RefNo:               strings.TrimSpace(record.BillingBalanceRefNo),
-					Description:         strings.TrimSpace(record.BillingBalanceDescription),
-				}
-				if transaction.Description == "" {
-					transaction.Description = "Admin import"
-				}
-				if err := tx.Create(transaction).Error; err != nil {
-					return translateError(err)
-				}
-			}
-
 			record.User.ID = dbUser.ID
 			record.User.CreatedAt = dbUser.CreatedAt
 			record.User.UpdatedAt = dbUser.UpdatedAt
@@ -565,25 +474,6 @@ func (r *Repo) createWithCredentialTx(tx *gorm.DB, input repository.CreateWithCr
 	}
 	if err := tx.Create(dbCredential).Error; err != nil {
 		return translateError(err)
-	}
-
-	if input.User.Role == domainuser.RoleUser && input.SubscriptionPlanID > 0 && input.SubscriptionPriceID > 0 {
-		now := time.Now()
-		subscription := &models.Subscription{
-			UserID:               dbUser.ID,
-			PlanID:               input.SubscriptionPlanID,
-			PriceID:              input.SubscriptionPriceID,
-			Status:               "active",
-			StartAt:              now,
-			CurrentPeriodStartAt: now,
-			CurrentPeriodEndAt:   input.SubscriptionEndAt,
-			CancelAtPeriodEnd:    false,
-			CanceledAt:           nil,
-			AutoRenew:            input.AutoRenew,
-		}
-		if err := tx.Create(subscription).Error; err != nil {
-			return translateError(err)
-		}
 	}
 
 	return nil
@@ -1001,21 +891,8 @@ func (r *Repo) DeleteAccountHard(ctx context.Context, userID uint) error {
 					return db.Unscoped().Where("user_id = ?", userID).Delete(&models.PermissionGroupUserAccess{}).Error
 				},
 			},
-			// 财务审计事实不在账号硬删除中清理：
-			// billing_usage_ledgers、billing_balance_transactions、billing_payment_orders
-			// 保留调用、余额和支付追溯快照。
-			{
-				label: "billing_subscriptions",
-				run: func(db *gorm.DB) error {
-					return db.Unscoped().Where("user_id = ?", userID).Delete(&models.Subscription{}).Error
-				},
-			},
-			{
-				label: "billing_accounts",
-				run: func(db *gorm.DB) error {
-					return db.Unscoped().Where("user_id = ?", userID).Delete(&models.BillingAccount{}).Error
-				},
-			},
+			// 计费与订阅历史表仅作归档，运行代码不再读写；
+			// 账号硬删除不再清理这些历史事实。
 			{
 				label: "user",
 				run: func(db *gorm.DB) error {
@@ -1870,37 +1747,6 @@ func toModelUser(item *domainuser.User) *models.User {
 		PhoneVerifiedAt:       item.PhoneVerifiedAt,
 		UsernameChangedAt:     item.UsernameChangedAt,
 		LastLoginAt:           item.LastLoginAt,
-	}
-}
-
-func toDomainPlan(item models.BillingPlan) *domainbilling.Plan {
-	return &domainbilling.Plan{
-		ID:                  item.ID,
-		Code:                item.Code,
-		Name:                item.Name,
-		Description:         item.Description,
-		FeatureJSON:         item.FeatureJSON,
-		PeriodCreditNanousd: item.PeriodCreditNanousd,
-		SortOrder:           item.SortOrder,
-		IsActive:            item.IsActive,
-		CreatedAt:           item.CreatedAt,
-		UpdatedAt:           item.UpdatedAt,
-	}
-}
-
-func toDomainPrice(item models.BillingPrice) *domainbilling.Price {
-	return &domainbilling.Price{
-		ID:               item.ID,
-		PlanID:           item.PlanID,
-		Code:             item.Code,
-		BillingInterval:  item.BillingInterval,
-		Currency:         item.Currency,
-		AmountCents:      item.AmountCents,
-		IsActive:         item.IsActive,
-		IsDefault:        item.IsDefault,
-		ExternalPriceRef: item.ExternalPriceRef,
-		CreatedAt:        item.CreatedAt,
-		UpdatedAt:        item.UpdatedAt,
 	}
 }
 

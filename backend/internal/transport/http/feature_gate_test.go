@@ -14,7 +14,6 @@ import (
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/pkg/token"
 	adminhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/admin"
 	authhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/auth"
-	billinghttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/billing"
 	contentmoderationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/contentmoderation"
 	conversationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/conversation"
 	"github.com/gin-gonic/gin"
@@ -76,17 +75,6 @@ var gatedRoutes = []struct {
 	{"accountSecurity", "GET", "/auth/sessions"},
 	{"accountSecurity", "POST", "/auth/logout-all"},
 
-	{"billingGating", "GET", "/billing/plans"},
-	{"billingGating", "POST", "/billing/subscriptions"},
-	{"billingGating", "POST", "/billing/payments/checkout"},
-	{"billingGating", "POST", "/billing/redemptions"},
-	{"billingGating", "POST", "/billing/payments/stripe/webhook"},
-	{"billingGating", "GET", "/admin/billing/plans"},
-	{"billingGating", "PATCH", "/admin/billing/accounts/1/balance"},
-	{"billingGating", "GET", "/admin/billing/redemption-codes"},
-	{"billingGating", "GET", "/admin/payment-orders"},
-	{"billingGating", "GET", "/admin/redemptions"},
-
 	{"contentModeration", "GET", "/admin/content-moderation/config"},
 	{"contentModeration", "GET", "/admin/content-moderation/events"},
 }
@@ -100,13 +88,7 @@ var openRoutes = []struct{ method, path string }{
 	{"GET", "/me"},
 	{"PATCH", "/me"},
 	{"POST", "/auth/logout"},
-	{"GET", "/billing/config"},
-	{"GET", "/billing/usage"},
-	{"GET", "/billing/overview"},
-	{"GET", "/admin/billing/model-prices"},
-	{"GET", "/admin/usage-statistics"},
 	{"GET", "/admin/audit-logs"},
-	{"GET", "/admin/call-logs"},
 	{"GET", "/conversations"},
 }
 
@@ -123,7 +105,6 @@ func gatedEngine(t *testing.T, cfg config.Config) *gin.Engine {
 	engine, err := NewEngine(config.NewRuntime(cfg), nil, Modules{
 		Auth:              &authhttp.Module{Handler: &authhttp.Handler{}},
 		Admin:             &adminhttp.Module{Handler: &adminhttp.Handler{}},
-		Billing:           &billinghttp.Module{Handler: &billinghttp.Handler{}},
 		ContentModeration: &contentmoderationhttp.Module{Handler: &contentmoderationhttp.Handler{}},
 		Conversation:      &conversationhttp.Module{Handler: &conversationhttp.Handler{}},
 	}, nil, nil)

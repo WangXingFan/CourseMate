@@ -173,7 +173,7 @@ func (h *Handler) GetModelIconAsset(c *gin.Context) {
 
 // ListModelVendors godoc
 // @Summary 管理员查询模型技术厂商
-// @Description 分页查询模型技术厂商目录；技术厂商是路由、权限和计费使用的稳定身份
+// @Description 分页查询模型技术厂商目录；技术厂商是路由和权限使用的稳定身份
 // @Tags llm
 // @Produce json
 // @Security BearerAuth

@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	domainbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/billing"
 	domainuser "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/user"
 )
 
@@ -38,20 +37,16 @@ type UpdateUserTwoFactorInput struct {
 	TrustedDeviceExpiresAt **time.Time
 }
 
-// UserImportRecord 描述一次管理员导入需要原子写入的用户、凭据和余额。
+// UserImportRecord 描述一次管理员导入需要原子写入的用户与凭据。
 type UserImportRecord struct {
-	User                      domainuser.User
-	Credential                domainuser.Credential
-	BillingBalanceNanousd     int64
-	BillingBalanceRefNo       string
-	BillingBalanceDescription string
+	User       domainuser.User
+	Credential domainuser.Credential
 }
 
 // UserListFilter 定义管理员用户列表过滤条件。
 type UserListFilter struct {
-	Query              string
-	SubscriptionStatus string
-	IdentityProvider   string
+	Query            string
+	IdentityProvider string
 }
 
 // AuthEventListInput 描述认证事件查询的筛选与分页条件。
@@ -215,10 +210,8 @@ type UserRepository interface {
 	UpdateFields(ctx context.Context, userID uint, input UpdateUserFieldsInput) (*domainuser.User, error)
 	ListUsers(ctx context.Context, offset int, limit int, filter UserListFilter) ([]domainuser.User, int64, error)
 	CountSuperAdmins(ctx context.Context) (int64, error)
-	GetActivePlanByCode(ctx context.Context, code string) (*domainbilling.Plan, error)
-	GetActiveDefaultPriceByPlanID(ctx context.Context, planID uint) (*domainbilling.Price, error)
 	CreateWithCredential(ctx context.Context, input CreateWithCredentialInput) error
-	ImportUsersWithCredentialsAndBalances(ctx context.Context, records []UserImportRecord) ([]domainuser.User, error)
+	ImportUsersWithCredentials(ctx context.Context, records []UserImportRecord) ([]domainuser.User, error)
 	ResetLoginFailure(ctx context.Context, userID uint) error
 	UpdateUserStatus(ctx context.Context, userID uint, status string) error
 	ResetPasswordByAdmin(ctx context.Context, userID uint, passwordHash string, mustResetPassword bool) error

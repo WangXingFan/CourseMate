@@ -4,8 +4,6 @@ import (
 	"strings"
 	"testing"
 
-	appbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
-	domainbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/billing"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/ports/llm"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/tokenestimate"
 )
@@ -137,125 +135,6 @@ func TestEstimateBillableInputTokensUsesFullContextForStatefulCalls(t *testing.T
 
 	if got := estimateBillableInputTokens(fullInput, nil); got != fullEstimate {
 		t.Fatalf("expected non-stateful calls to be estimated on the sent request, got %d want %d", got, fullEstimate)
-	}
-}
-
-// 结算重试只在可幂等时进行：有预留靠预留状态机回读，无预留靠账本运行级幂等键回读，
-// 两者都没有则只执行一次，避免重复入账。
-func TestUsageRecordIsIdempotent(t *testing.T) {
-	reservation := &domainbilling.UsageAuthorization{Mode: "usage", RefNo: "run_1", Reservation: &domainbilling.UsageBalanceReservation{RefNo: "run_1"}}
-	if !usageRecordIsIdempotent(&domainbilling.UsageLedger{}, reservation) {
-		t.Fatal("expected settlement with a reservation to be retryable")
-	}
-	if !usageRecordIsIdempotent(&domainbilling.UsageLedger{RefNo: "run_1"}, &domainbilling.UsageAuthorization{Mode: "self", RefNo: "run_1"}) {
-		t.Fatal("expected keyed ledger without reservation to be retryable")
-	}
-	if usageRecordIsIdempotent(&domainbilling.UsageLedger{}, &domainbilling.UsageAuthorization{Mode: "self"}) {
-		t.Fatal("expected unkeyed ledger without reservation to run once")
-	}
-	if usageRecordIsIdempotent(nil, nil) {
-		t.Fatal("expected missing ledger to run once")
-	}
-}
-
-func TestModerationBlockedBilledReason(t *testing.T) {
-	paid := &domainbilling.UsageAuthorization{Mode: "usage", RefNo: "run_1", Reservation: &domainbilling.UsageBalanceReservation{RefNo: "run_1"}}
-	selfHosted := &domainbilling.UsageAuthorization{Mode: "self", RefNo: "run_1"}
-	blocked := func(billable bool) *SendMessageResult {
-		return &SendMessageResult{Billable: billable, Moderation: &MessageModerationOutcome{Blocked: true, Direction: "input"}}
-	}
-
-	if got := ModerationBlockedBilledReason(blocked(true), paid); got != appbilling.BilledReasonModerationBlockedUpstreamUsage {
-		t.Fatalf("expected billable blocked run with reservation to be annotated, got %q", got)
-	}
-	if got := ModerationBlockedBilledReason(blocked(false), paid); got != "" {
-		t.Fatalf("expected blocked run without billable usage to stay unannotated, got %q", got)
-	}
-	if got := ModerationBlockedBilledReason(blocked(true), selfHosted); got != "" {
-		t.Fatalf("expected self-hosted run to stay unannotated, got %q", got)
-	}
-	if got := ModerationBlockedBilledReason(&SendMessageResult{Billable: true}, paid); got != "" {
-		t.Fatalf("expected non-blocked run to stay unannotated, got %q", got)
-	}
-	if got := ModerationBlockedBilledReason(nil, paid); got != "" {
-		t.Fatalf("expected nil result to stay unannotated, got %q", got)
-	}
-}
-
-func TestModerationLiveEmitterAnnotatesOutputBlocksOnly(t *testing.T) {
-	paid := &domainbilling.UsageAuthorization{Mode: "usage", RefNo: "run_1", Reservation: &domainbilling.UsageBalanceReservation{RefNo: "run_1"}}
-	var emitted []map[string]any
-	emit := moderationLiveEmitter(func(_ string, payload map[string]any) error {
-		emitted = append(emitted, payload)
-		return nil
-	}, paid)
-
-	emit("moderation_blocked", map[string]any{"direction": "output"})
-	emit("moderation_blocked", map[string]any{"direction": "input"})
-	emit("moderation_checking", map[string]any{})
-
-	if len(emitted) != 3 {
-		t.Fatalf("expected every event to be forwarded, got %d", len(emitted))
-	}
-	if got := emitted[0]["billedReason"]; got != appbilling.BilledReasonModerationBlockedUpstreamUsage {
-		t.Fatalf("expected output block to carry billed reason, got %v", got)
-	}
-	if _, ok := emitted[1]["billedReason"]; ok {
-		t.Fatal("expected input block to defer the billing note to settlement")
-	}
-	if _, ok := emitted[2]["billedReason"]; ok {
-		t.Fatal("expected non-block events to stay untouched")
-	}
-
-	var unpaid []map[string]any
-	moderationLiveEmitter(func(_ string, payload map[string]any) error {
-		unpaid = append(unpaid, payload)
-		return nil
-	}, &domainbilling.UsageAuthorization{Mode: "self"})("moderation_blocked", map[string]any{"direction": "output"})
-	if _, ok := unpaid[0]["billedReason"]; ok {
-		t.Fatal("expected self-hosted output block to stay unannotated")
-	}
-}
-
-func TestSendMessageBillingCallCount(t *testing.T) {
-	if got := sendMessageBillingCallCount(nil); got != 1 {
-		t.Fatalf("expected nil result to bill a single call, got %d", got)
-	}
-	if got := sendMessageBillingCallCount(&SendMessageResult{}); got != 1 {
-		t.Fatalf("expected interrupted run without completed calls to bill a single call, got %d", got)
-	}
-	if got := sendMessageBillingCallCount(&SendMessageResult{LLMCallCount: 3}); got != 3 {
-		t.Fatalf("expected tool loop to bill every completed upstream call, got %d", got)
-	}
-}
-
-func TestMessageRequestMaxOutputTokensReadsProviderSpecificKeys(t *testing.T) {
-	tests := []struct {
-		name    string
-		options map[string]any
-		want    int64
-	}{
-		{name: "no limit", options: map[string]any{"temperature": 0.7}, want: 0},
-		{name: "openai chat max_tokens", options: map[string]any{"max_tokens": float64(4096)}, want: 4096},
-		{name: "openai responses max_output_tokens", options: map[string]any{"max_output_tokens": 1024}, want: 1024},
-		{name: "openai completions max_completion_tokens", options: map[string]any{"max_completion_tokens": "2048"}, want: 2048},
-		{name: "gemini nested generationConfig", options: map[string]any{"generationConfig": map[string]any{"maxOutputTokens": int64(512)}}, want: 512},
-		{name: "explicit limit wins over other keys", options: map[string]any{"max_output_tokens": 300, "max_tokens": 900}, want: 300},
-		{name: "non-positive limit ignored", options: map[string]any{"max_tokens": 0}, want: 0},
-		{name: "unparseable limit ignored", options: map[string]any{"max_tokens": "many"}, want: 0},
-	}
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			if got := messageRequestMaxOutputTokens(tc.options); got != tc.want {
-				t.Fatalf("messageRequestMaxOutputTokens() = %d, want %d", got, tc.want)
-			}
-		})
-	}
-}
-
-func TestClassifyRunErrorCodeMapsInsufficientBalance(t *testing.T) {
-	if got := classifyRunErrorCode(appbilling.ErrUsageBalanceInsufficient); got != messageUsageBalanceErrorCode {
-		t.Fatalf("classifyRunErrorCode() = %q, want %q", got, messageUsageBalanceErrorCode)
 	}
 }
 

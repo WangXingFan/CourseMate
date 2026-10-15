@@ -6,7 +6,6 @@ import (
 	"time"
 
 	appaudit "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/audit"
-	appbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/channel"
 	appcompact "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/compact"
 	appcm "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/contentmoderation"
@@ -16,7 +15,6 @@ import (
 	appprocessing "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/processing"
 	apprag "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/rag"
 	appupload "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/upload"
-	domainbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/billing"
 	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
 	domainknowledgebase "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/knowledgebase"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
@@ -45,13 +43,6 @@ type auditWriter interface {
 	Write(ctx context.Context, input appaudit.WriteInput)
 }
 
-type basicServiceBillingContextKey struct{}
-
-type basicServiceBillingContext struct {
-	UserID         uint
-	ConversationID uint
-}
-
 // llmGateway 定义会话推理、媒体生成与后台响应管理所需的上游调用能力。
 type llmGateway interface {
 	Generate(ctx context.Context, route llm.RouteConfig, input llm.GenerateInput) (*llm.GenerateOutput, error)
@@ -74,7 +65,6 @@ type Service struct {
 	extractSvc            *extraction.Service
 	ragSvc                *apprag.Service
 	knowledgeBaseResolver knowledgeBaseResolver
-	billingSvc            *appbilling.Service
 	auditWriter           auditWriter
 	storeProvider         appstorage.Provider
 	logger                *zap.Logger
@@ -139,8 +129,6 @@ type SendMessageInput struct {
 	SourceMessagePublicID   string
 	BranchReason            string
 	Cancelable              bool
-	// UsageAuthorization 是请求级计费授权；提示词形状确定后据此把预算预留抬高到预估成本。
-	UsageAuthorization *domainbilling.UsageAuthorization
 	// OnEvent 用于向调用方推送中间事件（如 rag_search），流式场景使用。
 	OnEvent func(eventType string, payload map[string]any) error
 }
@@ -155,29 +143,15 @@ type SendMessageResult struct {
 	UserMessage         model.Message
 	AssistantMessage    model.Message
 	MetadataRefreshHint string
-	Billable            bool
 	UpstreamID          uint
 	UpstreamName        string
 	PlatformModelName   string
-	RoutedBindingCode   string
 	UpstreamModelName   string
-	UpstreamProtocol    string
-	EffectiveOptions    map[string]any
-	UsageSpeed          string
-	UsageServiceTier    string
-	UsageSource         string
-	RawUsageJSON        string
-	CacheWrite5mTokens  int64
-	CacheWrite1hTokens  int64
-	// LLMCallCount 是本次运行成功返回的上游 LLM 调用数；按次计费按该计数结算，
-	// 中断运行由计费层保底至少计 1 次。
-	LLMCallCount    int
-	LatencyMS       int64
-	DurationSeconds int64
-	StartedAt       time.Time
+	LatencyMS           int64
+	StartedAt           time.Time
 	// 执行了软审核屏障时设置 Moderation；Blocked 表示已撤回。
-	Moderation            *MessageModerationOutcome
-	postBillingCompaction *postBillingCompactionTask
+	Moderation               *MessageModerationOutcome
+	postGenerationCompaction *postGenerationCompactionTask
 }
 
 // MessageFeedbackResult 返回反馈后的当前状态（内部传输，不携带序列化标记）。
@@ -249,11 +223,6 @@ func UploadErrorSet() appupload.ErrorSet {
 		MIMEBlocked:          ErrMIMEBlocked,
 		DangerousMIMEType:    ErrDangerousMIMEType,
 	}
-}
-
-// SetBillingService 注入计费服务，用于记录标题、标签、上下文压缩等基础 LLM 服务用量。
-func (s *Service) SetBillingService(billingSvc *appbilling.Service) {
-	s.billingSvc = billingSvc
 }
 
 // SetAuditWriter 注入会话域审计写入器。

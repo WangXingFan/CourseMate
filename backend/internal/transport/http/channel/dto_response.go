@@ -3,7 +3,6 @@ package channel
 import (
 	"time"
 
-	appbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
 	appchannel "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/channel"
 	domainchannel "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/channel"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/security"
@@ -635,59 +634,20 @@ type CircuitResetResponse struct {
 
 // PublicModelResponse 面向前端的可用模型展示 DTO。
 type PublicModelResponse struct {
-	PlatformModelName string                      `json:"platformModelName"`
-	DisplayName       string                      `json:"displayName"`
-	Vendor            string                      `json:"vendor"`
-	VendorName        string                      `json:"vendorName"`
-	VendorIcon        string                      `json:"vendorIcon"`
-	DisplayGroupID    *uint                       `json:"displayGroupID" extensions:"x-nullable,!x-omitempty"`
-	DisplayGroupName  string                      `json:"displayGroupName"`
-	DisplayGroupIcon  string                      `json:"displayGroupIcon"`
-	KindsJSON         string                      `json:"kindsJSON"`
-	Icon              string                      `json:"icon"`
-	ProtocolsJSON     string                      `json:"protocolsJSON"`
-	CapabilitiesJSON  string                      `json:"capabilitiesJSON"`
-	Description       string                      `json:"description"`
-	SortOrder         int                         `json:"sortOrder"`
-	Pricing           *PublicModelPricingResponse `json:"pricing" extensions:"x-nullable,!x-omitempty"`
-}
-
-// PublicModelPricingResponse 面向前端的模型价格 DTO。
-type PublicModelPricingResponse struct {
-	Currency                string                           `json:"currency"`
-	IsFree                  bool                             `json:"isFree"`
-	Mode                    string                           `json:"mode"`
-	InputUSDPerMTokens      float64                          `json:"inputUSDPerMTokens"`
-	CacheReadUSDPerMTokens  float64                          `json:"cacheReadUSDPerMTokens"`
-	CacheWriteUSDPerMTokens float64                          `json:"cacheWriteUSDPerMTokens"`
-	CacheWrite5mMultiplier  float64                          `json:"cacheWrite5mMultiplier"`
-	CacheWrite1hMultiplier  float64                          `json:"cacheWrite1hMultiplier"`
-	OutputUSDPerMTokens     float64                          `json:"outputUSDPerMTokens"`
-	CallUSDPerCall          float64                          `json:"callUSDPerCall"`
-	DurationUSDPerSecond    float64                          `json:"durationUSDPerSecond"`
-	Tiers                   []PublicModelPricingTierResponse `json:"tiers"`
-	// 时段倍率按服务器本地时区定义；客户端用 scheduleUTCOffsetMinutes 判断当前命中的时段。
-	SchedulePeriods          []PublicSchedulePeriodResponse `json:"schedulePeriods"`
-	ScheduleUTCOffsetMinutes int                            `json:"scheduleUTCOffsetMinutes"`
-}
-
-// PublicSchedulePeriodResponse 面向前端的时段倍率 DTO。
-type PublicSchedulePeriodResponse struct {
-	Name        string `json:"name"`
-	Weekdays    []int  `json:"weekdays"`
-	Start       string `json:"start"`
-	End         string `json:"end"`
-	RatePercent int    `json:"ratePercent"`
-}
-
-// PublicModelPricingTierResponse 面向前端的模型阶梯价格 DTO。
-type PublicModelPricingTierResponse struct {
-	FromTokens              int64   `json:"fromTokens"`
-	UpToTokens              *int64  `json:"upToTokens" extensions:"x-nullable,!x-omitempty"`
-	InputUSDPerMTokens      float64 `json:"inputUSDPerMTokens"`
-	CacheReadUSDPerMTokens  float64 `json:"cacheReadUSDPerMTokens"`
-	CacheWriteUSDPerMTokens float64 `json:"cacheWriteUSDPerMTokens"`
-	OutputUSDPerMTokens     float64 `json:"outputUSDPerMTokens"`
+	PlatformModelName string `json:"platformModelName"`
+	DisplayName       string `json:"displayName"`
+	Vendor            string `json:"vendor"`
+	VendorName        string `json:"vendorName"`
+	VendorIcon        string `json:"vendorIcon"`
+	DisplayGroupID    *uint  `json:"displayGroupID" extensions:"x-nullable,!x-omitempty"`
+	DisplayGroupName  string `json:"displayGroupName"`
+	DisplayGroupIcon  string `json:"displayGroupIcon"`
+	KindsJSON         string `json:"kindsJSON"`
+	Icon              string `json:"icon"`
+	ProtocolsJSON     string `json:"protocolsJSON"`
+	CapabilitiesJSON  string `json:"capabilitiesJSON"`
+	Description       string `json:"description"`
+	SortOrder         int    `json:"sortOrder"`
 }
 
 // ---------- Swagger 文档类型 ----------
@@ -856,51 +816,6 @@ func toPublicModelResponse(v appchannel.ModelView) PublicModelResponse {
 		CapabilitiesJSON:  v.CapabilitiesJSON,
 		Description:       v.Description,
 		SortOrder:         v.SortOrder,
-		Pricing:           toPublicModelPricingResponse(v.Pricing),
-	}
-}
-
-func toPublicModelPricingResponse(v *appbilling.PublicModelPricing) *PublicModelPricingResponse {
-	if v == nil {
-		return nil
-	}
-	tiers := make([]PublicModelPricingTierResponse, 0, len(v.Tiers))
-	for _, tier := range v.Tiers {
-		tiers = append(tiers, PublicModelPricingTierResponse{
-			FromTokens:              tier.FromTokens,
-			UpToTokens:              tier.UpToTokens,
-			InputUSDPerMTokens:      tier.InputUSDPerMTokens,
-			CacheReadUSDPerMTokens:  tier.CacheReadUSDPerMTokens,
-			CacheWriteUSDPerMTokens: tier.CacheWriteUSDPerMTokens,
-			OutputUSDPerMTokens:     tier.OutputUSDPerMTokens,
-		})
-	}
-	periods := make([]PublicSchedulePeriodResponse, 0, len(v.SchedulePeriods))
-	for _, period := range v.SchedulePeriods {
-		periods = append(periods, PublicSchedulePeriodResponse{
-			Name:        period.Name,
-			Weekdays:    period.Weekdays,
-			Start:       period.Start,
-			End:         period.End,
-			RatePercent: period.RatePercent,
-		})
-	}
-	return &PublicModelPricingResponse{
-		Currency:                v.Currency,
-		IsFree:                  v.IsFree,
-		Mode:                    v.Mode,
-		InputUSDPerMTokens:      v.InputUSDPerMTokens,
-		CacheReadUSDPerMTokens:  v.CacheReadUSDPerMTokens,
-		CacheWriteUSDPerMTokens: v.CacheWriteUSDPerMTokens,
-		CacheWrite5mMultiplier:  v.CacheWrite5mMultiplier,
-		CacheWrite1hMultiplier:  v.CacheWrite1hMultiplier,
-		OutputUSDPerMTokens:     v.OutputUSDPerMTokens,
-		CallUSDPerCall:          v.CallUSDPerCall,
-		DurationUSDPerSecond:    v.DurationUSDPerSecond,
-		Tiers:                   tiers,
-
-		SchedulePeriods:          periods,
-		ScheduleUTCOffsetMinutes: v.ScheduleUTCOffsetMinutes,
 	}
 }
 

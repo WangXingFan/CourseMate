@@ -44,7 +44,7 @@ func TestListUsersSearchesBeforePagination(t *testing.T) {
 	}
 }
 
-func TestListUsersFiltersByIdentityProviderAndSubscriptionStatus(t *testing.T) {
+func TestListUsersFiltersByIdentityProvider(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open("file:list_users_filters?mode=memory&cache=shared"), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("open sqlite: %v", err)
@@ -53,8 +53,6 @@ func TestListUsersFiltersByIdentityProviderAndSubscriptionStatus(t *testing.T) {
 		&models.User{},
 		&models.AuthIdentityProvider{},
 		&models.UserIdentity{},
-		&models.BillingPlan{},
-		&models.Subscription{},
 	); err != nil {
 		t.Fatalf("migrate: %v", err)
 	}
@@ -81,26 +79,6 @@ func TestListUsersFiltersByIdentityProviderAndSubscriptionStatus(t *testing.T) {
 		t.Fatalf("seed identities: %v", err)
 	}
 
-	plans := []models.BillingPlan{
-		{Code: "free", Name: "Free", IsActive: true},
-		{Code: "pro", Name: "Pro", IsActive: true},
-	}
-	if err = db.Create(&plans).Error; err != nil {
-		t.Fatalf("seed plans: %v", err)
-	}
-	now := time.Now()
-	if err = db.Create(&models.Subscription{
-		UserID:               users[0].ID,
-		PlanID:               plans[1].ID,
-		PriceID:              1,
-		Status:               "active",
-		StartAt:              now.Add(-time.Hour),
-		CurrentPeriodStartAt: now.Add(-time.Hour),
-		CurrentPeriodEndAt:   ptrTime(now.Add(time.Hour)),
-	}).Error; err != nil {
-		t.Fatalf("seed subscription: %v", err)
-	}
-
 	repo := NewRepo(db)
 	identityItems, total, err := repo.ListUsers(context.Background(), 0, 10, repository.UserListFilter{IdentityProvider: "github"})
 	if err != nil {
@@ -108,22 +86,6 @@ func TestListUsersFiltersByIdentityProviderAndSubscriptionStatus(t *testing.T) {
 	}
 	if total != 1 || len(identityItems) != 1 || identityItems[0].Username != "paid" {
 		t.Fatalf("identity filter total=%d items=%+v, want paid", total, identityItems)
-	}
-
-	activeItems, total, err := repo.ListUsers(context.Background(), 0, 10, repository.UserListFilter{SubscriptionStatus: "active"})
-	if err != nil {
-		t.Fatalf("ListUsers(active) error = %v", err)
-	}
-	if total != 1 || len(activeItems) != 1 || activeItems[0].Username != "paid" {
-		t.Fatalf("active filter total=%d items=%+v, want paid", total, activeItems)
-	}
-
-	freeItems, total, err := repo.ListUsers(context.Background(), 0, 10, repository.UserListFilter{SubscriptionStatus: "free"})
-	if err != nil {
-		t.Fatalf("ListUsers(free) error = %v", err)
-	}
-	if total != 1 || len(freeItems) != 1 || freeItems[0].Username != "free" {
-		t.Fatalf("free filter total=%d items=%+v, want free", total, freeItems)
 	}
 }
 
@@ -148,8 +110,7 @@ func TestDeleteAccountHardRemovesUserScopedAssociations(t *testing.T) {
 		t.Fatalf("seed user: %v", err)
 	}
 	group := models.PermissionGroup{
-		Name:                  "Pro",
-		RateMultiplierPercent: 80,
+		Name: "Pro",
 	}
 	if err = db.Create(&group).Error; err != nil {
 		t.Fatalf("seed permission group: %v", err)
@@ -255,8 +216,4 @@ func TestDeleteAccountHardRejectsBuiltinKnowledgeBaseFileOwner(t *testing.T) {
 	if userCount != 1 {
 		t.Fatalf("user count = %d, want 1", userCount)
 	}
-}
-
-func ptrTime(value time.Time) *time.Time {
-	return &value
 }

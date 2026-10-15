@@ -12,7 +12,6 @@ import (
 // 新增业务域时须在此显式登记，避免表名前缀随意扩散。
 var allowedTableDomains = []string{
 	"audit",
-	"billing",
 	"chat",
 	"content_moderation",
 	"file",

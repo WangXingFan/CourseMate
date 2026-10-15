@@ -345,11 +345,6 @@ func normalizeAttachmentKind(kind string, mimeType string) string {
 	return inferAttachmentKind(mimeType)
 }
 
-// NormalizeAttachmentKind 规范化附件类型，供边界层复用。
-func NormalizeAttachmentKind(kind string, mimeType string) string {
-	return normalizeAttachmentKind(kind, mimeType)
-}
-
 func inferAttachmentKind(mimeType string) string {
 	if strings.HasPrefix(strings.ToLower(strings.TrimSpace(mimeType)), "image/") {
 		return "image"

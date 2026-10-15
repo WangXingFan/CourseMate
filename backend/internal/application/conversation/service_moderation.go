@@ -11,10 +11,8 @@ import (
 
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/pkg/textutil"
 
-	appbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
 	appcm "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/contentmoderation"
 	appstorage "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/objectstorage"
-	domainbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/billing"
 	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/ports/objectstorage"
 )
@@ -53,44 +51,9 @@ func (r *SendMessageResult) ModerationTerminalEmitted() bool {
 	return r != nil && r.Moderation != nil && r.Moderation.TerminalEmitted
 }
 
-// ModerationBlockedBilledReason 返回被拦截运行仍要结算的原因，用于拦截事件与账单快照。
-// 拦截只撤回内容，不撤回上游已产生的用量：持有预算预留的付费调用照常结算；self 模式与
-// 免费模型本就不产生费用，未产生可计费用量的拦截也不结算，两者都不标注。
-func ModerationBlockedBilledReason(result *SendMessageResult, authorization *domainbilling.UsageAuthorization) string {
-	if !result.IsModerationBlocked() || !result.Billable {
-		return ""
-	}
-	return paidUsageBilledReason(authorization)
-}
-
-// liveModerationBlockedBilledReason 在拦截事件实时推送时标注计费：输出侧拦截意味着上游已产出内容、
-// 用量必然发生；输入侧拦截是否已产生用量取决于与生成的时序，留待结算后由账单快照标注。
-func liveModerationBlockedBilledReason(direction string, authorization *domainbilling.UsageAuthorization) string {
-	if direction != appcm.DirectionOutput {
-		return ""
-	}
-	return paidUsageBilledReason(authorization)
-}
-
-func paidUsageBilledReason(authorization *domainbilling.UsageAuthorization) string {
-	if authorization == nil || authorization.Reservation == nil {
-		return ""
-	}
-	return appbilling.BilledReasonModerationBlockedUpstreamUsage
-}
-
-// moderationLiveEmitter 把实时事件回调包装为审核协调器的推送出口，并给拦截事件标注计费说明。
-func moderationLiveEmitter(
-	onEvent func(eventType string, payload map[string]any) error,
-	authorization *domainbilling.UsageAuthorization,
-) appcm.LiveEmitter {
+// moderationLiveEmitter 将审核协调器的推送出口封装为忽略错误的实时事件回调。
+func moderationLiveEmitter(onEvent func(eventType string, payload map[string]any) error) appcm.LiveEmitter {
 	return func(eventType string, payload map[string]any) {
-		if eventType == "moderation_blocked" && payload != nil {
-			direction, _ := payload["direction"].(string)
-			if reason := liveModerationBlockedBilledReason(direction, authorization); reason != "" {
-				payload["billedReason"] = reason
-			}
-		}
 		_ = onEvent(eventType, payload)
 	}
 }
@@ -155,7 +118,7 @@ func (s *Service) startModerationRun(
 		return nil
 	}
 	if input.OnEvent != nil {
-		coord.SetLiveEmitter(moderationLiveEmitter(input.OnEvent, input.UsageAuthorization))
+		coord.SetLiveEmitter(moderationLiveEmitter(input.OnEvent))
 	}
 	coord.EnqueueInputText(input.Content)
 	if len(input.FileIDs) > 0 {
@@ -220,7 +183,7 @@ func applyBarrierOutcome(result *SendMessageResult, barrier appcm.BarrierResult)
 		}
 		return
 	}
-	result.postBillingCompaction = nil
+	result.postGenerationCompaction = nil
 	result.MetadataRefreshHint = conversationMetadataRefreshNotNeeded
 	applyBlockedSnapshot(result, *barrier.Block, barrier.TerminalEmitted)
 }

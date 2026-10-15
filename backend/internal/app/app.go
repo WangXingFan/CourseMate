@@ -16,7 +16,6 @@ import (
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/admin"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/audit"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/auth"
-	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/channel"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/compact"
 	appcontentmoderation "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/contentmoderation"
@@ -42,16 +41,11 @@ import (
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/geoip"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/identityprovider"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/llm"
-	openrouterpricing "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/modelpricing/openrouter"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/objectstorage"
 	platformlogger "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/observability/logger"
 	platformtracing "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/observability/tracing"
-	epaypayment "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/payment/epay"
-	stripepayment "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/payment/stripe"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence"
-	filecache "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/filecache"
 	auditrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/audit"
-	billingrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/billing"
 	channelrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/channel"
 	contentmoderationrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/contentmoderation"
 	conversationrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/conversation"
@@ -66,7 +60,6 @@ import (
 	platformhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http"
 	adminhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/admin"
 	authhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/auth"
-	billinghttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/billing"
 	channelhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/channel"
 	contentmoderationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/contentmoderation"
 	conversationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/conversation"
@@ -102,21 +95,6 @@ type App struct {
 	// stopCh 由 RequestShutdown 关闭，与 SIGTERM 等价。
 	stopCh   chan struct{}
 	stopOnce sync.Once
-}
-
-type subscriptionGroupAdapter struct {
-	billing *billing.Service
-}
-
-func (a *subscriptionGroupAdapter) GetUserSubscriptionGroupID(ctx context.Context, userID uint) (*uint, error) {
-	snap, err := a.billing.GetCurrentSubscriptionSnapshot(ctx, userID, time.Now())
-	if err != nil {
-		return nil, err
-	}
-	if snap == nil {
-		return nil, nil
-	}
-	return snap.PermissionGroupID, nil
 }
 
 type avatarContentOpener struct {
@@ -212,7 +190,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	settingsRepo := settingsrepo.NewRepo(db)
 	settingsService := settings.NewService(settingsRepo, cfg.DataEncryptionKey)
 	settingsService.SetAuditWriter(auditService)
-	settingsService.SetRuntime(runtimeCfg)
 	runtimeService := appruntime.NewService(runtimeCfg, extractionprobe.Prober{})
 	runtimeService.SetDockerRunner(platformruntime.NewDockerRunner())
 	settingsCache := cacheBackend.Settings()
@@ -239,17 +216,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 
 	userRepo := userrepo.NewRepo(db)
 	userService := user.NewService(userRepo)
-	billingRepo := billingrepo.NewRepo(db)
-	billingService := billing.NewService(billingRepo)
-	billingService.SetAuditWriter(auditService)
-	billingService.SetRedemptionCodeSecret(cfg.DataEncryptionKey)
-	officialPricingService := billing.NewOfficialPricingService(
-		openrouterpricing.New(cfg.StrictOutboundPolicy()),
-		filecache.NewOpenRouterPricingCache(runtimeCfg.Snapshot().StorageRootDir),
-	)
-	paymentCheckoutService := billing.NewPaymentCheckoutService(stripepayment.New(cfg.StrictOutboundPolicy()), epaypayment.New())
-	billingHandler := billinghttp.NewHandler(billingService, settingsService, runtimeCfg, officialPricingService, paymentCheckoutService, log)
-	billingModule := billinghttp.NewModule(billingHandler)
 	// 对象存储工厂由组合根显式注入，避免服务实例依赖进程级可变状态。
 	objectStoreProvider := appstorage.NewRuntimeProvider(runtimeCfg, objectstorage.New)
 	// 抽取引擎工厂由组合根显式注入；具体客户端构造为 nil 时必须返回 nil 接口，避免 typed-nil 绕过判空。
@@ -298,7 +264,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	authService.SetObjectStoreProvider(objectStoreProvider)
 	authService.SetAuditWriter(auditService)
 	settingsService.SetAuthSafetyService(authService)
-	authService.SetSubscriptionResolver(billingService)
 	var bootstrapSuperAdmin *auth.BootstrapSuperAdmin
 	if cfg.LocalMode {
 		// 本地模式：唯一用户无密码、无初始化引导，通过启动握手拿到的一次性授权凭证登录。
@@ -318,14 +283,7 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	channelService.SetLogger(log)
 	channelService.SetObjectStoreProvider(objectStoreProvider)
 	channelService.SetModelIconAssetRepository(channelRepo)
-	channelService.SetBillingModelPricingFilter(billingService)
 	channelService.SetPermissionGroupRepo(channelRepo)
-	channelService.SetSubscriptionGroupResolver(&subscriptionGroupAdapter{billing: billingService})
-	billingService.SetGroupRateMultiplierResolver(channelRepo)
-	billingService.SetPermissionGroupLookup(channelRepo)
-	billingService.SetModelPricingInvalidator(channelService.InvalidateModelCatalog)
-	billingService.SetPlatformModelIdentityResolver(channelService)
-	billingService.SetModelPricingCatalogProvider(channelService)
 	channelHandler := channelhttp.NewHandler(channelService)
 	channelModule := channelhttp.NewModule(channelHandler)
 	conversationRepo := conversationrepo.NewRepo(db)
@@ -370,7 +328,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 		RAGService:        ragService,
 		Logger:            log,
 	})
-	conversationService.SetBillingService(billingService)
 	conversationService.SetAuditWriter(auditService)
 	conversationService.SetObjectStoreProvider(objectStoreProvider)
 	contentModerationRepo := contentmoderationrepo.NewRepo(db)
@@ -383,7 +340,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	contentModerationModule := contentmoderationhttp.NewModule(contentModerationHandler)
 	userService.SetAvatarContentOpener(avatarContentOpener{uploads: uploadService})
 	userService.SetAvatarFileValidator(uploadService)
-	userService.SetActivityStatsRepository(billingRepo)
 	authService.SetAvatarFileValidator(uploadService)
 	shutdownSignal := lifecycle.NewShutdown()
 	conversationHandler := conversationhttp.NewHandler(conversationService, uploadService, processingService, runtimeCfg, shutdownSignal)
@@ -392,15 +348,10 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	userModule := userhttp.NewModule(userHandler)
 	adminService := admin.NewService(userService, auditService)
 	adminService.SetAuthSecurityService(authService)
-	adminService.SetUsageLogService(billingService)
-	adminService.SetUsageStatisticsService(billingService)
-	adminService.SetOrderLogService(billingService)
 	adminService.SetConversationEventService(conversationService)
 	adminService.SetLogCleanupService(logCleanupService)
-	adminService.SetSubscriptionResolver(billingService)
 	adminService.SetPermissionGroupRepo(channelRepo)
 	adminService.SetPermissionGroupModelLookup(channelRepo)
-	adminService.SetPermissionGroupBillingPlanReferenceChecker(billingService)
 	adminHandler := adminhttp.NewHandler(adminService)
 	adminModule := adminhttp.NewModule(adminHandler)
 	contentModerationHandler.SetUserLabelResolver(adminService)
@@ -428,7 +379,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 		AuthService:       authService,
 		Channel:           channelModule,
 		Conversation:      conversationModule,
-		Billing:           billingModule,
 		Admin:             adminModule,
 		ContentModeration: contentModerationModule,
 		KnowledgeBase:     knowledgeBaseModule,

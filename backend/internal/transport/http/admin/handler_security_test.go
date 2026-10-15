@@ -10,10 +10,8 @@ import (
 
 	appadmin "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/admin"
 	auditapp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/audit"
-	appbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/billing"
 	userapp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/user"
 	domainaudit "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/audit"
-	domainbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/billing"
 	domainknowledgebase "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/knowledgebase"
 	domainuser "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/user"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/repository"
@@ -76,79 +74,6 @@ func TestDeleteUserReturnsConflictForBuiltinKnowledgeBaseFileOwner(t *testing.T)
 	}
 	if !strings.Contains(recorder.Body.String(), "knowledge_base.owner_file_reference") {
 		t.Fatalf("expected stable knowledge-base ownership error code, got body=%s", recorder.Body.String())
-	}
-}
-
-func TestGetUsageStatisticsRejectsConflictingSubjectFilters(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
-	service := appadmin.NewService(&handlerUserServiceFake{}, handlerAuditServiceFake{})
-	service.SetUsageStatisticsService(handlerUsageStatisticsServiceFake{})
-	handler := NewHandler(service)
-	router := gin.New()
-	router.GET("/admin/usage-statistics", handler.GetUsageStatistics)
-
-	request := httptest.NewRequest(http.MethodGet, "/admin/usage-statistics?user_id=1&permission_group_id=2", nil)
-	recorder := httptest.NewRecorder()
-	router.ServeHTTP(recorder, request)
-
-	if recorder.Code != http.StatusBadRequest {
-		t.Fatalf("expected bad request, got status=%d body=%s", recorder.Code, recorder.Body.String())
-	}
-	if !strings.Contains(recorder.Body.String(), "usage_statistics.subject_conflict") {
-		t.Fatalf("expected stable subject conflict error code, got body=%s", recorder.Body.String())
-	}
-}
-
-func TestGetUsageStatisticsResolvesRankingMetrics(t *testing.T) {
-	tests := []struct {
-		name            string
-		query           string
-		wantSection     string
-		wantModelRankBy string
-		wantUserRankBy  string
-	}{
-		{
-			name:            "default ranking metrics",
-			wantSection:     "all",
-			wantModelRankBy: "cost",
-			wantUserRankBy:  "cost",
-		},
-		{
-			name:            "independent ranking metrics",
-			query:           "?section=models&model_rank_by=tokens&user_rank_by=calls",
-			wantSection:     "models",
-			wantModelRankBy: "tokens",
-			wantUserRankBy:  "calls",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			gin.SetMode(gin.TestMode)
-			capturedFilter := appbilling.UsageStatisticsFilter{}
-			service := appadmin.NewService(&handlerUserServiceFake{}, handlerAuditServiceFake{})
-			service.SetUsageStatisticsService(handlerUsageStatisticsCaptureFake{filter: &capturedFilter})
-			handler := NewHandler(service)
-			router := gin.New()
-			router.GET("/admin/usage-statistics", handler.GetUsageStatistics)
-
-			request := httptest.NewRequest(http.MethodGet, "/admin/usage-statistics"+tt.query, nil)
-			recorder := httptest.NewRecorder()
-			router.ServeHTTP(recorder, request)
-
-			if recorder.Code != http.StatusOK {
-				t.Fatalf("expected success, got status=%d body=%s", recorder.Code, recorder.Body.String())
-			}
-			if capturedFilter.Section != tt.wantSection ||
-				capturedFilter.ModelRankBy != tt.wantModelRankBy ||
-				capturedFilter.UserRankBy != tt.wantUserRankBy {
-				t.Fatalf("unexpected ranking metrics: %+v", capturedFilter)
-			}
-			if !strings.Contains(recorder.Body.String(), `"section":"`+tt.wantSection+`"`) {
-				t.Fatalf("expected response section %q, got body=%s", tt.wantSection, recorder.Body.String())
-			}
-		})
 	}
 }
 
@@ -228,21 +153,6 @@ func (s *handlerUserServiceFake) ListAuthEvents(context.Context, userapp.AuthEve
 }
 
 type handlerAuditServiceFake struct{}
-
-type handlerUsageStatisticsServiceFake struct{}
-
-func (handlerUsageStatisticsServiceFake) GetUsageStatistics(context.Context, appbilling.UsageStatisticsFilter) (domainbilling.UsageStatistics, error) {
-	return domainbilling.UsageStatistics{}, nil
-}
-
-type handlerUsageStatisticsCaptureFake struct {
-	filter *appbilling.UsageStatisticsFilter
-}
-
-func (f handlerUsageStatisticsCaptureFake) GetUsageStatistics(_ context.Context, filter appbilling.UsageStatisticsFilter) (domainbilling.UsageStatistics, error) {
-	*f.filter = filter
-	return domainbilling.UsageStatistics{}, nil
-}
 
 func (handlerAuditServiceFake) Write(context.Context, auditapp.WriteInput) {}
 

@@ -1,29 +1,16 @@
 package settings
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
 
-	domainbilling "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/billing"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/security"
 )
 
 // settingValidator 校验去除首尾空白后的配置值；key 是 namespace:key，用于错误文案。
 type settingValidator func(value string, key string) error
-
-func allOf(validators ...settingValidator) settingValidator {
-	return func(value string, key string) error {
-		for _, validate := range validators {
-			if err := validate(value, key); err != nil {
-				return err
-			}
-		}
-		return nil
-	}
-}
 
 func boolValue() settingValidator {
 	return func(value string, key string) error {
@@ -237,95 +224,6 @@ func validateMinerUFileTypes(value string, key string) error {
 		}
 	}
 	return nil
-}
-
-func validatePaymentProviders(value string, key string) error {
-	for _, provider := range normalizePaymentProvidersSetting(value) {
-		switch provider {
-		case "stripe", "epay":
-		default:
-			return settingRule("payment_provider", "stripe,epay")
-		}
-	}
-	return nil
-}
-
-func normalizePaymentProvidersSetting(raw string) []string {
-	parts := strings.Split(raw, ",")
-	results := make([]string, 0, len(parts))
-	seen := make(map[string]struct{}, len(parts))
-	for _, part := range parts {
-		provider := strings.ToLower(strings.TrimSpace(part))
-		if provider == "" || provider == "disabled" {
-			continue
-		}
-		if _, ok := seen[provider]; ok {
-			continue
-		}
-		seen[provider] = struct{}{}
-		results = append(results, provider)
-	}
-	return results
-}
-
-func validateEPayGatewayURL(value string, key string) error {
-	if err := maxLength(512)(value, key); err != nil {
-		return err
-	}
-	if value == "" {
-		return nil
-	}
-	if _, err := domainbilling.ResolveEPaySubmitURL(value); err != nil {
-		return settingRule("epay_url", "")
-	}
-	return nil
-}
-
-type epayTypeSetting struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-}
-
-func validateEPayTypesJSON(value string, key string) error {
-	if value == "" {
-		return settingRule("required", "")
-	}
-	var items []epayTypeSetting
-	if err := json.Unmarshal([]byte(value), &items); err != nil {
-		return settingRule("json_array", "")
-	}
-	if len(items) == 0 || len(items) > 10 {
-		return settingRule("payment_count", "1,10")
-	}
-	seen := make(map[string]struct{}, len(items))
-	for _, item := range items {
-		name := strings.TrimSpace(item.Name)
-		paymentType := strings.TrimSpace(item.Type)
-		if name == "" || paymentType == "" {
-			return settingRule("payment_fields", "name,type")
-		}
-		if len(name) > 64 || len(paymentType) > 32 {
-			return settingRule("payment_item_length", "name:64,type:32")
-		}
-		if !validPaymentSettingToken(paymentType) {
-			return settingRule("payment_type_chars", "")
-		}
-		if _, ok := seen[paymentType]; ok {
-			return settingRule("payment_type_unique", "")
-		}
-		seen[paymentType] = struct{}{}
-	}
-	return nil
-}
-
-func validPaymentSettingToken(value string) bool {
-	for _, char := range value {
-		if (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') || (char >= '0' && char <= '9') || char == '_' || char == '-' {
-			continue
-		}
-		return false
-	}
-	return true
 }
 
 // validateKnowledgeBaseIDList 校验默认检索知识库的 public_id 列表：逗号分隔，最多 8 项，

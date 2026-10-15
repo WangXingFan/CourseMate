@@ -22,9 +22,6 @@ const (
 	CodeResourceNotFound         = "resource.not_found"
 	CodeResourceConflict         = "resource.conflict"
 	CodeFeatureDisabled          = "feature.disabled"
-	CodeBillingPaymentRequired   = "billing.payment_required"
-	CodeBillingInsufficientFunds = "billing.insufficient_funds"
-	CodeBillingPricingRequired   = "billing.pricing_required"
 	CodeRateLimitExceeded        = "rate_limit.exceeded"
 	CodeQuotaExceeded            = "quota.exceeded"
 	CodeFileInUse                = "file.in_use"
@@ -59,9 +56,6 @@ var codeMessages = map[string]string{
 	CodeResourceNotFound:         "resource not found",
 	CodeResourceConflict:         "resource conflict",
 	CodeFeatureDisabled:          "this feature is not available on this server",
-	CodeBillingPaymentRequired:   "payment required",
-	CodeBillingInsufficientFunds: "insufficient balance",
-	CodeBillingPricingRequired:   "model pricing is required",
 	CodeRateLimitExceeded:        "rate limit exceeded",
 	CodeQuotaExceeded:            "quota exceeded",
 	CodeFileInUse:                "file is in use",
@@ -74,7 +68,6 @@ var codeMessages = map[string]string{
 	CodeInternal:                 "internal server error",
 
 	"auth.provider_email_conflict":                  "provider email belongs to another account",
-	"billing.invalid_redemption_code":               "invalid redemption code",
 	"conversation.message_fork_history_incomplete":  "message history is too deep or incomplete",
 	"conversation.message_fork_state_invalid":       "message is still generating",
 	"conversation.message_fork_target_invalid":      "only assistant messages can be forked",
@@ -101,22 +94,13 @@ var codeMessages = map[string]string{
 	"llm.remote_models_snapshot_changed":            "remote models snapshot changed",
 	"llm.upstream_model_binding_changed":            "upstream model binding changed; reload and retry",
 	"llm.upstream_model_conflict":                   "model upstream source conflict",
-	"payment.checkout_failed":                       "create checkout failed",
-	"payment.epay_gateway_invalid":                  "epay gateway url is invalid",
-	"payment.provider_unavailable":                  "payment provider is unavailable",
 	"settings.invalid_namespace":                    "invalid setting namespace",
 	"settings.invalid_key":                          "invalid setting key",
 	"settings.invalid_value":                        "invalid setting value",
 	"settings.smtp_invalid":                         "invalid SMTP settings",
-	"settings.billing_payment_invalid":              "invalid billing payment settings",
 	"settings.embedding_invalid":                    "invalid embedding settings",
 	"settings.extract_invalid":                      "invalid file extraction settings",
 	"settings.model_option_policy_invalid":          "invalid model option policy settings",
-	"usage_statistics.invalid_billing_scope":        "invalid billing scope",
-	"usage_statistics.invalid_date_range":           "invalid usage statistics date range",
-	"usage_statistics.invalid_rank_by":              "invalid usage ranking field",
-	"usage_statistics.invalid_section":              "invalid usage statistics section",
-	"usage_statistics.subject_conflict":             "user and permission group filters are mutually exclusive",
 }
 
 func canonicalMessage(code string) (string, bool) {
@@ -134,8 +118,6 @@ func defaultDescription(status int) Description {
 		return Description{Status: status, Code: CodeResourceNotFound, Message: codeMessages[CodeResourceNotFound]}
 	case http.StatusConflict:
 		return Description{Status: status, Code: CodeResourceConflict, Message: codeMessages[CodeResourceConflict]}
-	case http.StatusPaymentRequired:
-		return Description{Status: status, Code: CodeBillingPaymentRequired, Message: codeMessages[CodeBillingPaymentRequired]}
 	case http.StatusTooManyRequests:
 		return Description{Status: status, Code: CodeRateLimitExceeded, Message: codeMessages[CodeRateLimitExceeded]}
 	case http.StatusBadGateway:
