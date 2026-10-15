@@ -143,7 +143,7 @@ export function NavUser({
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
             </DropdownMenuGroup>
-            {/* Outside the billing gate: servers without billing still offer the download. */}
+            {/* The desktop download follows the admin feature policy; no billing gate applies. */}
             <NavDesktopDownload onOpenPage={closeAfterExternalOpen} />
             <DropdownMenuSeparator />
             {isAdmin ? (

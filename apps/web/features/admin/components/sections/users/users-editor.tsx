@@ -15,7 +15,6 @@ import {
   ComboboxList,
 } from "@/components/ui/combobox";
 import {
-  DialogCollapsible,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -50,19 +49,14 @@ import {
 import { resolveAvatarImageSrc } from "@/shared/lib/avatar";
 import { TimeZoneSelect } from "@/shared/components/time-zone-select";
 import { cn } from "@/lib/utils";
-import { AdminDateTimePicker } from "@/features/admin/components/shared/date-time-picker";
 import type { AdminUserDTO, AdminUserRole, AdminUserStatus } from "@/features/admin/api/admin-types";
 import {
   USER_STATUS_OPTIONS,
   type CreateUserPayload,
   type EditUserPayload,
-  type UserTier,
 } from "@/features/admin/types/users";
-import type { AdminBillingMode, AdminBillingPlanDTO } from "@/features/admin/api/billing-types";
-import type { BillingDisplayOptions } from "@/entities/billing";
-import { formatBillingBalance, resolveDetailValue } from "@/features/admin/utils/user-display";
+import { resolveDetailValue } from "@/features/admin/utils/user-display";
 import { isAdminUserRole, isAdminUserStatus } from "@/features/admin/model/admin-unions";
-import { isString } from "@/shared/lib/type-guards";
 
 function formatSheetDateTime(value: string | null | undefined, locale: string): string {
   if (!value) {
@@ -118,8 +112,6 @@ type CreateUserDialogProps = {
   createDialogContentRef?: React.RefObject<HTMLDivElement | null>;
   createPayload: CreateUserPayload;
   setCreatePayload: React.Dispatch<React.SetStateAction<CreateUserPayload>>;
-  billingMode: AdminBillingMode;
-  billingPlans: AdminBillingPlanDTO[];
   createAvatarSource: {
     username: string;
     displayName: string;
@@ -136,8 +128,6 @@ export function CreateUserDialog({
   createDialogContentRef,
   createPayload,
   setCreatePayload,
-  billingMode,
-  billingPlans,
   createAvatarSource,
   onOpenCreateAvatarDialog,
   onCreateSubmit,
@@ -210,57 +200,6 @@ export function CreateUserDialog({
                 />
               </div>
 
-              {billingMode === "period" ? (
-                <div className="space-y-3">
-                  <div className="space-y-1">
-                    <p className="text-xs font-normal text-muted-foreground">{t("editor.subscriptionPlan")}</p>
-                    <Combobox
-                      items={billingPlans.map((plan) => plan.code)}
-                      value={createPayload.subscriptionTier}
-                      filter={null}
-                      autoComplete="none"
-                      onValueChange={(value) => {
-                        if (!isString(value)) return;
-                        setCreatePayload((current) => ({
-                          ...current,
-                          subscriptionTier: value,
-                          subscriptionExpiresAt: value === "free" ? "" : current.subscriptionExpiresAt,
-                        }));
-                      }}
-                      disabled={pending}
-                    >
-                      <ComboboxInput className="w-full min-w-0" placeholder={t("editor.selectSubscriptionPlan")} showClear={false} disabled={pending} />
-                      <ComboboxContent portalContainer={createDialogContentRef}>
-                        <ComboboxEmpty>{t("editor.noMatchingSubscriptionPlans")}</ComboboxEmpty>
-                        <ComboboxList>
-                          {(tier: UserTier) => (
-                            <ComboboxItem key={tier} value={tier}>
-                              {billingPlans.find((plan) => plan.code === tier)?.name ?? tier}
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
-                  </div>
-
-                  <DialogCollapsible open={createPayload.subscriptionTier !== "free"}>
-                    <AdminDateTimePicker
-                      value={createPayload.subscriptionExpiresAt}
-                      label={t("editor.expiryTime")}
-                      placeholder={t("editor.selectExpiryDate")}
-                      granularity="date"
-                      disabled={createPayload.subscriptionTier === "free"}
-                      disabledDate={{ before: new Date() }}
-                      onChange={(value) =>
-                        setCreatePayload((current) => ({
-                          ...current,
-                          subscriptionExpiresAt: value,
-                        }))
-                      }
-                    />
-                  </DialogCollapsible>
-                </div>
-              ) : null}
             </div>
 
             <DialogFooter className="shrink-0 px-4 py-3">
@@ -285,9 +224,6 @@ type EditUserSheetProps = {
   editDialogTarget: AdminUserDTO | null;
   editPayload: EditUserPayload;
   setEditPayload: React.Dispatch<React.SetStateAction<EditUserPayload>>;
-  billingMode: AdminBillingMode;
-  billingDisplay: BillingDisplayOptions;
-  billingPlans: AdminBillingPlanDTO[];
   statusChanged: boolean;
   timeZoneOptions: string[];
   roleOptions: AdminUserRole[];
@@ -352,9 +288,6 @@ export function EditUserSheet({
   editDialogTarget,
   editPayload,
   setEditPayload,
-  billingMode,
-  billingDisplay,
-  billingPlans,
   statusChanged,
   timeZoneOptions,
   roleOptions,
@@ -392,24 +325,6 @@ export function EditUserSheet({
     },
     [t],
   );
-  const resolveBillingAccountStatusLabel = React.useCallback(
-    (value: string | null | undefined) => {
-      switch (value?.trim()) {
-        case "active":
-          return t("billingAccountStatus.active");
-        case "frozen":
-          return t("billingAccountStatus.frozen");
-        case "closed":
-          return t("billingAccountStatus.closed");
-        case "suspended":
-          return t("billingAccountStatus.suspended");
-        default:
-          return value?.trim() || "-";
-      }
-    },
-    [t],
-  );
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent ref={editSheetContentRef} side="right" className="flex flex-col gap-0 sm:max-w-[520px]">
@@ -443,14 +358,6 @@ export function EditUserSheet({
                 <Badge variant="outline" className="text-muted-foreground">ID: {resolveDetailValue(editDialogTarget?.id)}</Badge>
                 <Badge variant="outline" className="text-muted-foreground">{resolveDetailValue(editDialogTarget?.role)}</Badge>
                 <Badge variant="outline" className="text-muted-foreground">{resolveUserStatusLabel(editDialogTarget?.status)}</Badge>
-                {billingMode === "period" ? (
-                  <Badge variant="outline" className="text-muted-foreground">{resolveDetailValue(editDialogTarget?.subscriptionTier)}</Badge>
-                ) : null}
-                {billingMode !== "self" ? (
-                  <Badge variant="outline" className="text-muted-foreground">
-                    {formatBillingBalance(editDialogTarget?.billingBalanceUSD, billingDisplay)}
-                  </Badge>
-                ) : null}
               </div>
             </div>
           </div>
@@ -581,74 +488,6 @@ export function EditUserSheet({
               ) : null}
             </div>
           </SheetSection>
-
-          {billingMode !== "self" ? (
-            <SheetSection title={t("editor.billingSection")}>
-              {billingMode === "period" ? (
-                <div className="grid gap-3 md:grid-cols-2">
-                  <div className="space-y-1">
-                    <Label className="text-xs font-normal text-muted-foreground">{t("editor.subscriptionPlan")}</Label>
-                    <Combobox
-                      items={billingPlans.map((plan) => plan.code)}
-                      value={editPayload.subscriptionTier}
-                      filter={null}
-                      autoComplete="none"
-                      onValueChange={(value) => {
-                        if (!isString(value)) return;
-                        setEditPayload((current) => ({
-                          ...current,
-                          subscriptionTier: value,
-                          subscriptionExpiresAt: value === "free" ? "" : current.subscriptionExpiresAt,
-                        }));
-                      }}
-                      disabled={pending || billingPlans.length === 0}
-                    >
-                      <ComboboxInput className="w-full min-w-0" placeholder={t("editor.selectSubscriptionPlan")} showClear={false} disabled={pending || billingPlans.length === 0} />
-                      <ComboboxContent portalContainer={editSheetContentRef}>
-                        <ComboboxEmpty>{t("editor.noMatchingSubscriptionPlans")}</ComboboxEmpty>
-                        <ComboboxList>
-                          {(tier: UserTier) => (
-                            <ComboboxItem key={tier} value={tier}>
-                              {billingPlans.find((plan) => plan.code === tier)?.name ?? tier}
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
-                  </div>
-                  <DialogCollapsible open={editPayload.subscriptionTier !== "free"}>
-                    <AdminDateTimePicker
-                      value={editPayload.subscriptionExpiresAt}
-                      label={t("editor.expiryTime")}
-                      placeholder={t("editor.selectExpiryDate")}
-                      granularity="date"
-                      disabled={pending || editPayload.subscriptionTier === "free"}
-                      disabledDate={{ before: new Date() }}
-                      onChange={(value) =>
-                        setEditPayload((current) => ({
-                          ...current,
-                          subscriptionExpiresAt: value,
-                        }))
-                      }
-                    />
-                  </DialogCollapsible>
-                </div>
-              ) : null}
-              <div className="grid gap-3 md:grid-cols-2">
-                <div className="space-y-1">
-                  <Label className="text-xs font-normal text-muted-foreground">{t("editor.accountBalance")}</Label>
-                  <Input
-                    type="number"
-                    step="0.000001"
-                    value={editPayload.billingBalanceUSD}
-                    onChange={(event) => setEditPayload((current) => ({ ...current, billingBalanceUSD: event.target.value }))}
-                    disabled={pending}
-                  />
-                </div>
-                <ReadOnlyField label={t("editor.billingStatus")} value={resolveBillingAccountStatusLabel(editDialogTarget?.billingAccountStatus || "active")} />
-              </div>
-            </SheetSection>
-          ) : null}
 
           <SheetSection title={t("editor.securitySection")}>
             <div className="grid gap-3 md:grid-cols-2">

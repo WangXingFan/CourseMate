@@ -8,8 +8,6 @@ type UseAdminUsersFiltersState = {
   setRoleFilter: (value: string) => void;
   statusFilter: string;
   setStatusFilter: (value: string) => void;
-  tierFilter: string;
-  setTierFilter: (value: string) => void;
   sortValue: UserSortValue;
   setSortValue: (value: UserSortValue) => void;
   filteredItems: AdminUserDTO[];
@@ -18,19 +16,16 @@ type UseAdminUsersFiltersState = {
 export function useAdminUsersFilters(items: AdminUserDTO[]): UseAdminUsersFiltersState {
   const [roleFilter, setRoleFilter] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState("");
-  const [tierFilter, setTierFilter] = React.useState("");
   const [sortValue, setSortValue] = React.useState<UserSortValue>("id_desc");
   const deferredRoleFilter = React.useDeferredValue(roleFilter);
   const deferredStatusFilter = React.useDeferredValue(statusFilter);
-  const deferredTierFilter = React.useDeferredValue(tierFilter);
   const deferredSortValue = React.useDeferredValue(sortValue);
 
   const filteredItems = React.useMemo(() => {
     const next = items.filter((item) => {
       const matchesRole = !deferredRoleFilter || item.role === deferredRoleFilter;
       const matchesStatus = !deferredStatusFilter || item.status === deferredStatusFilter;
-      const matchesTier = !deferredTierFilter || item.subscriptionTier === deferredTierFilter;
-      return matchesRole && matchesStatus && matchesTier;
+      return matchesRole && matchesStatus;
     });
 
     const lastActiveTimestamps = new Map(next.map((item) => [item.id, new Date(item.lastActiveAt || item.lastLoginAt || 0).getTime()]));
@@ -53,15 +48,13 @@ export function useAdminUsersFilters(items: AdminUserDTO[]): UseAdminUsersFilter
     });
 
     return next;
-  }, [deferredRoleFilter, deferredSortValue, deferredStatusFilter, deferredTierFilter, items]);
+  }, [deferredRoleFilter, deferredSortValue, deferredStatusFilter, items]);
 
   return {
     roleFilter,
     setRoleFilter,
     statusFilter,
     setStatusFilter,
-    tierFilter,
-    setTierFilter,
     sortValue,
     setSortValue,
     filteredItems,

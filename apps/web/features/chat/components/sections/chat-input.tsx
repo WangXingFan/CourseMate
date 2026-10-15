@@ -64,7 +64,6 @@ import type { FileObjectDTO } from "@/shared/api/file-types";
 import { StreamdownRender } from "@/shared/components/markdown/streamdown-render";
 import { useDialogSnapshot } from "@/shared/hooks/use-dialog-snapshot";
 import { useScrollFadeFallbackRef } from "@/shared/hooks/use-scroll-fade-fallback-ref";
-import type { BillingDisplayCurrency } from "@/entities/billing";
 import {
   LazyFilePreviewDialog,
   formatBytes,
@@ -96,8 +95,6 @@ type ChatInputProps = {
   attachments: PendingAttachment[];
   uploadingAttachments: UploadingAttachment[];
   modelOptions: ChatModelOption[];
-  billingDisplayCurrency: BillingDisplayCurrency;
-  billingDisplayUsdToCnyRate: number | null;
   selectedPlatformModelName: string;
   selectedKnowledgeBaseIDs: string[];
   queuedMessages: QueuedComposerMessage[];
@@ -171,8 +168,6 @@ function ChatInputComponent({
   attachments,
   uploadingAttachments,
   modelOptions,
-  billingDisplayCurrency,
-  billingDisplayUsdToCnyRate,
   selectedPlatformModelName,
   selectedKnowledgeBaseIDs,
   queuedMessages,
@@ -921,8 +916,6 @@ function ChatInputComponent({
             <div className="flex min-w-0 flex-1 items-center justify-end gap-1 overflow-hidden sm:gap-1.5">
               <ChatModelPicker
                 modelOptions={modelOptions}
-                billingDisplayCurrency={billingDisplayCurrency}
-                billingDisplayUsdToCnyRate={billingDisplayUsdToCnyRate}
                 selectedPlatformModelName={selectedPlatformModelName}
                 loading={modelLoading}
                 disabled={modelDisabled}

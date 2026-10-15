@@ -40,7 +40,6 @@ import { type FileContentLoader, PreviewMedia } from "@/entities/file";
 import { type MarkdownArtifactActions, MarkdownImage } from "@/shared/components/markdown/streamdown-components";
 import { StreamdownRender } from "@/shared/components/markdown/streamdown-render";
 import { useBranding } from "@/shared/config/branding-provider";
-import type { BillingDisplayCurrency } from "@/entities/billing";
 
 const EMPTY_TRACE_EVENTS: NonNullable<NonNullable<ChatAreaMessage["processTrace"]>["events"]> = [];
 const GrainientBackground = dynamic(
@@ -99,10 +98,7 @@ type ChatMessageBotProps = {
   showModelInfo?: boolean;
   showLatency?: boolean;
   showTokenUsage?: boolean;
-  showBillingCost?: boolean;
   showProcessTrace?: boolean;
-  billingDisplayCurrency?: BillingDisplayCurrency;
-  billingDisplayUsdToCnyRate?: number | null;
   readOnly?: boolean;
   attachmentContentLoader?: FileContentLoader;
   artifactActions?: MarkdownArtifactActions;
@@ -131,10 +127,7 @@ export function ChatMessageBot({
   showModelInfo = true,
   showLatency = true,
   showTokenUsage = true,
-  showBillingCost = false,
   showProcessTrace = true,
-  billingDisplayCurrency = "USD",
-  billingDisplayUsdToCnyRate = null,
   readOnly = false,
   attachmentContentLoader,
   artifactActions,
@@ -369,9 +362,6 @@ export function ChatMessageBot({
         showModelInfo={showModelInfo}
         showLatency={showLatency}
         showTokenUsage={showTokenUsage}
-        showBillingCost={showBillingCost}
-        billingDisplayCurrency={billingDisplayCurrency}
-        billingDisplayUsdToCnyRate={billingDisplayUsdToCnyRate}
         readOnly={readOnly}
         alwaysVisible={readOnly}
         showBranchNavigator={showBranchNavigator}

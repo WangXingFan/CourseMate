@@ -33,7 +33,6 @@ const ADMIN_ONBOARDING_TIPS = [
   "adminTips.files",
   "adminTips.context",
   "adminTips.trace",
-  "adminTips.billing",
   "adminTips.admin",
   "adminTips.ops",
 ];

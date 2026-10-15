@@ -37,9 +37,6 @@ export const isAdminLLMCbLogic = isOneOf(ADMIN_LLM_CB_LOGICS);
 export const ADMIN_LLM_MODEL_CB_POLICY_MODES = ["default", "enforced"] as const;
 export const isAdminLLMModelCbPolicyMode = isOneOf(ADMIN_LLM_MODEL_CB_POLICY_MODES);
 
-export const ADMIN_USAGE_STATISTICS_RANK_BY = ["cost", "tokens", "calls"] as const;
-export const isAdminUsageStatisticsRankBy = isOneOf(ADMIN_USAGE_STATISTICS_RANK_BY);
-
 export const PERMISSION_GROUP_MODEL_RULE_TYPES = ["all", "vendor", "protocol", "upstream"] as const;
 export const isPermissionGroupModelRuleType = isOneOf(PERMISSION_GROUP_MODEL_RULE_TYPES);
 

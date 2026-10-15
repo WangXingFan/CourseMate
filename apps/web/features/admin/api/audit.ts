@@ -6,9 +6,6 @@ import { authedRequest } from "@/shared/api/authed-client";
 import type {
   AdminAuditLogDTO,
   AdminConversationEventDTO,
-  AdminPaymentOrderDTO,
-  AdminRedemptionRecordDTO,
-  AdminUsageLogDTO,
   AdminUserAuthEventDTO,
 } from "@/features/admin/api/admin-types";
 import type { PagePayload } from "@/shared/api/common-types";
@@ -27,37 +24,6 @@ type ListAdminAuditLogsOptions = AdminPageOptions & {
   resource?: string;
   action?: string;
   actorUserID?: number;
-  createdFrom?: string;
-  createdTo?: string;
-  sort?: string;
-};
-
-type ListAdminUsageLogsOptions = AdminPageOptions & {
-  query?: string;
-  platformModelName?: string;
-  billingMode?: string;
-  userID?: number;
-  createdFrom?: string;
-  createdTo?: string;
-  sort?: string;
-};
-
-type ListAdminPaymentOrdersOptions = AdminPageOptions & {
-  query?: string;
-  orderType?: string;
-  provider?: string;
-  status?: string;
-  userID?: number;
-  createdFrom?: string;
-  createdTo?: string;
-  sort?: string;
-};
-
-type ListAdminRedemptionsOptions = AdminPageOptions & {
-  query?: string;
-  codeID?: number;
-  userID?: number;
-  rewardType?: string;
   createdFrom?: string;
   createdTo?: string;
   sort?: string;
@@ -155,82 +121,6 @@ export async function listAdminAuditLogs(
   }
   const data = await authedRequest<PagePayload<AdminAuditLogDTO>>(
     `/api/v1/admin/audit-logs?${params.toString()}`,
-    { accessToken },
-    true,
-  );
-
-  return normalizeAdminPagePayload(data);
-}
-
-export async function listAdminUsageLogs(
-  accessToken: string,
-  options: ListAdminUsageLogsOptions = {},
-): Promise<PagePayload<AdminUsageLogDTO>> {
-  const { page, pageSize } = resolveAdminPage(options);
-  const params = new URLSearchParams();
-  params.set("page", String(page));
-  params.set("page_size", String(pageSize));
-  if (options.query?.trim()) params.set("query", options.query.trim());
-  if (options.platformModelName?.trim()) params.set("platform_model_name", options.platformModelName.trim());
-  if (options.billingMode?.trim()) params.set("billing_mode", options.billingMode.trim());
-  if (options.userID && options.userID > 0) params.set("user_id", String(options.userID));
-  if (options.createdFrom?.trim()) params.set("created_from", options.createdFrom.trim());
-  if (options.createdTo?.trim()) params.set("created_to", options.createdTo.trim());
-  if (options.sort?.trim()) params.set("sort", options.sort.trim());
-
-  const data = await authedRequest<PagePayload<AdminUsageLogDTO>>(
-    `/api/v1/admin/call-logs?${params.toString()}`,
-    { accessToken },
-    true,
-  );
-
-  return normalizeAdminPagePayload(data);
-}
-
-export async function listAdminPaymentOrders(
-  accessToken: string,
-  options: ListAdminPaymentOrdersOptions = {},
-): Promise<PagePayload<AdminPaymentOrderDTO>> {
-  const { page, pageSize } = resolveAdminPage(options);
-  const params = new URLSearchParams();
-  params.set("page", String(page));
-  params.set("page_size", String(pageSize));
-  if (options.query?.trim()) params.set("query", options.query.trim());
-  if (options.orderType?.trim()) params.set("order_type", options.orderType.trim());
-  if (options.provider?.trim()) params.set("provider", options.provider.trim());
-  if (options.status?.trim()) params.set("status", options.status.trim());
-  if (options.userID && options.userID > 0) params.set("user_id", String(options.userID));
-  if (options.createdFrom?.trim()) params.set("created_from", options.createdFrom.trim());
-  if (options.createdTo?.trim()) params.set("created_to", options.createdTo.trim());
-  if (options.sort?.trim()) params.set("sort", options.sort.trim());
-
-  const data = await authedRequest<PagePayload<AdminPaymentOrderDTO>>(
-    `/api/v1/admin/payment-orders?${params.toString()}`,
-    { accessToken },
-    true,
-  );
-
-  return normalizeAdminPagePayload(data);
-}
-
-export async function listAdminRedemptions(
-  accessToken: string,
-  options: ListAdminRedemptionsOptions = {},
-): Promise<PagePayload<AdminRedemptionRecordDTO>> {
-  const { page, pageSize } = resolveAdminPage(options);
-  const params = new URLSearchParams();
-  params.set("page", String(page));
-  params.set("page_size", String(pageSize));
-  if (options.query?.trim()) params.set("query", options.query.trim());
-  if (options.codeID && options.codeID > 0) params.set("code_id", String(options.codeID));
-  if (options.userID && options.userID > 0) params.set("user_id", String(options.userID));
-  if (options.rewardType?.trim()) params.set("reward_type", options.rewardType.trim());
-  if (options.createdFrom?.trim()) params.set("created_from", options.createdFrom.trim());
-  if (options.createdTo?.trim()) params.set("created_to", options.createdTo.trim());
-  if (options.sort?.trim()) params.set("sort", options.sort.trim());
-
-  const data = await authedRequest<PagePayload<AdminRedemptionRecordDTO>>(
-    `/api/v1/admin/redemptions?${params.toString()}`,
     { accessToken },
     true,
   );

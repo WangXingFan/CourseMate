@@ -11,8 +11,6 @@ import {
   parseChatSettings,
 } from "@/features/settings/utils/chat-settings";
 import { useLocalizedErrorMessage } from "@/i18n/use-localized-error";
-import { getBillingConfig } from "@/shared/api/billing";
-import type { BillingMode } from "@/shared/api/billing-types";
 import { listPublicModels } from "@/shared/api/model";
 import type { PublicModelDTO } from "@/shared/api/model-types";
 import { getChatContextPolicy } from "@/shared/api/settings";
@@ -22,7 +20,6 @@ import { updateUserSettings, useUserSettings } from "@/entities/user-settings";
 type UseSettingsChatResult = {
   settings: ChatSettings;
   loading: boolean;
-  billingMode: BillingMode;
   contextCompressionEnabled: boolean;
   modelGroups: ReturnType<typeof groupModelsForPresentation>;
   handleBool: (key: string) => (checked: boolean) => void;
@@ -37,7 +34,6 @@ export function useSettingsChat(): UseSettingsChatResult {
   const userSettings = useUserSettings();
   const [models, setModels] = React.useState<PublicModelDTO[]>([]);
   const [metadataLoading, setMetadataLoading] = React.useState(true);
-  const [billingMode, setBillingMode] = React.useState<BillingMode>("self");
   const [contextCompressionEnabled, setContextCompressionEnabled] = React.useState(false);
 
   React.useEffect(() => {
@@ -45,9 +41,8 @@ export function useSettingsChat(): UseSettingsChatResult {
 
     void (async () => {
       try {
-        const [modelList, billingConfig, contextPolicy] = await Promise.all([
+        const [modelList, contextPolicy] = await Promise.all([
           listPublicModels(accessToken).catch((): PublicModelDTO[] => []),
-          getBillingConfig(accessToken).catch((): null => null),
           getChatContextPolicy(accessToken).catch(() => ({ contextCompactEnabled: false })),
         ]);
 
@@ -56,7 +51,6 @@ export function useSettingsChat(): UseSettingsChatResult {
         }
 
         setModels(modelList);
-        setBillingMode(billingConfig?.config.mode ?? "self");
         setContextCompressionEnabled(contextPolicy.contextCompactEnabled);
       } finally {
         if (!cancelled) {
@@ -111,7 +105,6 @@ export function useSettingsChat(): UseSettingsChatResult {
   return {
     settings,
     loading: metadataLoading || !userSettings.loaded,
-    billingMode,
     contextCompressionEnabled,
     modelGroups,
     handleBool,

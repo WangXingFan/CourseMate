@@ -14,7 +14,6 @@ import type {
   ConversationResponse,
   ConversationSearchPageResponse,
   ConversationSearchResultResponse,
-  MessageBillingCostResponse,
   MessageDeleteResponse,
   MessageFeedbackResponse,
   MessageProcessTraceResponse,
@@ -58,7 +57,6 @@ export type ConversationStatusFilter = "active" | "archived" | "all";
 export type ConversationStarredFilter = "all" | "starred" | "unstarred";
 export type MessageDTO = Omit<
   MessageResponse,
-  | "billingCost"
   | "modelIcon"
   | "modelVendor"
   | "platformModelName"
@@ -72,14 +70,11 @@ export type MessageDTO = Omit<
   modelIcon?: string;
   processTrace?: MessageProcessTraceDTO;
   myFeedback: "up" | "down" | "";
-  billingCost?: MessageBillingCostDTO;
 };
 
 export type ConversationRunDTO = Omit<RunResponse, "taskType">;
 
 export type ConversationRunStatusDTO = ConversationRunStatusResponse;
-
-export type MessageBillingCostDTO = MessageBillingCostResponse;
 
 export type TraceBlockDTO = MessageTraceBlockResponse;
 
@@ -219,8 +214,6 @@ export type StreamMessageEvent =
       eventID?: string;
       direction?: "input" | "output" | string;
       categories?: string[];
-      /** Non-empty means upstream usage incurred before a block is still billed; values match the ledger snapshot `billed_reason`. */
-      billedReason?: string;
     }
   | {
       type: "compact_done";
