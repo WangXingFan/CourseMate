@@ -14,6 +14,10 @@
   "beforeMessage": {
     "invalidId": "Invalid message cursor ID."
   },
+  "learning": {
+    "invalidAttempt": "Invalid practice answer. Please reopen the quiz.",
+    "attemptConflict": "This answer ID was already used for another answer. Please reopen the quiz."
+  },
   "classroom": {
     "forbidden": "Only teacher accounts can manage classes.",
     "invalid": "Enter a class name of at most 80 characters and a description of at most 255 characters.",

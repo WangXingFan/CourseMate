@@ -3450,6 +3450,92 @@ definitions:
     required:
     - errorMsg
     type: object
+  LearningAttemptData:
+    properties:
+      attempt:
+        $ref: '#/definitions/LearningAttemptResponse'
+    required:
+    - attempt
+    type: object
+  LearningAttemptRequest:
+    properties:
+      id:
+        type: string
+      questionId:
+        maxLength: 64
+        type: string
+      selected:
+        maximum: 3
+        minimum: 0
+        type: integer
+    required:
+    - id
+    - questionId
+    - selected
+    type: object
+  LearningAttemptResponse:
+    properties:
+      correct:
+        type: boolean
+      createdAt:
+        type: string
+      id:
+        type: string
+      questionId:
+        type: string
+      selected:
+        type: integer
+    required:
+    - correct
+    - createdAt
+    - id
+    - questionId
+    - selected
+    type: object
+  LearningProgressResponse:
+    properties:
+      accountId:
+        type: integer
+      questions:
+        items:
+          $ref: '#/definitions/LearningQuestionResponse'
+        type: array
+      recent:
+        items:
+          $ref: '#/definitions/LearningAttemptResponse'
+        type: array
+    required:
+    - accountId
+    - questions
+    - recent
+    type: object
+  LearningQuestionResponse:
+    properties:
+      answer:
+        type: integer
+      attempts:
+        type: integer
+      correctCount:
+        type: integer
+      id:
+        type: string
+      latest:
+        allOf:
+        - $ref: '#/definitions/LearningAttemptResponse'
+        x-nullable: true
+      lesson:
+        type: string
+      topic:
+        type: string
+    required:
+    - answer
+    - attempts
+    - correctCount
+    - id
+    - latest
+    - lesson
+    - topic
+    type: object
   LocalGrantExchangeRequest:
     properties:
       grant:
@@ -13592,6 +13678,68 @@ paths:
       summary: 将文件移出个人知识库
       tags:
       - knowledge-bases
+  /learning/attempts:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Practice answer
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/LearningAttemptRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningAttemptData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Save a personal practice answer, deduplicated by account and attempt
+        ID
+      tags:
+      - learning
+  /learning/progress:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningProgressResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Read personal practice progress and the latest 40 answers
+      tags:
+      - learning
   /llm/icon-assets/{public_id}:
     get:
       description: 公开读取经过后端校验的不可变模型展示图标

@@ -14,6 +14,10 @@
   "beforeMessage": {
     "invalidId": "消息游标 ID 无效。"
   },
+  "learning": {
+    "invalidAttempt": "作答内容无效，请重新打开练习。",
+    "attemptConflict": "这条作答编号已经用于其他答案，请重新打开练习。"
+  },
   "classroom": {
     "forbidden": "只有教师账号可以管理班级。",
     "invalid": "班级名称不能超过 80 个字符，说明不能超过 255 个字符。",

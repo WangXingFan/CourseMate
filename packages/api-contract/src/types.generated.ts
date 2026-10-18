@@ -1531,6 +1531,45 @@ export interface KnowledgebaseErrorDoc {
   errorMsg: string;
 }
 
+export interface LearningAttemptData {
+  attempt: LearningAttemptResponse;
+}
+
+export interface LearningAttemptRequest {
+  id: string;
+  /** @maxLength 64 */
+  questionId: string;
+  /**
+   * @min 0
+   * @max 3
+   */
+  selected: number;
+}
+
+export interface LearningAttemptResponse {
+  correct: boolean;
+  createdAt: string;
+  id: string;
+  questionId: string;
+  selected: number;
+}
+
+export interface LearningProgressResponse {
+  accountId: number;
+  questions: LearningQuestionResponse[];
+  recent: LearningAttemptResponse[];
+}
+
+export interface LearningQuestionResponse {
+  answer: number;
+  attempts: number;
+  correctCount: number;
+  id: string;
+  latest?: LearningAttemptResponse | null;
+  lesson: string;
+  topic: string;
+}
+
 export interface LocalGrantExchangeRequest {
   grant: string;
 }
@@ -7009,6 +7048,40 @@ export namespace KnowledgeBases {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = Blob;
+  }
+}
+
+export namespace Learning {
+  /**
+   * No description
+   * @tags learning
+   * @name AttemptsCreate
+   * @summary Save a personal practice answer, deduplicated by account and attempt ID
+   * @request POST:/learning/attempts
+   * @secure
+   */
+  export namespace AttemptsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = LearningAttemptRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningAttemptData;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name ProgressList
+   * @summary Read personal practice progress and the latest 40 answers
+   * @request GET:/learning/progress
+   * @secure
+   */
+  export namespace ProgressList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningProgressResponse;
   }
 }
 

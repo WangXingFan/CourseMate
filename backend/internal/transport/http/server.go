@@ -22,6 +22,7 @@ import (
 	contentmoderationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/contentmoderation"
 	conversationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/conversation"
 	knowledgebasehttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/knowledgebase"
+	learninghttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/learning"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/middleware"
 	settingshttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/settings"
 	systemhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/system"
@@ -51,6 +52,7 @@ type Modules struct {
 	AuthService       middleware.SessionValidator
 	Channel           *channelhttp.Module
 	Classroom         *classroomhttp.Module
+	Learning          *learninghttp.Module
 	Conversation      *conversationhttp.Module
 	Admin             *adminhttp.Module
 	ContentModeration *contentmoderationhttp.Module
@@ -163,6 +165,9 @@ func NewEngine(cfg *config.Runtime, log *zap.Logger, modules Modules, hc HealthC
 	}
 	if modules.Classroom != nil {
 		modules.Classroom.RegisterRoutes(authRequired)
+	}
+	if modules.Learning != nil {
+		modules.Learning.RegisterRoutes(authRequired)
 	}
 	if modules.KnowledgeBase != nil {
 		modules.KnowledgeBase.RegisterRoutes(authRequired)

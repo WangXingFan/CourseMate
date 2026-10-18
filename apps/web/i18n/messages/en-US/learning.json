@@ -16,6 +16,10 @@
       "experimentsDescription": "Random parameters, predict before the plot unlocks, then explain to earn a code."
     },
     "quick": {
+      "progress": {
+        "title": "Progress & mistakes",
+        "description": "Review your answers and practice by concept."
+      },
       "flow": {
         "title": "Before · During · After",
         "description": "A 15 + 45 + 30 minute checklist."

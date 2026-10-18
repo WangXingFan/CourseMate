@@ -24,6 +24,7 @@ import (
 	appembedding "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/embedding"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/extraction"
 	appknowledgebase "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/knowledgebase"
+	applearning "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/learning"
 	applogcleanup "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/logcleanup"
 	appstorage "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/objectstorage"
 	appprocessing "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/processing"
@@ -52,6 +53,7 @@ import (
 	contentmoderationrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/contentmoderation"
 	conversationrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/conversation"
 	knowledgebaserepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/knowledgebase"
+	learningrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/learning"
 	logcleanuprepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/logcleanup"
 	settingsrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/settings"
 	userrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/user"
@@ -67,6 +69,7 @@ import (
 	contentmoderationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/contentmoderation"
 	conversationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/conversation"
 	knowledgebasehttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/knowledgebase"
+	learninghttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/learning"
 	settingshttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/settings"
 	userhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/user"
 	usersettingshttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/usersettings"
@@ -378,6 +381,7 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	classroomService := appclassroom.NewService(classroomRepo, userRepo)
 	classroomHandler := classroomhttp.NewHandler(classroomService)
 	classroomModule := classroomhttp.NewModule(classroomHandler)
+	learningModule := learninghttp.NewModule(applearning.NewService(learningrepo.NewRepo(db)))
 
 	hc := newHealthChecker(db, cacheBackend)
 	rateLimiter := cacheBackend.RateLimiter()
@@ -386,6 +390,7 @@ func NewAppWithOptions(opts Options) (*App, error) {
 		AuthService:       authService,
 		Channel:           channelModule,
 		Classroom:         classroomModule,
+		Learning:          learningModule,
 		Conversation:      conversationModule,
 		Admin:             adminModule,
 		ContentModeration: contentModerationModule,

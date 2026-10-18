@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, Gamepad2, Route, Sparkles } from "lucide-react";
+import { ArrowUpRight, BookOpen, Gamepad2, Route, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -11,6 +11,7 @@ const QUICK_LINKS = [
   { id: "flow", href: "/learn/course-flow", icon: Route },
   { id: "quiz", href: "/learn/quiz", icon: Gamepad2 },
   { id: "experiments", href: "/learn/experiments", icon: Sparkles },
+  { id: "progress", href: "/learn/progress", icon: BookOpen },
 ] as const;
 
 export function LearningHub() {
@@ -32,7 +33,7 @@ export function LearningHub() {
           <p className="mt-2 text-sm leading-6 text-muted-foreground">{t("hub.description")}</p>
         </header>
 
-        <div className="grid gap-2 sm:grid-cols-3">
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {QUICK_LINKS.map((link) => {
             const Icon = link.icon;
             return (

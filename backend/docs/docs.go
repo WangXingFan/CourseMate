@@ -10204,6 +10204,104 @@ const docTemplate = `{
                 }
             }
         },
+        "/learning/attempts": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Save a personal practice answer, deduplicated by account and attempt ID",
+                "parameters": [
+                    {
+                        "description": "Practice answer",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LearningAttemptRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningAttemptData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/progress": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Read personal practice progress and the latest 40 answers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningProgressResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/llm/icon-assets/{public_id}": {
             "get": {
                 "description": "公开读取经过后端校验的不可变模型展示图标",
@@ -17138,6 +17236,131 @@ const docTemplate = `{
             ],
             "properties": {
                 "errorMsg": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningAttemptData": {
+            "type": "object",
+            "required": [
+                "attempt"
+            ],
+            "properties": {
+                "attempt": {
+                    "$ref": "#/definitions/LearningAttemptResponse"
+                }
+            }
+        },
+        "LearningAttemptRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "questionId",
+                "selected"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "questionId": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "selected": {
+                    "type": "integer",
+                    "maximum": 3,
+                    "minimum": 0
+                }
+            }
+        },
+        "LearningAttemptResponse": {
+            "type": "object",
+            "required": [
+                "correct",
+                "createdAt",
+                "id",
+                "questionId",
+                "selected"
+            ],
+            "properties": {
+                "correct": {
+                    "type": "boolean"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "questionId": {
+                    "type": "string"
+                },
+                "selected": {
+                    "type": "integer"
+                }
+            }
+        },
+        "LearningProgressResponse": {
+            "type": "object",
+            "required": [
+                "accountId",
+                "questions",
+                "recent"
+            ],
+            "properties": {
+                "accountId": {
+                    "type": "integer"
+                },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningQuestionResponse"
+                    }
+                },
+                "recent": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningAttemptResponse"
+                    }
+                }
+            }
+        },
+        "LearningQuestionResponse": {
+            "type": "object",
+            "required": [
+                "answer",
+                "attempts",
+                "correctCount",
+                "id",
+                "latest",
+                "lesson",
+                "topic"
+            ],
+            "properties": {
+                "answer": {
+                    "type": "integer"
+                },
+                "attempts": {
+                    "type": "integer"
+                },
+                "correctCount": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "latest": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/LearningAttemptResponse"
+                        }
+                    ],
+                    "x-nullable": true
+                },
+                "lesson": {
+                    "type": "string"
+                },
+                "topic": {
                     "type": "string"
                 }
             }
