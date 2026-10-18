@@ -7,11 +7,14 @@ import enDesktopSetup from "@/i18n/messages/en-US/desktop-setup.json";
 import enDesktopTabs from "@/i18n/messages/en-US/desktop-tabs.json";
 import enDesktopUpdate from "@/i18n/messages/en-US/desktop-update.json";
 import enChat from "@/i18n/messages/en-US/chat.json";
+import enClassrooms from "@/i18n/messages/en-US/classrooms.json";
 import enCommon from "@/i18n/messages/en-US/common.json";
 import enConversation from "@/i18n/messages/en-US/conversation.json";
 import enErrors from "@/i18n/messages/en-US/errors.json";
 import enGuide from "@/i18n/messages/en-US/guide.json";
 import enKnowledgeBases from "@/i18n/messages/en-US/knowledge-bases.json";
+import enLearning from "@/i18n/messages/en-US/learning.json";
+import enLearningLabs from "@/i18n/messages/en-US/learning-labs.json";
 import enLogin from "@/i18n/messages/en-US/login.json";
 import enRecent from "@/i18n/messages/en-US/recent.json";
 import enSettings from "@/i18n/messages/en-US/settings.json";
@@ -24,11 +27,14 @@ const ENGLISH_MESSAGES = {
   login: enLogin,
   guide: enGuide,
   chat: enChat,
+  classrooms: enClassrooms,
   desktopSetup: enDesktopSetup,
   desktopTabs: enDesktopTabs,
   desktopUpdate: enDesktopUpdate,
   recent: enRecent,
   knowledgeBases: enKnowledgeBases,
+  learning: enLearning,
+  learningLabs: enLearningLabs,
   settings: enSettings,
   adminFiles: enAdminFiles,
   adminModels: enAdminModels,
@@ -96,8 +102,11 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
     login,
     guide,
     chat,
+    classrooms,
     recent,
     knowledgeBases,
+    learning,
+    learningLabs,
     settings,
     adminFiles,
     adminModels,
@@ -113,8 +122,11 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
     import("@/i18n/messages/zh-CN/login.json"),
     import("@/i18n/messages/zh-CN/guide.json"),
     import("@/i18n/messages/zh-CN/chat.json"),
+    import("@/i18n/messages/zh-CN/classrooms.json"),
     import("@/i18n/messages/zh-CN/recent.json"),
     import("@/i18n/messages/zh-CN/knowledge-bases.json"),
+    import("@/i18n/messages/zh-CN/learning.json"),
+    import("@/i18n/messages/zh-CN/learning-labs.json"),
     import("@/i18n/messages/zh-CN/settings.json"),
     import("@/i18n/messages/zh-CN/admin-files.json"),
     import("@/i18n/messages/zh-CN/admin-models.json"),
@@ -132,8 +144,11 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
     login: login.default,
     guide: guide.default,
     chat: chat.default,
+    classrooms: classrooms.default,
     recent: recent.default,
     knowledgeBases: knowledgeBases.default,
+    learning: learning.default,
+    learningLabs: learningLabs.default,
     settings: settings.default,
     adminFiles: adminFiles.default,
     adminModels: adminModels.default,

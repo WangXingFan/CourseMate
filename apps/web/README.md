@@ -108,6 +108,24 @@ Next.js 的 route group（`(app)`、`(auth)`、`(project)`、`(shell)`）只用�
 | `/chat` | 对话工作区 |
 | `/recent` | 最近会话 |
 | `/knowledge-bases` | 知识库管理 |
+| `/classrooms` | 教师班级管理、学生名单与课堂小测 |
+| `/activities` | 学生端课堂活动与已发布小测 |
+| `/learn` | 学习实验室：信号与系统互动概念页 |
+| `/learn/convolution` | 卷积的可视化实验 |
+| `/learn/sampling` | 采样与混叠实验 |
+| `/learn/fourier-series` | 傅里叶级数实验 |
+| `/learn/first-order` | 一阶系统与时间常数实验 |
+| `/learn/fourier-transform` | 矩形脉冲与 sinc 频谱实验 |
+| `/learn/laplace` | 极点、ROC 与稳定性实验 |
+| `/learn/second-order` | 二阶系统阻尼与超调实验 |
+| `/learn/modulation` | AM 调制与边带实验 |
+| `/learn/experiments` | 四章随机参数闯关入口 |
+| `/learn/experiments/signal-basics` | 实验一：能量/功率信号分类 |
+| `/learn/experiments/time-domain` | 实验二：一阶系统时间常数 |
+| `/learn/experiments/frequency-domain` | 实验三：矩形脉冲频谱 |
+| `/learn/experiments/s-domain` | 实验四：s 域极点与响应 |
+| `/learn/quiz` | 90 秒快问快答 |
+| `/learn/course-flow` | 课前、课中、课后清单与出口条 |
 | `/settings/general` | 通用偏好 |
 | `/settings/chat` | 对话偏好 |
 | `/settings/account` | 账户与身份源 |

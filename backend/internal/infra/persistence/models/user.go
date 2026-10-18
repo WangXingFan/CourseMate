@@ -8,7 +8,9 @@ const (
 	// RoleAdmin 是后台管理员角色。
 	RoleAdmin = "admin"
 	// RoleUser 是普通用户角色。
-	RoleUser = "user"
+	RoleUser    = "user"
+	RoleTeacher = "teacher"
+	RoleStudent = "student"
 )
 
 const (
@@ -33,7 +35,7 @@ type User struct {
 	AvatarURL             string     `gorm:"size:2048;not null;default:'';index:idx_identity_users_file_avatar_url,where:avatar_url LIKE 'file:%';comment:头像地址"`
 	Email                 string     `gorm:"size:128;not null;default:'';index:idx_identity_users_email;comment:邮箱"`
 	Phone                 string     `gorm:"size:32;not null;default:'';index:idx_identity_users_phone;comment:手机号"`
-	Role                  string     `gorm:"size:32;not null;default:'user';index:idx_identity_users_role;comment:角色(superadmin/admin/user)"`
+	Role                  string     `gorm:"size:32;not null;default:'user';index:idx_identity_users_role;comment:角色(superadmin/admin/user/teacher/student)"`
 	Status                string     `gorm:"size:32;not null;default:'active';index:idx_identity_users_status;comment:账户状态"`
 	Timezone              string     `gorm:"size:64;not null;default:'Etc/UTC';comment:时区"`
 	Locale                string     `gorm:"size:16;not null;default:'en-US';comment:语言区域"`

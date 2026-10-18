@@ -7,7 +7,7 @@ import { isOneOf } from "@/shared/lib/type-guards";
 export const ADMIN_USER_STATUSES = ["pending_activation", "active", "locked", "suspended", "deactivated"] as const;
 export const isAdminUserStatus = isOneOf(ADMIN_USER_STATUSES);
 
-export const ADMIN_USER_ROLES = ["user", "admin", "superadmin"] as const;
+export const ADMIN_USER_ROLES = ["user", "teacher", "student", "admin", "superadmin"] as const;
 export const isAdminUserRole = isOneOf(ADMIN_USER_ROLES);
 
 export const ADMIN_LLM_STATUSES = ["active", "inactive"] as const;

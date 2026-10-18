@@ -1,0 +1,619 @@
+{
+  "common": {
+    "scenario": "Scenario",
+    "seed": "Prompt ID",
+    "newQuestion": "New question",
+    "hidden": "Submit your prediction to unlock the plot. The plot is not the answer; it is there to test your reasoning."
+  },
+  "prediction": {
+    "title": "Predict first, then look",
+    "predictFirst": "Required",
+    "description": "Use the formula and the parameters to commit to an answer, and write down why. The plot appears only after you submit.",
+    "optionsLabel": "Choose one answer",
+    "reasonLabel": "Your reasoning",
+    "reasonPlaceholder": "For example: because the real part of the pole is negative, the envelope decays as e^{σt}, so ...",
+    "reasonHint": "Write at least {count} characters. A because-therefore sentence is more useful than a bare conclusion.",
+    "submit": "Submit and unlock",
+    "retry": "Edit and retry",
+    "noPenalty": "A wrong answer is not penalised, but you must resubmit your reasoning.",
+    "correct": "Correct",
+    "incorrect": "Not quite",
+    "correctHint": "The plot is unlocked. Check that your reasoning explains the key feature of the curve.",
+    "incorrectHint": "The plot is unlocked. Before changing your answer, find the part that contradicts your prediction.",
+    "codeLabel": "Completion code",
+    "copyRecord": "Copy record",
+    "copied": "Copied"
+  },
+  "fourierTransform": {
+    "title": "Fourier transform: pulse and sinc",
+    "subtitle": "A narrower pulse gives a wider main lobe; the pulse area sets the DC value. Drag the width and watch time and frequency trade places.",
+    "formula": "X(j\\omega)=A\\tau\\,\\operatorname{sinc}\\left(\\frac{\\omega\\tau}{2}\\right)",
+    "controls": {
+      "title": "Parameters",
+      "description": "x(t) is a rectangle of width τ and height A, centred at the origin.",
+      "width": "Pulse width τ",
+      "widthHint": "Changing the width moves the spectral zeros.",
+      "amplitude": "Pulse height A",
+      "amplitudeHint": "The height only scales the result linearly."
+    },
+    "readouts": {
+      "width": "Pulse width",
+      "dc": "DC value X(0)",
+      "dcHint": "Equal to the pulse area Aτ",
+      "firstZero": "First zero",
+      "firstZeroHint": "At f = 1/τ",
+      "area": "Pulse area",
+      "areaHint": "Aτ sets the overall spectral height"
+    },
+    "plot": {
+      "timeTitle": "Time domain: rectangle",
+      "timeDescription": "The shaded area is Aτ, which is also X(0).",
+      "timeAxis": "t (s)",
+      "pulse": "x(t)",
+      "spectrumTitle": "Frequency domain: sinc envelope",
+      "spectrumDescription": "The dashed line marks the first zero. Side lobes decay as frequency grows.",
+      "freqAxis": "f (Hz)",
+      "spectrum": "|X(jω)|",
+      "firstZeroLabel": "first zero"
+    },
+    "insight": {
+      "title": "What to notice",
+      "duality": "Rectangle ↔ sinc is a fundamental pair: the boxier the time signal, the more spread-out the spectrum.",
+      "scaling": "Halve τ and the main lobe doubles in width; double A and the whole spectrum doubles in height.",
+      "zeros": "Zeros sit at f = k/τ (k = ±1, ±2, ...), not at arbitrary frequencies.",
+      "uncertainty": "A narrow time signal needs a wide band. This is the signals version of an uncertainty principle."
+    },
+    "experiment": {
+      "title": "Try this",
+      "narrow": "Move τ from 2 s to 0.5 s. Predict whether the main lobe widens or narrows.",
+      "predict": "Compute 1/τ first, then check the first zero on the plot.",
+      "connect": "Fix τ and change only A: the zeros stay put while the height scales."
+    }
+  },
+  "laplace": {
+    "title": "Laplace transform: poles and the ROC",
+    "subtitle": "Drag a conjugate pole pair across the imaginary axis: left half-plane decays, the axis oscillates, the right half-plane grows. The ROC decides causality and stability.",
+    "formula": "H(s)=\\frac{\\omega_0^2}{(s-\\sigma)^2+\\omega^2},\\qquad \\omega_0^2=\\sigma^2+\\omega^2",
+    "controls": {
+      "title": "Parameters",
+      "description": "The poles are at σ ± jω. This lab assumes a causal system, so the ROC lies to the right of the rightmost pole.",
+      "sigma": "Real part σ",
+      "sigmaHint": "σ < 0 is stable, σ = 0 is marginal, σ > 0 is unstable.",
+      "omega": "Imaginary part ω",
+      "omegaHint": "ω sets the oscillation rate; |σ| sets how fast the envelope decays or grows."
+    },
+    "readouts": {
+      "poles": "Poles",
+      "stability": "Stability",
+      "stabilityHint": "Check whether every pole is in the left half-plane",
+      "roc": "ROC",
+      "oscillation": "Oscillation frequency",
+      "oscillationHint": "f = ω/(2π)",
+      "stable": "Stable",
+      "unstable": "Unstable",
+      "marginal": "Marginally stable",
+      "decayTitle": "Read the response from the poles",
+      "decayDescription": "The real part controls the envelope and the imaginary part controls oscillation; together they determine h(t).",
+      "poleRadius": "Pole magnitude |p|",
+      "decayTime": "Decay time constant",
+      "decayTimeHint": "1/|σ|",
+      "rocAxis": "ROC and the jω axis",
+      "includesAxis": "Includes the jω axis",
+      "excludesAxis": "Does not include the jω axis",
+      "responseType": "Response shape",
+      "decaying": "Decaying oscillation",
+      "growing": "Growing oscillation",
+      "constant": "Constant-amplitude oscillation"
+    },
+    "plot": {
+      "pzTitle": "s-plane and ROC",
+      "pzDescription": "The shaded region is to the right of the rightmost pole; a causal ROC extends to the right.",
+      "impulseTitle": "Impulse response h(t)",
+      "impulseDescription": "The envelope is e^{σt}; ω controls the oscillation.",
+      "clipped": "Peak is about {peak}; the vertical axis is clipped.",
+      "timeAxis": "t (s)",
+      "impulse": "h(t)"
+    },
+    "insight": {
+      "title": "What to notice",
+      "left": "A left half-plane pole gives an e^{σt} decaying envelope: stable.",
+      "axis": "A simple pole on the imaginary axis gives constant oscillation: marginal.",
+      "right": "A right half-plane pole gives a growing envelope: unstable.",
+      "roc": "The ROC contains the jω axis if and only if the system is stable. For a causal system the ROC is to the right of the rightmost pole."
+    },
+    "experiment": {
+      "title": "Try this",
+      "cross": "Move σ from −2 to 1 slowly. Predict how the envelope of h(t) changes.",
+      "omega": "Fix σ and change only ω: the oscillation gets denser while the envelope stays the same.",
+      "roc": "At σ = 0, does the ROC still contain the jω axis? Is the system stable?"
+    }
+  },
+  "secondOrder": {
+    "title": "Second-order systems: damping decides",
+    "subtitle": "ζ controls overshoot and ωn controls speed. Move from underdamped to overdamped and watch peak time and settling time.",
+    "formula": "H(s)=\\frac{\\omega_n^2}{s^2+2\\zeta\\omega_n s+\\omega_n^2}",
+    "controls": {
+      "title": "Parameters",
+      "description": "ζ is the damping ratio and ωn is the undamped natural frequency. The step response settles at 1.",
+      "zeta": "Damping ratio ζ",
+      "zetaHint": "ζ < 1 is underdamped, ζ = 1 is critical, ζ > 1 is overdamped.",
+      "naturalFrequency": "Natural frequency ωn",
+      "naturalFrequencyHint": "A larger ωn makes the whole response faster."
+    },
+    "readouts": {
+      "overshoot": "Overshoot",
+      "overshootHint": "Only ζ < 1 overshoots",
+      "peakTime": "Peak time",
+      "settling": "Settling time (2%)",
+      "settlingHint": "About 4/(ζωn)",
+      "dampedFrequency": "Damped frequency"
+    },
+    "plot": {
+      "title": "Step response",
+      "description": "The dashed line is the final value 1; the marker is the first peak.",
+      "timeAxis": "t (s)",
+      "finalValue": "Final value",
+      "response": "y(t)",
+      "peak": "peak"
+    },
+    "insight": {
+      "title": "What to notice",
+      "under": "A smaller ζ means more overshoot and ringing, but a faster rise.",
+      "critical": "At ζ = 1 there is no overshoot: the fastest response without overshoot.",
+      "over": "For ζ > 1 there is no overshoot, but the two real poles separate and the response slows down.",
+      "natural": "Fix ζ and increase ωn: the whole response is compressed in time."
+    },
+    "experiment": {
+      "title": "Try this",
+      "fixed": "Fix ωn = 2 and move ζ from 0.1 to 1.0, recording the overshoot.",
+      "cross": "Set ζ exactly to 1 and confirm that the overshoot is zero.",
+      "compare": "Compare the settling time at ζ = 0.5 and ζ = 2, and explain why overdamped is not always faster."
+    }
+  },
+  "modulation": {
+    "title": "Modulation: moving the spectrum to a carrier",
+    "subtitle": "Use a baseband cosine to control the carrier amplitude. Inspect the carrier, the sidebands, and the overmodulation that appears when m > 1.",
+    "formula": "x(t)=\\left[1+m\\cos(2\\pi f_m t)\\right]\\cos(2\\pi f_c t)",
+    "controls": {
+      "title": "Parameters",
+      "description": "fm is the baseband frequency, fc is the carrier and m is the modulation index.",
+      "message": "Baseband fm",
+      "messageHint": "How fast the envelope changes.",
+      "carrier": "Carrier fc",
+      "carrierHint": "Where the spectrum is moved.",
+      "index": "Modulation index m",
+      "indexHint": "When m > 1 the envelope crosses zero: overmodulation."
+    },
+    "readouts": {
+      "bandwidth": "Bandwidth",
+      "bandwidthHint": "AM bandwidth is 2fm",
+      "sidebands": "Sidebands",
+      "status": "Status",
+      "normal": "Normal AM",
+      "normalHint": "The envelope stays positive",
+      "overmodulated": "Overmodulated",
+      "overmodulatedHint": "The envelope inverts and envelope detection distorts",
+      "powerSplit": "Carrier power share",
+      "powerSplitHint": "Pc/Ptotal = 1/(1+m²/2)"
+    },
+    "plot": {
+      "timeTitle": "Time domain: carrier and envelope",
+      "timeDescription": "The dashed curves are ±[1 + m cos(2πfm t)], which set the envelope of the modulated signal.",
+      "timeAxis": "t (s)",
+      "signal": "x(t)",
+      "spectrumTitle": "Frequency domain: carrier and sidebands",
+      "spectrumDescription": "Modulation moves the baseband spectrum to either side of fc; each line height depends on m.",
+      "freqAxis": "f (Hz)",
+      "amplitudeAxis": "amplitude"
+    },
+    "insight": {
+      "title": "What to notice",
+      "shift": "Multiplication moves the baseband spectrum to ±fc; it is a shift, not a copy.",
+      "sidebands": "Single-tone modulation produces only two sidebands, at fc − fm and fc + fm.",
+      "bandwidth": "AM bandwidth is twice the baseband bandwidth: B = 2fm.",
+      "overmodulation": "When m > 1 the envelope goes negative, so simple envelope detection cannot recover the baseband."
+    },
+    "experiment": {
+      "title": "Try this",
+      "zero": "Set m = 0 and watch the sidebands disappear, leaving only the carrier.",
+      "increase": "Move m from 0.5 to 1.4 and compare the envelope with the spectral lines.",
+      "observe": "Fix m and change fc: the sideband spacing depends only on fm."
+    }
+  },
+  "experimentHub": {
+    "title": "Four chapter challenges",
+    "subtitle": "Every attempt randomises the parameters. Predict, then reveal the plot, then explain it in your own words. A correct answer produces a completion code.",
+    "minutes": "{count} min",
+    "topics": {
+      "experiment-signal": {
+        "title": "Lab 1: signal classification",
+        "description": "A random energy, power or growing signal: decide which class it belongs to.",
+        "tag": "Chapter 1"
+      },
+      "experiment-time": {
+        "title": "Lab 2: time constant",
+        "description": "Random τ and k: predict how far the response has travelled at kτ.",
+        "tag": "Chapter 2"
+      },
+      "experiment-frequency": {
+        "title": "Lab 3: pulse spectrum",
+        "description": "Random pulse width: predict the first zero or the DC value.",
+        "tag": "Chapter 3"
+      },
+      "experiment-s": {
+        "title": "Lab 4: pole placement",
+        "description": "Random pole locations: identify the impulse-response shape and stability.",
+        "tag": "Chapter 4"
+      }
+    },
+    "how": {
+      "title": "How completion works",
+      "description": "The plot is a verification tool, not the answer.",
+      "steps": {
+        "seed": {
+          "title": "Random prompt",
+          "description": "Each new question gives a fresh parameter set and prompt ID."
+        },
+        "predict": {
+          "title": "Predict before the plot",
+          "description": "The plot is hidden until you submit, so you cannot work backwards from the curve."
+        },
+        "explain": {
+          "title": "Write the reason",
+          "description": "At least 20 characters, with a clear because-therefore structure."
+        },
+        "code": {
+          "title": "Completion code",
+          "description": "Generated after a correct answer; hand it in together with the prompt ID."
+        }
+      },
+      "note": "In class, draw a prompt ID at random and ask the student to explain the plot aloud, not just hand in code."
+    }
+  },
+  "experiments": {
+    "signalBasics": {
+      "title": "Lab 1: classifying signals",
+      "subtitle": "A signal is generated at random. Decide whether it is an energy signal, a power signal, or neither. Read the expression first.",
+      "formula": "E=\\int_{-\\infty}^{\\infty}|x(t)|^2dt,\\qquad P=\\lim_{T\\to\\infty}\\frac{1}{T}\\int_{-T/2}^{T/2}|x(t)|^2dt",
+      "scenarioDescription": "Decide from the expression, without looking at the waveform first.",
+      "question": "Which class does this signal belong to?",
+      "questionFallback": "Which class does this signal belong to?",
+      "options": {
+        "energy": "Energy signal",
+        "power": "Power signal",
+        "neither": "Neither",
+        "both": "Both an energy and a power signal"
+      },
+      "scenario": {
+        "energy": "x(t) = {a}·e^{−{d}t}·u(t)",
+        "power": "x(t) = {a}·cos(2π·{f}t)",
+        "ramp": "x(t) = {a}·t·u(t)"
+      },
+      "type": {
+        "energy": "One-sided decaying exponential",
+        "power": "Constant-amplitude cosine",
+        "ramp": "One-sided ramp"
+      },
+      "readouts": {
+        "type": "Signal type",
+        "energy": "Energy E",
+        "power": "Average power P"
+      },
+      "plot": {
+        "timeTitle": "Waveform check",
+        "timeDescription": "Shown after you submit. Check whether the signal decays to zero at infinity.",
+        "timeAxis": "t (s)",
+        "amplitude": "Amplitude"
+      },
+      "insight": {
+        "title": "How to decide",
+        "energy": "Energy signal: E is finite and positive, and the average power is zero.",
+        "power": "Power signal: the average power is finite and positive, and the energy is infinite.",
+        "neither": "The ramp t·u(t) has both infinite energy and infinite power, so it is neither."
+      }
+    },
+    "timeDomain": {
+      "title": "Lab 2: time constant",
+      "subtitle": "Given K and τ of a first-order system, predict what percentage of the final value the response has reached at t = kτ. Calculate first, then look.",
+      "formula": "y(t)=K\\left(1-e^{-t/\\tau}\\right)",
+      "scenarioDescription": "The parameters change every time; estimate from the formula instead of reading the plot.",
+      "scenario": "K = {gain}, τ = {tau} s. Find the response at t = {k}τ.",
+      "question": "At t = {k}τ, roughly what percentage of the final value has y(t) reached?",
+      "questionFallback": "At t = kτ, roughly what percentage of the final value has y(t) reached?",
+      "plot": {
+        "title": "Step-response check",
+        "description": "Shown after you submit; the dashed line is the final value K and the marker sits at kτ.",
+        "timeAxis": "t (s)",
+        "finalValue": "Final value K",
+        "response": "y(t)"
+      },
+      "readouts": {
+        "gain": "DC gain K",
+        "tau": "Time constant τ",
+        "valueAt": "y({k}τ)",
+        "valueAtHint": "Compute it from the formula, not from the plot",
+        "settling": "5τ settling time"
+      },
+      "insight": {
+        "title": "Remember these three numbers",
+        "tau": "t = τ: 63.2%; t = 2τ: 86.5%; t = 3τ: 95.0%.",
+        "multiples": "These percentages do not depend on K or τ, only on the multiple k.",
+        "gain": "K changes only the final value, not the time needed to reach 63.2%."
+      }
+    },
+    "frequencyDomain": {
+      "title": "Lab 3: spectrum of a rectangular pulse",
+      "subtitle": "Random pulse width τ and height A: predict the first spectral zero or the DC value. The answer comes from the formula, not the plot.",
+      "formula": "X(f)=A\\tau\\,\\operatorname{sinc}(f\\tau)",
+      "scenarioDescription": "Write X(f) first, then decide whether the question asks for a zero or the DC value.",
+      "scenario": "x(t) = {a}·rect(t/{tau}), where rect equals 1 for |t| < τ/2.",
+      "question": {
+        "zero": "At what frequency is the first positive zero of |X(f)|?",
+        "dc": "What is the spectral value |X(0)| at f = 0?"
+      },
+      "plot": {
+        "timeTitle": "Pulse in time",
+        "timeDescription": "Shown after you submit.",
+        "pulse": "x(t)",
+        "timeAxis": "t (s)",
+        "spectrumTitle": "Magnitude spectrum",
+        "spectrumDescription": "Shown after you submit; the dashed line marks the first zero.",
+        "spectrum": "|X(f)|",
+        "freqAxis": "f (Hz)",
+        "firstZero": "first zero"
+      },
+      "readouts": {
+        "dc": "DC value |X(0)|",
+        "firstZero": "First zero",
+        "mainLobe": "Main-lobe width"
+      },
+      "insight": {
+        "title": "The formula gives the answer",
+        "sinc": "The spectrum of a rectangle is a sinc: X(f) = Aτ·sinc(fτ).",
+        "inverse": "Zeros satisfy fτ = 1, so f = 1/τ.",
+        "dc": "The DC value equals the pulse area Aτ."
+      }
+    },
+    "sDomain": {
+      "title": "Lab 4: poles decide the response",
+      "subtitle": "Random pole locations: identify the impulse-response shape and stability. Read the s-plane condition before the time curve.",
+      "formula": "H(s)=\\frac{1}{(s-p_1)(s-p_2)},\\qquad h(t)=\\mathcal{L}^{-1}\\{H(s)\\}",
+      "scenarioDescription": "Decide from the pole locations only; do not look at h(t) first.",
+      "scenario": {
+        "complex": "H(s) has a conjugate pole pair at {sigma} ± j{omega}.",
+        "real": "H(s) has a double real pole at s = {sigma}."
+      },
+      "question": "Which shape is the impulse response most likely to have?",
+      "options": {
+        "decay": "Decaying oscillation",
+        "constant": "Constant-amplitude oscillation",
+        "grow": "Growing oscillation",
+        "monotonic": "Monotonic decay (no oscillation)"
+      },
+      "stability": {
+        "stable": "Stable",
+        "marginal": "Marginally stable",
+        "unstable": "Unstable"
+      },
+      "plot": {
+        "pzTitle": "s-plane and ROC",
+        "pzDescription": "The shaded region is the ROC; for a causal system it lies right of the rightmost pole.",
+        "impulseTitle": "Impulse response h(t)",
+        "impulseDescription": "Shown after you submit; watch the envelope and the oscillation.",
+        "timeAxis": "t (s)"
+      },
+      "readouts": {
+        "title": "Check your answer",
+        "poles": "Poles",
+        "doublePole": "{sigma} (double)",
+        "stability": "Stability",
+        "roc": "ROC",
+        "shape": "Response shape"
+      },
+      "insight": {
+        "title": "How to decide",
+        "left": "Conjugate poles in the left half-plane → decaying oscillation.",
+        "axis": "Conjugate poles on the imaginary axis → constant-amplitude oscillation, marginally stable.",
+        "right": "Conjugate poles in the right half-plane → growing oscillation, unstable.",
+        "repeat": "A double real pole → a t·e^{σt} shape, still monotonic (it may rise before falling)."
+      }
+    }
+  },
+  "quiz": {
+    "title": "Quick quiz",
+    "subtitle": "Answer 12 random concept questions in 90 seconds. Correct answers score points and consecutive correct answers earn a streak bonus.",
+    "formula": "\\text{score}=10\\times\\text{correct}+\\text{streak bonus}",
+    "intro": {
+      "title": "Rules",
+      "description": "Questions span all four chapters; the explanation appears right after each answer.",
+      "questions": "Questions",
+      "duration": "Time limit",
+      "perQuestion": "Average per question",
+      "ruleOne": "A correct answer is worth 10 points; each consecutive correct answer adds +2 (up to +10).",
+      "ruleTwo": "Wrong answers lose no points, but the streak resets.",
+      "ruleThree": "Time-up ends the round automatically; unanswered questions do not count toward accuracy.",
+      "start": "Start challenge"
+    },
+    "hud": {
+      "progress": "Question {current}/{total}"
+    },
+    "question": {
+      "eyebrow": "Current question",
+      "description": "Choose one answer; it cannot be changed after you submit.",
+      "next": "Next question",
+      "finish": "See results"
+    },
+    "result": {
+      "title": "Round complete",
+      "description": "Check the score, then review the misses; the misses are worth more of your time than the score.",
+      "score": "Score",
+      "correct": "Correct",
+      "accuracy": "Accuracy",
+      "streak": "Best streak",
+      "restart": "Play again",
+      "back": "Back to rules"
+    },
+    "review": {
+      "title": "Misses and review",
+      "description": "Every question you answered this round, with the correct answer.",
+      "empty": "No answers were recorded before time ran out.",
+      "answer": "Correct answer: {answer}"
+    },
+    "questions": {
+      "energy-signal": {
+        "prompt": "Which class does x(t) = e^{−2t}u(t) belong to?",
+        "option1": "Energy signal",
+        "option2": "Power signal",
+        "option3": "Neither",
+        "option4": "Both an energy and a power signal",
+        "explain": "The decaying exponential has finite energy and zero average power, so it is an energy signal."
+      },
+      "convolution-shift": {
+        "prompt": "If h(t) = δ(t − 2), then y(t) = x(t) * h(t) equals?",
+        "option1": "x(t + 2)",
+        "option2": "x(2t)",
+        "option3": "x(t − 2)",
+        "option4": "x(t)",
+        "explain": "Convolution with a delayed impulse shifts the input right by 2: y(t) = x(t − 2)."
+      },
+      "step-response": {
+        "prompt": "For a first-order system y(t)=K(1−e^{−t/τ}), at t=τ the response reaches what fraction of its final value?",
+        "option1": "50%",
+        "option2": "63.2%",
+        "option3": "86.5%",
+        "option4": "95%",
+        "explain": "1 − e^{−1} ≈ 0.632, so one time constant reaches 63.2%."
+      },
+      "aliasing": {
+        "prompt": "With f0=5 Hz and fs=8 Hz, what apparent frequency appears after aliasing?",
+        "option1": "5 Hz",
+        "option2": "8 Hz",
+        "option3": "13 Hz",
+        "option4": "3 Hz",
+        "explain": "|5 − 8| = 3 Hz; after sampling the high frequency folds to 3 Hz."
+      },
+      "nyquist": {
+        "prompt": "A signal has a highest frequency of 4 kHz. What is the theoretical minimum sampling rate?",
+        "option1": "8 kHz",
+        "option2": "4 kHz",
+        "option3": "2 kHz",
+        "option4": "16 kHz",
+        "explain": "The Nyquist rate is twice the highest frequency, namely 8 kHz."
+      },
+      "square-wave": {
+        "prompt": "The Fourier series of a square wave contains only odd harmonics mainly because the square wave is?",
+        "option1": "Even",
+        "option2": "Odd",
+        "option3": "Periodic",
+        "option4": "An energy signal",
+        "explain": "Odd symmetry removes the cosine terms; half-wave symmetry then removes the even harmonics."
+      },
+      "pulse-spectrum": {
+        "prompt": "As a rectangular pulse gets wider, its main spectral lobe becomes?",
+        "option1": "Wider",
+        "option2": "Unchanged",
+        "option3": "Narrower",
+        "option4": "Wider then narrower",
+        "explain": "Widening in time compresses the spectrum: the main-lobe width scales with 1/τ."
+      },
+      "time-constant": {
+        "prompt": "For a first-order system, as τ increases the cutoff frequency fc will?",
+        "option1": "Decrease",
+        "option2": "Increase",
+        "option3": "Stay the same",
+        "option4": "First rise then fall",
+        "explain": "fc = 1/(2πτ), so a larger τ means a narrower bandwidth."
+      },
+      "damping": {
+        "prompt": "As the damping ratio ζ of a second-order system increases from 0.3 to 0.7, the overshoot usually?",
+        "option1": "Increases",
+        "option2": "Decreases",
+        "option3": "Stays the same",
+        "option4": "Becomes infinite",
+        "explain": "Overshoot decreases as ζ grows; at ζ ≥ 1 there is no overshoot."
+      },
+      "right-half-plane": {
+        "prompt": "A continuous system has a pole in the right half-plane. The system is?",
+        "option1": "Stable",
+        "option2": "Marginally stable",
+        "option3": "Impossible to tell",
+        "option4": "Unstable",
+        "explain": "A right-half-plane pole contributes a growing exponential, so the system is unstable."
+      },
+      "am-bandwidth": {
+        "prompt": "An AM signal whose baseband highest frequency is fm has a bandwidth of about?",
+        "option1": "fm",
+        "option2": "4fm",
+        "option3": "2fm",
+        "option4": "0.5fm",
+        "explain": "The upper and lower sidebands each occupy fm, so the total bandwidth is 2fm."
+      },
+      "imaginary-axis": {
+        "prompt": "A conjugate pole pair on the imaginary axis corresponds to an impulse response that is?",
+        "option1": "A constant-amplitude oscillation",
+        "option2": "A decaying oscillation",
+        "option3": "A monotonic decay",
+        "option4": "A growing oscillation",
+        "explain": "The real part is zero, so the envelope neither decays nor grows: the oscillation has constant amplitude."
+      }
+    }
+  },
+  "courseFlow": {
+    "title": "Before · during · after",
+    "subtitle": "Connect a 15-minute preview, a 45-minute class, and a 30-minute review. Your checks are saved in this browser.",
+    "progress": {
+      "title": "Overall progress",
+      "description": "Check each item as you finish it; progress is stored only in this browser.",
+      "hint": "Aim to finish the first 3 items before class, the middle 3 during class, and the last 3 afterwards."
+    },
+    "phases": {
+      "before": {
+        "title": "15 minutes before class",
+        "description": "Bring one question to class instead of an empty head.",
+        "items": {
+          "read": "Skim this chapter's formulas and definitions",
+          "warmup": "Play one quick-quiz round and note what felt fuzzy",
+          "predict": "Make one overlap-area prediction on the convolution page"
+        }
+      },
+      "during": {
+        "title": "45 minutes in class",
+        "description": "Decide alone, explain in a pair, then look at the demo.",
+        "items": {
+          "challenge": "Draw a chapter lab at random and write your prediction first",
+          "explain": "Explain to a partner why the plot looks the way it does",
+          "exit": "Write a one-minute exit ticket"
+        }
+      },
+      "after": {
+        "title": "30 minutes after class",
+        "description": "Turn 'I saw it' into 'I can say it'.",
+        "items": {
+          "experiment": "Finish the chapter lab and record the prompt ID and completion code",
+          "selfcheck": "Reach 80% accuracy in the quick quiz",
+          "question": "Write one question about the next chapter you still want to ask"
+        }
+      }
+    },
+    "openLab": "Open the matching lab",
+    "exit": {
+      "title": "One-minute exit ticket",
+      "description": "Close with two sentences: one conclusion and one confusion. Copy it to your teacher or the class discussion.",
+      "keepLabel": "The most important conclusion today",
+      "keepPlaceholder": "For example: the real part of a pole sets the envelope, the imaginary part sets the oscillation rate.",
+      "stuckLabel": "One point I still do not understand",
+      "stuckPlaceholder": "For example: why is a system unstable when the ROC excludes the imaginary axis?",
+      "copy": "Copy exit ticket",
+      "copied": "Copied"
+    },
+    "reset": "Clear this page",
+    "teacher": {
+      "title": "Teacher verification tips",
+      "description": "Look at the reasoning, not the code.",
+      "before": "Draw 2 students before class and ask them to explain the parameters behind a prompt ID in their own words.",
+      "during": "Have students hide the plot, write a prediction, and only then unlock it.",
+      "after": "Collect completion codes and reasons; a code is derived from the prompt ID and the correct answer, so it is quick to check.",
+      "code": "The same prompt ID must produce the same code; the reasoning must be the student's own wording."
+    }
+  }
+}

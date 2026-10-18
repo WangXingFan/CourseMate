@@ -17,6 +17,7 @@ import (
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/audit"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/auth"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/channel"
+	appclassroom "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/classroom"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/compact"
 	appcontentmoderation "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/contentmoderation"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/conversation"
@@ -47,6 +48,7 @@ import (
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence"
 	auditrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/audit"
 	channelrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/channel"
+	classroomrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/classroom"
 	contentmoderationrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/contentmoderation"
 	conversationrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/conversation"
 	knowledgebaserepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/knowledgebase"
@@ -61,6 +63,7 @@ import (
 	adminhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/admin"
 	authhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/auth"
 	channelhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/channel"
+	classroomhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/classroom"
 	contentmoderationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/contentmoderation"
 	conversationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/conversation"
 	knowledgebasehttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/knowledgebase"
@@ -371,6 +374,10 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	conversationService.SetKnowledgeBaseResolver(knowledgeBaseService)
 	knowledgeBaseHandler := knowledgebasehttp.NewHandler(knowledgeBaseService, runtimeCfg)
 	knowledgeBaseModule := knowledgebasehttp.NewModule(knowledgeBaseHandler)
+	classroomRepo := classroomrepo.NewRepo(db)
+	classroomService := appclassroom.NewService(classroomRepo, userRepo)
+	classroomHandler := classroomhttp.NewHandler(classroomService)
+	classroomModule := classroomhttp.NewModule(classroomHandler)
 
 	hc := newHealthChecker(db, cacheBackend)
 	rateLimiter := cacheBackend.RateLimiter()
@@ -378,6 +385,7 @@ func NewAppWithOptions(opts Options) (*App, error) {
 		Auth:              authModule,
 		AuthService:       authService,
 		Channel:           channelModule,
+		Classroom:         classroomModule,
 		Conversation:      conversationModule,
 		Admin:             adminModule,
 		ContentModeration: contentModerationModule,

@@ -1,0 +1,274 @@
+{
+  "common": {
+    "back": "Back to learning lab",
+    "interactive": "Interactive"
+  },
+  "hub": {
+    "eyebrow": "Signals & Systems Lab",
+    "title": "Build intuition by changing one parameter",
+    "description": "One parameter and one plot at a time, for the ideas that are hardest to see in a textbook: convolution, sampling, spectra, poles and feedback.",
+    "interactive": "Interactive",
+    "footer": "Every plot is computed locally in your browser. Change a parameter, predict what will happen, then check the result.",
+    "sections": {
+      "concepts": "Concept labs",
+      "conceptsDescription": "Change a parameter first, then return to the formula to explain it.",
+      "experiments": "Chapter challenges",
+      "experimentsDescription": "Random parameters, predict before the plot unlocks, then explain to earn a code."
+    },
+    "quick": {
+      "flow": {
+        "title": "Before · During · After",
+        "description": "A 15 + 45 + 30 minute checklist."
+      },
+      "quiz": {
+        "title": "Quick quiz",
+        "description": "12 random questions in 90 seconds."
+      },
+      "experiments": {
+        "title": "Four chapter challenges",
+        "description": "Random prompts; the plot unlocks only after you predict."
+      }
+    },
+    "inClass": "Class challenge",
+    "experimentsNote": "Each attempt generates a prompt ID and a completion code. Reshuffle for a new parameter set, which is useful for in-class spot checks."
+  },
+  "topics": {
+    "convolution": {
+      "title": "Convolution, visually",
+      "description": "Flip, shift, multiply and integrate two signals. See why the output is the overlapping area.",
+      "tag": "LTI systems"
+    },
+    "sampling": {
+      "title": "Sampling and aliasing",
+      "description": "Lower the sampling rate until a fast sine starts pretending to be a slow one.",
+      "tag": "Sampling theorem"
+    },
+    "fourier-series": {
+      "title": "Fourier series",
+      "description": "Add odd harmonics one by one and watch a square wave emerge, with its stubborn Gibbs ripple.",
+      "tag": "Spectrum"
+    },
+    "first-order": {
+      "title": "First-order systems",
+      "description": "Connect the time constant to 63.2%, settling time and the cutoff frequency.",
+      "tag": "Time constant"
+    },
+    "fourier-transform": {
+      "title": "Fourier transform: pulse and sinc",
+      "description": "Change the pulse width and watch the main lobe, zeros and spectrum trade places.",
+      "tag": "Frequency domain"
+    },
+    "laplace": {
+      "title": "Laplace transform: poles and ROC",
+      "description": "Drag a pole across the imaginary axis and watch decay become oscillation, then growth.",
+      "tag": "s-domain"
+    },
+    "second-order": {
+      "title": "Second-order systems",
+      "description": "Tune ζ and ωn to connect overshoot, peak time and settling time.",
+      "tag": "Dynamics"
+    },
+    "modulation": {
+      "title": "Modulation: moving the spectrum",
+      "description": "Shift a baseband signal around a carrier and inspect sidebands, bandwidth and overmodulation.",
+      "tag": "Communications"
+    },
+    "experiment-signal": {
+      "title": "Lab 1: signal classification",
+      "description": "A random energy, power or growing signal: decide which class it belongs to.",
+      "tag": "Chapter 1"
+    },
+    "experiment-time": {
+      "title": "Lab 2: time constant",
+      "description": "Random τ and k: predict how far the response has travelled at kτ.",
+      "tag": "Chapter 2"
+    },
+    "experiment-frequency": {
+      "title": "Lab 3: pulse spectrum",
+      "description": "Random pulse width: predict the first zero or the DC value.",
+      "tag": "Chapter 3"
+    },
+    "experiment-s": {
+      "title": "Lab 4: pole placement",
+      "description": "Random pole locations: identify the impulse-response shape and stability.",
+      "tag": "Chapter 4"
+    }
+  },
+  "convolution": {
+    "title": "Convolution: the moving overlap",
+    "subtitle": "A rectangle convolved with a decaying exponential. Move t and watch the overlap area become y(t).",
+    "formula": "y(t)=\\int_{-\\infty}^{\\infty}x(\\tau)h(t-\\tau)\\,d\\tau",
+    "controls": {
+      "title": "Parameters",
+      "description": "x(t) is a unit rectangle on [-0.5, 0.5]; h(t) = e^{-t}u(t).",
+      "time": "Shift t",
+      "timeHint": "Move the reversed kernel across the input."
+    },
+    "readouts": {
+      "integral": "Overlap area",
+      "integralHint": "Numerical integral of the product",
+      "exact": "Exact y(t)",
+      "exactHint": "Closed-form value",
+      "overlap": "Overlap range",
+      "overlapHint": "Where both signals are non-zero",
+      "phase": "Current stage"
+    },
+    "phases": {
+      "before": "No overlap",
+      "rising": "Rising",
+      "falling": "Falling"
+    },
+    "plot": {
+      "overlapTitle": "Flip, shift, multiply",
+      "overlapDescription": "The shaded region is the integrand; its area is the output at this t.",
+      "amplitude": "amplitude",
+      "product": "x(τ)h(t−τ)",
+      "currentT": "current t",
+      "outputTitle": "Accumulated area = output",
+      "outputDescription": "The marker follows the area under the product as t moves."
+    },
+    "steps": {
+      "title": "Four operations",
+      "flip": "Flip h(τ) to h(−τ).",
+      "shift": "Shift by t to obtain h(t−τ).",
+      "multiply": "Multiply x(τ) by h(t−τ).",
+      "integrate": "Integrate the product over τ."
+    },
+    "observe": {
+      "title": "What to notice",
+      "noOverlap": "Before t = −0.5 the signals never overlap, so the output stays zero.",
+      "rising": "Between −0.5 and 0.5 the overlap grows: the output rises like 1 − e^{−(t+0.5)}.",
+      "falling": "After 0.5 the overlap shrinks and the output decays exponentially.",
+      "area": "Convolution is not pointwise multiplication; it accumulates area over the whole overlap."
+    }
+  },
+  "sampling": {
+    "title": "Sampling and aliasing",
+    "subtitle": "Sample a cosine at different rates. Below the Nyquist rate, a fast signal leaves a slow-looking set of samples.",
+    "formula": "x_s[n]=x(nT_s),\\qquad f_s=\\frac{1}{T_s}",
+    "controls": {
+      "title": "Parameters",
+      "description": "x(t) = cos(2π f₀ t), sampled every T_s = 1/f_s seconds.",
+      "signalFrequency": "Signal frequency f₀",
+      "signalHint": "The physical frequency you want to capture.",
+      "samplingFrequency": "Sampling frequency f_s",
+      "samplingHint": "The number of samples taken per second."
+    },
+    "readouts": {
+      "nyquist": "Nyquist rate 2f₀",
+      "samplesPerPeriod": "Samples / period",
+      "status": "Status",
+      "aliased": "Aliased",
+      "safe": "Resolved",
+      "aliasedHint": "f_s is below 2f₀.",
+      "safeHint": "f_s is at or above 2f₀.",
+      "alias": "Apparent frequency",
+      "aliasHint": "The low-frequency cosine that fits the same samples."
+    },
+    "plot": {
+      "title": "Continuous signal, samples and alias",
+      "description": "Dots are the samples the system actually sees. The dashed curve is an alias that passes through the same dots.",
+      "timeAxis": "t (s)",
+      "amplitude": "amplitude",
+      "continuous": "Continuous x(t)",
+      "alias": "Alias frequency"
+    },
+    "theory": {
+      "title": "Why aliasing happens",
+      "nyquist": "A real sinusoid is uniquely determined by samples only when f_s > 2f₀. The threshold 2f₀ is the Nyquist rate.",
+      "overlap": "Sampling multiplies by an impulse train, which copies the spectrum every f_s. When copies overlap, high frequencies fold down.",
+      "edge": "At exactly f_s = 2f₀ the samples determine the frequency but not the phase, so this is a boundary case rather than a comfortable design point."
+    },
+    "experiment": {
+      "title": "Try this",
+      "lowRate": "Set f_s to 6 Hz with f₀ = 5 Hz. Predict the apparent frequency before looking at the readout.",
+      "increase": "Raise f_s above 10 Hz and watch the alias disappear.",
+      "compare": "Compare the number of samples per period with the visual smoothness of the reconstruction.",
+      "question": "If the samples alone are given, can you tell 5 Hz from 7 Hz at f_s = 12 Hz?"
+    }
+  },
+  "fourierSeries": {
+    "title": "Fourier series: from sine waves to a square wave",
+    "subtitle": "A square wave is an infinite sum of odd harmonics. Increase N and watch the edges sharpen while the ripple stays.",
+    "formula": "x(t)=\\frac{4}{\\pi}\\sum_{k=1,3,5,\\ldots}^{N}\\frac{\\sin(2\\pi k t)}{k}",
+    "controls": {
+      "title": "Parameters",
+      "description": "The fundamental is 1 Hz. Only odd harmonics contribute.",
+      "harmonics": "Highest harmonic N",
+      "harmonicsHint": "N is always odd; the slider adds two harmonics at a time."
+    },
+    "readouts": {
+      "harmonics": "Harmonics",
+      "peak": "Peak value",
+      "peakHint": "Maximum of the partial sum",
+      "overshoot": "Overshoot",
+      "overshootHint": "Above the ideal square-wave level of 1"
+    },
+    "plot": {
+      "timeTitle": "Time domain",
+      "timeDescription": "The dashed line is the ideal square wave; the solid line is the finite partial sum.",
+      "ideal": "Ideal square wave",
+      "partial": "Partial sum with N = {count}",
+      "spectrumTitle": "Line spectrum",
+      "spectrumDescription": "Odd harmonics only, with amplitude 4/(πk).",
+      "harmonicAxis": "harmonic k",
+      "amplitudeAxis": "amplitude"
+    },
+    "insight": {
+      "title": "What the spectrum tells you",
+      "odd": "The square wave has odd symmetry, so only sine terms with odd k survive.",
+      "decay": "Harmonic amplitude falls as 1/k: high frequencies are present, but progressively weaker.",
+      "gibbs": "Near a jump the partial sum overshoots by about 9% and the overshoot does not vanish as N grows.",
+      "convergence": "More harmonics reduce the transition width, so the approximation converges in energy even though the pointwise error at the jump does not go away."
+    },
+    "experiment": {
+      "title": "Try this",
+      "step": "Set N = 1 and notice that the result is just a sine wave.",
+      "observe": "Increase N to 31 and watch the edge get steeper while the ripple remains.",
+      "spectrum": "Predict the amplitude of the 9th harmonic before checking the spectrum."
+    }
+  },
+  "firstOrder": {
+    "title": "First-order systems: the time constant",
+    "subtitle": "A first-order step response reaches 63.2% at one time constant, 95% at three, and is essentially settled at five.",
+    "formula": "y(t)=K\\left(1-e^{-t/\\tau}\\right)",
+    "controls": {
+      "title": "Parameters",
+      "description": "K is the DC gain and τ sets how fast the system responds.",
+      "gain": "DC gain K",
+      "gainHint": "The final value of the step response.",
+      "timeConstant": "Time constant τ",
+      "timeConstantHint": "Larger τ means a slower system."
+    },
+    "readouts": {
+      "atTau": "y(τ)",
+      "atTauHint": "63.2% of the final value",
+      "atTwoTau": "y(2τ)",
+      "settling": "Settling time ≈ 5τ",
+      "settlingHint": "Within about 1% of the final value",
+      "cutoff": "Cutoff f_c",
+      "cutoffHint": "First-order low-pass: f_c = 1/(2πτ)"
+    },
+    "plot": {
+      "title": "Step response",
+      "description": "The horizontal dashed line is the final value K = {value}.",
+      "timeAxis": "t (s)",
+      "finalValue": "Final value K",
+      "response": "Step response y(t)"
+    },
+    "insight": {
+      "title": "Why 63.2%?",
+      "definition": "τ is the time for the response to cover 1 − e^{−1} ≈ 63.2% of the remaining distance to the final value.",
+      "meaning": "At t = τ the slope has already fallen to 1/e of its initial value, so the response visibly slows down.",
+      "bandwidth": "A slower time response means a narrower bandwidth: f_c = 1/(2πτ).",
+      "gain": "K scales the whole response vertically; it does not change the settling time."
+    },
+    "experiment": {
+      "title": "Try this",
+      "changeTau": "Double τ and observe that the 63.2% point moves to the right.",
+      "changeGain": "Change K and confirm that the shape stays the same while the final value scales.",
+      "readPoint": "Read y at τ, 2τ and 3τ, then compare with the readouts.",
+      "connect": "Connect the cutoff frequency to the time constant: smaller τ means wider bandwidth."
+    }
+  }
+}

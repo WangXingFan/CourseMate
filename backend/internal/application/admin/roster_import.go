@@ -231,7 +231,7 @@ func (s *Service) createRosterAccount(
 			DisplayName:           candidate.displayName,
 			Email:                 candidate.email,
 			EmailSource:           domainuser.EmailSourceAdminSet,
-			Role:                  domainuser.RoleUser,
+			Role:                  domainuser.RoleStudent,
 			Status:                domainuser.StatusActive,
 			Timezone:              rosterDefaultTimezone,
 			Locale:                rosterDefaultLocale,
