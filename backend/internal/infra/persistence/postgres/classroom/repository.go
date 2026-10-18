@@ -190,11 +190,6 @@ func (r *Repo) GetStudentClassroom(ctx context.Context, studentID uint) (*domain
 	return r.GetClassroom(ctx, publicID)
 }
 
-type quizRow struct {
-	models.ClassroomQuiz
-	SubmissionCount int64 `gorm:"column:submission_count"`
-}
-
 func (r *Repo) CreateQuiz(ctx context.Context, input domain.Quiz) (*domain.Quiz, error) {
 	if input.PublicID == "" || input.ClassroomID == 0 || input.TeacherID == 0 || len(input.Questions) == 0 {
 		return nil, repository.ErrInvalidInput
