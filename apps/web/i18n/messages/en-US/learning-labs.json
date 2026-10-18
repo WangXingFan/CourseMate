@@ -419,6 +419,62 @@
       }
     }
   },
+  "progress": {
+    "title": "Progress & mistakes",
+    "description": "Keep your answers, find the concepts to revisit, and review your account's progress on any device.",
+    "loading": "Loading practice history…",
+    "saving": "Saving your answer…",
+    "synced": "Synced to your account",
+    "loadFailed": "Could not load practice history.",
+    "accountChanged": "The signed-in account changed. Reload the page to continue.",
+    "accountUnavailable": "Could not read the current account. Reload the page to try again.",
+    "saveFailed": "{count} answers still need to be saved. Please retry.",
+    "retry": "Reload",
+    "retrySave": "Retry saving",
+    "newQuiz": "Start a quick quiz",
+    "totalAnswers": "Total answers",
+    "accuracy": "Overall accuracy",
+    "unresolved": "To practice",
+    "corrected": "Latest answer correct",
+    "scope": "Includes quick quizzes and mistake practice. A correct latest answer does not by itself demonstrate mastery.",
+    "viewLabel": "Practice history view",
+    "mistakes": "Mistakes",
+    "history": "Recent answers",
+    "topicLabel": "Concept",
+    "allTopics": "All concepts",
+    "includeCorrected": "Include mistakes answered correctly most recently",
+    "practiceMistakes": "Practice unresolved mistakes",
+    "emptyTitle": "Start with one round",
+    "emptyHint": "Missed quiz questions appear here automatically. Review the explanation and try again to check your understanding.",
+    "noPending": "No unresolved mistakes in this selection",
+    "noPendingHint": "Choose another concept or include previously corrected questions to keep practicing.",
+    "historyHint": "The latest 40 answers are shown; totals above include your entire history.",
+    "historyEmpty": "No answers in this selection yet.",
+    "yourAnswer": "Your choice: {answer}",
+    "correctAnswer": "Correct answer: {answer}",
+    "retryQuestion": "Try again",
+    "mistakeCount": "{count} incorrect attempts",
+    "latestCorrect": "Latest answer correct",
+    "needsPractice": "To practice",
+    "showExplanation": "Show answer and explanation",
+    "reviewLesson": "Revisit the experiment",
+    "practiceTitle": "Mistake practice",
+    "practiceDescription": "Take your time. Decide independently, then check your reasoning against the explanation. Your answers update your practice history.",
+    "practiceRule": "Each answer reveals an explanation. A correct retry updates the latest-answer status while preserving the mistake history.",
+    "noPracticeQuestions": "No matching questions. Return to your mistakes or start a full quiz.",
+    "untimed": "Untimed",
+    "topics": {
+      "signal-classification": "Signal classification",
+      "convolution": "Convolution and time shifts",
+      "time-constant": "First-order systems",
+      "sampling": "Sampling and aliasing",
+      "fourier-series": "Fourier series",
+      "fourier-transform": "Fourier transform",
+      "second-order": "Second-order systems",
+      "poles": "Poles and stability",
+      "modulation": "Modulation and bandwidth"
+    }
+  },
   "quiz": {
     "title": "Quick quiz",
     "subtitle": "Answer 12 random concept questions in 90 seconds. Correct answers score points and consecutive correct answers earn a streak bonus.",
@@ -431,7 +487,7 @@
       "perQuestion": "Average per question",
       "ruleOne": "A correct answer is worth 10 points; each consecutive correct answer adds +2 (up to +10).",
       "ruleTwo": "Wrong answers lose no points, but the streak resets.",
-      "ruleThree": "Time-up ends the round automatically; unanswered questions do not count toward accuracy.",
+      "ruleThree": "Time-up ends the round automatically; unanswered questions do not count toward accuracy. The timer pauses while saving.",
       "start": "Start challenge"
     },
     "hud": {
@@ -501,9 +557,9 @@
         "explain": "The Nyquist rate is twice the highest frequency, namely 8 kHz."
       },
       "square-wave": {
-        "prompt": "The Fourier series of a square wave contains only odd harmonics mainly because the square wave is?",
+        "prompt": "What directly makes the even harmonics vanish in a symmetric periodic square wave?",
         "option1": "Even",
-        "option2": "Odd",
+        "option2": "Half-wave symmetry",
         "option3": "Periodic",
         "option4": "An energy signal",
         "explain": "Odd symmetry removes the cosine terms; half-wave symmetry then removes the even harmonics."
@@ -533,7 +589,7 @@
         "explain": "Overshoot decreases as ζ grows; at ζ ≥ 1 there is no overshoot."
       },
       "right-half-plane": {
-        "prompt": "A continuous system has a pole in the right half-plane. The system is?",
+        "prompt": "A causal rational continuous-time LTI system has a right-half-plane pole (no pole-zero cancellation). Its BIBO stability is?",
         "option1": "Stable",
         "option2": "Marginally stable",
         "option3": "Impossible to tell",

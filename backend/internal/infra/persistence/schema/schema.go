@@ -15,6 +15,7 @@ func Models() []any {
 		&models.ClassroomStudent{},
 		&models.ClassroomQuiz{},
 		&models.ClassroomQuizSubmission{},
+		&models.LearningAttempt{},
 		&models.UserContactVerification{},
 		&models.UserCredential{},
 		&models.UserSession{},

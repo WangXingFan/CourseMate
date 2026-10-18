@@ -13,4 +13,5 @@ export { TimeDomainExperiment } from "@/features/learning/components/experiments
 export { FrequencyDomainExperiment } from "@/features/learning/components/experiments/frequency-domain-experiment";
 export { SDomainExperiment } from "@/features/learning/components/experiments/s-domain-experiment";
 export { LearningQuiz } from "@/features/learning/components/quiz/learning-quiz";
+export { LearningProgress } from "@/features/learning/components/learning-progress";
 export { CourseFlow } from "@/features/learning/components/course-flow/course-flow";

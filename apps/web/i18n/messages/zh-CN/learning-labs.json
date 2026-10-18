@@ -419,6 +419,62 @@
       }
     }
   },
+  "progress": {
+    "title": "学习记录与错题本",
+    "description": "把每一次作答留下来，找到需要再想一遍的知识点。记录随账号保存，可在其他设备查看。",
+    "loading": "正在读取学习记录…",
+    "saving": "正在保存作答…",
+    "synced": "已与账号同步",
+    "loadFailed": "学习记录加载失败。",
+    "accountChanged": "账号已切换，请刷新页面后继续。",
+    "accountUnavailable": "无法读取当前账号，请刷新页面重试。",
+    "saveFailed": "还有 {count} 条作答未保存，请重试。",
+    "retry": "重新加载",
+    "retrySave": "重试保存",
+    "newQuiz": "开始快问快答",
+    "totalAnswers": "累计作答",
+    "accuracy": "累计正确率",
+    "unresolved": "待练习错题",
+    "corrected": "最近已答对",
+    "scope": "目前统计快问快答与错题重练。最近答对表示该题的最新一次作答正确，不代表已完全掌握。",
+    "viewLabel": "学习记录视图",
+    "mistakes": "错题本",
+    "history": "最近作答",
+    "topicLabel": "知识点",
+    "allTopics": "全部知识点",
+    "includeCorrected": "显示最近已答对的错题",
+    "practiceMistakes": "练习待订正错题",
+    "emptyTitle": "从第一次练习开始",
+    "emptyHint": "完成快问快答后，答错的题目会自动收进这里。每道错题都能回看解析，再做一次验证理解。",
+    "noPending": "当前范围没有待练习错题",
+    "noPendingHint": "可以切换知识点，或勾选显示最近已答对的错题，继续巩固。",
+    "historyHint": "展示最近 40 次作答；上方累计数据包含全部记录。",
+    "historyEmpty": "当前范围还没有作答记录。",
+    "yourAnswer": "你的选择：{answer}",
+    "correctAnswer": "正确答案：{answer}",
+    "retryQuestion": "重练这题",
+    "mistakeCount": "累计答错 {count} 次",
+    "latestCorrect": "最近已答对",
+    "needsPractice": "待练习",
+    "showExplanation": "展开答案与解析",
+    "reviewLesson": "回看对应实验",
+    "practiceTitle": "错题重练",
+    "practiceDescription": "放慢一点，先独立判断，再用解析核对思路。本轮不限时，作答会更新到学习记录。",
+    "practiceRule": "每题选择一次后显示解析。答对后标记为最近已答对，原有错题历史继续保留。",
+    "noPracticeQuestions": "当前没有符合条件的题目，可以返回错题本或开始一轮快问快答。",
+    "untimed": "不限时",
+    "topics": {
+      "signal-classification": "信号分类",
+      "convolution": "卷积与时移",
+      "time-constant": "一阶系统与时间常数",
+      "sampling": "采样与混叠",
+      "fourier-series": "傅里叶级数",
+      "fourier-transform": "傅里叶变换",
+      "second-order": "二阶系统",
+      "poles": "极点与稳定性",
+      "modulation": "调制与带宽"
+    }
+  },
   "quiz": {
     "title": "快问快答",
     "subtitle": "90 秒内随机完成 12 道概念题。答对得分，连续答对有连击加成。",
@@ -431,7 +487,7 @@
       "perQuestion": "平均每题",
       "ruleOne": "答对得 10 分，连续答对每次额外 +2 分（最多 +10）。",
       "ruleTwo": "答错不扣分，但连击会清零。",
-      "ruleThree": "时间到自动结算；没答的题不计入正确率。",
+      "ruleThree": "时间到自动结算；没答的题不计入正确率，保存作答时暂停计时。",
       "start": "开始挑战"
     },
     "hud": {
@@ -501,9 +557,9 @@
         "explain": "奈奎斯特率是最高频率的两倍，即 8 kHz。"
       },
       "square-wave": {
-        "prompt": "方波的傅里叶级数只含奇次谐波，主要因为方波是？",
+        "prompt": "对称周期方波的傅里叶级数中偶次谐波为零，直接原因是？",
         "option1": "偶函数",
-        "option2": "奇函数",
+        "option2": "具有半波对称性",
         "option3": "周期函数",
         "option4": "能量信号",
         "explain": "奇对称使余弦项消失；半波对称进一步让偶次谐波为零。"
@@ -533,7 +589,7 @@
         "explain": "超调随 ζ 增大而减小；ζ ≥ 1 时超调为零。"
       },
       "right-half-plane": {
-        "prompt": "连续系统有极点位于右半平面，系统？",
+        "prompt": "因果有理连续时间 LTI 系统有右半平面极点（无极零抵消），其 BIBO 稳定性是？",
         "option1": "稳定",
         "option2": "临界稳定",
         "option3": "无法判断",

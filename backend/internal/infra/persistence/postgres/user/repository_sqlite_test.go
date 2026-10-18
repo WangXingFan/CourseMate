@@ -143,6 +143,9 @@ func TestDeleteAccountHardRemovesUserScopedAssociations(t *testing.T) {
 		t.Fatalf("seed knowledge base file associations: %v", err)
 	}
 
+	if err = db.Create(&models.LearningAttempt{UserID: user.ID, AttemptID: "delete-user-attempt", QuestionID: "energy-signal", Selected: 1}).Error; err != nil {
+		t.Fatalf("seed learning attempt: %v", err)
+	}
 	if err = NewRepo(db).DeleteAccountHard(context.Background(), user.ID); err != nil {
 		t.Fatalf("DeleteAccountHard() error = %v", err)
 	}
@@ -156,6 +159,7 @@ func TestDeleteAccountHardRemovesUserScopedAssociations(t *testing.T) {
 	}
 	for label, item := range map[string]any{
 		"knowledge base files": &models.KnowledgeBaseFile{},
+		"learning attempts":    &models.LearningAttempt{},
 	} {
 		if err = db.Model(item).Count(&count).Error; err != nil {
 			t.Fatalf("count %s: %v", label, err)

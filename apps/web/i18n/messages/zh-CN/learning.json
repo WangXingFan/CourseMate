@@ -16,6 +16,10 @@
       "experimentsDescription": "随机题目、先预测后看图，提交理由后生成完成码。"
     },
     "quick": {
+      "progress": {
+        "title": "学习记录与错题本",
+        "description": "回看每次作答，按知识点练习错题。"
+      },
       "flow": {
         "title": "课前 · 课中 · 课后",
         "description": "一张清单安排 15 + 45 + 30 分钟。"
