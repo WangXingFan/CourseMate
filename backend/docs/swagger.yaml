@@ -151,6 +151,14 @@ definitions:
     required:
     - fileIDs
     type: object
+  AddStudentRequest:
+    properties:
+      username:
+        example: s20260001
+        type: string
+    required:
+    - username
+    type: object
   AdminErrorDoc:
     properties:
       data: {}
@@ -893,6 +901,51 @@ definitions:
         type: boolean
     required:
     - reset
+    type: object
+  ClassroomDataResponse:
+    properties:
+      classroom:
+        $ref: '#/definitions/ClassroomResponse'
+    required:
+    - classroom
+    type: object
+  ClassroomListResponse:
+    properties:
+      classrooms:
+        items:
+          $ref: '#/definitions/ClassroomResponse'
+        type: array
+    required:
+    - classrooms
+    type: object
+  ClassroomMutationResponse:
+    properties:
+      updated:
+        type: boolean
+    required:
+    - updated
+    type: object
+  ClassroomResponse:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      studentCount:
+        type: integer
+      teacherName:
+        type: string
+    required:
+    - createdAt
+    - description
+    - id
+    - name
+    - studentCount
+    - teacherName
     type: object
   CleanupLogsRequest:
     properties:
@@ -1802,6 +1855,18 @@ definitions:
     - data
     - errorMsg
     type: object
+  CreateClassroomRequest:
+    properties:
+      description:
+        example: 计算机基础课程行政班
+        type: string
+      name:
+        example: 2026 级一班
+        type: string
+    required:
+    - description
+    - name
+    type: object
   CreateConversationRequest:
     properties:
       model:
@@ -1915,6 +1980,21 @@ definitions:
         type: string
     required:
     - name
+    type: object
+  CreateQuizRequest:
+    properties:
+      phase:
+        type: string
+      questions:
+        items:
+          $ref: '#/definitions/QuizQuestionRequest'
+        type: array
+      title:
+        type: string
+    required:
+    - phase
+    - questions
+    - title
     type: object
   CreateUpstreamRequest:
     properties:
@@ -5086,6 +5166,194 @@ definitions:
     - vendorIcon
     - vendorName
     type: object
+  QuizDataResponse:
+    properties:
+      quiz:
+        $ref: '#/definitions/QuizResponse'
+    required:
+    - quiz
+    type: object
+  QuizListResponse:
+    properties:
+      quizzes:
+        items:
+          $ref: '#/definitions/QuizResponse'
+        type: array
+    required:
+    - quizzes
+    type: object
+  QuizQuestionRequest:
+    properties:
+      answer:
+        type: integer
+      options:
+        items:
+          type: string
+        type: array
+      prompt:
+        type: string
+    required:
+    - answer
+    - options
+    - prompt
+    type: object
+  QuizQuestionResponse:
+    properties:
+      answer:
+        type: integer
+      id:
+        type: string
+      options:
+        items:
+          type: string
+        type: array
+      prompt:
+        type: string
+    required:
+    - answer
+    - id
+    - options
+    - prompt
+    type: object
+  QuizQuestionStatisticsResponse:
+    properties:
+      answer:
+        type: integer
+      correctCount:
+        type: integer
+      id:
+        type: string
+      optionCounts:
+        items:
+          type: integer
+        type: array
+      options:
+        items:
+          type: string
+        type: array
+      prompt:
+        type: string
+    required:
+    - answer
+    - correctCount
+    - id
+    - optionCounts
+    - options
+    - prompt
+    type: object
+  QuizReportResponse:
+    properties:
+      missing:
+        items:
+          $ref: '#/definitions/StudentResponse'
+        type: array
+      quiz:
+        $ref: '#/definitions/QuizResponse'
+      statistics:
+        $ref: '#/definitions/QuizStatisticsResponse'
+      students:
+        items:
+          $ref: '#/definitions/StudentResponse'
+        type: array
+      submissions:
+        items:
+          $ref: '#/definitions/QuizSubmissionResponse'
+        type: array
+    required:
+    - missing
+    - quiz
+    - statistics
+    - students
+    - submissions
+    type: object
+  QuizResponse:
+    properties:
+      closedAt:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      openedAt:
+        type: string
+      phase:
+        type: string
+      questions:
+        items:
+          $ref: '#/definitions/QuizQuestionResponse'
+        type: array
+      status:
+        type: string
+      submissionCount:
+        type: integer
+      title:
+        type: string
+    required:
+    - closedAt
+    - createdAt
+    - id
+    - openedAt
+    - phase
+    - questions
+    - status
+    - submissionCount
+    - title
+    type: object
+  QuizStatisticsResponse:
+    properties:
+      averageScore:
+        type: number
+      questions:
+        items:
+          $ref: '#/definitions/QuizQuestionStatisticsResponse'
+        type: array
+      studentCount:
+        type: integer
+      submissionCount:
+        type: integer
+    required:
+    - averageScore
+    - questions
+    - studentCount
+    - submissionCount
+    type: object
+  QuizSubmissionResponse:
+    properties:
+      answers:
+        items:
+          type: integer
+        type: array
+      score:
+        type: integer
+      studentId:
+        type: string
+      studentName:
+        type: string
+      submittedAt:
+        type: string
+      username:
+        type: string
+    required:
+    - answers
+    - score
+    - studentId
+    - studentName
+    - submittedAt
+    - username
+    type: object
+  QuizSubmissionResultResponse:
+    properties:
+      score:
+        type: integer
+      submitted:
+        type: boolean
+      total:
+        type: integer
+    required:
+    - score
+    - submitted
+    - total
+    type: object
   RefreshTokenResponseDoc:
     properties:
       data:
@@ -5498,6 +5766,90 @@ definitions:
     - usedBytes
     - userID
     type: object
+  StudentListResponse:
+    properties:
+      students:
+        items:
+          $ref: '#/definitions/StudentResponse'
+        type: array
+    required:
+    - students
+    type: object
+  StudentQuizListResponse:
+    properties:
+      classroom:
+        $ref: '#/definitions/ClassroomResponse'
+      quizzes:
+        items:
+          $ref: '#/definitions/StudentQuizResponse'
+        type: array
+    required:
+    - classroom
+    - quizzes
+    type: object
+  StudentQuizQuestionResponse:
+    properties:
+      id:
+        type: string
+      options:
+        items:
+          type: string
+        type: array
+      prompt:
+        type: string
+    required:
+    - id
+    - options
+    - prompt
+    type: object
+  StudentQuizResponse:
+    properties:
+      answers:
+        items:
+          type: integer
+        type: array
+      id:
+        type: string
+      openedAt:
+        type: string
+      phase:
+        type: string
+      questions:
+        items:
+          $ref: '#/definitions/StudentQuizQuestionResponse'
+        type: array
+      score:
+        type: integer
+      status:
+        type: string
+      submitted:
+        type: boolean
+      title:
+        type: string
+    required:
+    - answers
+    - id
+    - openedAt
+    - phase
+    - questions
+    - score
+    - status
+    - submitted
+    - title
+    type: object
+  StudentResponse:
+    properties:
+      displayName:
+        type: string
+      id:
+        type: string
+      username:
+        type: string
+    required:
+    - displayName
+    - id
+    - username
+    type: object
   SubmitFileEmbeddingsRequest:
     properties:
       fileIDs:
@@ -5519,6 +5871,15 @@ definitions:
         type: array
     required:
     - fileIDs
+    type: object
+  SubmitQuizRequest:
+    properties:
+      answers:
+        items:
+          type: integer
+        type: array
+    required:
+    - answers
     type: object
   SuccessDoc:
     properties:
@@ -5732,6 +6093,18 @@ definitions:
     required:
     - challengeToken
     - code
+    type: object
+  UpdateClassroomRequest:
+    properties:
+      description:
+        example: 计算机基础课程行政班
+        type: string
+      name:
+        example: 2026 级二班
+        type: string
+    required:
+    - description
+    - name
     type: object
   UpdateConversationLabelsRequest:
     properties:
@@ -11311,6 +11684,341 @@ paths:
       summary: 查询服务器能力声明
       tags:
       - system
+  /classrooms:
+    get:
+      description: 教师查询自己创建的班级，管理员查询全部班级。
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ClassroomListResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 查询班级
+      tags:
+      - classrooms
+    post:
+      consumes:
+      - application/json
+      description: 仅教师账号可创建班级，并成为班级的唯一管理者。
+      parameters:
+      - description: 班级信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/CreateClassroomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ClassroomDataResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 创建班级
+      tags:
+      - classrooms
+  /classrooms/{id}:
+    delete:
+      description: 教师删除自己创建的班级；班级内学生随即恢复为未分班状态。
+      parameters:
+      - description: 班级公开 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ClassroomMutationResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 删除班级
+      tags:
+      - classrooms
+    patch:
+      consumes:
+      - application/json
+      description: 教师更新自己创建的班级名称或说明。
+      parameters:
+      - description: 班级公开 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 班级信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateClassroomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ClassroomMutationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 更新班级
+      tags:
+      - classrooms
+  /classrooms/{id}/quizzes:
+    get:
+      description: 教师查询自己班级内的小测，包含正确答案与提交人数。
+      parameters:
+      - description: 班级公开 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/QuizListResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 查询班级小测
+      tags:
+      - classrooms
+    post:
+      consumes:
+      - application/json
+      description: 教师创建草稿小测；题目答案只返回给教师。
+      parameters:
+      - description: 班级公开 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 小测内容
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/CreateQuizRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/QuizDataResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 创建班级小测
+      tags:
+      - classrooms
+  /classrooms/{id}/students:
+    get:
+      description: 教师查询自己的班级成员，管理员可查看全部班级成员。
+      parameters:
+      - description: 班级公开 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/StudentListResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 查询班级学生
+      tags:
+      - classrooms
+    post:
+      consumes:
+      - application/json
+      description: 教师按用户名添加学生。一名学生最多属于一个班级，已分班学生须先从原班级移出。
+      parameters:
+      - description: 班级公开 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 学生用户名
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/AddStudentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ClassroomMutationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 添加班级学生
+      tags:
+      - classrooms
+  /classrooms/{id}/students/{student_id}:
+    delete:
+      description: 教师把学生从自己的班级移出；移出后学生可以加入其他班级。
+      parameters:
+      - description: 班级公开 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 学生公开 ID
+        in: path
+        name: student_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ClassroomMutationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 移出班级学生
+      tags:
+      - classrooms
   /context-artifacts/{id}:
     get:
       consumes:
@@ -13810,6 +14518,153 @@ paths:
       summary: 查询可用模型目录
       tags:
       - llm
+  /quizzes/{id}/close:
+    post:
+      description: 教师截止小测后，学生不能再提交答案。
+      parameters:
+      - description: 小测公开 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ClassroomMutationResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 截止班级小测
+      tags:
+      - classrooms
+  /quizzes/{id}/open:
+    post:
+      description: 教师发布小测后，班级学生可在学生端看到题目。
+      parameters:
+      - description: 小测公开 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ClassroomMutationResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 发布班级小测
+      tags:
+      - classrooms
+  /quizzes/{id}/submissions:
+    get:
+      description: 教师查看提交率、选项分布、未提交名单与逐份提交记录。
+      parameters:
+      - description: 小测公开 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/QuizReportResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 查询小测统计
+      tags:
+      - classrooms
+    post:
+      consumes:
+      - application/json
+      description: 学生提交一次答案并得到得分；重复提交返回 409。
+      parameters:
+      - description: 小测公开 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 答案
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/SubmitQuizRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/QuizSubmissionResultResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 提交小测答案
+      tags:
+      - classrooms
   /runtime/chat-file-policy:
     get:
       description: 返回当前用户在聊天中上传与使用文件的运行时策略（大小、数量、类型与处理模式等）
@@ -13888,6 +14743,29 @@ paths:
       summary: 查询模型 options 透传策略
       tags:
       - settings
+  /student/quizzes:
+    get:
+      description: 学生查询当前班级已发布的小测；响应不包含正确答案。
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/StudentQuizListResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 查询学生端小测
+      tags:
+      - classrooms
   /user/settings:
     get:
       description: 返回当前用户全部个人偏好配置，缺失项以默认值填充

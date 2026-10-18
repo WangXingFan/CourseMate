@@ -1,0 +1,274 @@
+{
+  "common": {
+    "back": "返回学习实验室",
+    "interactive": "可交互"
+  },
+  "hub": {
+    "eyebrow": "信号与系统实验室",
+    "title": "改变一个参数，建立一点直觉",
+    "description": "用一个参数、一张图，把课本上最难“看见”的概念变成可观察的现象：卷积、采样、频谱、极点与反馈。",
+    "interactive": "可交互",
+    "footer": "所有曲线都在浏览器本地计算。先改变参数并预测结果，再观察图形验证。",
+    "sections": {
+      "concepts": "概念实验室",
+      "conceptsDescription": "先动手改参数，再回到公式解释现象。",
+      "experiments": "章节闯关",
+      "experimentsDescription": "随机题目、先预测后看图，提交理由后生成完成码。"
+    },
+    "quick": {
+      "flow": {
+        "title": "课前 · 课中 · 课后",
+        "description": "一张清单安排 15 + 45 + 30 分钟。"
+      },
+      "quiz": {
+        "title": "快问快答",
+        "description": "90 秒随机 12 题，练反应也查漏洞。"
+      },
+      "experiments": {
+        "title": "四章闯关",
+        "description": "按章节抽题，图形在预测后才解锁。"
+      }
+    },
+    "inClass": "课堂闯关",
+    "experimentsNote": "每个实验都会生成题目编号与完成码；换一题即可得到不同的参数组合，适合课堂随机抽查。"
+  },
+  "topics": {
+    "convolution": {
+      "title": "卷积：移动的重叠区",
+      "description": "翻转、平移、相乘、积分。亲眼看到输出为什么等于重叠部分的面积。",
+      "tag": "LTI 系统"
+    },
+    "sampling": {
+      "title": "采样与混叠",
+      "description": "把采样率降到奈奎斯特率以下，看一个高频正弦如何“伪装”成低频信号。",
+      "tag": "采样定理"
+    },
+    "fourier-series": {
+      "title": "傅里叶级数",
+      "description": "逐个加入奇次谐波，看方波如何成形，以及为什么吉布斯纹波不会消失。",
+      "tag": "频谱"
+    },
+    "first-order": {
+      "title": "一阶系统",
+      "description": "把时间常数与 63.2%、调节时间和截止频率联系起来。",
+      "tag": "时间常数"
+    },
+    "fourier-transform": {
+      "title": "傅里叶变换：矩形与 sinc",
+      "description": "改变脉冲宽度，观察主瓣、零点和频谱的此消彼长。",
+      "tag": "频域"
+    },
+    "laplace": {
+      "title": "拉普拉斯变换：极点与 ROC",
+      "description": "拖动极点穿过虚轴，看冲激响应如何从衰减变成等幅、再到发散。",
+      "tag": "s 域"
+    },
+    "second-order": {
+      "title": "二阶系统：阻尼与超调",
+      "description": "调 ζ 和 ωn，把超调、峰值时间和调节时间连起来。",
+      "tag": "动态响应"
+    },
+    "modulation": {
+      "title": "调制：频谱搬移",
+      "description": "把基带信号搬到载波附近，观察边带、带宽和过调制。",
+      "tag": "通信"
+    },
+    "experiment-signal": {
+      "title": "实验一：信号分类",
+      "description": "随机给出能量、功率或增长信号，判断它属于哪一类。",
+      "tag": "第一章"
+    },
+    "experiment-time": {
+      "title": "实验二：时间常数",
+      "description": "随机 τ 与 k，预测 kτ 时刻响应走了多少。",
+      "tag": "第二章"
+    },
+    "experiment-frequency": {
+      "title": "实验三：脉冲频谱",
+      "description": "随机脉宽，预测首个零点或直流分量。",
+      "tag": "第三章"
+    },
+    "experiment-s": {
+      "title": "实验四：极点定性",
+      "description": "随机极点位置，判断冲激响应的形态与稳定性。",
+      "tag": "第四章"
+    }
+  },
+  "convolution": {
+    "title": "卷积：移动的重叠区",
+    "subtitle": "用矩形脉冲与衰减指数做卷积。拖动 t，观察乘积曲线下的面积如何变成 y(t)。",
+    "formula": "y(t)=\\int_{-\\infty}^{\\infty}x(\\tau)h(t-\\tau)\\,d\\tau",
+    "controls": {
+      "title": "参数",
+      "description": "x(t) 是 [-0.5, 0.5] 上的单位矩形；h(t) = e^{-t}u(t)。",
+      "time": "平移量 t",
+      "timeHint": "让翻转后的 h 沿输入信号滑动。"
+    },
+    "readouts": {
+      "integral": "重叠面积",
+      "integralHint": "乘积信号的数值积分",
+      "exact": "精确 y(t)",
+      "exactHint": "闭式解",
+      "overlap": "重叠区间",
+      "overlapHint": "两个信号同时非零的范围",
+      "phase": "当前阶段"
+    },
+    "phases": {
+      "before": "尚未重叠",
+      "rising": "上升段",
+      "falling": "下降段"
+    },
+    "plot": {
+      "overlapTitle": "翻转、平移、相乘",
+      "overlapDescription": "阴影区域就是被积函数，它的面积对应当前 t 的输出值。",
+      "amplitude": "幅度",
+      "product": "x(τ)h(t−τ)",
+      "currentT": "当前 t",
+      "outputTitle": "面积的累积 = 输出",
+      "outputDescription": "随着 t 移动，标记点跟随乘积曲线下的面积。"
+    },
+    "steps": {
+      "title": "四个动作",
+      "flip": "把 h(τ) 翻转为 h(−τ)。",
+      "shift": "平移 t，得到 h(t−τ)。",
+      "multiply": "把 x(τ) 与 h(t−τ) 相乘。",
+      "integrate": "对乘积关于 τ 积分。"
+    },
+    "observe": {
+      "title": "观察什么",
+      "noOverlap": "当 t < −0.5 时两个信号没有重叠，输出保持为零。",
+      "rising": "当 −0.5 < t < 0.5 时重叠区变长，输出按 1 − e^{−(t+0.5)} 上升。",
+      "falling": "当 t > 0.5 后重叠区缩短，输出呈指数衰减。",
+      "area": "卷积不是逐点相乘，而是把整个重叠区上的面积累加起来。"
+    }
+  },
+  "sampling": {
+    "title": "采样与混叠",
+    "subtitle": "以不同采样率对余弦采样。低于奈奎斯特率时，高频信号会留下看起来像低频的采样点。",
+    "formula": "x_s[n]=x(nT_s),\\qquad f_s=\\frac{1}{T_s}",
+    "controls": {
+      "title": "参数",
+      "description": "x(t) = cos(2π f₀ t)，每 T_s = 1/f_s 秒采样一次。",
+      "signalFrequency": "信号频率 f₀",
+      "signalHint": "你希望采集的物理频率。",
+      "samplingFrequency": "采样频率 f_s",
+      "samplingHint": "每秒采集的样本数。"
+    },
+    "readouts": {
+      "nyquist": "奈奎斯特率 2f₀",
+      "samplesPerPeriod": "每周期采样数",
+      "status": "状态",
+      "aliased": "发生混叠",
+      "safe": "可分辨",
+      "aliasedHint": "f_s 低于 2f₀。",
+      "safeHint": "f_s 不低于 2f₀。",
+      "alias": "表观频率",
+      "aliasHint": "能穿过同一组采样点的低频余弦。"
+    },
+    "plot": {
+      "title": "连续信号、采样点与混叠",
+      "description": "圆点是系统真正看到的样本；虚线是穿过同一组样本的混叠曲线。",
+      "timeAxis": "t (s)",
+      "amplitude": "幅度",
+      "continuous": "连续信号 x(t)",
+      "alias": "混叠频率"
+    },
+    "theory": {
+      "title": "为什么会产生混叠",
+      "nyquist": "只有 f_s > 2f₀ 时，样本才能唯一确定一个实正弦。2f₀ 称为奈奎斯特率。",
+      "overlap": "采样相当于乘上冲激串，频谱会以 f_s 为周期复制。复制出的频谱重叠时，高频就会折叠到低频。",
+      "edge": "当 f_s 恰好等于 2f₀ 时，样本能确定频率但无法确定相位，这是边界情况，不适合作为实际设计点。"
+    },
+    "experiment": {
+      "title": "动手试试",
+      "lowRate": "令 f₀ = 5 Hz、f_s = 6 Hz。先猜表观频率，再看读数。",
+      "increase": "把 f_s 提高到 10 Hz 以上，观察混叠曲线消失。",
+      "compare": "比较每周期采样数与重建波形的平滑程度。",
+      "question": "如果只给你 f_s = 12 Hz 的采样点，你能区分 5 Hz 和 7 Hz 吗？"
+    }
+  },
+  "fourierSeries": {
+    "title": "傅里叶级数：从正弦到方波",
+    "subtitle": "方波是奇次谐波的无穷和。增大 N，边沿会变陡，但纹波不会消失。",
+    "formula": "x(t)=\\frac{4}{\\pi}\\sum_{k=1,3,5,\\ldots}^{N}\\frac{\\sin(2\\pi k t)}{k}",
+    "controls": {
+      "title": "参数",
+      "description": "基频为 1 Hz，只有奇次谐波参与合成。",
+      "harmonics": "最高谐波次数 N",
+      "harmonicsHint": "N 始终为奇数，拖动滑块每次增加两个谐波。"
+    },
+    "readouts": {
+      "harmonics": "谐波数",
+      "peak": "峰值",
+      "peakHint": "部分和的最大值",
+      "overshoot": "过冲",
+      "overshootHint": "超出理想方波电平 1 的比例"
+    },
+    "plot": {
+      "timeTitle": "时域波形",
+      "timeDescription": "虚线是理想方波，实线是有限项部分和。",
+      "ideal": "理想方波",
+      "partial": "N = {count} 的部分和",
+      "spectrumTitle": "线谱",
+      "spectrumDescription": "只有奇次谐波，幅度为 4/(πk)。",
+      "harmonicAxis": "谐波次数 k",
+      "amplitudeAxis": "幅度"
+    },
+    "insight": {
+      "title": "频谱告诉了我们什么",
+      "odd": "方波具有奇对称性，因此只有奇次正弦项保留下来。",
+      "decay": "谐波幅度按 1/k 衰减：高频分量存在，但越来越弱。",
+      "gibbs": "在跳变附近，部分和会过冲约 9%，而且随着 N 增大，这个过冲不会消失。",
+      "convergence": "更多谐波会让过渡带变窄，因此近似在能量意义下收敛，但跳变点的逐点误差不会消失。"
+    },
+    "experiment": {
+      "title": "动手试试",
+      "step": "把 N 设为 1，观察结果只是一条正弦波。",
+      "observe": "把 N 增大到 31，观察边沿变陡而纹波仍在。",
+      "spectrum": "先预测第 9 次谐波的幅度，再对照频谱图。"
+    }
+  },
+  "firstOrder": {
+    "title": "一阶系统：时间常数",
+    "subtitle": "一阶阶跃响应在一个时间常数时达到 63.2%，三个时间常数时达到 95%，五个时间常数后基本稳定。",
+    "formula": "y(t)=K\\left(1-e^{-t/\\tau}\\right)",
+    "controls": {
+      "title": "参数",
+      "description": "K 是直流增益，τ 决定系统响应有多快。",
+      "gain": "直流增益 K",
+      "gainHint": "阶跃响应的最终值。",
+      "timeConstant": "时间常数 τ",
+      "timeConstantHint": "τ 越大，系统越慢。"
+    },
+    "readouts": {
+      "atTau": "y(τ)",
+      "atTauHint": "最终值的 63.2%",
+      "atTwoTau": "y(2τ)",
+      "settling": "调节时间 ≈ 5τ",
+      "settlingHint": "与最终值的误差约在 1% 以内",
+      "cutoff": "截止频率 f_c",
+      "cutoffHint": "一阶低通：f_c = 1/(2πτ)"
+    },
+    "plot": {
+      "title": "阶跃响应",
+      "description": "水平虚线是最终值 K = {value}。",
+      "timeAxis": "t (s)",
+      "finalValue": "最终值 K",
+      "response": "阶跃响应 y(t)"
+    },
+    "insight": {
+      "title": "为什么是 63.2%？",
+      "definition": "τ 是响应走完剩余距离 1 − e^{−1} ≈ 63.2% 所需的时间。",
+      "meaning": "在 t = τ 时，斜率已经降到初始值的 1/e，所以响应看起来明显变慢。",
+      "bandwidth": "时域响应越慢，带宽越窄：f_c = 1/(2πτ)。",
+      "gain": "K 只把整条响应纵向缩放，不改变调节时间。"
+    },
+    "experiment": {
+      "title": "动手试试",
+      "changeTau": "把 τ 加倍，观察 63.2% 点向右移动。",
+      "changeGain": "改变 K，确认波形形状不变而最终值按比例缩放。",
+      "readPoint": "读出 τ、2τ、3τ 处的 y 值，与右侧读数对照。",
+      "connect": "把截止频率与时间常数联系起来：τ 越小，带宽越宽。"
+    }
+  }
+}

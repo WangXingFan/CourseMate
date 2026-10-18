@@ -8,7 +8,9 @@ const (
 	// RoleAdmin 是后台管理员角色。
 	RoleAdmin = "admin"
 	// RoleUser 是普通用户角色。
-	RoleUser = "user"
+	RoleUser    = "user"
+	RoleTeacher = "teacher"
+	RoleStudent = "student"
 )
 
 func IsAdminRole(role string) bool {

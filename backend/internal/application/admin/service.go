@@ -483,7 +483,7 @@ func isManageableStatus(status string) bool {
 
 func isManageableRole(role string) bool {
 	switch role {
-	case domainuser.RoleUser, domainuser.RoleAdmin, domainuser.RoleSuperAdmin:
+	case domainuser.RoleUser, domainuser.RoleTeacher, domainuser.RoleStudent, domainuser.RoleAdmin, domainuser.RoleSuperAdmin:
 		return true
 	default:
 		return false

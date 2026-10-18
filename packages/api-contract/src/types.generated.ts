@@ -69,6 +69,11 @@ export interface AddKnowledgeBaseFilesRequest {
   fileIDs: string[];
 }
 
+export interface AddStudentRequest {
+  /** @example "s20260001" */
+  username: string;
+}
+
 export interface AdminErrorDoc {
   data: any;
   details?: any;
@@ -370,6 +375,27 @@ export interface ChatFilePolicyResponseDoc {
 
 export interface CircuitResetResponse {
   reset: boolean;
+}
+
+export interface ClassroomDataResponse {
+  classroom: ClassroomResponse;
+}
+
+export interface ClassroomListResponse {
+  classrooms: ClassroomResponse[];
+}
+
+export interface ClassroomMutationResponse {
+  updated: boolean;
+}
+
+export interface ClassroomResponse {
+  createdAt: string;
+  description: string;
+  id: string;
+  name: string;
+  studentCount: number;
+  teacherName: string;
 }
 
 export interface CleanupLogsRequest {
@@ -745,6 +771,13 @@ export interface ConversationUpdateResponseDoc {
   errorMsg: string;
 }
 
+export interface CreateClassroomRequest {
+  /** @example "计算机基础课程行政班" */
+  description: string;
+  /** @example "2026 级一班" */
+  name: string;
+}
+
 export interface CreateConversationRequest {
   /** @maxLength 128 */
   model?: string;
@@ -810,6 +843,12 @@ export interface CreatePermissionGroupRequest {
   description?: string;
   /** @maxLength 128 */
   name: string;
+}
+
+export interface CreateQuizRequest {
+  phase: string;
+  questions: QuizQuestionRequest[];
+  title: string;
 }
 
 export interface CreateUpstreamRequest {
@@ -2283,6 +2322,78 @@ export interface PublicModelResponse {
   vendorName: string;
 }
 
+export interface QuizDataResponse {
+  quiz: QuizResponse;
+}
+
+export interface QuizListResponse {
+  quizzes: QuizResponse[];
+}
+
+export interface QuizQuestionRequest {
+  answer: number;
+  options: string[];
+  prompt: string;
+}
+
+export interface QuizQuestionResponse {
+  answer: number;
+  id: string;
+  options: string[];
+  prompt: string;
+}
+
+export interface QuizQuestionStatisticsResponse {
+  answer: number;
+  correctCount: number;
+  id: string;
+  optionCounts: number[];
+  options: string[];
+  prompt: string;
+}
+
+export interface QuizReportResponse {
+  missing: StudentResponse[];
+  quiz: QuizResponse;
+  statistics: QuizStatisticsResponse;
+  students: StudentResponse[];
+  submissions: QuizSubmissionResponse[];
+}
+
+export interface QuizResponse {
+  closedAt: string;
+  createdAt: string;
+  id: string;
+  openedAt: string;
+  phase: string;
+  questions: QuizQuestionResponse[];
+  status: string;
+  submissionCount: number;
+  title: string;
+}
+
+export interface QuizStatisticsResponse {
+  averageScore: number;
+  questions: QuizQuestionStatisticsResponse[];
+  studentCount: number;
+  submissionCount: number;
+}
+
+export interface QuizSubmissionResponse {
+  answers: number[];
+  score: number;
+  studentId: string;
+  studentName: string;
+  submittedAt: string;
+  username: string;
+}
+
+export interface QuizSubmissionResultResponse {
+  score: number;
+  submitted: boolean;
+  total: number;
+}
+
 export interface RefreshTokenResponseDoc {
   data: LoginResponse;
   errorMsg: string;
@@ -2480,6 +2591,39 @@ export interface StorageQuotaResponse {
   userID: number;
 }
 
+export interface StudentListResponse {
+  students: StudentResponse[];
+}
+
+export interface StudentQuizListResponse {
+  classroom: ClassroomResponse;
+  quizzes: StudentQuizResponse[];
+}
+
+export interface StudentQuizQuestionResponse {
+  id: string;
+  options: string[];
+  prompt: string;
+}
+
+export interface StudentQuizResponse {
+  answers: number[];
+  id: string;
+  openedAt: string;
+  phase: string;
+  questions: StudentQuizQuestionResponse[];
+  score: number;
+  status: string;
+  submitted: boolean;
+  title: string;
+}
+
+export interface StudentResponse {
+  displayName: string;
+  id: string;
+  username: string;
+}
+
 export interface SubmitFileEmbeddingsRequest {
   /**
    * @maxItems 100
@@ -2494,6 +2638,10 @@ export interface SubmitPlatformFileEmbeddingsRequest {
    * @minItems 1
    */
   fileIDs: string[];
+}
+
+export interface SubmitQuizRequest {
+  answers: number[];
 }
 
 export interface SuccessDoc {
@@ -2606,6 +2754,13 @@ export interface TwoFactorVerifyRequest {
    */
   code: string;
   verificationMethod?: "two_factor" | "email";
+}
+
+export interface UpdateClassroomRequest {
+  /** @example "计算机基础课程行政班" */
+  description: string;
+  /** @example "2026 级二班" */
+  name: string;
 }
 
 export interface UpdateConversationLabelsRequest {
@@ -5758,6 +5913,175 @@ export namespace Capabilities {
   }
 }
 
+export namespace Classrooms {
+  /**
+   * @description 教师查询自己创建的班级，管理员查询全部班级。
+   * @tags classrooms
+   * @name ClassroomsList
+   * @summary 查询班级
+   * @request GET:/classrooms
+   * @secure
+   */
+  export namespace ClassroomsList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomListResponse;
+  }
+
+  /**
+   * @description 仅教师账号可创建班级，并成为班级的唯一管理者。
+   * @tags classrooms
+   * @name ClassroomsCreate
+   * @summary 创建班级
+   * @request POST:/classrooms
+   * @secure
+   */
+  export namespace ClassroomsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateClassroomRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomDataResponse;
+  }
+
+  /**
+   * @description 教师删除自己创建的班级；班级内学生随即恢复为未分班状态。
+   * @tags classrooms
+   * @name ClassroomsDelete
+   * @summary 删除班级
+   * @request DELETE:/classrooms/{id}
+   * @secure
+   */
+  export namespace ClassroomsDelete {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomMutationResponse;
+  }
+
+  /**
+   * @description 教师更新自己创建的班级名称或说明。
+   * @tags classrooms
+   * @name ClassroomsPartialUpdate
+   * @summary 更新班级
+   * @request PATCH:/classrooms/{id}
+   * @secure
+   */
+  export namespace ClassroomsPartialUpdate {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateClassroomRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomMutationResponse;
+  }
+
+  /**
+   * @description 教师查询自己班级内的小测，包含正确答案与提交人数。
+   * @tags classrooms
+   * @name QuizzesList
+   * @summary 查询班级小测
+   * @request GET:/classrooms/{id}/quizzes
+   * @secure
+   */
+  export namespace QuizzesList {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = QuizListResponse;
+  }
+
+  /**
+   * @description 教师创建草稿小测；题目答案只返回给教师。
+   * @tags classrooms
+   * @name QuizzesCreate
+   * @summary 创建班级小测
+   * @request POST:/classrooms/{id}/quizzes
+   * @secure
+   */
+  export namespace QuizzesCreate {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = CreateQuizRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = QuizDataResponse;
+  }
+
+  /**
+   * @description 教师查询自己的班级成员，管理员可查看全部班级成员。
+   * @tags classrooms
+   * @name StudentsList
+   * @summary 查询班级学生
+   * @request GET:/classrooms/{id}/students
+   * @secure
+   */
+  export namespace StudentsList {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = StudentListResponse;
+  }
+
+  /**
+   * @description 教师按用户名添加学生。一名学生最多属于一个班级，已分班学生须先从原班级移出。
+   * @tags classrooms
+   * @name StudentsCreate
+   * @summary 添加班级学生
+   * @request POST:/classrooms/{id}/students
+   * @secure
+   */
+  export namespace StudentsCreate {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AddStudentRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomMutationResponse;
+  }
+
+  /**
+   * @description 教师把学生从自己的班级移出；移出后学生可以加入其他班级。
+   * @tags classrooms
+   * @name StudentsDelete
+   * @summary 移出班级学生
+   * @request DELETE:/classrooms/{id}/students/{student_id}
+   * @secure
+   */
+  export namespace StudentsDelete {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+      /** 学生公开 ID */
+      studentId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomMutationResponse;
+  }
+}
+
 export namespace ContextArtifacts {
   /**
    * @description 查询当前用户可访问的上下文证据详情，用于 Prompt Trace 来源查看
@@ -7145,6 +7469,84 @@ export namespace Models {
   }
 }
 
+export namespace Quizzes {
+  /**
+   * @description 教师截止小测后，学生不能再提交答案。
+   * @tags classrooms
+   * @name CloseCreate
+   * @summary 截止班级小测
+   * @request POST:/quizzes/{id}/close
+   * @secure
+   */
+  export namespace CloseCreate {
+    export type RequestParams = {
+      /** 小测公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomMutationResponse;
+  }
+
+  /**
+   * @description 教师发布小测后，班级学生可在学生端看到题目。
+   * @tags classrooms
+   * @name OpenCreate
+   * @summary 发布班级小测
+   * @request POST:/quizzes/{id}/open
+   * @secure
+   */
+  export namespace OpenCreate {
+    export type RequestParams = {
+      /** 小测公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomMutationResponse;
+  }
+
+  /**
+   * @description 教师查看提交率、选项分布、未提交名单与逐份提交记录。
+   * @tags classrooms
+   * @name SubmissionsList
+   * @summary 查询小测统计
+   * @request GET:/quizzes/{id}/submissions
+   * @secure
+   */
+  export namespace SubmissionsList {
+    export type RequestParams = {
+      /** 小测公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = QuizReportResponse;
+  }
+
+  /**
+   * @description 学生提交一次答案并得到得分；重复提交返回 409。
+   * @tags classrooms
+   * @name SubmissionsCreate
+   * @summary 提交小测答案
+   * @request POST:/quizzes/{id}/submissions
+   * @secure
+   */
+  export namespace SubmissionsCreate {
+    export type RequestParams = {
+      /** 小测公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = SubmitQuizRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = QuizSubmissionResultResponse;
+  }
+}
+
 export namespace Runtime {
   /**
    * @description 返回当前用户在聊天中上传与使用文件的运行时策略（大小、数量、类型与处理模式等）
@@ -7225,6 +7627,24 @@ export namespace Settings {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = Envelope;
+  }
+}
+
+export namespace Student {
+  /**
+   * @description 学生查询当前班级已发布的小测；响应不包含正确答案。
+   * @tags classrooms
+   * @name QuizzesList
+   * @summary 查询学生端小测
+   * @request GET:/student/quizzes
+   * @secure
+   */
+  export namespace QuizzesList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = StudentQuizListResponse;
   }
 }
 

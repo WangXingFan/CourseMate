@@ -23,6 +23,7 @@ import {
   NAVIGATION_SEARCH_PAGE_SIZE,
 } from "@/features/shell/model/navigation-search";
 import { useFeaturePolicy } from "@/shared/hooks/use-feature-policy";
+import { useOptionalAuthSession } from "@/shared/auth/auth-session-context";
 
 export function NavMain({
   onCreateConversation,
@@ -31,6 +32,10 @@ export function NavMain({
 }) {
   const t = useTranslations("common.navigation");
   const { knowledgeBaseEnabled } = useFeaturePolicy();
+  const sessionUser = useOptionalAuthSession()?.user;
+  const canSeeClassrooms =
+    sessionUser?.role === "teacher" || sessionUser?.role === "admin" || sessionUser?.role === "superadmin";
+  const canSeeActivities = sessionUser?.role === "student";
   const isMobile = useSidebarIsMobile();
   const { setOpenMobile } = useSidebarActions();
   const state = useSidebarVisualState();
@@ -77,7 +82,11 @@ export function NavMain({
 
         <SidebarMenu className="mt-4 gap-0.5">
           {NAVIGATION_ITEMS.filter(
-            (item) => item.group === "secondary" && (knowledgeBaseEnabled || item.id !== "knowledgeBases"),
+            (item) =>
+              item.group === "secondary" &&
+              (knowledgeBaseEnabled || item.id !== "knowledgeBases") &&
+              (item.id !== "classrooms" || canSeeClassrooms) &&
+              (item.id !== "activities" || canSeeActivities),
           ).map((item) => (
             <NavMainItem
               key={item.id}

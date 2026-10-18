@@ -9,7 +9,7 @@ export const USER_STATUS_OPTIONS: AdminUserStatus[] = [
   "deactivated",
 ];
 
-export const USER_ROLE_OPTIONS: AdminUserRole[] = ["user", "admin", "superadmin"];
+export const USER_ROLE_OPTIONS: AdminUserRole[] = ["user", "teacher", "student", "admin", "superadmin"];
 
 export const USER_SORT_OPTIONS = [
   { labelKey: "sort.idDesc", value: "id_desc" },

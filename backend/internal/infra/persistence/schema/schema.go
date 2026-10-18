@@ -11,6 +11,10 @@ import (
 func Models() []any {
 	return []any{
 		&models.User{},
+		&models.Classroom{},
+		&models.ClassroomStudent{},
+		&models.ClassroomQuiz{},
+		&models.ClassroomQuizSubmission{},
 		&models.UserContactVerification{},
 		&models.UserCredential{},
 		&models.UserSession{},

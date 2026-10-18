@@ -13,6 +13,7 @@ import (
 var allowedTableDomains = []string{
 	"audit",
 	"chat",
+	"classroom",
 	"content_moderation",
 	"file",
 	"identity",
