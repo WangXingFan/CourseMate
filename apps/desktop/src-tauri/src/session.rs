@@ -493,16 +493,17 @@ mod tests {
 }
 
 // Live integration test: needs a running server and a desktop-issued refresh token.
-//   DEEIX_TEST_ORIGIN=http://127.0.0.1:8080 DEEIX_TEST_REFRESH_TOKEN=... cargo test --lib -- --ignored
+//   COURSEMATE_TEST_ORIGIN=http://127.0.0.1:8080 COURSEMATE_TEST_REFRESH_TOKEN=... cargo test --lib -- --ignored
 #[cfg(test)]
 mod live {
     use super::perform_refresh;
 
     #[tokio::test]
-    #[ignore = "requires DEEIX_TEST_ORIGIN and DEEIX_TEST_REFRESH_TOKEN"]
+    #[ignore = "requires COURSEMATE_TEST_ORIGIN and COURSEMATE_TEST_REFRESH_TOKEN"]
     async fn refresh_against_live_server_rotates_token() {
-        let origin = std::env::var("DEEIX_TEST_ORIGIN").expect("DEEIX_TEST_ORIGIN");
-        let token = std::env::var("DEEIX_TEST_REFRESH_TOKEN").expect("DEEIX_TEST_REFRESH_TOKEN");
+        let origin = std::env::var("COURSEMATE_TEST_ORIGIN").expect("COURSEMATE_TEST_ORIGIN");
+        let token =
+            std::env::var("COURSEMATE_TEST_REFRESH_TOKEN").expect("COURSEMATE_TEST_REFRESH_TOKEN");
 
         let first = perform_refresh(&origin, &token)
             .await

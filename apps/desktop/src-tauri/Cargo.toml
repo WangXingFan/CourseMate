@@ -1,15 +1,15 @@
 [package]
-name = "deeix-chat-desktop"
+name = "coursemate-desktop"
 version = "0.4.4-beta.3"
-description = "DEEIX Chat desktop shell"
-authors = ["DEEIX"]
+description = "CourseMate desktop shell"
+authors = ["WangXingFan"]
 edition = "2021"
 rust-version = "1.77"
 license = "Apache-2.0"
 publish = false
 
 [lib]
-name = "deeix_chat_desktop_lib"
+name = "coursemate_desktop_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

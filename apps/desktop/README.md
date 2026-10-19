@@ -1,4 +1,18 @@
-# apps/desktop
+# CourseMate Desktop · 课知伴桌面端
+
+CourseMate is a learning companion for Signals and Systems, with interactive
+lessons, chapter experiments, AI explanations, quizzes, and spaced review.
+This desktop client bundles the same learning interface as the browser version.
+
+Project and downloads: [WangXingFan/CourseMate](https://github.com/WangXingFan/CourseMate).
+
+CourseMate uses the application identifier `io.github.wangxingfan.coursemate`,
+its own Windows MSI product family, update signing key, and policy registry key
+`SOFTWARE\Policies\CourseMate`. Its installed data and credentials are separate
+from DEEIX Chat. Existing upstream installations are not migrated automatically.
+The `@deeix/*` workspace names and Go module path remain internal namespaces.
+Upstream license and copyright attribution are retained in `LICENSE` and `NOTICE`,
+which are included in desktop distributions.
 
 Tauri 2 shell around the `@deeix/web` build. It contains **no business logic**:
 windows, tray, deep links, auto-update and OS keychain access only. If a feature
@@ -84,7 +98,7 @@ created on first click. A tab hidden for 30 minutes has its webview discarded
 from the keychain. Tabs can be reordered by dragging; order is persisted.
 
 `pnpm dev` runs with `tauri.dev.conf.json`, which swaps the identifier to
-`com.deeix.chat.desktop.dev`: the dev build gets its own config dir, keychain
+`io.github.wangxingfan.coursemate.dev`: the dev build gets its own config dir, keychain
 service and local database, so it never disturbs an installed copy.
 
 Storage (localStorage) is shared across tabs on purpose: it holds UI
@@ -95,7 +109,7 @@ server.
 
 | | Local | Remote |
 | --- | --- | --- |
-| Server | the Go server bundled as a sidecar, started by the shell | a DEEIX Chat deployment the user points the app at |
+| Server | the Go server bundled as a sidecar, started by the shell | a CourseMate deployment the user points the app at |
 | Data | SQLite + local files under the app data dir (`local/`) | on that server |
 | Account | one passwordless owner, signed in via a one-time grant from the sidecar handshake | the server's accounts, password or OAuth |
 | Network | `127.0.0.1:<ephemeral>` only; port changes each launch | whatever the user pinned |
@@ -114,7 +128,7 @@ Sign-out in a local tab has no login page to return to, so it maps to
 
 ### Sidecar lifecycle
 
-`src/sidecar.rs` spawns `deeix-chat-server --local --data-dir <app-data>/local`
+`src/sidecar.rs` spawns `coursemate-server --local --data-dir <app-data>/local`
 through `tauri-plugin-shell` (Rust side only; the webview has no shell
 permission). The server binds a loopback port, prints one JSON line
 (`{"type":"ready","origin":…,"grant":…}`) to stdout, and logs to stderr. The
@@ -193,9 +207,16 @@ step, because MSI versions must be numeric. Build the setup only
 (`pnpm tauri build --bundles nsis`) or pass the config CI uses:
 `node scripts/release-config.mjs --channel beta` prints the `--config` argument.
 
-Building is not enough to ship: macOS packages must be **notarized** and Windows
-packages **code-signed**, otherwise users cannot install them. Signing keys and
-the updater key live only in CI secrets — never in this repository.
+Official distribution can additionally use macOS notarization and Windows
+code signing. Without these certificates, the workflow produces ad-hoc signed
+macOS packages and unsigned Windows installers, with the corresponding OS prompts.
+The updater signing key is required and is separate from these certificates.
+Private signing material stays in CI secrets or ignored local files.
+
+For this project's validation policy, run builds and tests in GitHub Actions.
+Manually run **Desktop Release** on the desired branch to collect installers as
+workflow artifacts. A manual run does not publish a GitHub Release; version tags
+create a draft release. Merging into `dev` alone does not build installers.
 
 ## Third-party sign-in (OAuth / OIDC)
 
@@ -204,12 +225,12 @@ RFC 8252 native-app flow using the server's provider-auth bridge:
 
 1. The shell binds an ephemeral port on `127.0.0.1` and hands the web app
    `http://127.0.0.1:<port>/oauth/callback` as the redirect URI.
-2. The web app starts the bridge with client id `com.deeix.chat.desktop`; the
+2. The web app starts the bridge with client id `io.github.wangxingfan.coursemate`; the
    server validates that the redirect is a loopback address with a port and
    nothing else, then returns the provider authorization URL.
 3. The authorization URL opens in the **system browser** (the user's existing
    provider session is reused; the webview never sees provider credentials).
-4. The provider redirects to the server callback, which issues a one-time DEEIX
+4. The provider redirects to the server callback, which issues a one-time authorization
    grant and redirects the browser to the loopback URI.
 5. The shell answers that request with a "you can close this tab" page and
    emits the callback URL to the webview, which navigates to `/auth/callback`
@@ -239,8 +260,8 @@ runtime only in `auto` mode, so a portable or MSI build cannot install updates
 even if the web layer asked.
 
 Release assets are renamed by `scripts/rename-release-assets.mjs` to
-`DEEIX-Chat-<version>-<os>-<arch>[-setup|-updater].<ext>`, e.g.
-`DEEIX-Chat-0.4.4-beta.1-macos-arm64.dmg`, `-linux-x64.AppImage`,
+`CourseMate-<version>-<os>-<arch>[-setup|-updater].<ext>`, e.g.
+`CourseMate-0.4.4-beta.1-macos-arm64.dmg`, `-linux-x64.AppImage`,
 `-windows-x64-setup.exe`, `-macos-arm64-updater.tar.gz`. The plan is
 validated for collisions before anything is renamed, and the updater manifest,
 which references assets by file name, is reconciled from its own URLs, so the
@@ -280,8 +301,8 @@ One signed binary set ships in three forms:
 | `…-windows-x64.msi` (WiX) | IT deployment (Intune, SCCM, Group Policy) | Per machine | `disabled`, IT manages versions |
 | `…-windows-x64-portable.zip` | Restricted machines, USB drives, trying the app | None: unzip and run | `notify` |
 
-Silent installs: `DEEIX-Chat-<v>-windows-x64-setup.exe /S` (per user) or
-`msiexec /i DEEIX-Chat-<v>-windows-x64.msi /qn` (per machine). The MSI
+Silent installs: `CourseMate-<v>-windows-x64-setup.exe /S` (per user) or
+`msiexec /i CourseMate-<v>-windows-x64.msi /qn` (per machine). The MSI
 `upgradeCode` in `tauri.conf.json` identifies the product family for upgrades and
 deployment assignments and must never change. MSI versions are numeric, so
 `x.y.z-beta.n` is built as `x.y.z.n` (`scripts/release-config.mjs`).
@@ -289,9 +310,9 @@ deployment assignments and must never change. MSI versions are numeric, so
 ### Portable edition
 
 ```text
-DEEIX Chat/
-  DEEIX Chat.exe            signed app
-  deeix-chat-server.exe     signed sidecar (local mode)
+CourseMate/
+  CourseMate.exe            signed app
+  coursemate-server.exe     signed sidecar (local mode)
   portable                  marker: its presence switches the app to portable mode
   README.txt
   data/                     created on first run
@@ -309,7 +330,7 @@ DEEIX Chat/
   system `%TEMP%` are the one exception.
 - **Credentials stay in Windows Credential Manager**, never in `data/`, so a lost
   USB drive does not leak sign-ins; moving to another machine means signing in
-  again. Each copy runs under `com.deeix.chat.desktop.portable-<instance-id>`,
+  again. Each copy runs under `io.github.wangxingfan.coursemate.portable-<instance-id>`,
   which keeps its credentials and single-instance lock separate from an installed
   copy and from other portable copies. The id survives moving the folder, a new
   drive letter, and updating by extracting over the old folder. Sign out before
@@ -328,7 +349,7 @@ DEEIX Chat/
 ### Enterprise policy
 
 The app reads policy once at startup from
-`HKLM\SOFTWARE\Policies\DEEIX\Chat` and `HKCU\SOFTWARE\Policies\DEEIX\Chat`; a
+`HKLM\SOFTWARE\Policies\CourseMate` and `HKCU\SOFTWARE\Policies\CourseMate`; a
 value set under HKLM wins. Rust enforces it (`src-tauri/src/policy.rs`); the UI
 only reflects it.
 
@@ -362,14 +383,12 @@ config selects a driver that was compiled out.
 
 ## Icons
 
-`src-tauri/icons/mark.png` is the bare "D" mark (black on transparent). From it:
-`source.png` is the 1024² app icon on the macOS grid (824px rounded square in
-the theme's `--background` #f8f8f6, mark in `--foreground` #3d3929 at 82%, transparent margin) —
-regenerate every platform size with
-`pnpm tauri icon src-tauri/icons/source.png --output src-tauri/icons` and
-delete the generated `android/` and `ios/` folders. `tray.png` is the 44px
-monochrome menu-bar glyph (macOS template image); Windows/Linux trays show the
-app icon.
+`src-tauri/icons/source.svg` is the CourseMate open-book and signal-wave icon.
+`source.png` is its 1024² raster source. The transparent outer margin leaves room
+for platform icon masks. Regenerate platform sizes with `pnpm tauri icon` from
+the SVG, keeping only desktop outputs. `mark.svg` / `mark.png` are the monochrome
+version; `tray.png` is the 44px macOS template glyph. Windows/Linux trays use the
+full-color app icon.
 
 ## Signing
 
@@ -402,10 +421,10 @@ To obtain the .p12 on macOS: Keychain Access → My Certificates → right-click
 
 | Field | Value |
 | --- | --- |
-| Service | `com.deeix.chat.desktop` |
+| Service | `io.github.wangxingfan.coursemate` |
 | Account | `refresh-token:<origin>` (e.g. `refresh-token:https://chat.example.com`) |
 
 One entry per origin; switching servers deletes the previous entry rather than
 leaving dormant credentials behind. A Windows portable copy uses the service
-`com.deeix.chat.desktop.portable-<instance-id>` instead (see
+`io.github.wangxingfan.coursemate.portable-<instance-id>` instead (see
 [Portable edition](#portable-edition)).

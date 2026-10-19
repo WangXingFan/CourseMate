@@ -1,8 +1,8 @@
 // Enterprise policy. Administrators set it through Group Policy / Intune (ADMX
 // templates in deploy/windows/policies) or plain registry values:
 //
-//   HKLM\SOFTWARE\Policies\DEEIX\Chat   (machine; wins value by value)
-//   HKCU\SOFTWARE\Policies\DEEIX\Chat   (user)
+//   HKLM\SOFTWARE\Policies\CourseMate   (machine; wins value by value)
+//   HKCU\SOFTWARE\Policies\CourseMate   (user)
 //
 //   DefaultServerUrl   REG_SZ     prefilled server address
 //   LockServerUrl      REG_DWORD  1 = only DefaultServerUrl may be used
@@ -20,7 +20,7 @@ use crate::tabs::Server;
 
 /// Registry path below HKLM / HKCU.
 #[cfg_attr(not(windows), allow(dead_code))]
-pub const REGISTRY_KEY: &str = r"SOFTWARE\Policies\DEEIX\Chat";
+pub const REGISTRY_KEY: &str = r"SOFTWARE\Policies\CourseMate";
 
 pub const LOCAL_MODE_DISABLED: &str = "policy: local mode is disabled by your administrator";
 pub const SERVER_LOCKED: &str = "policy: server address is locked by your administrator";

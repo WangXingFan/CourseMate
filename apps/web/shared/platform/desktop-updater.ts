@@ -6,8 +6,8 @@ import { check } from "@tauri-apps/plugin-updater";
 // artifact against the public key in tauri.conf.json before installing, so a
 // compromised release endpoint cannot push arbitrary code.
 //
-// Release channels: the endpoint points at a single channel today. A beta channel
-// means a second endpoint plus a second signing key, not a second code path.
+// Stable and beta builds use separate release manifests from the same repository
+// and verify packages with the same CourseMate signing key.
 
 export type UpdateCheckResult =
   | { kind: "unsupported" }

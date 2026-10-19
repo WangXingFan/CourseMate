@@ -37,7 +37,7 @@ const (
 	// 容器编排下应小于 terminationGracePeriodSeconds，为强断兜底与资源释放留余量。
 	defaultHTTPShutdownTimeoutSeconds = 10
 	// DefaultDesktopDownloadURL 是桌面端下载页的默认地址。
-	DefaultDesktopDownloadURL = "https://deeix.com/download"
+	DefaultDesktopDownloadURL = "https://github.com/WangXingFan/CourseMate/releases"
 	// DefaultFileFullContextMaxBytes 是全文注入的默认提取文本大小上限（2 MiB）。
 	DefaultFileFullContextMaxBytes int64 = 2 * 1024 * 1024
 

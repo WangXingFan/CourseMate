@@ -175,6 +175,16 @@ func TestProviderAuthBridgeDesktopRedirectMustBeLoopbackWithPort(t *testing.T) {
 	}
 }
 
+func TestProviderAuthBridgeLegacyDesktopKeepsLoopbackValidation(t *testing.T) {
+	service, _ := newProviderAuthBridgeTestService()
+	if err := service.validateProviderAuthClientRedirect("acme", providerAuthLegacyDesktopClientID, "http://127.0.0.1:49152/oauth/callback"); err != nil {
+		t.Fatalf("legacy desktop redirect rejected: %v", err)
+	}
+	if err := service.validateProviderAuthClientRedirect("acme", providerAuthLegacyDesktopClientID, "http://evil.example.com:49152/oauth/callback"); err == nil {
+		t.Fatal("legacy desktop redirect must still reject non-loopback origins")
+	}
+}
+
 func newProviderAuthBridgeTestService() (*Service, *memorycache.Cache) {
 	provider := &domainuser.IdentityProvider{
 		ID:                  10,
