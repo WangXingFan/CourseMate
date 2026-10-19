@@ -154,7 +154,7 @@ jobs:
       - name: Course content generation consistency
         run: |
           node scripts/generate-signals-content.mjs
-          git diff --exit-code -- content/signals backend/internal/domain/learning/content
+          git diff --exit-code -- content/signals backend/internal/domain/learning/content backend/internal/domain/knowledgebase/content
       - name: Check (lint, types, architecture, API contract)
         run: pnpm turbo run check --filter=@deeix/web --filter=./packages/*
       - name: Test

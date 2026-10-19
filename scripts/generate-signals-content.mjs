@@ -89,7 +89,20 @@ const write = (path, value) => { mkdirSync(resolve(root, path, ".."), { recursiv
 write("backend/internal/domain/learning/content/course.json", `${JSON.stringify(catalog, null, 2)}\n`);
 write("content/signals/notes.md", notes);
 write("content/signals/corrections.json", `${JSON.stringify(corrections, null, 2)}\n`);
-for (const lesson of lessons) {
-  write(`content/signals/knowledge-base/${lesson.id}.md`, `# ${lesson.number} ${lesson.title}\n\n课程：信号与系统\n知识点ID：${lesson.id}\n版本：${catalog.version}\n章节：${lesson.chapter}\n课程链接：/learn/knowledge?lesson=${lesson.id}\n\n${caveat}${lesson.markdown}\n`);
+const documents = lessons.map((lesson) => ({
+  id: lesson.id,
+  markdown: `# ${lesson.number} ${lesson.title}\n\n课程：信号与系统\n知识点ID：${lesson.id}\n版本：${catalog.version}\n章节：${lesson.chapter}\n课程链接：/learn/knowledge?lesson=${lesson.id}\n\n${caveat}${lesson.markdown}\n`,
+}));
+for (const document of documents) {
+  write(`content/signals/knowledge-base/${document.id}.md`, document.markdown);
 }
+write("backend/internal/domain/knowledgebase/content/signals.json", `${JSON.stringify({
+  key: catalog.id,
+  publicID: "kb_signals_systems",
+  version: catalog.version,
+  digest: createHash("sha256").update(JSON.stringify(documents)).digest("hex"),
+  name: catalog.title,
+  description: "CourseMate 内置课程讲义，含 75 个知识点。配置向量化后可在对话中检索引用。",
+  documents,
+}, null, 2)}\n`);
 console.log(`Generated ${lessons.length} lessons, ${lessons.reduce((sum, lesson) => sum + lesson.questions.length, 0)} staged questions (${lessons.flatMap((lesson) => lesson.questions).filter((q) => q.fields.length).length} numeric/coefficient questions) and ${corrections.length} correction records.`);

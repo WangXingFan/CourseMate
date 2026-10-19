@@ -34,6 +34,7 @@ import (
 	appupload "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/upload"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/user"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/usersettings"
+	domainknowledgebase "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/knowledgebase"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/cache"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
 	moderationclient "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/contentmoderation"
@@ -374,6 +375,12 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	knowledgeBaseService.SetFileUploader(uploadService)
 	knowledgeBaseService.SetFileEmbeddingSubmitter(processingService)
 	knowledgeBaseService.SetLogger(log)
+	seedCtx, cancelSeed := context.WithTimeout(context.Background(), 2*time.Minute)
+	seedErr := appknowledgebase.NewBuiltinSeeder(knowledgeBaseRepo, uploadService).Seed(seedCtx, domainknowledgebase.SignalsPackage())
+	cancelSeed()
+	if seedErr != nil {
+		return nil, fmt.Errorf("seed builtin course knowledge base: %w", seedErr)
+	}
 	conversationService.SetKnowledgeBaseResolver(knowledgeBaseService)
 	knowledgeBaseHandler := knowledgebasehttp.NewHandler(knowledgeBaseService, runtimeCfg)
 	knowledgeBaseModule := knowledgebasehttp.NewModule(knowledgeBaseHandler)
