@@ -70,6 +70,80 @@ func TestLearningProgressIsolationRetryAndRecovery(t *testing.T) {
 	if len(view.Recent) != 2 || !view.Recent[0].Correct || view.Recent[1].Correct {
 		t.Fatalf("history order: %+v", view.Recent)
 	}
+	if question.LatestWrong == nil || question.Misconception != "energy-signal-power" || question.NextReviewAt == nil {
+		t.Fatal("correct quiz erased diagnosis or review schedule")
+	}
+}
+
+func TestVariantReviewWorkflowAndIsolation(t *testing.T) {
+	router := testRouter(t)
+	for _, path := range []string{"/learning/variants/energy-signal-v1", "/learning/tutor", "/learning/reviews"} {
+		method := http.MethodPost
+		if strings.Contains(path, "/variants/") {
+			method = http.MethodGet
+		}
+		if result := request(t, router, 0, method, path, `{}`); result.Code != http.StatusUnauthorized {
+			t.Fatalf("anonymous %s: %d", path, result.Code)
+		}
+	}
+	variant := request(t, router, 1, http.MethodGet, "/learning/variants/energy-signal-v1?locale=zh-CN", "")
+	if variant.Code != http.StatusOK || strings.Contains(variant.Body.String(), `"answer"`) || strings.Contains(variant.Body.String(), `"explanation"`) || !strings.Contains(variant.Body.String(), "总能量") {
+		t.Fatalf("variant leaked or missing translation: %s", variant.Body)
+	}
+	body := fmt.Sprintf(`{"id":%q,"baseQuestionId":"energy-signal","variantId":"energy-signal-v1","selected":0,"locale":"zh-CN"}`, uuid.NewString())
+	if result := request(t, router, 2, http.MethodPost, "/learning/reviews", body); result.Code != http.StatusBadRequest {
+		t.Fatal("review accessed another student's mistake")
+	}
+	wrong := fmt.Sprintf(`{"id":%q,"questionId":"energy-signal","selected":1}`, uuid.NewString())
+	if result := request(t, router, 1, http.MethodPost, "/learning/attempts", wrong); result.Code != http.StatusOK {
+		t.Fatal(result.Body.String())
+	}
+	first := request(t, router, 1, http.MethodPost, "/learning/reviews", body)
+	if first.Code != http.StatusOK {
+		t.Fatalf("review: %d %s", first.Code, first.Body)
+	}
+	var envelope struct {
+		Data LearningAttemptData `json:"data"`
+	}
+	if err := json.Unmarshal(first.Body.Bytes(), &envelope); err != nil {
+		t.Fatal(err)
+	}
+	if !envelope.Data.Attempt.Correct || envelope.Data.Attempt.ReviewStage != 1 || envelope.Data.Explanation == "" {
+		t.Fatalf("review result: %+v", envelope.Data)
+	}
+	retry := request(t, router, 1, http.MethodPost, "/learning/reviews", body)
+	if retry.Code != http.StatusOK || retry.Body.String() != first.Body.String() {
+		t.Fatal("review retry changed result")
+	}
+	for _, changed := range []string{strings.Replace(body, `"selected":0`, `"selected":1`, 1), strings.Replace(body, "energy-signal-v1", "energy-signal-v2", 1)} {
+		if result := request(t, router, 1, http.MethodPost, "/learning/reviews", changed); result.Code != http.StatusConflict {
+			t.Fatalf("conflict: %d %s", result.Code, result.Body)
+		}
+	}
+	view := progress(t, router, 1)
+	if len(view.Recent) != 2 || view.Questions[0].ReviewStage != 1 || view.Questions[0].LatestWrong.Selected != 1 || view.Recent[0].Mode != "review" {
+		t.Fatalf("progress: %+v", view)
+	}
+	if len(progress(t, router, 2).Recent) != 0 {
+		t.Fatal("review history leaked")
+	}
+}
+
+func TestTutorHTTPValidation(t *testing.T) {
+	router := testRouter(t)
+	for _, body := range []string{
+		`{"experimentId":"unknown","action":"hint"}`,
+		`{"experimentId":"signal-basics","action":"hint","parameters":{"x":{"nested":1}}}`,
+		`{"experimentId":"signal-basics","action":"hint","parameters":{"x":[1]}}`,
+	} {
+		if result := request(t, router, 1, http.MethodPost, "/learning/tutor", body); result.Code != http.StatusBadRequest {
+			t.Fatalf("accepted invalid context: %d %s", result.Code, result.Body)
+		}
+	}
+	result := request(t, router, 1, http.MethodPost, "/learning/tutor", `{"experimentId":"signal-basics","action":"hint","locale":"zh-CN","parameters":{"amplitude":2,"reversed":false}}`)
+	if result.Code != http.StatusOK || !strings.Contains(result.Body.String(), `"source":"curated"`) || result.Header().Get("Cache-Control") != "no-store" {
+		t.Fatalf("tutor: %d %s", result.Code, result.Body)
+	}
 }
 
 func TestLearningValidationAndHistoryLimit(t *testing.T) {

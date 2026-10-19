@@ -5,6 +5,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	app "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/learning"
@@ -22,6 +23,7 @@ func (m *Module) RegisterRoutes(group *gin.RouterGroup) {
 	group.GET("/learning/progress", m.Progress)
 	group.POST("/learning/attempts", m.Submit)
 	group.POST("/learning/reviews", m.SubmitReview)
+	group.GET("/learning/variants/:id", m.Variant)
 	group.POST("/learning/tutor", m.Tutor)
 }
 
@@ -66,11 +68,7 @@ func (m *Module) Progress(c *gin.Context) {
 		if item.LatestWrong != nil {
 			wrong := toResponse(*item.LatestWrong)
 			entry.LatestWrong = &wrong
-			if wrong.Mode == domain.AttemptModeReview {
-				entry.Misconception = question.Misconceptions[(question.Answer+1)%4]
-			} else {
-				entry.Misconception = question.Misconceptions[wrong.Selected]
-			}
+			entry.Misconception = question.Misconceptions[wrong.Selected]
 		}
 		view.Questions = append(view.Questions, entry)
 	}
@@ -132,7 +130,38 @@ func (m *Module) SubmitReview(c *gin.Context) {
 		writeError(c, err)
 		return
 	}
-	response.Success(c, LearningAttemptData{Attempt: toResponse(*attempt)})
+	variant := domain.FindVariant(attempt.VariantID)
+	text := variantText(variant, input.Locale)
+	response.Success(c, LearningAttemptData{Attempt: toResponse(*attempt), Explanation: text.Explanation})
+}
+
+// Variant godoc
+// @Summary Read a localized review variant without its answer or explanation
+// @Tags learning
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "Variant ID"
+// @Param locale query string false "Locale"
+// @Success 200 {object} LearningVariantResponse
+// @Failure 400 {object} response.Envelope
+// @Failure 401 {object} response.Envelope
+// @Router /learning/variants/{id} [get]
+func (m *Module) Variant(c *gin.Context) {
+	variant := domain.FindVariant(c.Param("id"))
+	if variant == nil {
+		writeError(c, app.ErrInvalid)
+		return
+	}
+	text := variantText(variant, c.Query("locale"))
+	c.Header("Cache-Control", "no-store")
+	response.Success(c, LearningVariantResponse{ID: variant.ID, BaseQuestionID: variant.BaseQuestionID, Prompt: text.Prompt, Options: text.Options, Lesson: domain.FindQuestion(variant.BaseQuestionID).Lesson})
+}
+
+func variantText(variant *domain.Variant, locale string) domain.VariantText {
+	if strings.HasPrefix(strings.ToLower(locale), "zh") {
+		return variant.ZH
+	}
+	return variant.EN
 }
 
 // Tutor godoc

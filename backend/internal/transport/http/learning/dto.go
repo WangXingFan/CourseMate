@@ -13,6 +13,7 @@ type LearningReviewRequest struct {
 	BaseQuestionID string `json:"baseQuestionId" binding:"required,max=64"`
 	VariantID      string `json:"variantId" binding:"required,max=64"`
 	Selected       *int   `json:"selected" binding:"required,min=0,max=3"`
+	Locale         string `json:"locale" binding:"omitempty,max=16"`
 }
 
 type LearningAttemptResponse struct {
@@ -29,7 +30,16 @@ type LearningAttemptResponse struct {
 }
 
 type LearningAttemptData struct {
-	Attempt LearningAttemptResponse `json:"attempt"`
+	Attempt     LearningAttemptResponse `json:"attempt"`
+	Explanation string                  `json:"explanation"`
+}
+
+type LearningVariantResponse struct {
+	ID             string   `json:"id"`
+	BaseQuestionID string   `json:"baseQuestionId"`
+	Prompt         string   `json:"prompt"`
+	Options        []string `json:"options"`
+	Lesson         string   `json:"lesson"`
 }
 
 type LearningQuestionResponse struct {

@@ -1533,6 +1533,7 @@ export interface KnowledgebaseErrorDoc {
 
 export interface LearningAttemptData {
   attempt: LearningAttemptResponse;
+  explanation: string;
 }
 
 export interface LearningAttemptRequest {
@@ -1585,6 +1586,8 @@ export interface LearningReviewRequest {
   /** @maxLength 64 */
   baseQuestionId: string;
   id: string;
+  /** @maxLength 16 */
+  locale: string;
   /**
    * @min 0
    * @max 3
@@ -1622,6 +1625,14 @@ export interface LearningTutorResponse {
   source: string;
   steps: string[];
   summary: string;
+}
+
+export interface LearningVariantResponse {
+  baseQuestionId: string;
+  id: string;
+  lesson: string;
+  options: string[];
+  prompt: string;
 }
 
 export interface LocalGrantExchangeRequest {
@@ -7168,6 +7179,28 @@ export namespace Learning {
     export type RequestBody = LearningTutorRequest;
     export type RequestHeaders = {};
     export type ResponseBody = LearningTutorResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name VariantsDetail
+   * @summary Read a localized review variant without its answer or explanation
+   * @request GET:/learning/variants/{id}
+   * @secure
+   */
+  export namespace VariantsDetail {
+    export type RequestParams = {
+      /** Variant ID */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** Locale */
+      locale?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningVariantResponse;
   }
 }
 
