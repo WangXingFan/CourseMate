@@ -7,6 +7,7 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LessonPanel, LessonShell, Readout } from "@/features/learning/components/shared/lesson-shell";
+import { ExperimentTutor } from "@/features/learning/components/shared/experiment-tutor";
 import { PredictionCard, type PredictionResult } from "@/features/learning/components/shared/prediction-card";
 import { RevealGate } from "@/features/learning/components/shared/reveal-gate";
 import { SignalPlot, type PlotPoint } from "@/features/learning/components/shared/signal-plot";
@@ -107,6 +108,8 @@ export function SignalBasicsExperiment() {
           result={result}
           record={record}
         />
+
+        {scenario && seed ? <ExperimentTutor key={seed} seed={seed} experimentId="signal-basics" action={result ? "explain" : "hint"} parameters={{ amplitude: scenario.amplitude, decay: scenario.decay, frequency: scenario.frequency }} plotSummary={scenarioText} selected={selected} reason={reason} correct={result?.correct ?? false} /> : null}
 
         <LessonPanel title={t("plot.timeTitle")} description={t("plot.timeDescription")}>
           <RevealGate revealed={revealed} label={common("hidden")}>
