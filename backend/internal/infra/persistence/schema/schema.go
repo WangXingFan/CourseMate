@@ -46,6 +46,7 @@ func Models() []any {
 		&models.AuditLog{},
 		&models.KnowledgeBase{},
 		&models.KnowledgeBaseFile{},
+		&models.BuiltinKnowledgeBaseSeed{},
 		&models.SystemSetting{},
 		&models.UserSetting{},
 		&models.FileChunk{},

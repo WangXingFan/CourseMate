@@ -200,6 +200,31 @@ func (s *Service) ListFiles(ctx context.Context, input ListFilesInput) (*ListFil
 
 // UploadFile 上传文件并扣减用户配额。
 func (s *Service) UploadFile(ctx context.Context, input UploadFileInput) (*UploadFileResult, error) {
+	return s.uploadFile(ctx, input, false)
+}
+
+// ImportBuiltinMarkdown is reserved for trusted, bundled teaching notes. It
+// creates platform-owned files without borrowing an administrator's identity.
+// No HTTP handler exposes this entry point; ordinary uploads still require an
+// active account and obey the administrator's upload MIME allowlist.
+func (s *Service) ImportBuiltinMarkdown(ctx context.Context, fileName string, markdown string) (*UploadFileResult, error) {
+	result, err := s.uploadFile(ctx, UploadFileInput{
+		Ownership: FileOwnershipSystem, Purpose: "knowledge_base", FileName: fileName,
+		MimeType: "text/markdown", DeclaredSize: int64(len(markdown)), Reader: strings.NewReader(markdown),
+	}, true)
+	if err != nil {
+		return nil, err
+	}
+	// A previous startup may have persisted the file but failed to enqueue it.
+	if result.Reused && (result.File.ProcessingStatus == "uploaded" || result.File.ProcessingStatus == "failed") {
+		if err = s.initializeUploadedFile(ctx, &result.File); err != nil {
+			return nil, err
+		}
+	}
+	return result, nil
+}
+
+func (s *Service) uploadFile(ctx context.Context, input UploadFileInput, builtin bool) (*UploadFileResult, error) {
 	if input.Reader == nil {
 		return nil, s.errInvalidFileReference()
 	}
@@ -213,12 +238,16 @@ func (s *Service) UploadFile(ctx context.Context, input UploadFileInput) (*Uploa
 		normalizedMIME = "application/octet-stream"
 	}
 
-	userItem, err := s.repo.GetUserByID(ctx, input.UserID)
-	if err != nil {
-		return nil, err
-	}
-	if userItem.Status != domainuser.StatusActive {
-		return nil, s.errInvalidFileReference()
+	var userItem *domainuser.User
+	if !builtin {
+		var err error
+		userItem, err = s.repo.GetUserByID(ctx, input.UserID)
+		if err != nil {
+			return nil, err
+		}
+		if userItem.Status != domainuser.StatusActive {
+			return nil, s.errInvalidFileReference()
+		}
 	}
 
 	cfg := s.snapshot()
@@ -233,7 +262,10 @@ func (s *Service) UploadFile(ctx context.Context, input UploadFileInput) (*Uploa
 	fileID := "file_" + conv.NormalizePublicID(uuid.NewString())
 	ownerUserID := input.UserID
 	quotaBytes := cfg.UserStorageQuotaBytes
-	storageOwner := strings.TrimSpace(userItem.PublicID)
+	storageOwner := "system"
+	if userItem != nil {
+		storageOwner = strings.TrimSpace(userItem.PublicID)
+	}
 	if input.Ownership == FileOwnershipSystem {
 		ownerUserID = 0
 		quotaBytes = 0
@@ -277,7 +309,7 @@ func (s *Service) UploadFile(ctx context.Context, input UploadFileInput) (*Uploa
 		removeUploadedObject(relativePath)
 		return nil, s.errDangerousMIMEType()
 	}
-	if !isAllowedMIME(detectedMIME, cfg) {
+	if !builtin && !isAllowedMIME(detectedMIME, cfg) {
 		removeUploadedObject(relativePath)
 		return nil, s.errMIMEBlocked()
 	}
@@ -346,6 +378,9 @@ func (s *Service) UploadFile(ctx context.Context, input UploadFileInput) (*Uploa
 	initErr := s.initializeUploadedFile(initializeCtx, fileItem)
 	cancelInitialize()
 	if initErr != nil {
+		if builtin {
+			return nil, initErr
+		}
 		if s.logger != nil {
 			s.logger.Warn("initialize_uploaded_file_failed",
 				zap.String("file_id", fileItem.FileID),

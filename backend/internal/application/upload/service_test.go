@@ -177,6 +177,58 @@ func TestUploadFileStoresSystemAssetOutsideUploaderOwnership(t *testing.T) {
 	}
 }
 
+func TestBuiltinMarkdownDoesNotBorrowIdentityOrPrivateFile(t *testing.T) {
+	repo := newUploadTestRepo()
+	store := newUploadTestStore()
+	service := newUploadTestService(repo, store)
+	private, err := service.UploadFile(t.Context(), uploadTestInput("private.md", "same notes"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	// A bundled import must work without an active actor or a student upload
+	// MIME permission, while ordinary requests retain both checks.
+	repo.user.Status = "disabled"
+	service.cfg.Store(config.Config{MaxUploadFileBytes: 1024 * 1024, FileAllowedMIMETypes: "image/png"})
+	bundled, err := service.ImportBuiltinMarkdown(t.Context(), "ss-2-5.md", "same notes")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bundled.File.UserID != 0 || bundled.File.FileID == private.File.FileID || bundled.Quota.QuotaBytes != 0 || !strings.HasPrefix(bundled.File.StoragePath, "system/") {
+		t.Fatal("bundled import reused private content or personal storage")
+	}
+	duplicate, err := service.ImportBuiltinMarkdown(t.Context(), "ss-2-5.md", "same notes")
+	if err != nil || !duplicate.Reused || duplicate.File.FileID != bundled.File.FileID {
+		t.Fatalf("builtin import was not content-deduplicated: %#v, %v", duplicate, err)
+	}
+	if _, err = service.UploadFile(t.Context(), uploadTestInput("student.md", "student content")); err == nil {
+		t.Fatal("ordinary upload bypassed account validation")
+	}
+	repo.user.Status = domainuser.StatusActive
+	if _, err = service.UploadFile(t.Context(), uploadTestInput("student.md", "student content")); err == nil {
+		t.Fatal("ordinary upload bypassed MIME validation")
+	}
+}
+
+func TestBuiltinMarkdownRetriesFailedQueueInitialization(t *testing.T) {
+	repo := newUploadTestRepo()
+	store := newUploadTestStore()
+	service := newUploadTestService(repo, store)
+	queueErr := errors.New("queue unavailable")
+	service.hooks.InitializeUploadedFile = func(context.Context, *domainconversation.FileObject) error { return queueErr }
+	if _, err := service.ImportBuiltinMarkdown(t.Context(), "note.md", "course notes"); !errors.Is(err, queueErr) {
+		t.Fatalf("queue failure was hidden: %v", err)
+	}
+	initialized := false
+	service.hooks.InitializeUploadedFile = func(context.Context, *domainconversation.FileObject) error {
+		initialized = true
+		return nil
+	}
+	result, err := service.ImportBuiltinMarkdown(t.Context(), "note.md", "course notes")
+	if err != nil || !result.Reused || !initialized || repo.activeFileCount() != 1 {
+		t.Fatalf("failed import did not resume: %#v, %v", result, err)
+	}
+}
+
 func TestUploadFileAllowsReuploadAfterDelete(t *testing.T) {
 	ctx := context.Background()
 	repo := newUploadTestRepo()
