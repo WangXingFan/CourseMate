@@ -72,7 +72,7 @@ func (r *Repo) Progress(ctx context.Context, userID uint) (*domain.Progress, err
 			}
 		}
 
-		latestWrong, err := latestAttemptByQuestion(tx, userID, "correct = ?", false)
+		latestWrong, err := latestAttemptByQuestion(tx, userID, "correct = ? AND COALESCE(NULLIF(mode, ''), 'quiz') = 'quiz'", false)
 		if err != nil {
 			return err
 		}
@@ -198,6 +198,16 @@ func cloneTime(value *time.Time) *time.Time {
 func (r *Repo) SaveReview(ctx context.Context, input domain.Attempt, now time.Time) (*domain.Attempt, error) {
 	var result *domain.Attempt
 	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		var existing models.LearningAttempt
+		lookup := tx.Where("user_id = ? AND attempt_id = ?", input.UserID, input.ID).First(&existing).Error
+		if lookup == nil {
+			saved := toAttempt(existing)
+			result = &saved
+			return nil
+		}
+		if !errors.Is(lookup, gorm.ErrRecordNotFound) {
+			return lookup
+		}
 		var anchor models.LearningAttempt
 		err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("user_id = ? AND question_id = ? AND correct = ?", input.UserID, input.QuestionID, false).Order("id ASC").First(&anchor).Error
 		if errors.Is(err, gorm.ErrRecordNotFound) {

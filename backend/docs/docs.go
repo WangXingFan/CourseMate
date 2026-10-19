@@ -10414,6 +10414,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/learning/variants/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Read a localized review variant without its answer or explanation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Variant ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Locale",
+                        "name": "locale",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningVariantResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/llm/icon-assets/{public_id}": {
             "get": {
                 "description": "公开读取经过后端校验的不可变模型展示图标",
@@ -17355,11 +17406,15 @@ const docTemplate = `{
         "LearningAttemptData": {
             "type": "object",
             "required": [
-                "attempt"
+                "attempt",
+                "explanation"
             ],
             "properties": {
                 "attempt": {
                     "$ref": "#/definitions/LearningAttemptResponse"
+                },
+                "explanation": {
+                    "type": "string"
                 }
             }
         },
@@ -17533,6 +17588,7 @@ const docTemplate = `{
             "required": [
                 "baseQuestionId",
                 "id",
+                "locale",
                 "selected",
                 "variantId"
             ],
@@ -17543,6 +17599,10 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
+                },
+                "locale": {
+                    "type": "string",
+                    "maxLength": 16
                 },
                 "selected": {
                     "type": "integer",
@@ -17652,6 +17712,36 @@ const docTemplate = `{
                     }
                 },
                 "summary": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningVariantResponse": {
+            "type": "object",
+            "required": [
+                "baseQuestionId",
+                "id",
+                "lesson",
+                "options",
+                "prompt"
+            ],
+            "properties": {
+                "baseQuestionId": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lesson": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "prompt": {
                     "type": "string"
                 }
             }
