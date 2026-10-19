@@ -14,41 +14,41 @@ import (
 var courseJSON []byte
 
 type Course struct {
-	ID         string         `json:"id"`
-	Version    string         `json:"version"`
-	Title      string         `json:"title"`
-	Language   string         `json:"language"`
-	SourceName string         `json:"sourceName"`
-	SourceHash string         `json:"sourceHash"`
-	Lessons    []CourseLesson `json:"lessons"`
+	ID         string
+	Version    string
+	Title      string
+	Language   string
+	SourceName string
+	SourceHash string
+	Lessons    []CourseLesson
 }
 
 type CourseLesson struct {
-	ID        string           `json:"id"`
-	Number    string           `json:"number"`
-	Title     string           `json:"title"`
-	Chapter   string           `json:"chapter"`
-	Markdown  string           `json:"markdown"`
-	Questions []CourseQuestion `json:"questions"`
+	ID        string
+	Number    string
+	Title     string
+	Chapter   string
+	Markdown  string
+	Questions []CourseQuestion
 }
 
 // CourseQuestion contains private grading data. HTTP must project public fields.
 type CourseQuestion struct {
-	ID          string        `json:"id"`
-	Stage       string        `json:"stage"`
-	Prompt      string        `json:"prompt"`
-	Options     []string      `json:"options"`
-	Answer      int           `json:"answer"`
-	Formula     string        `json:"formula"`
-	Fields      []CourseField `json:"fields"`
-	Explanation string        `json:"explanation"`
+	ID          string
+	Stage       string
+	Prompt      string
+	Options     []string
+	Answer      int
+	Formula     string
+	Fields      []CourseField
+	Explanation string
 }
 
 type CourseField struct {
-	ID       string  `json:"id"`
-	Label    string  `json:"label"`
-	Unit     string  `json:"unit"`
-	Expected float64 `json:"expected"`
+	ID       string
+	Label    string
+	Unit     string
+	Expected float64
 }
 
 var course = func() Course {
@@ -72,24 +72,24 @@ func FindCourseLesson(id string) *CourseLesson {
 }
 
 type LessonFieldResult struct {
-	ID       string `json:"id"`
-	Correct  bool   `json:"correct"`
-	Expected string `json:"expected"`
+	ID       string
+	Correct  bool
+	Expected string
 }
 
 type LessonAttempt struct {
-	ID          string              `json:"id"`
-	UserID      uint                `json:"-"`
-	Version     string              `json:"version"`
-	LessonID    string              `json:"lessonId"`
-	QuestionID  string              `json:"questionId"`
-	Stage       string              `json:"stage"`
-	Answers     map[string]string   `json:"answers"`
-	Score       int                 `json:"score"`
-	Total       int                 `json:"total"`
-	Results     []LessonFieldResult `json:"results"`
-	Explanation string              `json:"explanation"`
-	CreatedAt   time.Time           `json:"createdAt"`
+	ID          string
+	UserID      uint
+	Version     string
+	LessonID    string
+	QuestionID  string
+	Stage       string
+	Answers     map[string]string
+	Score       int
+	Total       int
+	Results     []LessonFieldResult
+	Explanation string
+	CreatedAt   time.Time
 }
 
 // ParseCourseNumber accepts decimal/scientific numbers and one numeric fraction.
