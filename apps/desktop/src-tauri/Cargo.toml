@@ -17,7 +17,10 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 tauri = { version = "2", features = ["tray-icon", "image-png", "unstable"] }
-tauri-plugin-updater = "2"
+# Current updater artifacts are raw Windows installers / Linux AppImages and
+# macOS tarballs. Disable legacy Windows ZIP / Linux tar.gz support so the
+# unused, vulnerable zip 4 dependency is not linked into the client.
+tauri-plugin-updater = { version = "2.12", default-features = false, features = ["rustls-tls", "system-proxy"] }
 tauri-plugin-process = "2"
 tauri-plugin-opener = "2"
 # OS credential store: macOS Keychain, Windows Credential Manager, Linux Secret Service.
