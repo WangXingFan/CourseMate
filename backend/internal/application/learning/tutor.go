@@ -23,17 +23,17 @@ type TutorInput struct {
 }
 
 type TutorCitation struct {
-	ID      string `json:"id"`
-	Chapter string `json:"chapter"`
-	Section string `json:"section"`
-	Href    string `json:"href"`
+	ID      string
+	Chapter string
+	Section string
+	Href    string
 }
 
 type TutorResponse struct {
-	Source    string          `json:"source"`
-	Summary   string          `json:"summary"`
-	Steps     []string        `json:"steps"`
-	Citations []TutorCitation `json:"citations"`
+	Source    string
+	Summary   string
+	Steps     []string
+	Citations []TutorCitation
 }
 
 type tutorRouteResolver interface {
@@ -98,7 +98,7 @@ func (s *Service) Tutor(ctx context.Context, userID uint, input TutorInput) (Tut
 func (s *Service) resolveTutorRoute(ctx context.Context, userID uint) (*channel.ResolvedRoute, error) {
 	input := channel.ResolveRouteInput{
 		TaskType: channel.TaskTypeChat,
-		Scope:    channel.RouteScopeInternal,
+		Scope:    channel.RouteScopeUser,
 		UserID:   userID,
 	}
 	if resolver, ok := s.routeResolver.(tutorDefaultRouteResolver); ok {
