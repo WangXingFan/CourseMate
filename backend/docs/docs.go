@@ -10279,7 +10279,7 @@ const docTemplate = `{
                 "tags": [
                     "learning"
                 ],
-                "summary": "Read personal practice progress and the latest 40 answers",
+                "summary": "Read personal practice, diagnosis, and spaced-review progress",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -10295,6 +10295,118 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/reviews": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Submit a server-graded variant review and schedule the next review",
+                "parameters": [
+                    {
+                        "description": "Variant review answer",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LearningReviewRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningAttemptData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/tutor": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Request a grounded hint or explanation for an interactive experiment",
+                "parameters": [
+                    {
+                        "description": "Experiment context",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LearningTutorRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningTutorResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/Envelope"
                         }
@@ -17276,13 +17388,21 @@ const docTemplate = `{
         "LearningAttemptResponse": {
             "type": "object",
             "required": [
+                "answer",
                 "correct",
                 "createdAt",
                 "id",
+                "mode",
+                "nextReviewAt",
                 "questionId",
-                "selected"
+                "reviewStage",
+                "selected",
+                "variantId"
             ],
             "properties": {
+                "answer": {
+                    "type": "integer"
+                },
                 "correct": {
                     "type": "boolean"
                 },
@@ -17292,11 +17412,24 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "mode": {
+                    "type": "string"
+                },
+                "nextReviewAt": {
+                    "type": "string",
+                    "x-nullable": true
+                },
                 "questionId": {
                     "type": "string"
                 },
+                "reviewStage": {
+                    "type": "integer"
+                },
                 "selected": {
                     "type": "integer"
+                },
+                "variantId": {
+                    "type": "string"
                 }
             }
         },
@@ -17333,7 +17466,13 @@ const docTemplate = `{
                 "correctCount",
                 "id",
                 "latest",
+                "latestWrong",
                 "lesson",
+                "misconception",
+                "nextReviewAt",
+                "reviewDue",
+                "reviewStage",
+                "suggestedVariantId",
                 "topic"
             ],
             "properties": {
@@ -17357,10 +17496,162 @@ const docTemplate = `{
                     ],
                     "x-nullable": true
                 },
+                "latestWrong": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/LearningAttemptResponse"
+                        }
+                    ],
+                    "x-nullable": true
+                },
                 "lesson": {
                     "type": "string"
                 },
+                "misconception": {
+                    "type": "string"
+                },
+                "nextReviewAt": {
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "reviewDue": {
+                    "type": "boolean"
+                },
+                "reviewStage": {
+                    "type": "integer"
+                },
+                "suggestedVariantId": {
+                    "type": "string"
+                },
                 "topic": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningReviewRequest": {
+            "type": "object",
+            "required": [
+                "baseQuestionId",
+                "id",
+                "selected",
+                "variantId"
+            ],
+            "properties": {
+                "baseQuestionId": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "id": {
+                    "type": "string"
+                },
+                "selected": {
+                    "type": "integer",
+                    "maximum": 3,
+                    "minimum": 0
+                },
+                "variantId": {
+                    "type": "string",
+                    "maxLength": 64
+                }
+            }
+        },
+        "LearningTutorCitation": {
+            "type": "object",
+            "required": [
+                "chapter",
+                "href",
+                "id",
+                "section"
+            ],
+            "properties": {
+                "chapter": {
+                    "type": "string"
+                },
+                "href": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "section": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningTutorRequest": {
+            "type": "object",
+            "required": [
+                "action",
+                "correct",
+                "experimentId",
+                "locale",
+                "parameters",
+                "plotSummary",
+                "reason",
+                "selected"
+            ],
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "enum": [
+                        "hint",
+                        "explain"
+                    ]
+                },
+                "correct": {
+                    "type": "boolean"
+                },
+                "experimentId": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "locale": {
+                    "type": "string",
+                    "maxLength": 16
+                },
+                "parameters": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "plotSummary": {
+                    "type": "string",
+                    "maxLength": 2000
+                },
+                "reason": {
+                    "type": "string",
+                    "maxLength": 1200
+                },
+                "selected": {
+                    "type": "string",
+                    "maxLength": 200
+                }
+            }
+        },
+        "LearningTutorResponse": {
+            "type": "object",
+            "required": [
+                "citations",
+                "source",
+                "steps",
+                "summary"
+            ],
+            "properties": {
+                "citations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningTutorCitation"
+                    }
+                },
+                "source": {
+                    "type": "string"
+                },
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "summary": {
                     "type": "string"
                 }
             }
