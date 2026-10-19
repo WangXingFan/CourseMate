@@ -31,6 +31,10 @@
       "experiments": {
         "title": "四章闯关",
         "description": "按章节抽题，图形在预测后才解锁。"
+      },
+      "workbench": {
+        "title": "信号工作台",
+        "description": "自定义信号与变换，组合运算和卷积。"
       }
     },
     "inClass": "课堂闯关",
