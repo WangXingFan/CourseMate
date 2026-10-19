@@ -119,6 +119,8 @@ try {
   await screenshot("diagnosis-desktop");
   await page.getByRole("button", { name: "最近作答", exact: true }).click();
   await page.getByText("变式 energy-signal-v1 · 所选选项 A", { exact: true }).waitFor();
+  await page.getByRole("button", { name: "变式复习", exact: true }).click();
+  await page.getByRole("heading", { name: "x(t)=2e^(−t)u(t) 的总能量是多少？", exact: true }).waitFor();
   assert.deepEqual(errors, []);
   console.log("PASS: workbench desktop/mobile, four tutors and reset, explanation, diagnosis, due filter, immutable review retry, scheduling display, history mode labels");
 } catch (error) {

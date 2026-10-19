@@ -638,7 +638,8 @@
     "variantHistory": "Variant {variant} · Selected option {choice}",
     "lastMistake": "Latest original mistake: {answer}",
     "lastReviewCorrect": "Latest variant review: correct",
-    "lastReviewIncorrect": "Latest variant review: incorrect"
+    "lastReviewIncorrect": "Latest variant review: incorrect",
+    "reviewBaseQuestion": "Related original question: {question}"
   },
   "quiz": {
     "title": "Quick quiz",
