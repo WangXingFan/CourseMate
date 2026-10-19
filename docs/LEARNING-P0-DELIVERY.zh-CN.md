@@ -44,7 +44,7 @@
 
 UI smoke 使用受控 API 数据验证界面状态；真实后端评分和存储行为由 Go 测试验证。模型路径使用测试网关验证，不要求在 CI 中配置实际上游密钥。
 
-具体运行链接、提交与结果在本文件的验收记录中补充。截图保存在 Web 任务的 `learning-p0-screenshots` artifact。
+具体运行链接、提交与结果见下方验收记录及 [PR 检查](https://github.com/WangXingFan/CourseMate/pull/1/checks)。截图保存在 Web 任务的 `learning-p0-screenshots` artifact；最终提交的镜像 digest 与验收结果记录在 PR 描述中。
 
 ## 回滚
 
@@ -54,4 +54,5 @@ UI smoke 使用受控 API 数据验证界面状态；真实后端评分和存储
 
 - 阶段 0：提交 `3c88e611` 的 [CI](https://github.com/WangXingFan/CourseMate/actions/runs/39197037711) 与 [CodeQL](https://github.com/WangXingFan/CourseMate/actions/runs/39197037702) 已通过。
 - 完整功能首轮：提交 `aa3fbb6a` 的 [CI](https://github.com/WangXingFan/CourseMate/actions/runs/39198049364) 与 [CodeQL](https://github.com/WangXingFan/CourseMate/actions/runs/39198049365) 已通过，包括 API、Web、Desktop、6 项 Web 学习回归测试、40 项共享核心测试以及桌面/移动端 UI smoke。已检查 [5 张验收截图](https://github.com/WangXingFan/CourseMate/actions/runs/39198049364/artifacts/12162996592)，未发现页面溢出或弹窗截断。
-- 完整 P0：等待最终提交的 Actions 结果后填写。
+- 双架构镜像首轮：提交 `aa3fbb6a` 的 [Image (GHCR)](https://github.com/WangXingFan/CourseMate/actions/runs/39198096247) 已通过 amd64、arm64 和 manifest 检查；功能分支镜像 tag 为 `ghcr.io/wangxingfan/coursemate:codex-learning-p0`。
+- 后续边界修正：补齐原题批量重练筛选、变式历史入口、请求过期隔离与数值分辨率提示。最终功能提交的验收状态以 [PR 检查](https://github.com/WangXingFan/CourseMate/pull/1/checks) 和 PR 描述中的 SHA/运行链接/digest 为准。
