@@ -41,6 +41,7 @@ Review when due ← Practice a variant ← Diagnose a mistake ← Take a quiz
 | Area | Capabilities |
 | --- | --- |
 | Interactive lessons | Eight topics: convolution, sampling, Fourier series, first-order systems, Fourier transform, Laplace transform, second-order systems, and modulation. |
+| Knowledge and staged practice | 75 curated Chinese sections, each with preparation, in-class and follow-up questions: 225 authored exercises, including 81 numeric/coefficient exercises with fraction input, formula preview, partial credit and account-owned results. |
 | Chapter experiments and tutor | Signal basics, time domain, frequency domain, and s-domain experiments. Curated hints before answering; AI explanations after answering, with course citations and a curated fallback when a model is unavailable. |
 | Signal workbench | Step, finite-width impulse approximation, rectangle, exponential, and sine signals; reversal, scaling, and shifting; view A/B, add, subtract, multiply, or compute numerical convolution. |
 | Quizzes and diagnosis | 12 base questions, 36 bilingual misconception diagnoses, 24 server-graded variant exercises, and account-scoped attempt history. |
@@ -56,6 +57,7 @@ Open these paths on your deployed instance after signing in:
 | Path | Purpose |
 | --- | --- |
 | `/learn` | Learning hub and topic navigation. |
+| `/learn/knowledge` | Search course notes and complete each section's three practice stages. |
 | `/learn/course-flow` | Suggested activities before, during, and after class. |
 | `/learn/experiments` | Four chapter experiments with hints and explanations. |
 | `/learn/workbench` | Build, transform, and combine signals. |
@@ -64,7 +66,7 @@ Open these paths on your deployed instance after signing in:
 
 For AI-generated experiment explanations, an administrator must configure and authorize a model and its upstream channel. Curated hints and fallback explanations remain available without a model. Teaching-material retrieval additionally requires uploaded materials and an embedding configuration.
 
-P0 (stages 0–3) is implemented. See the [delivery and validation record](./docs/LEARNING-P0-DELIVERY.zh-CN.md) for CI evidence and numerical limits. Unified activity tracking, step-by-step solution checks, course knowledge navigation, discrete-time topics, experiment reports, and teacher analytics remain on the [roadmap](./docs/COURSEMATE-LEARNING-ROADMAP.zh-CN.md).
+P0 (stages 0–3) is implemented. See the [delivery and validation record](./docs/LEARNING-P0-DELIVERY.zh-CN.md) for CI evidence and numerical limits. The [course content package](./content/signals/README.md) preserves the imported source, documents corrections and provides 75 Markdown files for knowledge-base upload. Course browsing and deterministic practice work without an AI model; using the notes in retrieval requires uploading that package through the existing knowledge-base workflow. Full derivation checks, handwriting grading, unified activity tracking, expanded discrete-time topics, experiment reports and teacher analytics remain on the [roadmap](./docs/COURSEMATE-LEARNING-ROADMAP.zh-CN.md).
 
 ## Architecture and Tech Stack
 

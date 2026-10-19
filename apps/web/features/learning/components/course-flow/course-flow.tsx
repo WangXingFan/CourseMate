@@ -19,7 +19,7 @@ const PHASES = [
     id: "before",
     minutes: 15,
     items: [
-      { id: "read", href: "/learn" },
+      { id: "read", href: "/learn/knowledge" },
       { id: "warmup", href: "/learn/quiz" },
       { id: "predict", href: "/learn/convolution" },
     ],
