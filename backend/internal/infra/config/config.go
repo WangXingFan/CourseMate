@@ -18,7 +18,7 @@ const (
 	defaultAppName                      = "CourseMate"
 	defaultBrandTitle                   = "CourseMate"
 	defaultBrandShortName               = "CourseMate"
-	defaultBrandDescription             = "CourseMate is a multi-model AI conversation system."
+	defaultBrandDescription             = "CourseMate is an interactive Signals and Systems learning companion with experiments, AI tutoring, quizzes and spaced review."
 	defaultBrandFaviconURL              = "/favicon.ico"
 	defaultBrandPWAIcon192URL           = "/pwa/icon-192.png"
 	defaultBrandPWAIcon512URL           = "/pwa/icon-512.png"

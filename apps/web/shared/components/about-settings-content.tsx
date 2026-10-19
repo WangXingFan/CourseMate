@@ -2,14 +2,14 @@
 
 import type { ComponentType, ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
-import { ExternalLink, Globe, Mail, Newspaper } from "lucide-react";
+import { ExternalLink, FileText, MessageSquare } from "lucide-react";
 
 import { useTranslations } from "next-intl";
 
 import packageMeta from "@/package.json";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { DeeixLogo } from "@/shared/components/app-logo";
+import { CourseMateLogo } from "@/shared/components/app-logo";
 import {
   SettingsPage,
   SettingsSection,
@@ -18,11 +18,9 @@ import { cn } from "@/lib/utils";
 
 type AboutLabels = {
   details: string;
-  official: string;
-  website: string;
+  author: string;
   repository: string;
-  social: string;
-  blog: string;
+  notices: string;
   contact: string;
   copyright: string;
   license: string;
@@ -41,7 +39,7 @@ type AboutSettingsContentProps = {
   versionDetails?: ReactNode;
   // Extra sections appended after the product details (e.g. admin-only settings).
   extraSections?: ReactNode;
-  // Renders third-party brand marks (GitHub, X) of the official links. Injected by the
+  // Renders third-party brand marks (GitHub) of the project links. Injected by the
   // caller so this product panel stays free of the identity-provider entity.
   brandIcon?: AboutBrandIcon;
 };
@@ -130,40 +128,28 @@ export function AboutSettingsContent({
   );
   const links: AboutLinkItem[] = [
     {
-      label: labels.website,
-      value: "deeix.com",
-      href: "https://deeix.com",
-      icon: Globe,
-    },
-    {
-      label: labels.official,
-      value: "DEEIX",
-      href: "https://github.com/DEEIX-AI",
+      label: labels.author,
+      value: "WangXingFan",
+      href: "https://github.com/WangXingFan",
       brand: { name: "GitHub", slug: "github" },
-    },
-    {
-      label: labels.social,
-      value: "@DEEIX_AI",
-      href: "https://x.com/DEEIX_AI",
-      brand: { name: "X", slug: "x" },
     },
     {
       label: labels.repository,
-      value: "DEEIX-Chat",
-      href: "https://github.com/DEEIX-AI/DEEIX-Chat",
+      value: "CourseMate",
+      href: "https://github.com/WangXingFan/CourseMate",
       brand: { name: "GitHub", slug: "github" },
     },
     {
-      label: labels.blog,
-      value: "blog.cheny.me",
-      href: "https://blog.cheny.me/",
-      icon: Newspaper,
+      label: labels.notices,
+      value: "NOTICE",
+      href: "https://github.com/WangXingFan/CourseMate/blob/dev/NOTICE",
+      icon: FileText,
     },
     {
       label: labels.contact,
-      value: "support@deeix.com",
-      href: "mailto:support@deeix.com",
-      icon: Mail,
+      value: "GitHub Issues",
+      href: "https://github.com/WangXingFan/CourseMate/issues",
+      icon: MessageSquare,
     },
   ];
 
@@ -173,7 +159,7 @@ export function AboutSettingsContent({
         <div className="space-y-5 px-0.5">
           <div className="flex min-w-0 flex-col gap-2.5">
             <div className="flex h-14 w-40 shrink-0 items-center sm:w-48">
-              <DeeixLogo width={180} height={56} className="h-auto w-36 sm:w-44" />
+              <CourseMateLogo width={180} height={56} className="h-auto w-36 sm:w-44" />
             </div>
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <span className="text-xs text-muted-foreground">{consoleLabel}</span>

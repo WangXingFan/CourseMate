@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { useBranding } from "@/shared/config/branding-provider";
 
-export function PoweredByDeeix({ className }: { className?: string }) {
+export function PoweredByCourseMate({ className }: { className?: string }) {
   const t = useTranslations("common.attribution");
   return (
     <span
@@ -17,7 +17,7 @@ export function PoweredByDeeix({ className }: { className?: string }) {
     >
       <span>{t("poweredBy")}</span>
       <a
-        href="https://github.com/DEEIX-AI/DEEIX-Chat"
+        href="https://github.com/WangXingFan/CourseMate"
         target="_blank"
         rel="noopener noreferrer"
         aria-label={t("githubLink")}
@@ -51,7 +51,7 @@ export function CustomBrandAttribution({ className }: { className?: string }) {
   }
   return (
     <div className={className}>
-      <PoweredByDeeix />
+      <PoweredByCourseMate />
     </div>
   );
 }

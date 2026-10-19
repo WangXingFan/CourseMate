@@ -20,6 +20,8 @@ CourseMate 使用独立的应用标识、MSI 产品标识和更新签名，与�
 
 `@deeix/*` 工作区名称和 Go module 路径作为内部代码命名保留；许可证及原有来源版权声明仍随客户端分发。
 
+客户端复用的 Web 界面同步使用 CourseMate 字标、浏览器/PWA 图标和学习功能介绍。“关于”页面链接到本项目、作者、Issues 和来源声明。
+
 ## 构建与下载
 
 按项目规划，编译和测试在 GitHub Actions 执行：
@@ -33,6 +35,8 @@ CourseMate 使用独立的应用标识、MSI 产品标识和更新签名，与�
 本仓库内修改桌面代码或发布工作流的 PR 也会构建四个平台并上传安装包，便于合并前验证；来自外部 Fork 的 PR 不执行需要签名 Secrets 的客户端打包任务。
 
 平台产物：Windows EXE、MSI 与便携 ZIP；macOS DMG；Linux AppImage 与 DEB。包含 WebView2 的离线便携包需要额外配置工作流变量。
+
+自动更新使用 Windows 原始安装程序、Linux 原始 AppImage、macOS 更新 tarball。客户端关闭旧版 Windows ZIP 和 Linux tar.gz 更新兼容功能，避免引入未使用的 ZIP 解包依赖；便携 ZIP 仍通过下载后手动替换更新。
 
 ## 签名
 

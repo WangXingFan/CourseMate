@@ -9,7 +9,7 @@ import { HeightTransition } from "@/components/ui/height-transition";
 import { Input } from "@/components/ui/input";
 import { SpinnerLabel } from "@/components/ui/spinner";
 import { AppLogo } from "@/shared/components/app-logo";
-import { CustomBrandAttribution } from "@/shared/components/powered-by-deeix";
+import { CustomBrandAttribution } from "@/shared/components/powered-by-coursemate";
 import { useDesktopDistribution } from "@/features/desktop/hooks/use-desktop-distribution";
 import { type DistributionPolicy, isPolicyError } from "@/shared/platform/desktop-distribution";
 import { isShellSessionError } from "@/shared/platform/desktop-shell";

@@ -13,7 +13,7 @@ export type ChatContextPolicy = {
 };
 
 /** Default desktop download page; mirrors the backend `desktop:download_url` default. */
-export const DEFAULT_DESKTOP_DOWNLOAD_URL = "https://deeix.com/download";
+export const DEFAULT_DESKTOP_DOWNLOAD_URL = "https://github.com/WangXingFan/CourseMate/releases";
 
 export type FeaturePolicy = {
   knowledgeBaseEnabled: boolean;

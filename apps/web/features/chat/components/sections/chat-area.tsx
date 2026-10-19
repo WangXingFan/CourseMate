@@ -36,12 +36,12 @@ import { MAX_SCREENSHOT_MESSAGES } from "@/features/chat/model/conversation-scre
 import type { ChatModelOption } from "@/features/chat/types/chat-runtime";
 import type { ChatAreaMessage, UserMessageEditMode } from "@/features/chat/types/messages";
 import { cn } from "@/lib/utils";
-import { AppLogo, DeeixLogo } from "@/shared/components/app-logo";
+import { AppLogo, CourseMateLogo } from "@/shared/components/app-logo";
 import { ConversationScreenshotIconDropdown } from "@/entities/conversation";
 import { useCopyAction } from "@/shared/components/copy-action";
 import type { FileContentLoader } from "@/entities/file";
 import { StreamdownRender } from "@/shared/components/markdown/streamdown-render";
-import { PoweredByDeeix } from "@/shared/components/powered-by-deeix";
+import { PoweredByCourseMate } from "@/shared/components/powered-by-coursemate";
 import { useBranding } from "@/shared/config/branding-provider";
 
 function LiveMessageFollower({ activeKey }: { activeKey: string }): null {
@@ -225,16 +225,16 @@ function ChatScreenshotBrandMark({ placement }: { placement: "top" | "bottom" })
       {placement === "top" ? (
         <>
           <AppLogo width={65} height={20} className="h-5 w-auto opacity-75" />
-          {branding.logoURL ? <PoweredByDeeix className="text-[10px]" /> : null}
+          {branding.logoURL ? <PoweredByCourseMate className="text-[10px]" /> : null}
         </>
       ) : branding.logoURL ? (
         <>
           <AppLogo width={65} height={20} className="h-5 w-auto opacity-75" />
           <span aria-hidden="true" className="h-4 w-px bg-border" />
-          <DeeixLogo width={65} height={20} className="h-5 w-auto opacity-75" />
+          <CourseMateLogo width={65} height={20} className="h-5 w-auto opacity-75" />
         </>
       ) : (
-        <DeeixLogo width={65} height={20} className="h-5 w-auto opacity-75" />
+        <CourseMateLogo width={65} height={20} className="h-5 w-auto opacity-75" />
       )}
     </div>
   );
