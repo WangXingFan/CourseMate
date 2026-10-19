@@ -47,7 +47,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
   const questions = model.data?.questions ?? [];
   const pool = questions.filter((item) => {
     if (questionID) return item.id === questionID;
-    return (!topic || item.topic === topic) && (!practice || (item.attempts > item.correctCount && item.latest && !item.latest.correct));
+    return (!topic || item.topic === topic) && (!practice || (item.latestWrong !== null && item.reviewStage < 5));
   });
   const targeted = practice || Boolean(questionID);
   const [phase, setPhase] = React.useState<Phase>("idle");

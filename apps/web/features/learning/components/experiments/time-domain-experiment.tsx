@@ -7,6 +7,7 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LessonPanel, LessonShell, Readout } from "@/features/learning/components/shared/lesson-shell";
+import { ExperimentTutor } from "@/features/learning/components/shared/experiment-tutor";
 import { PredictionCard, type PredictionResult } from "@/features/learning/components/shared/prediction-card";
 import { RevealGate } from "@/features/learning/components/shared/reveal-gate";
 import { SignalPlot, type PlotPoint } from "@/features/learning/components/shared/signal-plot";
@@ -100,6 +101,8 @@ export function TimeDomainExperiment() {
           result={result}
           record={record}
         />
+
+        {scenario && seed ? <ExperimentTutor key={seed} seed={seed} experimentId="time-domain" action={result ? "explain" : "hint"} parameters={{ tau: scenario.tau, gain: scenario.gain, multiple: scenario.multiple }} plotSummary={t("scenario", { gain: scenario.gain.toFixed(1), tau: scenario.tau.toFixed(2), k: scenario.multiple })} selected={selected} reason={reason} correct={result?.correct ?? false} /> : null}
 
         <LessonPanel title={t("plot.title")} description={t("plot.description")}>
           <RevealGate revealed={revealed} label={common("hidden")}>

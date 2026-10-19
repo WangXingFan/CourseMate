@@ -1533,6 +1533,7 @@ export interface KnowledgebaseErrorDoc {
 
 export interface LearningAttemptData {
   attempt: LearningAttemptResponse;
+  explanation: string;
 }
 
 export interface LearningAttemptRequest {
@@ -1547,11 +1548,16 @@ export interface LearningAttemptRequest {
 }
 
 export interface LearningAttemptResponse {
+  answer: number;
   correct: boolean;
   createdAt: string;
   id: string;
+  mode: string;
+  nextReviewAt?: string | null;
   questionId: string;
+  reviewStage: number;
   selected: number;
+  variantId: string;
 }
 
 export interface LearningProgressResponse {
@@ -1566,8 +1572,67 @@ export interface LearningQuestionResponse {
   correctCount: number;
   id: string;
   latest?: LearningAttemptResponse | null;
+  latestWrong?: LearningAttemptResponse | null;
   lesson: string;
+  misconception: string;
+  nextReviewAt?: string | null;
+  reviewDue: boolean;
+  reviewStage: number;
+  suggestedVariantId: string;
   topic: string;
+}
+
+export interface LearningReviewRequest {
+  /** @maxLength 64 */
+  baseQuestionId: string;
+  id: string;
+  /** @maxLength 16 */
+  locale: string;
+  /**
+   * @min 0
+   * @max 3
+   */
+  selected: number;
+  /** @maxLength 64 */
+  variantId: string;
+}
+
+export interface LearningTutorCitation {
+  chapter: string;
+  href: string;
+  id: string;
+  section: string;
+}
+
+export interface LearningTutorRequest {
+  action: "hint" | "explain";
+  correct: boolean;
+  /** @maxLength 64 */
+  experimentId: string;
+  /** @maxLength 16 */
+  locale: string;
+  parameters: Record<string, any>;
+  /** @maxLength 2000 */
+  plotSummary: string;
+  /** @maxLength 1200 */
+  reason: string;
+  /** @maxLength 200 */
+  selected: string;
+}
+
+export interface LearningTutorResponse {
+  citations: LearningTutorCitation[];
+  source: string;
+  steps: string[];
+  summary: string;
+}
+
+export interface LearningVariantResponse {
+  baseQuestionId: string;
+  id: string;
+  lesson: string;
+  options: string[];
+  prompt: string;
 }
 
 export interface LocalGrantExchangeRequest {
@@ -7072,7 +7137,7 @@ export namespace Learning {
    * No description
    * @tags learning
    * @name ProgressList
-   * @summary Read personal practice progress and the latest 40 answers
+   * @summary Read personal practice, diagnosis, and spaced-review progress
    * @request GET:/learning/progress
    * @secure
    */
@@ -7082,6 +7147,60 @@ export namespace Learning {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = LearningProgressResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name ReviewsCreate
+   * @summary Submit a server-graded variant review and schedule the next review
+   * @request POST:/learning/reviews
+   * @secure
+   */
+  export namespace ReviewsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = LearningReviewRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningAttemptData;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name TutorCreate
+   * @summary Request a grounded hint or explanation for an interactive experiment
+   * @request POST:/learning/tutor
+   * @secure
+   */
+  export namespace TutorCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = LearningTutorRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningTutorResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name VariantsDetail
+   * @summary Read a localized review variant without its answer or explanation
+   * @request GET:/learning/variants/{id}
+   * @secure
+   */
+  export namespace VariantsDetail {
+    export type RequestParams = {
+      /** Variant ID */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** Locale */
+      locale?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningVariantResponse;
   }
 }
 

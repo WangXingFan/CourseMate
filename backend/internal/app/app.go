@@ -381,7 +381,9 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	classroomService := appclassroom.NewService(classroomRepo, userRepo)
 	classroomHandler := classroomhttp.NewHandler(classroomService)
 	classroomModule := classroomhttp.NewModule(classroomHandler)
-	learningModule := learninghttp.NewModule(applearning.NewService(learningrepo.NewRepo(db)))
+	learningService := applearning.NewService(learningrepo.NewRepo(db))
+	learningService.SetTutor(channelService, llmClient)
+	learningModule := learninghttp.NewModule(learningService)
 
 	hc := newHealthChecker(db, cacheBackend)
 	rateLimiter := cacheBackend.RateLimiter()
