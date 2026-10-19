@@ -42,6 +42,7 @@ test("invalid numeric inputs fail and zero signals have a finite plot range", ()
   for(const value of [0,-1,NaN,Infinity]) assert.throws(()=>sampleSignal({...DEFAULT_SOURCE,scale:value}),RangeError);
   assert.throws(()=>sampleSignal({...DEFAULT_SOURCE, amplitude:Infinity}),RangeError);
   assert.throws(()=>combineSignals([[0,NaN]],[[0,0]],"add"),RangeError);
+  assert.throws(()=>combineSignals([[0,0]],[[NaN,0]],"add"),RangeError);
   const zero = sampleSignal({...DEFAULT_SOURCE,amplitude:0});
   const [low,high] = signalYDomain([zero]);
   assert.ok(Number.isFinite(low)&&Number.isFinite(high)&&high>low);

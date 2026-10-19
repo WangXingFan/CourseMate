@@ -50,7 +50,7 @@ export function sampleSignal(source: SignalSource): SignalPoint[] {
 }
 
 export function combineSignals(a: readonly SignalPoint[], b: readonly SignalPoint[], operation: SignalOperation): SignalPoint[] {
-  if (!a.length || a.length !== b.length || a.some(([t, y], i) => !Number.isFinite(t) || !Number.isFinite(y) || !Number.isFinite(b[i][1]) || Math.abs(t - b[i][0]) > 1e-9 || (i > 0 && Math.abs(t - a[i - 1][0] - SAMPLE_DT) > 1e-9))) throw new RangeError("Invalid sampling grid");
+  if (!a.length || a.length !== b.length || a.some(([t, y], i) => !Number.isFinite(t) || !Number.isFinite(y) || !Number.isFinite(b[i][0]) || !Number.isFinite(b[i][1]) || Math.abs(t - b[i][0]) > 1e-9 || (i > 0 && Math.abs(t - a[i - 1][0] - SAMPLE_DT) > 1e-9))) throw new RangeError("Invalid sampling grid");
   if (operation === "a") return a.map(([t, y]) => [t, y]);
   if (operation === "b") return b.map(([t, y]) => [t, y]);
   if (operation === "convolve") {
