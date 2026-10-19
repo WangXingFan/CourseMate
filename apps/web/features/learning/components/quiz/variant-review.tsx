@@ -6,10 +6,12 @@ import { useFormatter, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useLearningReview } from "@/features/learning/hooks/use-learning-review";
+import { useLearningTimeZone } from "@/features/learning/hooks/use-learning-time-zone";
 
 export function VariantReview({ variantId, onSaved, onClose }: { variantId: string; onSaved: () => void; onClose: () => void }) {
   const t = useTranslations("learningLabs.review");
   const format = useFormatter();
+  const timeZone = useLearningTimeZone();
   const model = useLearningReview(variantId, onSaved);
   const attempt = model.result?.attempt;
 
@@ -29,7 +31,7 @@ export function VariantReview({ variantId, onSaved, onClose }: { variantId: stri
           <p>{t("answer", { answer: model.data.options[attempt.answer] ?? "—" })}</p>
           <p className="text-muted-foreground">{model.result?.explanation}</p>
           <p>{t("stage", { stage: attempt.reviewStage })}</p>
-          <p>{attempt.nextReviewAt ? t("next", { date: format.dateTime(new Date(attempt.nextReviewAt), { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) }) : t("completed")}</p>
+          <p>{attempt.nextReviewAt ? t("next", { date: format.dateTime(new Date(attempt.nextReviewAt), { timeZone, year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) }) : t("completed")}</p>
           <Button size="sm" variant="outline" onClick={onClose}>{t("close")}</Button>
         </div>}
       </div> : null}

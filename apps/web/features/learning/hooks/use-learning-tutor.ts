@@ -12,14 +12,15 @@ export function useLearningTutor(seed: string, input: Omit<LearningTutorPayload,
   const { accessToken } = useAuthSession();
   const locale = useLocale();
   const resolveError = useLocalizedErrorMessage();
-  const [data, setData] = React.useState<LearningTutorData | null>(null);
+  const [snapshot, setSnapshot] = React.useState<{ token: string; data: LearningTutorData } | null>(null);
+  const data = snapshot?.token === accessToken ? snapshot.data : null;
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const controller = React.useRef<AbortController | null>(null);
   const action = input.action;
 
   React.useEffect(() => {
-    setData(null); setError(""); setLoading(false);
+    setSnapshot(null); setError(""); setLoading(false);
     return () => { controller.current?.abort(); };
   }, [seed, action, accessToken, locale]);
 
@@ -27,10 +28,10 @@ export function useLearningTutor(seed: string, input: Omit<LearningTutorPayload,
     controller.current?.abort();
     const current = new AbortController();
     controller.current = current;
-    setLoading(true); setError(""); setData(null);
+    setLoading(true); setError(""); setSnapshot(null);
     try {
       const result = await requestLearningTutor(accessToken, { ...input, locale }, current.signal);
-      if (!current.signal.aborted) setData(result);
+      if (!current.signal.aborted) setSnapshot({ token: accessToken, data: result });
     } catch (cause: unknown) {
       if (!current.signal.aborted) setError(resolveError(cause));
     } finally {

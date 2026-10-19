@@ -162,6 +162,21 @@ jobs:
             next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
       - name: Build
         run: pnpm turbo run build --filter=@deeix/web
+      - name: Install learning UI smoke browser
+        run: |
+          npm install --prefix "$RUNNER_TEMP/learning-browser" --no-audit --no-fund playwright@1.58.2
+          node "$RUNNER_TEMP/learning-browser/node_modules/playwright/cli.js" install --with-deps chromium
+      - name: Learning feedback UI smoke (desktop and mobile)
+        env:
+          PLAYWRIGHT_PACKAGE_JSON: ${{ runner.temp }}/learning-browser/node_modules/playwright/package.json
+        run: node apps/web/scripts/learning-smoke.mjs
+      - name: Upload learning UI screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: learning-p0-screenshots
+          path: .cache/learning-p0-smoke
+          if-no-files-found: ignore
 
   desktop:
     name: Desktop
