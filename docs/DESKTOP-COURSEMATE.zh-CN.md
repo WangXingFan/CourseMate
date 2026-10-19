@@ -30,6 +30,8 @@ CourseMate 使用独立的应用标识、MSI 产品标识和更新签名，与�
 
 手动运行只上传构建产物。版本标签会创建 GitHub Release 草稿；发布草稿后，已安装客户端才会收到更新。普通合并到 `dev` 不会自动生成客户端安装包。
 
+本仓库内修改桌面代码或发布工作流的 PR 也会构建四个平台并上传安装包，便于合并前验证；来自外部 Fork 的 PR 不执行需要签名 Secrets 的客户端打包任务。
+
 平台产物：Windows EXE、MSI 与便携 ZIP；macOS DMG；Linux AppImage 与 DEB。包含 WebView2 的离线便携包需要额外配置工作流变量。
 
 ## 签名
