@@ -19,7 +19,7 @@ export function KnowledgeCourse() {
   const catalog = useLearningCourse();
   const [search, setSearch] = React.useState("");
   const [chapter, setChapter] = React.useState("");
-  const selected = params.get("lesson") ?? catalog.data?.lessons[0]?.id ?? "";
+  const selected = params.get("lesson")?.trim() || catalog.data?.lessons[0]?.id || "";
   const detail = useLearningCourseLesson(selected);
   const chapters = [...new Set(catalog.data?.lessons.map((lesson) => lesson.chapter) ?? [])];
   const filtered = catalog.data?.lessons.filter((lesson) => (!chapter || lesson.chapter === chapter) && `${lesson.number} ${lesson.title} ${lesson.chapter}`.toLowerCase().includes(search.toLowerCase())) ?? [];
@@ -55,7 +55,7 @@ export function KnowledgeCourse() {
             <nav aria-label={t("catalog")} className="mt-3 max-h-60 space-y-1 overflow-y-auto lg:max-h-[65vh]">
               {filtered.map((lesson) => <Link key={lesson.id} href={`/learn/knowledge?lesson=${lesson.id}`} prefetch={false} aria-current={selected === lesson.id ? "page" : undefined} className={`flex items-center gap-2 rounded-lg px-2 py-2.5 text-xs leading-5 transition-colors ${selected === lesson.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"}`}>
                 <span className="w-7 shrink-0 font-mono text-[10px]">{lesson.number}</span><span className="flex-1">{lesson.title}</span>
-                <span aria-label={t("stageProgress", { completed: lesson.completedStages })} className="shrink-0 font-mono text-[10px]">{lesson.completedStages}/3</span>
+                <span className="shrink-0 font-mono text-[10px]"><span aria-hidden="true">{lesson.completedStages}/3</span><span className="sr-only">{t("stageProgress", { completed: lesson.completedStages })}</span></span>
               </Link>)}
               {catalog.data && filtered.length === 0 && <p className="py-4 text-xs text-muted-foreground">{t("empty")}</p>}
             </nav>
