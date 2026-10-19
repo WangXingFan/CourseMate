@@ -10259,6 +10259,155 @@
                 }
             }
         },
+        "/learning/course": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Read the knowledge catalog and personal stage completion",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningCourseResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/lesson-attempts": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Grade and save a staged answer with partial credit and idempotent retries",
+                "parameters": [
+                    {
+                        "description": "Numeric blanks or choice answer",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LearningLessonAttemptRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningLessonAttemptResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/lessons/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Read lesson notes and staged questions without private answer keys",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Stable knowledge lesson ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningCourseLessonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/learning/progress": {
             "get": {
                 "security": [
@@ -17477,6 +17626,269 @@
                     "type": "integer"
                 },
                 "variantId": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningCourseField": {
+            "type": "object",
+            "required": [
+                "id",
+                "label",
+                "unit"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningCourseLessonResponse": {
+            "type": "object",
+            "required": [
+                "attempts",
+                "lesson",
+                "markdown",
+                "questions",
+                "version"
+            ],
+            "properties": {
+                "attempts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningLessonAttemptResponse"
+                    }
+                },
+                "lesson": {
+                    "$ref": "#/definitions/LearningCourseLessonSummary"
+                },
+                "markdown": {
+                    "type": "string"
+                },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningCourseQuestion"
+                    }
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningCourseLessonSummary": {
+            "type": "object",
+            "required": [
+                "chapter",
+                "completedStages",
+                "id",
+                "masteredStages",
+                "number",
+                "title"
+            ],
+            "properties": {
+                "chapter": {
+                    "type": "string"
+                },
+                "completedStages": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "masteredStages": {
+                    "type": "integer"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningCourseQuestion": {
+            "type": "object",
+            "required": [
+                "fields",
+                "formula",
+                "id",
+                "options",
+                "prompt",
+                "stage"
+            ],
+            "properties": {
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningCourseField"
+                    }
+                },
+                "formula": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "prompt": {
+                    "type": "string"
+                },
+                "stage": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningCourseResponse": {
+            "type": "object",
+            "required": [
+                "id",
+                "language",
+                "lessons",
+                "sourceName",
+                "title",
+                "version"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "lessons": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningCourseLessonSummary"
+                    }
+                },
+                "sourceName": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningLessonAttemptRequest": {
+            "type": "object",
+            "required": [
+                "answers",
+                "id",
+                "lessonId",
+                "questionId",
+                "version"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lessonId": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "questionId": {
+                    "type": "string",
+                    "maxLength": 96
+                },
+                "version": {
+                    "type": "string",
+                    "maxLength": 32
+                }
+            }
+        },
+        "LearningLessonAttemptResponse": {
+            "type": "object",
+            "required": [
+                "answers",
+                "createdAt",
+                "explanation",
+                "id",
+                "lessonId",
+                "questionId",
+                "results",
+                "score",
+                "stage",
+                "total",
+                "version"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "explanation": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lessonId": {
+                    "type": "string"
+                },
+                "questionId": {
+                    "type": "string"
+                },
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningLessonFieldResult"
+                    }
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "stage": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningLessonFieldResult": {
+            "type": "object",
+            "required": [
+                "correct",
+                "expected",
+                "id"
+            ],
+            "properties": {
+                "correct": {
+                    "type": "boolean"
+                },
+                "expected": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "string"
                 }
             }

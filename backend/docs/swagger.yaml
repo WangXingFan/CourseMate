@@ -3511,6 +3511,192 @@ definitions:
     - selected
     - variantId
     type: object
+  LearningCourseField:
+    properties:
+      id:
+        type: string
+      label:
+        type: string
+      unit:
+        type: string
+    required:
+    - id
+    - label
+    - unit
+    type: object
+  LearningCourseLessonResponse:
+    properties:
+      attempts:
+        items:
+          $ref: '#/definitions/LearningLessonAttemptResponse'
+        type: array
+      lesson:
+        $ref: '#/definitions/LearningCourseLessonSummary'
+      markdown:
+        type: string
+      questions:
+        items:
+          $ref: '#/definitions/LearningCourseQuestion'
+        type: array
+      version:
+        type: string
+    required:
+    - attempts
+    - lesson
+    - markdown
+    - questions
+    - version
+    type: object
+  LearningCourseLessonSummary:
+    properties:
+      chapter:
+        type: string
+      completedStages:
+        type: integer
+      id:
+        type: string
+      masteredStages:
+        type: integer
+      number:
+        type: string
+      title:
+        type: string
+    required:
+    - chapter
+    - completedStages
+    - id
+    - masteredStages
+    - number
+    - title
+    type: object
+  LearningCourseQuestion:
+    properties:
+      fields:
+        items:
+          $ref: '#/definitions/LearningCourseField'
+        type: array
+      formula:
+        type: string
+      id:
+        type: string
+      options:
+        items:
+          type: string
+        type: array
+      prompt:
+        type: string
+      stage:
+        type: string
+    required:
+    - fields
+    - formula
+    - id
+    - options
+    - prompt
+    - stage
+    type: object
+  LearningCourseResponse:
+    properties:
+      id:
+        type: string
+      language:
+        type: string
+      lessons:
+        items:
+          $ref: '#/definitions/LearningCourseLessonSummary'
+        type: array
+      sourceName:
+        type: string
+      title:
+        type: string
+      version:
+        type: string
+    required:
+    - id
+    - language
+    - lessons
+    - sourceName
+    - title
+    - version
+    type: object
+  LearningLessonAttemptRequest:
+    properties:
+      answers:
+        additionalProperties:
+          type: string
+        type: object
+      id:
+        type: string
+      lessonId:
+        maxLength: 64
+        type: string
+      questionId:
+        maxLength: 96
+        type: string
+      version:
+        maxLength: 32
+        type: string
+    required:
+    - answers
+    - id
+    - lessonId
+    - questionId
+    - version
+    type: object
+  LearningLessonAttemptResponse:
+    properties:
+      answers:
+        additionalProperties:
+          type: string
+        type: object
+      createdAt:
+        type: string
+      explanation:
+        type: string
+      id:
+        type: string
+      lessonId:
+        type: string
+      questionId:
+        type: string
+      results:
+        items:
+          $ref: '#/definitions/LearningLessonFieldResult'
+        type: array
+      score:
+        type: integer
+      stage:
+        type: string
+      total:
+        type: integer
+      version:
+        type: string
+    required:
+    - answers
+    - createdAt
+    - explanation
+    - id
+    - lessonId
+    - questionId
+    - results
+    - score
+    - stage
+    - total
+    - version
+    type: object
+  LearningLessonFieldResult:
+    properties:
+      correct:
+        type: boolean
+      expected:
+        type: string
+      id:
+        type: string
+    required:
+    - correct
+    - expected
+    - id
+    type: object
   LearningProgressResponse:
     properties:
       accountId:
@@ -13874,6 +14060,99 @@ paths:
       - BearerAuth: []
       summary: Save a personal practice answer, deduplicated by account and attempt
         ID
+      tags:
+      - learning
+  /learning/course:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningCourseResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Read the knowledge catalog and personal stage completion
+      tags:
+      - learning
+  /learning/lesson-attempts:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Numeric blanks or choice answer
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/LearningLessonAttemptRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningLessonAttemptResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Grade and save a staged answer with partial credit and idempotent retries
+      tags:
+      - learning
+  /learning/lessons/{id}:
+    get:
+      parameters:
+      - description: Stable knowledge lesson ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningCourseLessonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Read lesson notes and staged questions without private answer keys
       tags:
       - learning
   /learning/progress:

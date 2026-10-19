@@ -35,6 +35,10 @@
       "workbench": {
         "title": "信号工作台",
         "description": "自定义信号与变换，组合运算和卷积。"
+      },
+      "knowledge": {
+        "title": "知识与阶段练习",
+        "description": "75 节讲义，每节配预习、课中、课后题。"
       }
     },
     "inClass": "课堂闯关",
@@ -278,5 +282,48 @@
       "readPoint": "读出 τ、2τ、3τ 处的 y 值，与右侧读数对照。",
       "connect": "把截止频率与时间常数联系起来：τ 越小，带宽越宽。"
     }
+  },
+  "knowledge": {
+    "back": "返回学习实验室",
+    "title": "知识与阶段练习",
+    "description": "75 个小节，循着预习、课中练习、课后巩固逐步掌握。先独立作答，再核对公式与推导。",
+    "total": "{count} 个阶段已作答",
+    "catalog": "小节目录",
+    "search": "搜索编号、标题或章节",
+    "chapter": "筛选章节",
+    "allChapters": "全部章节",
+    "stageProgress": "已作答 {completed}/3 个阶段",
+    "empty": "没有匹配的小节",
+    "loading": "正在加载课程内容…",
+    "lessonNavigation": "相邻小节",
+    "source": "中文课程资料 · 根据导入原稿校订，附录 C 速记收录在 B.10。内容用于学习辅助，结论使用前请核对适用条件。",
+    "notes": "本节知识讲义",
+    "collapse": "收起",
+    "expand": "展开",
+    "stages": {
+      "preview": "课前预习",
+      "in_class": "课中练习",
+      "after_class": "课后巩固"
+    },
+    "goals": {
+      "preview": "唤醒概念，带着问题阅读",
+      "in_class": "应用公式，检查关键步骤",
+      "after_class": "迁移应用，辨析易错之处"
+    },
+    "choose": "选择一个答案",
+    "inputHelp": "支持小数、科学计数法和分数（如 9/4）。按给定单位填写数值；字母、LaTeX 和完整推导无需输入。允许误差为 10⁻⁶ × max(1, |参考值|)。",
+    "preview": "公式预览：",
+    "correct": "正确",
+    "expected": "参考值：{value}",
+    "score": "本次得分 {score}/{total}",
+    "answer": "参考答案：",
+    "practiceAgain": "重新练习",
+    "saving": "正在评分并保存…",
+    "retrySubmission": "重试原提交",
+    "submit": "提交答案",
+    "partialCredit": "各空独立计分 · 保存到当前账号",
+    "retryHelp": "提交内容已锁定，可安全重试同一次作答",
+    "reload": "重新加载",
+    "mastered": "最新作答全对：{count} 个阶段"
   }
 }

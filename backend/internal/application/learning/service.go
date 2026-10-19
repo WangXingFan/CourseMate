@@ -12,13 +12,15 @@ import (
 
 type Service struct {
 	repo          repository.LearningRepository
+	lessonRepo    repository.LearningLessonRepository
 	routeResolver tutorRouteResolver
 	llmGateway    tutorLLMGateway
 	now           func() time.Time
 }
 
 func NewService(repo repository.LearningRepository) *Service {
-	return &Service{repo: repo, now: time.Now}
+	lessonRepo, _ := repo.(repository.LearningLessonRepository)
+	return &Service{repo: repo, lessonRepo: lessonRepo, now: time.Now}
 }
 
 func (s *Service) Submit(ctx context.Context, userID uint, id, questionID string, selected int) (*domain.Attempt, error) {

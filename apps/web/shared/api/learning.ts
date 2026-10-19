@@ -1,6 +1,19 @@
 import { authedRequest } from "@/shared/api/authed-client";
 import type { LearningAttemptPayload, LearningAttemptResult, LearningProgressData } from "@/shared/api/learning-types";
 import type { LearningTutorPayload, LearningTutorData, LearningReviewPayload, LearningVariantData } from "@/shared/api/learning-types";
+import type { LearningCourseData, LearningCourseLessonData, LearningLessonAnswerPayload, LearningLessonAnswerData } from "@/shared/api/learning-types";
+
+export function getLearningCourse(accessToken: string, signal?: AbortSignal): Promise<LearningCourseData> {
+  return authedRequest<LearningCourseData>("/api/v1/learning/course", { accessToken, signal });
+}
+
+export function getLearningCourseLesson(accessToken: string, id: string, signal?: AbortSignal): Promise<LearningCourseLessonData> {
+  return authedRequest<LearningCourseLessonData>(`/api/v1/learning/lessons/${encodeURIComponent(id)}`, { accessToken, signal });
+}
+
+export function saveLearningLessonAnswer(accessToken: string, payload: LearningLessonAnswerPayload, signal?: AbortSignal): Promise<LearningLessonAnswerData> {
+  return authedRequest<LearningLessonAnswerData>("/api/v1/learning/lesson-attempts", { method: "POST", accessToken, body: payload, signal });
+}
 
 export async function getLearningProgress(accessToken: string, signal?: AbortSignal): Promise<LearningProgressData> {
   return authedRequest<LearningProgressData>("/api/v1/learning/progress", { accessToken, signal });

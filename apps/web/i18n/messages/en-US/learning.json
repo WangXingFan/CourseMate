@@ -35,6 +35,10 @@
       "workbench": {
         "title": "Signal workbench",
         "description": "Customize signals, transformations and convolution."
+      },
+      "knowledge": {
+        "title": "Knowledge & staged practice",
+        "description": "75 sections with preparation, in-class and follow-up questions."
       }
     },
     "inClass": "Class challenge",
@@ -278,5 +282,48 @@
       "readPoint": "Read y at τ, 2τ and 3τ, then compare with the readouts.",
       "connect": "Connect the cutoff frequency to the time constant: smaller τ means wider bandwidth."
     }
+  },
+  "knowledge": {
+    "back": "Back to learning lab",
+    "title": "Knowledge & staged practice",
+    "description": "75 sections with preparation, in-class practice and follow-up questions. Try each question before checking the formulas and reasoning.",
+    "total": "of {count} stages attempted",
+    "catalog": "Section catalog",
+    "search": "Search number, title or chapter",
+    "chapter": "Filter chapters",
+    "allChapters": "All chapters",
+    "stageProgress": "{completed}/3 stages attempted",
+    "empty": "No matching sections",
+    "loading": "Loading course content…",
+    "lessonNavigation": "Adjacent sections",
+    "source": "Chinese course material · Curated from the imported notes. Appendix C is included in B.10. Check each result’s assumptions before use.",
+    "notes": "Section notes",
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "stages": {
+      "preview": "Preparation",
+      "in_class": "In-class practice",
+      "after_class": "Follow-up practice"
+    },
+    "goals": {
+      "preview": "Recall the concept before reading",
+      "in_class": "Apply formulas and check the key steps",
+      "after_class": "Transfer your learning and examine common errors"
+    },
+    "choose": "Choose one answer",
+    "inputHelp": "Enter decimals, scientific notation or fractions such as 9/4, using the indicated unit. Fill numeric coefficients instead of typing LaTeX or full derivations. Tolerance: 10⁻⁶ × max(1, |reference value|).",
+    "preview": "Formula preview: ",
+    "correct": "Correct",
+    "expected": "Reference: {value}",
+    "score": "Score: {score}/{total}",
+    "answer": "Reference answer:",
+    "practiceAgain": "Practice again",
+    "saving": "Grading and saving…",
+    "retrySubmission": "Retry original submission",
+    "submit": "Submit answer",
+    "partialCredit": "Each blank earns credit · Saved to your account",
+    "retryHelp": "Answers are locked; retry the same submission safely",
+    "reload": "Reload",
+    "mastered": "Latest attempt fully correct: {count} stages"
   }
 }

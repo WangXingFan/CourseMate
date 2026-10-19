@@ -17,3 +17,15 @@ type LearningAttempt struct {
 }
 
 func (LearningAttempt) TableName() string { return "user_learning_attempts" }
+
+type LearningLessonAttempt struct {
+	ID         uint   `gorm:"primaryKey;autoIncrement"`
+	UserID     uint   `gorm:"not null;uniqueIndex:idx_lesson_attempt;index:idx_lesson_progress"`
+	AttemptID  string `gorm:"size:36;not null;uniqueIndex:idx_lesson_attempt"`
+	Version    string `gorm:"size:32;not null;index:idx_lesson_progress"`
+	QuestionID string `gorm:"size:96;not null;index:idx_lesson_progress"`
+	Payload    string `gorm:"type:text;not null"`
+	CreatedAt  time.Time
+}
+
+func (LearningLessonAttempt) TableName() string { return "user_learning_lesson_attempts" }
