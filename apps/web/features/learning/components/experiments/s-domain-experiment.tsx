@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LessonPanel, LessonShell, Readout } from "@/features/learning/components/shared/lesson-shell";
 import { PoleZeroPlot } from "@/features/learning/components/shared/pole-zero-plot";
+import { ExperimentTutor } from "@/features/learning/components/shared/experiment-tutor";
 import { PredictionCard, type PredictionResult } from "@/features/learning/components/shared/prediction-card";
 import { RevealGate } from "@/features/learning/components/shared/reveal-gate";
 import { SignalPlot, type PlotPoint } from "@/features/learning/components/shared/signal-plot";
@@ -105,7 +106,9 @@ export function SDomainExperiment() {
         />
 
         <div className="grid gap-3 lg:grid-cols-2">
-          <LessonPanel title={t("plot.pzTitle")} description={t("plot.pzDescription")}>
+          {scenario && seed ? <ExperimentTutor key={seed} seed={seed} experimentId="s-domain" action={result ? "explain" : "hint"} parameters={{ sigma: scenario.sigma, omega: scenario.omega }} plotSummary={t("scenarioDescription")} selected={selected} reason={reason} correct={result?.correct ?? false} /> : null}
+
+        <LessonPanel title={t("plot.pzTitle")} description={t("plot.pzDescription")}>
             <RevealGate revealed={revealed} label={common("hidden")}>
               {scenario ? (
                 <PoleZeroPlot

@@ -7,6 +7,7 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LessonPanel, LessonShell, Readout } from "@/features/learning/components/shared/lesson-shell";
+import { ExperimentTutor } from "@/features/learning/components/shared/experiment-tutor";
 import { PredictionCard, type PredictionOption, type PredictionResult } from "@/features/learning/components/shared/prediction-card";
 import { RevealGate } from "@/features/learning/components/shared/reveal-gate";
 import { SignalPlot, type PlotPoint } from "@/features/learning/components/shared/signal-plot";
@@ -90,6 +91,8 @@ export function FrequencyDomainExperiment() {
           result={result}
           record={record}
         />
+
+        {scenario && seed ? <ExperimentTutor key={seed} seed={seed} experimentId="frequency-domain" action={result ? "explain" : "hint"} parameters={{ width: scenario.width, amplitude: scenario.amplitude, questionType: scenario.questionType }} plotSummary={t("scenarioDescription")} selected={selected} reason={reason} correct={result?.correct ?? false} /> : null}
 
         <LessonPanel title={t("plot.timeTitle")} description={t("plot.timeDescription")}>
           <RevealGate revealed={revealed} label={common("hidden")}>

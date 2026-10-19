@@ -434,9 +434,9 @@
     "newQuiz": "开始快问快答",
     "totalAnswers": "累计作答",
     "accuracy": "累计正确率",
-    "unresolved": "待练习错题",
-    "corrected": "最近已答对",
-    "scope": "目前统计快问快答与错题重练。最近答对表示该题的最新一次作答正确，不代表已完全掌握。",
+    "unresolved": "复习中",
+    "corrected": "复习完成",
+    "scope": "记录覆盖快问快答与变式复习。原题答对后仍保留最近错误；复习阶段与到期时间以服务器为准。",
     "viewLabel": "学习记录视图",
     "mistakes": "错题本",
     "history": "最近作答",
@@ -446,8 +446,8 @@
     "practiceMistakes": "练习待订正错题",
     "emptyTitle": "从第一次练习开始",
     "emptyHint": "完成快问快答后，答错的题目会自动收进这里。每道错题都能回看解析，再做一次验证理解。",
-    "noPending": "当前范围没有待练习错题",
-    "noPendingHint": "可以切换知识点，或勾选显示最近已答对的错题，继续巩固。",
+    "noPending": "当前筛选没有题目",
+    "noPendingHint": "切换复习状态或知识点查看其他题目。",
     "historyHint": "展示最近 40 次作答；上方累计数据包含全部记录。",
     "historyEmpty": "当前范围还没有作答记录。",
     "yourAnswer": "你的选择：{answer}",
@@ -473,7 +473,172 @@
       "second-order": "二阶系统",
       "poles": "极点与稳定性",
       "modulation": "调制与带宽"
-    }
+    },
+    "diagnoses": {
+      "energy-signal-power": {
+        "thought": "你可能把无限时长等同于功率信号。",
+        "correction": "持续时间无限不代表平均功率非零；先检查平方积分是否收敛。"
+      },
+      "energy-signal-neither": {
+        "thought": "你可能认为无限时长必然使总能量发散。",
+        "correction": "指数衰减可以抵消无限积分区间；写出平方后的指数再积分。"
+      },
+      "energy-signal-both": {
+        "thought": "你可能认为有限能量也意味着有限非零平均功率。",
+        "correction": "有限总能量除以无限观察时间，平均功率趋于零；两类定义不能同时满足。"
+      },
+      "convolution-shift-direction": {
+        "thought": "你可能把 δ(t−2) 当成向左移动。",
+        "correction": "先让冲激括号内为零：位置在 t=2；延迟冲激使卷积输出向右移动。"
+      },
+      "convolution-shift-scale": {
+        "thought": "你可能把时移和时间尺度变换混淆。",
+        "correction": "x(2t) 会改变持续时间；与延迟冲激卷积只改变时间位置。"
+      },
+      "convolution-shift-ignore": {
+        "thought": "你可能只记住与 δ(t) 卷积不变，忽略了冲激的延迟。",
+        "correction": "保留冲激参数中的位移，再使用筛选性质。"
+      },
+      "step-response-half": {
+        "thought": "你可能把指数逼近看成线性增长。",
+        "correction": "时间常数不是达到一半的时间；将 t/τ=1 代入指数。"
+      },
+      "step-response-two-tau": {
+        "thought": "你可能把一个时间常数和两个时间常数的响应比例混淆。",
+        "correction": "先计算无量纲比值 t/τ，避免直接套用记忆中的百分比。"
+      },
+      "step-response-settling": {
+        "thought": "你可能把一个时间常数当成接近调节完成的时刻。",
+        "correction": "区分 1τ 与 3τ、5τ；指数响应在有限时间内只是逼近终值。"
+      },
+      "aliasing-no-fold": {
+        "thought": "你可能保留了原频率，没有折叠到第一奈奎斯特区间。",
+        "correction": "先检查 f0 是否超过 fs/2；超过时寻找与整数倍 fs 的频率差。"
+      },
+      "aliasing-sample-rate": {
+        "thought": "你可能把采样频率当成了采样后的信号频率。",
+        "correction": "fs 决定频谱副本的间隔，表观频率仍来自这些副本折叠后的位置。"
+      },
+      "aliasing-add-frequencies": {
+        "thought": "你可能把一个频谱副本的位置直接当成基带频率。",
+        "correction": "f0+fs 是副本位置之一；还要折叠回 [0, fs/2]。"
+      },
+      "nyquist-equal": {
+        "thought": "你可能认为每个周期一个采样点就足够恢复信号。",
+        "correction": "奈奎斯特率由最高频率的两倍决定；实际采样还需留出余量。"
+      },
+      "nyquist-half": {
+        "thought": "你可能把采样率与最高频率的倍数关系取反。",
+        "correction": "检查单位并写出 fs 与 2fmax 的关系；降低采样率会增加混叠风险。"
+      },
+      "nyquist-double-again": {
+        "thought": "你可能对奈奎斯特的倍数关系重复乘了二。",
+        "correction": "本题问理论奈奎斯特率，实际工程余量不能改变这个定义。"
+      },
+      "square-wave-even": {
+        "thought": "你可能把偶函数对傅里叶系数的影响与半波对称混淆。",
+        "correction": "偶对称使正弦项消失；偶次谐波消失需要检查半波反对称。"
+      },
+      "square-wave-period": {
+        "thought": "你可能认为周期性本身就能消除偶次谐波。",
+        "correction": "周期性只给出离散谐波；具体哪些系数为零还取决于对称性。"
+      },
+      "square-wave-energy": {
+        "thought": "你可能把能量分类当成了谐波选择的原因。",
+        "correction": "非零持续周期方波通常是功率信号；系数为零由波形对称性决定。"
+      },
+      "pulse-spectrum-same-width": {
+        "thought": "你可能认为时域和频域宽度同向变化。",
+        "correction": "先写出第一个频谱零点 1/T，再判断脉宽变化后的方向。"
+      },
+      "pulse-spectrum-direct": {
+        "thought": "你可能只注意了频谱高度，忽略脉宽对零点的影响。",
+        "correction": "幅度与主瓣宽度是不同量；零点间距随脉宽变化。"
+      },
+      "pulse-spectrum-nonmonotonic": {
+        "thought": "你可能把 sinc 的振荡形状当成了主瓣宽度的非单调变化。",
+        "correction": "固定主瓣的定义为两侧第一零点之间，再比较 1/T。"
+      },
+      "time-constant-inverse": {
+        "thought": "你可能把时间常数增大理解为系统响应更快、带宽更大。",
+        "correction": "由 fc=1/(2πτ) 判断倒数关系；更慢的响应对应更窄带宽。"
+      },
+      "time-constant-independent": {
+        "thought": "你可能把时间响应与频率响应看成互不相关。",
+        "correction": "它们由同一个极点决定；τ 同时控制响应速度与截止频率。"
+      },
+      "time-constant-peaking": {
+        "thought": "你可能把二阶系统的共振直觉用到了一阶系统。",
+        "correction": "固定增益的一阶低通截止频率与 τ 成反比，不存在先升后降的关系。"
+      },
+      "damping-more-overshoot": {
+        "thought": "你可能把阻尼增强理解为振荡更剧烈。",
+        "correction": "阻尼消耗振荡能量；在欠阻尼范围用超调公式核对变化方向。"
+      },
+      "damping-no-effect": {
+        "thought": "你可能只考虑自然频率，忽略阻尼比对包络的作用。",
+        "correction": "自然频率与阻尼比作用不同；改变 ζ 会改变超调量和衰减速度。"
+      },
+      "damping-infinite": {
+        "thought": "你可能把有限欠阻尼参数变化误判为失稳。",
+        "correction": "正阻尼比 0.3 与 0.7 都对应稳定的标准二阶系统；用有限超调公式比较。"
+      },
+      "rhp-stable": {
+        "thought": "你可能忽略了极点实部为正对应的增长项。",
+        "correction": "因果系统的右半平面极点产生增长响应；检查 ROC 是否包含虚轴。"
+      },
+      "rhp-marginal": {
+        "thought": "你可能把右半平面极点与虚轴简单极点混淆。",
+        "correction": "实部为正对应增长；实部为零才可能出现等幅振荡的边界情况。"
+      },
+      "rhp-undecidable": {
+        "thought": "你可能注意到稳定性依赖 ROC，但忽略题目已给出因果性。",
+        "correction": "因果有理系统的 ROC 位于最右极点右侧；有右半平面极点时不能包含虚轴。"
+      },
+      "am-single-sideband": {
+        "thought": "你可能只计算了一个边带的宽度。",
+        "correction": "本题为普通双边带 AM；载频两侧各有一个边带。"
+      },
+      "am-double-sideband-twice": {
+        "thought": "你可能把上下边带的宽度重复计算。",
+        "correction": "从 fc−fm 到 fc+fm 直接相减，避免对双边带再次乘二。"
+      },
+      "am-half": {
+        "thought": "你可能把基带最高频率与带宽的倍数关系倒置。",
+        "correction": "先标出两个最外侧边带，再计算它们之间的跨度。"
+      },
+      "imaginary-axis-decay": {
+        "thought": "你可能把非零虚部当成衰减的来源。",
+        "correction": "虚部控制振荡，实部控制指数包络；虚轴极点的实部为零。"
+      },
+      "imaginary-axis-real": {
+        "thought": "你可能把共轭虚极点当成负实极点。",
+        "correction": "负实极点产生非振荡衰减；共轭虚极点产生正弦或余弦项。"
+      },
+      "imaginary-axis-grow": {
+        "thought": "你可能把振荡频率非零误认为包络增长。",
+        "correction": "检查 e^(σt) 中的 σ；虚轴上 σ=0，包络不随时间增长。"
+      }
+    },
+    "reviewFilter": "复习状态",
+    "filters": {
+      "all": "全部薄弱题",
+      "due": "已到期",
+      "active": "复习中",
+      "done": "已完成"
+    },
+    "diagnosis": "误区诊断",
+    "reviewStage": "复习阶段 {stage}/5",
+    "reviewCompleted": "复习已完成",
+    "dueNow": "已到期，可开始复习",
+    "nextReview": "下次复习：{date}",
+    "variantReview": "变式复习",
+    "reviewMode": "变式复习",
+    "quizMode": "快问快答",
+    "variantHistory": "变式 {variant} · 所选选项 {choice}",
+    "lastMistake": "最近原题错误：{answer}",
+    "lastReviewCorrect": "最近变式复习：答对",
+    "lastReviewIncorrect": "最近变式复习：答错"
   },
   "quiz": {
     "title": "快问快答",
@@ -671,5 +836,72 @@
       "after": "课后收完成码与理由；完成码由题目编号和正确答案生成，可快速核对。",
       "code": "同一题目编号的完成码应一致；理由必须是学生自己的表述。"
     }
+  },
+  "tutor": {
+    "title": "实验助教",
+    "hint": "给我一个提示",
+    "explain": "解释我的判断",
+    "loading": "正在整理…",
+    "retry": "重试",
+    "model": "AI 解释",
+    "curated": "课程精选",
+    "hintDescription": "先明确观察方向，再提交你的预测和理由。",
+    "explainDescription": "对照课程来源，检查推理中的关键关系。"
+  },
+  "workbench": {
+    "title": "自定义信号工作台",
+    "description": "组合两个信号源，观察变换和运算如何改变曲线。",
+    "rule": "变换顺序：反转 → 尺度 → 平移。s>0 向右移动；a>1 拉伸。",
+    "reset": "恢复示例",
+    "source": "信号源 {id}",
+    "kind": "基本信号",
+    "combine": "组合运算",
+    "output": "运算结果",
+    "range": "结果时间范围",
+    "sampling": "采样间隔",
+    "samples": "结果采样点",
+    "reversed": "反转时间轴",
+    "impulseNote": "窄脉冲是单位冲激的有限宽度近似。变换前面积等于幅度参数，缩放时间轴也会缩放面积。",
+    "approximation": "输入采样范围为 [−8, 8] s；卷积按 Σ x[k]h[n−k]·Δt 计算，输出扩展到 [−16, 16] s。无限时长信号在采样窗口外按零处理；窄脉冲近似与有限采样会引入数值误差。",
+    "kinds": {
+      "step": "阶跃",
+      "impulse": "窄脉冲",
+      "rectangle": "矩形脉冲",
+      "exponential": "单边指数",
+      "sine": "正弦"
+    },
+    "operations": {
+      "a": "仅 A",
+      "b": "仅 B",
+      "add": "A + B",
+      "subtract": "A − B",
+      "multiply": "A × B",
+      "convolve": "A ∗ B（卷积）"
+    },
+    "parameters": {
+      "amplitude": "幅度（窄脉冲为面积）",
+      "shift": "平移 s / s",
+      "scale": "尺度 a",
+      "width": "脉宽 / s",
+      "decay": "衰减率 / s⁻¹",
+      "frequency": "频率 / Hz"
+    }
+  },
+  "review": {
+    "title": "变式复习",
+    "description": "用同类题检验理解，提交后查看解析和下一次复习时间。",
+    "loading": "正在加载题目…",
+    "retry": "重新加载",
+    "choose": "选择一个答案",
+    "submit": "提交答案",
+    "saving": "正在保存…",
+    "retrySubmission": "重试原提交",
+    "correct": "回答正确",
+    "incorrect": "还需巩固",
+    "answer": "正确答案：{answer}",
+    "stage": "当前复习阶段：{stage}/5",
+    "next": "下次复习：{date}",
+    "completed": "本轮复习已完成，已退出到期队列。",
+    "close": "返回错题本"
   }
 }
