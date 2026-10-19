@@ -11,12 +11,14 @@ import { LessonPanel, LessonShell, Readout } from "@/features/learning/component
 import { ProgressStatus } from "@/features/learning/components/shared/progress-status";
 import { VariantReview } from "@/features/learning/components/quiz/variant-review";
 import { useLearningProgress } from "@/features/learning/hooks/use-learning-progress";
+import { useLearningTimeZone } from "@/features/learning/hooks/use-learning-time-zone";
 import type { LearningQuestionDTO } from "@/shared/api/learning-types";
 
 export function LearningProgress() {
   const t = useTranslations("learningLabs.progress");
   const q = useTranslations("learningLabs.quiz.questions");
   const format = useFormatter();
+  const timeZone = useLearningTimeZone();
   const model = useLearningProgress();
   const [tab, setTab] = React.useState<"mistakes" | "history">("mistakes");
   const [topic, setTopic] = React.useState("all");
@@ -71,7 +73,7 @@ export function LearningProgress() {
               <div className="min-w-0 flex-1">
                 <p className="text-xs leading-5"><Badge variant="outline" className="mr-2 text-[10px]">{t(attempt.mode === "review" ? "reviewMode" : "quizMode")}</Badge>{q(`${attempt.questionId}.prompt`)}</p>
                 <p className="mt-1 text-[11px] leading-5 text-muted-foreground">{attempt.mode === "review" ? t("variantHistory", { variant: attempt.variantId, choice: String.fromCharCode(65 + attempt.selected) }) : t("yourAnswer", { answer: q(`${attempt.questionId}.option${attempt.selected + 1}`) })}</p>
-                <time dateTime={attempt.createdAt} className="mt-1 block text-[10px] text-muted-foreground">{format.dateTime(new Date(attempt.createdAt), { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</time>
+                <time dateTime={attempt.createdAt} className="mt-1 block text-[10px] text-muted-foreground">{format.dateTime(new Date(attempt.createdAt), { timeZone, year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</time>
               </div>
               <Button asChild size="xs" variant="ghost"><Link href={`/learn/quiz?question=${encodeURIComponent(attempt.questionId)}`}>{t("retryQuestion")}</Link></Button>
             </li>)}</ol> : <p className="text-xs text-muted-foreground">{t("historyEmpty")}</p>}
@@ -87,6 +89,7 @@ function MistakeCard({ question, onReview }: { question: LearningQuestionDTO; on
   const t = useTranslations("learningLabs.progress");
   const q = useTranslations("learningLabs.quiz.questions");
   const format = useFormatter();
+  const timeZone = useLearningTimeZone();
   return (
     <article className="overflow-hidden rounded-xl border border-border/60 bg-card shadow-sm">
       <div className={`border-l-2 p-4 ${question.reviewStage === 5 ? "border-l-emerald-500" : "border-l-amber-500"}`}>
@@ -103,7 +106,7 @@ function MistakeCard({ question, onReview }: { question: LearningQuestionDTO; on
         </div> : null}
         <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-muted-foreground">
           <Badge variant={question.reviewDue ? "default" : "secondary"}>{t("reviewStage", { stage: question.reviewStage })}</Badge>
-          <span>{question.reviewStage === 5 ? t("reviewCompleted") : question.reviewDue ? t("dueNow") : question.nextReviewAt ? t("nextReview", { date: format.dateTime(new Date(question.nextReviewAt), { month: "short", day: "numeric" }) }) : "—"}</span>
+          <span>{question.reviewStage === 5 ? t("reviewCompleted") : question.reviewDue ? t("dueNow") : question.nextReviewAt ? t("nextReview", { date: format.dateTime(new Date(question.nextReviewAt), { timeZone, month: "short", day: "numeric" }) }) : "—"}</span>
         </div>
         <details className="mt-3 text-xs">
           <summary className="w-fit cursor-pointer text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{t("showExplanation")}</summary>
