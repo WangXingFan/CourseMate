@@ -217,6 +217,8 @@ For this project's validation policy, run builds and tests in GitHub Actions.
 Manually run **Desktop Release** on the desired branch to collect installers as
 workflow artifacts. A manual run does not publish a GitHub Release; version tags
 create a draft release. Merging into `dev` alone does not build installers.
+Desktop changes in same-repository PRs also build installers for review; fork
+PRs skip this workflow because they cannot access the updater signing secrets.
 
 ## Third-party sign-in (OAuth / OIDC)
 
