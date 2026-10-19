@@ -1,15 +1,15 @@
 [package]
-name = "deeix-chat-desktop"
+name = "coursemate-desktop"
 version = "0.4.4-beta.3"
-description = "DEEIX Chat desktop shell"
-authors = ["DEEIX"]
+description = "CourseMate desktop shell"
+authors = ["WangXingFan"]
 edition = "2021"
 rust-version = "1.77"
 license = "Apache-2.0"
 publish = false
 
 [lib]
-name = "deeix_chat_desktop_lib"
+name = "coursemate_desktop_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
@@ -17,7 +17,10 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 tauri = { version = "2", features = ["tray-icon", "image-png", "unstable"] }
-tauri-plugin-updater = "2"
+# Current updater artifacts are raw Windows installers / Linux AppImages and
+# macOS tarballs. Disable legacy Windows ZIP / Linux tar.gz support so the
+# unused, vulnerable zip 4 dependency is not linked into the client.
+tauri-plugin-updater = { version = "2.12", default-features = false, features = ["rustls-tls", "system-proxy"] }
 tauri-plugin-process = "2"
 tauri-plugin-opener = "2"
 # OS credential store: macOS Keychain, Windows Credential Manager, Linux Secret Service.

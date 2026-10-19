@@ -36,7 +36,7 @@ export function MobileHeader({
           width={64}
           height={48}
           priority
-          className="h-5 w-auto object-contain"
+          className="h-8 w-auto object-contain"
         />
       </div>
 

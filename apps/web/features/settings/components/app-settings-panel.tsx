@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { SettingsSectionGuard } from "@/features/settings/components/settings-section-guard";
 import { SettingsSidebar } from "@/features/settings/components/settings-sidebar";
-import { CustomBrandAttribution } from "@/shared/components/powered-by-deeix";
+import { CustomBrandAttribution } from "@/shared/components/powered-by-coursemate";
 
 export function AppSettingsPanel({
   children,

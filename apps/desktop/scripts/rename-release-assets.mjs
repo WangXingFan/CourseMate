@@ -1,7 +1,7 @@
 // Gives every release asset one platform-explicit name:
-//   DEEIX-Chat-<version>-<os>-<arch>[-setup|-updater].<ext>
-//   e.g. DEEIX.Chat_0.4.4-beta.1_aarch64.dmg -> DEEIX-Chat-0.4.4-beta.1-macos-arm64.dmg
-//        DEEIX.Chat_0.4.4_x64_en-US.msi      -> DEEIX-Chat-0.4.4-windows-x64.msi
+//   CourseMate-<version>-<os>-<arch>[-setup|-updater].<ext>
+//   e.g. CourseMate_0.4.4-beta.1_aarch64.dmg -> CourseMate-0.4.4-beta.1-macos-arm64.dmg
+//        CourseMate_0.4.4_x64_en-US.msi      -> CourseMate-0.4.4-windows-x64.msi
 // The portable zips (package-portable.mjs) are uploaded under their final
 // names and are left alone, as is SHA256SUMS (written after renaming).
 //
@@ -18,7 +18,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
-const PRODUCT = "DEEIX-Chat";
+const PRODUCT = "CourseMate";
 const DEFAULT_MSI_LOCALE = "en-US";
 
 const gh = (...args) => execFileSync("gh", args, { encoding: "utf8" });

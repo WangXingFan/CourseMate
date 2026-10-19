@@ -502,6 +502,7 @@ Web、App 与桌面端的登录、注册和账号身份绑定都走这一个回�
 - [多端架构](ARCHITECTURE.md)
 - [部署说明](../deploy/README.md)
 - [桌面端说明](../apps/desktop/README.md)
+- [CourseMate 客户端构建与签名](DESKTOP-COURSEMATE.zh-CN.md)
 - 后端说明：[backend/README.md](../backend/README.md)
 - API 文档索引：[backend/docs/README.md](../backend/docs/README.md)
 - 前端说明：[apps/web/README.md](../apps/web/README.md)

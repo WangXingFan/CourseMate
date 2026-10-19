@@ -19,7 +19,7 @@ import { isDesktopApp } from "@/shared/platform/runtime";
 // the shared callback page handles state verification and the grant exchange.
 
 /** Client id registered with the provider-auth bridge for the desktop shell. */
-export const DESKTOP_OAUTH_CLIENT_ID = "com.deeix.chat.desktop";
+export const DESKTOP_OAUTH_CLIENT_ID = "io.github.wangxingfan.coursemate";
 export const WEB_OAUTH_CLIENT_ID = "deeix-web";
 
 const CALLBACK_EVENT = "oauth-loopback-callback";

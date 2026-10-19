@@ -4,7 +4,7 @@ import { pwaAsset } from "@/shared/pwa/assets";
 export const DEFAULT_BRANDING: BrandingDTO = {
   title: "CourseMate",
   shortName: "CourseMate",
-  description: "CourseMate is a multi-model AI conversation system.",
+  description: "CourseMate is an interactive Signals and Systems learning companion with experiments, AI tutoring, quizzes and spaced review.",
   logoURL: "",
   faviconURL: "/favicon.ico",
   pwaIcon192URL: pwaAsset("/pwa/icon-192.png"),

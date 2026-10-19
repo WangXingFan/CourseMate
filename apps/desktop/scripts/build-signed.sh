@@ -42,7 +42,14 @@ elif [[ "$(uname)" == "Darwin" && -z "${APPLE_SIGNING_IDENTITY:-}" ]]; then
 fi
 
 cd "$root"
-pnpm --filter @deeix/desktop build
+version="$(cat VERSION)"
+channel=stable
+if [[ "$version" == *-* ]]; then channel=beta; fi
+pnpm --filter @deeix/desktop build:sidecar
+# release-config emits a whitespace-free JSON value after --config.
+config_output="$(node apps/desktop/scripts/release-config.mjs --channel "$channel" --repository WangXingFan/CourseMate)"
+read -r config_flag config_json <<< "$config_output"
+pnpm --filter @deeix/desktop tauri build "$config_flag" "$config_json"
 
 if [[ "$(uname)" == "Darwin" ]]; then
   shopt -s nullglob
@@ -52,7 +59,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
 fi
 
 if [[ "$(uname)" == "Darwin" ]]; then
-  app="$root/apps/desktop/src-tauri/target/release/bundle/macos/DEEIX Chat.app"
+  app="$root/apps/desktop/src-tauri/target/release/bundle/macos/CourseMate.app"
   echo "--- codesign"
   codesign --verify --deep --strict --verbose=2 "$app"
   if [[ -n "${APPLE_TEAM_ID:-}" ]]; then
