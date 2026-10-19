@@ -46,5 +46,5 @@ type BuiltinKnowledgeBaseSeed struct {
 }
 
 func (BuiltinKnowledgeBaseSeed) TableName() string {
-	return "builtin_knowledge_base_seeds"
+	return "knowledge_base_builtin_seeds"
 }
