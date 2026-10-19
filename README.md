@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  An integrated AI platform for enterprise model routing, chat, files, identity, and operations.
+  CourseMate · 课知伴 — an AI learning companion for Signals and Systems.
 </p>
 
 <p align="center">
@@ -14,10 +14,8 @@
 </p>
 
 <p align="center">
-  <a href="https://deeix.com"><img alt="Website" src="https://img.shields.io/badge/Website-deeix.com-black" /></a>
-  <a href="https://deeix.com/docs/deeix-chat/quickstart"><img alt="Guide" src="https://img.shields.io/badge/Guide-Quickstart-0f766e" /></a>
-  <a href="https://t.me/deeix_chat"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-deeix_chat-26A5E4?logo=telegram&logoColor=white" /></a>
-  <a href="https://x.com/DEEIX_AI"><img alt="X" src="https://img.shields.io/badge/X-%40DEEIX_AI-black?logo=x&logoColor=white" /></a>
+  <a href="https://github.com/WangXingFan/CourseMate"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-CourseMate-181717?logo=github&logoColor=white" /></a>
+  <a href="https://github.com/WangXingFan/CourseMate/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/WangXingFan/CourseMate/actions/workflows/ci.yml/badge.svg?branch=dev" /></a>
   <a href="https://www.apache.org/licenses/LICENSE-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue" /></a>
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-black" />
   <img alt="React" src="https://img.shields.io/badge/React-19-149eca" />
@@ -26,34 +24,47 @@
 
 ## Overview
 
-CourseMate is an open-source, deployable AI platform for individuals, teams, and enterprises that need long-term, stable, and unified access to multiple model providers. It provides one clear entry point for multiple upstream models and providers, integrating multimodal chat, model routing, files and RAG, identity, audit logs, and operational controls into one product.
+CourseMate (课知伴) is an open-source, self-hosted learning companion for students studying **Signals and Systems**. It combines interactive lessons, chapter experiments, course-aware assistance, quizzes, and mistake review in one workspace. Students can make a prediction, adjust a signal, inspect the result, and reinforce their understanding through variant exercises and scheduled review.
 
-The system is designed around simple deployment, efficient static delivery, and a low runtime resource footprint: lightweight without feeling limited, restrained without losing capability, and open without becoming disorderly.
+The learning tools share an existing platform for AI conversations, teaching-material retrieval, model routing, account management, and administration. The browser frontend and Go API can run together in one Docker container; a Tauri desktop client is also available.
 
-![CourseMate workspace](./docs/assets/screenshots/DEEIX-Chat.jpg)
+## Learning Workflow
+
+```text
+Learn a concept → Predict → Run an experiment → Read hints and explanations
+                                                      ↓
+Review when due ← Practice a variant ← Diagnose a mistake ← Take a quiz
+```
 
 ## Features
 
 | Area | Capabilities |
 | --- | --- |
-| Conversations | A multimodal chat interface for daily use, with streaming, branches, retries, edits, feedback, rich rendering, and traceable model execution metadata. |
-| Models and routing | A platform-model layer for upstream channels, real models, route bindings, priority, weights, circuit breaking, vendor mapping, and capability configuration. Users can add private upstreams and models themselves; private model keys are isolated per user and always route only to their owning upstream. |
-| Protocols and adaptation | Unified support for OpenAI, Anthropic, Google/Gemini, xAI, OpenRouter, and OpenAI-compatible protocols across text and provider-native capability differences. |
-| Files and retrieval | File upload, preview, extraction, OCR, storage quota, full-context injection, chunking, embeddings, and semantic retrieval so file content can naturally enter the conversation context. |
-| Context management | Message windows, token budgets, summary compression, and RAG evidence records for controlled-cost continuity. |
-| Identity and security | Local accounts, session management, HttpOnly refresh cookies, 2FA/TOTP, trusted devices, SSO/OIDC/OAuth, contact verification, and encrypted sensitive data. |
-| Administration and audit | Centralized management for users, roles, upstreams, models, routes, usage logs, audit logs, auth events, and system events. |
-| Deployment and operations | Single-runtime frontend/API serving, Docker deployment, SQLite or PostgreSQL, in-memory cache or Redis, S3-compatible storage, Swagger, structured logs, version endpoint, GeoIP, and OpenTelemetry. |
+| Interactive lessons | Eight topics: convolution, sampling, Fourier series, first-order systems, Fourier transform, Laplace transform, second-order systems, and modulation. |
+| Chapter experiments and tutor | Signal basics, time domain, frequency domain, and s-domain experiments. Curated hints before answering; AI explanations after answering, with course citations and a curated fallback when a model is unavailable. |
+| Signal workbench | Step, finite-width impulse approximation, rectangle, exponential, and sine signals; reversal, scaling, and shifting; view A/B, add, subtract, multiply, or compute numerical convolution. |
+| Quizzes and diagnosis | 12 base questions, 36 bilingual misconception diagnoses, 24 server-graded variant exercises, and account-scoped attempt history. |
+| Spaced review | Due-date filters, review stages, original-question retry, and variant practice. Review intervals progress through 1, 3, 7, 14, and 30 days, with incorrect variant answers restarting the schedule. |
+| Teaching materials and AI chat | Knowledge-base retrieval, traceable sources, file parsing, streaming conversations, and configurable model providers. |
+| Accounts and administration | User and role management, model authorization, upstream routing, authentication, and audit logs. |
+| Clients and deployment | Chinese and English interfaces, browser and Tauri desktop clients, Docker, SQLite or PostgreSQL, and in-memory cache or Redis. |
 
-<p align="center">
-  <img src="./docs/assets/screenshots/DEEIX-Chat-Dark.png" alt="CourseMate dark mode" width="49.45%" />
-</p>
+## Learning Pages
 
-<p align="center">
-  <img src="./docs/assets/screenshots/DEEIX-Chat-Usage.png" alt="CourseMate usage statistics" width="32.3%" />
-  <img src="./docs/assets/screenshots/DEEIX-Chat-Artifacts.png" alt="CourseMate artifacts" width="32.3%" />
-  <img src="./docs/assets/screenshots/DEEIX-Chat-Html.png" alt="CourseMate HTML rendering" width="32.3%" />
-</p>
+Open these paths on your deployed instance after signing in:
+
+| Path | Purpose |
+| --- | --- |
+| `/learn` | Learning hub and topic navigation. |
+| `/learn/course-flow` | Suggested activities before, during, and after class. |
+| `/learn/experiments` | Four chapter experiments with hints and explanations. |
+| `/learn/workbench` | Build, transform, and combine signals. |
+| `/learn/quiz` | Quick quizzes and original-question practice. |
+| `/learn/progress` | Attempt history, misconception diagnosis, variant exercises, and due reviews. |
+
+For AI-generated experiment explanations, an administrator must configure and authorize a model and its upstream channel. Curated hints and fallback explanations remain available without a model. Teaching-material retrieval additionally requires uploaded materials and an embedding configuration.
+
+P0 (stages 0–3) is implemented. See the [delivery and validation record](./docs/LEARNING-P0-DELIVERY.zh-CN.md) for CI evidence and numerical limits. Unified activity tracking, step-by-step solution checks, course knowledge navigation, discrete-time topics, experiment reports, and teacher analytics remain on the [roadmap](./docs/COURSEMATE-LEARNING-ROADMAP.zh-CN.md).
 
 ## Architecture and Tech Stack
 
@@ -64,13 +75,13 @@ flowchart TB
   Browser["User / Admin Browser"]
 
   subgraph Frontend["Frontend Build"]
-    Web["Next.js 16 / React 19<br/>Chat UI / Admin Console"]
+    Web["Next.js 16 / React 19<br/>Learning / Chat / Admin"]
   end
 
   subgraph Backend["Go Single Runtime"]
     Static["Static Asset Serving"]
     HTTP["Gin HTTP API"]
-    App["Application<br/>Auth / Routing / Files / Audit"]
+    App["Application<br/>Learning / Review / Tutor<br/>Auth / Routing / Files / Audit"]
     Infra["Infra Adapters<br/>Protocols / Data / Cache / Storage"]
   end
 
@@ -99,7 +110,7 @@ flowchart TB
 
 | Layer | Responsibility | Technologies |
 | --- | --- | --- |
-| Frontend | Chat UI, admin console, and static builds | Next.js 16, React 19, TypeScript, Tailwind CSS, Shadcn/UI, Streamdown, KaTeX, Mermaid, Recharts, Motion |
+| Frontend | Interactive learning, chat, admin console, and static builds | Next.js 16, React 19, TypeScript, Tailwind CSS, Shadcn/UI, Streamdown, KaTeX, Mermaid, Recharts, Motion |
 | Backend runtime | APIs, authentication, authorization, orchestration, protocol adaptation, and static serving | Go 1.26, Gin, Gorm, Swagger, OpenTelemetry, Zap |
 | Data and cache | Domain data, vector retrieval, session state, and runtime cache | PostgreSQL, pgvector, SQLite, sqlite-vec, Redis, in-memory cache |
 | Files and storage | Uploaded files, generated files, object storage, and local persistence | Local filesystem, S3-compatible object storage |
@@ -127,13 +138,13 @@ The backend keeps clear internal boundaries: `backend/cmd/server` is the executa
 │   └── docs/                  # generated Swagger artifacts
 ├── apps/                     # client applications (one directory per platform)
 │   ├── web/                  # Next.js App Router and static export
+│   │   ├── app/              # route entries and layouts
+│   │   ├── features/         # learning, chat, and administration workflows
+│   │   ├── entities/         # reusable business entities
+│   │   ├── shared/           # API, auth, UI, hooks, models, utilities
+│   │   ├── components/       # UI primitives and visual components
+│   │   └── public/           # static assets
 │   └── desktop/              # Tauri 2 shell: tray, deep links, auto-update, OS keychain
-│       ├── app/              # route entries and layouts
-│       ├── features/         # feature-owned UI and client workflows
-│       ├── entities/         # reusable business entities
-│       ├── shared/           # API, auth, UI, hooks, models, utilities
-│       ├── components/       # UI primitives and visual components
-│       └── public/           # static assets
 ├── packages/
 │   ├── api-contract/         # generated TypeScript API contract (single source for all clients)
 │   └── core/                 # platform-agnostic client logic shared by web / desktop / mobile
@@ -155,7 +166,7 @@ The SQLite profile does not require a separately managed database or cache. The 
 
 ## Quick Start
 
-> Quick installation guide: [Quick Start](https://deeix.com/docs/deeix-chat/quickstart).
+> For a low-dependency trial, use the [SQLite Docker profile](#1-lightweight-installation-sqlite). Deployment assets are in [`deploy/`](./deploy/README.md).
 
 ### Local Development
 
@@ -222,7 +233,9 @@ repository root and routes to pnpm / turbo / cargo / go underneath.
 | `make version` | Propagate `VERSION` to every package manifest. |
 
 The same verbs exist as pnpm scripts (`pnpm dev:api`, `pnpm check`, …) for
-tooling that prefers them; CI uses those directly.
+tooling that prefers them; CI uses those directly. For the learning roadmap work,
+run builds, tests, lint, type checks, Docker builds, and Playwright in GitHub Actions,
+as required by the [validation policy](./docs/COURSEMATE-LEARNING-ROADMAP.zh-CN.md#15-github-actions-验证策略).
 
 The frontend is exported as static files, so `pnpm build` writes the browser artifact to `apps/web/out`. The Go service can serve that directory in the production image or through `server.frontend_dist_dir`.
 
@@ -381,7 +394,7 @@ If a superadmin already exists, the service does not regenerate or print the ini
 
 ## Configuration
 
-> Full configuration guide: [Configuration](https://deeix.com/docs/deeix-chat/configuration).
+> Configuration templates: [PostgreSQL + Redis](./deploy/config.example.yaml), [SQLite](./deploy/config.sqlite.example.yaml), and [full stack](./deploy/config.full.example.yaml).
 
 Backend configuration is split into static runtime configuration and runtime business settings. Static runtime configuration describes branding and the infrastructure, security, and storage parameters required to start the service, and is provided through `config.yaml` and environment variables. Runtime business settings cover product capabilities such as authentication, conversations, models, and files; they are stored in `system_settings` and maintained from the admin console. Environment variables override matching config-file values, which is useful for containerized deployments, separated deployments, and secret injection.
 
@@ -470,12 +483,13 @@ Third-party sign-in requires `PUBLIC_API_BASE_URL` to be the externally reachabl
 <PUBLIC_API_BASE_URL>/api/v1/auth/providers/<provider-slug>/callback
 ```
 
-Sign-in, registration, and account identity binding on Web, App, and Desktop all use this callback. The external provider authorization code and client secret remain on the self-hosted server; public clients receive only a short-lived, one-time DEEIX grant bound to their PKCE verifier. While `PUBLIC_API_BASE_URL` is unset, provider sign-in is disabled and the admin console shows a notice.
+Sign-in, registration, and account identity binding on Web, App, and Desktop all use this callback. The external provider authorization code and client secret remain on the self-hosted server; public clients receive only a short-lived, one-time authorization grant bound to their PKCE verifier. While `PUBLIC_API_BASE_URL` is unset, provider sign-in is disabled and the admin console shows a notice.
 
 ## Feature Guides
 
-- [User Guide](https://deeix.com/docs/deeix-chat/new-chat)
-- [Admin Guide](https://deeix.com/docs/deeix-chat/admin-accounts)
+- [Learning pages](#learning-pages): lessons, experiments, quizzes, and review.
+- [P0 delivery](./docs/LEARNING-P0-DELIVERY.zh-CN.md): behavior, API changes, validation, and limitations.
+- [Deployment](./deploy/README.md): configuration profiles and optional services.
 
 ## Security Notes
 
@@ -488,10 +502,11 @@ Sign-in, registration, and account identity binding on Web, App, and Desktop all
 
 ## Documentation
 
-- [Quick Start](https://deeix.com/docs/deeix-chat/quickstart)
-- [Configuration](https://deeix.com/docs/deeix-chat/configuration)
-- [User Guide](https://deeix.com/docs/deeix-chat/new-chat)
-- [Admin Guide](https://deeix.com/docs/deeix-chat/admin-accounts)
+- [Learning roadmap](./docs/COURSEMATE-LEARNING-ROADMAP.zh-CN.md)
+- [P0 delivery and validation](./docs/LEARNING-P0-DELIVERY.zh-CN.md)
+- [Architecture](./docs/ARCHITECTURE.md)
+- [Deployment](./deploy/README.md)
+- [Desktop client](./apps/desktop/README.md)
 - Backend guide: [backend/README.md](./backend/README.md)
 - API documentation index: [backend/docs/README.md](./backend/docs/README.md)
 - Frontend guide: [apps/web/README.md](./apps/web/README.md)
@@ -500,21 +515,13 @@ Sign-in, registration, and account identity binding on Web, App, and Desktop all
 - Security policy: [SECURITY.md](./.github/SECURITY.md)
 - Swagger UI (development only): `http://localhost:8080/swagger/index.html`
 
-## Acknowledgements
+## Contributor
 
-CourseMate is built on the open-source ecosystem. Thanks to all maintainers and communities in the AI tooling ecosystem.
+- [WangXingFan](https://github.com/WangXingFan)
 
-- [Next.js](https://nextjs.org)
-- [Go](https://go.dev)
-- [LINUX DO](https://linux.do)
+## Feedback
 
-## Contact & Community
-
-- Website: [deeix.com](https://deeix.com/)
-- Blog: [blog.cheny.me](https://blog.cheny.me/)
-- Email: [support@deeix.com](mailto:support@deeix.com)
-- Telegram: [t.me/deeix_chat](https://t.me/deeix_chat)
-- X: [@DEEIX_AI](https://x.com/DEEIX_AI)
+Report bugs and suggest improvements through [GitHub Issues](https://github.com/WangXingFan/CourseMate/issues).
 
 ## License
 

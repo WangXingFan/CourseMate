@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  企业级模型路由、对话、文件、身份和运维的一体化 AI 平台。
+  CourseMate · 课知伴 — 面向《信号与系统》的 AI 学习伙伴。
 </p>
 
 <p align="center">
@@ -14,10 +14,8 @@
 </p>
 
 <p align="center">
-  <a href="https://deeix.com"><img alt="官网" src="https://img.shields.io/badge/官网-deeix.com-black" /></a>
-  <a href="https://deeix.com/zh/docs/deeix-chat/quickstart"><img alt="快速安装教程" src="https://img.shields.io/badge/快速安装-教程-0f766e" /></a>
-  <a href="https://t.me/deeix_chat"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-deeix_chat-26A5E4?logo=telegram&logoColor=white" /></a>
-  <a href="https://x.com/DEEIX_AI"><img alt="推特 / X" src="https://img.shields.io/badge/X-%40DEEIX_AI-black?logo=x&logoColor=white" /></a>
+  <a href="https://github.com/WangXingFan/CourseMate"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-CourseMate-181717?logo=github&logoColor=white" /></a>
+  <a href="https://github.com/WangXingFan/CourseMate/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/WangXingFan/CourseMate/actions/workflows/ci.yml/badge.svg?branch=dev" /></a>
   <a href="https://www.apache.org/licenses/LICENSE-2.0"><img alt="开源协议" src="https://img.shields.io/badge/License-Apache%202.0-blue" /></a>
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-black" />
   <img alt="React" src="https://img.shields.io/badge/React-19-149eca" />
@@ -26,34 +24,47 @@
 
 ## 项目简介
 
-课知伴 是一款开源可部署的 AI 平台，面向需要长期、稳定、统一使用多模型能力的个人、团队与企业。它用一个清晰的使用入口承载多个上游模型和服务商，将多模态对话、模型路由、文件与 RAG、身份认证、审计日志和运维控制整合到同一个产品中。
+课知伴（CourseMate）是一款可自行部署的开源 AI 学习伙伴，当前围绕 **《信号与系统》** 课程，整合交互式课程、章节实验、课程助教、快问快答和错题复习。学生可以先做预测，再调节信号参数、观察结果，通过变式练习和间隔复习巩固理解。
 
-系统围绕简单部署、高效静态分发和低资源的运行时占用设计，轻量而不简陋、克制而不缺能力、开放而不失秩序。
+学习功能复用已有的 AI 对话、教学资料检索、模型路由、账号管理和后台管理能力。浏览器前端与 Go API 可由同一个 Docker 容器提供服务，也可通过 Tauri 桌面客户端访问。
 
-![课知伴 工作区](./assets/screenshots/DEEIX-Chat.jpg)
+## 学习流程
+
+```text
+学习概念 → 先做预测 → 操作实验 → 阅读提示与解释
+                                    ↓
+按期复习 ← 变式巩固 ← 错因诊断 ← 快问快答
+```
 
 ## 核心能力
 
 | 模块 | 能力 |
 | --- | --- |
-| 对话体验 | 面向日常高频使用的多模态对话界面，支持流式响应、多分支、重试、编辑、反馈、富文本渲染和可追踪的模型执行信息。 |
-| 模型与路由 | 以平台模型为统一入口管理上游渠道、真实模型、路由绑定、优先级、权重、熔断、厂商映射和能力配置，降低多供应商接入后的维护成本。 |
-| 协议与适配 | 统一适配 OpenAI、Anthropic、Google/Gemini、xAI、OpenRouter 和 OpenAI 兼容协议，覆盖文本和不同厂商的原生能力差异。 |
-| 文件与检索 | 提供文件上传、预览、提取、OCR、存储配额、全文注入、分片、向量嵌入和语义检索能力，让文件内容自然进入对话上下文。 |
-| 上下文管理 | 支持消息窗口、Token 预算、压缩摘要和 RAG 证据记录，在可控成本下维持连续对话体验。 |
-| 身份与安全 | 覆盖本地账号、会话管理、HttpOnly Refresh Cookie、2FA/TOTP、可信设备、SSO/OIDC/OAuth、联系方式验证和敏感信息加密。 |
-| 管理与审计 | 后台集中管理用户、角色、上游、模型、路由、调用日志、审计日志、认证事件和系统事件。 |
-| 部署与运维 | 支持单运行时托管前端与 API、Docker 部署、SQLite 或 PostgreSQL、内存缓存或 Redis、S3 兼容存储、Swagger、结构化日志、版本接口、GeoIP 和 OpenTelemetry。 |
+| 交互式课程 | 卷积、采样、傅里叶级数、一阶系统、傅里叶变换、拉普拉斯变换、二阶系统、调制八个专题。 |
+| 章节实验与助教 | 信号基础、时域、频域、s 域四个实验；作答前提供课程精选提示，作答后提供 AI 解释与课程引用，模型不可用时回退课程内容。 |
+| 自定义信号工作台 | 阶跃、有限宽度冲激近似、矩形、指数、正弦五类信号；支持反转、尺度变换、平移，以及 A/B 查看、加、减、乘和数值卷积。 |
+| 快问快答与误区诊断 | 12 道基础题、36 类双语误区诊断、24 道服务端评分变式题，以及按账号保存的作答历史。 |
+| 间隔复习 | 到期筛选、复习阶段、原题重练和变式巩固；按 1、3、7、14、30 天安排复习，变式答错后重置计划。 |
+| 教学资料与 AI 对话 | 知识库检索、可追溯来源、文件解析、流式对话和可配置的模型服务商。 |
+| 账号与管理 | 用户和角色管理、模型授权、上游路由、身份认证与审计日志。 |
+| 客户端与部署 | 中英文界面、浏览器与 Tauri 桌面端、Docker、SQLite 或 PostgreSQL、内存缓存或 Redis。 |
 
-<p align="center">
-  <img src="./assets/screenshots/DEEIX-Chat-Dark.png" alt="课知伴 深色模式" width="49.45%" />
-</p>
+## 学习入口
 
-<p align="center">
-  <img src="./assets/screenshots/DEEIX-Chat-Usage.png" alt="课知伴 用量统计" width="32.3%" />
-  <img src="./assets/screenshots/DEEIX-Chat-Artifacts.png" alt="课知伴 Artifacts" width="32.3%" />
-  <img src="./assets/screenshots/DEEIX-Chat-Html.png" alt="课知伴 HTML 渲染" width="32.3%" />
-</p>
+登录部署后的站点，即可访问以下路径：
+
+| 路径 | 用途 |
+| --- | --- |
+| `/learn` | 学习首页与课程专题导航。 |
+| `/learn/course-flow` | 课前、课中、课后的建议活动流程。 |
+| `/learn/experiments` | 四个章节实验与提示、解释。 |
+| `/learn/workbench` | 自定义信号、变换与组合运算。 |
+| `/learn/quiz` | 快问快答与原题练习。 |
+| `/learn/progress` | 作答历史、误区诊断、变式练习与到期复习。 |
+
+使用实验中的 AI 解释前，管理员需要配置模型及其上游渠道，并授予账号访问权限。未配置模型时，课程精选提示与回退解释仍可使用。教学资料检索还需要上传资料并配置 Embedding。
+
+P0（阶段 0–3）已实现，CI 验收记录与数值计算边界见 [P0 交付文档](LEARNING-P0-DELIVERY.zh-CN.md)。统一学习活动记录、分步解题检查、课程知识导航、离散时间专题、实验报告与教师学情分析仍在 [后续规划](COURSEMATE-LEARNING-ROADMAP.zh-CN.md) 中。
 
 ## 系统架构与技术栈
 
@@ -64,13 +75,13 @@ flowchart TB
   Browser["用户 / 管理员浏览器"]
 
   subgraph Frontend["前端构建"]
-    Web["Next.js 16 / React 19<br/>Chat UI / Admin Console"]
+    Web["Next.js 16 / React 19<br/>学习 / 对话 / 管理后台"]
   end
 
   subgraph Backend["Go 单运行时"]
     Static["静态资源托管"]
     HTTP["Gin HTTP API"]
-    App["Application<br/>权限 / 路由 / 文件 / 审计"]
+    App["Application<br/>学习 / 复习 / 助教<br/>权限 / 路由 / 文件 / 审计"]
     Infra["Infra Adapters<br/>协议 / 数据 / 缓存 / 存储"]
   end
 
@@ -99,7 +110,7 @@ flowchart TB
 
 | 层面 | 职责 | 主要技术 |
 | --- | --- | --- |
-| 前端 | 用户对话、后台管理、静态构建 | Next.js 16、React 19、TypeScript、Tailwind CSS、Shadcn/UI、Streamdown、KaTeX、Mermaid、Recharts、Motion |
+| 前端 | 交互式学习、用户对话、后台管理、静态构建 | Next.js 16、React 19、TypeScript、Tailwind CSS、Shadcn/UI、Streamdown、KaTeX、Mermaid、Recharts、Motion |
 | 后端运行时 | API、认证授权、业务编排、协议适配、静态资源托管 | Go 1.26、Gin、Gorm、Swagger、OpenTelemetry、Zap |
 | 数据与缓存 | 领域数据、向量检索、会话状态、运行时缓存 | PostgreSQL、pgvector、SQLite、sqlite-vec、Redis、内存缓存 |
 | 文件与存储 | 上传文件、生成文件、对象存储和本地持久化 | 本地文件系统、S3 兼容对象存储 |
@@ -127,13 +138,13 @@ flowchart TB
 │   └── docs/                  # 生成的 Swagger 文件
 ├── apps/                     # 客户端应用（每个平台一个目录）
 │   ├── web/                  # Next.js App Router 与静态导出
+│   │   ├── app/              # 路由入口和布局
+│   │   ├── features/         # 学习、对话和后台管理等业务流程
+│   │   ├── entities/         # 可复用业务实体
+│   │   ├── shared/           # API、认证、UI、hooks、模型和工具
+│   │   ├── components/       # 基础 UI 与视觉组件
+│   │   └── public/           # 静态资源
 │   └── desktop/              # Tauri 2 桌面壳：托盘、深链接、自动更新、系统 keychain
-│       ├── app/              # 路由入口和布局
-│       ├── features/         # 按业务域组织的 UI 与客户端流程
-│       ├── entities/         # 可复用业务实体
-│       ├── shared/           # API、认证、UI、hooks、模型和工具
-│       ├── components/       # 基础 UI 与视觉组件
-│       └── public/           # 静态资源
 ├── packages/
 │   ├── api-contract/         # 生成的 TypeScript API 契约（所有客户端的唯一来源）
 │   └── core/                 # Web / 桌面 / 移动端共享的平台无关客户端逻辑
@@ -155,7 +166,7 @@ SQLite 方案不要求单独管理数据库或缓存。默认开发配置使用 
 
 ## 快速开始
 
-> 快速安装教程：[快速开始](https://deeix.com/zh/docs/deeix-chat/quickstart)。
+> 低依赖体验可从 [SQLite Docker 方案](#1-轻量安装sqlite) 开始，部署文件位于 [`deploy/`](../deploy/README.md)。
 
 ### 本地开发
 
@@ -219,7 +230,7 @@ NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8080
 | `make api-docs` | 重新生成 Swagger 与 TypeScript API 类型。 |
 | `make version` | 把 `VERSION` 同步到所有包清单。 |
 
-同一组动作也以 pnpm 脚本存在（`pnpm dev:api`、`pnpm check` …），CI 直接用它们。
+同一组动作也以 pnpm 脚本存在（`pnpm dev:api`、`pnpm check` …），CI 直接用它们。学习闭环规划相关改动遵循 [验证约束](COURSEMATE-LEARNING-ROADMAP.zh-CN.md#15-github-actions-验证策略)：编译、测试、Lint、类型检查、Docker 构建与 Playwright 均在 GitHub Actions 中执行。
 
 前端以静态资源形式导出，`pnpm build` 会把浏览器产物写入 `apps/web/out`。生产镜像中的 Go 服务，或配置了 `server.frontend_dist_dir` 的 Go 服务，可以直接托管该目录。
 
@@ -378,7 +389,7 @@ docker compose logs app
 
 ## 配置说明
 
-> 完整配置说明：[配置说明](https://deeix.com/zh/docs/deeix-chat/configuration)。
+> 配置模板：[PostgreSQL + Redis](../deploy/config.example.yaml)、[SQLite](../deploy/config.sqlite.example.yaml)、[全量部署](../deploy/config.full.example.yaml)。
 
 后端配置分为静态运行配置和运行时业务配置。静态运行配置用于描述品牌以及服务启动所需的基础设施、安全和存储参数，由 `config.yaml` 与环境变量提供；运行时业务配置用于认证、会话、模型、文件等产品能力，写入 `system_settings` 并通过后台管理维护。环境变量会覆盖配置文件中的同名项，适合容器化、分离部署和密钥注入场景。
 
@@ -467,12 +478,13 @@ docker compose logs app
 <PUBLIC_API_BASE_URL>/api/v1/auth/providers/<provider-slug>/callback
 ```
 
-Web、App 与桌面端的登录、注册和账号身份绑定都走这一个回调。外部身份源的授权码和 Client Secret 始终留在用户自己的服务器；公共客户端只会收到一个短时、单次使用并绑定 PKCE verifier 的 DEEIX 授权码。未配置 `PUBLIC_API_BASE_URL` 时第三方登录不可用，管理后台会给出提示。
+Web、App 与桌面端的登录、注册和账号身份绑定都走这一个回调。外部身份源的授权码和 Client Secret 始终留在用户自己的服务器；公共客户端只会收到一个短时、单次使用并绑定 PKCE verifier 的授权码。未配置 `PUBLIC_API_BASE_URL` 时第三方登录不可用，管理后台会给出提示。
 
 ## 功能指南
 
-- [用户指南](https://deeix.com/zh/docs/deeix-chat/new-chat)
-- [管理指南](https://deeix.com/zh/docs/deeix-chat/admin-accounts)
+- [学习入口](#学习入口)：课程、实验、答题与复习。
+- [P0 交付文档](LEARNING-P0-DELIVERY.zh-CN.md)：功能行为、API、验收与限制。
+- [部署说明](../deploy/README.md)：配置方案与可选服务。
 
 ## 安全说明
 
@@ -485,10 +497,11 @@ Web、App 与桌面端的登录、注册和账号身份绑定都走这一个回�
 
 ## 文档入口
 
-- [快速开始](https://deeix.com/zh/docs/deeix-chat/quickstart)
-- [配置说明](https://deeix.com/zh/docs/deeix-chat/configuration)
-- [用户指南](https://deeix.com/zh/docs/deeix-chat/new-chat)
-- [管理指南](https://deeix.com/zh/docs/deeix-chat/admin-accounts)
+- [学习闭环规划](COURSEMATE-LEARNING-ROADMAP.zh-CN.md)
+- [P0 交付与验收](LEARNING-P0-DELIVERY.zh-CN.md)
+- [多端架构](ARCHITECTURE.md)
+- [部署说明](../deploy/README.md)
+- [桌面端说明](../apps/desktop/README.md)
 - 后端说明：[backend/README.md](../backend/README.md)
 - API 文档索引：[backend/docs/README.md](../backend/docs/README.md)
 - 前端说明：[apps/web/README.md](../apps/web/README.md)
@@ -497,21 +510,13 @@ Web、App 与桌面端的登录、注册和账号身份绑定都走这一个回�
 - 安全策略：[SECURITY.md](../.github/SECURITY.md)
 - Swagger UI（仅开发环境）：`http://localhost:8080/swagger/index.html`
 
-## 鸣谢
+## 贡献者
 
-课知伴 基于开源生态构建，感谢所有 AI 工具生态中的维护者和社区。
+- [WangXingFan](https://github.com/WangXingFan)
 
-- [Next.js](https://nextjs.org)
-- [Go](https://go.dev)
-- [LINUX DO](https://linux.do)
+## 问题反馈
 
-## 联系&交流
-
-- 官网：[deeix.com](https://deeix.com/)
-- 博客：[blog.cheny.me](https://blog.cheny.me/)
-- 邮箱：[support@deeix.com](mailto:support@deeix.com)
-- Telegram：[t.me/deeix_chat](https://t.me/deeix_chat)
-- 推特 / X：[@DEEIX_AI](https://x.com/DEEIX_AI)
+通过 [GitHub Issues](https://github.com/WangXingFan/CourseMate/issues) 提交问题或功能建议。
 
 ## 开源协议
 
