@@ -8,11 +8,15 @@
 
 ## 技术栈
 
-- Next.js 16.3.4、React 19.2.8、TypeScript 7
+- Next.js 16.3.8、React 19.2.8、TypeScript 7
 - Tailwind CSS 4、Shadcn/UI、Radix UI、Base UI
 - Biome 2（lint）
 - Streamdown、KaTeX、Mermaid、Recharts、Motion
 - `@deeix/api-contract`：从 Go Swagger 契约生成的 TypeScript 类型
+
+`styles/vendor/shadcn-tailwind.css` 保留 shadcn 4.19.1 的原始样式及 MIT 许可证。
+应用构建只使用这份样式；组件生成 CLI 不作为工作区依赖安装，避免引入其 MCP、
+HTTP 服务与文件匹配依赖。`@shadcn/react` 运行时组件继续独立使用。
 
 ## 目录结构
 
