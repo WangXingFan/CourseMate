@@ -126,6 +126,7 @@ Next.js 的 route group（`(app)`、`(auth)`、`(project)`、`(shell)`）只用�
 | `/learn/experiments/s-domain` | 实验四：s 域极点与响应 |
 | `/learn/quiz` | 90 秒快问快答 |
 | `/learn/progress` | 账号学习记录、按知识点筛选的错题本与不限时重练 |
+| `/learn/workbench` | 自定义信号、时间变换、组合运算与数值卷积 |
 | `/learn/course-flow` | 课前、课中、课后清单与出口条 |
 | `/settings/general` | 通用偏好 |
 | `/settings/chat` | 对话偏好 |
@@ -141,6 +142,8 @@ Next.js 的 route group（`(app)`、`(auth)`、`(project)`、`(shell)`）只用�
 新增管理后台页面时，必须同时在 `features/admin/model/admin-sections.ts` 的 `ADMIN_SECTIONS` 中登记，且路由段、`ADMIN_SECTIONS` 的 `id` 与 `features/admin/components/sections/<section>/` 目录同名，否则 `pnpm check:arch` 会失败。
 
 ## API 契约
+
+学习闭环 P0 已新增四实验助教、信号工作台、误区诊断与间隔复习。使用说明、API、数据兼容、验证和回滚见 [P0 交付记录](../../docs/LEARNING-P0-DELIVERY.zh-CN.md)。UI 与数值回归在 GitHub Actions 的 Web 任务执行。
 
 学习记录目前覆盖快问快答和错题重练；每次作答单独保存，后端校验答案并按账号和作答 UUID 去重。最近作答展示 40 条，累计统计保留全部记录。答错后再答对的题目保留错题历史，并显示最近作答状态。未完成保存的请求暂存于当前标签页的 sessionStorage，按服务器与账号隔离，重新进入页面后补传。
 

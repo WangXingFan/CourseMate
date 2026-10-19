@@ -434,9 +434,9 @@
     "newQuiz": "Start a quick quiz",
     "totalAnswers": "Total answers",
     "accuracy": "Overall accuracy",
-    "unresolved": "To practice",
-    "corrected": "Latest answer correct",
-    "scope": "Includes quick quizzes and mistake practice. A correct latest answer does not by itself demonstrate mastery.",
+    "unresolved": "In review",
+    "corrected": "Review completed",
+    "scope": "Records cover quick quizzes and variant reviews. A correct quiz answer preserves mistake history. Review stages and due dates come from the server.",
     "viewLabel": "Practice history view",
     "mistakes": "Mistakes",
     "history": "Recent answers",
@@ -446,8 +446,8 @@
     "practiceMistakes": "Practice unresolved mistakes",
     "emptyTitle": "Start with one round",
     "emptyHint": "Missed quiz questions appear here automatically. Review the explanation and try again to check your understanding.",
-    "noPending": "No unresolved mistakes in this selection",
-    "noPendingHint": "Choose another concept or include previously corrected questions to keep practicing.",
+    "noPending": "No questions match these filters",
+    "noPendingHint": "Try another review status or topic.",
     "historyHint": "The latest 40 answers are shown; totals above include your entire history.",
     "historyEmpty": "No answers in this selection yet.",
     "yourAnswer": "Your choice: {answer}",
@@ -473,7 +473,173 @@
       "second-order": "Second-order systems",
       "poles": "Poles and stability",
       "modulation": "Modulation and bandwidth"
-    }
+    },
+    "diagnoses": {
+      "energy-signal-power": {
+        "thought": "You may be equating infinite duration with a power signal.",
+        "correction": "Infinite duration does not imply nonzero average power. Check whether the squared integral converges."
+      },
+      "energy-signal-neither": {
+        "thought": "You may think infinite duration always makes total energy diverge.",
+        "correction": "Exponential decay can make an improper integral converge. Square the signal before integrating."
+      },
+      "energy-signal-both": {
+        "thought": "You may think finite energy also means finite nonzero average power.",
+        "correction": "Finite energy divided by an unbounded observation interval tends to zero power. The two definitions do not overlap."
+      },
+      "convolution-shift-direction": {
+        "thought": "You may be interpreting δ(t−2) as a left shift.",
+        "correction": "Set its argument to zero: the impulse is at t=2. A delayed impulse delays the convolution output."
+      },
+      "convolution-shift-scale": {
+        "thought": "You may be confusing time shifting with time scaling.",
+        "correction": "x(2t) changes duration. Convolution with a delayed impulse changes time position only."
+      },
+      "convolution-shift-ignore": {
+        "thought": "You may remember the identity with δ(t) but have dropped the delay.",
+        "correction": "Retain the shift in the impulse argument when applying the sifting property."
+      },
+      "step-response-half": {
+        "thought": "You may be treating exponential approach as linear growth.",
+        "correction": "A time constant is not the half-rise time. Substitute t/τ=1 into the exponential."
+      },
+      "step-response-two-tau": {
+        "thought": "You may be mixing up the response fractions at one and two time constants.",
+        "correction": "Compute the dimensionless ratio t/τ before choosing a memorized percentage."
+      },
+      "step-response-settling": {
+        "thought": "You may be treating one time constant as an almost settled response.",
+        "correction": "Distinguish 1τ from 3τ and 5τ. The response approaches its final value asymptotically."
+      },
+      "aliasing-no-fold": {
+        "thought": "You may have kept the original frequency without folding it into the first Nyquist interval.",
+        "correction": "Check f0 against fs/2, then take the appropriate difference from an integer multiple of fs."
+      },
+      "aliasing-sample-rate": {
+        "thought": "You may have confused the sampling rate with the apparent signal frequency.",
+        "correction": "fs sets the spacing of spectral replicas. The apparent frequency comes from their folded position."
+      },
+      "aliasing-add-frequencies": {
+        "thought": "You may have used a replica location as the baseband frequency.",
+        "correction": "f0+fs is one replica location. Fold it back into [0, fs/2]."
+      },
+      "nyquist-equal": {
+        "thought": "You may think one sample per cycle is sufficient for reconstruction.",
+        "correction": "The Nyquist rate is twice the highest frequency. Practical sampling also needs margin."
+      },
+      "nyquist-half": {
+        "thought": "You may have inverted the relationship between sample rate and highest frequency.",
+        "correction": "Write the relationship between fs and 2fmax. A lower sample rate increases aliasing risk."
+      },
+      "nyquist-double-again": {
+        "thought": "You may have applied the factor of two twice.",
+        "correction": "The question asks for the theoretical Nyquist rate. Engineering margin does not change its definition."
+      },
+      "square-wave-even": {
+        "thought": "You may be confusing even symmetry with half-wave symmetry.",
+        "correction": "Even symmetry removes sine terms. Vanishing even harmonics requires the appropriate half-wave antisymmetry."
+      },
+      "square-wave-period": {
+        "thought": "You may think periodicity alone eliminates even harmonics.",
+        "correction": "Periodicity gives discrete harmonics. Symmetry determines which coefficients vanish."
+      },
+      "square-wave-energy": {
+        "thought": "You may be using energy classification to explain missing harmonics.",
+        "correction": "A nonzero persistent periodic square wave is usually a power signal. Its symmetry determines vanishing coefficients."
+      },
+      "pulse-spectrum-same-width": {
+        "thought": "You may think time width and frequency width change in the same direction.",
+        "correction": "Write the first spectral zero as 1/T before deciding how it moves."
+      },
+      "pulse-spectrum-direct": {
+        "thought": "You may have focused on spectral height and missed the effect of width on the zeros.",
+        "correction": "Spectral height and main-lobe width are different quantities. Zero spacing depends on pulse width."
+      },
+      "pulse-spectrum-nonmonotonic": {
+        "thought": "You may be confusing sinc oscillations with a nonmonotonic change in main-lobe width.",
+        "correction": "Define the main lobe between its first zeros, then compare 1/T."
+      },
+      "time-constant-inverse": {
+        "thought": "You may think a larger time constant means a faster response and wider bandwidth.",
+        "correction": "Use fc=1/(2πτ). A slower response has a narrower bandwidth."
+      },
+      "time-constant-independent": {
+        "thought": "You may be treating time and frequency responses as independent.",
+        "correction": "The same pole controls both. τ determines response speed and cutoff frequency."
+      },
+      "time-constant-peaking": {
+        "thought": "You may be applying second-order resonance intuition to a first-order system.",
+        "correction": "For a fixed-gain first-order low-pass system, cutoff frequency is inversely proportional to τ."
+      },
+      "damping-more-overshoot": {
+        "thought": "You may think stronger damping increases oscillation.",
+        "correction": "Damping dissipates oscillatory energy. Check the overshoot formula within the underdamped range."
+      },
+      "damping-no-effect": {
+        "thought": "You may have considered natural frequency while overlooking damping.",
+        "correction": "Natural frequency and damping ratio play different roles. Changing ζ changes overshoot and decay."
+      },
+      "damping-infinite": {
+        "thought": "You may be mistaking a finite change in positive damping for instability.",
+        "correction": "The standard systems with ζ=0.3 and ζ=0.7 are both stable. Compare their finite overshoot values."
+      },
+      "rhp-stable": {
+        "thought": "You may have overlooked the growth caused by a positive pole real part.",
+        "correction": "A causal system with a right-half-plane pole has a growing response. Check whether its ROC contains the imaginary axis."
+      },
+      "rhp-marginal": {
+        "thought": "You may be confusing right-half-plane poles with simple imaginary-axis poles.",
+        "correction": "Positive real parts produce growth. Zero real parts can produce the sustained-oscillation boundary case."
+      },
+      "rhp-undecidable": {
+        "thought": "You may know stability depends on the ROC but have missed the stated causality.",
+        "correction": "For a causal rational system, the ROC is right of the rightmost pole. A right-half-plane pole then excludes the imaginary axis."
+      },
+      "am-single-sideband": {
+        "thought": "You may have counted only one sideband.",
+        "correction": "For ordinary double-sideband AM, there is one sideband on each side of the carrier."
+      },
+      "am-double-sideband-twice": {
+        "thought": "You may have counted both sidebands twice.",
+        "correction": "Subtract fc−fm from fc+fm directly, without applying another factor of two."
+      },
+      "am-half": {
+        "thought": "You may have inverted the relationship between baseband frequency and bandwidth.",
+        "correction": "Mark the outer sidebands first, then calculate their separation."
+      },
+      "imaginary-axis-decay": {
+        "thought": "You may be treating a nonzero imaginary part as the source of decay.",
+        "correction": "The imaginary part controls oscillation. The real part controls the envelope and is zero on the imaginary axis."
+      },
+      "imaginary-axis-real": {
+        "thought": "You may be treating imaginary conjugate poles as negative real poles.",
+        "correction": "Negative real poles produce nonoscillatory decay. Imaginary conjugate poles produce sinusoidal terms."
+      },
+      "imaginary-axis-grow": {
+        "thought": "You may be confusing nonzero oscillation frequency with envelope growth.",
+        "correction": "Check σ in e^(σt). On the imaginary axis σ=0, so the envelope does not grow."
+      }
+    },
+    "reviewFilter": "Review status",
+    "filters": {
+      "all": "All weak questions",
+      "due": "Due",
+      "active": "In review",
+      "done": "Completed"
+    },
+    "diagnosis": "Misconception diagnosis",
+    "reviewStage": "Review stage {stage}/5",
+    "reviewCompleted": "Review completed",
+    "dueNow": "Due for review",
+    "nextReview": "Next review: {date}",
+    "variantReview": "Review a variant",
+    "reviewMode": "Variant review",
+    "quizMode": "Quick quiz",
+    "variantHistory": "Variant {variant} · Selected option {choice}",
+    "lastMistake": "Latest original mistake: {answer}",
+    "lastReviewCorrect": "Latest variant review: correct",
+    "lastReviewIncorrect": "Latest variant review: incorrect",
+    "reviewBaseQuestion": "Related original question: {question}"
   },
   "quiz": {
     "title": "Quick quiz",
@@ -671,5 +837,73 @@
       "after": "Collect completion codes and reasons; a code is derived from the prompt ID and the correct answer, so it is quick to check.",
       "code": "The same prompt ID must produce the same code; the reasoning must be the student's own wording."
     }
+  },
+  "tutor": {
+    "title": "Experiment tutor",
+    "hint": "Give me a hint",
+    "explain": "Explain my reasoning",
+    "loading": "Preparing…",
+    "retry": "Retry",
+    "model": "AI explanation",
+    "curated": "Course guidance",
+    "hintDescription": "Find a direction, then submit your prediction and reasoning.",
+    "explainDescription": "Check the key relationships against the cited course material."
+  },
+  "workbench": {
+    "title": "Signal workbench",
+    "description": "Combine two signal sources and explore how transformations and operations change their curves.",
+    "rule": "Order: reverse → scale → shift. Positive s shifts right; a>1 stretches time.",
+    "reset": "Reset example",
+    "source": "Source {id}",
+    "kind": "Basic signal",
+    "combine": "Combine signals",
+    "output": "Result",
+    "range": "Result time range",
+    "sampling": "Sample interval",
+    "samples": "Result samples",
+    "reversed": "Reverse time",
+    "impulseNote": "The narrow pulse approximates an impulse with finite width. Its area before transformation equals the amplitude parameter; scaling time also scales area.",
+    "approximation": "Inputs are sampled on [−8, 8] s. Convolution uses Σ x[k]h[n−k]·Δt with a full [−16, 16] s output. Infinite-duration signals are treated as zero outside the input window. Finite sampling and narrow-pulse approximation introduce numerical error.",
+    "kinds": {
+      "step": "Step",
+      "impulse": "Narrow pulse",
+      "rectangle": "Rectangular pulse",
+      "exponential": "One-sided exponential",
+      "sine": "Sine"
+    },
+    "operations": {
+      "a": "A only",
+      "b": "B only",
+      "add": "A + B",
+      "subtract": "A − B",
+      "multiply": "A × B",
+      "convolve": "A ∗ B (convolution)"
+    },
+    "parameters": {
+      "amplitude": "Amplitude (area for narrow pulse)",
+      "shift": "Shift s / s",
+      "scale": "Scale a",
+      "width": "Pulse width / s",
+      "decay": "Decay rate / s⁻¹",
+      "frequency": "Frequency / Hz"
+    },
+    "resolutionWarning": "The pulse is very narrow or the oscillation is fast relative to the sampling grid. Increase the time scale or pulse width, or lower the frequency before comparing fine details."
+  },
+  "review": {
+    "title": "Variant review",
+    "description": "Check your understanding with a related problem, then see the explanation and next review date.",
+    "loading": "Loading the question…",
+    "retry": "Reload",
+    "choose": "Choose an answer",
+    "submit": "Submit answer",
+    "saving": "Saving…",
+    "retrySubmission": "Retry this submission",
+    "correct": "Correct",
+    "incorrect": "Keep practicing",
+    "answer": "Correct answer: {answer}",
+    "stage": "Current review stage: {stage}/5",
+    "next": "Next review: {date}",
+    "completed": "This review cycle is complete. The question has left the due queue.",
+    "close": "Back to mistakes"
   }
 }

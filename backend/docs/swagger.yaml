@@ -3454,8 +3454,11 @@ definitions:
     properties:
       attempt:
         $ref: '#/definitions/LearningAttemptResponse'
+      explanation:
+        type: string
     required:
     - attempt
+    - explanation
     type: object
   LearningAttemptRequest:
     properties:
@@ -3475,22 +3478,38 @@ definitions:
     type: object
   LearningAttemptResponse:
     properties:
+      answer:
+        type: integer
       correct:
         type: boolean
       createdAt:
         type: string
       id:
         type: string
+      mode:
+        type: string
+      nextReviewAt:
+        type: string
+        x-nullable: true
       questionId:
         type: string
+      reviewStage:
+        type: integer
       selected:
         type: integer
+      variantId:
+        type: string
     required:
+    - answer
     - correct
     - createdAt
     - id
+    - mode
+    - nextReviewAt
     - questionId
+    - reviewStage
     - selected
+    - variantId
     type: object
   LearningProgressResponse:
     properties:
@@ -3523,7 +3542,22 @@ definitions:
         allOf:
         - $ref: '#/definitions/LearningAttemptResponse'
         x-nullable: true
+      latestWrong:
+        allOf:
+        - $ref: '#/definitions/LearningAttemptResponse'
+        x-nullable: true
       lesson:
+        type: string
+      misconception:
+        type: string
+      nextReviewAt:
+        type: string
+        x-nullable: true
+      reviewDue:
+        type: boolean
+      reviewStage:
+        type: integer
+      suggestedVariantId:
         type: string
       topic:
         type: string
@@ -3533,8 +3567,132 @@ definitions:
     - correctCount
     - id
     - latest
+    - latestWrong
     - lesson
+    - misconception
+    - nextReviewAt
+    - reviewDue
+    - reviewStage
+    - suggestedVariantId
     - topic
+    type: object
+  LearningReviewRequest:
+    properties:
+      baseQuestionId:
+        maxLength: 64
+        type: string
+      id:
+        type: string
+      locale:
+        maxLength: 16
+        type: string
+      selected:
+        maximum: 3
+        minimum: 0
+        type: integer
+      variantId:
+        maxLength: 64
+        type: string
+    required:
+    - baseQuestionId
+    - id
+    - locale
+    - selected
+    - variantId
+    type: object
+  LearningTutorCitation:
+    properties:
+      chapter:
+        type: string
+      href:
+        type: string
+      id:
+        type: string
+      section:
+        type: string
+    required:
+    - chapter
+    - href
+    - id
+    - section
+    type: object
+  LearningTutorRequest:
+    properties:
+      action:
+        enum:
+        - hint
+        - explain
+        type: string
+      correct:
+        type: boolean
+      experimentId:
+        maxLength: 64
+        type: string
+      locale:
+        maxLength: 16
+        type: string
+      parameters:
+        additionalProperties: {}
+        type: object
+      plotSummary:
+        maxLength: 2000
+        type: string
+      reason:
+        maxLength: 1200
+        type: string
+      selected:
+        maxLength: 200
+        type: string
+    required:
+    - action
+    - correct
+    - experimentId
+    - locale
+    - parameters
+    - plotSummary
+    - reason
+    - selected
+    type: object
+  LearningTutorResponse:
+    properties:
+      citations:
+        items:
+          $ref: '#/definitions/LearningTutorCitation'
+        type: array
+      source:
+        type: string
+      steps:
+        items:
+          type: string
+        type: array
+      summary:
+        type: string
+    required:
+    - citations
+    - source
+    - steps
+    - summary
+    type: object
+  LearningVariantResponse:
+    properties:
+      baseQuestionId:
+        type: string
+      id:
+        type: string
+      lesson:
+        type: string
+      options:
+        items:
+          type: string
+        type: array
+      prompt:
+        type: string
+    required:
+    - baseQuestionId
+    - id
+    - lesson
+    - options
+    - prompt
     type: object
   LocalGrantExchangeRequest:
     properties:
@@ -13737,7 +13895,109 @@ paths:
             $ref: '#/definitions/Envelope'
       security:
       - BearerAuth: []
-      summary: Read personal practice progress and the latest 40 answers
+      summary: Read personal practice, diagnosis, and spaced-review progress
+      tags:
+      - learning
+  /learning/reviews:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Variant review answer
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/LearningReviewRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningAttemptData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Submit a server-graded variant review and schedule the next review
+      tags:
+      - learning
+  /learning/tutor:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Experiment context
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/LearningTutorRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningTutorResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Request a grounded hint or explanation for an interactive experiment
+      tags:
+      - learning
+  /learning/variants/{id}:
+    get:
+      parameters:
+      - description: Variant ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Locale
+        in: query
+        name: locale
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningVariantResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Read a localized review variant without its answer or explanation
       tags:
       - learning
   /llm/icon-assets/{public_id}:

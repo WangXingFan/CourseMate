@@ -31,6 +31,10 @@
       "experiments": {
         "title": "Four chapter challenges",
         "description": "Random prompts; the plot unlocks only after you predict."
+      },
+      "workbench": {
+        "title": "Signal workbench",
+        "description": "Customize signals, transformations and convolution."
       }
     },
     "inClass": "Class challenge",
