@@ -1,6 +1,6 @@
 # CourseMate 学习闭环未来工作规划
 
-> 状态：2026-10-19 已恢复实施，P0（阶段 0–3）代码已提交到独立分支，正在完成 Actions 验收；阶段 4–8 保持后续规划。
+> 状态：2026-10-19 已实施 P0（阶段 0–3），首轮完整 CI、CodeQL、桌面/移动端交互及双架构镜像验证已通过；最终提交验收见 [PR #1](https://github.com/WangXingFan/CourseMate/pull/1)。阶段 4–8 保持后续规划。
 > 编写日期：2026-10-18。
 > 代码基线：分支 `dev`，提交 `5761a0d8`（`feat: add learning progress and mistake review`）。
 > 适用范围：Web、后端 API、共享契约与后续教师侧能力；桌面端优先复用同一 Web 功能。
