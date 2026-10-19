@@ -52,10 +52,13 @@ jobs:
             api:
               - *shared
               - backend/**
+              - content/signals/**
             web:
               - *shared
               - apps/web/**
               - packages/**
+              - content/signals/**
+              - backend/internal/domain/learning/content/**
             desktop:
               - *shared
               - apps/desktop/**
@@ -148,6 +151,10 @@ jobs:
           cache-dependency-path: backend/go.sum
       - name: Install
         run: pnpm install --frozen-lockfile
+      - name: Course content generation consistency
+        run: |
+          node scripts/generate-signals-content.mjs
+          git diff --exit-code -- content/signals backend/internal/domain/learning/content
       - name: Check (lint, types, architecture, API contract)
         run: pnpm turbo run check --filter=@deeix/web --filter=./packages/*
       - name: Test

@@ -892,6 +892,12 @@ func (r *Repo) DeleteAccountHard(ctx context.Context, userID uint) error {
 				},
 			},
 			{
+				label: "user_learning_lesson_attempts",
+				run: func(db *gorm.DB) error {
+					return db.Where("user_id = ?", userID).Delete(&models.LearningLessonAttempt{}).Error
+				},
+			},
+			{
 				label: "permission_group_user_access",
 				run: func(db *gorm.DB) error {
 					return db.Unscoped().Where("user_id = ?", userID).Delete(&models.PermissionGroupUserAccess{}).Error

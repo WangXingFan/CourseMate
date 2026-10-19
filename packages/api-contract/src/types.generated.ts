@@ -1560,6 +1560,78 @@ export interface LearningAttemptResponse {
   variantId: string;
 }
 
+export interface LearningCourseField {
+  id: string;
+  label: string;
+  unit: string;
+}
+
+export interface LearningCourseLessonResponse {
+  attempts: LearningLessonAttemptResponse[];
+  lesson: LearningCourseLessonSummary;
+  markdown: string;
+  questions: LearningCourseQuestion[];
+  version: string;
+}
+
+export interface LearningCourseLessonSummary {
+  chapter: string;
+  completedStages: number;
+  id: string;
+  masteredStages: number;
+  number: string;
+  title: string;
+}
+
+export interface LearningCourseQuestion {
+  fields: LearningCourseField[];
+  formula: string;
+  id: string;
+  options: string[];
+  prompt: string;
+  stage: string;
+}
+
+export interface LearningCourseResponse {
+  id: string;
+  language: string;
+  lessons: LearningCourseLessonSummary[];
+  sourceName: string;
+  title: string;
+  version: string;
+}
+
+export interface LearningLessonAttemptRequest {
+  answers: Record<string, string>;
+  id: string;
+  /** @maxLength 64 */
+  lessonId: string;
+  /** @maxLength 96 */
+  questionId: string;
+  /** @maxLength 32 */
+  version: string;
+}
+
+export interface LearningLessonAttemptResponse {
+  answers: Record<string, string>;
+  createdAt: string;
+  explanation: string;
+  id: string;
+  lessonId: string;
+  questionId: string;
+  results: LearningLessonFieldResult[];
+  score: number;
+  stage: string;
+  total: number;
+  version: string;
+}
+
+export interface LearningLessonFieldResult {
+  correct: boolean;
+  expected: string;
+  id: string;
+}
+
 export interface LearningProgressResponse {
   accountId: number;
   questions: LearningQuestionResponse[];
@@ -7131,6 +7203,57 @@ export namespace Learning {
     export type RequestBody = LearningAttemptRequest;
     export type RequestHeaders = {};
     export type ResponseBody = LearningAttemptData;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name CourseList
+   * @summary Read the knowledge catalog and personal stage completion
+   * @request GET:/learning/course
+   * @secure
+   */
+  export namespace CourseList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningCourseResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name LessonAttemptsCreate
+   * @summary Grade and save a staged answer with partial credit and idempotent retries
+   * @request POST:/learning/lesson-attempts
+   * @secure
+   */
+  export namespace LessonAttemptsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = LearningLessonAttemptRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningLessonAttemptResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name LessonsDetail
+   * @summary Read lesson notes and staged questions without private answer keys
+   * @request GET:/learning/lessons/{id}
+   * @secure
+   */
+  export namespace LessonsDetail {
+    export type RequestParams = {
+      /** Stable knowledge lesson ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningCourseLessonResponse;
   }
 
   /**

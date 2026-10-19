@@ -187,7 +187,7 @@ func testRouter(t *testing.T) *gin.Engine {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = sqlDB.Close() })
-	if err := db.AutoMigrate(&models.LearningAttempt{}); err != nil {
+	if err := db.AutoMigrate(&models.LearningAttempt{}, &models.LearningLessonAttempt{}); err != nil {
 		t.Fatal(err)
 	}
 	router := gin.New()

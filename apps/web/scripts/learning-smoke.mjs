@@ -32,6 +32,14 @@ const user = { id: 101, publicID: "qa-student", username: "student101", displayN
 let savedReview = null;
 let failReviewResponse = true;
 const reviewRequests = [];
+const course = JSON.parse(await readFile("backend/internal/domain/learning/content/course.json", "utf8"));
+const lessonAttempts = new Map();
+const lessonRequests = [];
+let failLessonResponse = true;
+function summary(lesson) {
+  const attempts = [...lessonAttempts.values()].filter((attempt) => attempt.lessonId === lesson.id);
+  return { id: lesson.id, number: lesson.number, title: lesson.title, chapter: lesson.chapter, completedStages: attempts.length, masteredStages: attempts.filter((attempt) => attempt.score === attempt.total).length };
+}
 const tutorRequests = [];
 const errors = [];
 let browser;
@@ -42,7 +50,27 @@ try {
   await context.route("**/api/v1/**", async (route) => {
     const request = route.request(), url = new URL(request.url());
     let data = {};
-    if (url.pathname.endsWith("/learning/progress")) {
+    if (url.pathname.endsWith("/learning/course")) {
+      data = { id: course.id, version: course.version, title: course.title, language: course.language, sourceName: course.sourceName, lessons: course.lessons.map(summary) };
+    } else if (url.pathname.includes("/learning/lessons/")) {
+      const lesson = course.lessons.find((item) => item.id === url.pathname.split("/").at(-1));
+      assert.ok(lesson);
+      data = { version: course.version, lesson: summary(lesson), markdown: lesson.markdown, questions: lesson.questions.map(({ id, stage, prompt, options, formula, fields }) => ({ id, stage, prompt, options, formula, fields: fields.map(({ id, label, unit }) => ({ id, label, unit })) })), attempts: [...lessonAttempts.values()].filter((item) => item.lessonId === lesson.id) };
+    } else if (url.pathname.endsWith("/learning/lesson-attempts")) {
+      const body = request.postDataJSON(); lessonRequests.push(body);
+      const q = course.lessons.find((item) => item.id === body.lessonId).questions.find((item) => item.id === body.questionId);
+      const results = q.options.length ? [{ id: "choice", correct: Number(body.answers.choice) === q.answer, expected: q.options[q.answer] }] : q.fields.map((field) => {
+        const parts = body.answers[field.id].split("/").map(Number);
+        return { id: field.id, correct: Math.abs(parts[0] / (parts[1] ?? 1) - field.expected) < 1e-6, expected: String(field.expected) };
+      });
+      let saved = lessonAttempts.get(body.questionId);
+      if (!saved || saved.id !== body.id) {
+        saved = { ...body, stage: q.stage, score: results.filter((item) => item.correct).length, total: results.length, results, explanation: q.explanation, createdAt: now };
+        lessonAttempts.set(body.questionId, saved);
+      }
+      if (failLessonResponse) { failLessonResponse = false; await route.abort("connectionfailed"); return; }
+      data = saved;
+    } else if (url.pathname.endsWith("/learning/progress")) {
       data = { accountId: user.id, questions: catalog.map((q) => ({ ...q, attempts: q.id === "energy-signal" ? (savedReview ? 2 : 1) : 0, correctCount: q.id === "energy-signal" && savedReview ? 1 : 0, latest: q.id === "energy-signal" ? savedReview ?? wrong : null, latestWrong: q.id === "energy-signal" ? wrong : null, misconception: q.id === "energy-signal" ? "energy-signal-power" : "", suggestedVariantId: q.id === "energy-signal" ? "energy-signal-v1" : "", reviewStage: savedReview && q.id === "energy-signal" ? 1 : 0, nextReviewAt: q.id === "energy-signal" ? (savedReview ?? wrong).nextReviewAt : null, reviewDue: q.id === "energy-signal" && !savedReview })), recent: savedReview ? [savedReview, wrong] : [wrong] };
     } else if (url.pathname.includes("/learning/variants/")) {
       data = { id: "energy-signal-v1", baseQuestionId: "energy-signal", prompt: "x(t)=2e^(−t)u(t) 的总能量是多少？", options: ["2", "4", "∞", "0"], lesson: "/learn/experiments/signal-basics" };
@@ -121,6 +149,35 @@ try {
   await page.getByText("变式 energy-signal-v1 · 所选选项 A", { exact: true }).waitFor();
   await page.getByRole("button", { name: "变式复习", exact: true }).click();
   await page.getByRole("heading", { name: "x(t)=2e^(−t)u(t) 的总能量是多少？", exact: true }).waitFor();
+
+  await page.goto(`${base}/learn/knowledge?lesson=ss-1-1`);
+  await page.getByRole("heading", { name: "1.1 信号的分类与基本量", exact: true }).waitFor();
+  for (const stage of ["课前预习", "课中练习", "课后巩固"]) await page.getByRole("heading", { name: stage, exact: true }).waitFor();
+  const inClass = page.getByRole("region", { name: "课中练习", exact: true });
+  await inClass.getByRole("textbox", { name: "能量 E", exact: true }).fill("9/4");
+  await inClass.getByText("公式预览：", { exact: false }).waitFor();
+  await inClass.getByRole("button", { name: "提交答案", exact: true }).click();
+  await inClass.getByRole("button", { name: "重试原提交", exact: true }).waitFor();
+  assert.equal(await inClass.getByRole("textbox").isDisabled(), true);
+  await inClass.getByRole("button", { name: "重试原提交", exact: true }).click();
+  await inClass.getByText("本次得分 1/1", { exact: true }).waitFor();
+  assert.deepEqual(lessonRequests[0], lessonRequests[1], "lesson retry changed original payload");
+  await page.reload();
+  await inClass.getByText("本次得分 1/1", { exact: true }).waitFor();
+  await screenshot("knowledge-desktop");
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`${base}/learn/knowledge?lesson=ss-2-5`);
+  await page.getByRole("heading", { name: "2.5 卷积积分", exact: true }).waitFor();
+  for (const [label, value] of [["a", "1"], ["b", "1"], ["c", "3"], ["d", "1"]]) await inClass.getByRole("textbox", { name: label, exact: true }).fill(value);
+  await inClass.getByRole("button", { name: "提交答案", exact: true }).click();
+  await inClass.getByText("本次得分 3/4", { exact: true }).waitFor();
+  await inClass.getByText("参考值：-1", { exact: true }).waitFor();
+  await noOverflow();
+  await inClass.scrollIntoViewIfNeeded(); await screenshot("knowledge-piecewise-mobile");
+  await page.locator("#knowledge-search").fill("小波");
+  assert.ok(await page.getByRole("navigation", { name: "小节目录" }).getByRole("link").count() > 0);
+  await screenshot("knowledge-search-mobile");
   assert.deepEqual(errors, []);
   console.log("PASS: workbench desktop/mobile, four tutors and reset, explanation, diagnosis, due filter, immutable review retry, scheduling display, history mode labels");
 } catch (error) {

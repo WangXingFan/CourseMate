@@ -1,0 +1,4189 @@
+{
+  "id": "signals-systems",
+  "version": "2026-10-19.1",
+  "title": "信号与系统",
+  "language": "zh-CN",
+  "sourceName": "信号与系统_总知识点总结.md",
+  "sourceHash": "394ad53afa31f3e1ecbf367f0019fb779ba3df5c8c380474bfea4635d1d87583",
+  "lessons": [
+    {
+      "id": "ss-0-1",
+      "number": "0.1",
+      "title": "一条主线",
+      "chapter": "第0章 全书总框架",
+      "markdown": "- **信号分解**：把任意输入分解为基本信号（冲激、复指数、正弦）的叠加。\n- **基本响应**：求系统对基本信号的响应（$h(t)$、$H(j\\omega)$、$H(s)$）。\n- **叠加合成**：利用线性时不变性，把各基本响应叠加成总响应。\n- **一句话**：信号与系统分析 = “分解 + 基本响应 + 叠加”。",
+      "questions": [
+        {
+          "prompt": "用冲激分解输入后，要得到 LTI 系统的总响应，还需要哪两步？",
+          "options": [
+            "求冲激响应，再加权叠加",
+            "只计算输入峰值",
+            "先假定系统非线性"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "时不变性给出移位后的冲激响应，线性保证加权叠加成立。",
+          "id": "ss-0-1-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "输入写成加权冲激积分时，每个冲激激起的响应是什么？",
+          "options": [
+            "$h(\\tau-t)$ 且不用权重",
+            "始终是原输入本身",
+            "$h(t-\\tau)$ 乘以该冲激的权重"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "位于 τ 的单位冲激产生 h(t−τ)，还要乘以输入权重。",
+          "id": "ss-0-1-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "同一线性系统对 x₁、x₂ 的零状态响应在某时刻分别为 2、−1。输入 3x₁+2x₂，该时刻输出为多少？",
+          "options": [],
+          "formula": "y=3y_1+2y_2",
+          "fields": [
+            {
+              "label": "输出 y",
+              "expected": 4,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "线性叠加：3×2+2×(−1)=4。",
+          "id": "ss-0-1-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-0-2",
+      "number": "0.2",
+      "title": "两类描述",
+      "chapter": "第0章 全书总框架",
+      "markdown": "- **外部法（输入—输出法）**：只关心激励与响应关系；工具是微分/差分方程、冲激响应、系统函数。\n- **内部法（状态变量法）**：同时描述系统内部状态；工具是状态方程、输出方程、状态转移矩阵。\n- **适用**：单输入单输出常用外部法；多输入多输出、初始状态复杂、计算机仿真常用状态空间法。",
+      "questions": [
+        {
+          "prompt": "需要研究内部储能及多输入多输出关系，应优先采用什么描述？",
+          "options": [
+            "只记录输入最大值",
+            "只画输出幅度谱",
+            "状态变量描述"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "状态空间同时描述内部状态和输入输出关系。",
+          "id": "ss-0-2-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "仅给出传递函数，通常不能唯一确定什么？",
+          "options": [
+            "约分后输入输出极点",
+            "内部状态实现",
+            "零状态输入输出关系"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "不同状态坐标、不同非最小实现可有相同传递函数。",
+          "id": "ss-0-2-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "两个装置传递函数相同，但一个有隐藏的不稳定模态，应怎样补充分析？",
+          "options": [
+            "检查状态矩阵与内部结构",
+            "直接断言内部都稳定",
+            "仅比较直流增益"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "输入输出等价不保证内部模态等价，特别要防止不稳定对消。",
+          "id": "ss-0-2-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-0-3",
+      "number": "0.3",
+      "title": "四条分析路线",
+      "chapter": "第0章 全书总框架",
+      "markdown": "| 路线 | 基本信号 | 核心运算 | 系统描述 |\n|---|---|---|---|\n| 时域 | 冲激 $\\delta(t)$ | 卷积 $y=f*h$ | 微分方程、$h(t)$ |\n| 频域 | 复指数 $e^{j\\omega t}$ | 相乘 $Y=HF$ | 频率响应 $H(j\\omega)$ |\n| 复频域 | 复指数 $e^{st}$ | 相乘 $Y=H(s)F(s)$ | 系统函数 $H(s)$ |\n| 状态空间 | 状态向量 $x(t)$ | 一阶方程组 | $A,B,C,D$ |",
+      "questions": [
+        {
+          "prompt": "在时域求 LTI 零状态输出，核心运算是什么？",
+          "options": [
+            "取输入绝对值",
+            "卷积",
+            "逐点相除"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "时域 y=x*h，对应变换域相乘。",
+          "id": "ss-0-3-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "已知输入傅里叶变换 X 和频率响应 H，应如何求输出频谱？",
+          "options": [
+            "$Y=HX$",
+            "$Y=H+X$",
+            "$Y=H/X$"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "LTI 系统在频域对每个频率分量缩放和移相。",
+          "id": "ss-0-3-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "微分方程含非零初始状态，哪条路线更方便保留初始项？",
+          "options": [
+            "直接忽略初始值用 Y=HX",
+            "只算输入傅里叶级数",
+            "单边拉普拉斯变换"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "单边变换的微分性质显式包含 0⁻ 初始值。",
+          "id": "ss-0-3-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-0-4",
+      "number": "0.4",
+      "title": "五个核心对应",
+      "chapter": "第0章 全书总框架",
+      "markdown": "- 时域卷积 ↔ 频域相乘：$f*g \\leftrightarrow FG$。\n- 时域微分 ↔ 频域乘 $j\\omega$：$f' \\leftrightarrow j\\omega F$。\n- 时域积分 ↔ 频域除 $j\\omega$：$\\int f \\leftrightarrow F/(j\\omega)$（补直流项）。\n- 时域延迟 ↔ 频域乘 $e^{-j\\omega t_0}$。\n- 时域采样 ↔ 频域周期复制；时域周期化 ↔ 频域离散化。",
+      "questions": [
+        {
+          "prompt": "时域卷积在傅里叶域对应什么？",
+          "options": [
+            "频谱相乘",
+            "频谱相加",
+            "频谱不变"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "在适用条件下，卷积定理将积分变成乘法。",
+          "id": "ss-0-4-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "输入延迟 t₀，其频谱应乘什么？",
+          "options": [
+            "$e^{j\\omega t_0}$",
+            "$t_0$",
+            "$e^{-j\\omega t_0}$"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "延迟带来负线性相位，幅度谱不变。",
+          "id": "ss-0-4-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "某信号延迟 3 s，在 ω=2 rad/s 处由延迟引入的未折返相位是多少？",
+          "options": [],
+          "formula": "\\Delta\\varphi=-\\omega t_0",
+          "fields": [
+            {
+              "label": "相位变化",
+              "expected": -6,
+              "unit": "rad",
+              "id": "f1"
+            }
+          ],
+          "explanation": "相位变化为 −2×3=−6 rad；这里要求未折返值。",
+          "id": "ss-0-4-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-0-5",
+      "number": "0.5",
+      "title": "系统性质总表",
+      "chapter": "第0章 全书总框架",
+      "markdown": "| 性质 | 定义/判据 | 典型反例 |\n|---|---|---|\n| 线性 | 齐次性 + 可加性；动态系统还需可分解、零状态线性、零输入线性 | $y=f^2$、$y=\\lvert f\\rvert$、$y=f+1$ |\n| 时不变 | $T[f(t-t_0)]=y(t-t_0)$ | $y=f(2-t)$、$y=t f(t)$ |\n| 因果 | 输出不依赖未来输入；$h(t)=0\\ (t<0)$ | $y=f(t+1)$、理想低通 |\n| 稳定 | 有界输入有界输出；LTI 等价于 $\\int\\lvert h\\rvert<\\infty$ | $h(t)=e^{t}u(t)$ |\n| 记忆 | 输出只与当前输入有关为无记忆 | 含电容、电感、延迟 |\n| 可逆 | 不同输入产生不同输出，存在逆系统 | $y=f^2$（不可逆） |",
+      "questions": [
+        {
+          "prompt": "BIBO 稳定中的 BIBO 指什么？",
+          "options": [
+            "输出必须恒为零",
+            "系统必须无记忆",
+            "有界输入产生有界输出"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "稳定性与线性、因果、记忆性是不同性质。",
+          "id": "ss-0-5-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "系统 y(t)=t x(t) 是哪种情况？",
+          "options": [
+            "线性、时不变",
+            "线性、时变",
+            "非线性、时不变"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "对输入满足叠加，但延迟输入与延迟输出中的时间因子不同。",
+          "id": "ss-0-5-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "y(t)=x(t−1) 的正确性质组合是什么？",
+          "options": [
+            "因果、有记忆、BIBO 稳定",
+            "非因果、无记忆",
+            "因果但 BIBO 不稳定"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "只读过去输入，因此因果且有记忆；延迟不放大有界输入。",
+          "id": "ss-0-5-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-0-6",
+      "number": "0.6",
+      "title": "章节地图",
+      "chapter": "第0章 全书总框架",
+      "markdown": "- **第1章**：信号与系统的基本概念、冲激函数、系统性质、系统描述。\n- **第2章**：连续系统时域分析——微分方程、初始值、零输入/零状态、冲激响应、卷积。\n- **第3章**：连续系统频域分析——傅里叶级数、傅里叶变换、频谱、频响、滤波、采样。\n- **第4章**：DFT/FFT——连续到离散的演化、离散傅里叶变换、快速算法。\n- **第5章**：连续系统 s 域分析——拉普拉斯变换、系统函数、稳定性、框图与模拟。\n- **第6章**：状态变量分析——状态方程、状态转移矩阵、可控性、可观测性。\n- **第7章**：小波与时频分析——STFT、CWT、DWT。\n",
+      "questions": [
+        {
+          "prompt": "想理解矩形脉冲通过系统后的波形，先复习哪章工具？",
+          "options": [
+            "Matlab 命令速查",
+            "连续系统时域分析",
+            "小波工程应用"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "时域卷积直接描述波形叠加与重叠面积。",
+          "id": "ss-0-6-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "要用计算机求有限长采样序列的频谱，应该连接哪两部分知识？",
+          "options": [
+            "采样定理和 DFT/FFT",
+            "只看直流电路",
+            "只看可逆性定义"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "采样控制混叠，DFT/FFT 完成有限序列频域计算。",
+          "id": "ss-0-6-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "检测短暂冲击出现的时间和频段，哪组工具更合适？",
+          "options": [
+            "只保留全局平均值",
+            "只求输入总能量",
+            "STFT 或小波时频分析"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "时频分析同时保留时间定位和频率结构。",
+          "id": "ss-0-6-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-1-1",
+      "number": "1.1",
+      "title": "信号的分类与基本量",
+      "chapter": "第1章 信号与系统基本概念",
+      "markdown": "- **信号**：信息的载体，数学上表示为时间/空间变量的函数或序列，$f(t)$ 或 $f[k]$。\n- **确定/随机**：可用确定函数描述为确定信号；只能用统计特性描述为随机信号。\n- **连续/离散**：时间连续取值为连续时间信号；只在离散时刻有定义为离散时间信号；时间和幅度都离散并量化为数字信号。\n- **周期/非周期**：存在最小正周期 $T$ 使 $f(t)=f(t+T)$ 为周期信号；$\\Omega=2\\pi/T=2\\pi f$ 为基波角频率。\n- **连续周期信号之和**：周期比为有理数时，两周期的公倍数是和信号的周期；若发生抵消，最小正周期可能更小。非退化的不同频率正弦之和，可用频率比判断。\n- **离散正弦序列**：非退化正弦序列在角频率与 $2\\pi$ 比为有理数时周期；将 $\\beta/(2\\pi)=m/N$ 约成互素形式后，通常最小周期为 $N$。恒零等退化情形单独处理。\n- **离散周期序列之和**：两周期的最小公倍数是和序列的一个周期，但抵消或对称性可能使最小周期更短。\n- **能量**：$E=\\int_{-\\infty}^{\\infty}|f(t)|^2dt$；离散 $E=\\sum_{k=-\\infty}^{\\infty}|f[k]|^2$。\n- **功率**：$P=\\lim_{T\\to\\infty}\\frac{1}{T}\\int_{-T/2}^{T/2}|f(t)|^2dt$；离散用时间平均。\n- **能量信号**：$0<E<\\infty$，此时 $P=0$；有限长确定信号通常为能量信号。\n- **功率信号**：$0<P<\\infty$，此时 $E=\\infty$；周期信号、阶跃、常数通常为功率信号。\n- **既非能量也非功率**：$f(t)=t$、$e^{t}$ 等既无有限能量又无有限平均功率。\n- **因果/反因果/双边**：因果 $t<0$ 时为零；反因果 $t>0$ 时为零；两边都存在为双边信号。\n- **实/复信号**：实信号满足 $f(t)=f^*(t)$；复信号用于解析信号、通信调制等。\n- **典型信号**：指数、正弦/余弦、复指数、阶跃、冲激、斜升、门函数、Sa 函数。",
+      "questions": [
+        {
+          "prompt": "非零有限能量信号的平均功率是多少？",
+          "options": [
+            "0",
+            "无穷大",
+            "必定等于能量"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "有限总能量除以不断增长的观察时长，极限为零。",
+          "id": "ss-1-1-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "计算 x(t)=3e^(−2t)u(t) 的能量。可输入小数或分数。",
+          "options": [],
+          "formula": "E=\\int_0^\\infty 9e^{-4t}dt",
+          "fields": [
+            {
+              "label": "能量 E",
+              "expected": 2.25,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "E=9∫₀∞e^(−4t)dt=9/4。不能漏掉幅度平方。",
+          "id": "ss-1-1-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "x(t)=2cos(3t) 的平均功率是多少？",
+          "options": [],
+          "formula": "P=\\frac{A^2}{2}",
+          "fields": [
+            {
+              "label": "平均功率 P",
+              "expected": 2,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "余弦平方的周期平均值为 1/2，故 P=4/2=2。",
+          "id": "ss-1-1-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-1-2",
+      "number": "1.2",
+      "title": "基本运算与波形变换",
+      "chapter": "第1章 信号与系统基本概念",
+      "markdown": "- **加减乘**：同一时刻逐点运算；定义域不同时按并集补零。乘法可用于加窗、门控、幅度调制。\n- **反转**：$f(-t)$ 关于纵轴镜像；$f[-k]$ 关于 $k=0$ 翻转。\n- **平移**：$f(t-t_0)$ 右移（延迟）$t_0$；$f(t+t_0)$ 左移（超前）$t_0$。\n- **尺度**：$f(at)$ 中 $a>1$ 压缩，$0<a<1$ 展宽，$a<0$ 同时反转。\n- **复合变换的正确顺序**：$f(at+b)=f(a(t+b/a))$。\n  - 顺序一：先左移 $b$，再按 $a$ 展缩。\n  - 顺序二：先按 $a$ 展缩，再左移 $b/a$。\n  - 两种顺序的平移量不同，不能把“平移量”混用。\n- **离散运算**：移位要求整数；抽取（下采样）会丢点，插值（上采样）会补零，不能简单套用连续尺度变换。\n- **差分/求和**：前向差分 $\\Delta f[k]=f[k+1]-f[k]$；后向差分 $f[k]-f[k-1]$；求和 $g[k]=\\sum_{n=-\\infty}^{k}f[n]$。\n- **奇偶分解**：$f_e(t)=\\frac{f(t)+f(-t)}{2}$，$f_o(t)=\\frac{f(t)-f(-t)}{2}$。\n- **尺度与能量**：$E_{f(at)}=E_f/|a|$；功率信号的功率在尺度变换下不变。",
+      "questions": [
+        {
+          "prompt": "x(2t) 相对 x(t) 的时间宽度如何变化？",
+          "options": [
+            "加倍",
+            "不变",
+            "减半"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "同一特征点从 t=a 移到 t=a/2。",
+          "id": "ss-1-2-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "x(t) 仅在 0≤t≤2 非零。y(t)=x(2t−2) 的非零区间是什么？",
+          "options": [],
+          "formula": "0\\le 2t-2\\le 2",
+          "fields": [
+            {
+              "label": "左端点",
+              "expected": 1,
+              "unit": "s",
+              "id": "f1"
+            },
+            {
+              "label": "右端点",
+              "expected": 2,
+              "unit": "s",
+              "id": "f2"
+            }
+          ],
+          "explanation": "直接解不等式：2≤2t≤4，因此 1≤t≤2。",
+          "id": "ss-1-2-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "已知 x(t) 的能量为 12，求 x(−3t) 的能量。",
+          "options": [],
+          "formula": "E_{x(at)}=E_x/|a|",
+          "fields": [
+            {
+              "label": "变换后能量",
+              "expected": 4,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "反转不改变能量，时间压缩 3 倍使能量变为 12/3=4。",
+          "id": "ss-1-2-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-1-3",
+      "number": "1.3",
+      "title": "阶跃函数与冲激函数",
+      "chapter": "第1章 信号与系统基本概念",
+      "markdown": "- **单位阶跃**：$u(t)=1\\ (t>0)$，$u(t)=0\\ (t<0)$；延迟阶跃 $u(t-t_0)$ 表示在 $t_0$ 接入。\n- **门函数**：$G_\\tau(t)=u(t+\\tau/2)-u(t-\\tau/2)$，宽度为 $\\tau$，中心在 0。\n- **斜升函数**：$r(t)=t u(t)$；$r'(t)=u(t)$，$r(t)=\\int_{-\\infty}^{t}u(\\tau)d\\tau$。\n- **冲激的狄拉克定义**：$\\delta(t)=0\\ (t\\ne0)$，$\\int_{-\\infty}^{\\infty}\\delta(t)dt=1$；它是奇异函数，不是普通点函数。\n- **冲激与阶跃**：$\\delta(t)=\\frac{du(t)}{dt}$，$u(t)=\\int_{-\\infty}^{t}\\delta(\\tau)d\\tau$。\n- **广义函数定义**：对测试函数 $\\varphi(t)$，$\\int\\delta(t)\\varphi(t)dt=\\varphi(0)$；冲激按积分效果定义。\n- **取样性质**：$f(t)\\delta(t-t_0)=f(t_0)\\delta(t-t_0)$；$\\int f(t)\\delta(t-t_0)dt=f(t_0)$。\n- **离散形式**：$f[k]\\delta[k-k_0]=f[k_0]\\delta[k-k_0]$；$\\sum f[k]\\delta[k-k_0]=f[k_0]$。\n- **偶奇性**：$\\delta(t)$ 为偶函数；$\\delta'(t)$ 为奇函数；高阶导数奇偶性交替。\n- **尺度变换**：$\\delta(at)=\\frac{1}{|a|}\\delta(t)$；$\\delta'(at)=\\frac{1}{a|a|}\\delta'(t)$；$\\delta(at-t_0)=\\frac{1}{|a|}\\delta(t-t_0/a)$。\n- **冲激偶**：$\\int\\delta'(t)\\varphi(t)dt=-\\varphi'(0)$；$f(t)\\delta'(t)=f(0)\\delta'(t)-f'(0)\\delta(t)$。\n- **高阶冲激**：$\\int\\delta^{(n)}(t)\\varphi(t)dt=(-1)^n\\varphi^{(n)}(0)$。\n- **卷积恒等**：$f(t)*\\delta(t)=f(t)$；$f(t)*\\delta(t-t_0)=f(t-t_0)$；$f(t)*\\delta'(t)=f'(t)$。\n- **单位序列**：$\\delta[k]=1\\ (k=0)$，否则为 0；$u[k]=1\\ (k\\ge0)$，否则为 0；$\\delta[k]=u[k]-u[k-1]$，$u[k]=\\sum_{n=-\\infty}^{k}\\delta[n]$。\n- **注意**：$\\delta[k]$ 是普通序列，不像 $\\delta(t)$ 取无穷大；其“面积”为 1 体现在求和上。",
+      "questions": [
+        {
+          "prompt": "δ(t) 应按什么方式理解？",
+          "options": [
+            "所有时刻都等于 1",
+            "对测试函数的积分作用",
+            "在零点取一个普通有限值"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "冲激是分布，由 ∫δ(t)φ(t)dt=φ(0) 定义。",
+          "id": "ss-1-3-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "计算全实轴积分 ∫(t²+1)δ(2t−4)dt。",
+          "options": [],
+          "formula": "\\delta(2t-4)=\\frac12\\delta(t-2)",
+          "fields": [
+            {
+              "label": "积分值",
+              "expected": 2.5,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "取样点 t=2，缩放系数 1/2，结果 (4+1)/2=5/2。",
+          "id": "ss-1-3-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "计算全实轴积分 ∫t²δ′(t−1)dt。",
+          "options": [],
+          "formula": "\\int f(t)\\delta'(t-a)dt=-f'(a)",
+          "fields": [
+            {
+              "label": "积分值",
+              "expected": -2,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "冲激导数作用于测试函数导数并带负号：−2t 在 t=1 为 −2。",
+          "id": "ss-1-3-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-1-4",
+      "number": "1.4",
+      "title": "系统的定义、分类与性质",
+      "chapter": "第1章 信号与系统基本概念",
+      "markdown": "- **系统**：输入到输出的映射/算子，$y=T[f]$；可含激励和初始状态。\n- **分类**：连续/离散、动态/即时（记忆/无记忆）、线性/非线性、时不变/时变、因果/非因果、稳定/不稳定、可逆/不可逆。\n- **线性**：齐次性 $T[af]=aT[f]$ + 可加性 $T[f_1+f_2]=T[f_1]+T[f_2]$。\n- **动态系统线性的三条件**：\n  1. 全响应可分解：$y=y_{zs}+y_{zi}$；\n  2. 零状态响应对激励线性；\n  3. 零输入响应对初始状态线性。\n- **线性判别步骤**：先查可分解性，再分别查零状态线性、零输入线性；不能只验证齐次性或只看零状态。\n- **典型非线性项**：$f^2$、$|f|$、$x^2(0)$、$x(0)f(t)$、$f(t)+1$、$f[k]f[k-1]$。\n- **时不变**：若 $T[f(t)]=y(t)$，则 $T[f(t-t_0)]=y(t-t_0)$。\n- **时不变判别**：先由 $T[f(t)]$ 得 $y(t)$，写出 $y(t-t_0)$；再以 $f(t-t_0)$ 为输入求 $T[f(t-t_0)]$，比较两者是否恒等。\n- **时变例子**：$y(t)=f(2-t)$、$y(t)=t f(t)$、$y(t)=f(t)\\cos t$ 通常为时变。\n- **因果**：输出只依赖当前和过去输入/状态；零状态响应不出现在激励之前；$h(t)=0\\ (t<0)$。\n- **非因果例子**：$y(t)=f(t+1)$、理想砖墙低通。理想微分器 $h(t)=\\delta'(t)$ 在广义函数意义下是因果的，但不满足 BIBO 稳定。\n- **稳定（BIBO）**：有界输入产生有界输出；LTI 系统等价于 $\\int_{-\\infty}^{\\infty}|h(t)|dt<\\infty$。\n- **记忆性**：输出只与当前输入有关为无记忆/即时系统；含电容、电感、延迟等为记忆/动态系统。\n- **可逆性**：不同输入产生不同输出，存在逆系统 $T^{-1}$；$y=f^2$ 不可逆。\n- **独立性**：线性、时不变、因果、稳定是四个独立性质；一个系统可以线性但时变，也可以因果但不稳定。",
+      "questions": [
+        {
+          "prompt": "判别线性时必须同时检查什么？",
+          "options": [
+            "齐次性与可加性",
+            "因果性与记忆性",
+            "周期性与奇偶性"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "只检查齐次性不足以证明线性。",
+          "id": "ss-1-4-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "广义函数意义下，理想微分器 y=x′ 的性质是什么？",
+          "options": [
+            "必定非因果且稳定",
+            "无记忆且稳定",
+            "因果，但不 BIBO 稳定"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "h=δ′ 支撑在零点，因此因果；有界的高频输入可产生无界导数。",
+          "id": "ss-1-4-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "y(t)=x²(t) 的正确判断是什么？",
+          "options": [
+            "必须读取未来输入",
+            "无记忆、因果、非线性",
+            "线性且时变"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "输出只依赖当前输入，但平方运算不满足叠加。",
+          "id": "ss-1-4-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-1-5",
+      "number": "1.5",
+      "title": "系统的描述",
+      "chapter": "第1章 信号与系统基本概念",
+      "markdown": "- **连续系统数学模型**：常系数线性微分方程用于描述有限维 LTI 系统；最小阶数由独立动态储能状态决定，不能机械地数所有电容、电感。\n- **电路建模**：列 KCL/KVL → 代入元件 VCR → 消去中间变量 → 整理成输入—输出微分方程。\n- **力学建模**：牛顿第二定律 + 弹簧力 + 阻尼力，可得到与 RLC 电路同形式的二阶方程。\n- **相似系统**：不同物理系统具有相同形式的微分方程，可用同一套方法分析。\n- **离散系统模型**：差分方程；未知序列最高序号与最低序号之差为阶数。\n- **框图基本部件**：加法器、数乘器、积分器（连续）或迟延单元（离散）。\n- **由方程画框图**：最高阶导数移到左边，用 n 个积分器逐级得到低阶导数；分母系数构成反馈，分子系数构成前馈。\n- **分子含导数**：引入辅助函数 $x(t)$，先实现分母方程，再由 $y$ 与 $x$ 的各阶导数关系实现前馈。\n- **由框图写方程**：设积分器/延迟器输出为辅助变量，沿加法器列方程，消去辅助变量。\n- **系统模拟**：实际系统 → 方程 → 框图 → 电路/计算机实现；框图也是系统函数和状态方程的桥梁。",
+      "questions": [
+        {
+          "prompt": "建立电路输入输出微分方程，合理的起点是什么？",
+          "options": [
+            "随意指定传递函数",
+            "先删除全部储能元件",
+            "KCL/KVL 与元件关系"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "从守恒关系和元件伏安关系消去中间变量。",
+          "id": "ss-1-5-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "RC 低通满足 RC y′+y=x，R=2 kΩ，C=100 μF。求时间常数。",
+          "options": [],
+          "formula": "\\tau=RC",
+          "fields": [
+            {
+              "label": "时间常数",
+              "expected": 0.2,
+              "unit": "s",
+              "id": "f1"
+            }
+          ],
+          "explanation": "2×10³×100×10⁻⁶=0.2 s，注意千和微的单位换算。",
+          "id": "ss-1-5-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "两个不同物理装置的微分方程同形，这意味着什么？",
+          "options": [
+            "可用相同的数学分析方法",
+            "所有物理量的单位相同",
+            "内部元件必须相同"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "相似系统共享数学结构，但参数和变量物理意义可不同。",
+          "id": "ss-1-5-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-1-6",
+      "number": "1.6",
+      "title": "LTI系统分析方法概述",
+      "chapter": "第1章 信号与系统基本概念",
+      "markdown": "- **外部法**：时域（微分方程、$h(t)$、卷积）、频域（傅里叶）、复频域（拉普拉斯）。\n- **内部法**：状态变量法，适合多输入多输出、初始状态和计算机求解。\n- **三个基本问题**：基本信号与基本响应；任意信号的分解；LTI 系统分析。\n- **分解思想**：把复杂输入分解为冲激、复指数或正弦；系统对基本信号的响应已知后叠加。\n- **三条主线**：$y_{zs}=f*h$；$Y(j\\omega)=H(j\\omega)F(j\\omega)$；$Y(s)=H(s)F(s)$。\n- **全响应**：$y=y_{zi}+y_{zs}$；零输入由初始状态决定，零状态由输入和 $h(t)$ 决定。\n- **课程重点**：信号分类与运算、冲激函数、系统性质、微分方程与框图、卷积、傅里叶分析、拉普拉斯分析。\n",
+      "questions": [
+        {
+          "prompt": "y=x*h 表示哪部分响应？",
+          "options": [
+            "任意非线性系统全响应",
+            "零状态响应",
+            "只表示零输入响应"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "卷积描述 LTI 系统在零初始状态下对输入的响应。",
+          "id": "ss-1-6-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "某时刻零输入响应为 5，零状态响应为 −2，求线性系统全响应。",
+          "options": [],
+          "formula": "y=y_{zi}+y_{zs}",
+          "fields": [
+            {
+              "label": "全响应",
+              "expected": 3,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "全响应按初始状态和激励分解，相加得到 3。",
+          "id": "ss-1-6-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "初始状态非零时直接写 Y=HX，最容易漏掉什么？",
+          "options": [
+            "输入引起的全部响应",
+            "系统的每一个零点",
+            "零输入响应"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "非零初始状态还产生独立于输入的自然响应。",
+          "id": "ss-1-6-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-2-1",
+      "number": "2.1",
+      "title": "微分方程的经典解",
+      "chapter": "第2章 连续系统时域分析",
+      "markdown": "- **一般形式**：$y^{(n)}+a_{n-1}y^{(n-1)}+\\cdots+a_0y=b_mf^{(m)}+\\cdots+b_0f$。\n- **全解结构**：$y(t)=y_h(t)+y_p(t)$；齐次解为自由响应，特解为强迫响应。\n- **特征方程**：令齐次方程对应多项式 $D(\\lambda)=0$，特征根决定系统固有模态。\n- **单实根**：$\\lambda_i$ 对应 $C_ie^{\\lambda_it}$。\n- **r 重实根**：$\\lambda$ 对应 $(C_1+C_2t+\\cdots+C_rt^{r-1})e^{\\lambda t}$。\n- **共轭复根**：$\\alpha\\pm j\\beta$ 对应 $e^{\\alpha t}(C\\cos\\beta t+D\\sin\\beta t)$。\n- **特解设法**：\n  | 输入 $f(t)$ | 特解形式（非共振时） |\n  |---|---|\n  | 常数 $A$ | 常数 $P$ |\n  | $e^{at}$ | $Pe^{at}$ |\n  | $\\cos\\omega t$ 或 $\\sin\\omega t$ | $P\\cos\\omega t+Q\\sin\\omega t$ |\n  | $t^m$ | $P_m t^m+\\cdots+P_1t+P_0$ |\n- **共振**：若特解形式与齐次解重合，特解乘 $t^r$（r 为重合重数）；系数可能与齐次解合并，不能强行拆分自由/强迫响应。\n- **定系数**：用 $0^+$ 初始值代入全解，确定齐次解系数；n 阶系统需要 n 个初始值。\n- **解的适用范围**：$t\\ge0^+$；$0^-$ 到 $0^+$ 的跳变要单独处理。",
+      "questions": [
+        {
+          "prompt": "常系数微分方程齐次解的模态由什么决定？",
+          "options": [
+            "特征根",
+            "输入的颜色",
+            "采样序号的名称"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "将齐次方程中的导数替换为 λ，特征多项式的根决定模态。",
+          "id": "ss-2-1-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "y′+2y=4，y(0⁺)=1。填入 t≥0 解 y=A+B e^(−2t) 的系数。",
+          "options": [],
+          "formula": "y(t)=A+B e^{-2t}",
+          "fields": [
+            {
+              "label": "A",
+              "expected": 2,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "B",
+              "expected": -1,
+              "unit": "",
+              "id": "f2"
+            }
+          ],
+          "explanation": "常值特解 A=4/2=2；初值给出 A+B=1，所以 B=−1。",
+          "id": "ss-2-1-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "激励 e^(−t) 与二重特征根 −1 共振，试探特解应如何调整？",
+          "options": [
+            "把指数符号改正即可",
+            "在常规指数特解前乘 t²",
+            "仍只用常数乘 e^(−t)"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "与齐次解重合二重时，需要乘 t² 才能得到线性独立的特解。",
+          "id": "ss-2-1-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-2-2",
+      "number": "2.2",
+      "title": "初始状态与初始值（0⁻/0⁺）",
+      "chapter": "第2章 连续系统时域分析",
+      "markdown": "- **0⁻**：激励即将接入但尚未接入的时刻；$y(0^-),y'(0^-),\\dots$ 反映历史储能，与激励无关。\n- **0⁺**：激励刚接入后的时刻；$y(0^+),y'(0^+),\\dots$ 是微分方程求解的初始值。\n- **无冲激时**：电容电压、电感电流不跳变：$u_C(0^+)=u_C(0^-)$，$i_L(0^+)=i_L(0^-)$。\n- **右端含冲激**：在 $[0^-,0^+]$ 上对微分方程积分，比较 $\\delta(t)$ 及其各阶导数的系数。\n- **跳变规则**：若右端含 $\\delta(t)$，则 $y$ 的最高阶导数含 $\\delta$，次高阶导数在 $t=0$ 处跃变，其余低阶导数连续。\n- **右端含 $\\delta'(t)$**：更高一阶的导数出现冲激，跳变位置上移；依次类推。\n- **右端不含冲激**：各阶初始值不因激励接入而跳变。\n- **典型例子**：$y''+3y'+2y=2f'+6f$，$f=u(t)$ 时右端出现 $2\\delta(t)+6u(t)$，故 $y(0^+)=y(0^-)$，$y'(0^+)=y'(0^-)+2$。\n- **积分法**：$\\int_{0^-}^{0^+}y''dt=y'(0^+)-y'(0^-)$；右端 $\\delta$ 项积分贡献 1，$\\delta'$ 项贡献更高阶跳变。\n- **注意**：$0^-$ 值用于零输入响应；$0^+$ 值用于经典法全解。两者不能混用。",
+      "questions": [
+        {
+          "prompt": "单边拉普拉斯变换的初始条件通常采用哪一侧？",
+          "options": [
+            "任意时刻都一样",
+            "无条件用 0⁺",
+            "0⁻"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "以 0⁻ 为起点才能保留接入瞬间冲激引起的跳变。",
+          "id": "ss-2-2-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "y′+2y=3δ(t)，已知 y(0⁻)=1。求 y(0⁺)。",
+          "options": [],
+          "formula": "y(0^+)-y(0^-)=3",
+          "fields": [
+            {
+              "label": "y(0⁺)",
+              "expected": 4,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "跨零积分，普通函数积分趋零，冲激积分为3，故 y 跳变3。",
+          "id": "ss-2-2-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "y″+3y′+2y=2δ(t)+6u(t)，y(0⁻)=1、y′(0⁻)=−1。求两项右初值。",
+          "options": [],
+          "formula": "\\Delta y=0,\\quad\\Delta y'=2",
+          "fields": [
+            {
+              "label": "y(0⁺)",
+              "expected": 1,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "y′(0⁺)",
+              "expected": 1,
+              "unit": "",
+              "id": "f2"
+            }
+          ],
+          "explanation": "无 δ′ 项所以 y 连续；匹配 δ 项得 y′ 跳变2，从−1到1。",
+          "id": "ss-2-2-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-2-3",
+      "number": "2.3",
+      "title": "零输入响应与零状态响应",
+      "chapter": "第2章 连续系统时域分析",
+      "markdown": "- **零输入响应 $y_{zi}$**：令 $f(t)=0$，仅由初始状态引起；解齐次方程，系数由 $y(0^-),y'(0^-),\\dots$ 确定。\n- **零输入线性**：$y_{zi}$ 与初始状态成线性关系，满足齐次性和可加性。\n- **零状态响应 $y_{zs}$**：令初始状态为零，仅由输入引起；可用经典法，也可用 $y_{zs}=f*h$。\n- **零状态线性**：零状态响应对输入满足齐次性与可加性；时移性质还需系统时不变，不能由线性单独推出。\n- **全响应**：$y=y_{zi}+y_{zs}$。\n- **自由/强迫响应**：自由响应由特征根决定；强迫响应由输入形式决定。\n- **两种分解的关系**：$y_{zi}$ 一定是自由响应；但自由响应还包括 $y_{zs}$ 中的齐次分量。因此“零输入”不等于“自由”，“零状态”也不等于“强迫”。\n- **暂态/稳态**：在稳定系统及适当输入条件下，自然暂态衰减，可能留下常值或周期稳态。并非所有稳定系统对任意输入都有有限终值。\n- **线性系统判据**：全响应可分解 + 零状态线性 + 零输入线性；三者同时成立才是线性动态系统。",
+      "questions": [
+        {
+          "prompt": "零输入响应中的‘零’指什么？",
+          "options": [
+            "系统参数为零",
+            "外部输入为零",
+            "所有初始状态为零"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "初始储能可以非零，因此即使没有输入也能产生响应。",
+          "id": "ss-2-3-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "y′+2y=x，y(0⁻)=3。求零输入响应 yzi=Ae^(−2t) 的 A。",
+          "options": [],
+          "formula": "y_{zi}(t)=A e^{-2t}",
+          "fields": [
+            {
+              "label": "A",
+              "expected": 3,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "置输入为零解齐次方程，系数由初始值3确定。",
+          "id": "ss-2-3-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "零状态响应是否只包含强迫响应？",
+          "options": [
+            "永远只含输入模态",
+            "必定等于零输入响应",
+            "还可能含系统自然模态"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "初始状态为零不代表没有暂态，零状态解中也可能出现齐次模态。",
+          "id": "ss-2-3-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-2-4",
+      "number": "2.4",
+      "title": "冲激响应与阶跃响应",
+      "chapter": "第2章 连续系统时域分析",
+      "markdown": "- **冲激响应**：$h(t)=T[\\delta(t)]$，零状态系统对单位冲激的响应。\n- **求解**：若系统输入输出方程为 $D(p)y=N(p)f$，则冲激响应满足 $D(p)h=N(p)\\delta$；先做冲激匹配，再求普通函数部分。\n- **形式**：$h(t)$ 由特征根决定；因果系统 $t<0$ 时 $h(t)=0$。\n- **分子阶数**：严格真有理 $H(s)$ 不含冲激直接项；分子分母同阶时长除常数对应 $\\delta(t)$；分子阶数更高时才可能含 $\\delta$ 的导数。\n- **阶跃响应**：$g(t)=T[u(t)]$，零状态系统对单位阶跃的响应。\n- **关系**：$g'(t)=h(t)$，$g(t)=\\int_{-\\infty}^{t}h(\\tau)d\\tau$；因果系统 $g(t)=\\int_0^t h(\\tau)d\\tau$。\n- **测量意义**：阶跃响应易测，可用于实验辨识；冲激响应是卷积核，理论上最重要。\n- **稳定性**：普通函数冲激响应绝对可积是 BIBO 稳定判据；有冲激直接项时用有限测度形式理解。虚轴极点导致的自然临界稳定不能等同 BIBO 稳定。\n- **Matlab**：`impulse(sys)`、`step(sys)`；符号法可用 `ilaplace`。",
+      "questions": [
+        {
+          "prompt": "LTI 系统阶跃响应与冲激响应的关系是什么？",
+          "options": [
+            "$h=g'$",
+            "$h=g^2$",
+            "$h=1/g$"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "u′=δ，线性时不变算子与微分在适当条件下可交换。",
+          "id": "ss-2-4-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "h(t)=2e^(−2t)u(t)，将阶跃响应写成 g=A(1−e^(−2t))u(t)。求 A。",
+          "options": [],
+          "formula": "g(t)=\\int_0^t 2e^{-2\\tau}d\\tau",
+          "fields": [
+            {
+              "label": "A",
+              "expected": 1,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "积分得到1−e^(−2t)，稳态增益为1。",
+          "id": "ss-2-4-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "因果有理 H(s) 的分子、分母同阶，长除后的常数对应什么？",
+          "options": [
+            "只对应普通指数项",
+            "冲激 δ(t) 项",
+            "必定包含 δ′(t)"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "常数的逆拉氏变换是 δ；正次幂多项式才产生冲激导数。",
+          "id": "ss-2-4-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-2-5",
+      "number": "2.5",
+      "title": "卷积积分",
+      "chapter": "第2章 连续系统时域分析",
+      "markdown": "- **时域分解**：任意 $f(t)$ 可近似为窄脉冲之和 $f(t)\\approx\\sum_k f(k\\Delta)p_\\Delta(t-k\\Delta)\\Delta$。\n- **极限**：$\\Delta\\to0$ 时，窄脉冲趋于冲激，求和变为积分：$f(t)=\\int_{-\\infty}^{\\infty}f(\\tau)\\delta(t-\\tau)d\\tau$。\n- **卷积定义**：$y(t)=f(t)*h(t)=\\int_{-\\infty}^{\\infty}f(\\tau)h(t-\\tau)d\\tau$。\n- **零状态响应**：LTI 系统 $y_{zs}(t)=f(t)*h(t)$。\n- **因果简化**：因果系统 $h(t-\\tau)=0\\ (\\tau>t)$，上限变为 $t$；因果输入 $f(\\tau)=0\\ (\\tau<0)$，下限变为 0。\n- **图解法四步**：翻转 $h(\\tau)\\to h(-\\tau)$ → 平移 $t$ → 相乘 → 对 $\\tau$ 积分。\n- **分段原则**：根据两波形重叠区间确定积分上下限；关键是翻转后波形端点随 $t$ 移动的位置。\n- **存在条件**：积分需要收敛；若 $f,h\\in L^1$，卷积几乎处处存在且仍属 $L^1$。逐点连续性需要额外正则条件，不能仅由两者绝对可积推出。\n- **物理意义**：输入是无数加权冲激，系统对每个冲激的响应为 $h(t-\\tau)$，叠加得到输出。\n- **Matlab**：离散用 `conv(f,h)`；连续近似用 `conv(f,h)*dt`，时间轴起点为两信号起点之和。",
+      "questions": [
+        {
+          "prompt": "图解卷积中 h(t−τ) 相对 h(τ) 需要什么操作？",
+          "options": [
+            "只逐点平方",
+            "完全不移动",
+            "先翻转，再按 t 平移"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "固定 t 后以 τ 为积分变量，h(−τ) 翻转后再平移。",
+          "id": "ss-2-5-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "x=u(t)−u(t−1)，h=u(t)−u(t−2)。填 y=x*h 各区间中的系数；端点按连续延拓。",
+          "options": [],
+          "formula": "y=\\begin{cases}a t&0\\le t<1\\\\b&1\\le t<2\\\\c+d t&2\\le t\\le3\\\\0&\\text{其余}\\end{cases}",
+          "fields": [
+            {
+              "label": "a",
+              "expected": 1,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "b",
+              "expected": 1,
+              "unit": "",
+              "id": "f2"
+            },
+            {
+              "label": "c",
+              "expected": 3,
+              "unit": "",
+              "id": "f3"
+            },
+            {
+              "label": "d",
+              "expected": -1,
+              "unit": "",
+              "id": "f4"
+            }
+          ],
+          "explanation": "重叠长度依次为 t、1、3−t；区间外没有重叠。每个空独立计分。",
+          "id": "ss-2-5-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "x=e^(−t)u(t)，h=e^(−t)u(t)。在 y=A t e^(−t)u(t) 中填 A。",
+          "options": [],
+          "formula": "y=e^{-t}\\int_0^t d\\tau",
+          "fields": [
+            {
+              "label": "A",
+              "expected": 1,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "同指数项相乘后与 τ 无关，积分长度为 t。",
+          "id": "ss-2-5-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-2-6",
+      "number": "2.6",
+      "title": "卷积的性质",
+      "chapter": "第2章 连续系统时域分析",
+      "markdown": "- **代数性质**：交换律 $f*g=g*f$；结合律 $(f*g)*h=f*(g*h)$；分配律 $f*(g+h)=f*g+f*h$。\n- **系统互联**：级联 $h=h_1*h_2$；并联 $h=h_1+h_2$。\n- **与冲激**：$f*\\delta=f$；$f*\\delta(t-t_0)=f(t-t_0)$。\n- **与冲激导数**：$f*\\delta^{(n)}=f^{(n)}$；$f*\\delta'=f'$。\n- **与阶跃**：$f*u=\\int_{-\\infty}^{t}f(\\tau)d\\tau$；$f*u(t-t_0)=\\int_{-\\infty}^{t-t_0}f(\\tau)d\\tau$。\n- **微积分性质**：$(f*g)'=f'*g=f*g'$；$\\int(f*g)=(\\int f)*g=f*(\\int g)$。\n- **使用条件**：微积分性质要求边界项为零或广义函数意义下成立；否则要补修正项。\n- **时移**：若 $f*g=y(t)$，则 $f(t-t_1)*g(t-t_2)=y(t-t_1-t_2)$。\n- **时限**：两个时限信号卷积仍为时限信号；支撑长度为两支撑长度之和。\n- **矩形卷积**：等宽矩形卷积得三角形；不等宽矩形卷积得梯形；平顶宽度为两宽度之差，总底宽为两宽度之和。\n- **指数卷积**：$e^{-at}u(t)*e^{-bt}u(t)=\\frac{e^{-at}-e^{-bt}}{b-a}u(t)\\ (a\\ne b)$。\n- **阶跃卷积**：$u*u=tu(t)$；$tu*u=\\frac{t^2}{2}u(t)$。\n- **常用方法**：定义法、图解法、性质法、变换法、数值法；简单波形优先图解法，复杂信号优先变换法。",
+      "questions": [
+        {
+          "prompt": "两个 LTI 系统级联的总冲激响应是什么？",
+          "options": [
+            "$h_1/h_2$",
+            "$h_1*h_2$",
+            "$h_1+h_2$"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "级联对应卷积，并联才是相加。",
+          "id": "ss-2-6-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "已知 x*h=y(t)，求 x(t−2)*h(t−3)=y(t−d) 中的 d。",
+          "options": [],
+          "formula": "d=t_1+t_2",
+          "fields": [
+            {
+              "label": "总延迟 d",
+              "expected": 5,
+              "unit": "s",
+              "id": "f1"
+            }
+          ],
+          "explanation": "卷积的两路延迟相加，2+3=5。",
+          "id": "ss-2-6-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "x、h 分别为幅度1、宽度2和5的因果矩形。求卷积的底宽、平顶宽度和峰值。",
+          "options": [],
+          "formula": "T_{\\mathrm{底}}=T_1+T_2",
+          "fields": [
+            {
+              "label": "底宽",
+              "expected": 7,
+              "unit": "s",
+              "id": "f1"
+            },
+            {
+              "label": "平顶宽度",
+              "expected": 3,
+              "unit": "s",
+              "id": "f2"
+            },
+            {
+              "label": "峰值",
+              "expected": 2,
+              "unit": "",
+              "id": "f3"
+            }
+          ],
+          "explanation": "重叠长度最大为较短宽度2，底宽7，平顶宽度5−2=3。",
+          "id": "ss-2-6-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-2-7",
+      "number": "2.7",
+      "title": "相关函数",
+      "chapter": "第2章 连续系统时域分析",
+      "markdown": "- **互相关**：$R_{xy}(\\tau)=\\int_{-\\infty}^{\\infty}x(t)y(t-\\tau)dt$（不同教材时移方向可能相反）。\n- **自相关**：$R_x(\\tau)=\\int_{-\\infty}^{\\infty}x(t)x(t-\\tau)dt$。\n- **对称关系**：$R_{xy}(\\tau)=R_{yx}(-\\tau)$；实信号自相关为偶函数，$R_x(0)=E$ 且为最大值。\n- **与卷积关系**：实信号 $R_{xy}(\\tau)=x(\\tau)*y(-\\tau)$；自相关 $R_x(\\tau)=x(\\tau)*x(-\\tau)$。\n- **傅里叶关系**：$R_{xy}(\\tau)\\leftrightarrow X(j\\omega)Y^*(j\\omega)$；$R_x(\\tau)\\leftrightarrow|X(j\\omega)|^2$。\n- **物理意义**：衡量两信号相似程度或时延；卷积描述系统输出，相关描述相似性。\n- **应用**：时延估计、信号检测、匹配滤波、功率谱估计。",
+      "questions": [
+        {
+          "prompt": "能量信号的自相关 Rxx(0) 等于什么？",
+          "options": [
+            "信号能量",
+            "恒为0",
+            "信号周期"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "零延迟时与自身共轭相乘再积分，正好是能量定义。",
+          "id": "ss-2-7-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "实信号 x 为 [0,2] 上幅度1的矩形。求自相关 Rxx(0)、Rxx(1)。",
+          "options": [],
+          "formula": "R_{xx}(\\tau)=\\int x(t)x(t-\\tau)dt",
+          "fields": [
+            {
+              "label": "Rxx(0)",
+              "expected": 2,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "Rxx(1)",
+              "expected": 1,
+              "unit": "",
+              "id": "f2"
+            }
+          ],
+          "explanation": "相关值等于两矩形重叠长度；延迟0重叠2，延迟1重叠1。",
+          "id": "ss-2-7-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "复信号相关函数与普通卷积相比需要注意什么？",
+          "options": [
+            "相关必定等于逐点乘法",
+            "反转并取共轭，且说明延迟约定",
+            "无论如何都不需共轭"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "复相关包含共轭；不同教材的延迟正负约定可能不同。",
+          "id": "ss-2-7-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-2-8",
+      "number": "2.8",
+      "title": "微分算子",
+      "chapter": "第2章 连续系统时域分析",
+      "markdown": "- **定义**：$p=\\frac{d}{dt}$，$p^nf=\\frac{d^nf}{dt^n}$。\n- **算子方程**：$D(p)y=N(p)f$；零状态下传输算子 $H(p)=N(p)/D(p)$，$y=H(p)f$。\n- **性质**：线性；常数可与算子交换；但算子不能随意穿过时变函数，$p(fg)=f'g+fg'$。\n- **电路算子模型**：电阻 $R$；电感 $pL$；电容 $1/(pC)$；可写算子阻抗/导纳。\n- **适用**：常系数线性系统、零状态分析；初始条件需另加零输入响应。\n- **与系统函数**：$H(s)=H(p)|_{p=s}$。\n- **注意**：算子法默认零状态；含初始储能时用 s 域模型更方便。",
+      "questions": [
+        {
+          "prompt": "微分算子 p 表示什么？",
+          "options": [
+            "逐点平方",
+            "积分上限",
+            "$d/dt$"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "算子法用多项式表示常系数微分关系。",
+          "id": "ss-2-8-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "零状态系统 (p²+3p+2)y=(p+4)x，H(p)=(p+a)/[(p+b)(p+c)]，按 b<c 填系数。",
+          "options": [],
+          "formula": "H(p)=\\frac{p+a}{(p+b)(p+c)}",
+          "fields": [
+            {
+              "label": "a",
+              "expected": 4,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "b",
+              "expected": 1,
+              "unit": "",
+              "id": "f2"
+            },
+            {
+              "label": "c",
+              "expected": 2,
+              "unit": "",
+              "id": "f3"
+            }
+          ],
+          "explanation": "p²+3p+2=(p+1)(p+2)，分子常数为4。",
+          "id": "ss-2-8-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "有非零初始状态时，把 p 直接换成 s 并只算 H(s)X(s)，会怎样？",
+          "options": [
+            "漏掉初始状态引起的项",
+            "自动包括所有初始项",
+            "得到唯一完整响应"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "零状态传输算子不包含历史储能，应单独处理初始条件。",
+          "id": "ss-2-8-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-2-9",
+      "number": "2.9",
+      "title": "时域分析总结",
+      "chapter": "第2章 连续系统时域分析",
+      "markdown": "- **步骤**：建模 → 求 $0^+$ 初始值 → 求 $y_{zi}$ → 求 $h(t)$ → 卷积求 $y_{zs}$ → 相加得全响应。\n- **优点**：物理概念直观，卷积明确，适合简单波形和冲激响应分析。\n- **缺点**：高阶方程和复杂输入计算量大；初始值跳变容易出错。\n- **与变换域关系**：时域卷积对应频域/s域相乘，是后续章节的出发点。\n",
+      "questions": [
+        {
+          "prompt": "已知 h(t) 和输入且初始静止，最直接的方法是什么？",
+          "options": [
+            "只判断奇偶性",
+            "卷积",
+            "先求可控矩阵"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "冲激响应完整描述零状态 LTI 系统。",
+          "id": "ss-2-9-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "y′+y=u(t)，y(0⁻)=2。t≥0 时 y=A+B e^(−t)，求 A、B。",
+          "options": [],
+          "formula": "y=y_{zi}+y_{zs}",
+          "fields": [
+            {
+              "label": "A",
+              "expected": 1,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "B",
+              "expected": 1,
+              "unit": "",
+              "id": "f2"
+            }
+          ],
+          "explanation": "零输入为2e^(−t)，零状态为1−e^(−t)，相加为1+e^(−t)。",
+          "id": "ss-2-9-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "数值近似连续卷积后发现幅值随 dt 大幅改变，应先检查什么？",
+          "options": [
+            "是否删除了所有时间标签",
+            "是否把输入改成随机数",
+            "离散 conv 结果是否乘了 dt"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "连续积分的黎曼和含 dt；漏乘会产生约1/dt倍的误差。",
+          "id": "ss-2-9-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-3-1",
+      "number": "3.1",
+      "title": "正交分解与傅里叶级数的思想",
+      "chapter": "第3章 连续系统频域分析",
+      "markdown": "- **矢量内积**：$\\langle \\mathbf V_1,\\mathbf V_2\\rangle=|\\mathbf V_1||\\mathbf V_2|\\cos\\theta$；内积为 0 表示正交。\n- **正交矢量集**：任意两个不同矢量正交；每个矢量长度为 1 时为正交集。\n- **投影系数**：用 $c_{12}\\mathbf V_2$ 近似 $\\mathbf V_1$，使误差矢量垂直于 $\\mathbf V_2$，得 $c_{12}=\\frac{\\langle\\mathbf V_1,\\mathbf V_2\\rangle}{\\langle\\mathbf V_2,\\mathbf V_2\\rangle}$。\n- **信号内积**：复信号 $\\langle f_1,f_2\\rangle=\\int_{t_1}^{t_2}f_1(t)f_2^*(t)dt$；实信号去掉共轭。\n- **正交函数集**：任意两个不同函数在区间上内积为 0；函数能量为 1 时为标准正交集。\n- **完备性**：集合外不存在非零函数与所有成员正交；完备性保证任意信号可无误差展开。\n- **广义傅里叶级数**：$f(t)=\\sum_n c_n\\varphi_n(t)$，$c_n=\\frac{\\langle f,\\varphi_n\\rangle}{\\langle\\varphi_n,\\varphi_n\\rangle}$。\n- **最佳逼近**：有限项展开时，取傅里叶系数使均方误差最小；增加项数误差单调减小。\n- **帕斯瓦尔**：$\\int|f|^2dt=\\sum_n|c_n|^2\\int|\\varphi_n|^2dt$；正交分量之间无交叉能量。\n- **两组典型完备集**：三角函数集 $\\{1,\\cos n\\Omega t,\\sin n\\Omega t\\}$；复指数集 $\\{e^{jn\\Omega t}\\}$。",
+      "questions": [
+        {
+          "prompt": "把信号投影到正交基上，系数主要由什么确定？",
+          "options": [
+            "内积与基函数范数",
+            "只由峰值确定",
+            "只由信号名称确定"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "正交展开系数为内积除以基函数的能量。",
+          "id": "ss-3-1-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "一个周期内不同整数谐波复指数的内积通常是什么？",
+          "options": [
+            "总等于周期的平方",
+            "总等于1",
+            "0"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "不同谐波在一个完整周期上相互正交。",
+          "id": "ss-3-1-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "截取更多傅里叶级数项，跳变处的吉布斯过冲怎样变化？",
+          "options": [
+            "所有位置的误差都增大",
+            "区域变窄，但相对过冲不趋零",
+            "每次都立即完全消失"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "增加谐波改善大部分区间，跳变附近保留有限相对过冲。",
+          "id": "ss-3-1-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-3-2",
+      "number": "3.2",
+      "title": "周期信号的傅里叶级数",
+      "chapter": "第3章 连续系统频域分析",
+      "markdown": "- **狄利克雷条件**：周期内绝对可积；有限个极值；有限个第一类间断点。\n- **三角形式**：$f(t)=\\frac{a_0}{2}+\\sum_{n=1}^{\\infty}(a_n\\cos n\\Omega t+b_n\\sin n\\Omega t)$，$\\Omega=2\\pi/T$。\n- **三角系数**：$a_n=\\frac{2}{T}\\int_T f(t)\\cos n\\Omega t\\,dt$，$b_n=\\frac{2}{T}\\int_T f(t)\\sin n\\Omega t\\,dt$，$a_0=\\frac{2}{T}\\int_T f(t)dt$。\n- **余弦形式**：$f(t)=A_0+\\sum_{n=1}^{\\infty}A_n\\cos(n\\Omega t+\\varphi_n)$。\n- **余弦系数**：$A_0=a_0/2$，$A_n=\\sqrt{a_n^2+b_n^2}$，$\\varphi_n=-\\arctan(b_n/a_n)$。\n- **指数形式**：$f(t)=\\sum_{n=-\\infty}^{\\infty}F_ne^{jn\\Omega t}$，$F_n=\\frac{1}{T}\\int_T f(t)e^{-jn\\Omega t}dt$。\n- **两种形式关系**：$F_0=a_0/2$；$F_n=(a_n-jb_n)/2$，$F_{-n}=(a_n+jb_n)/2=F_n^*$（实信号）；$A_n=2|F_n|\\ (n>0)$。\n- **偶对称**：$f(-t)=f(t)$ ⇒ $b_n=0$，只含直流和余弦项。\n- **奇对称**：$f(-t)=-f(t)$ ⇒ $a_n=0$，只含正弦项。\n- **半波奇对称（奇谐）**：$f(t+T/2)=-f(t)$ ⇒ 只含奇次谐波。\n- **偶谐函数**：若以 $T$ 为参考周期且 $f(t+T/2)=f(t)$，则只含偶次谐波（含直流），实际基波周期为 $T/2$。\n- **收敛性**：间断点收敛于左右极限平均值；有限项逼近出现吉布斯过冲。\n- **吉布斯现象**：过冲幅度不随项数增加而消失，只向间断点集中。",
+      "questions": [
+        {
+          "prompt": "周期为 T 的信号，基波角频率是多少？",
+          "options": [
+            "$T/(2\\pi)$",
+            "$1/T^2$",
+            "$2\\pi/T$"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "频率 f=1/T，角频率 Ω=2πf。",
+          "id": "ss-3-2-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "x(t)=2+3cos(Ωt)。复指数傅里叶级数中 F₀、F₁ 为多少？",
+          "options": [],
+          "formula": "3\\cos(\\Omega t)=\\frac32 e^{j\\Omega t}+\\frac32 e^{-j\\Omega t}",
+          "fields": [
+            {
+              "label": "F₀",
+              "expected": 2,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "F₁",
+              "expected": 1.5,
+              "unit": "",
+              "id": "f2"
+            }
+          ],
+          "explanation": "常数项为2，余弦幅度平均分到正负频率各3/2。",
+          "id": "ss-3-2-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "幅度1、占空比1/4的单极性矩形脉冲串，其直流系数是多少？",
+          "options": [],
+          "formula": "F_0=\\frac1T\\int_T x(t)dt",
+          "fields": [
+            {
+              "label": "直流系数",
+              "expected": 0.25,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "直流分量是一个周期的平均值，等于幅度乘占空比。",
+          "id": "ss-3-2-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-3-3",
+      "number": "3.3",
+      "title": "周期信号的频谱",
+      "chapter": "第3章 连续系统频域分析",
+      "markdown": "- **频谱**：各次谐波幅度、相位随频率的变化；分别画幅度谱、相位谱。\n- **离散谱**：只在 $n\\Omega$ 处有谱线，间隔为基频 $\\Omega$。\n- **单边谱**：只画 $\\omega\\ge0$，用 $A_n$、$\\varphi_n$；双边谱在 $n\\in\\mathbb Z$ 上画 $F_n$。\n- **单双边关系**：$A_0=|F_0|$；$A_n=2|F_n|\\ (n>0)$；负频率与正频率成对合成实正弦。\n- **三个特点**：离散性、谐波性、收敛性。\n- **收敛速度**：波形越光滑，高频谐波衰减越快；有跳变时衰减慢。\n- **周期矩形脉冲**：以 0 为中心、宽度 $\\tau$、幅度 1 时，$F_n=\\frac{\\tau}{T}\\mathrm{Sa}\\left(\\frac{n\\Omega\\tau}{2}\\right)$。\n- **包络**：谱线包络由单个周期波形的傅里叶变换决定；零点位置与脉冲宽度有关。\n- **周期与谱线**：$T$ 越大，谱线越密、幅度越小；$T\\to\\infty$ 时离散谱过渡为连续谱。\n- **平均功率**：$P=\\frac{1}{T}\\int_T|f|^2dt=\\sum_{n=-\\infty}^{\\infty}|F_n|^2$。\n- **三角形式功率**：$P=A_0^2+\\sum_{n=1}^{\\infty}\\frac{A_n^2}{2}$。\n- **带宽**：工程上常以谱线下降到某一比例（如 1/10）以内的范围定义；脉冲越窄，带宽越宽。",
+      "questions": [
+        {
+          "prompt": "周期信号的傅里叶级数频谱是怎样的？",
+          "options": [
+            "只有负频率",
+            "在整数倍基频处离散分布",
+            "必定连续且恒定"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "周期性对应谐波离散性，谱线间隔为基频。",
+          "id": "ss-3-3-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "T=0.02 s 的周期信号，其谱线间隔是多少 Hz？",
+          "options": [],
+          "formula": "\\Delta f=1/T",
+          "fields": [
+            {
+              "label": "谱线间隔",
+              "expected": 50,
+              "unit": "Hz",
+              "id": "f1"
+            }
+          ],
+          "explanation": "1/0.02=50 Hz，不能误写成50 rad/s。",
+          "id": "ss-3-3-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "对实周期信号，复级数系数满足什么关系？",
+          "options": [
+            "$F_{-n}=-F_n$ 恒成立",
+            "正负频率毫无关系",
+            "$F_{-n}=F_n^*$"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "实信号频谱共轭对称，因此幅度偶对称。",
+          "id": "ss-3-3-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-3-4",
+      "number": "3.4",
+      "title": "非周期信号与傅里叶变换",
+      "chapter": "第3章 连续系统频域分析",
+      "markdown": "- **极限过程**：$T\\to\\infty$ 时谱线间隔 $\\Omega\\to0$，离散谱变为连续谱；引入频谱密度 $F(j\\omega)$。\n- **正变换**：$F(j\\omega)=\\int_{-\\infty}^{\\infty}f(t)e^{-j\\omega t}dt$。\n- **反变换**：$f(t)=\\frac{1}{2\\pi}\\int_{-\\infty}^{\\infty}F(j\\omega)e^{j\\omega t}d\\omega$。\n- **存在条件**：绝对可积是充分条件；狄利克雷条件也可；冲激、常数、阶跃需广义函数意义。\n- **频谱密度**：$F(j\\omega)$ 为复函数；$|F|$ 为幅度谱，$\\angle F$ 为相位谱；量纲为幅度/频率。\n- **常用变换对**：\n  | 时域 $f(t)$ | 频域 $F(j\\omega)$ |\n  |---|---|\n  | $\\delta(t)$ | $1$ |\n  | $1$ | $2\\pi\\delta(\\omega)$ |\n  | $\\delta(t-t_0)$ | $e^{-j\\omega t_0}$ |\n  | $e^{j\\omega_0t}$ | $2\\pi\\delta(\\omega-\\omega_0)$ |\n  | $\\cos\\omega_0t$ | $\\pi[\\delta(\\omega-\\omega_0)+\\delta(\\omega+\\omega_0)]$ |\n  | $\\sin\\omega_0t$ | $\\frac{\\pi}{j}[\\delta(\\omega-\\omega_0)-\\delta(\\omega+\\omega_0)]$ |\n  | $u(t)$ | $\\pi\\delta(\\omega)+\\frac{1}{j\\omega}$ |\n  | $e^{-at}u(t)$ | $\\frac{1}{a+j\\omega}\\ (a>0)$ |\n  | $e^{-a|t|}$ | $\\frac{2a}{a^2+\\omega^2}\\ (a>0)$ |\n  | $G_\\tau(t)$ | $\\tau\\mathrm{Sa}\\left(\\frac{\\omega\\tau}{2}\\right)$ |\n  | $\\mathrm{Sa}(\\omega_ct)$ | $\\frac{\\pi}{\\omega_c}G_{2\\omega_c}(\\omega)$ |\n- **门函数**：$G_\\tau(t)=1\\ (|t|<\\tau/2)$；时域越窄，频域越宽。\n- **冲激**：包含所有频率，幅度相等；常数只含直流。\n- **阶跃**：含直流冲激项和 $1/(j\\omega)$ 项，不能漏掉 $\\pi\\delta(\\omega)$。",
+      "questions": [
+        {
+          "prompt": "本课程傅里叶正变换核使用什么符号？",
+          "options": [
+            "$e^{-j\\omega t}$",
+            "$e^{+j\\omega t}$",
+            "$e^{-t^2}$"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "约定正变换负号，逆变换正号并带1/(2π)。",
+          "id": "ss-3-4-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "x(t)=e^(−2t)u(t)，求 X(j0)。",
+          "options": [],
+          "formula": "X(j\\omega)=\\frac1{2+j\\omega}",
+          "fields": [
+            {
+              "label": "X(j0)",
+              "expected": 0.5,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "零频谱值是时间积分，∫₀∞e^(−2t)dt=1/2。",
+          "id": "ss-3-4-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "宽度2、中心0、幅度3的矩形脉冲，其傅里叶变换在零频处是多少？",
+          "options": [],
+          "formula": "X(j0)=\\int x(t)dt",
+          "fields": [
+            {
+              "label": "X(j0)",
+              "expected": 6,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "零频处等于脉冲面积：3×2=6。",
+          "id": "ss-3-4-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-3-5",
+      "number": "3.5",
+      "title": "傅里叶变换的性质",
+      "chapter": "第3章 连续系统频域分析",
+      "markdown": "- **线性**：$af_1+bf_2\\leftrightarrow aF_1+bF_2$。\n- **共轭对称**：实信号 $F(-j\\omega)=F^*(j\\omega)$；幅度谱偶对称，相位谱奇对称。\n- **实偶/实奇**：实偶信号频谱为实偶；实奇信号频谱为虚奇。\n- **时移**：$f(t-t_0)\\leftrightarrow e^{-j\\omega t_0}F(j\\omega)$；幅度不变，相位加线性项。\n- **尺度**：$f(at)\\leftrightarrow\\frac{1}{|a|}F\\left(j\\frac{\\omega}{a}\\right)$；时域压缩对应频域展宽。\n- **频移**：$f(t)e^{j\\omega_0t}\\leftrightarrow F(j(\\omega-\\omega_0))$。\n- **调制**：$f(t)\\cos\\omega_0t\\leftrightarrow\\frac{1}{2}[F(j(\\omega-\\omega_0))+F(j(\\omega+\\omega_0))]$。\n- **对称性**：$f(t)\\leftrightarrow F(j\\omega)$ ⇒ $F(jt)\\leftrightarrow2\\pi f(-\\omega)$；门函数与 Sa 对偶。\n- **时域卷积**：$f_1*f_2\\leftrightarrow F_1F_2$。\n- **频域卷积**：$f_1f_2\\leftrightarrow\\frac{1}{2\\pi}F_1*F_2$。\n- **时域微分**：$f^{(n)}\\leftrightarrow(j\\omega)^nF$。\n- **时域积分**：$\\int_{-\\infty}^{t}f(\\tau)d\\tau\\leftrightarrow\\frac{F(j\\omega)}{j\\omega}+\\pi F(0)\\delta(\\omega)$。\n- **频域微分**：$(-jt)^nf(t)\\leftrightarrow\\frac{d^nF}{d\\omega^n}$；$tf(t)\\leftrightarrow j\\frac{dF}{d\\omega}$。\n- **频域积分**：$f(t)/t\\leftrightarrow -j\\int_{-\\infty}^{\\omega}F(j\\eta)d\\eta$；通常要求 $f(0)=0$ 且积分收敛。\n- **相关定理**：$R_{xy}\\leftrightarrow XY^*$；$R_x\\leftrightarrow|X|^2$。\n- **帕斯瓦尔**：$\\int|f|^2dt=\\frac{1}{2\\pi}\\int|F|^2d\\omega$。\n- **记忆口诀**：时移不改变幅度；尺度使时宽带宽成反比；卷积变乘积；微分乘 $j\\omega$；积分除 $j\\omega$ 补直流。",
+      "questions": [
+        {
+          "prompt": "时间压缩通常使频谱如何变化？",
+          "options": [
+            "同样压缩且幅值不变",
+            "完全不变",
+            "展宽并改变幅度尺度"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "x(at)↔X(jω/a)/|a|，时间频率尺度互为倒数。",
+          "id": "ss-3-5-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "X(j0)=6，求 x(3t) 的傅里叶变换在零频处的值。",
+          "options": [],
+          "formula": "Y(j\\omega)=\\frac13X(j\\omega/3)",
+          "fields": [
+            {
+              "label": "Y(j0)",
+              "expected": 2,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "缩放系数为1/3，所以零频值为2。",
+          "id": "ss-3-5-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "x(t)cos(ωct) 的频谱是什么？",
+          "options": [
+            "左右平移的两个频谱各乘1/2",
+            "只向右移动且幅值不变",
+            "原谱逐点平方"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "将余弦展开为两个复指数，分别得到 ±ωc 频移。",
+          "id": "ss-3-5-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-3-6",
+      "number": "3.6",
+      "title": "周期信号的傅里叶变换",
+      "chapter": "第3章 连续系统频域分析",
+      "markdown": "- **广义变换**：$F(j\\omega)=2\\pi\\sum_{n=-\\infty}^{\\infty}F_n\\delta(\\omega-n\\Omega)$。\n- **冲激强度**：$2\\pi F_n$；位置在 $n\\Omega$。\n- **与级数关系**：周期信号的傅里叶变换把级数系数放在谐波频率处。\n- **单周期法**：设一个周期为 $f_0(t)$，其变换为 $F_0(j\\omega)$，则 $F_n=\\frac{1}{T}F_0(jn\\Omega)$。\n- **周期冲激串**：$\\sum_n\\delta(t-nT)\\leftrightarrow\\frac{2\\pi}{T}\\sum_k\\delta\\left(\\omega-\\frac{2\\pi k}{T}\\right)$。\n- **对偶关系**：时域周期化 ↔ 频域离散化；时域离散化 ↔ 频域周期化。\n- **用途**：统一处理采样、调制、周期激励；周期信号不绝对可积，但可在广义函数下变换。",
+      "questions": [
+        {
+          "prompt": "周期信号的傅里叶变换应在哪种意义下处理？",
+          "options": [
+            "不允许出现冲激",
+            "广义函数意义",
+            "所有信号都绝对可积"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "周期信号通常非绝对可积，其频谱可用冲激串表达。",
+          "id": "ss-3-6-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "若周期信号 F₁=2，变换在 ω=Ω 处冲激系数写为 Kπ，求 K。",
+          "options": [],
+          "formula": "X(j\\omega)=2\\pi\\sum_nF_n\\delta(\\omega-n\\Omega)",
+          "fields": [
+            {
+              "label": "K",
+              "expected": 4,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "冲激系数为2πF₁=4π。",
+          "id": "ss-3-6-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "周期冲激串的时间间隔增加一倍，频域冲激间隔怎样变化？",
+          "options": [
+            "加倍",
+            "不变",
+            "减半"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "频域间隔为2π/T，与时域间隔互为倒数。",
+          "id": "ss-3-6-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-3-7",
+      "number": "3.7",
+      "title": "LTI系统的频域分析",
+      "chapter": "第3章 连续系统频域分析",
+      "markdown": "- **特征函数**：$e^{j\\omega t}$ 通过 LTI 系统仍为同频复指数：$T[e^{j\\omega t}]=H(j\\omega)e^{j\\omega t}$。\n- **频率响应**：$H(j\\omega)=\\int_{-\\infty}^{\\infty}h(t)e^{-j\\omega t}dt$，即 $h(t)$ 的傅里叶变换。\n- **幅频/相频**：$H(j\\omega)=|H(j\\omega)|e^{j\\varphi(\\omega)}$；输出幅度乘 $|H|$，相位加 $\\varphi$。\n- **一般输入**：$Y(j\\omega)=H(j\\omega)F(j\\omega)$；反变换得 $y(t)$。\n- **傅里叶变换法步骤**：求 $F(j\\omega)$ → 求 $H(j\\omega)$ → 相乘 → 反变换。\n- **傅里叶级数法**：周期输入展开为各次谐波，分别乘 $H(jn\\Omega)$ 后叠加。\n- **适用条件**：零状态、LTI、稳定系统（频率响应存在）。\n- **频响求法一**：微分方程两边取傅里叶变换，整理 $Y/F$。\n- **频响求法二**：画电路频域模型，用阻抗/导纳和 KCL、KVL 求。\n- **正弦稳态**：输入 $\\cos\\omega_0t$，输出 $|H(j\\omega_0)|\\cos(\\omega_0t+\\varphi(\\omega_0))$。\n- **周期输入**：全时间周期激励的稳定 LTI 零状态输出可逐谐波合成；若从有限时刻接通，还可能有暂态。稳态可取输入周期为周期，但最小周期可能因谐波被滤除而缩短。",
+      "questions": [
+        {
+          "prompt": "稳定 LTI 系统对单频正弦稳态输入会怎样？",
+          "options": [
+            "保持频率，只改幅度与相位",
+            "必定产生新谐波",
+            "必定变成直流"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "复指数是 LTI 系统的特征函数。",
+          "id": "ss-3-7-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "某频率处 |H|=1/2，输入为幅度6的余弦，求稳态输出幅度。",
+          "options": [],
+          "formula": "A_y=|H|A_x",
+          "fields": [
+            {
+              "label": "输出幅度",
+              "expected": 3,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "幅度增益1/2乘输入幅度6，得到3。",
+          "id": "ss-3-7-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "t=0 接通正弦输入后，能否把正弦稳态式直接当作所有时刻的完整输出？",
+          "options": [
+            "能，任何系统都适用",
+            "不能，接通过程还可能有暂态",
+            "能，稳定就没有暂态"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "稳态式描述暂态衰减后或全时间正弦激励的输出。",
+          "id": "ss-3-7-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-3-8",
+      "number": "3.8",
+      "title": "无失真传输与滤波",
+      "chapter": "第3章 连续系统频域分析",
+      "markdown": "- **无失真定义**：输出与输入相比只有幅度缩放和整体延迟，波形形状不变。\n- **时域条件**：$y(t)=Kf(t-t_d)$。\n- **频域条件**：$H(j\\omega)=Ke^{-j\\omega t_d}$。\n- **幅频/相频**：幅频为常数 $K$；相频为线性 $-\\omega t_d$。\n- **群时延**：$\\tau_g=-\\frac{d\\varphi}{d\\omega}=t_d$；无失真要求群时延为常数。\n- **实际条件**：在信号占有频带内满足即可；带外不必满足。\n- **理想低通**：$H(j\\omega)=1\\ (|\\omega|<\\omega_c)$，其余为 0。\n- **理想低通冲激响应**：$h(t)=\\frac{\\omega_c}{\\pi}\\mathrm{Sa}(\\omega_c t)$；非因果、无限长。\n- **理想低通阶跃响应**：有上升沿、过冲和吉布斯现象；上升时间与 $\\omega_c$ 成反比。\n- **物理可实现**：因果性 $h(t)=0\\ (t<0)$ 是必要条件；幅频还需满足佩利-维纳条件。\n- **佩利-维纳**：$\\int_{-\\infty}^{\\infty}\\frac{|\\ln|H(j\\omega)||}{1+\\omega^2}d\\omega<\\infty$；幅频不能有无限陡截止或有限支撑。\n- **实际滤波器**：允许过渡带和误差；Butterworth、Chebyshev、椭圆等逼近；阶数越高过渡带越陡。\n- **滤波器类型**：低通、高通、带通、带阻；由通带/阻带位置定义。",
+      "questions": [
+        {
+          "prompt": "无失真传输要求信号占用频带内满足什么？",
+          "options": [
+            "只需幅频常数",
+            "只需相位为任意函数",
+            "幅频常数、相频线性"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "同时保持各频率相对幅度与统一延迟，才能保持波形。",
+          "id": "ss-3-8-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "H(jω)=2e^(−j3ω)，求幅度增益和群时延。",
+          "options": [],
+          "formula": "H(j\\omega)=K e^{-j\\omega t_d}",
+          "fields": [
+            {
+              "label": "K",
+              "expected": 2,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "群时延",
+              "expected": 3,
+              "unit": "s",
+              "id": "f2"
+            }
+          ],
+          "explanation": "幅度为2，相位−3ω的负导数为3 s。",
+          "id": "ss-3-8-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "理想砖墙低通冲激响应双边无限长，这对严格因果实现意味着什么？",
+          "options": [
+            "有限延迟也无法使它严格因果",
+            "加任意微小延迟即可精确实现",
+            "只要采样就自动因果"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "双边无限支撑平移任意有限时间后仍包含负时间部分。",
+          "id": "ss-3-8-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-3-9",
+      "number": "3.9",
+      "title": "取样定理",
+      "chapter": "第3章 连续系统频域分析",
+      "markdown": "- **取样模型**：$f_s(t)=f(t)s(t)$；$s(t)$ 为取样脉冲。\n- **取样类型**：矩形脉冲取样（自然取样）；冲激取样（理想取样）。\n- **冲激取样**：$f_s(t)=\\sum_n f(nT_s)\\delta(t-nT_s)$。\n- **取样频谱**：$F_s(j\\omega)=\\frac{1}{T_s}\\sum_{n=-\\infty}^{\\infty}F(j(\\omega-n\\omega_s))$，$\\omega_s=2\\pi/T_s$。\n- **自然取样**：复制谱带 sinc 包络加权；冲激取样复制谱等幅，幅度乘 $1/T_s$。\n- **混叠**：$\\omega_s<2\\omega_m$ 时相邻副本重叠，高频折叠到低频，无法唯一恢复。\n- **时域取样定理**：基带带限信号通常取 $f_s>2f_m$。等号需要对边界频率分量等作额外限制；临界频率正弦可能所有样本为零。实际采样还需抗混叠滤波的过渡带余量。\n- **奈奎斯特速率与奈奎斯特频率**：信号的奈奎斯特速率阈值为 $2f_m$，相应间隔为 $1/(2f_m)$；给定采样系统的奈奎斯特频率通常指 $f_s/2$。\n- **恢复**：理想低通取出基带谱；截止频率满足 $\\omega_m\\le\\omega_c\\le\\omega_s-\\omega_m$。\n- **重建公式**：$f(t)=\\sum_n f(nT_s)\\mathrm{Sa}\\left(\\frac{\\pi}{T_s}(t-nT_s)\\right)$。\n- **组合信号**：对于基带带限信号，卷积的频谱支撑不超出两频谱支撑交集，相乘不超出支撑之和，相加不超出支撑并集；常用上界分别为较小带宽、带宽之和、较大带宽，但不保证等号。\n- **尺度影响**：$f(at)$ 的最高频率变为 $|a|f_m$，奈奎斯特频率也变为 $|a|$ 倍。\n- **实际系统**：前置抗混叠滤波、过采样、量化编码、DAC 重建滤波；CD 音频 44.1 kHz、16 bit。\n- **注意**：$f_s$ 是赫兹，$\\omega_s$ 是 rad/s；公式中不要混用。",
+      "questions": [
+        {
+          "prompt": "基带带限信号最高频率 fm，通用安全采样条件是什么？",
+          "options": [
+            "任何采样率都能重建",
+            "$f_s>2f_m$，并留抗混叠余量",
+            "$f_s=f_m$ 即可"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "等号边界需要排除临界频率分量等条件；实际系统还需过渡带。",
+          "id": "ss-3-9-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "最高频率3 kHz的基带信号，奈奎斯特速率阈值是多少 kHz？这里填阈值，实际采样率应更高。",
+          "options": [],
+          "formula": "f_{\\mathrm{阈值}}=2f_m",
+          "fields": [
+            {
+              "label": "阈值",
+              "expected": 6,
+              "unit": "kHz",
+              "id": "f1"
+            }
+          ],
+          "explanation": "2×3=6 kHz；阈值不等于在所有边界信号上都能安全采用的采样率。",
+          "id": "ss-3-9-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "采样率1000 Hz，输入800 Hz实余弦，折叠到 [0,fs/2] 后频率是多少？",
+          "options": [],
+          "formula": "f_a=|f-f_s|",
+          "fields": [
+            {
+              "label": "混叠频率",
+              "expected": 200,
+              "unit": "Hz",
+              "id": "f1"
+            }
+          ],
+          "explanation": "800 Hz 与−200 Hz离散样本等价，实余弦的正频率折叠值为200 Hz。",
+          "id": "ss-3-9-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-3-10",
+      "number": "3.10",
+      "title": "能量谱与功率谱",
+      "chapter": "第3章 连续系统频域分析",
+      "markdown": "- **能量谱密度**：$E(\\omega)=|F(j\\omega)|^2$；实、非负、偶函数（实信号）。\n- **能量**：$E=\\int|f|^2dt=\\frac{1}{2\\pi}\\int|F|^2d\\omega$。\n- **自相关与能量谱**：$R_x(\\tau)\\leftrightarrow|F(j\\omega)|^2$。\n- **功率信号**：平均功率 $P=\\lim_{T\\to\\infty}\\frac{1}{T}\\int_{-T/2}^{T/2}|f|^2dt$。\n- **功率谱密度**：$P=\\frac{1}{2\\pi}\\int S(\\omega)d\\omega$；$S(\\omega)$ 为功率谱密度。\n- **维纳-辛钦**：$S(\\omega)=\\mathcal{F}[R(\\tau)]$；功率谱与自相关为变换对。\n- **周期信号**：功率谱为冲激串，冲激强度对应各谐波功率。\n- **白噪声**：功率谱为常数 $N_0/2$（双边）；自相关为 $\\frac{N_0}{2}\\delta(\\tau)$。\n- **带限白噪声**：带宽内谱平坦，带宽外为零。\n- **估计方法**：周期图、平均周期图、Welch；加窗和分段降低方差，但存在偏差/方差折中。\n",
+      "questions": [
+        {
+          "prompt": "能量谱密度通常由哪个量给出？",
+          "options": [
+            "$|X(j\\omega)|^2$",
+            "$X(j\\omega)$ 的符号",
+            "相位除以时间"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "能量谱非负，自相关与它构成傅里叶变换对。",
+          "id": "ss-3-10-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "已知 ∫|X(jω)|²dω=8π，求总能量。",
+          "options": [],
+          "formula": "E=\\frac1{2\\pi}\\int|X(j\\omega)|^2d\\omega",
+          "fields": [
+            {
+              "label": "E",
+              "expected": 4,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "根据本课程角频率变换约定，要乘1/(2π)，得到4。",
+          "id": "ss-3-10-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "用更短分段进行 Welch 平均，典型折中是什么？",
+          "options": [
+            "完全消除所有估计误差",
+            "方差降低，但频率分辨能力可能变差",
+            "分辨率与方差必定同时无限改善"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "更多分段可降低估计方差，较短观察窗则加宽主瓣。",
+          "id": "ss-3-10-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-4-1",
+      "number": "4.1",
+      "title": "从连续到离散的演化",
+      "chapter": "第4章 离散傅里叶变换（DFT/FFT）",
+      "markdown": "- **两条路径**：时域采样使频域周期化；频域采样使时域周期化。\n- **五种傅里叶变换**：\n  | 变换 | 时域 | 频域 |\n  |---|---|---|\n  | CTFS | 连续、周期 | 离散、非周期 |\n  | CTFT | 连续、非周期 | 连续、非周期 |\n  | DTFT | 离散、非周期 | 连续、周期（$2\\pi$） |\n  | DFS | 离散、周期 | 离散、周期 |\n  | DFT | 有限长离散（隐含周期） | 有限长离散（隐含周期） |\n- **记忆要点**：时域离散 ↔ 频域周期；时域周期 ↔ 频域离散。\n- **DFT 的地位**：时域、频域都离散且有限，适合计算机处理；是 DFS 取主值区间。\n- **DTFT 与 DFT**：DFT 是 DTFT 在 $[0,2\\pi)$ 上的等间隔采样。\n- **FFT**：DFT 的快速算法，使实际计算成为可能。",
+      "questions": [
+        {
+          "prompt": "时域离散化对应频域的什么特征？",
+          "options": [
+            "必定只有直流",
+            "必定不连续且非周期",
+            "周期化"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "DTFT 对数字角频率以2π为周期。",
+          "id": "ss-4-1-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "DFT 与有限序列 DTFT 的关系是什么？",
+          "options": [
+            "DFT 只能处理常数",
+            "对一个周期的等间隔频域采样",
+            "DFT 是全新的物理变换"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "N点DFT取DTFT在2πk/N处的样本。",
+          "id": "ss-4-1-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "FFT 与 DFT 的关系是什么？",
+          "options": [
+            "FFT 是计算 DFT 的快速算法",
+            "FFT 改变了 DFT 的数学定义",
+            "FFT 自动修复混叠"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "同样输入和约定下，两者计算同一变换。",
+          "id": "ss-4-1-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-4-2",
+      "number": "4.2",
+      "title": "DFT 的定义与参数",
+      "chapter": "第4章 离散傅里叶变换（DFT/FFT）",
+      "markdown": "- **正变换**：$X[k]=\\sum_{n=0}^{N-1}x[n]W_N^{kn}$，$W_N=e^{-j2\\pi/N}$。\n- **反变换**：$x[n]=\\frac{1}{N}\\sum_{k=0}^{N-1}X[k]W_N^{-kn}$。\n- **隐含周期性**：DFT 把有限长序列看成周期为 $N$ 的周期序列的一个主值周期。\n- **主值区间**：$n,k=0,1,\\dots,N-1$。\n- **频率对应**：第 $k$ 个频点对应 $f_k=k f_s/N$；$0\\le k<N/2$ 为正频率，$k>N/2$ 对应负频率。\n- **频率分辨率**：$\\Delta f=f_s/N=1/(NT_s)$；$T=NT_s$ 为观察时长。\n- **补零**：增加 $N$ 使频域采样更密，但**不提高真实频率分辨率**；真实分辨率由观察时长 $T$ 决定。\n- **频谱泄漏**：截断/加窗使能量扩散到邻近频点；矩形窗泄漏较大，其他窗可折中主瓣宽度与旁瓣。\n- **栅栏效应**：DFT 只给出离散频点，非频点频率可能落在两根谱线之间。",
+      "questions": [
+        {
+          "prompt": "对固定采样率，增加真实采集时长主要改善什么？",
+          "options": [
+            "改变信号原频率",
+            "区分相邻频率的能力",
+            "自动消除全部噪声"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "较长观察时长使谱窗主瓣更窄。",
+          "id": "ss-4-2-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "fs=1024 Hz，N=256，求频点间隔和第10个频点 k=10 的频率。",
+          "options": [],
+          "formula": "\\Delta f=f_s/N,\\quad f_k=k\\Delta f",
+          "fields": [
+            {
+              "label": "频点间隔",
+              "expected": 4,
+              "unit": "Hz",
+              "id": "f1"
+            },
+            {
+              "label": "f₁₀",
+              "expected": 40,
+              "unit": "Hz",
+              "id": "f2"
+            }
+          ],
+          "explanation": "1024/256=4 Hz，10×4=40 Hz。",
+          "id": "ss-4-2-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "把256个真实样本补零到2048点，正确说法是什么？",
+          "options": [
+            "观察时间自动延长8倍",
+            "可恢复已经丢失的频率细节",
+            "频谱网格变密，但真实分辨能力不提高"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "补零只增加已有有限时长频谱的采样点。",
+          "id": "ss-4-2-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-4-3",
+      "number": "4.3",
+      "title": "DFT 的性质",
+      "chapter": "第4章 离散傅里叶变换（DFT/FFT）",
+      "markdown": "- **线性**：$ax_1[n]+bx_2[n]\\leftrightarrow aX_1[k]+bX_2[k]$。\n- **循环移位**：$x[(n-m)]_N\\leftrightarrow W_N^{km}X[k]$。\n- **循环卷积**：$x_1[n]\\circledast x_2[n]\\leftrightarrow X_1[k]X_2[k]$。\n- **时域相乘**：$x_1[n]x_2[n]\\leftrightarrow\\frac{1}{N}X_1[k]\\circledast X_2[k]$。\n- **共轭对称**：实序列 $X[N-k]=X^*[k]$；$|X[k]|$ 偶对称，相位奇对称。\n- **帕斯瓦尔**：$\\sum_{n=0}^{N-1}|x[n]|^2=\\frac{1}{N}\\sum_{k=0}^{N-1}|X[k]|^2$。\n- **循环卷积与线性卷积**：DFT 的循环卷积会产生时域混叠；要得到线性卷积，需补零到 $N\\ge N_1+N_2-1$。\n- **圆周移位**：移出主值区间的样本从另一端绕回，与线性移位不同。\n- **对偶性**：时域循环卷积 ↔ 频域相乘；时域相乘 ↔ 频域循环卷积除以 $N$。",
+      "questions": [
+        {
+          "prompt": "DFT 域相乘默认对应哪种时域卷积？",
+          "options": [
+            "循环卷积",
+            "无条件线性卷积",
+            "逐点相乘"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "DFT隐含周期延拓，未补零时结果会绕回。",
+          "id": "ss-4-3-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "两个序列长度分别为4和6，DFT计算线性卷积至少需要多少点？",
+          "options": [],
+          "formula": "N\\ge N_1+N_2-1",
+          "fields": [
+            {
+              "label": "最小 N",
+              "expected": 9,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "线性卷积长度4+6−1=9，补零到至少9点避免时域混叠。",
+          "id": "ss-4-3-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "实序列的8点DFT有 X[1]=2+3j，求 X[7] 的实部和虚部。",
+          "options": [],
+          "formula": "X[N-k]=X^*[k]",
+          "fields": [
+            {
+              "label": "实部",
+              "expected": 2,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "虚部",
+              "expected": -3,
+              "unit": "",
+              "id": "f2"
+            }
+          ],
+          "explanation": "共轭对称：X[7]=X*[1]=2−3j。",
+          "id": "ss-4-3-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-4-4",
+      "number": "4.4",
+      "title": "FFT 快速算法",
+      "chapter": "第4章 离散傅里叶变换（DFT/FFT）",
+      "markdown": "- **基本思想**：利用 $W_N$ 的对称性 $W_N^{k+N/2}=-W_N^k$ 和周期性 $W_N^{k+N}=W_N^k$，把 N 点 DFT 分解为更小 DFT。\n- **基2算法**：要求 $N=2^M$；按时间抽取（DIT）或按频率抽取（DIF）。\n- **蝶形运算**：两个输入、两个输出，一次复数乘和两次复数加。\n- **复杂度**：直接 DFT 为 $O(N^2)$；FFT 为 $O(N\\log_2N)$。\n- **实现细节**：DIT 输入需比特反转，输出自然序；DIF 输入自然序，输出比特反转。\n- **原位运算**：蝶形可在原数组上完成，节省存储。\n- **IFFT**：可用共轭、交换实虚部或直接调用反变换实现。\n- **实序列**：可用一个 N 点复 FFT 同时计算两个实序列，或利用共轭对称性减少计算。\n- **应用**：频谱分析、卷积加速、OFDM、雷达、图像处理。\n",
+      "questions": [
+        {
+          "prompt": "基2 FFT 的长度要求是什么？",
+          "options": [
+            "所有 FFT 只能取奇数长度",
+            "N 必须是素数",
+            "$N=2^M$"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "基2分解要求2的整数次幂；其他FFT算法可处理其他长度。",
+          "id": "ss-4-4-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "1024点基2FFT需要多少级蝶形？",
+          "options": [],
+          "formula": "M=\\log_2N",
+          "fields": [
+            {
+              "label": "级数 M",
+              "expected": 10,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "1024=2¹⁰，因此有10级。",
+          "id": "ss-4-4-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "8点标准基2FFT，每级4个蝶形，共有多少个蝶形？",
+          "options": [],
+          "formula": "N_{\\mathrm{蝶形}}=\\frac N2\\log_2N",
+          "fields": [
+            {
+              "label": "蝶形数",
+              "expected": 12,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "8/2×3=12。这里统计蝶形数量，而非实数乘法次数。",
+          "id": "ss-4-4-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-5-1",
+      "number": "5.1",
+      "title": "拉普拉斯变换的定义与收敛域",
+      "chapter": "第5章 连续系统s域分析",
+      "markdown": "- **引入动机**：有些信号不满足傅里叶变换条件（如 $e^{2t}u(t)$），且频域法不便处理初始状态；引入复频率 $s=\\sigma+j\\omega$ 和衰减因子 $e^{-\\sigma t}$。\n- **双边拉氏变换**：$F_b(s)=\\int_{-\\infty}^{\\infty}f(t)e^{-st}dt$。\n- **双边反变换**：$f(t)=\\frac{1}{2\\pi j}\\int_{\\sigma-j\\infty}^{\\sigma+j\\infty}F_b(s)e^{st}ds$。\n- **单边拉氏变换**：$F(s)=\\int_{0^-}^{\\infty}f(t)e^{-st}dt$；下限 $0^-$ 可包含 $t=0$ 处的冲激。\n- **收敛域（ROC）**：使 $\\int|f(t)|e^{-\\sigma t}dt<\\infty$ 的 $\\sigma$ 范围。\n- **ROC 基本规则**：\n  | 信号类型 | ROC |\n  |---|---|\n  | 右边信号 | 最右极点右侧 |\n  | 左边信号 | 最左极点左侧 |\n  | 双边信号 | 两极点之间的带状区域 |\n  | 时限信号 | 整个 s 平面（可能除无穷远） |\n- **ROC 不含极点**：ROC 边界由极点所在竖线划分。\n- **唯一性**：同一 $F(s)$ 若 ROC 不同，对应原信号不同；$F(s)$ 必须与 ROC 一起给出。\n- **与傅里叶变换**：若 ROC 包含虚轴，则 $F(j\\omega)=F(s)|_{s=j\\omega}$；否则傅里叶变换可能不存在或需广义函数。\n- **常用变换对**：\n  | $f(t)$ | $F(s)$ | ROC |\n  |---|---|---|\n  | $\\delta(t)$ | $1$ | 全平面 |\n  | $u(t)$ | $1/s$ | $\\mathrm{Re}(s)>0$ |\n  | $t^nu(t)$ | $n!/s^{n+1}$ | $\\mathrm{Re}(s)>0$ |\n  | $e^{-at}u(t)$ | $1/(s+a)$ | $\\mathrm{Re}(s)>-a$ |\n  | $t e^{-at}u(t)$ | $1/(s+a)^2$ | $\\mathrm{Re}(s)>-a$ |\n  | $\\cos\\omega_0t\\,u(t)$ | $s/(s^2+\\omega_0^2)$ | $\\mathrm{Re}(s)>0$ |\n  | $\\sin\\omega_0t\\,u(t)$ | $\\omega_0/(s^2+\\omega_0^2)$ | $\\mathrm{Re}(s)>0$ |",
+      "questions": [
+        {
+          "prompt": "双边拉氏变换为什么要同时给出 ROC？",
+          "options": [
+            "所有 ROC 都等于全平面",
+            "相同代数式在不同 ROC 下可对应不同信号",
+            "ROC 只是绘图颜色"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "收敛域决定左右边性，代数式本身不足以唯一反变换。",
+          "id": "ss-5-1-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "x=e^(−2t)u(t)，ROC写作 Re(s)>a，求 a。",
+          "options": [],
+          "formula": "X(s)=\\frac1{s+2}",
+          "fields": [
+            {
+              "label": "ROC边界 a",
+              "expected": -2,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "右边指数要求 Re(s+2)>0，所以边界为−2且不含边界。",
+          "id": "ss-5-1-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "1/(s+2)，ROC为 Re(s)<−2，对应什么？",
+          "options": [
+            "$e^{-2t}u(t)$",
+            "$\\delta(t)$",
+            "$-e^{-2t}u(-t)$"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "左边信号的积分给出同一代数式，但有负号且ROC在极点左侧。",
+          "id": "ss-5-1-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-5-2",
+      "number": "5.2",
+      "title": "拉普拉斯变换的性质",
+      "chapter": "第5章 连续系统s域分析",
+      "markdown": "- **线性**：$af_1+bf_2\\leftrightarrow aF_1+bF_2$，ROC 取交集（可能扩大）。\n- **尺度**：$f(at)\\leftrightarrow\\frac{1}{|a|}F\\left(\\frac{s}{a}\\right)$；单边变换通常讨论 $a>0$。\n- **时移**：$f(t-t_0)u(t-t_0)\\leftrightarrow e^{-st_0}F(s)$；单边变换必须写 $u(t-t_0)$。\n- **复频移**：$e^{s_0t}f(t)\\leftrightarrow F(s-s_0)$；ROC 平移。\n- **时域微分**：$f'(t)\\leftrightarrow sF(s)-f(0^-)$。\n- **二阶微分**：$f''(t)\\leftrightarrow s^2F(s)-sf(0^-)-f'(0^-)$。\n- **n 阶微分**：$f^{(n)}\\leftrightarrow s^nF(s)-\\sum_{k=0}^{n-1}s^{n-1-k}f^{(k)}(0^-)$。\n- **时域积分**：$\\int_{0^-}^{t}f(\\tau)d\\tau\\leftrightarrow F(s)/s$。\n- **s域微分**：$tf(t)\\leftrightarrow-\\frac{dF}{ds}$；$t^nf(t)\\leftrightarrow(-1)^n\\frac{d^nF}{ds^n}$。\n- **s域积分**：$f(t)/t\\leftrightarrow\\int_s^{\\infty}F(\\sigma)d\\sigma$；要求积分收敛。\n- **时域卷积**：$f_1*f_2\\leftrightarrow F_1F_2$；这是 s 域分析的核心。\n- **初值定理**：若 $f(t)$ 不含 $\\delta(t)$ 及其导数（$F(s)$ 为真分式，假分式先长除），$f(0^+)=\\lim_{s\\to\\infty}sF(s)$。\n- **终值定理**：若 $f(\\infty)$ 存在，且 $sF(s)$ 的极点均在左半平面，$f(\\infty)=\\lim_{s\\to0}sF(s)$。\n- **终值条件**：$sF(s)$ 在虚轴上不能有极点；振荡或不稳定信号不能直接用终值定理。\n- **单边/双边差异**：微分、积分性质的初始项只在单边变换中出现；双边变换不含 $0^-$ 初始值。",
+      "questions": [
+        {
+          "prompt": "单边拉氏变换中，f′ 的变换是什么？",
+          "options": [
+            "$sF(s)-f(0^-)$",
+            "$sF(s)$ 无条件成立",
+            "$F(s)/s$"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "微分性质必须保留接入前初始值。",
+          "id": "ss-5-2-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "F(s)=1/(s+2)，求对应因果信号的初值和终值。",
+          "options": [],
+          "formula": "f(0^+)=\\lim_{s\\to\\infty}sF,\\quad f(\\infty)=\\lim_{s\\to0}sF",
+          "fields": [
+            {
+              "label": "初值",
+              "expected": 1,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "终值",
+              "expected": 0,
+              "unit": "",
+              "id": "f2"
+            }
+          ],
+          "explanation": "该真分式无冲激；sF极点在−2，终值定理条件满足。",
+          "id": "ss-5-2-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "F(s)=1/(s²+1)，直接由 lim(s→0)sF=0 断言终值为0，问题在哪？",
+          "options": [
+            "终值一定等于1",
+            "sF虚轴有极点，终值定理条件不满足",
+            "所有极限计算都禁止"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "原信号为sin(t)u(t)，持续振荡，没有终值。",
+          "id": "ss-5-2-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-5-3",
+      "number": "5.3",
+      "title": "拉普拉斯逆变换",
+      "chapter": "第5章 连续系统s域分析",
+      "markdown": "- **方法**：查表、利用性质化简、部分分式展开；复变积分直接计算通常较难。\n- **假分式**：先长除为多项式 + 真分式；多项式的逆变换是 $\\delta(t)$ 及其各阶导数。\n- **真分式**：$F(s)=B(s)/A(s)$，分母因式分解后按极点类型展开。\n- **单实极点**：$F(s)=\\sum_i\\frac{K_i}{s-p_i}$，$K_i=\\lim_{s\\to p_i}(s-p_i)F(s)$，反变换 $\\sum_iK_ie^{p_it}u(t)$。\n- **r 重实极点**：$\\frac{K}{(s-p)^r}$ 对应 $\\frac{K}{(r-1)!}t^{r-1}e^{pt}u(t)$。\n- **共轭复极点**：配成 $\\frac{s-\\alpha}{(s-\\alpha)^2+\\beta^2}$、$\\frac{\\beta}{(s-\\alpha)^2+\\beta^2}$，反变换为 $e^{\\alpha t}\\cos\\beta t$、$e^{\\alpha t}\\sin\\beta t$。\n- **ROC 与因果性**：右边信号对应因果项；左边信号对应反因果项；双边 ROC 对应双边信号。\n- **检验**：用初值/终值定理或代入特殊点检查系数。\n- **Matlab**：`residue(b,a)` 求留数、极点、直接项。",
+      "questions": [
+        {
+          "prompt": "有理函数分子阶数高于或等于分母，逆变换前应先怎样处理？",
+          "options": [
+            "删掉分子最高次项",
+            "忽略收敛域",
+            "多项式长除"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "长除分离出冲激及其导数对应的多项式。",
+          "id": "ss-5-3-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "因果 X(s)=1/[(s+1)(s+2)]，写成 A/(s+1)+B/(s+2)，求 A、B。",
+          "options": [],
+          "formula": "X(s)=\\frac A{s+1}+\\frac B{s+2}",
+          "fields": [
+            {
+              "label": "A",
+              "expected": 1,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "B",
+              "expected": -1,
+              "unit": "",
+              "id": "f2"
+            }
+          ],
+          "explanation": "通分有1=A(s+2)+B(s+1)，代s=−1、−2分别得到1、−1。",
+          "id": "ss-5-3-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "因果 X(s)=6/(s+2)³，x(t)=A t²e^(−2t)u(t)，求 A。",
+          "options": [],
+          "formula": "\\mathcal L[t^2e^{-2t}u(t)]=\\frac{2!}{(s+2)^3}",
+          "fields": [
+            {
+              "label": "A",
+              "expected": 3,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "三重极点对应 t²/2!，所以系数6/2=3。",
+          "id": "ss-5-3-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-5-4",
+      "number": "5.4",
+      "title": "电路的s域模型与微分方程变换解",
+      "chapter": "第5章 连续系统s域分析",
+      "markdown": "- **元件模型**：电阻 $R$；电感 $sL$；电容 $1/(sC)$。\n- **电感初始条件**：$V_L(s)=sLI_L(s)-Li_L(0^-)$；可等效为串联电压源 $Li_L(0^-)$（极性与电流参考方向相反），或并联电流源 $i_L(0^-)/s$。\n- **电容初始条件**：$V_C(s)=\\frac{1}{sC}I_C(s)+\\frac{u_C(0^-)}{s}$；可等效为串联电压源 $u_C(0^-)/s$，或并联电流源 $Cu_C(0^-)$（方向与 $i_C$ 参考方向相反）。\n- **s域分析步骤**：画 s 域电路 → 列 KCL/KVL → 解出 $Y(s)$ → 部分分式反变换。\n- **微分方程变换**：两边取单边拉氏变换，代入 $0^-$ 初始条件，整理得 $Y(s)$。\n- **解的结构**：$Y(s)=Y_{zi}(s)+Y_{zs}(s)$；零输入部分由初始条件产生，零状态部分为 $H(s)F(s)$。\n- **零输入/零状态**：可在 s 域分别求解，再反变换相加；也可先求全 $Y(s)$ 再一次反变换。\n- **注意**：初始条件用 $0^-$ 值；s 域等效源的方向和符号要与元件方程一致。",
+      "questions": [
+        {
+          "prompt": "非零初始电感电流在 s 域电路中如何处理？",
+          "options": [
+            "直接设初始电流为零",
+            "用元件方程保留等效初始源",
+            "把电感无条件短路"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "V=sLI−Li(0⁻)，初始项不可省略。",
+          "id": "ss-5-4-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "y′+2y=u(t)，y(0⁻)=3。Y(s)=A/s+B/(s+2)，求 A、B。",
+          "options": [],
+          "formula": "(s+2)Y=\\frac1s+3",
+          "fields": [
+            {
+              "label": "A",
+              "expected": 0.5,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "B",
+              "expected": 2.5,
+              "unit": "",
+              "id": "f2"
+            }
+          ],
+          "explanation": "Y=1/[s(s+2)]+3/(s+2)=0.5/s+2.5/(s+2)。",
+          "id": "ss-5-4-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "电容初始电压非零时，V(s)=I(s)/(sC) 是否完整？",
+          "options": [
+            "完整，初始项永远不影响输出",
+            "应改为 sCI(s)",
+            "不完整，还需 uC(0⁻)/s"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "单边积分关系包含初始电压，必须和参考方向一起处理。",
+          "id": "ss-5-4-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-5-5",
+      "number": "5.5",
+      "title": "系统函数与零极点",
+      "chapter": "第5章 连续系统s域分析",
+      "markdown": "- **定义**：零状态下 $H(s)=\\frac{Y(s)}{F(s)}$；$H(s)=\\mathcal{L}[h(t)]$。\n- **有理形式**：$H(s)=\\frac{N(s)}{D(s)}=K\\frac{\\prod_i(s-z_i)}{\\prod_j(s-p_j)}$。\n- **零点**：$N(s)=0$ 的根 $z_i$；**极点**：$D(s)=0$ 的根 $p_j$。\n- **极点与模态**：\n  | 极点位置 | 时域模态 |\n  |---|---|\n  | 负实轴 | 衰减指数 $e^{-at}$ |\n  | 正实轴 | 增长指数 $e^{at}$ |\n  | 左半平面复极点 | 衰减振荡 $e^{\\sigma t}\\cos(\\omega t+\\varphi)$，$\\sigma<0$ |\n  | 虚轴单极点 | 等幅振荡/常数 |\n  | 右半平面复极点 | 增长振荡 |\n  | 重极点 | $t^m e^{pt}$ 形式 |\n- **零点作用**：不决定稳定性，但影响各模态系数、相位、幅频形状和陷波。\n- **增益**：$K$ 影响整体幅度，不改变极点位置和稳定性。\n- **求法一**：由微分方程在零状态下把 $d/dt$ 换成 $s$，整理 $Y/F$。\n- **求法二**：由 s 域电路用阻抗/导纳求。\n- **求法三**：由 $h(t)$ 取拉氏变换。\n- **真/假分式**：分子阶数低于分母为真分式；相等或更高时含 $\\delta(t)$ 及其导数项。\n- **零极点图**：在 s 平面标出零点（○）和极点（×）；直观判断稳定性、频响和模态。\n- **零极点对消**：分子分母公因式对消可能隐藏不稳定内部模态；实际稳定性要结合状态方程或内部结构。",
+      "questions": [
+        {
+          "prompt": "系统函数 H=Y/X 的定义使用什么初始条件？",
+          "options": [
+            "零状态",
+            "任意非零状态均直接取比值",
+            "必须有冲激初始状态"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "非零初始状态会引入与输入无关的响应，不能计入系统函数。",
+          "id": "ss-5-5-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "H(s)=(s+3)/[(s+1)(s+2)]，按从小到大填零点、两个极点。",
+          "options": [],
+          "formula": "H(s)=\\frac{s+3}{(s+1)(s+2)}",
+          "fields": [
+            {
+              "label": "零点",
+              "expected": -3,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "较小极点",
+              "expected": -2,
+              "unit": "",
+              "id": "f2"
+            },
+            {
+              "label": "较大极点",
+              "expected": -1,
+              "unit": "",
+              "id": "f3"
+            }
+          ],
+          "explanation": "分子零点−3，分母根为−1、−2。没有公因式对消。",
+          "id": "ss-5-5-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "不稳定极点与零点代数对消后，能否断言内部稳定？",
+          "options": [
+            "只需增益小于1",
+            "不能，可能仍有隐藏不稳定模态",
+            "能，约分自动消除全部内部状态"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "内部稳定需要检查原实现或状态矩阵。",
+          "id": "ss-5-5-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-5-6",
+      "number": "5.6",
+      "title": "系统稳定性",
+      "chapter": "第5章 连续系统s域分析",
+      "markdown": "- **BIBO 稳定**：有界输入产生有界输出；LTI 系统等价于 $\\int_{-\\infty}^{\\infty}|h(t)|dt<\\infty$。\n- **s 域判据**：$H(s)$ 的 ROC 包含虚轴。\n- **因果系统**：对已约分的适当有理传递函数，全部极点严格在左半平面等价于输入输出 BIBO 稳定；含冲激导数的非适当系统不能只按有限极点判断。\n- **临界稳定**：虚轴上只有单极点（且无右半平面极点）；响应有界但不绝对可积，不满足 BIBO。\n- **不稳定**：右半平面有极点，或虚轴上有重极点。\n- **零点不影响稳定性**：稳定性由极点（分母）决定。\n- **劳斯-霍尔维茨判据**：由特征多项式 $D(s)=a_ns^n+\\cdots+a_0$ 列劳斯表。\n- **必要条件**：所有系数同号且无缺项（$a_n>0$ 时全部 $a_i>0$）；这是必要条件，不是充分条件。\n- **劳斯表**：在正确处理零首项、全零行等特殊情形后，首列符号变化次数给出右半平面根数；严格稳定还需排除虚轴根。\n- **特殊情况一**：某行第一列为 0，用 $\\varepsilon$ 代替后继续，令 $\\varepsilon\\to0$ 判断符号。\n- **特殊情况二**：出现全零行时，用上一行构造辅助多项式，求导替换该行。全零行说明存在关于原点对称的根，可能是虚轴根，也可能是实轴或复平面中的对称根。\n- **内部稳定**：状态方程所有特征值在左半平面；即使输入输出 $H(s)$ 因对消看似稳定，内部仍可能不稳定。\n- **离散对应**：因果离散系统稳定 ⇔ 全部极点位于单位圆内；Z 域部分按课程要求不展开。",
+      "questions": [
+        {
+          "prompt": "因果、适当有理且已约分的传递函数，BIBO稳定要求什么？",
+          "options": [
+            "所有零点位于左半平面即可",
+            "虚轴有单极点也算BIBO稳定",
+            "所有极点严格位于左半平面"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "虚轴极点一般导致不衰减冲激响应，不满足BIBO。",
+          "id": "ss-5-6-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "h(t)=3e^(−2t)u(t)，求 ∫|h(t)|dt。",
+          "options": [],
+          "formula": "\\int_0^\\infty3e^{-2t}dt",
+          "fields": [
+            {
+              "label": "绝对积分",
+              "expected": 1.5,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "结果3/2有限，因此该系统BIBO稳定。",
+          "id": "ss-5-6-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "H(s)=1/(s²+1) 的因果系统属于哪种情况？",
+          "options": [
+            "不满足BIBO稳定，可有有界零输入振荡",
+            "BIBO稳定且渐近衰减",
+            "所有响应都立即发散"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "h=sin(t)u(t)不绝对可积；‘临界稳定’描述内部自然运动时不能等同BIBO。",
+          "id": "ss-5-6-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-5-7",
+      "number": "5.7",
+      "title": "频率响应与滤波特性",
+      "chapter": "第5章 连续系统s域分析",
+      "markdown": "- **频率响应**：若 ROC 包含虚轴，$H(j\\omega)=H(s)|_{s=j\\omega}$。\n- **幅频/相频**：$|H(j\\omega)|$、$\\angle H(j\\omega)$；描述正弦稳态的增益和相移。\n- **正弦稳态**：输入 $\\cos\\omega_0t$，输出 $|H(j\\omega_0)|\\cos(\\omega_0t+\\angle H(j\\omega_0))$。\n- **波特图**：幅频用 $20\\log_{10}|H|$（dB），横轴用 $\\log\\omega$；相频画角度。\n- **低通**：低频增益大，高频衰减；截止频率为幅度下降到 $1/\\sqrt2$（-3 dB）处。\n- **高通**：低频衰减，高频通过；零点常在原点。\n- **带通**：只在某频带内增益大；复极点靠近虚轴形成谐振。\n- **带阻**：某频带衰减；零点在虚轴上形成陷波。\n- **谐振**：复极点越靠近虚轴，谐振峰越高、Q 值越大、带宽越窄。\n- **Q 与带宽**：$Q=\\omega_0/BW$；$BW=\\omega_0/Q$。\n- **零极点与频响**：极点靠近虚轴抬高该频率附近幅度；零点靠近虚轴压低该频率附近幅度。\n- **全通/线性相位**：全通系统幅频为常数，只改变相位；线性相位对应恒定群时延、无相位失真。",
+      "questions": [
+        {
+          "prompt": "波特幅频图中幅值增益转 dB 使用哪个公式？",
+          "options": [
+            "$|H|^2$",
+            "$20\\log_{10}|H|$",
+            "$10|H|$"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "幅值比用20log；功率比才使用10log。",
+          "id": "ss-5-7-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "H(s)=2/(s+2)，求直流增益和−3dB截止角频率。",
+          "options": [],
+          "formula": "H(j\\omega)=\\frac2{2+j\\omega}",
+          "fields": [
+            {
+              "label": "直流增益",
+              "expected": 1,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "截止角频率",
+              "expected": 2,
+              "unit": "rad/s",
+              "id": "f2"
+            }
+          ],
+          "explanation": "低频增益2/2=1；ω=2时幅值为1/√2。",
+          "id": "ss-5-7-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "带通中心角频率1000 rad/s，Q=5，求带宽。",
+          "options": [],
+          "formula": "BW=\\omega_0/Q",
+          "fields": [
+            {
+              "label": "带宽",
+              "expected": 200,
+              "unit": "rad/s",
+              "id": "f1"
+            }
+          ],
+          "explanation": "1000/5=200 rad/s，注意与Hz带宽的区别。",
+          "id": "ss-5-7-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-5-8",
+      "number": "5.8",
+      "title": "s域框图、信号流图与梅森公式",
+      "chapter": "第5章 连续系统s域分析",
+      "markdown": "- **基本单元**：积分器 $1/s$、加法器、数乘器；积分器对应时域积分。\n- **由 $H(s)$ 画直接型框图**：引入辅助变量 $X(s)$，使 $X(s)=F(s)/D(s)$，再令 $Y(s)=N(s)X(s)$；分母系数构成反馈，分子系数构成前馈。\n- **信号流图元素**：节点表示信号；有向支路表示传输增益；源节点只有出支路，汇节点只有入支路。\n- **前向通路**：从源到汇、不重复经过节点的路径；增益为各支路增益乘积 $P_k$。\n- **回路**：闭合路径；回路增益 $L_i$ 为各支路增益乘积。\n- **不接触回路**：没有公共节点的回路；梅森公式中才可出现乘积项。\n- **梅森公式**：$T=\\frac{1}{\\Delta}\\sum_k P_k\\Delta_k$。\n- **特征式**：$\\Delta=1-\\sum_iL_i+\\sum_{i<j}L_iL_j-\\sum_{i<j<k}L_iL_jL_k+\\cdots$，只取互不接触回路乘积。\n- **余子式**：$\\Delta_k$ 为去掉与第 k 条前向通路接触的回路后的特征式。\n- **用途**：复杂框图/流图的传递函数快速计算；也可由流图反推系统函数。\n- **注意**：梅森公式适用于线性时不变系统；回路和前向通路不要重复经过同一节点。",
+      "questions": [
+        {
+          "prompt": "梅森公式中的不接触回路要求什么？",
+          "options": [
+            "没有公共节点",
+            "只有增益符号不同",
+            "只要不重复同一支路即可"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "共享节点即接触，不能作为不接触回路乘积项。",
+          "id": "ss-5-8-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "单一前向通路增益P=6，一个接触该通路的回路增益L=−2，求总传输增益。",
+          "options": [],
+          "formula": "T=\\frac P{1-L}",
+          "fields": [
+            {
+              "label": "T",
+              "expected": 2,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "Δ=1−(−2)=3，通路余因子为1，总增益6/3=2。",
+          "id": "ss-5-8-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "只有两个互不接触回路，L₁=1/2，L₂=1/4。求梅森行列式 Δ。",
+          "options": [],
+          "formula": "\\Delta=1-L_1-L_2+L_1L_2",
+          "fields": [
+            {
+              "label": "Δ",
+              "expected": 0.375,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "1−1/2−1/4+1/8=3/8。",
+          "id": "ss-5-8-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-5-9",
+      "number": "5.9",
+      "title": "连续系统的模拟结构",
+      "chapter": "第5章 连续系统s域分析",
+      "markdown": "- **直接形式 I**：分别实现分母反馈和分子前馈；若全部用积分器实现，分子前馈的微分器也要用积分器替代，共需约 $2n$ 个积分器。\n- **直接形式 II（正准型）**：共享积分器，n 阶系统只需 n 个积分器；系数直接对应 $H(s)$ 的分子/分母。\n- **直接形式优点**：结构简单、系数直观；缺点：高阶级联时系数敏感、动态范围差。\n- **级联形式**：$H(s)=\\prod_iH_i(s)$，每个 $H_i$ 为一阶或二阶节；零极点配对和增益分配影响动态范围。\n- **级联优点**：降低系数灵敏度，便于模块化、调参；注意节间顺序防溢出。\n- **并联形式**：部分分式 $H(s)=\\sum_iH_i(s)$，各节并联相加；极点决定各节，零点在分子。\n- **并联优点**：各节独立，便于调整；复数极点需成对实现。\n- **积分器数目**：直接 II 型 = n；直接 I 型（全积分器实现）≈ 2n；级联/并联由各节积分器数相加。\n- **选择原则**：高阶系统优先级联/并联；低阶、理论分析常用直接型。",
+      "questions": [
+        {
+          "prompt": "连续系统直接II型实现最常用的储存单元是什么？",
+          "options": [
+            "只用比较器",
+            "只用绝对值器",
+            "积分器"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "积分器输出可直接用作状态变量。",
+          "id": "ss-5-9-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "三阶严格真有理传递函数采用标准直接II型，需要多少个积分器？",
+          "options": [],
+          "formula": "N_{\\mathrm{积分器}}=n",
+          "fields": [
+            {
+              "label": "积分器数",
+              "expected": 3,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "标准直接II型共享状态链，n阶需n个积分器。",
+          "id": "ss-5-9-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "相同传递函数的不同框图实现，状态变量是否必须相同？",
+          "options": [
+            "不必，可对应不同坐标或非最小实现",
+            "必须逐项相同",
+            "只能存在一个实现"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "实现不是唯一的，最小实现之间可通过相似变换联系。",
+          "id": "ss-5-9-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-5-10",
+      "number": "5.10",
+      "title": "零极点配置与一阶RC低通",
+      "chapter": "第5章 连续系统s域分析",
+      "markdown": "- **低通**：极点位于负实轴或左半平面，零点在无穷远；低频增益大，高频衰减。\n- **高通**：零点在原点，极点位于左半平面；低频衰减，高频通过。\n- **带通**：复共轭极点靠近虚轴，零点在原点/无穷远；形成谐振带。\n- **带阻/陷波**：零点在虚轴上（陷波频率），极点在其内侧；实现窄带抑制。\n- **参数关系**：截止频率、带宽、Q 值由零极点位置决定；阶数越高，过渡带越陡。\n- **一阶 RC 低通**：$H(s)=\\frac{1}{1+sRC}=\\frac{\\omega_c}{s+\\omega_c}$，$\\omega_c=1/(RC)$。\n- **幅频**：$|H(j\\omega)|=\\frac{1}{\\sqrt{1+(\\omega/\\omega_c)^2}}$。\n- **相频**：$\\varphi(\\omega)=-\\arctan(\\omega/\\omega_c)$。\n- **截止频率**：$\\omega=\\omega_c$ 时幅度下降 3 dB。\n- **阶跃响应**：$g(t)=(1-e^{-t/RC})u(t)$；时间常数 $\\tau=RC$。\n- **特点**：无源、简单；带负载能力弱，过渡带较缓；可用有源滤波器改善。\n",
+      "questions": [
+        {
+          "prompt": "一阶RC低通的极点位置是什么？",
+          "options": [
+            "$jRC$",
+            "$-1/(RC)$",
+            "$+RC$"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "H=1/(1+sRC)，分母根为−1/(RC)。",
+          "id": "ss-5-10-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "R=1 kΩ，C=10 μF，求RC时间常数和截止角频率。",
+          "options": [],
+          "formula": "\\tau=RC,\\quad\\omega_c=1/\\tau",
+          "fields": [
+            {
+              "label": "τ",
+              "expected": 0.01,
+              "unit": "s",
+              "id": "f1"
+            },
+            {
+              "label": "ωc",
+              "expected": 100,
+              "unit": "rad/s",
+              "id": "f2"
+            }
+          ],
+          "explanation": "RC=1000×10×10⁻⁶=0.01s，倒数为100rad/s。",
+          "id": "ss-5-10-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "保持电阻不变，把电容加倍，截止角频率怎样变化？",
+          "options": [
+            "加倍",
+            "不变",
+            "减半"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "截止角频率与RC成反比，而响应时间常数加倍。",
+          "id": "ss-5-10-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-6-1",
+      "number": "6.1",
+      "title": "状态与状态空间",
+      "chapter": "第6章 系统状态变量分析",
+      "markdown": "- **状态**：能完整描述系统未来行为所需的最小变量集合；已知状态和未来输入，就可确定未来输出。\n- **状态变量**：构成状态向量的各变量，通常取独立电容电压、独立电感电流。\n- **状态向量**：$x(t)=[x_1(t),\\dots,x_n(t)]^T$；维数 n 等于独立储能元件数。\n- **状态方程**：一阶微分/差分方程组，描述状态如何随输入演化。\n- **输出方程**：输出是状态和输入的代数组合。\n- **优点**：可描述内部状态、适合多输入多输出、便于计算机仿真和控制器设计。\n- **非唯一性**：状态选择不唯一；不同状态向量之间可用相似变换 $x'=Px$ 转换。",
+      "questions": [
+        {
+          "prompt": "状态的核心作用是什么？",
+          "options": [
+            "与未来输入一起决定未来演化",
+            "只是输出的别名",
+            "必须等于输入的瞬时幅值"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "状态浓缩历史信息，给定状态和后续输入即可确定后续运动。",
+          "id": "ss-6-1-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "线性状态空间模型的状态选择是否唯一？",
+          "options": [
+            "唯一，只能取输出",
+            "必须全取输入导数",
+            "不唯一，可作可逆坐标变换"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "状态坐标可变，但可逆变换不改变系统输入输出行为。",
+          "id": "ss-6-1-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "一个最小二阶系统采用最小状态描述，状态向量维数是多少？",
+          "options": [],
+          "formula": "x\\in\\mathbb R^n",
+          "fields": [
+            {
+              "label": "n",
+              "expected": 2,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "最小实现的维数等于系统阶数2。",
+          "id": "ss-6-1-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-6-2",
+      "number": "6.2",
+      "title": "连续系统的状态方程与输出方程",
+      "chapter": "第6章 系统状态变量分析",
+      "markdown": "- **标准形式**：$\\dot{x}(t)=Ax(t)+Bf(t)$。\n- **输出方程**：$y(t)=Cx(t)+Df(t)$。\n- **维数**：$x:n\\times1$，$f:p\\times1$，$y:q\\times1$；$A:n\\times n$，$B:n\\times p$，$C:q\\times n$，$D:q\\times p$。\n- **D 矩阵**：表示输入直接馈通到输出；不含直达项时 $D=0$。\n- **零输入解**：$x(t)=e^{At}x(0)$。\n- **全解**：$x(t)=e^{At}x(0)+\\int_0^t e^{A(t-\\tau)}Bf(\\tau)d\\tau$。\n- **输出**：$y(t)=Cx(t)+Df(t)$。\n- **状态转移矩阵**：$\\Phi(t)=e^{At}$；满足 $\\dot\\Phi=A\\Phi$，$\\Phi(0)=I$。\n- **性质**：$\\Phi(t_1+t_2)=\\Phi(t_1)\\Phi(t_2)$；$\\Phi^{-1}(t)=\\Phi(-t)$；$\\Phi(t)$ 与 $A$ 可交换。",
+      "questions": [
+        {
+          "prompt": "标准连续LTI状态方程是什么？",
+          "options": [
+            "$x=Ay^2$",
+            "$\\dot u=Cy$",
+            "$\\dot x=Ax+Bu$"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "输出方程是y=Cx+Du，两者作用不同。",
+          "id": "ss-6-2-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "A=−2，B=3，C=4，D=1。某时刻x=2、u=1，求 x′ 与 y。",
+          "options": [],
+          "formula": "\\dot x=Ax+Bu,\\quad y=Cx+Du",
+          "fields": [
+            {
+              "label": "x′",
+              "expected": -1,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "y",
+              "expected": 9,
+              "unit": "",
+              "id": "f2"
+            }
+          ],
+          "explanation": "x′=−2×2+3=−1；y=4×2+1=9。",
+          "id": "ss-6-2-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "D 非零表示什么？",
+          "options": [
+            "输入对输出有直接通路",
+            "系统一定不稳定",
+            "状态一定不存在"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "Du项不经状态积分直接进入输出。",
+          "id": "ss-6-2-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-6-3",
+      "number": "6.3",
+      "title": "状态方程的建立",
+      "chapter": "第6章 系统状态变量分析",
+      "markdown": "- **由 RLC 电路**：\n  1. 选独立电容电压、独立电感电流为状态；\n  2. 对电容节点列 KCL，对电感回路列 KVL；\n  3. 消去非状态变量，整理成一阶方程组；\n  4. 输出量用状态和输入表示。\n- **状态数**：等于独立储能元件数；受控源、耦合电感会增加列写复杂度。\n- **由微分方程（相变量法）**：n 阶方程选 $x_1=y,x_2=\\dot y,\\dots,x_n=y^{(n-1)}$。\n- **相变量矩阵**：得到 companion 矩阵；输出 $y=x_1$。\n- **分子含导数**：直接用相变量会引入输入导数；可引入辅助变量或化为可控标准型。\n- **由框图/流图**：每个积分器的输出作为一个状态；积分器输入等于该状态的导数；按加法器/数乘器关系列方程。\n- **输出方程**：由输出节点用状态和输入表示。\n- **注意**：状态选择不唯一；矩阵形式要核对维数和符号。",
+      "questions": [
+        {
+          "prompt": "从微分方程建立状态方程，常见状态选择是什么？",
+          "options": [
+            "只取常数零",
+            "独立储能变量或积分器输出",
+            "任意重复同一变量"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "状态必须包含足够的独立动态信息。",
+          "id": "ss-6-3-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "y″+3y′+2y=u，取x₁=y，x₂=y′。填 A第二行和 B第二项。",
+          "options": [],
+          "formula": "\\dot x=\\begin{bmatrix}0&1\\\\a&b\\end{bmatrix}x+\\begin{bmatrix}0\\\\c\\end{bmatrix}u",
+          "fields": [
+            {
+              "label": "a",
+              "expected": -2,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "b",
+              "expected": -3,
+              "unit": "",
+              "id": "f2"
+            },
+            {
+              "label": "c",
+              "expected": 1,
+              "unit": "",
+              "id": "f3"
+            }
+          ],
+          "explanation": "x₁′=x₂，x₂′=−2x₁−3x₂+u。",
+          "id": "ss-6-3-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "把同一电容电压重复选两次，能构成最小独立状态组吗？",
+          "options": [
+            "一定可以，数量够就行",
+            "只要单位不同就可以",
+            "不能，变量不独立"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "重复变量不增加动态信息，不能代替独立状态。",
+          "id": "ss-6-3-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-6-4",
+      "number": "6.4",
+      "title": "离散系统的状态方程",
+      "chapter": "第6章 系统状态变量分析",
+      "markdown": "- **标准形式**：$x[k+1]=Ax[k]+Bf[k]$。\n- **输出方程**：$y[k]=Cx[k]+Df[k]$。\n- **零输入解**：$x[k]=A^kx[0]$。\n- **全解**：$x[k]=A^kx[0]+\\sum_{m=0}^{k-1}A^{k-1-m}Bf[m]$。\n- **由差分方程**：选延迟输出或相变量为状态，化为一阶差分方程组。\n- **由框图**：每个延迟单元输出作为一个状态；列延迟器输入方程。\n- **注意**：时间索引、超前/延迟关系；状态选择不唯一。\n- **说明**：本节只讲状态空间建模，不展开离散系统的时域响应和 Z 域分析。",
+      "questions": [
+        {
+          "prompt": "离散状态方程的状态更新形式是什么？",
+          "options": [
+            "$x[k+1]=Ax[k]+Bu[k]$",
+            "$x[k+1]=x[k]^2$ 必为LTI",
+            "$x[k]=Au[k+1]$ 必为因果"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "状态由当前状态和当前输入递推到下一拍。",
+          "id": "ss-6-4-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "x[k+1]=0.5x[k]+u[k]，x[0]=2，u[0]=1、u[1]=0。求x[1]、x[2]。",
+          "options": [],
+          "formula": "x[k+1]=0.5x[k]+u[k]",
+          "fields": [
+            {
+              "label": "x[1]",
+              "expected": 2,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "x[2]",
+              "expected": 1,
+              "unit": "",
+              "id": "f2"
+            }
+          ],
+          "explanation": "第一拍0.5×2+1=2，第二拍0.5×2+0=1。",
+          "id": "ss-6-4-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "离散线性状态模型渐近稳定要求 A 的特征值怎样？",
+          "options": [
+            "模等于1也必渐近稳定",
+            "模严格小于1",
+            "实部严格小于0即可"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "离散时间的稳定域为单位圆内部，不能照搬连续左半平面。",
+          "id": "ss-6-4-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-6-5",
+      "number": "6.5",
+      "title": "状态方程的变换域求解",
+      "chapter": "第6章 系统状态变量分析",
+      "markdown": "- **连续拉氏**：$sX(s)-x(0)=AX(s)+BF(s)$。\n- **连续解**：$X(s)=(sI-A)^{-1}[x(0)+BF(s)]$。\n- **状态转移矩阵**：$e^{At}=\\mathcal{L}^{-1}[(sI-A)^{-1}]$。\n- **离散 Z 域**：$zX(z)-zx[0]=AX(z)+BF(z)$。\n- **离散解**：$X(z)=(zI-A)^{-1}[zx[0]+BF(z)]$；时域 $x[k]=A^kx[0]+\\sum_{m=0}^{k-1}A^{k-1-m}Bf[m]$。\n- **离散状态转移矩阵**：$A^k=\\mathcal{Z}^{-1}[z(zI-A)^{-1}]$（按单边 Z 变换定义）。\n- **矩阵求逆**：$(sI-A)^{-1}=\\frac{\\mathrm{adj}(sI-A)}{\\det(sI-A)}$；极点由 $\\det(sI-A)=0$ 决定。\n- **Cayley-Hamilton**：$A$ 满足自身特征多项式，可用于计算 $e^{At}$ 或 $A^k$。\n- **注意**：初始状态维数、矩阵顺序、$z$ 与 $z-1$ 的单边/双边约定要一致。",
+      "questions": [
+        {
+          "prompt": "连续常系数系统的状态转移矩阵是什么？",
+          "options": [
+            "$A+tI$ 无条件成立",
+            "$A^{-1}$",
+            "$e^{At}$"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "矩阵指数满足Φ′=AΦ、Φ(0)=I。",
+          "id": "ss-6-5-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "无输入，A=diag(−1,−2)，x(0)=(3,4)ᵀ。写x₁=a e^(−t)，x₂=b e^(−2t)，填a、b。",
+          "options": [],
+          "formula": "x(t)=e^{At}x(0)",
+          "fields": [
+            {
+              "label": "a",
+              "expected": 3,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "b",
+              "expected": 4,
+              "unit": "",
+              "id": "f2"
+            }
+          ],
+          "explanation": "对角矩阵各状态独立演化，初始幅值直接作为指数系数。",
+          "id": "ss-6-5-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "有输入时，状态解中除零输入项还需要什么？",
+          "options": [
+            "$\\int_0^t e^{A(t-\\tau)}Bu(\\tau)d\\tau$",
+            "仅加输入峰值",
+            "不需要任何输入项"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "输入在每个时刻激起状态变化，再由状态转移矩阵传播到t。",
+          "id": "ss-6-5-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-6-6",
+      "number": "6.6",
+      "title": "系统函数矩阵与稳定性",
+      "chapter": "第6章 系统状态变量分析",
+      "markdown": "- **连续系统函数矩阵**：$H(s)=C(sI-A)^{-1}B+D$。\n- **离散系统函数矩阵**：$H(z)=C(zI-A)^{-1}B+D$。\n- **元素含义**：$H_{ij}$ 表示第 j 个输入到第 i 个输出的传递函数。\n- **极点**：$\\det(sI-A)=0$ 的根，即 $A$ 的特征值；决定系统稳定性。\n- **连续稳定**：所有特征值实部小于 0。\n- **离散稳定**：所有特征值模小于 1。\n- **多变量**：$H(s)$ 为矩阵；稳定性由 $A$ 的特征值统一决定，不能只看某一个通道。\n- **零极点对消**：传递函数矩阵可能因对消丢失不可控/不可观模态；内部稳定性看 $A$ 的特征值。",
+      "questions": [
+        {
+          "prompt": "状态模型的传递函数矩阵是什么？",
+          "options": [
+            "$C(sI+A)B$",
+            "$C(sI-A)^{-1}B+D$",
+            "$A+B+C+D$"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "零状态下解出X=(sI−A)⁻¹BU，再代入输出方程。",
+          "id": "ss-6-6-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "A=−2，B=3，C=4，D=0。H(s)=K/(s+2)，求K与直流增益。",
+          "options": [],
+          "formula": "H(s)=C(sI-A)^{-1}B",
+          "fields": [
+            {
+              "label": "K",
+              "expected": 12,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "H(0)",
+              "expected": 6,
+              "unit": "",
+              "id": "f2"
+            }
+          ],
+          "explanation": "分子为CB=12，H(0)=12/2=6。",
+          "id": "ss-6-6-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "A=diag(−1,1)，而H(s)=1/(s+1)。系统内部是否渐近稳定？",
+          "options": [
+            "是，H的极点够稳定即可",
+            "只由直流增益决定",
+            "否，A仍有特征值+1"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "不可控或不可观状态可能把不稳定模态隐藏在H之外。",
+          "id": "ss-6-6-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-6-7",
+      "number": "6.7",
+      "title": "可控性与可观测性",
+      "chapter": "第6章 系统状态变量分析",
+      "markdown": "- **可控性**：能否通过输入在有限时间内把状态从任意初值调到零。\n- **可控性判据**：$\\mathrm{rank}[B,AB,\\dots,A^{n-1}B]=n$。\n- **可观测性**：能否由有限时间输出确定初始状态。\n- **可观测性判据**：$\\mathrm{rank}[C;CA;\\dots;CA^{n-1}]=n$。\n- **PBH 判据（可控）**：对所有 $s$，$\\mathrm{rank}[sI-A,B]=n$；只需检查 $A$ 的特征值。\n- **PBH 判据（可观）**：对所有 $s$，$\\mathrm{rank}[(sI-A)^T,C^T]=n$。\n- **对偶性**：$(A,B)$ 可控 ⇔ $(A^T,B^T)$ 可观。\n- **最小实现**：既可控又可观；传递函数零极点对消对应不可控或不可观模态。\n- **物理意义**：可控性看输入能否影响所有状态；可观测性看输出能否反映所有状态。",
+      "questions": [
+        {
+          "prompt": "n维单输入系统完全可控的秩判据是什么？",
+          "options": [
+            "$\\operatorname{rank}[B,AB,\\ldots,A^{n-1}B]=n$",
+            "只要求B非零",
+            "只要求A可逆"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "可控矩阵要张成整个状态空间。",
+          "id": "ss-6-7-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "A=diag(−1,−2)，B=(1,0)ᵀ。求可控矩阵秩。",
+          "options": [],
+          "formula": "\\mathcal C=[B,AB]",
+          "fields": [
+            {
+              "label": "rank(C)",
+              "expected": 1,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "两列为(1,0)ᵀ和(−1,0)ᵀ，线性相关，第二个状态不可控。",
+          "id": "ss-6-7-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "A=diag(−1,−2)，C=(1,1)。求可观矩阵 [C;CA] 的秩。",
+          "options": [],
+          "formula": "\\mathcal O=\\begin{bmatrix}1&1\\\\-1&-2\\end{bmatrix}",
+          "fields": [
+            {
+              "label": "rank(O)",
+              "expected": 2,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "行列式−1非零，秩2，两个状态均可观。",
+          "id": "ss-6-7-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-6-8",
+      "number": "6.8",
+      "title": "Matlab 状态空间工具",
+      "chapter": "第6章 系统状态变量分析",
+      "markdown": "- **建模**：`sys=ss(A,B,C,D)`；`tf(sys)`、`zpk(sys)` 转换。\n- **响应**：`lsim(sys,u,t,x0)` 求任意输入/初始状态响应；`initial(sys,x0)` 求零输入响应。\n- **状态转移**：`expm(A*t)`；离散化 `c2d(sys,Ts)`。\n- **可控/可观**：`ctrb(A,B)`、`obsv(A,C)`；`rank` 判断。\n- **极点配置**：`place(A,B,p)`；观测器设计 `place(A',C',p)'`。\n- **注意**：采样时间、初始状态维数、输出矩阵维数；数值病态时检查 rank 的容差。\n",
+      "questions": [
+        {
+          "prompt": "Matlab中构造状态空间系统通常使用什么命令？",
+          "options": [
+            "fft(A,B,C,D)",
+            "conv(A,B,C,D)",
+            "ss(A,B,C,D)"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "ss创建状态空间对象，fft和conv分别是频谱和卷积工具。",
+          "id": "ss-6-8-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "检查可控性时，应该怎样使用 ctrb？",
+          "options": [
+            "只打印B的最大值",
+            "对 ctrb(A,B) 求秩并与状态维数比较",
+            "只看矩阵是否有非零元素"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "完全可控要求可控矩阵满行秩。",
+          "id": "ss-6-8-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "数值计算 rank 得到临界结论时，合理做法是什么？",
+          "options": [
+            "检查尺度、容差和条件数",
+            "把小数一律当成零而不说明",
+            "只增加显示位数就认定正确"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "浮点秩对尺度和容差敏感，病态模型需要额外检查。",
+          "id": "ss-6-8-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-7-1",
+      "number": "7.1",
+      "title": "平稳信号与非平稳信号",
+      "chapter": "第7章 小波与时频分析",
+      "markdown": "- **平稳信号**：统计特性（均值、方差、相关函数）不随时间平移变化；分严平稳/广义平稳。\n- **非平稳信号**：统计特性或频率成分随时间变化，如语音、雷达回波、故障冲击、分段变频信号。\n- **傅里叶变换局限**：全局积分只给出“有哪些频率”，不能给出“何时出现”。\n- **例子**：四个频率成分全程存在的信号 vs 四个频率成分分段出现的信号，频谱主峰可能相似，但时域结构完全不同。\n- **需求**：需要同时获得时间分辨率和频率分辨率的时频分析工具。",
+      "questions": [
+        {
+          "prompt": "宽平稳随机过程的均值和自相关应满足什么？",
+          "options": [
+            "信号必须完全无噪声",
+            "均值常数，自相关仅依赖时间差",
+            "每个样本必须恒定"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "平稳是统计性质，不能等同于每条实现不变化。",
+          "id": "ss-7-1-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "啁啾信号的瞬时频率随时间变化，分析时通常如何处理？",
+          "options": [
+            "作为非平稳信号考察局部时频结构",
+            "只用一个频率概括所有时刻",
+            "认为任何傅里叶工具都失效"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "全局频谱可计算，但时频工具更利于定位频率变化。",
+          "id": "ss-7-1-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "两段信号全局幅度谱相似，是否说明频率出现顺序相同？",
+          "options": [
+            "一定相同",
+            "只有均值不同才可能顺序不同",
+            "不能，全局幅度谱不保留全部时间顺序"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "全局幅度谱不能独立提供局部时间定位。",
+          "id": "ss-7-1-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-7-2",
+      "number": "7.2",
+      "title": "短时傅里叶变换（STFT）",
+      "chapter": "第7章 小波与时频分析",
+      "markdown": "- **定义**：$X(t,\\omega)=\\int f(\\tau)w(\\tau-t)e^{-j\\omega\\tau}d\\tau$。\n- **思想**：用窗函数 $w$ 截取信号局部，再对每段做傅里叶变换。\n- **谱图**：$|X(t,\\omega)|^2$ 给出时间—频率能量分布。\n- **窗长折中**：长窗频率分辨率高、时间分辨率低；短窗相反。\n- **不确定性原理**：时间分辨率和频率分辨率不能同时任意小。\n- **局限**：窗长固定，不能同时兼顾高频和低频；对突变信号不够灵活。\n- **应用**：语音分析、音乐分析、故障诊断、雷达信号分析。",
+      "questions": [
+        {
+          "prompt": "STFT如何获得局部频谱？",
+          "options": [
+            "滑动加窗后做傅里叶变换",
+            "对全信号只求一个平均值",
+            "先丢弃所有相位与时间坐标"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "窗函数限定局部观察区间，滑动后形成时频图。",
+          "id": "ss-7-2-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "STFT采用更短的窗，通常得到什么折中？",
+          "options": [
+            "时间频率分辨率同时无限提高",
+            "频率定位更好，时间定位更差",
+            "时间定位更好，频率分辨能力更弱"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "时间窗越短，频率主瓣一般越宽。",
+          "id": "ss-7-2-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "fs=1000 Hz，窗长100个样本，求窗的时间长度。",
+          "options": [],
+          "formula": "T_w=N_w/f_s",
+          "fields": [
+            {
+              "label": "窗长",
+              "expected": 0.1,
+              "unit": "s",
+              "id": "f1"
+            }
+          ],
+          "explanation": "100/1000=0.1s；这不等于窗移动步长。",
+          "id": "ss-7-2-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-7-3",
+      "number": "7.3",
+      "title": "连续小波变换（CWT）",
+      "chapter": "第7章 小波与时频分析",
+      "markdown": "- **母小波**：$\\psi(t)$，满足 $\\int\\psi(t)dt=0$（零均值）。\n- **小波基**：$\\psi_{a,b}(t)=\\frac{1}{\\sqrt{a}}\\psi\\left(\\frac{t-b}{a}\\right)$；$a>0$ 为尺度，$b$ 为平移。\n- **尺度含义**：大尺度看低频/全局；小尺度看高频/细节。\n- **容许条件**：$C_\\psi=\\int_{-\\infty}^{\\infty}\\frac{|\\Psi(\\omega)|^2}{|\\omega|}d\\omega<\\infty$；保证可逆。\n- **CWT**：$W(a,b)=\\int f(t)\\psi_{a,b}^*(t)dt$。\n- **重构**：$f(t)=\\frac{1}{C_\\psi}\\int_0^\\infty\\int_{-\\infty}^{\\infty}W(a,b)\\psi_{a,b}(t)\\frac{da\\,db}{a^2}$；复小波按约定可能多一个因子 2。\n- **优势**：多分辨率、时频局部化可调，适合非平稳/突变信号。\n- **与 STFT 区别**：STFT 窗长固定；CWT 尺度可变，高频用短窗、低频用长窗。",
+      "questions": [
+        {
+          "prompt": "CWT中尺度增大通常对应什么？",
+          "options": [
+            "较高频率、较短时间支撑",
+            "任何频率都不变",
+            "较低频率、较长时间支撑"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "母小波拉伸后变化更慢，伪频率通常与尺度成反比。",
+          "id": "ss-7-3-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "某母小波伪频率关系 f=fc/(aΔt)，fc=1，Δt=0.01s，尺度a=5。求f。",
+          "options": [],
+          "formula": "f=\\frac{f_c}{a\\Delta t}",
+          "fields": [
+            {
+              "label": "伪频率",
+              "expected": 20,
+              "unit": "Hz",
+              "id": "f1"
+            }
+          ],
+          "explanation": "1/(5×0.01)=20Hz。具体fc由母小波约定决定。",
+          "id": "ss-7-3-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "小波可容许条件在常见情况下要求母小波具有什么特征？",
+          "options": [
+            "零均值，直流分量为零",
+            "均值必须等于1",
+            "必须是常数函数"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "零均值使小波对直流不响应，是常见可容许小波的重要条件。",
+          "id": "ss-7-3-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-7-4",
+      "number": "7.4",
+      "title": "离散小波变换（DWT）",
+      "chapter": "第7章 小波与时频分析",
+      "markdown": "- **离散化**：取 $a=2^j$、$b=k2^j$，得到二进小波。\n- **滤波器组**：低通分解得近似系数，高通分解得细节系数；可多级分解。\n- **Mallat 算法**：快速小波变换；与多分辨率分析对应。\n- **分解与重构**：正交/双正交小波可完美重构；双正交小波可放宽正交性以获得线性相位。\n- **阈值处理**：对小波系数阈值化，实现去噪/压缩。\n- **边界处理**：对称延拓、零延拓、周期延拓会影响边界系数。\n- **计算量**：滤波器组实现的快速小波变换为 $O(N)$；多级分解因逐级降采样，总量仍与 $N$ 同阶。",
+      "questions": [
+        {
+          "prompt": "DWT常用滤波器组中，一层分解包含什么？",
+          "options": [
+            "只把信号重复一遍",
+            "低通、高通及下采样",
+            "只做逐点平方"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "近似分量和细节分量经二抽取得到多分辨表示。",
+          "id": "ss-7-4-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "忽略边界延拓，对256点信号作一层标准二抽取DWT，每个子带多少点？",
+          "options": [],
+          "formula": "N_{\\mathrm{子带}}=N/2",
+          "fields": [
+            {
+              "label": "每个子带点数",
+              "expected": 128,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "两支各下采样2倍，每支128点；实际边界处理可能影响输出长度。",
+          "id": "ss-7-4-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "标准多层小波分解通常继续分解哪一支？",
+          "options": [
+            "所有分支都必须同时继续",
+            "只分解已经丢弃的数据",
+            "低频近似分支"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "普通DWT递归分解低频；小波包才进一步分解高低频各分支。",
+          "id": "ss-7-4-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-7-5",
+      "number": "7.5",
+      "title": "小波变换工程应用",
+      "chapter": "第7章 小波与时频分析",
+      "markdown": "- **去噪**：小波分解 → 阈值处理细节系数 → 重构；保留边缘/突变。\n- **压缩**：小波系数稀疏，舍弃小系数；JPEG2000 等图像压缩。\n- **故障诊断**：检测冲击/奇异性，用于机械、电力设备监测。\n- **生物医学**：ECG/EEG 去噪、特征提取、异常检测。\n- **图像处理**：图像融合、增强、边缘检测、超分辨率。\n- **通信/雷达**：突发信号检测、时频分析、目标特征提取。\n",
+      "questions": [
+        {
+          "prompt": "小波阈值去噪的常见依据是什么？",
+          "options": [
+            "有效结构与噪声在小波系数上的分布不同",
+            "噪声永远只在直流",
+            "删除全部系数可保留完整信号"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "稀疏表示下，较小系数常含较多噪声，但阈值需结合任务选择。",
+          "id": "ss-7-5-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "阈值过大最可能造成什么？",
+          "options": [
+            "信号必定完全无失真",
+            "采样定理自动失效",
+            "真实细节也被抹掉"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "降噪强度与结构保真之间存在折中。",
+          "id": "ss-7-5-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "比较小波去噪前后效果，除了噪声能量还应检查什么？",
+          "options": [
+            "只看配色是否鲜艳",
+            "瞬态、边缘和任务相关特征是否保留",
+            "只看文件大小"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "不能把平滑程度直接等同信号恢复质量。",
+          "id": "ss-7-5-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-a-1",
+      "number": "A.1",
+      "title": "傅里叶变换常用对",
+      "chapter": "附录A 公式与变换对总表",
+      "markdown": "| 时域 | 频域 |\n|---|---|\n| $\\delta(t)$ | $1$ |\n| $\\delta(t-t_0)$ | $e^{-j\\omega t_0}$ |\n| $1$ | $2\\pi\\delta(\\omega)$ |\n| $e^{j\\omega_0t}$ | $2\\pi\\delta(\\omega-\\omega_0)$ |\n| $\\cos\\omega_0t$ | $\\pi[\\delta(\\omega-\\omega_0)+\\delta(\\omega+\\omega_0)]$ |\n| $\\sin\\omega_0t$ | $\\frac{\\pi}{j}[\\delta(\\omega-\\omega_0)-\\delta(\\omega+\\omega_0)]$ |\n| $u(t)$ | $\\pi\\delta(\\omega)+\\frac{1}{j\\omega}$ |\n| $\\mathrm{sgn}(t)$ | $\\frac{2}{j\\omega}$ |\n| $e^{-at}u(t)$ | $\\frac{1}{a+j\\omega}$ |\n| $t^ne^{-at}u(t)$ | $\\frac{n!}{(a+j\\omega)^{n+1}}$ |\n| $e^{-a\\lvert t\\rvert}$ | $\\frac{2a}{a^2+\\omega^2}$ |\n| $G_\\tau(t)$ | $\\tau\\mathrm{Sa}\\left(\\frac{\\omega\\tau}{2}\\right)$ |\n| $\\mathrm{Sa}(\\omega_ct)$ | $\\frac{\\pi}{\\omega_c}G_{2\\omega_c}(\\omega)$ |\n| $\\delta'(t)$ | $j\\omega$ |",
+      "questions": [
+        {
+          "prompt": "δ(t)的傅里叶变换是什么？",
+          "options": [
+            "0",
+            "$\\delta(\\omega)$",
+            "1"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "由取样性质，∫δ(t)e^(−jωt)dt=1。",
+          "id": "ss-a-1-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "单位幅度、宽度4的中心矩形，X(jω)=A Sa(2ω)，求A。",
+          "options": [],
+          "formula": "X(j\\omega)=\\tau\\operatorname{Sa}(\\omega\\tau/2)",
+          "fields": [
+            {
+              "label": "A",
+              "expected": 4,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "矩形面积为4，对应零频值4，因此系数为4。",
+          "id": "ss-a-1-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "cos(ω₀t)的傅里叶变换中每根冲激的系数是什么？",
+          "options": [
+            "$\\pi$",
+            "$2\\pi$",
+            "$1/2$"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "余弦拆成两个1/2复指数，复指数的变换系数2π，故每根为π。",
+          "id": "ss-a-1-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-a-2",
+      "number": "A.2",
+      "title": "拉普拉斯变换常用对",
+      "chapter": "附录A 公式与变换对总表",
+      "markdown": "| 时域（因果） | 象函数 | ROC |\n|---|---|---|\n| $\\delta(t)$ | $1$ | 全平面 |\n| $u(t)$ | $1/s$ | $\\mathrm{Re}(s)>0$ |\n| $t^nu(t)$ | $n!/s^{n+1}$ | $\\mathrm{Re}(s)>0$ |\n| $e^{-at}u(t)$ | $1/(s+a)$ | $\\mathrm{Re}(s)>-a$ |\n| $te^{-at}u(t)$ | $1/(s+a)^2$ | $\\mathrm{Re}(s)>-a$ |\n| $\\cos\\omega_0t\\,u(t)$ | $s/(s^2+\\omega_0^2)$ | $\\mathrm{Re}(s)>0$ |\n| $\\sin\\omega_0t\\,u(t)$ | $\\omega_0/(s^2+\\omega_0^2)$ | $\\mathrm{Re}(s)>0$ |\n| $e^{-at}\\cos\\omega_0t\\,u(t)$ | $(s+a)/((s+a)^2+\\omega_0^2)$ | $\\mathrm{Re}(s)>-a$ |\n| $e^{-at}\\sin\\omega_0t\\,u(t)$ | $\\omega_0/((s+a)^2+\\omega_0^2)$ | $\\mathrm{Re}(s)>-a$ |",
+      "questions": [
+        {
+          "prompt": "因果 e^(−at) 的拉氏变换是什么？",
+          "options": [
+            "$s+a$",
+            "$1/(s+a)$，ROC为Re(s)>−a",
+            "$1/(s-a)$，不需ROC"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "直接积分需Re(s+a)>0。",
+          "id": "ss-a-2-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "x=t²u(t)，X(s)=A/s³，求A。",
+          "options": [],
+          "formula": "\\mathcal L[t^nu(t)]=\\frac{n!}{s^{n+1}}",
+          "fields": [
+            {
+              "label": "A",
+              "expected": 2,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "n=2，2!=2。",
+          "id": "ss-a-2-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "因果 sin(3t) 的拉氏变换是什么？",
+          "options": [
+            "$s/(s^2+9)$",
+            "$1/(s+3)$",
+            "$3/(s^2+9)$"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "分子s对应余弦，分子角频率对应正弦；ROC为Re(s)>0。",
+          "id": "ss-a-2-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-a-3",
+      "number": "A.3",
+      "title": "傅里叶变换与拉普拉斯变换性质对照",
+      "chapter": "附录A 公式与变换对总表",
+      "markdown": "| 性质 | 傅里叶变换 | 拉普拉斯变换 |\n|---|---|---|\n| 线性 | $af_1+bf_2\\leftrightarrow aF_1+bF_2$ | 同左 |\n| 尺度 | $\\frac{1}{\\lvert a\\rvert}F(j\\omega/a)$，$a\\ne0$ | 双边为 $\\frac{1}{\\lvert a\\rvert}F(s/a)$ 并相应变换 ROC；单边常用式要求 $a>0$ |\n| 时移 | $e^{-j\\omega t_0}F(j\\omega)$ | $e^{-st_0}F(s)$（单边需 $u(t-t_0)$） |\n| 频移/复频移 | $F(j(\\omega-\\omega_0))$ | $F(s-s_0)$ |\n| 时域微分 | $(j\\omega)^nF(j\\omega)$ | $s^nF(s)$ 减初始项 |\n| 时域积分 | $F/(j\\omega)+\\pi F(0)\\delta(\\omega)$ | $F(s)/s$ |\n| 时域卷积 | $F_1F_2$ | $F_1F_2$ |\n| 频域微分 | $(-jt)^nf\\leftrightarrow d^nF/d\\omega^n$ | $t^nf\\leftrightarrow(-1)^nd^nF/ds^n$ |\n| 初值/终值 | 一般不直接使用 | 有初值、终值定理 |\n| 帕斯瓦尔 | $\\int\\lvert f\\rvert^2=\\frac{1}{2\\pi}\\int\\lvert F\\rvert^2$ | 无简单常用形式 |",
+      "questions": [
+        {
+          "prompt": "与双边傅里叶微分性质相比，单边拉氏微分性质特别要保留什么？",
+          "options": [
+            "初始值项",
+            "额外的幅度平方",
+            "采样点数N"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "积分下限0⁻导致边界初始项。",
+          "id": "ss-a-3-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "f(0⁻)=2，F(1)=5，求单边拉氏变换 L[f′] 在s=1的值。",
+          "options": [],
+          "formula": "\\mathcal L[f']=sF(s)-f(0^-)",
+          "fields": [
+            {
+              "label": "变换值",
+              "expected": 3,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "1×5−2=3；直接使用sF会错为5。",
+          "id": "ss-a-3-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "单边拉氏尺度公式可否直接无条件用于负尺度a？",
+          "options": [
+            "负尺度只改变单位",
+            "不可，负尺度改变积分区间与左右边性",
+            "可以，所有情形完全相同"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "常用单边公式以a>0为条件，双边公式另需变换ROC。",
+          "id": "ss-a-3-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-a-4",
+      "number": "A.4",
+      "title": "卷积公式速查",
+      "chapter": "附录A 公式与变换对总表",
+      "markdown": "- $f(t)*g(t)=\\int_{-\\infty}^{\\infty}f(\\tau)g(t-\\tau)d\\tau$。\n- $f*\\delta=f$；$f*\\delta(t-t_0)=f(t-t_0)$。\n- $f*\\delta^{(n)}=f^{(n)}$；$f*u=\\int_{-\\infty}^{t}f(\\tau)d\\tau$。\n- $(f*g)'=f'*g=f*g'$；$\\int(f*g)=(\\int f)*g=f*(\\int g)$。\n- $f(t-t_1)*g(t-t_2)=y(t-t_1-t_2)$，其中 $y=f*g$。\n- 等宽矩形卷积 → 三角形；不等宽矩形卷积 → 梯形。\n- $e^{-at}u*e^{-bt}u=\\frac{e^{-at}-e^{-bt}}{b-a}u(t)\\ (a\\ne b)$。\n- $u*u=tu(t)$；$tu*u=\\frac{t^2}{2}u(t)$。\n- 时限卷积：支撑长度相加。\n- 相关与卷积：$R_{xy}(\\tau)=x(\\tau)*y(-\\tau)$（实信号，按本文定义）。",
+      "questions": [
+        {
+          "prompt": "x*δ(t−a) 等于什么？",
+          "options": [
+            "$x(t+a)$",
+            "$a x(t)$",
+            "$x(t-a)$"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "卷积中的延迟冲激使输出延迟a。",
+          "id": "ss-a-4-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "u(t)*u(t)=A t u(t)，求A。",
+          "options": [],
+          "formula": "\\int_0^t1\\,d\\tau=t",
+          "fields": [
+            {
+              "label": "A",
+              "expected": 1,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "两因果阶跃的重叠积分区间为[0,t]。",
+          "id": "ss-a-4-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "tu(t)*u(t)=A t²u(t)，求A。",
+          "options": [],
+          "formula": "\\int_0^t\\tau d\\tau=\\frac{t^2}{2}",
+          "fields": [
+            {
+              "label": "A",
+              "expected": 0.5,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "对斜升积分得到二次函数，系数为1/2。",
+          "id": "ss-a-4-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-a-5",
+      "number": "A.5",
+      "title": "稳定性判据速查",
+      "chapter": "附录A 公式与变换对总表",
+      "markdown": "| 对象 | 判据 |\n|---|---|\n| 连续 LTI（时域） | $\\int_{-\\infty}^{\\infty}\\lvert h(t)\\rvert dt<\\infty$ |\n| 连续 LTI（s域） | ROC 包含虚轴；因果系统全部极点位于左半平面 |\n| 连续状态空间 | $A$ 的全部特征值实部小于 0 |\n| 离散 LTI（时域） | $\\sum_{k=-\\infty}^{\\infty}\\lvert h[k]\\rvert<\\infty$ |\n| 离散 LTI（Z域） | ROC 包含单位圆；因果系统全部极点位于单位圆内 |\n| 离散状态空间 | $A$ 的全部特征值模小于 1 |\n| 自然运动临界稳定（非 BIBO 判据） | 连续状态特征值在闭左半平面，虚轴模态半单；离散状态特征值在闭单位圆内，圆周模态半单。一般不代表 BIBO 稳定 |\n| 不稳定 | 右半平面/圆外有极点，或虚轴/单位圆上有重极点 |",
+      "questions": [
+        {
+          "prompt": "状态矩阵所有特征值实部严格小于0，说明什么？",
+          "options": [
+            "离散系统必稳定",
+            "连续有限维LTI系统内部渐近稳定",
+            "仅说明输入频谱为零"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "连续系统用左半平面，离散系统用单位圆内。",
+          "id": "ss-a-5-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "理想直接通路 y=2x 的 h=2δ，是否BIBO稳定？",
+          "options": [
+            "稳定，|y|≤2|x|",
+            "不稳定，因为δ不是普通函数",
+            "只有x=0时稳定"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "普通函数的绝对可积判据应推广到有限测度，冲激直接通路可稳定。",
+          "id": "ss-a-5-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "有界零输入自然响应与BIBO稳定能否视为同一概念？",
+          "options": [
+            "完全等价且无条件",
+            "只要叫临界稳定就一定BIBO",
+            "不能，需要区分内部稳定与输入输出稳定"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "有界自然振荡可在共振有界输入下产生无界输出。",
+          "id": "ss-a-5-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-a-6",
+      "number": "A.6",
+      "title": "采样与DFT参数速查",
+      "chapter": "附录A 公式与变换对总表",
+      "markdown": "- 采样：$f_s=1/T_s$，$\\omega_s=2\\pi f_s$。\n- 采样通常取 $f_s>2f_m$、$T_s<1/(2f_m)$；等号边界需额外条件，实际需留抗混叠余量。\n- 采样频谱：$F_s(j\\omega)=\\frac{1}{T_s}\\sum_nF(j(\\omega-n\\omega_s))$。\n- 重建：$f(t)=\\sum_nf(nT_s)\\mathrm{Sa}\\left(\\frac{\\pi}{T_s}(t-nT_s)\\right)$。\n- 组合信号带宽：对于基带带限信号，卷积的频谱支撑不超出两频谱支撑交集，相乘不超出支撑之和，相加不超出支撑并集；常用上界分别为较小带宽、带宽之和、较大带宽，但不保证等号。\n- DFT：$X[k]=\\sum_{n=0}^{N-1}x[n]W_N^{kn}$，$W_N=e^{-j2\\pi/N}$。\n- 频率分辨率：$\\Delta f=f_s/N=1/(NT_s)$。\n- 频点：$f_k=kf_s/N$。\n- 线性卷积长度：$N\\ge N_1+N_2-1$。\n- 基2 FFT要求 $N=2^M$，复杂度 $O(N\\log_2N)$；其他FFT算法可处理其他长度。",
+      "questions": [
+        {
+          "prompt": "采样率fs与采样周期Ts的关系是什么？",
+          "options": [
+            "$f_s=1/T_s$",
+            "$f_s=T_s$",
+            "$f_s=2\\pi T_s$"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "Hz是每秒采样次数，周期是每次采样的秒数。",
+          "id": "ss-a-6-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "fs=800 Hz，真实采样400点，求观察时长和原始DFT频点间隔。",
+          "options": [],
+          "formula": "T=N/f_s,\\quad\\Delta f=1/T",
+          "fields": [
+            {
+              "label": "T",
+              "expected": 0.5,
+              "unit": "s",
+              "id": "f1"
+            },
+            {
+              "label": "Δf",
+              "expected": 2,
+              "unit": "Hz",
+              "id": "f2"
+            }
+          ],
+          "explanation": "400/800=0.5s，频点间隔1/0.5=2Hz。",
+          "id": "ss-a-6-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "两带限信号最高频率分别B₁、B₂，其乘积带宽怎样描述更严谨？",
+          "options": [
+            "无条件等于较小值",
+            "不超过B₁+B₂，实际可能因支撑或抵消更小",
+            "无条件严格等于B₁+B₂"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "时域相乘对应频域卷积，支撑给出上界而非普遍等式。",
+          "id": "ss-a-6-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-a-7",
+      "number": "A.7",
+      "title": "系统关系速查",
+      "chapter": "附录A 公式与变换对总表",
+      "markdown": "- 时域：$y_{zs}=f*h$。\n- 频域：$Y(j\\omega)=H(j\\omega)F(j\\omega)$。\n- s域：$Y(s)=H(s)F(s)$（零状态）。\n- $H(j\\omega)=H(s)|_{s=j\\omega}$（ROC 含虚轴）。\n- $H(s)=\\mathcal{L}[h(t)]$；$H(j\\omega)=\\mathcal{F}[h(t)]$。\n- $H(s)=C(sI-A)^{-1}B+D$。\n- $H(p)=N(p)/D(p)$（零状态传输算子）。\n- 无失真：$H(j\\omega)=Ke^{-j\\omega t_d}$。\n- 理想低通：$h(t)=\\frac{\\omega_c}{\\pi}\\mathrm{Sa}(\\omega_ct)$。\n",
+      "questions": [
+        {
+          "prompt": "H(jω)=H(s)|s=jω 的普通频响解释要求什么？",
+          "options": [
+            "任何H(s)代入都自动成立",
+            "系统必须无记忆",
+            "相关ROC包含虚轴"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "代数代入不保证傅里叶积分收敛。",
+          "id": "ss-a-7-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "两个稳定系统串联，直流增益分别2和3，求总直流增益。",
+          "options": [],
+          "formula": "H_{\\mathrm{总}}=H_1H_2",
+          "fields": [
+            {
+              "label": "总直流增益",
+              "expected": 6,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "串联频响相乘，2×3=6。",
+          "id": "ss-a-7-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "非零初始状态时Y(s)=H(s)X(s)要补上什么？",
+          "options": [
+            "$Y_{zi}(s)$",
+            "输入的平方",
+            "随机一个常数即可"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "完整输出包含初始状态产生的零输入项。",
+          "id": "ss-a-7-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-b-1",
+      "number": "B.1",
+      "title": "判断信号性质",
+      "chapter": "附录B 解题方法与易错点",
+      "markdown": "- **周期性**：连续信号看 $T_1/T_2$ 是否为有理数；离散正弦看 $2\\pi/\\beta$ 是否为有理数。\n- **能量/功率**：先算 $E$ 和 $P$；有限能量为能量信号，有限非零功率为功率信号。\n- **因果性**：看 $t<0$ 是否为 0；注意“因果信号”和“因果系统”不是一回事。\n- **奇偶性**：代入 $f(-t)$ 或 $f[-k]$；可用于简化傅里叶系数。",
+      "questions": [
+        {
+          "prompt": "判断能量信号时应检查哪个条件？",
+          "options": [
+            "只要峰值非零即可",
+            "$0<E<\\infty$",
+            "只要信号持续时间有限即可，无需检查奇点"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "有限时长信号若有非平方可积奇点也可能不是能量信号。",
+          "id": "ss-b-1-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "x=cos(2t)+cos(3t)，求最小正周期T，答案按 T=kπ 填k。",
+          "options": [],
+          "formula": "T=k\\pi",
+          "fields": [
+            {
+              "label": "k",
+              "expected": 2,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "两个分量周期为π与2π/3，共同最小正周期为2π。",
+          "id": "ss-b-1-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "cos(t)+cos(√2t) 是否周期？",
+          "options": [
+            "周期为2π",
+            "周期为√2π",
+            "非周期，两频率比无理"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "连续正弦分量频率比无理时不存在共同正周期。",
+          "id": "ss-b-1-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-b-2",
+      "number": "B.2",
+      "title": "波形变换",
+      "chapter": "附录B 解题方法与易错点",
+      "markdown": "- 先化成标准形式 $f(a(t-t_0))$ 或 $f(at+b)$，再确定顺序。\n- 常用顺序：先平移后展缩，或先展缩后平移；平移量要随顺序调整。\n- 反转、平移、尺度同时出现时，建议先用关键点（起点、终点、峰值）跟踪位置。\n- 离散信号不要随意做非整数尺度变换；抽取/插值要说明丢点或补零规则。",
+      "questions": [
+        {
+          "prompt": "复合波形变换中，降低出错率的可靠方法是什么？",
+          "options": [
+            "跟踪原信号关键点的位置",
+            "忽略尺度的符号",
+            "所有平移量都直接照抄常数项"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "解at+b=t原关键点，可避免变换顺序混淆。",
+          "id": "ss-b-2-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "原信号峰值在t=4。变换x(−2t+6)后，该峰值位于何处？",
+          "options": [],
+          "formula": "-2t+6=4",
+          "fields": [
+            {
+              "label": "峰值时刻",
+              "expected": 1,
+              "unit": "s",
+              "id": "f1"
+            }
+          ],
+          "explanation": "直接解关键点方程：−2t=−2，t=1。",
+          "id": "ss-b-2-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "原信号支撑为[−1,1]，x(2t+4)的支撑端点是什么？",
+          "options": [],
+          "formula": "-1\\le2t+4\\le1",
+          "fields": [
+            {
+              "label": "左端点",
+              "expected": -2.5,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "右端点",
+              "expected": -1.5,
+              "unit": "",
+              "id": "f2"
+            }
+          ],
+          "explanation": "解得−5≤2t≤−3，所以端点为−2.5和−1.5。",
+          "id": "ss-b-2-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-b-3",
+      "number": "B.3",
+      "title": "求系统响应",
+      "chapter": "附录B 解题方法与易错点",
+      "markdown": "- **有时域微分方程**：经典法（齐次+特解）或零输入/零状态分解。\n- **有初始状态**：零输入部分使用接入前状态 $0^-$；经典全响应法需要先匹配冲激求 $0^+$ 初值，不能把全响应右初值直接用于零输入部分。\n- **有冲激响应**：直接 $y_{zs}=f*h$。\n- **周期输入**：傅里叶级数法，逐谐波乘 $H(jn\\Omega)$。\n- **非周期输入**：傅里叶变换法，$Y=HF$ 后反变换。\n- **含初始条件/不稳定信号**：优先 s 域法。\n- **多输入多输出/内部状态**：状态空间法。",
+      "questions": [
+        {
+          "prompt": "题目同时给出输入和非零初始状态，首先应区分什么？",
+          "options": [
+            "只考虑输入即可",
+            "把所有初始条件删掉",
+            "零输入与零状态贡献"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "两类贡献的来源和计算方法不同。",
+          "id": "ss-b-3-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "y′+y=0，y(0⁻)=4，求y(ln2)。",
+          "options": [],
+          "formula": "y(t)=4e^{-t}",
+          "fields": [
+            {
+              "label": "y(ln2)",
+              "expected": 2,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "齐次响应为4e^(−t)，在ln2处为4/2=2。",
+          "id": "ss-b-3-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "经典法出现冲激接入时，确定积分常数前应做什么？",
+          "options": [
+            "先匹配冲激求0⁺初值",
+            "无条件令0⁺=0⁻",
+            "删除方程中的冲激项"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "接入冲激可能引起状态或导数跳变，需先确定右初值。",
+          "id": "ss-b-3-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-b-4",
+      "number": "B.4",
+      "title": "卷积计算",
+      "chapter": "附录B 解题方法与易错点",
+      "markdown": "- 简单矩形/三角波形：图解法，注意翻转、平移、重叠区间。\n- 含冲激/阶跃：用奇异函数性质，避免硬积。\n- 指数/多项式：用定义或拉氏变换。\n- 高阶/复杂信号：变换域相乘再反变换。\n- 数值计算：离散 `conv`，连续近似乘 $dt$，注意时间轴对齐。\n- 易错：卷积与相关混淆；时移量符号；积分上下限；微积分性质边界项。",
+      "questions": [
+        {
+          "prompt": "图解卷积选积分上下限的依据是什么？",
+          "options": [
+            "只看输入峰值位置",
+            "翻转平移后与输入的重叠区间",
+            "始终取0到1"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "随t移动的交集决定实际积分范围。",
+          "id": "ss-b-4-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "x、h均为[0,1]上幅度1矩形，求卷积y(0.5)、y(1.5)。",
+          "options": [],
+          "formula": "y(t)=\\begin{cases}t&0\\le t<1\\\\2-t&1\\le t\\le2\\end{cases}",
+          "fields": [
+            {
+              "label": "y(0.5)",
+              "expected": 0.5,
+              "unit": "",
+              "id": "f1"
+            },
+            {
+              "label": "y(1.5)",
+              "expected": 0.5,
+              "unit": "",
+              "id": "f2"
+            }
+          ],
+          "explanation": "两处重叠长度都为0.5，卷积关于t=1对称。",
+          "id": "ss-b-4-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "连续卷积用采样和近似，原conv结果某点为120，dt=0.01s。积分近似值是多少？",
+          "options": [],
+          "formula": "y\\approx\\operatorname{conv}(x,h)\\,\\Delta t",
+          "fields": [
+            {
+              "label": "积分近似值",
+              "expected": 1.2,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "120×0.01=1.2，时间步长是积分权重。",
+          "id": "ss-b-4-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-b-5",
+      "number": "B.5",
+      "title": "傅里叶分析",
+      "chapter": "附录B 解题方法与易错点",
+      "markdown": "- 周期信号：先展开傅里叶级数，再用 $H(jn\\Omega)$ 求稳态响应。\n- 非周期信号：用傅里叶变换，注意常用对和性质。\n- 复杂波形：用线性、时移、尺度、对称性拆分。\n- 含冲激/阶跃：注意广义函数项，特别是 $\\pi\\delta(\\omega)$。\n- 求频谱：先判断奇偶/实虚，减少计算。\n- 求能量/功率：用帕斯瓦尔，注意单边/双边谱因子。",
+      "questions": [
+        {
+          "prompt": "实偶信号的傅里叶变换有什么对称性？",
+          "options": [
+            "实偶",
+            "纯虚奇",
+            "必定恒为零"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "正弦积分因奇对称抵消，余弦项留下实偶频谱。",
+          "id": "ss-b-5-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "x(t)=3cos(2t)，求平均功率。",
+          "options": [],
+          "formula": "P=A^2/2",
+          "fields": [
+            {
+              "label": "P",
+              "expected": 4.5,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "余弦均方为1/2，因此P=9/2。",
+          "id": "ss-b-5-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "使用傅里叶性质化简后，检查零频值的好处是什么？",
+          "options": [
+            "可自动证明系统内部稳定",
+            "可与时间面积核对幅度尺度",
+            "可证明任意信号绝对可积"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "对可积信号，X(j0)=∫x(t)dt，是实用的系数检查。",
+          "id": "ss-b-5-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-b-6",
+      "number": "B.6",
+      "title": "拉普拉斯分析",
+      "chapter": "附录B 解题方法与易错点",
+      "markdown": "- 先确定单边/双边和 ROC；没有 ROC 的 $F(s)$ 不完整。\n- 假分式先长除；真分式部分分式展开。\n- 单极点、重极点、共轭复极点分别处理。\n- 反变换后根据 ROC 判断因果/反因果。\n- 初值/终值定理先检查条件；不满足条件不要硬套。\n- 电路题先画 s 域模型，初始条件用等效源表示。",
+      "questions": [
+        {
+          "prompt": "部分分式展开完成后，适合做什么检查？",
+          "options": [
+            "删除ROC",
+            "把所有留数改成正数",
+            "代入特殊s值或使用适用的初终值定理"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "独立代入可发现展开系数的符号错误。",
+          "id": "ss-b-6-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "因果F(s)=(s+3)/[(s+1)(s+2)]，求f(0⁺)。",
+          "options": [],
+          "formula": "f(0^+)=\\lim_{s\\to\\infty}sF(s)",
+          "fields": [
+            {
+              "label": "初值",
+              "expected": 1,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "该严格真分式不含冲激，极限由最高次项系数给出1。",
+          "id": "ss-b-6-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "拉氏反变换中只给1/(s+1)却不给左右边性或ROC，结论是什么？",
+          "options": [
+            "双边问题的原信号不能唯一确定",
+            "必为e^(−t)u(t)",
+            "必为零"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "若已约定单边因果则可唯一；双边变换必须补充ROC。",
+          "id": "ss-b-6-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-b-7",
+      "number": "B.7",
+      "title": "稳定性分析",
+      "chapter": "附录B 解题方法与易错点",
+      "markdown": "- 连续系统：极点实部 < 0；离散系统：极点模 < 1。\n- 因果系统才可直接用“全部极点左半平面/单位圆内”判据；非因果系统要看 ROC。\n- 高阶多项式用劳斯表；注意零行和全零行特殊处理。\n- 状态空间看 $A$ 的特征值；传递函数对消可能隐藏不稳定模态。\n- 临界稳定不是 BIBO 稳定；虚轴/单位圆上重极点不稳定。",
+      "questions": [
+        {
+          "prompt": "分析内部稳定性，应优先查看什么？",
+          "options": [
+            "只看输出峰值的一次测量",
+            "完整状态矩阵或未约去的内部结构",
+            "只看约分后分子零点"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "隐藏模态可能不出现在输入输出传递函数中。",
+          "id": "ss-b-7-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "多项式系数全正是否足以保证所有根在左半平面？",
+          "options": [
+            "不够，只是常见必要条件",
+            "足够，完全无需其他判据",
+            "说明所有根都在右半平面"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "三阶及以上仍需Routh等判据；全正系数不是普遍充分条件。",
+          "id": "ss-b-7-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "三阶多项式s³+2s²+3s+4的Routh表首列为1、2、a、4，求a。",
+          "options": [],
+          "formula": "a=\\frac{2\\times3-1\\times4}{2}",
+          "fields": [
+            {
+              "label": "a",
+              "expected": 1,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "a=(6−4)/2=1，首列全正，没有右半平面根。",
+          "id": "ss-b-7-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-b-8",
+      "number": "B.8",
+      "title": "采样与DFT",
+      "chapter": "附录B 解题方法与易错点",
+      "markdown": "- 先确认信号是否带限；非带限信号不能直接套奈奎斯特。\n- 检查 $f_s\\ge2f_m$；注意 $f_s$ 与 $\\omega_s$ 的换算。\n- 采样前加抗混叠滤波；恢复时低通截止频率满足 $\\omega_m\\le\\omega_c\\le\\omega_s-\\omega_m$。\n- DFT 频率轴：$f_k=kf_s/N$；$k>N/2$ 对应负频率。\n- 补零只增加频域采样密度，不提高真实分辨率。\n- 循环卷积要补零到 $N_1+N_2-1$ 才等于线性卷积。",
+      "questions": [
+        {
+          "prompt": "设计采样方案时，正确顺序是什么？",
+          "options": [
+            "先检查带宽与抗混叠，再设计DFT参数",
+            "先随意降采样再补零修复混叠",
+            "只增加FFT点数即可"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "采样导致的信息丢失不能通过FFT补零恢复。",
+          "id": "ss-b-8-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "fs=2000Hz，希望原始DFT频点间隔5Hz，至少采集多少真实样本？",
+          "options": [],
+          "formula": "N=f_s/\\Delta f",
+          "fields": [
+            {
+              "label": "N",
+              "expected": 400,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "2000/5=400，对应观察时长0.2s。",
+          "id": "ss-b-8-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "要分辨两条很近的正弦谱线，通常应优先怎样做？",
+          "options": [
+            "把采样时间戳删掉",
+            "延长真实观察时间并选择合适窗",
+            "仅将短记录补零100倍"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "真实分辨能力由观察窗和信号条件决定，补零只加密网格。",
+          "id": "ss-b-8-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-b-9",
+      "number": "B.9",
+      "title": "状态空间",
+      "chapter": "附录B 解题方法与易错点",
+      "markdown": "- 状态数 = 独立储能元件数；状态选择不唯一。\n- 列方程时先选状态，再消去非状态变量。\n- 矩阵维数要匹配：$A:n\\times n$，$B:n\\times p$，$C:q\\times n$，$D:q\\times p$。\n- 可控性矩阵按列拼；可观测性矩阵按行拼。\n- 稳定性看 $A$ 的特征值，不看 $C,D$。\n- 传递函数矩阵对消可能丢失不可控/不可观模态。",
+      "questions": [
+        {
+          "prompt": "从状态模型计算H(s)时采用什么初始状态？",
+          "options": [
+            "随意非零状态",
+            "只要求输出初值为1",
+            "零状态"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "传递函数描述零状态输入输出关系。",
+          "id": "ss-b-9-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "一维状态模型A=−3、B=2、C=5、D=1，求H(0)。",
+          "options": [],
+          "formula": "H(s)=\\frac{CB}{s-A}+D",
+          "fields": [
+            {
+              "label": "H(0)",
+              "expected": 4.333333333333333,
+              "unit": "",
+              "id": "f1"
+            }
+          ],
+          "explanation": "H(0)=10/3+1=13/3，可用分数输入。",
+          "id": "ss-b-9-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "更换状态坐标后，可控性与可观性应怎样？",
+          "options": [
+            "在可逆相似变换下保持不变",
+            "必须全部相反",
+            "只由坐标名称决定"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "可逆坐标变换保持相关矩阵秩，不改变系统结构性质。",
+          "id": "ss-b-9-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    },
+    {
+      "id": "ss-b-10",
+      "number": "B.10",
+      "title": "常见错误清单",
+      "chapter": "附录B 解题方法与易错点",
+      "markdown": "1. 把 $0^-$ 初始状态直接当 $0^+$ 初始值，忽略冲激跳变。\n2. 右端含 $\\delta$ 时，忘记对最高阶导数做冲激匹配。\n3. 卷积与相关混淆，时移方向写反。\n4. 单边谱与双边谱幅度差 2 倍，功率差 2 倍。\n5. 阶跃/积分变换漏掉 $\\pi\\delta(\\omega)$ 或直流项。\n6. 拉氏变换只写 $F(s)$ 不写 ROC。\n7. 初值定理用于假分式，未先长除。\n8. 终值定理用于不稳定/振荡信号，得到错误“终值”。\n9. 只凭 $H(s)$ 对消后的极点判稳，忽略内部不稳定模态。\n10. 采样频率 $f_s$ 与角频率 $\\omega_s$ 混用。\n11. 认为补零能提高频率分辨率。\n12. 用 DFT 循环卷积代替线性卷积，未补零。\n13. 状态矩阵维数不匹配，可控/可观矩阵行列方向写反。\n14. 忘记理想低通非因果、不可精确实现。\n15. 周期信号直接套普通傅里叶变换，忘记冲激串。\n\n\n## 附录C 考前速记\n\n1. 信号分析主线：分解 → 基本响应 → 叠加。\n2. 时域卷积：$y=f*h$；频域相乘：$Y=HF$；s域相乘：$Y=H(s)F(s)$。\n3. 能量信号：$0<E<\\infty,P=0$；功率信号：$0<P<\\infty,E=\\infty$。\n4. 周期信号之和不一定周期；离散周期序列之和一定周期。\n5. 离散正弦周期条件：$2\\pi/\\beta$ 为有理数。\n6. $\\delta(at)=\\frac{1}{|a|}\\delta(t)$；$\\delta'(at)=\\frac{1}{a|a|}\\delta'(t)$。\n7. $f(t)\\delta(t-t_0)=f(t_0)\\delta(t-t_0)$；$\\int f\\delta=f(t_0)$。\n8. $f*\\delta=f$；$f*\\delta'=f'$；$f*u=\\int f$。\n9. 动态系统线性三条件：可分解、零状态线性、零输入线性。\n10. 时不变判别：$T[f(t-t_0)]$ 是否等于 $y(t-t_0)$。\n11. 因果：$h(t)=0\\ (t<0)$；稳定：$\\int|h|<\\infty$。\n12. 齐次解：单根 $e^{\\lambda t}$，重根 $t^me^{\\lambda t}$，复根 $e^{\\alpha t}\\cos/\\sin\\beta t$。\n13. 右端含 $\\delta$：最高阶导数含 $\\delta$，次高阶导数跳变。\n14. 全响应 = 零输入 + 零状态；零输入一定是自由响应，但自由响应不一定是零输入。\n15. $g'=h$，$g=\\int h$。\n16. 卷积交换、结合、分配；级联 $h_1*h_2$，并联 $h_1+h_2$。\n17. 等宽矩形卷积得三角形；不等宽得梯形。\n18. 傅里叶级数：$F_n=\\frac{1}{T}\\int_Tf e^{-jn\\Omega t}dt$。\n19. 单双边谱：$A_n=2|F_n|\\ (n>0)$，$A_0=|F_0|$。\n20. 周期信号功率：$P=\\sum|F_n|^2$。\n21. 门函数 $\\leftrightarrow$ Sa；时域越窄，频域越宽。\n22. 时移不改变幅度谱；尺度使时宽带宽成反比。\n23. 时域卷积 $\\leftrightarrow$ 频域相乘；时域相乘 $\\leftrightarrow$ 频域卷积除以 $2\\pi$。\n24. 时域微分乘 $j\\omega$；时域积分除 $j\\omega$ 并补 $\\pi F(0)\\delta(\\omega)$。\n25. 帕斯瓦尔：$\\int|f|^2=\\frac{1}{2\\pi}\\int|F|^2$。\n26. 周期信号傅里叶变换：$2\\pi\\sum F_n\\delta(\\omega-n\\Omega)$。\n27. 频响 $H(j\\omega)$：幅度乘 $|H|$，相位加 $\\angle H$。\n28. 无失真：幅频常数、相频线性、群时延常数。\n29. 理想低通非因果；$h(t)=\\frac{\\omega_c}{\\pi}\\mathrm{Sa}(\\omega_ct)$。\n30. 通用安全采样取 $f_s>2f_m$ 并留余量，等号需边界限制；重建用理想低通/sinc 插值。\n31. 拉氏变换必须带 ROC；右边信号 ROC 在最右极点右侧。\n32. 时域微分：$f'\\leftrightarrow sF-f(0^-)$。\n33. 初值 $f(0^+)=\\lim sF$（真分式）；终值 $f(\\infty)=\\lim sF$（极点左半平面）。\n34. 对因果适当有理且约分后的传递函数，BIBO稳定要求连续极点严格在左半平面、离散极点严格在单位圆内；内部稳定另查完整状态。\n35. 劳斯表第一列符号变化数 = 右半平面极点数。\n36. 梅森公式：$T=\\frac{1}{\\Delta}\\sum P_k\\Delta_k$。\n37. 直接II型 n 阶系统用 n 个积分器。\n38. 状态方程：$\\dot x=Ax+Bf$，$y=Cx+Df$；解含 $e^{At}$。\n39. 可控性 rank$[B,AB,\\dots,A^{n-1}B]=n$；可观性 rank$[C;CA;\\dots;CA^{n-1}]=n$。\n40. STFT 窗长固定；CWT 尺度可变，高频短窗、低频长窗。\n\n---\n\n> **使用建议**：第一轮按章看概念和公式；第二轮只看附录 A 和 B；考前只看附录 C，并把错题对应回具体小节。",
+      "questions": [
+        {
+          "prompt": "最容易把能量算错的操作是哪一种？",
+          "options": [
+            "核对单位",
+            "忘记对幅度取模平方",
+            "先写积分区间"
+          ],
+          "answer": 1,
+          "fields": [],
+          "formula": "",
+          "explanation": "能量定义为∫|x|²dt，而不是∫xdt。",
+          "id": "ss-b-10-preview-v1",
+          "stage": "preview"
+        },
+        {
+          "prompt": "ω=200π rad/s 对应多少Hz？",
+          "options": [
+            "100 Hz",
+            "200π Hz",
+            "200 Hz"
+          ],
+          "answer": 0,
+          "fields": [],
+          "formula": "",
+          "explanation": "f=ω/(2π)=100Hz，赫兹与角频率不能混用。",
+          "id": "ss-b-10-in_class-v1",
+          "stage": "in_class"
+        },
+        {
+          "prompt": "复习时遇到公式结论与适用条件冲突，应该怎样做？",
+          "options": [
+            "只背结论并忽略条件",
+            "认为所有教材符号必须完全相同",
+            "先核对条件、定义和边界情形"
+          ],
+          "answer": 2,
+          "fields": [],
+          "formula": "",
+          "explanation": "采样、终值定理和稳定性等结论均依赖明确条件。",
+          "id": "ss-b-10-after_class-v1",
+          "stage": "after_class"
+        }
+      ]
+    }
+  ]
+}

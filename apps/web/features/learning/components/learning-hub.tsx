@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { LEARNING_TOPICS, type LearningTopic } from "@/features/learning/model/learning-topics";
 
 const QUICK_LINKS = [
+  { id: "knowledge", href: "/learn/knowledge", icon: BookOpen },
   { id: "workbench", href: "/learn/workbench", icon: SlidersHorizontal },
   { id: "flow", href: "/learn/course-flow", icon: Route },
   { id: "quiz", href: "/learn/quiz", icon: Gamepad2 },

@@ -16,3 +16,4 @@ export { LearningQuiz } from "@/features/learning/components/quiz/learning-quiz"
 export { LearningProgress } from "@/features/learning/components/learning-progress";
 export { CourseFlow } from "@/features/learning/components/course-flow/course-flow";
 export { SignalWorkbench } from "@/features/learning/components/workbench/signal-workbench";
+export { KnowledgeCourse } from "./components/knowledge-course";
