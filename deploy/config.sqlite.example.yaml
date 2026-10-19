@@ -34,7 +34,7 @@ branding:
   # Optional. Frontend product branding; changes take effect after restarting the app.
   title: CourseMate
   short_name: CourseMate
-  description: CourseMate is a multi-model AI conversation system.
+  description: CourseMate is an interactive Signals and Systems learning companion with experiments, AI tutoring, quizzes and spaced review.
   logo_url: ""
   favicon_url: /favicon.ico
   pwa_icon_192_url: /pwa/icon-192.png

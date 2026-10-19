@@ -8,7 +8,7 @@ CourseMate 的产品标题、HTML Meta Description、Logo、浏览器图标和 P
 
 未配置或配置为空时，对应位置使用仓库内置品牌资源。品牌接口不可用时，前端也会保留内置品牌，不阻塞页面加载。
 
-品牌配置只影响允许定制的产品展示区域。用户端和管理端的“关于”页面始终展示 DEEIX 官方 Logo、产品介绍、版权、官网、仓库和许可证信息。配置自定义 Logo 时，公开分享页和聊天截图仍会显示固定的 `Powered by DEEIX` 来源标识。
+品牌配置影响产品展示区域。“关于”页面固定展示 CourseMate 字标、学习功能介绍、作者、项目仓库、问题反馈及许可证，并提供 `NOTICE` 来源声明入口。配置自定义 Logo 时，公开分享页和聊天截图会显示固定的 `Powered by CourseMate` 来源标识。
 
 ## 配置项
 
@@ -31,7 +31,7 @@ branding:
 | --- | --- | --- | --- |
 | `branding.title` | HTML 标题、PWA 名称及前端默认产品名称 | 简短的纯文本产品名称 | `CourseMate` |
 | `branding.short_name` | PWA 短名称、生成占位动画和 Artifact 标识 | 推荐不超过 12 个字符 | `CourseMate` |
-| `branding.description` | HTML Meta Description 和 PWA description | 简洁的纯文本页面摘要 | `CourseMate is a multi-model AI conversation system.` |
+| `branding.description` | HTML Meta Description 和 PWA description | 简洁的纯文本页面摘要 | CourseMate 的信号与系统学习介绍 |
 | `branding.logo_url` | 登录页、侧边栏、移动端标题、公开分享页和聊天截图 | SVG 优先；PNG/WebP 至少 `1200 x 369`，推荐约 `3.25:1` | 浅色使用 `apps/web/public/logo.svg`，深色使用 `apps/web/public/logo-white.svg` |
 | `branding.favicon_url` | 浏览器标签页、书签 | SVG、ICO，或至少 `64 x 64` 的 PNG | `apps/web/public/favicon.ico` |
 | `branding.pwa_icon_192_url` | PWA manifest、浏览器通知 | `192 x 192` PNG | `apps/web/public/pwa/icon-192.png` |
@@ -47,19 +47,21 @@ branding:
 
 承载 Logo 的服务需要允许当前站点读取图片，否则聊天截图可能无法嵌入该图片。图标 URL 应长期公开可访问；更新资源时推荐使用带版本号的 URL，避免浏览器或已安装 PWA 继续使用旧缓存。
 
-## 不参与定制的 DEEIX 信息
+## 不参与定制的项目信息
 
 以下内容不受品牌配置影响：
 
-- 用户端和管理端“关于”页面中的 DEEIX Logo、产品介绍、版权、官网、仓库、社交账号和许可证信息。
-- 自定义 Logo 场景下的 `Powered by DEEIX` 来源标识和固定 DEEIX Logo。
+- “关于”页面中的 CourseMate 字标、学习功能介绍、作者、项目仓库、问题反馈、来源声明和许可证信息。
+- 自定义 Logo 场景下的 `Powered by CourseMate` 来源标识和固定 CourseMate 字标。
 - 仓库及 Docker 镜像中的 `LICENSE` 和 `NOTICE` 文件。
+
+原 DEEIX Chat 的版权和来源信息保留在 `NOTICE` 中，桌面安装包和便携包也随包分发。产品标识调整不会删除这些声明。
 
 这些限制只描述仓库内置品牌配置的行为，不改变许可证授权与商标边界。
 
 ## Logo 尺寸与留白
 
-仓库字标画布约为 `2400 x 737`，宽高比约 `3.25:1`。自定义横向 Logo 推荐：
+仓库字标使用书本与信号波形符号，以及原生 SVG 路径绘制的 CourseMate 文字。画布为 `520 x 160`，宽高比为 `3.25:1`。自定义横向 Logo 推荐：
 
 1. 优先提供带正确 `viewBox` 的 SVG；位图推荐使用 `1200 x 369` 或更高的同等比例图片。
 2. 画布宽高比保持在 `3:1-3.5:1`，不要使用正方形应用图标替代横向字标。
@@ -98,8 +100,8 @@ Docker 镜像内的前端仍是 Next.js 静态导出文件，由同一个 Go 服
 至少检查以下位置：
 
 - 浅色和深色主题中的登录页、侧边栏、移动端标题和公开分享页。
-- 用户端和管理端“关于”页面仍完整展示 DEEIX 官方信息。
-- 聊天截图和公开分享页中的自定义品牌及 DEEIX 来源标识。
+- “关于”页面展示 CourseMate 项目信息，来源声明可通过 `NOTICE` 链接查看。
+- 聊天截图和公开分享页中的自定义品牌及 CourseMate 来源标识。
 - 浏览器标题、Meta Description、favicon 和 Apple Touch Icon。
 - `/api/v1/branding`、`/api/v1/branding/manifest.webmanifest` 和同源兼容地址 `/manifest.webmanifest` 中的品牌名称、启动地址和图标。
 - 后台回复完成通知使用的品牌名称和图标。

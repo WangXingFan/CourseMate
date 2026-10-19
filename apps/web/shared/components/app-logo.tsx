@@ -35,8 +35,8 @@ export function AppLogo({
   );
 }
 
-export function DeeixLogo({
-  alt = "DEEIX Chat",
+export function CourseMateLogo({
+  alt = "CourseMate",
   width,
   height,
   priority,

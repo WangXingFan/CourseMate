@@ -41,7 +41,7 @@ export function AppSidebar({
       }
     : {
         name: localizedBrandTitle(branding.title, tCommon("appName")),
-        email: "deeix.com",
+        email: "CourseMate",
         avatar: "",
       };
 
