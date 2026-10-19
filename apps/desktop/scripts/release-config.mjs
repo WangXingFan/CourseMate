@@ -15,9 +15,8 @@
 //     replaces whatever is installed; the field only makes builds tell apart.
 //
 // bundle.windows.wix.upgradeCode in tauri.conf.json is the MSI product family.
-// It equals Tauri's default for "DEEIX Chat" (the one 0.4.4-beta.1 shipped
-// with) and must NEVER change: a different code installs side by side instead
-// of upgrading, and breaks every GPO/Intune/SCCM assignment keyed on it.
+// CourseMate has its own product family, separate from the upstream app.
+// Keep this value stable for all subsequent CourseMate releases.
 //
 // Usage: release-config.mjs --channel stable|beta [--repository owner/name]
 //                           [--version x.y.z] [--thumbprint <sha1 hex>]
@@ -53,7 +52,7 @@ export function msiVersion(version) {
 }
 
 /** The config object merged over tauri.conf.json for a release build. */
-export function releaseConfig({ version, channel, repository, thumbprint }) {
+export function releaseConfig({ version, channel, repository = "WangXingFan/CourseMate", thumbprint }) {
   if (channel !== "stable" && channel !== "beta") {
     throw new Error(`unknown channel: ${channel}`);
   }
@@ -64,14 +63,13 @@ export function releaseConfig({ version, channel, repository, thumbprint }) {
     }
     config.bundle.windows.certificateThumbprint = thumbprint.toUpperCase();
   }
-  if (channel === "beta") {
-    if (!/^[\w.-]+\/[\w.-]+$/.test(repository ?? "")) {
-      throw new Error("beta builds need --repository owner/name");
-    }
-    config.plugins = {
-      updater: { endpoints: [`https://github.com/${repository}/releases/download/desktop-beta/latest.json`] },
-    };
+  if (!/^[\w.-]+\/[\w.-]+$/.test(repository ?? "")) {
+    throw new Error("release builds need --repository owner/name");
   }
+  const manifest = channel === "beta" ? "download/desktop-beta/latest.json" : "latest/download/latest.json";
+  config.plugins = {
+    updater: { endpoints: [`https://github.com/${repository}/releases/${manifest}`] },
+  };
   return config;
 }
 

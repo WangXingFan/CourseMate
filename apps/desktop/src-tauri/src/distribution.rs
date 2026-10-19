@@ -20,7 +20,7 @@ use crate::paths::{self, PortableLayout};
 use crate::policy::{self, Policy};
 
 /// Download page when the updater endpoint is not a GitHub release URL.
-const DEFAULT_REPOSITORY_URL: &str = "https://github.com/DEEIX-AI/DEEIX-Chat";
+const DEFAULT_REPOSITORY_URL: &str = "https://github.com/WangXingFan/CourseMate";
 #[cfg_attr(not(windows), allow(dead_code))]
 pub const WEBVIEW2_DOWNLOAD_URL: &str = "https://developer.microsoft.com/microsoft-edge/webview2/";
 const UPDATE_CHECK_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(20);
@@ -236,12 +236,12 @@ pub fn grant_updater<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
 
 fn data_dir_message(detail: &str) -> String {
     format!(
-        "DEEIX Chat (portable) cannot write to its data folder:\n{detail}\n\n\
-         Move the whole \"DEEIX Chat\" folder to a location where you can create files \
+        "CourseMate (portable) cannot write to its data folder:\n{detail}\n\n\
+         Move the whole \"CourseMate\" folder to a location where you can create files \
          (for example Documents, the desktop or a USB drive) and start it again. \
          The portable version never stores its data anywhere else.\n\n\
-         便携版 DEEIX Chat 无法写入数据文件夹：\n{detail}\n\n\
-         请将整个“DEEIX Chat”文件夹移动到可以写入文件的位置（例如“文档”、桌面或 U 盘）后重新启动。\
+         便携版 CourseMate 无法写入数据文件夹：\n{detail}\n\n\
+         请将整个“CourseMate”文件夹移动到可以写入文件的位置（例如“文档”、桌面或 U 盘）后重新启动。\
          便携版不会把数据存放到其他位置。"
     )
 }
@@ -271,11 +271,11 @@ fn ensure_webview_runtime(bundled: Option<&std::path::Path>) {
                 dir.display(),
             ),
             None => format!(
-                "DEEIX Chat needs the Microsoft Edge WebView2 Runtime, which was not found on this \
+                "CourseMate needs the Microsoft Edge WebView2 Runtime, which was not found on this \
                  computer ({error}).\n\n\
                  Install the Evergreen WebView2 Runtime from Microsoft (administrators can deploy it \
                  for all users), or use the portable \"-offline\" package, which includes it.\n\n\
-                 DEEIX Chat 需要 Microsoft Edge WebView2 运行时，但此电脑上未找到。\n\
+                 CourseMate 需要 Microsoft Edge WebView2 运行时，但此电脑上未找到。\n\
                  请从 Microsoft 安装 Evergreen WebView2 运行时（管理员可为所有用户统一部署），\
                  或使用自带运行时的便携版“-offline”包。"
             ),
@@ -433,11 +433,12 @@ mod tests {
 
     #[test]
     fn releases_url_follows_endpoint_and_channel() {
-        let stable = "https://github.com/DEEIX-AI/DEEIX-Chat/releases/latest/download/latest.json";
+        let stable =
+            "https://github.com/WangXingFan/CourseMate/releases/latest/download/latest.json";
         let beta = "https://github.com/fork/Chat/releases/download/desktop-beta/latest.json";
         assert_eq!(
             releases_url(Some(stable), false),
-            "https://github.com/DEEIX-AI/DEEIX-Chat/releases/latest"
+            "https://github.com/WangXingFan/CourseMate/releases/latest"
         );
         assert_eq!(
             releases_url(Some(beta), true),
@@ -450,7 +451,7 @@ mod tests {
         ] {
             assert_eq!(
                 releases_url(other, false),
-                "https://github.com/DEEIX-AI/DEEIX-Chat/releases/latest"
+                "https://github.com/WangXingFan/CourseMate/releases/latest"
             );
         }
     }
@@ -458,8 +459,8 @@ mod tests {
     #[test]
     fn portable_identifier_keeps_the_base_and_adds_the_instance() {
         assert_eq!(
-            portable_identifier("com.deeix.chat.desktop", "0123456789abcdef"),
-            "com.deeix.chat.desktop.portable-0123456789abcdef"
+            portable_identifier("io.github.wangxingfan.coursemate", "0123456789abcdef"),
+            "io.github.wangxingfan.coursemate.portable-0123456789abcdef"
         );
     }
 

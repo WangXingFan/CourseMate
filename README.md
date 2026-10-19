@@ -507,6 +507,7 @@ Sign-in, registration, and account identity binding on Web, App, and Desktop all
 - [Architecture](./docs/ARCHITECTURE.md)
 - [Deployment](./deploy/README.md)
 - [Desktop client](./apps/desktop/README.md)
+- [CourseMate desktop packaging guide (中文)](./docs/DESKTOP-COURSEMATE.zh-CN.md)
 - Backend guide: [backend/README.md](./backend/README.md)
 - API documentation index: [backend/docs/README.md](./backend/docs/README.md)
 - Frontend guide: [apps/web/README.md](./apps/web/README.md)

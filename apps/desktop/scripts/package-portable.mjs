@@ -1,21 +1,21 @@
 // Packs the Windows portable edition:
 //
-//   DEEIX-Chat-<version>-windows-<arch>-portable[-offline].zip
-//   └── DEEIX Chat/
-//       ├── DEEIX Chat.exe          the cargo binary (deeix-chat-desktop.exe), renamed
-//       ├── deeix-chat-server.exe   the local-mode sidecar
+//   CourseMate-<version>-windows-<arch>-portable[-offline].zip
+//   └── CourseMate/
+//       ├── CourseMate.exe          the cargo binary (coursemate-desktop.exe), renamed
+//       ├── coursemate-server.exe   the local-mode sidecar
 //       ├── portable                marker that switches the app to portable mode
 //       ├── README.txt
 //       └── webview2/               offline variant only: WebView2 Fixed Version runtime
 //
 // Where the binaries come from after `tauri build` (verified against
 // tauri-bundler 2.9.4, used by @tauri-apps/cli 2.11.5):
-//   - target[/<triple>]/release/deeix-chat-desktop.exe is the *original*
+//   - target[/<triple>]/release/coursemate-desktop.exe is the *original*
 //     binary. The bundler patches the bundle type into it, signs it and packs
 //     it once per installer, then restores the unpatched, UNSIGNED original.
 //     So this exe reports no bundle type (the marker decides portable mode)
 //     and CI must sign it before packing.
-//   - binaries/deeix-chat-server-<triple>.exe is signed in place by the
+//   - binaries/coursemate-server-<triple>.exe is signed in place by the
 //     bundler when a certificate is configured, and is preferred over the
 //     copy tauri-build placed in target/ at compile time (never signed).
 //
@@ -36,12 +36,12 @@ import { crc32, deflateRawSync } from "node:zlib";
 const here = dirname(fileURLToPath(import.meta.url));
 const srcTauri = resolve(here, "..", "src-tauri");
 
-export const ROOT_FOLDER = "DEEIX Chat";
-export const APP_EXE = "DEEIX Chat.exe";
-export const SIDECAR_EXE = "deeix-chat-server.exe";
+export const ROOT_FOLDER = "CourseMate";
+export const APP_EXE = "CourseMate.exe";
+export const SIDECAR_EXE = "coursemate-server.exe";
 export const MARKER_FILE = "portable";
 export const WEBVIEW2_FOLDER = "webview2";
-const SIDECAR_STEM = "deeix-chat-server";
+const SIDECAR_STEM = "coursemate-server";
 const DEFAULT_TRIPLE = "x86_64-pc-windows-msvc";
 const WEBVIEW2_URL = "https://developer.microsoft.com/microsoft-edge/webview2/";
 
@@ -49,11 +49,11 @@ const WEBVIEW2_URL = "https://developer.microsoft.com/microsoft-edge/webview2/";
 const crlf = (text) => text.replace(/\r?\n/g, "\r\n");
 
 export const MARKER_TEXT = crlf(
-  "This file makes DEEIX Chat run as a portable app: all data stays in the \"data\" folder next to it. Do not delete it.\n",
+  "This file makes CourseMate run as a portable app: all data stays in the \"data\" folder next to it. Do not delete it.\n",
 );
 
 export function portableAssetName(version, { arch = "x64", offline = false } = {}) {
-  return `DEEIX-Chat-${version}-windows-${arch}-portable${offline ? "-offline" : ""}.zip`;
+  return `CourseMate-${version}-windows-${arch}-portable${offline ? "-offline" : ""}.zip`;
 }
 
 export function archFromTriple(triple) {
@@ -78,7 +78,7 @@ export function readmeText(version, { offline = false } = {}) {
   ${WEBVIEW2_URL}
   “-portable-offline”包已自带该运行时，无需安装。`;
 
-  return crlf(`DEEIX Chat ${version} - portable edition for Windows
+  return crlf(`CourseMate ${version} - portable edition for Windows
 ====================================================
 
 REQUIREMENTS
@@ -104,21 +104,21 @@ WHERE YOUR DATA IS
 
 UPDATING
 The portable edition never updates itself; it tells you when a new version
-is available and links to the download page. To update, quit DEEIX Chat
+is available and links to the download page. To update, quit CourseMate
 (tray icon > Quit), download the new portable zip and extract it over this
 folder, keeping the "data" folder.
 
 REMOVING
 1. In the app, sign out of every server. This deletes its token from
    Windows Credential Manager.
-2. Quit DEEIX Chat (tray icon > Quit).
+2. Quit CourseMate (tray icon > Quit).
 3. Delete the "${ROOT_FOLDER}" folder.
 Tokens of a copy that was deleted without signing out can be removed in
 Control Panel > Credential Manager > Windows Credentials: entries whose name
-contains "com.deeix.chat.desktop.portable-".
+contains "io.github.wangxingfan.coursemate.portable-".
 
 
-DEEIX Chat ${version} - Windows 便携版
+CourseMate ${version} - Windows 便携版
 ======================================
 
 系统要求
@@ -141,15 +141,15 @@ ${webviewZh}
 
 更新
 便携版不会自动更新，有新版本时只会提示并给出下载页面链接。更新方法：退出
-DEEIX Chat（托盘图标 > 退出），下载新的便携版压缩包并解压覆盖本文件夹，
+CourseMate（托盘图标 > 退出），下载新的便携版压缩包并解压覆盖本文件夹，
 保留“data”文件夹即可。
 
 彻底删除
 1. 在应用中退出所有服务器的登录，这会从 Windows 凭据管理器中删除对应凭据。
-2. 退出 DEEIX Chat（托盘图标 > 退出）。
+2. 退出 CourseMate（托盘图标 > 退出）。
 3. 删除“${ROOT_FOLDER}”文件夹。
 如果某个副本在未退出登录的情况下被删除，可在“控制面板 > 凭据管理器 >
-Windows 凭据”中删除名称包含“com.deeix.chat.desktop.portable-”的条目。
+Windows 凭据”中删除名称包含“io.github.wangxingfan.coursemate.portable-”的条目。
 `);
 }
 
@@ -224,6 +224,8 @@ export function planEntries({ exe, sidecar, version, webview2 }) {
     { name: `${root}${SIDECAR_EXE}`, source: sidecar },
     { name: `${root}${MARKER_FILE}`, content: MARKER_TEXT },
     { name: `${root}README.txt`, content: readmeText(version, { offline: Boolean(webview2) }) },
+    { name: `${root}LICENSE`, source: resolve(srcTauri, "../../../LICENSE") },
+    { name: `${root}NOTICE`, source: resolve(srcTauri, "../../../NOTICE") },
   ];
   if (webview2) {
     const base = resolveWebview2Dir(webview2);

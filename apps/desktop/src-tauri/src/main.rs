@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    deeix_chat_desktop_lib::run()
+    coursemate_desktop_lib::run()
 }

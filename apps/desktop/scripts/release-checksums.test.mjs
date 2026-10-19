@@ -26,12 +26,12 @@ test("formats sorted coreutils lines and never lists itself", () => {
   const text = formatChecksums([
     { name: "latest.json", sha256: a },
     { name: CHECKSUMS_FILE, sha256: b },
-    { name: "DEEIX-Chat-1.0.0-windows-x64.msi", sha256: b },
-    { name: "DEEIX-Chat-1.0.0-windows-x64-portable.zip", sha256: a },
+    { name: "CourseMate-1.0.0-windows-x64.msi", sha256: b },
+    { name: "CourseMate-1.0.0-windows-x64-portable.zip", sha256: a },
   ]);
   assert.equal(
     text,
-    `${a}  DEEIX-Chat-1.0.0-windows-x64-portable.zip\n${b}  DEEIX-Chat-1.0.0-windows-x64.msi\n${a}  latest.json\n`,
+    `${a}  CourseMate-1.0.0-windows-x64-portable.zip\n${b}  CourseMate-1.0.0-windows-x64.msi\n${a}  latest.json\n`,
   );
 });
 

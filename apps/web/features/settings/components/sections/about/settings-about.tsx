@@ -19,11 +19,9 @@ export function SettingsAbout() {
       consoleLabel={t("userConsole")}
       labels={{
         details: t("details"),
-        official: t("official"),
-        website: t("website"),
+        author: t("author"),
         repository: t("repository"),
-        social: t("social"),
-        blog: t("blog"),
+        notices: t("notices"),
         contact: t("contact"),
         copyright: t("copyright"),
         license: t("license"),

@@ -18,7 +18,7 @@ const (
 	defaultAppName                      = "CourseMate"
 	defaultBrandTitle                   = "CourseMate"
 	defaultBrandShortName               = "CourseMate"
-	defaultBrandDescription             = "CourseMate is a multi-model AI conversation system."
+	defaultBrandDescription             = "CourseMate is an interactive Signals and Systems learning companion with experiments, AI tutoring, quizzes and spaced review."
 	defaultBrandFaviconURL              = "/favicon.ico"
 	defaultBrandPWAIcon192URL           = "/pwa/icon-192.png"
 	defaultBrandPWAIcon512URL           = "/pwa/icon-512.png"
@@ -37,7 +37,7 @@ const (
 	// 容器编排下应小于 terminationGracePeriodSeconds，为强断兜底与资源释放留余量。
 	defaultHTTPShutdownTimeoutSeconds = 10
 	// DefaultDesktopDownloadURL 是桌面端下载页的默认地址。
-	DefaultDesktopDownloadURL = "https://deeix.com/download"
+	DefaultDesktopDownloadURL = "https://github.com/WangXingFan/CourseMate/releases"
 	// DefaultFileFullContextMaxBytes 是全文注入的默认提取文本大小上限（2 MiB）。
 	DefaultFileFullContextMaxBytes int64 = 2 * 1024 * 1024
 

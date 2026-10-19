@@ -1,7 +1,7 @@
 // Builds the Go server as a Tauri sidecar.
 //
 // Tauri's `bundle.externalBin` expects `<name>-<rust-target-triple>` next to
-// the config (e.g. binaries/deeix-chat-server-aarch64-apple-darwin) and strips
+// the config (e.g. binaries/coursemate-server-aarch64-apple-darwin) and strips
 // the suffix when bundling. The server links SQLite through cgo, so it is
 // always built natively on the platform that bundles it; CI runs this once per
 // matrix leg. Pass --target <triple> when cross-building on macOS (x86_64 on an
@@ -34,7 +34,7 @@ const commit = safeGit(["rev-parse", "--short", "HEAD"]) || "unknown";
 const buildTime = new Date().toISOString();
 
 const ext = goos === "windows" ? ".exe" : "";
-const output = join(outDir, `deeix-chat-server-${triple}${ext}`);
+const output = join(outDir, `coursemate-server-${triple}${ext}`);
 mkdirSync(outDir, { recursive: true });
 
 const module = "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/buildinfo";

@@ -13,7 +13,7 @@ use tauri_plugin_shell::ShellExt;
 use crate::paths;
 
 /// `bundle.externalBin` without the `binaries/` prefix and target triple.
-const SIDECAR_PROGRAM: &str = "deeix-chat-server";
+const SIDECAR_PROGRAM: &str = "coursemate-server";
 const READY_TIMEOUT: Duration = Duration::from_secs(30);
 const LOCAL_DATA_DIR: &str = "local";
 

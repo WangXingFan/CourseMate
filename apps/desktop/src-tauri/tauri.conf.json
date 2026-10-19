@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "DEEIX Chat",
+  "productName": "CourseMate",
   "version": "0.4.4-beta.3",
-  "identifier": "com.deeix.chat.desktop",
+  "identifier": "io.github.wangxingfan.coursemate",
   "build": {
     "frontendDist": "../../web/out",
     "devUrl": "http://localhost:3000",
@@ -32,9 +32,9 @@
       "icons/icon.ico"
     ],
     "category": "Productivity",
-    "shortDescription": "DEEIX Chat desktop client",
-    "longDescription": "Desktop client for a self-hosted DEEIX Chat server.",
-    "copyright": "© DEEIX",
+    "shortDescription": "CourseMate learning companion",
+    "longDescription": "CourseMate (课知伴): interactive Signals and Systems lessons, experiments, AI assistance, quizzes and spaced review.",
+    "copyright": "Copyright 2026 WangXingFan. Includes DEEIX Chat code; see NOTICE and LICENSE.",
     "createUpdaterArtifacts": true,
     "linux": {
       "deb": {
@@ -57,20 +57,24 @@
         "displayLanguageSelector": false
       },
       "wix": {
-        "upgradeCode": "416f18c0-1adb-51dc-ba68-b574720eb9bc",
+        "upgradeCode": "d0121e08-6c81-4722-a5ef-8b90fbb6f3b6",
         "language": "en-US"
       }
     },
     "externalBin": [
-      "binaries/deeix-chat-server"
-    ]
+      "binaries/coursemate-server"
+    ],
+    "resources": {
+      "../../../LICENSE": "LICENSE",
+      "../../../NOTICE": "NOTICE"
+    }
   },
   "plugins": {
     "updater": {
       "endpoints": [
-        "https://github.com/DEEIX-AI/DEEIX-Chat/releases/latest/download/latest.json"
+        "https://github.com/WangXingFan/CourseMate/releases/latest/download/latest.json"
       ],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDk5MEM5OUQ5NDdDRkJEODgKUldTSXZjOUgyWmtNbVdMdmJMQisrMTV4R1liVGJxajU0RjUrOHhWakRjR0U3cmV5RS83TFNWMEgK"
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEFCNTlERDdFMkI1RkNCNTMKUldSVHkxOHJmdDFacTUveSt5QjNyRDJlcmVncnVuODJJRnNsem9nMUFDUDdlUnlTMDhpMXVabVcK"
     }
   }
 }
