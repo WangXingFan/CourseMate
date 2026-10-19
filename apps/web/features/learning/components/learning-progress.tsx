@@ -71,11 +71,11 @@ export function LearningProgress() {
             {recent.length ? <ol className="divide-y divide-border/50">{recent.map((attempt) => <li key={attempt.id} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
               {attempt.correct ? <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-600" /> : <XCircle className="mt-0.5 size-4 shrink-0 text-destructive" />}
               <div className="min-w-0 flex-1">
-                <p className="text-xs leading-5"><Badge variant="outline" className="mr-2 text-[10px]">{t(attempt.mode === "review" ? "reviewMode" : "quizMode")}</Badge>{q(`${attempt.questionId}.prompt`)}</p>
+                <p className="text-xs leading-5"><Badge variant="outline" className="mr-2 text-[10px]">{t(attempt.mode === "review" ? "reviewMode" : "quizMode")}</Badge>{attempt.mode === "review" ? t("reviewBaseQuestion", { question: q(`${attempt.questionId}.prompt`) }) : q(`${attempt.questionId}.prompt`)}</p>
                 <p className="mt-1 text-[11px] leading-5 text-muted-foreground">{attempt.mode === "review" ? t("variantHistory", { variant: attempt.variantId, choice: String.fromCharCode(65 + attempt.selected) }) : t("yourAnswer", { answer: q(`${attempt.questionId}.option${attempt.selected + 1}`) })}</p>
                 <time dateTime={attempt.createdAt} className="mt-1 block text-[10px] text-muted-foreground">{format.dateTime(new Date(attempt.createdAt), { timeZone, year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</time>
               </div>
-              <Button asChild size="xs" variant="ghost"><Link href={`/learn/quiz?question=${encodeURIComponent(attempt.questionId)}`}>{t("retryQuestion")}</Link></Button>
+              {attempt.mode === "review" ? <Button size="xs" variant="ghost" onClick={() => setReviewTarget(attempt.variantId)}>{t("variantReview")}</Button> : <Button asChild size="xs" variant="ghost"><Link href={`/learn/quiz?question=${encodeURIComponent(attempt.questionId)}`}>{t("retryQuestion")}</Link></Button>}
             </li>)}</ol> : <p className="text-xs text-muted-foreground">{t("historyEmpty")}</p>}
           </LessonPanel>}
         </> : null}

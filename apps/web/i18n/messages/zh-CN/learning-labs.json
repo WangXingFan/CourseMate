@@ -638,7 +638,8 @@
     "variantHistory": "变式 {variant} · 所选选项 {choice}",
     "lastMistake": "最近原题错误：{answer}",
     "lastReviewCorrect": "最近变式复习：答对",
-    "lastReviewIncorrect": "最近变式复习：答错"
+    "lastReviewIncorrect": "最近变式复习：答错",
+    "reviewBaseQuestion": "关联原题：{question}"
   },
   "quiz": {
     "title": "快问快答",
