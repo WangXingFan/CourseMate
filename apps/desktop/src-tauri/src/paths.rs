@@ -5,7 +5,7 @@
 // start (see `prepare_portable`).
 //
 // Portable layout:
-//   DEEIX Chat.exe, deeix-chat-server.exe, portable (marker), README.txt
+//   CourseMate.exe, coursemate-server.exe, portable (marker), README.txt
 //   webview2/            optional Fixed Version WebView2 runtime
 //   data/instance-id     identity of this copy (keychain + single-instance)
 //   data/tabs.json       open tabs
@@ -239,7 +239,7 @@ mod tests {
 
     fn scratch(name: &str) -> PathBuf {
         let dir = std::env::temp_dir().join(format!(
-            "deeix-paths-{name}-{}-{}",
+            "coursemate-paths-{name}-{}-{}",
             std::process::id(),
             new_instance_id(Path::new(name))
         ));
@@ -350,7 +350,7 @@ mod tests {
 
     #[test]
     fn portable_paths_stay_inside_the_data_folder() {
-        let data = Path::new("/portable/DEEIX Chat/data");
+        let data = Path::new("/portable/CourseMate/data");
         let paths = AppPaths::portable(data);
         assert_eq!(paths.config_dir, data);
         assert_eq!(paths.data_dir, data);

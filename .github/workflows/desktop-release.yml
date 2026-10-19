@@ -148,6 +148,16 @@ jobs:
       - name: Verify version consistency
         run: node scripts/sync-version.mjs --check
 
+      - name: Require CourseMate updater signing key
+        shell: bash
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        run: |
+          if [[ -z "$TAURI_SIGNING_PRIVATE_KEY" ]]; then
+            echo "::error::Configure TAURI_SIGNING_PRIVATE_KEY and TAURI_SIGNING_PRIVATE_KEY_PASSWORD for CourseMate before building installers."
+            exit 1
+          fi
+
       # Tauri treats a signing variable that merely exists as configured, so
       # the Apple credentials are exported only when the secrets are set;
       # identity and team id are then read from the certificate.
@@ -203,6 +213,7 @@ jobs:
         run: |
           set -euo pipefail
           tag="${{ github.ref_type == 'tag' && github.ref_name || '' }}"
+          if [[ -z "$tag" ]]; then tag="$(cat VERSION)"; fi
           if [[ "$tag" == *-* ]]; then channel=beta; else channel=stable; fi
           echo "name=$channel" >> "$GITHUB_OUTPUT"
           args=(--channel "$channel" --repository "${{ github.repository }}")
@@ -226,21 +237,24 @@ jobs:
           # Beta endpoint, MSI version and signing thumbprint; see the channel step.
           args: ${{ matrix.args }} ${{ steps.channel.outputs.tauri_args }}
           tagName: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
-          releaseName: "v__VERSION__"
-          # Asset suffixes as produced by the assets job below. The Verified and
-          # Available columns are edited by hand on the draft when a platform
-          # needs a caveat.
+          releaseName: "CourseMate v__VERSION__"
+          # Asset suffixes as produced by the assets job below. Platform
+          # verification and signature status must be reviewed on the draft.
           releaseBody: |
-            ### ⏬ Download
+            CourseMate（课知伴）桌面客户端：交互式《信号与系统》课程、章节实验、AI 助教、快问快答与间隔复习。
 
-            | Platform | Download | Verified | Available |
-            | --- | --- | --- | --- |
-            | macOS · Apple silicon | `macos-arm64.dmg` | ✅ Verified | ✅ Available |
-            | macOS · Intel | `macos-x64.dmg` | ✅ Verified | ✅ Available |
-            | Linux · x86_64 | `linux-x64.AppImage` or `.deb` | ✅ Verified | ✅ Available |
-            | Windows · x86_64 | `windows-x64-setup.exe` | ✅ Verified | ✅ Available |
-            | Windows · x86_64 · MSI | `windows-x64.msi` | ✅ Verified | ✅ Available |
-            | Windows · x86_64 · Portable | `windows-x64-portable.zip` | ✅ Verified | ✅ Available |
+            ### Download / 下载
+
+            Assets use the prefix `CourseMate-<version>-`. Check the build results and platform signatures before publishing this draft.
+
+            | Platform | Filename suffix |
+            | --- | --- |
+            | macOS · Apple silicon | `macos-arm64.dmg` |
+            | macOS · Intel | `macos-x64.dmg` |
+            | Linux · x86_64 | `linux-x64.AppImage` or `linux-x64.deb` |
+            | Windows · x86_64 | `windows-x64-setup.exe` |
+            | Windows · x86_64 · MSI | `windows-x64.msi` |
+            | Windows · x86_64 · Portable | `windows-x64-portable.zip` |
 
             Checksums are in `SHA256SUMS`. `-updater.tar.gz`, `.sig` and `latest.json` belong to the built-in updater.
           # Draft until a human publishes it. Stable installs poll GitHub's
@@ -298,9 +312,9 @@ jobs:
             Sort-Object { [version]$_.Directory.Parent.Name } -Descending |
             Select-Object -First 1
           if (-not $signtool) { throw "signtool.exe not found" }
-          $exe = "apps/desktop/src-tauri/target/release/deeix-chat-desktop.exe"
+          $exe = "apps/desktop/src-tauri/target/release/coursemate-desktop.exe"
           & $signtool.FullName sign /fd $conf.bundle.windows.digestAlgorithm /sha1 $env:WINDOWS_CERTIFICATE_THUMBPRINT `
-            /t $conf.bundle.windows.timestampUrl /d "DEEIX Chat" $exe
+            /t $conf.bundle.windows.timestampUrl /d "CourseMate" $exe
           if ($LASTEXITCODE -ne 0) { throw "signtool failed with $LASTEXITCODE" }
 
       # Optional offline variant: Microsoft's WebView2 Fixed Version runtime,
@@ -357,8 +371,8 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $root = "apps/desktop/src-tauri"
           $files = @(
-            "$root/target/release/deeix-chat-desktop.exe"
-            "$root/binaries/deeix-chat-server-x86_64-pc-windows-msvc.exe"
+            "$root/target/release/coursemate-desktop.exe"
+            "$root/binaries/coursemate-server-x86_64-pc-windows-msvc.exe"
           )
           $files += Get-ChildItem "$root/target/release/bundle/nsis/*-setup.exe", "$root/target/release/bundle/msi/*.msi" |
             ForEach-Object FullName

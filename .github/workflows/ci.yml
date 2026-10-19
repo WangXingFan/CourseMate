@@ -208,7 +208,7 @@ jobs:
       - name: Placeholder sidecar
         run: |
           mkdir -p binaries
-          touch "binaries/deeix-chat-server-$(rustc -vV | sed -n 's/^host: //p')"
+          touch "binaries/coursemate-server-$(rustc -vV | sed -n 's/^host: //p')"
       - name: Format
         run: cargo fmt --check
       - name: Clippy

@@ -1,4 +1,4 @@
-// DEEIX Chat desktop shell: window/tray lifecycle, OAuth loopback, updater and
+// CourseMate desktop shell: window/tray lifecycle, OAuth loopback, updater and
 // session storage. No business logic — everything else is the apps/web build.
 
 mod dialog;
@@ -71,7 +71,7 @@ pub fn run() {
             Ok(())
         })
         .build(context)
-        .expect("error while building DEEIX Chat desktop")
+        .expect("error while building CourseMate desktop")
         .run(|app, event| match event {
             tauri::RunEvent::Exit => sidecar::stop_blocking(app),
             #[cfg(target_os = "macos")]

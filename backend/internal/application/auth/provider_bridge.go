@@ -29,7 +29,9 @@ const (
 	// ProviderAuthNativeClientID 标识提供方交接请求中的原生客户端。
 	ProviderAuthNativeClientID = "com.deeix.chat.native"
 	// ProviderAuthDesktopClientID 标识提供方交接请求中的桌面客户端。
-	ProviderAuthDesktopClientID = "com.deeix.chat.desktop"
+	ProviderAuthDesktopClientID = "io.github.wangxingfan.coursemate"
+	// 保留旧桌面客户端交接 ID，以便已安装客户端继续登录。
+	providerAuthLegacyDesktopClientID = "com.deeix.chat.desktop"
 
 	providerAuthBridgeAudience = "provider_auth_bridge_v1"
 	providerAuthTransactionTTL = 10 * time.Minute
@@ -396,7 +398,7 @@ func (s *Service) validateProviderAuthClientRedirect(slug string, clientID strin
 			return ErrProviderNativeRedirectInvalid
 		}
 		return nil
-	case ProviderAuthDesktopClientID:
+	case ProviderAuthDesktopClientID, providerAuthLegacyDesktopClientID:
 		parsed, err := url.Parse(trimmedRedirectURI)
 		if err != nil || parsed.Scheme != "http" || parsed.User != nil || parsed.RawQuery != "" || parsed.Fragment != "" {
 			return ErrProviderDesktopRedirectInvalid

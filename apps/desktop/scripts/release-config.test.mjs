@@ -29,19 +29,25 @@ test("refuses versions Windows Installer cannot represent", () => {
   }
 });
 
-test("stable builds keep the configured updater endpoint", () => {
-  assert.deepEqual(releaseConfig({ version: "0.5.0", channel: "stable", repository: "o/r" }), {
-    bundle: { windows: { wix: { version: "0.5.0" } } },
-  });
+test("stable builds use the selected repository instead of an inherited endpoint", () => {
+  for (const repository of ["WangXingFan/CourseMate", "fork/LearningApp"]) {
+    const config = releaseConfig({ version: "0.5.0", channel: "stable", repository });
+    assert.deepEqual(config.plugins.updater.endpoints, [
+      `https://github.com/${repository}/releases/latest/download/latest.json`,
+    ]);
+    assert.equal(config.bundle.windows.wix.version, "0.5.0");
+  }
+  assert.throws(() => releaseConfig({ version: "0.5.0", channel: "stable", repository: "../wrong/repo" }), /repository/);
 });
 
 test("beta builds poll the rolling desktop-beta manifest", () => {
-  const config = releaseConfig({ version: "0.5.0-beta.3", channel: "beta", repository: "DEEIX-AI/DEEIX-Chat" });
+  const config = releaseConfig({ version: "0.5.0-beta.3", channel: "beta", repository: "WangXingFan/CourseMate" });
   assert.deepEqual(config.plugins.updater.endpoints, [
-    "https://github.com/DEEIX-AI/DEEIX-Chat/releases/download/desktop-beta/latest.json",
+    "https://github.com/WangXingFan/CourseMate/releases/download/desktop-beta/latest.json",
   ]);
   assert.equal(config.bundle.windows.wix.version, "0.5.0.3");
-  assert.throws(() => releaseConfig({ version: "0.5.0-beta.3", channel: "beta" }), /repository/);
+  assert.deepEqual(releaseConfig({ version: "0.5.0-beta.3", channel: "beta" }).plugins.updater.endpoints, config.plugins.updater.endpoints);
+  assert.throws(() => releaseConfig({ version: "0.5.0-beta.3", channel: "beta", repository: "https://github.com/o/r" }), /repository/);
   assert.throws(() => releaseConfig({ version: "0.5.0", channel: "nightly" }), /channel/);
 });
 

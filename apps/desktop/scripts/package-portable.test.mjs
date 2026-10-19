@@ -61,21 +61,21 @@ function readZip(file) {
 }
 
 test("asset names follow the release convention", () => {
-  assert.equal(portableAssetName("0.4.4"), "DEEIX-Chat-0.4.4-windows-x64-portable.zip");
+  assert.equal(portableAssetName("0.4.4"), "CourseMate-0.4.4-windows-x64-portable.zip");
   assert.equal(
     portableAssetName("0.4.4-beta.2", { offline: true }),
-    "DEEIX-Chat-0.4.4-beta.2-windows-x64-portable-offline.zip",
+    "CourseMate-0.4.4-beta.2-windows-x64-portable-offline.zip",
   );
-  assert.equal(portableAssetName("1.0.0", { arch: "arm64" }), "DEEIX-Chat-1.0.0-windows-arm64-portable.zip");
+  assert.equal(portableAssetName("1.0.0", { arch: "arm64" }), "CourseMate-1.0.0-windows-arm64-portable.zip");
   assert.equal(archFromTriple("x86_64-pc-windows-msvc"), "x64");
   assert.equal(archFromTriple("aarch64-pc-windows-msvc"), "arm64");
   assert.throws(() => archFromTriple("riscv64gc-unknown-linux-gnu"));
 });
 
 test("reads the cargo binary name from [package]", () => {
-  const toml = `[package]\nname = "deeix-chat-desktop"\nversion = "1"\n\n[lib]\nname = "deeix_chat_desktop_lib"\n`;
-  assert.equal(cargoBinaryName(toml), "deeix-chat-desktop");
-  assert.equal(cargoBinaryName(readFileSync(new URL("../src-tauri/Cargo.toml", import.meta.url), "utf8")), "deeix-chat-desktop");
+  const toml = `[package]\nname = "coursemate-desktop"\nversion = "1"\n\n[lib]\nname = "coursemate_desktop_lib"\n`;
+  assert.equal(cargoBinaryName(toml), "coursemate-desktop");
+  assert.equal(cargoBinaryName(readFileSync(new URL("../src-tauri/Cargo.toml", import.meta.url), "utf8")), "coursemate-desktop");
 });
 
 test("finds the build outputs, preferring the bundler-signed sidecar", () => {
@@ -84,9 +84,9 @@ test("finds the build outputs, preferring the bundler-signed sidecar", () => {
     writeFileSync(join(dir, "Cargo.toml"), `[package]\nname = "app-bin"\n`);
     assert.throws(() => findBuildOutputs(dir), /app-bin\.exe/);
     const plain = touch(join(dir, "target", "release", "app-bin.exe"));
-    const copied = touch(join(dir, "target", "release", "deeix-chat-server.exe"));
+    const copied = touch(join(dir, "target", "release", "coursemate-server.exe"));
     assert.deepEqual(findBuildOutputs(dir), { exe: plain, sidecar: copied });
-    const signed = touch(join(dir, "binaries", "deeix-chat-server-x86_64-pc-windows-msvc.exe"));
+    const signed = touch(join(dir, "binaries", "coursemate-server-x86_64-pc-windows-msvc.exe"));
     assert.equal(findBuildOutputs(dir).sidecar, signed);
     // With both target layouts present, the newer build wins.
     const triple = touch(join(dir, "target", "x86_64-pc-windows-msvc", "release", "app-bin.exe"));
@@ -115,7 +115,7 @@ test("accepts a WebView2 runtime folder or the folder the .cab expands into", ()
 test("packs the portable layout under one folder with a space in its name", () => {
   const dir = scratch();
   try {
-    const exe = touch(join(dir, "deeix-chat-desktop.exe"), "MZ app ".repeat(1000));
+    const exe = touch(join(dir, "coursemate-desktop.exe"), "MZ app ".repeat(1000));
     const sidecar = touch(join(dir, "server.exe"), "MZ server");
     const out = writeZip(planEntries({ exe, sidecar, version: "1.2.3" }), join(dir, "out", portableAssetName("1.2.3")), {
       mtime: new Date(Date.UTC(2026, 0, 2, 3, 4, 6)),
@@ -123,14 +123,16 @@ test("packs the portable layout under one folder with a space in its name", () =
     const entries = readZip(out);
     assert.deepEqual(
       entries.map((e) => e.name),
-      ["DEEIX Chat/", `DEEIX Chat/${APP_EXE}`, "DEEIX Chat/deeix-chat-server.exe", "DEEIX Chat/portable", "DEEIX Chat/README.txt"],
+      ["CourseMate/", `CourseMate/${APP_EXE}`, "CourseMate/coursemate-server.exe", "CourseMate/portable", "CourseMate/README.txt", "CourseMate/LICENSE", "CourseMate/NOTICE"],
     );
     const byName = Object.fromEntries(entries.map((e) => [e.name, e]));
-    assert.ok(byName["DEEIX Chat/"].dirAttr);
-    assert.equal(byName[`DEEIX Chat/${APP_EXE}`].data.toString(), "MZ app ".repeat(1000));
-    assert.equal(byName["DEEIX Chat/portable"].data.toString(), MARKER_TEXT);
-    const readme = byName["DEEIX Chat/README.txt"].data.toString("utf8");
-    assert.match(readme, /DEEIX Chat 1\.2\.3/);
+    assert.ok(byName["CourseMate/"].dirAttr);
+    assert.equal(byName[`CourseMate/${APP_EXE}`].data.toString(), "MZ app ".repeat(1000));
+    assert.equal(byName["CourseMate/portable"].data.toString(), MARKER_TEXT);
+    assert.match(byName["CourseMate/LICENSE"].data.toString(), /Apache License/);
+    assert.match(byName["CourseMate/NOTICE"].data.toString(), /DEEIX/);
+    const readme = byName["CourseMate/README.txt"].data.toString("utf8");
+    assert.match(readme, /CourseMate 1\.2\.3/);
     assert.ok(!readme.includes("webview2\" folder"), "online package does not claim a bundled runtime");
 
     // Same inputs and timestamp: byte-identical archive.
@@ -142,7 +144,7 @@ test("packs the portable layout under one folder with a space in its name", () =
     // Cross-check with the system unzip where available.
     if (spawnSync("unzip", ["-v"]).status === 0) {
       const listing = execFileSync("unzip", ["-l", out], { encoding: "utf8" });
-      assert.match(listing, /DEEIX Chat\/DEEIX Chat\.exe/);
+      assert.match(listing, /CourseMate\/CourseMate\.exe/);
       assert.equal(spawnSync("unzip", ["-tq", out]).status, 0);
     }
   } finally {
@@ -160,10 +162,10 @@ test("the offline variant carries the flattened WebView2 runtime", () => {
     touch(join(cab, "Locales", "zh-CN.pak"), "pak");
     const entries = planEntries({ exe, sidecar, version: "1.2.3", webview2: join(dir, "expanded") });
     const names = entries.map((e) => e.name);
-    assert.ok(names.includes("DEEIX Chat/webview2/"));
-    assert.ok(names.includes("DEEIX Chat/webview2/msedgewebview2.exe"));
-    assert.ok(names.includes("DEEIX Chat/webview2/Locales/"));
-    assert.ok(names.includes("DEEIX Chat/webview2/Locales/zh-CN.pak"));
+    assert.ok(names.includes("CourseMate/webview2/"));
+    assert.ok(names.includes("CourseMate/webview2/msedgewebview2.exe"));
+    assert.ok(names.includes("CourseMate/webview2/Locales/"));
+    assert.ok(names.includes("CourseMate/webview2/Locales/zh-CN.pak"));
     assert.ok(names.every((n) => !n.includes("\\") && !n.includes("FixedVersionRuntime")));
     const readme = entries.find((e) => e.name.endsWith("README.txt")).content;
     assert.match(readme, /private copy is included/);
@@ -184,7 +186,7 @@ test("README covers requirements, data, credentials, updates and removal in both
     "Credential Manager",
     "never updates itself",
     "sign out of every server",
-    "com.deeix.chat.desktop.portable-",
+    "io.github.wangxingfan.coursemate.portable-",
     "系统要求",
     "凭据管理器",
     "彻底删除",

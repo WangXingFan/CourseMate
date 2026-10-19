@@ -204,7 +204,7 @@ type Result<T> = std::result::Result<T, TabsError>;
 pub fn init<R: Runtime>(app: &AppHandle<R>) -> Result<()> {
     let config = tauri::utils::config::WindowConfig {
         label: WINDOW_LABEL.into(),
-        title: "DEEIX Chat".into(),
+        title: "CourseMate".into(),
         width: 1280.0,
         height: 840.0,
         min_width: Some(960.0),
@@ -420,7 +420,7 @@ fn lower_traffic_lights<R: Runtime>(window: &Window<R>) -> Result<()> {
 
     let ns_window = window.ns_window()? as *mut AnyObject;
     unsafe {
-        let identifier = NSString::from_str("com.deeix.chat.desktop.tabstrip");
+        let identifier = NSString::from_str("io.github.wangxingfan.coursemate.tabstrip");
         let toolbar: *mut AnyObject = msg_send![objc2::class!(NSToolbar), alloc];
         let toolbar: *mut AnyObject = msg_send![toolbar, initWithIdentifier: &*identifier];
         let _: () = msg_send![toolbar, setShowsBaselineSeparator: false];
