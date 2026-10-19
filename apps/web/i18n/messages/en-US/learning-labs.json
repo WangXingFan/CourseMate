@@ -885,7 +885,8 @@
       "width": "Pulse width / s",
       "decay": "Decay rate / s⁻¹",
       "frequency": "Frequency / Hz"
-    }
+    },
+    "resolutionWarning": "The pulse is very narrow or the oscillation is fast relative to the sampling grid. Increase the time scale or pulse width, or lower the frequency before comparing fine details."
   },
   "review": {
     "title": "Variant review",

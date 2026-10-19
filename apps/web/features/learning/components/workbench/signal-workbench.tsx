@@ -31,6 +31,7 @@ export function SignalWorkbench() {
   const output = React.useMemo(() => combineSignals(inputA, inputB, operation), [inputA, inputB, operation]);
   const yDomain = signalYDomain([inputA, inputB, output]);
   const xDomain: readonly [number, number] = operation === "convolve" ? [-16, 16] : [-8, 8];
+  const underResolved = [a, b].some((source) => ((source.kind === "impulse" || source.kind === "rectangle") && source.width * source.scale < 4 * SAMPLE_DT) || (source.kind === "sine" && source.frequency / source.scale > 1 / (4 * SAMPLE_DT)));
 
   function reset() { setA({ ...DEFAULT_SOURCE }); setB({ ...DEFAULT_SOURCE, width: 1 }); setOperation("convolve"); }
 
@@ -47,6 +48,7 @@ export function SignalWorkbench() {
         ]} /></div>
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3"><Readout label={t("range")} value={`[${xDomain[0]}, ${xDomain[1]}] s`} /><Readout label={t("sampling")} value={`Δt = ${SAMPLE_DT} s`} /><Readout label={t("samples")} value={output.length} /></div>
         <p className="mt-3 text-xs leading-6 text-muted-foreground">{t("approximation")}</p>
+        {underResolved ? <p role="status" className="mt-2 text-xs leading-6 text-amber-700 dark:text-amber-400">{t("resolutionWarning")}</p> : null}
       </LessonPanel>
     </div>
   </LessonShell>;

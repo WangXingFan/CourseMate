@@ -24,9 +24,11 @@ export function useLearningReview(variantId: string, onSaved: () => void) {
   const payload = React.useRef<LearningReviewPayload | null>(null);
   const owner = React.useRef(accessToken);
   const inFlight = React.useRef(false);
+  const generation = React.useRef(0);
   const data = snapshot?.token === accessToken ? snapshot.data : null;
 
   React.useEffect(() => {
+    generation.current++;
     owner.current = accessToken;
     const controller = new AbortController();
     setSnapshot(null); setResult(null); setSelected(null); setLoading(true); setError(""); setSaving(false); setLocked(false);
@@ -36,7 +38,7 @@ export function useLearningReview(variantId: string, onSaved: () => void) {
     }).catch((cause: unknown) => {
       if (!controller.signal.aborted) setError(resolveError(cause));
     }).finally(() => { if (!controller.signal.aborted) setLoading(false); });
-    return () => { controller.abort(); owner.current = ""; };
+    return () => { controller.abort(); owner.current = ""; generation.current++; };
   }, [accessToken, variantId, locale, loadRevision, resolveError]);
 
   async function submit() {
@@ -48,13 +50,14 @@ export function useLearningReview(variantId: string, onSaved: () => void) {
     setLocked(true);
     inFlight.current = true; setSaving(true); setError("");
     const token = accessToken;
+    const requestGeneration = generation.current;
     try {
       const saved = await saveLearningReview(token, input);
-      if (owner.current === token) { setResult(saved); onSaved(); }
+      if (owner.current === token && generation.current === requestGeneration) { setResult(saved); onSaved(); }
     } catch (cause: unknown) {
-      if (owner.current === token) setError(resolveError(cause));
+      if (owner.current === token && generation.current === requestGeneration) setError(resolveError(cause));
     } finally {
-      if (owner.current === token) { setSaving(false); inFlight.current = false; }
+      if (owner.current === token && generation.current === requestGeneration) { setSaving(false); inFlight.current = false; }
     }
   }
 

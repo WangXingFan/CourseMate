@@ -885,7 +885,8 @@
       "width": "脉宽 / s",
       "decay": "衰减率 / s⁻¹",
       "frequency": "频率 / Hz"
-    }
+    },
+    "resolutionWarning": "当前脉冲过窄或振荡过快，采样点不足以准确表现细节。增大尺度、增大脉宽或降低频率后再比较。"
   },
   "review": {
     "title": "变式复习",
