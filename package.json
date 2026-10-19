@@ -23,7 +23,9 @@
     "overrides": {
       "dompurify": "3.4.14",
       "fast-uri": ">=3.1.6",
-      "js-yaml": ">=4.3.2"
+      "js-yaml": ">=4.3.2",
+      "sharp": "0.35.5",
+      "source-map-js": "1.2.2"
     }
   }
 }
