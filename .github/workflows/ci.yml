@@ -151,7 +151,7 @@ jobs:
       - name: Check (lint, types, architecture, API contract)
         run: pnpm turbo run check --filter=@deeix/web --filter=./packages/*
       - name: Test
-        run: pnpm turbo run test --filter=./packages/*
+        run: pnpm turbo run test --filter=@deeix/web --filter=./packages/*
       - name: Cache Next.js build
         uses: actions/cache@v4
         with:
