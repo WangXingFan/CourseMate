@@ -343,7 +343,7 @@ func TestClassroomHandlersRejectBlankPathIDs(t *testing.T) {
 func TestQuizRoutesCreatePublishSubmitAndReport(t *testing.T) {
 	router, _ := newClassroomHandlerTest(t)
 	lessons := performClassroomRequest(router, http.MethodGet, "/api/v1/classrooms/class_one/quiz-lessons", "", 0)
-	if lessons.Code != http.StatusOK || !strings.Contains(lessons.Body.String(), "ss-1-1") || strings.Contains(lessons.Body.String(), `"answer"`) {
+	if lessons.Code != http.StatusOK || !strings.Contains(lessons.Body.String(), "ss-1-1") || !strings.Contains(lessons.Body.String(), `"followup"`) || !strings.Contains(lessons.Body.String(), `"answer"`) {
 		t.Fatalf("lesson selection status/body = %d/%s", lessons.Code, lessons.Body.String())
 	}
 	studentLessons := performClassroomRequest(router, http.MethodGet, "/api/v1/classrooms/class_one/quiz-lessons", "", 4)

@@ -2,9 +2,9 @@ import type { BrandingDTO } from "@/shared/api/branding";
 import { pwaAsset } from "@/shared/pwa/assets";
 
 export const DEFAULT_BRANDING: BrandingDTO = {
-  title: "CourseMate",
-  shortName: "CourseMate",
-  description: "CourseMate is an interactive Signals and Systems learning companion with experiments, AI tutoring, quizzes and spaced review.",
+  title: "课知伴",
+  shortName: "课知伴",
+  description: "课知伴是《信号与系统》互动学习助手，支持信号实验、AI 助教、练习与间隔复习。",
   logoURL: "",
   faviconURL: "/favicon.ico",
   pwaIcon192URL: pwaAsset("/pwa/icon-192.png"),

@@ -1,0 +1,18 @@
+.native-lab-print { display: none; }
+@media print {
+  @page { size: A4; margin: 16mm 14mm; }
+  body[data-lab-report="true"] { height: auto !important; overflow: visible !important; background: white !important; color: #222 !important; }
+  body[data-lab-report="true"] > :not(.native-lab-print) { display: none !important; }
+  body[data-lab-report="true"] > .native-lab-print { display: block !important; position: static; width: 100%; padding: 0; font: 11px/1.7 "Microsoft YaHei", sans-serif; --card: white; --foreground: #222; --muted-foreground: #555; --border: #ddd; }
+  .native-lab-print h1 { font-size: 22px; margin: 0 0 12px; }
+  .native-lab-print h2 { font-size: 17px; margin: 18px 0 10px; }
+  .native-lab-print h3 { font-size: 12px; margin: 12px 0 6px; }
+  .native-lab-print p { white-space: pre-wrap; overflow-wrap: anywhere; margin: 7px 0; }
+  .native-lab-print table { width: 100%; min-width: 0; border-collapse: collapse; font-size: 9px; }
+  .native-lab-print th, .native-lab-print td { border: 1px solid #ddd; padding: 6px; overflow-wrap: anywhere; }
+  .native-lab-print tr, .native-lab-report-figure { break-inside: avoid; }
+  .native-lab-print svg { max-width: 100%; height: auto; }
+  .native-lab-print .overflow-x-auto { overflow: visible; }
+  .native-lab-report-task { break-before: page; }
+  .native-lab-report-task:first-of-type { break-before: auto; }
+}

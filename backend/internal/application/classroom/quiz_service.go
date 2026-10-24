@@ -41,6 +41,7 @@ type QuizReport struct {
 	StudentCount    int
 	SubmissionCount int
 	AverageScore    float64
+	Comparison      *QuizComparison
 	Questions       []QuizQuestionStatistics
 }
 
@@ -68,6 +69,7 @@ func (s *Service) QuizLessons(ctx context.Context, actor uint, classroomPublicID
 			items = append(items, domain.QuizLesson{
 				ID: lesson.ID, Number: lesson.Number, Title: lesson.Title, Chapter: lesson.Chapter,
 				Prompt: question.Prompt, Options: append([]string(nil), question.Options...),
+				Answer: question.Answer, Explanation: question.Explanation, Followup: pairedSnapshot(lesson.ID, question).Followup,
 			})
 		}
 	}
@@ -107,10 +109,7 @@ func (s *Service) CreateQuiz(
 			return nil, ErrQuizInvalid
 		}
 		seen[lessonID] = true
-		questions = append(questions, domain.QuizQuestion{
-			ID: question.ID, Prompt: question.Prompt,
-			Options: append([]string(nil), question.Options...), Answer: question.Answer,
-		})
+		questions = append(questions, pairedSnapshot(lessonID, question))
 	}
 	return s.repo.CreateQuiz(ctx, domain.Quiz{
 		PublicID:    strings.ReplaceAll(uuid.NewString(), "-", ""),
@@ -136,12 +135,33 @@ func (s *Service) ownedQuiz(ctx context.Context, actor uint, publicID string) (*
 
 // OpenQuiz publishes a quiz so students in the classroom can answer it.
 func (s *Service) OpenQuiz(ctx context.Context, actor uint, publicID string) error {
-	if _, err := s.ownedQuiz(ctx, actor, publicID); err != nil {
+	quiz, err := s.ownedQuiz(ctx, actor, publicID)
+	if err != nil {
 		return err
 	}
-	err := s.repo.UpdateQuizStatus(ctx, strings.TrimSpace(publicID), actor, domain.QuizStatusOpen)
+	if quiz.SourceQuizID != "" {
+		parent, e := s.ownedQuiz(ctx, actor, quiz.SourceQuizID)
+		if e != nil {
+			return e
+		}
+		if parent.Status != domain.QuizStatusClosed {
+			return ErrQuizInvalid
+		}
+	} else {
+		followup, e := s.findFollowup(ctx, *quiz)
+		if e != nil {
+			return e
+		}
+		if followup != nil {
+			return ErrQuizInvalid
+		}
+	}
+	err = s.repo.UpdateQuizStatus(ctx, strings.TrimSpace(publicID), actor, domain.QuizStatusOpen)
 	if errors.Is(err, repository.ErrNotFound) {
 		return ErrQuizNotFound
+	}
+	if errors.Is(err, repository.ErrInvalidInput) {
+		return ErrQuizInvalid
 	}
 	return err
 }
@@ -154,6 +174,9 @@ func (s *Service) CloseQuiz(ctx context.Context, actor uint, publicID string) er
 	err := s.repo.UpdateQuizStatus(ctx, strings.TrimSpace(publicID), actor, domain.QuizStatusClosed)
 	if errors.Is(err, repository.ErrNotFound) {
 		return ErrQuizNotFound
+	}
+	if errors.Is(err, repository.ErrInvalidInput) {
+		return ErrQuizInvalid
 	}
 	return err
 }
@@ -182,6 +205,8 @@ func (s *Service) StudentQuizzes(ctx context.Context, actor uint) (*domain.Class
 	for index := range items {
 		for questionIndex := range items[index].Questions {
 			items[index].Questions[questionIndex].Answer = -1
+			items[index].Questions[questionIndex].Explanation = ""
+			items[index].Questions[questionIndex].Followup = nil
 		}
 	}
 	return classroom, items, nil
@@ -300,7 +325,12 @@ func (s *Service) QuizReport(ctx context.Context, actor uint, publicID string) (
 	if len(submissions) > 0 {
 		average = float64(totalScore) / float64(len(submissions))
 	}
+	comparison, err := s.quizComparison(ctx, actor, *quiz, students)
+	if err != nil {
+		return nil, err
+	}
 	return &QuizReport{
+		Comparison:      comparison,
 		Quiz:            *quiz,
 		Students:        students,
 		Submissions:     submissions,

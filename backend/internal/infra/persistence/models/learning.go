@@ -29,3 +29,18 @@ type LearningLessonAttempt struct {
 }
 
 func (LearningLessonAttempt) TableName() string { return "user_learning_lesson_attempts" }
+
+type LearningQuizRound struct {
+	ID          string `gorm:"size:36;primaryKey"`
+	UserID      uint   `gorm:"not null;index:idx_quiz_ranking"`
+	ChapterID   string `gorm:"size:8;not null;index:idx_quiz_ranking"`
+	BankVersion string `gorm:"size:32;not null;default:'';index:idx_quiz_ranking"`
+	Payload     string `gorm:"type:text;not null"`
+	Score       int    `gorm:"not null;default:0"`
+	AnswerCount int    `gorm:"not null;default:0"`
+	ElapsedMS   int64  `gorm:"not null;default:0"`
+	StartedAt   time.Time
+	FinishedAt  *time.Time
+}
+
+func (LearningQuizRound) TableName() string { return "user_learning_quiz_rounds" }

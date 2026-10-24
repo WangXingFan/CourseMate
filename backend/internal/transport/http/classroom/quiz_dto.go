@@ -3,12 +3,15 @@ package classroom
 import "time"
 
 type QuizLessonResponse struct {
-	ID      string   `json:"id"`
-	Number  string   `json:"number"`
-	Title   string   `json:"title"`
-	Chapter string   `json:"chapter"`
-	Prompt  string   `json:"prompt"`
-	Options []string `json:"options"`
+	ID          string                `json:"id"`
+	Number      string                `json:"number"`
+	Title       string                `json:"title"`
+	Chapter     string                `json:"chapter"`
+	Prompt      string                `json:"prompt"`
+	Options     []string              `json:"options"`
+	Answer      int                   `json:"answer"`
+	Explanation string                `json:"explanation"`
+	Followup    *QuizQuestionResponse `json:"followup" extensions:"x-nullable"`
 }
 
 type QuizLessonListResponse struct {
@@ -23,10 +26,14 @@ type CreateQuizRequest struct {
 
 // QuizQuestionResponse is the teacher view and includes the correct option.
 type QuizQuestionResponse struct {
-	ID      string   `json:"id"`
-	Prompt  string   `json:"prompt"`
-	Options []string `json:"options"`
-	Answer  int      `json:"answer"`
+	ID           string   `json:"id"`
+	Prompt       string   `json:"prompt"`
+	Options      []string `json:"options"`
+	Answer       int      `json:"answer"`
+	LessonID     string   `json:"lessonId"`
+	ConceptID    string   `json:"conceptId"`
+	ConceptTitle string   `json:"conceptTitle"`
+	Explanation  string   `json:"explanation"`
 }
 
 // QuizResponse is the teacher-facing quiz summary.
@@ -40,6 +47,7 @@ type QuizResponse struct {
 	CreatedAt       time.Time              `json:"createdAt"`
 	OpenedAt        *time.Time             `json:"openedAt"`
 	ClosedAt        *time.Time             `json:"closedAt"`
+	SourceQuizID    string                 `json:"sourceQuizId"`
 }
 
 // QuizListResponse is a teacher quiz list.
@@ -70,6 +78,8 @@ type QuizQuestionStatisticsResponse struct {
 	Answer       int      `json:"answer"`
 	OptionCounts []int    `json:"optionCounts"`
 	CorrectCount int      `json:"correctCount"`
+	Explanation  string   `json:"explanation"`
+	ConceptTitle string   `json:"conceptTitle"`
 }
 
 // QuizStatisticsResponse summarizes completion and correctness.
@@ -87,6 +97,7 @@ type QuizReportResponse struct {
 	Submissions []QuizSubmissionResponse `json:"submissions"`
 	Missing     []StudentResponse        `json:"missing"`
 	Statistics  QuizStatisticsResponse   `json:"statistics"`
+	Comparison  *QuizComparisonResponse  `json:"comparison" extensions:"x-nullable"`
 }
 
 // StudentQuizQuestionResponse never contains the correct option.

@@ -58,7 +58,7 @@ try {
     else if (url.pathname.endsWith("/conversations/output-test")) data = { conversation };
     else if (url.pathname.endsWith("/conversations")) data = { results: [conversation], total: 1 };
     else if (url.pathname.endsWith("/capabilities")) data = { features: { knowledgeBases: true, classrooms: true } };
-    else if (url.pathname.endsWith("/branding")) data = { title: "CourseMate", shortName: "CourseMate", description: "", logoURL: "", faviconURL: "/favicon.ico" };
+    else if (url.pathname.endsWith("/branding")) data = { title: "课知伴", shortName: "课知伴", description: "", logoURL: "", faviconURL: "/favicon.ico" };
     else if (url.pathname.endsWith("/version")) { await route.fulfill({ json: { version: "0.4.4-beta.3", buildID: "" } }); return; }
     await route.fulfill({ json: { errorMsg: "", data } });
   });

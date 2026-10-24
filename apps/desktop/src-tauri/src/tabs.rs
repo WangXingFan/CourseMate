@@ -204,7 +204,7 @@ type Result<T> = std::result::Result<T, TabsError>;
 pub fn init<R: Runtime>(app: &AppHandle<R>) -> Result<()> {
     let config = tauri::utils::config::WindowConfig {
         label: WINDOW_LABEL.into(),
-        title: "CourseMate".into(),
+        title: "课知伴".into(),
         width: 1280.0,
         height: 840.0,
         min_width: Some(960.0),

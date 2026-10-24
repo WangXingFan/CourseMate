@@ -1,72 +1,51 @@
 "use client";
 
+import { ArrowLeft, Download, FlaskConical, Upload } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { useLearningVirtualLab } from "@/features/learning/hooks/use-learning-virtual-lab";
+import { SpinnerLabel } from "@/components/ui/spinner";
+import { useLearningNativeLab } from "@/features/learning/hooks/use-learning-native-lab";
+import { type LabRoute, parseLabRoute } from "@/features/learning/model/virtual-lab-native";
+import { NativeLabHelp, NativeLabOverview } from "./native-lab-overview";
+import { NativeLabRecords, NativeLabReport } from "./native-lab-records";
+import { NativeLabTask } from "./native-lab-task";
 
 export function VirtualLabWorkspace({ initialRoute = "home" }: { initialRoute?: string }) {
   const t = useTranslations("learning.virtualLab");
-  const { user, snapshot, record, retry, reload, backup, failRestore, start } = useLearningVirtualLab();
-  const frame = useRef<HTMLIFrameElement>(null);
-  const available = !!snapshot?.available;
-  const nonce = snapshot?.nonce;
-  const document = snapshot?.document;
-  const sendInit = useCallback(() => {
-    if (!user || !available || !nonce) return;
-    frame.current?.contentWindow?.postMessage({
-      channel: "coursemate-lab", type: "init", nonce, document,
-      identity: { name: user.displayName || user.username, number: user.username },
-    }, "*");
-  }, [user, available, nonce, document]);
+  const n = useTranslations("learning.virtualLab.native");
+  const model = useLearningNativeLab();
+  const { engine, snapshot, user, retry, reload, backup } = model;
+  const [route, setRoute] = useState<LabRoute>(() => parseLabRoute("", initialRoute));
+  const [printState, setPrintState] = useState<{ key: string; course: string } | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [importError, setImportError] = useState("");
+  const fileInput = useRef<HTMLInputElement>(null);
+  const closeReport = useCallback(() => setPrintState(null), []);
+  useEffect(() => { setPendingFile(null); setImportError(""); }, [snapshot?.nonce]);
   useEffect(() => {
-    const navigate = () => {
-      const route = window.location.hash.slice(1) || initialRoute;
-      frame.current?.contentWindow?.postMessage({ channel: "coursemate-lab", type: "navigate", nonce, route }, "*");
-    };
-    const receive = (event: MessageEvent) => {
-      if (event.source !== frame.current?.contentWindow || event.origin !== "null") return;
-      const msg: unknown = event.data;
-      if (typeof msg !== "object" || !msg || !("channel" in msg) || msg.channel !== "coursemate-lab" || !("type" in msg)) return;
-      if (msg.type === "ready") { sendInit(); return; }
-      if (!("nonce" in msg) || msg.nonce !== nonce) return;
-      if (msg.type === "loaded" && "document" in msg && typeof msg.document === "string") { start(msg.document); navigate(); }
-      if (msg.type === "error") failRestore();
-      if (msg.type === "change" && "document" in msg && typeof msg.document === "string") record(msg.document);
-    };
-    window.addEventListener("message", receive);
+    const navigate = () => setRoute(parseLabRoute(window.location.hash, initialRoute));
+    navigate();
     window.addEventListener("hashchange", navigate);
-    return () => {
-      window.removeEventListener("message", receive);
-      window.removeEventListener("hashchange", navigate);
-    };
-  }, [nonce, sendInit, record, failRestore, start, initialRoute]);
+    return () => window.removeEventListener("hashchange", navigate);
+  }, [initialRoute]);
   const status = snapshot?.status ?? "loading";
-  return (
-    <div className="flex h-full min-h-0 flex-col bg-background">
-      <header className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-3">
-        <Link href="/learn/experiments" className="text-xs underline underline-offset-4">{t("back")}</Link>
-        <h1 className="text-sm font-medium">{t("title")}</h1>
-        <span className="text-xs text-muted-foreground">{user?.displayName || user?.username} · {user?.username}</span>
-        <span role="status" className="text-xs text-muted-foreground">{t(`status.${status}`)}</span>
-        {status === "error" && <Button size="sm" variant="outline" onClick={retry}>{t("retry")}</Button>}
-        {available && <Button size="sm" variant="outline" onClick={backup}>{t("backup")}</Button>}
-      </header>
-      {(status === "conflict" || status === "invalid") && (
-        <div role="alert" className="border-b border-border bg-muted p-4 text-xs leading-6">
-          <p>{t(status === "conflict" ? "conflictNote" : "invalidNote")}</p>
-          <Button className="mt-2" size="sm" variant="outline" onClick={reload}>{t("reload")}</Button>
-        </div>
-      )}
-      {snapshot?.localWarning && <p role="alert" className="p-3 text-xs">{t("localWarning")}</p>}
-      {available ? (
-        <iframe key={nonce} ref={frame} title={t("frameTitle")} src="/vendor/signal-lab/index.html"
-          sandbox="allow-scripts allow-downloads allow-modals" referrerPolicy="origin"
-          onLoad={sendInit} className="min-h-0 w-full flex-1 border-0 bg-white" />
-      ) : (
-        <p className="p-6 text-sm text-muted-foreground">{t(status === "error" ? "loadFailed" : "status.loading")}</p>
-      )}
+  const onPrint = (course: string) => { if (snapshot) setPrintState({ key: snapshot.nonce, course }); };
+  const links = [{ href: "#home", label: n("overview"), active: route.page === "home" }, ...(engine?.courses ?? []).map((course) => ({ href: `#course/${course.id}`, label: `${course.number} · ${course.short}`, active: ["course", "task"].includes(route.page) && route.id.startsWith(course.id) })), { href: "#records/L1", label: n("records"), active: route.page === "records" }, { href: "#help", label: n("help"), active: route.page === "help" }];
+  return <main className="h-full min-h-0 min-w-0 flex-1 overflow-y-auto bg-background" data-native-lab>
+    <div className="mx-auto w-full max-w-7xl px-4 py-5 md:px-7 md:py-7">
+      <header className="mb-5 flex flex-wrap items-center justify-between gap-4"><div className="min-w-0"><Link href="/learn/experiments" className="mb-3 inline-flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground"><ArrowLeft aria-hidden className="size-3" />{t("back")}</Link><p className="flex items-center gap-2 text-sm font-medium"><FlaskConical aria-hidden className="size-4 text-primary" />{t("title")}</p><p className="mt-2 text-[11px] text-muted-foreground">{user?.displayName || user?.username} · {user?.username}</p></div><div className="flex flex-wrap items-center gap-2"><span role="status" className={`mr-1 rounded-full border px-2.5 py-1 text-[10px] ${status === "saved" ? "border-emerald-600/20 text-emerald-700 dark:text-emerald-400" : "border-border text-muted-foreground"}`}>{t(`status.${status}`)}</span>{status === "error" && <Button size="sm" variant="outline" onClick={retry}>{t("retry")}</Button>}{snapshot?.available && <Button size="sm" variant="outline" onClick={backup}><Download aria-hidden className="size-3" />{t("backup")}</Button>}{engine && <Button size="sm" variant="ghost" onClick={() => fileInput.current?.click()}><Upload aria-hidden className="size-3" />{n("import")}</Button>}</div></header>
+      {(status === "conflict" || status === "invalid") && <div role="alert" className="mb-5 rounded-xl border border-primary/20 bg-primary/5 p-4 text-xs leading-7"><p>{t(status === "conflict" ? "conflictNote" : "invalidNote")}</p><Button className="mt-2" size="sm" variant="outline" onClick={reload}>{t("reload")}</Button></div>}
+      {snapshot?.localWarning && <p role="alert" className="mb-4 text-xs text-destructive">{t("localWarning")}</p>}
+      {importError && <p role="alert" className="mb-4 text-xs text-destructive">{importError}</p>}
+      {engine ? <><nav aria-label={n("navigation")} className="mb-7 flex flex-wrap gap-1 rounded-xl border border-border/60 bg-card p-1.5">{links.map((link) => <a key={link.href} href={link.href} aria-current={link.active ? "page" : undefined} className={`rounded-lg px-3 py-2 text-[11px] leading-5 transition-colors ${link.active ? "bg-primary/8 font-medium text-primary" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"}`}>{link.label}</a>)}</nav><div id="main" data-lab-route={`${route.page}/${route.id}`}>
+        {route.page === "task" ? <NativeLabTask key={`${snapshot?.nonce}-${route.id}`} model={model} engine={engine} taskID={route.id} /> : route.page === "records" ? <NativeLabRecords key={snapshot?.nonce} engine={engine} courseID={route.id} onPrint={onPrint} /> : route.page === "help" ? <NativeLabHelp /> : <NativeLabOverview engine={engine} courseID={route.page === "course" ? route.id : undefined} />}
+      </div><footer className="mt-10 flex flex-wrap justify-between gap-3 border-t border-border/60 py-4 font-mono text-[10px] text-muted-foreground"><span>CS3017 / v{engine.version}</span><span>{n("computeLocally")}</span></footer></> : status !== "invalid" && <div className="flex min-h-80 items-center justify-center text-xs text-muted-foreground">{status === "error" ? t("loadFailed") : <SpinnerLabel>{t("status.loading")}</SpinnerLabel>}</div>}
     </div>
-  );
+    <input ref={fileInput} id="import-file" type="file" accept=".json,application/json" className="hidden" onChange={(event) => { const file = event.target.files?.[0]; if (file) setPendingFile(file); event.target.value = ""; }} />
+    <AlertDialog open={!!pendingFile} onOpenChange={(open) => { if (!open) setPendingFile(null); }}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>{n("import")}</AlertDialogTitle><AlertDialogDescription>{n("importWarning")}</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>{n("cancel")}</AlertDialogCancel><AlertDialogAction onClick={() => { if (pendingFile) void model.importFile(pendingFile).then(() => setImportError("")).catch((error: unknown) => setImportError(error instanceof Error ? error.message : n("actionFailed"))); }}>{n("confirm")}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+    {engine && printState && printState.key === snapshot?.nonce && <NativeLabReport engine={engine} courseID={printState.course} onClose={closeReport} />}
+  </main>;
 }

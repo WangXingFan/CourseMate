@@ -91,7 +91,7 @@
   "navigation": "Settings navigation",
   "aboutPage": {
     "title": "About",
-    "description": "CourseMate is an interactive learning companion for Signals and Systems. Explore course chapters and signal experiments, ask the AI tutor, check your understanding with quizzes, and revisit concepts through spaced review.",
+    "description": "课知伴 is an interactive learning companion for Signals and Systems. Explore course chapters and signal experiments, ask the AI tutor, check your understanding with quizzes, and revisit concepts through spaced review.",
     "details": "Product information",
     "product": "Product",
     "version": "Version",
@@ -99,7 +99,7 @@
     "userConsole": "User console",
     "repository": "Repository",
     "contact": "Feedback",
-    "copyright": "© 2026 WangXingFan · CourseMate",
+    "copyright": "© 2026 WangXingFan · 课知伴",
     "license": "Code licensed under the Apache License 2.0.",
     "author": "Author",
     "notices": "Third-party notices"
@@ -320,7 +320,7 @@
         "description": {
           "bootstrapVerified": "Setting your first email requires verifying ownership of the new address.",
           "saveOnly": "The email address will be updated after saving.",
-          "change": "CourseMate will ask for the verification required by your account before saving this change."
+          "change": "课知伴 will ask for the verification required by your account before saving this change."
         },
         "labels": {
           "newEmail": "New email"

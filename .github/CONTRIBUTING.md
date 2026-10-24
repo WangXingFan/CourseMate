@@ -4,6 +4,7 @@ Thank you for contributing to DEEIX Chat.
 
 ## Before You Start
 
+- The default and primary branch is `main`. Create feature branches from `main` and target `main` in pull requests.
 - Search existing issues and pull requests before opening a new one.
 - Keep changes focused. Avoid unrelated refactors in feature or bug-fix pull requests.
 - For security issues, follow [SECURITY.md](./SECURITY.md) instead of opening a public issue.

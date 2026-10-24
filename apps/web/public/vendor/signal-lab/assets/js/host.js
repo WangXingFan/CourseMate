@@ -12,7 +12,7 @@
     R.data.student.number = identity.number;
     for (const [id, value] of [['student-name', identity.name], ['student-number', identity.number]]) {
       const input = document.getElementById(id);
-      if (input) { input.value = value; input.readOnly = true; input.title = '来自当前 CourseMate 登录账号'; }
+      if (input) { input.value = value; input.readOnly = true; input.title = '来自当前 课知伴 登录账号'; }
     }
   };
   window.addEventListener('coursemate-lab-change', () => {

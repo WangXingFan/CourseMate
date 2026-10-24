@@ -135,14 +135,14 @@ export function AboutSettingsContent({
     },
     {
       label: labels.repository,
-      value: "CourseMate",
+      value: "课知伴",
       href: "https://github.com/WangXingFan/CourseMate",
       brand: { name: "GitHub", slug: "github" },
     },
     {
       label: labels.notices,
       value: "NOTICE",
-      href: "https://github.com/WangXingFan/CourseMate/blob/dev/NOTICE",
+      href: "https://github.com/WangXingFan/CourseMate/blob/main/NOTICE",
       icon: FileText,
     },
     {

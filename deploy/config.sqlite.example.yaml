@@ -1,5 +1,5 @@
 app:
-  name: CourseMate
+  name: 课知伴
   # Required. Use prod and replace security values before public deployment.
   env: dev
 
@@ -32,9 +32,9 @@ security:
 
 branding:
   # Optional. Frontend product branding; changes take effect after restarting the app.
-  title: CourseMate
-  short_name: CourseMate
-  description: CourseMate is an interactive Signals and Systems learning companion with experiments, AI tutoring, quizzes and spaced review.
+  title: 课知伴
+  short_name: 课知伴
+  description: 课知伴是《信号与系统》互动学习助手，支持信号实验、AI 助教、练习与间隔复习。
   logo_url: ""
   favicon_url: /favicon.ico
   pwa_icon_192_url: /pwa/icon-192.png

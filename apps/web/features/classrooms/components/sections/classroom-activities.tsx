@@ -28,6 +28,7 @@ import {
   type ClassroomActivitiesModel,
   useClassroomActivities,
 } from "@/features/classrooms/hooks/use-classroom-activities";
+import { QuizComparisonPanel } from "@/features/classrooms/components/sections/quiz-comparison-panel";
 import { cn } from "@/lib/utils";
 import { StreamdownRender } from "@/shared/components/markdown/streamdown-render";
 import type { ClassroomQuizDTO, ClassroomStudentDTO } from "@/shared/api/classroom-types";
@@ -69,6 +70,9 @@ export function ClassroomActivities({ model }: { model: ClassroomActivitiesModel
         </div>
       </div>
 
+      <div className="shrink-0 border-b border-border/40 bg-muted/20 px-3 py-3 md:px-5">
+        <p className="text-xs font-medium">{t("workflow.title")}</p>
+      </div>
       {list.loading && list.quizzes.length === 0 ? (
         <div className="flex min-h-0 flex-1 items-center justify-center text-muted-foreground">
           <Spinner className="size-4" />
@@ -80,7 +84,9 @@ export function ClassroomActivities({ model }: { model: ClassroomActivitiesModel
               <QuizRow
                 key={quiz.id}
                 quiz={quiz}
-                busy={actions.busyQuizID === quiz.id}
+                busy={!!actions.busyQuizID}
+                followup={list.quizzes.find((item) => item.sourceQuizId === quiz.id)}
+                onFollowup={() => { const next = list.quizzes.find((item) => item.sourceQuizId === quiz.id); if (next) void actions.openReport(next); else void actions.createFollowup(quiz); }}
                 onPublish={() => actions.publish(quiz)}
                 onClose={() => actions.close(quiz)}
                 onReport={() => void actions.openReport(quiz)}
@@ -115,6 +121,8 @@ function QuizRow({
   onPublish,
   onClose,
   onReport,
+  onFollowup,
+  followup,
   locale,
 }: {
   quiz: ClassroomQuizDTO;
@@ -122,6 +130,8 @@ function QuizRow({
   onPublish: () => void;
   onClose: () => void;
   onReport: () => void;
+  onFollowup: () => void;
+  followup?: ClassroomQuizDTO;
   locale: string;
 }) {
   const t = useTranslations("classrooms.activities");
@@ -154,19 +164,20 @@ function QuizRow({
             </span>
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-1">
-          {quiz.status === "draft" || quiz.status === "closed" ? (
+        <div className="flex shrink-0 flex-wrap items-center gap-1">
+          {(quiz.status === "draft" || quiz.status === "closed") && !followup ? (
             <Button type="button" size="sm" className="h-7 px-2" disabled={busy} onClick={onPublish}>
               {busy ? <Spinner className="size-3" /> : null}
               {t("open")}
             </Button>
-          ) : (
+          ) : quiz.status === "open" ? (
             <Button type="button" size="sm" variant="outline" className="h-7 px-2" disabled={busy} onClick={onClose}>
               {busy ? <Spinner className="size-3" /> : null}
               {t("close")}
             </Button>
-          )}
-          <Button type="button" variant="ghost" size="sm" className="h-7 px-2" onClick={onReport}>
+          ) : null}
+          {quiz.phase === "pre_class" && quiz.status === "closed" && <Button type="button" variant="outline" size="sm" className="h-7 px-2" disabled={busy} onClick={onFollowup}>{t(followup ? "viewFollowup" : "createFollowup")}</Button>}
+          <Button type="button" variant="ghost" size="sm" className="h-7 px-2" aria-label={t("report")} onClick={onReport}>
             <BarChart3 className="size-3.5" strokeWidth={1.6} />
             <span className="hidden sm:inline">{t("report")}</span>
           </Button>
@@ -221,7 +232,7 @@ function QuizEditorDialog({ model }: { model: ClassroomActivitiesModel }) {
                             <input id={inputID} type="checkbox" checked={selected} disabled={saving || (!selected && selectedCount >= maxQuestions)} onChange={() => toggleLesson(lesson.id)} className="mt-0.5 accent-primary" />
                             <span className="min-w-0"><span className="block font-medium">{lesson.number} {lesson.title}</span><span className="mt-1 block text-[10px] text-muted-foreground">{lesson.chapter}</span></span>
                           </label>
-                          {selected && <div className="mt-3 border-t border-primary/15 pt-3 text-xs" lang="zh-CN"><StreamdownRender content={lesson.prompt} /><ol className="mt-2 space-y-1 text-muted-foreground">{lesson.options.map((option, index) => <li key={index} className="flex gap-2"><span className="shrink-0 font-mono">{OPTION_LETTERS[index]}.</span><div className="min-w-0"><StreamdownRender content={option} /></div></li>)}</ol></div>}
+                          {selected && <div className="mt-3 space-y-3 border-t border-primary/15 pt-3 text-xs" lang="zh-CN"><StreamdownRender content={lesson.prompt} /><ol className="space-y-1 text-muted-foreground">{lesson.options.map((option, index) => <li key={index} className="flex gap-2"><span className="shrink-0 font-mono">{OPTION_LETTERS[index]}.</span><div className="min-w-0"><StreamdownRender content={option} /></div></li>)}</ol><p className="text-[11px] font-medium text-primary">{t("answerKey", { answer: OPTION_LETTERS[lesson.answer] })}</p><StreamdownRender content={lesson.explanation} />{lesson.followup && <details className="rounded-md bg-muted/50 p-3"><summary className="cursor-pointer font-medium">{t("pairedPreview")}</summary><div className="mt-3 space-y-2"><StreamdownRender content={lesson.followup.prompt} /><ol className="space-y-1 text-muted-foreground">{lesson.followup.options.map((option, index) => <li key={index} className="flex gap-2"><span className="font-mono">{OPTION_LETTERS[index]}.</span><StreamdownRender content={option} /></li>)}</ol><p className="text-primary">{t("answerKey", { answer: OPTION_LETTERS[lesson.followup.answer] })}</p><StreamdownRender content={lesson.followup.explanation} /></div></details>}</div>}
                         </div>
                       );
                     })}
@@ -248,11 +259,10 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
 
   return (
     <Dialog open={report !== null || loading} onOpenChange={(open) => !open && close()}>
-      <DialogContent className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[760px]">
+      <DialogContent aria-describedby={undefined} className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[760px]">
         <DialogHeightTransition contentClassName="max-h-[min(88vh,780px)]">
           <DialogHeader className="shrink-0 px-4 py-4">
             <DialogTitle>{t("reportDialog.title")}</DialogTitle>
-            <DialogDescription>{t("reportDialog.description")}</DialogDescription>
           </DialogHeader>
           {loading || !report ? (
             <div className="flex h-40 items-center justify-center text-muted-foreground">
@@ -260,6 +270,7 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
             </div>
           ) : (
             <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-2">
+              <p className="text-sm font-semibold">{report.quiz.title}</p>
               <div className="grid grid-cols-3 gap-2">
                 <ReportStat label={t("reportDialog.submitted")} value={`${report.statistics.submissionCount}/${report.statistics.studentCount}`} />
                 <ReportStat label={t("reportDialog.missing")} value={String(report.missing.length)} />
@@ -269,16 +280,17 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
                 />
               </div>
 
+              {report.comparison && <QuizComparisonPanel comparison={report.comparison} />}
               <div className="rounded-lg border border-border/50 p-3">
                 <p className="text-[11px] font-medium text-foreground">{t("reportDialog.distribution")}</p>
                 <div className="mt-2 space-y-3">
                   {report.statistics.questions.map((question, questionIndex) => (
                     <div key={question.id} className="space-y-1.5">
-                      <p className="text-[10px] text-muted-foreground">
-                        {t("createDialog.question", { index: questionIndex + 1 })} · {question.prompt}
-                      </p>
+                      <p className="text-[10px] text-muted-foreground">{t("createDialog.question", { index: questionIndex + 1 })}{question.conceptTitle ? ` · ${question.conceptTitle}` : ""}</p>
+                      <div className="text-xs" lang="zh-CN"><StreamdownRender content={question.prompt} /></div>
+                      <p className="text-[11px] font-medium text-primary">{t("answerKey", { answer: OPTION_LETTERS[question.answer] })} · {t("accuracy", { correct: question.correctCount, total: report.statistics.submissionCount })}</p>
                       <div className="space-y-1">
-                        {question.options.map((_option, optionIndex) => {
+                        {question.options.map((option, optionIndex) => {
                           const count = question.optionCounts[optionIndex] ?? 0;
                           const max = Math.max(1, ...question.optionCounts);
                           const percent = Math.round((count / max) * 100);
@@ -288,7 +300,8 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
                               <span className="w-4 shrink-0 text-[10px] font-medium text-muted-foreground">
                                 {OPTION_LETTERS[optionIndex]}
                               </span>
-                              <div className="h-4 min-w-0 flex-1 overflow-hidden rounded-sm bg-muted/60">
+                              <div className="min-w-0 flex-[2] text-[11px]" lang="zh-CN"><StreamdownRender content={option} /></div>
+                              <div className="h-4 min-w-10 flex-1 overflow-hidden rounded-sm bg-muted/60">
                                 <div
                                   className={cn("h-full rounded-sm transition-[width]", correct ? "bg-primary" : "bg-muted-foreground/35")}
                                   style={{ width: `${percent}%` }}
@@ -306,6 +319,7 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
                           );
                         })}
                       </div>
+                      {question.explanation && <div className="rounded-md bg-muted/30 px-3 py-2 text-[11px] leading-5 text-muted-foreground" lang="zh-CN"><StreamdownRender content={question.explanation} /></div>}
                     </div>
                   ))}
                 </div>
@@ -364,7 +378,10 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
               </div>
             </div>
           )}
-          <DialogFooter className="shrink-0 px-4 py-3">
+          <DialogFooter className="shrink-0 flex-wrap px-4 py-3">
+            {report && <Button type="button" variant="outline" disabled={loading} onClick={() => void model.actions.openReport(report.quiz)}>{t("refresh")}</Button>}
+            {report?.quiz.status === "draft" && <Button type="button" disabled={!!model.actions.busyQuizID} onClick={() => { void model.actions.publish(report.quiz); close(); }}>{t("open")}</Button>}
+            {report?.quiz.phase === "pre_class" && report.quiz.status === "closed" && !report.comparison && <Button type="button" disabled={!!model.actions.busyQuizID} onClick={() => void model.actions.createFollowup(report.quiz)}>{t("createFollowup")}</Button>}
             <Button type="button" variant="ghost" onClick={close}>
               {t("reportDialog.close")}
             </Button>

@@ -11,12 +11,12 @@ const MENU_QUIT: &str = "quit";
 
 /// Build the tray icon with a show/quit menu.
 pub fn create_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
-    let show = MenuItem::with_id(app, MENU_SHOW, "Show CourseMate", true, None::<&str>)?;
-    let quit = MenuItem::with_id(app, MENU_QUIT, "Quit", true, None::<&str>)?;
+    let show = MenuItem::with_id(app, MENU_SHOW, "显示课知伴", true, None::<&str>)?;
+    let quit = MenuItem::with_id(app, MENU_QUIT, "退出", true, None::<&str>)?;
     let menu = Menu::with_items(app, &[&show, &quit])?;
 
     let mut builder = TrayIconBuilder::with_id("main")
-        .tooltip("CourseMate")
+        .tooltip("课知伴")
         .menu(&menu)
         // Left click opens the window; the menu stays on right click.
         .show_menu_on_left_click(false)

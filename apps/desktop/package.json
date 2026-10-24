@@ -3,7 +3,7 @@
   "version": "0.4.4-beta.3",
   "private": true,
   "type": "module",
-  "description": "CourseMate desktop client for interactive Signals and Systems learning, AI assistance and review.",
+  "description": "课知伴 desktop client for interactive Signals and Systems learning, AI assistance and review.",
   "scripts": {
     "sync:version": "node ../../scripts/sync-version.mjs desktop",
     "check:version": "node ../../scripts/sync-version.mjs --check desktop",

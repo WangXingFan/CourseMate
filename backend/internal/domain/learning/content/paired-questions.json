@@ -1,0 +1,1097 @@
+{
+  "version": "2026-10-24-v1",
+  "pairs": [
+    {
+      "lessonID": "ss-1-1",
+      "conceptID": "ss-1-1-preview-concept",
+      "conceptTitle": "有限能量与平均功率",
+      "previewQuestionID": "ss-1-1-preview-v1",
+      "followup": {
+        "id": "ss-1-1-followup-v1",
+        "stage": "followup",
+        "prompt": "某非零信号总能量为 $5$ J，观察区间为 $[-T,T]$。随着 $T$ 趋于无穷，平均功率趋于什么？",
+        "options": [
+          "5 W",
+          "0",
+          "无穷大",
+          "仅凭有限能量无法确定"
+        ],
+        "answer": 1,
+        "formula": "",
+        "fields": [],
+        "explanation": "分子区间能量不超过5 J，除以不断增大的2T，极限为0。有限能量不等于非零平均功率。"
+      }
+    },
+    {
+      "lessonID": "ss-1-2",
+      "conceptID": "ss-1-2-preview-concept",
+      "conceptTitle": "时间尺度与波形宽度",
+      "previewQuestionID": "ss-1-2-preview-v1",
+      "followup": {
+        "id": "ss-1-2-followup-v1",
+        "stage": "followup",
+        "prompt": "$x(t)$ 的非零区间宽度为 2 s。$x(t/3)$ 的非零区间宽度是多少？",
+        "options": [
+          "2/3 s",
+          "2 s",
+          "6 s",
+          "3 s"
+        ],
+        "answer": 2,
+        "formula": "",
+        "fields": [],
+        "explanation": "原特征点t=a在新信号中满足t/3=a，移到3a，因此宽度扩大3倍。"
+      }
+    },
+    {
+      "lessonID": "ss-1-3",
+      "conceptID": "ss-1-3-preview-concept",
+      "conceptTitle": "冲激的分布取样性质",
+      "previewQuestionID": "ss-1-3-preview-v1",
+      "followup": {
+        "id": "ss-1-3-followup-v1",
+        "stage": "followup",
+        "prompt": "按分布取样性质，全实轴积分 $\\int (t+2)\\delta(t-3)dt$ 等于多少？",
+        "options": [
+          "1",
+          "3",
+          "0",
+          "5"
+        ],
+        "answer": 3,
+        "formula": "",
+        "fields": [],
+        "explanation": "δ(t−3)对测试函数取t=3处的值，3+2=5；不能把冲激当成普通常数函数。"
+      }
+    },
+    {
+      "lessonID": "ss-1-4",
+      "conceptID": "ss-1-4-preview-concept",
+      "conceptTitle": "线性叠加检验",
+      "previewQuestionID": "ss-1-4-preview-v1",
+      "followup": {
+        "id": "ss-1-4-followup-v1",
+        "stage": "followup",
+        "prompt": "为了确认算子 $T$ 为线性系统，哪个条件足以直接表达完整的叠加要求？",
+        "options": [
+          "$T[ax_1+bx_2]=aT[x_1]+bT[x_2]$ 对所有允许输入与标量成立",
+          "只要某一个输入满足T[2x]=2T[x]",
+          "只要输出有界",
+          "只要输出不依赖未来输入"
+        ],
+        "answer": 0,
+        "formula": "",
+        "fields": [],
+        "explanation": "对所有允许输入与标量成立的叠加公式同时包含齐次性和可加性。单个样例无法证明线性。"
+      }
+    },
+    {
+      "lessonID": "ss-1-5",
+      "conceptID": "ss-1-5-preview-concept",
+      "conceptTitle": "从物理定律建立模型",
+      "previewQuestionID": "ss-1-5-preview-v1",
+      "followup": {
+        "id": "ss-1-5-followup-v1",
+        "stage": "followup",
+        "prompt": "串联RC低通以电容电压y为输出、输入电压为x，采用被动参考方向。由KVL与电容关系应得到哪条方程？",
+        "options": [
+          "$RCx\\prime+x=y$",
+          "$RCy\\prime+y=x$",
+          "$y=x^2$",
+          "$y\\prime=0$ 无条件成立"
+        ],
+        "answer": 1,
+        "formula": "",
+        "fields": [],
+        "explanation": "KVL给出x=Ri+y，电容电流i=Cy′，代入得到RCy′+y=x。"
+      }
+    },
+    {
+      "lessonID": "ss-1-6",
+      "conceptID": "ss-1-6-preview-concept",
+      "conceptTitle": "卷积的零状态适用范围",
+      "previewQuestionID": "ss-1-6-preview-v1",
+      "followup": {
+        "id": "ss-1-6-followup-v1",
+        "stage": "followup",
+        "prompt": "LTI系统初始储能不为零，输入为x，冲激响应为h。其全响应通常应如何写？",
+        "options": [
+          "$y=x*h$ 无条件适用",
+          "$y=y_{zi}$，输入没有贡献",
+          "$y=y_{zi}+x*h$",
+          "$y=xh$ 逐点相乘"
+        ],
+        "answer": 2,
+        "formula": "",
+        "fields": [],
+        "explanation": "卷积x*h只给零状态响应；非零初始状态引起的零输入响应需另外相加。"
+      }
+    },
+    {
+      "lessonID": "ss-2-1",
+      "conceptID": "ss-2-1-preview-concept",
+      "conceptTitle": "齐次特征根与自然模态",
+      "previewQuestionID": "ss-2-1-preview-v1",
+      "followup": {
+        "id": "ss-2-1-followup-v1",
+        "stage": "followup",
+        "prompt": "齐次方程 $y\\prime+3y=0$ 的非零自然模态是哪一项？",
+        "options": [
+          "$Ce^{3t}$",
+          "$C\\cos(3t)$",
+          "$3t+C$",
+          "$Ce^{-3t}$"
+        ],
+        "answer": 3,
+        "formula": "",
+        "fields": [],
+        "explanation": "代入e^(λt)得到λ+3=0，特征根−3决定指数衰减模态。"
+      }
+    },
+    {
+      "lessonID": "ss-2-2",
+      "conceptID": "ss-2-2-preview-concept",
+      "conceptTitle": "接入瞬间的左右初值",
+      "previewQuestionID": "ss-2-2-preview-v1",
+      "followup": {
+        "id": "ss-2-2-followup-v1",
+        "stage": "followup",
+        "prompt": "采用 $0^-$ 起点。$y\\prime+2y=4\\delta(t)$、$y(0^-)=2$，跨零积分后 $y(0^+)$ 等于多少？",
+        "options": [
+          "6",
+          "2",
+          "4",
+          "−2"
+        ],
+        "answer": 0,
+        "formula": "",
+        "fields": [],
+        "explanation": "冲激令Δy=4；y(0+)=y(0−)+4=6，不能无条件把左右初值视为相同。"
+      }
+    },
+    {
+      "lessonID": "ss-2-3",
+      "conceptID": "ss-2-3-preview-concept",
+      "conceptTitle": "零输入不等于零初始状态",
+      "previewQuestionID": "ss-2-3-preview-v1",
+      "followup": {
+        "id": "ss-2-3-followup-v1",
+        "stage": "followup",
+        "prompt": "切断外部输入后，已充电电容仍通过电阻放电。这段响应应归为哪一类？",
+        "options": [
+          "零状态响应，因为输入为零",
+          "由初始储能引起的零输入响应",
+          "必定没有响应",
+          "非线性响应，与初始状态无关"
+        ],
+        "answer": 1,
+        "formula": "",
+        "fields": [],
+        "explanation": "“零输入”只指外部激励为零；初始状态可非零，并驱动自然响应。"
+      }
+    },
+    {
+      "lessonID": "ss-2-4",
+      "conceptID": "ss-2-4-preview-concept",
+      "conceptTitle": "阶跃与冲激响应互相求导",
+      "previewQuestionID": "ss-2-4-preview-v1",
+      "followup": {
+        "id": "ss-2-4-followup-v1",
+        "stage": "followup",
+        "prompt": "因果LTI系统零状态阶跃响应为 $g(t)=(1-e^{-2t})u(t)$，冲激响应是哪一项？",
+        "options": [
+          "$(1-e^{-2t})^2u(t)$",
+          "$e^{-2t}u(t)$",
+          "$2e^{-2t}u(t)$",
+          "$2e^{2t}u(t)$"
+        ],
+        "answer": 2,
+        "formula": "",
+        "fields": [],
+        "explanation": "h=g′；g在零点连续且取0，所以没有额外冲激项，普通导数为2e^(−2t)u(t)。"
+      }
+    },
+    {
+      "lessonID": "ss-2-5",
+      "conceptID": "ss-2-5-preview-concept",
+      "conceptTitle": "卷积的翻转与平移",
+      "previewQuestionID": "ss-2-5-preview-v1",
+      "followup": {
+        "id": "ss-2-5-followup-v1",
+        "stage": "followup",
+        "prompt": "固定t、以τ为横轴，$h(t-\\tau)$ 从 $h(\\tau)$ 得到时，正确操作是什么？",
+        "options": [
+          "仅将幅度乘t",
+          "只平移，始终不翻转",
+          "直接换成h(t+τ)而不变形",
+          "先得到h(−τ)，再沿τ轴向右平移t"
+        ],
+        "answer": 3,
+        "formula": "",
+        "fields": [],
+        "explanation": "h(t−τ)=h(−(τ−t))，先翻转h(−τ)，再把τ替换为τ−t，即右移t。"
+      }
+    },
+    {
+      "lessonID": "ss-2-6",
+      "conceptID": "ss-2-6-preview-concept",
+      "conceptTitle": "级联与并联的卷积关系",
+      "previewQuestionID": "ss-2-6-preview-v1",
+      "followup": {
+        "id": "ss-2-6-followup-v1",
+        "stage": "followup",
+        "prompt": "先经过冲激响应h₁的系统，再经过h₂。总零状态输出是哪一项？",
+        "options": [
+          "$y=x*(h_1*h_2)$",
+          "$y=x*(h_1+h_2)$",
+          "$y=x/h_1/h_2$",
+          "$y=x(h_1h_2)$ 逐点相乘"
+        ],
+        "answer": 0,
+        "formula": "",
+        "fields": [],
+        "explanation": "级联输出为(x*h₁)*h₂，利用结合律等于x*(h₁*h₂)；相加对应并联。"
+      }
+    },
+    {
+      "lessonID": "ss-2-7",
+      "conceptID": "ss-2-7-preview-concept",
+      "conceptTitle": "零延迟自相关等于能量",
+      "previewQuestionID": "ss-2-7-preview-v1",
+      "followup": {
+        "id": "ss-2-7-followup-v1",
+        "stage": "followup",
+        "prompt": "复能量信号定义 $R_{xx}(\\tau)=\\int x(t)x^*(t-\\tau)dt$，若总能量为7，$R_{xx}(0)$ 为多少？",
+        "options": [
+          "0",
+          "7",
+          "49",
+          "信号周期"
+        ],
+        "answer": 1,
+        "formula": "",
+        "fields": [],
+        "explanation": "τ=0时，x(t)x*(t)=|x(t)|²，积分就是能量7。"
+      }
+    },
+    {
+      "lessonID": "ss-2-8",
+      "conceptID": "ss-2-8-preview-concept",
+      "conceptTitle": "微分算子的含义",
+      "previewQuestionID": "ss-2-8-preview-v1",
+      "followup": {
+        "id": "ss-2-8-followup-v1",
+        "stage": "followup",
+        "prompt": "使用 $p=d/dt$，$(p^2+2p+1)y$ 应展开为什么？",
+        "options": [
+          "$y^2+2y+1$",
+          "$2y\\prime+y$",
+          "$y\\prime\\prime+2y\\prime+y$",
+          "$y\\prime\\prime+2y+1$"
+        ],
+        "answer": 2,
+        "formula": "",
+        "fields": [],
+        "explanation": "p²表示连续求两次导数，常数项1表示恒等算子，不是把y平方。"
+      }
+    },
+    {
+      "lessonID": "ss-2-9",
+      "conceptID": "ss-2-9-preview-concept",
+      "conceptTitle": "已知冲激响应时的解法选择",
+      "previewQuestionID": "ss-2-9-preview-v1",
+      "followup": {
+        "id": "ss-2-9-followup-v1",
+        "stage": "followup",
+        "prompt": "已知连续LTI系统初始静止、h(t)与x(t)，需要整个零状态输出。哪种运算直接适用？",
+        "options": [
+          "把x和h的峰值相加",
+          "只计算x的周期",
+          "直接把x逐点平方",
+          "连续卷积积分"
+        ],
+        "answer": 3,
+        "formula": "",
+        "fields": [],
+        "explanation": "初始静止消除了零输入项，零状态LTI响应由y(t)=∫x(τ)h(t−τ)dτ直接给出。"
+      }
+    },
+    {
+      "lessonID": "ss-3-1",
+      "conceptID": "ss-3-1-preview-concept",
+      "conceptTitle": "正交投影系数",
+      "previewQuestionID": "ss-3-1-preview-v1",
+      "followup": {
+        "id": "ss-3-1-followup-v1",
+        "stage": "followup",
+        "prompt": "正交展开中，若 $\\langle x,\\phi\rangle=6$、$\\langle\\phi,\\phi\rangle=3$，沿该基函数的投影系数是多少？",
+        "options": [
+          "2",
+          "18",
+          "3",
+          "6"
+        ],
+        "answer": 0,
+        "formula": "",
+        "fields": [],
+        "explanation": "投影系数c=⟨x,φ⟩/⟨φ,φ⟩=6/3=2；必须除以基函数范数平方。"
+      }
+    },
+    {
+      "lessonID": "ss-3-2",
+      "conceptID": "ss-3-2-preview-concept",
+      "conceptTitle": "周期与基波角频率",
+      "previewQuestionID": "ss-3-2-preview-v1",
+      "followup": {
+        "id": "ss-3-2-followup-v1",
+        "stage": "followup",
+        "prompt": "周期 $T=0.25$ s 的信号，基波角频率是多少？",
+        "options": [
+          "4 rad/s",
+          "$8\\pi$ rad/s",
+          "$0.5\\pi$ rad/s",
+          "0.25 Hz"
+        ],
+        "answer": 1,
+        "formula": "",
+        "fields": [],
+        "explanation": "f0=1/T=4 Hz，Ω=2πf0=8π rad/s，不能把Hz直接当作rad/s。"
+      }
+    },
+    {
+      "lessonID": "ss-3-3",
+      "conceptID": "ss-3-3-preview-concept",
+      "conceptTitle": "周期频谱的离散谐波结构",
+      "previewQuestionID": "ss-3-3-preview-v1",
+      "followup": {
+        "id": "ss-3-3-followup-v1",
+        "stage": "followup",
+        "prompt": "一个非恒定周期信号的基本周期是0.1 s。其傅里叶级数可能出现的谱线位置是哪一组？",
+        "options": [
+          "任意频率处必定连续且平坦",
+          "只能出现在负频率",
+          "整数倍10 Hz处（某些系数可为零）",
+          "所有谱线都必须相隔0.1 Hz"
+        ],
+        "answer": 2,
+        "formula": "",
+        "fields": [],
+        "explanation": "f0=1/T=10 Hz，级数频率为nf0；对称性可使其中部分谱线为零。"
+      }
+    },
+    {
+      "lessonID": "ss-3-4",
+      "conceptID": "ss-3-4-preview-concept",
+      "conceptTitle": "傅里叶变换核的符号约定",
+      "previewQuestionID": "ss-3-4-preview-v1",
+      "followup": {
+        "id": "ss-3-4-followup-v1",
+        "stage": "followup",
+        "prompt": "采用 $X(j\\omega)=\\int x(t)e^{-j\\omega t}dt$，$\\delta(t-2)$ 的傅里叶变换是什么？",
+        "options": [
+          "$e^{j2\\omega}$",
+          "$2\\pi\\delta(\\omega)$",
+          "2",
+          "$e^{-j2\\omega}$"
+        ],
+        "answer": 3,
+        "formula": "",
+        "fields": [],
+        "explanation": "冲激取样把t代为2，直接得到负号相位因子e^(−j2ω)。"
+      }
+    },
+    {
+      "lessonID": "ss-3-5",
+      "conceptID": "ss-3-5-preview-concept",
+      "conceptTitle": "时间与频率尺度互逆",
+      "previewQuestionID": "ss-3-5-preview-v1",
+      "followup": {
+        "id": "ss-3-5-followup-v1",
+        "stage": "followup",
+        "prompt": "若y(t)=x(2t)，正确的傅里叶变换关系是哪一项？",
+        "options": [
+          "$Y(j\\omega)=\\tfrac12X(j\\omega/2)$",
+          "$Y(j\\omega)=2X(j2\\omega)$",
+          "$Y(j\\omega)=X(j\\omega)$",
+          "$Y(j\\omega)=\\tfrac12X(j2\\omega)$"
+        ],
+        "answer": 0,
+        "formula": "",
+        "fields": [],
+        "explanation": "变量代换v=2t，dt=dv/2，指数核频率变为ω/2；时域压缩对应频域展宽。"
+      }
+    },
+    {
+      "lessonID": "ss-3-6",
+      "conceptID": "ss-3-6-preview-concept",
+      "conceptTitle": "周期信号的广义傅里叶变换",
+      "previewQuestionID": "ss-3-6-preview-v1",
+      "followup": {
+        "id": "ss-3-6-followup-v1",
+        "stage": "followup",
+        "prompt": "周期信号某复指数系数为F₂=3，其傅里叶变换在ω=2Ω处的冲激权重是多少？",
+        "options": [
+          "3",
+          "$6\\pi$",
+          "$3\\pi$",
+          "0"
+        ],
+        "answer": 1,
+        "formula": "",
+        "fields": [],
+        "explanation": "周期信号X(jω)=2πΣF_nδ(ω−nΩ)，所以该冲激权重为2π×3=6π。"
+      }
+    },
+    {
+      "lessonID": "ss-3-7",
+      "conceptID": "ss-3-7-preview-concept",
+      "conceptTitle": "稳定LTI的正弦稳态同频性",
+      "previewQuestionID": "ss-3-7-preview-v1",
+      "followup": {
+        "id": "ss-3-7-followup-v1",
+        "stage": "followup",
+        "prompt": "稳定LTI系统输入为100 Hz纯正弦。暂态消退后，非零输出的频率应是什么？",
+        "options": [
+          "必定为200 Hz",
+          "必定变为0 Hz直流",
+          "仍为100 Hz，幅度和相位可变",
+          "由输入幅度决定的新频率"
+        ],
+        "answer": 2,
+        "formula": "",
+        "fields": [],
+        "explanation": "复指数是LTI算子的特征函数；LTI频响只改变该频率分量的幅度与相位。"
+      }
+    },
+    {
+      "lessonID": "ss-3-8",
+      "conceptID": "ss-3-8-preview-concept",
+      "conceptTitle": "无失真传输条件",
+      "previewQuestionID": "ss-3-8-preview-v1",
+      "followup": {
+        "id": "ss-3-8-followup-v1",
+        "stage": "followup",
+        "prompt": "在信号占用频带内，哪种频率响应保证输出是输入的定倍延迟？",
+        "options": [
+          "$H(j\\omega)=3e^{-j\\omega^2}$",
+          "$H(j\\omega)=(1+\\omega^2)e^{-j2\\omega}$",
+          "$|H|$恒定而相位完全任意",
+          "$H(j\\omega)=3e^{-j2\\omega}$"
+        ],
+        "answer": 3,
+        "formula": "",
+        "fields": [],
+        "explanation": "常幅3与线性相位−2ω对应y(t)=3x(t−2)，两条件需同时满足。"
+      }
+    },
+    {
+      "lessonID": "ss-3-9",
+      "conceptID": "ss-3-9-preview-concept",
+      "conceptTitle": "安全采样的严格不等式",
+      "previewQuestionID": "ss-3-9-preview-v1",
+      "followup": {
+        "id": "ss-3-9-followup-v1",
+        "stage": "followup",
+        "prompt": "基带信号可能含最高3 kHz的正弦分量，不另加边界排除条件。以下哪一采样率满足通用严格条件？",
+        "options": [
+          "8 kHz",
+          "3 kHz",
+          "6 kHz",
+          "1.5 kHz"
+        ],
+        "answer": 0,
+        "formula": "",
+        "fields": [],
+        "explanation": "要求fs>2fm=6 kHz；6 kHz只是阈值，不能普遍保证边界分量可重建。"
+      }
+    },
+    {
+      "lessonID": "ss-3-10",
+      "conceptID": "ss-3-10-preview-concept",
+      "conceptTitle": "能量谱密度取模平方",
+      "previewQuestionID": "ss-3-10-preview-v1",
+      "followup": {
+        "id": "ss-3-10-followup-v1",
+        "stage": "followup",
+        "prompt": "某频率处 $X(j\\omega)=3+j4$，该处能量谱密度 $|X(j\\omega)|^2$ 是多少？",
+        "options": [
+          "5",
+          "25",
+          "7",
+          "−7"
+        ],
+        "answer": 1,
+        "formula": "",
+        "fields": [],
+        "explanation": "|3+j4|²=3²+4²=25，为非负实数，不是直接平方复数或只取实部。"
+      }
+    },
+    {
+      "lessonID": "ss-5-1",
+      "conceptID": "ss-5-1-preview-concept",
+      "conceptTitle": "ROC决定双边逆变换",
+      "previewQuestionID": "ss-5-1-preview-v1",
+      "followup": {
+        "id": "ss-5-1-followup-v1",
+        "stage": "followup",
+        "prompt": "双边变换X(s)=1/(s+1)。哪条信息能区分右边衰减指数与左边增长方向的信号？",
+        "options": [
+          "分子是否写成1.0",
+          "给曲线更换颜色",
+          "ROC位于极点右侧还是左侧",
+          "只给同一个代数式即可"
+        ],
+        "answer": 2,
+        "formula": "",
+        "fields": [],
+        "explanation": "右边信号ROC为Re(s)>−1，左边信号为Re(s)<−1；相同代数式不唯一。"
+      }
+    },
+    {
+      "lessonID": "ss-5-2",
+      "conceptID": "ss-5-2-preview-concept",
+      "conceptTitle": "单边微分的初始项",
+      "previewQuestionID": "ss-5-2-preview-v1",
+      "followup": {
+        "id": "ss-5-2-followup-v1",
+        "stage": "followup",
+        "prompt": "单边拉氏采用0−起点，f(0−)=3。f′的变换应是哪一项？",
+        "options": [
+          "$sF(s)$",
+          "$F(s)/s$",
+          "$sF(s)+3$",
+          "$sF(s)-3$"
+        ],
+        "answer": 3,
+        "formula": "",
+        "fields": [],
+        "explanation": "分部积分的边界项为−f(0−)，不能遗漏初始状态，也不能写成加号。"
+      }
+    },
+    {
+      "lessonID": "ss-5-3",
+      "conceptID": "ss-5-3-preview-concept",
+      "conceptTitle": "非严格真分式先长除",
+      "previewQuestionID": "ss-5-3-preview-v1",
+      "followup": {
+        "id": "ss-5-3-followup-v1",
+        "stage": "followup",
+        "prompt": "因果 $X(s)=(s+3)/(s+1)$，长除后常数1的逆拉氏分量是什么？",
+        "options": [
+          "$\\delta(t)$",
+          "$u(t)$",
+          "$e^{-t}u(t)$",
+          "$\\delta\\prime(t)$"
+        ],
+        "answer": 0,
+        "formula": "",
+        "fields": [],
+        "explanation": "X=1+2/(s+1)，常数1对应δ(t)，因此先长除可避免漏掉直接通路冲激。"
+      }
+    },
+    {
+      "lessonID": "ss-5-4",
+      "conceptID": "ss-5-4-preview-concept",
+      "conceptTitle": "电感初始状态的s域保留",
+      "previewQuestionID": "ss-5-4-preview-v1",
+      "followup": {
+        "id": "ss-5-4-followup-v1",
+        "stage": "followup",
+        "prompt": "被动参考方向下，电感L=2 H、i(0−)=3 A。正确的单边s域元件方程是哪一项？",
+        "options": [
+          "$V(s)=2sI(s)$",
+          "$V(s)=2sI(s)-6$",
+          "$V(s)=2sI(s)+6$",
+          "$V(s)=I(s)/(2s)$"
+        ],
+        "answer": 1,
+        "formula": "",
+        "fields": [],
+        "explanation": "v=Ldi/dt，单边微分性质给V=L(sI−i(0−))=2sI−6。"
+      }
+    },
+    {
+      "lessonID": "ss-5-5",
+      "conceptID": "ss-5-5-preview-concept",
+      "conceptTitle": "系统函数的零状态定义",
+      "previewQuestionID": "ss-5-5-preview-v1",
+      "followup": {
+        "id": "ss-5-5-followup-v1",
+        "stage": "followup",
+        "prompt": "测得的总输出含非零初始状态产生的Yzi。定义系统函数时，应取哪种比值？",
+        "options": [
+          "$H=(Y_{zs}+Y_{zi})/X$ 无条件适用",
+          "$H=Y_{zi}/X$",
+          "$H=Y_{zs}/X$，即零状态输出与输入的变换比",
+          "$H=X/Y_{zi}$"
+        ],
+        "answer": 2,
+        "formula": "",
+        "fields": [],
+        "explanation": "系统函数描述零状态输入输出关系，初始状态引起的输出必须从定义中分离。"
+      }
+    },
+    {
+      "lessonID": "ss-5-6",
+      "conceptID": "ss-5-6-preview-concept",
+      "conceptTitle": "BIBO稳定极点条件",
+      "previewQuestionID": "ss-5-6-preview-v1",
+      "followup": {
+        "id": "ss-5-6-followup-v1",
+        "stage": "followup",
+        "prompt": "对于因果、适当有理且已约分的H(s)，哪组极点满足BIBO稳定条件？",
+        "options": [
+          "+1与−2",
+          "+j与−j",
+          "0与−2",
+          "−1与−2"
+        ],
+        "answer": 3,
+        "formula": "",
+        "fields": [],
+        "explanation": "所有极点必须严格在左半平面；虚轴单极点不满足BIBO稳定。"
+      }
+    },
+    {
+      "lessonID": "ss-5-7",
+      "conceptID": "ss-5-7-preview-concept",
+      "conceptTitle": "幅值比与分贝",
+      "previewQuestionID": "ss-5-7-preview-v1",
+      "followup": {
+        "id": "ss-5-7-followup-v1",
+        "stage": "followup",
+        "prompt": "某频率处幅值增益为0.1，相对幅值增益为多少dB？",
+        "options": [
+          "−20 dB",
+          "−10 dB",
+          "20 dB",
+          "0.1 dB"
+        ],
+        "answer": 0,
+        "formula": "",
+        "fields": [],
+        "explanation": "幅值比使用20log10，20log10(0.1)=−20 dB；功率比公式不能直接套用。"
+      }
+    },
+    {
+      "lessonID": "ss-5-8",
+      "conceptID": "ss-5-8-preview-concept",
+      "conceptTitle": "梅森公式的不接触回路",
+      "previewQuestionID": "ss-5-8-preview-v1",
+      "followup": {
+        "id": "ss-5-8-followup-v1",
+        "stage": "followup",
+        "prompt": "信号流图两个回路没有公共支路，但共享一个节点。梅森公式中能否把它们计为不接触回路对？",
+        "options": [
+          "能，只要不共用支路",
+          "不能，共享节点就算接触",
+          "能，只要增益符号相反",
+          "能，只要回路方向相反"
+        ],
+        "answer": 1,
+        "formula": "",
+        "fields": [],
+        "explanation": "不接触的定义是不共享任何节点；仅支路不同仍可能在节点接触。"
+      }
+    },
+    {
+      "lessonID": "ss-5-9",
+      "conceptID": "ss-5-9-preview-concept",
+      "conceptTitle": "连续直接II型的状态存储",
+      "previewQuestionID": "ss-5-9-preview-v1",
+      "followup": {
+        "id": "ss-5-9-followup-v1",
+        "stage": "followup",
+        "prompt": "连续LTI系统的标准直接II型结构用积分器链表示动态。一个四阶严格真有理系统在该标准结构中用几个积分器？",
+        "options": [
+          "1",
+          "2",
+          "4",
+          "8"
+        ],
+        "answer": 2,
+        "formula": "",
+        "fields": [],
+        "explanation": "n阶标准直接II型采用共享的n级状态积分链，四阶需4个积分器。"
+      }
+    },
+    {
+      "lessonID": "ss-5-10",
+      "conceptID": "ss-5-10-preview-concept",
+      "conceptTitle": "RC极点与时间常数",
+      "previewQuestionID": "ss-5-10-preview-v1",
+      "followup": {
+        "id": "ss-5-10-followup-v1",
+        "stage": "followup",
+        "prompt": "一阶RC低通时间常数由0.1 s变为0.2 s，其极点从−10移到哪里？",
+        "options": [
+          "−20 s⁻¹",
+          "+5 s⁻¹",
+          "原位置不变",
+          "−5 s⁻¹"
+        ],
+        "answer": 3,
+        "formula": "",
+        "fields": [],
+        "explanation": "极点p=−1/τ，τ加倍使极点绝对值减半，仍在左半平面。"
+      }
+    },
+    {
+      "lessonID": "ss-a-1",
+      "conceptID": "ss-a-1-preview-concept",
+      "conceptTitle": "冲激的傅里叶常用对",
+      "previewQuestionID": "ss-a-1-preview-v1",
+      "followup": {
+        "id": "ss-a-1-followup-v1",
+        "stage": "followup",
+        "prompt": "采用正变换核e^(−jωt)，2δ(t)的傅里叶变换是什么？",
+        "options": [
+          "常数2",
+          "2δ(ω)",
+          "0",
+          "2πu(ω)"
+        ],
+        "answer": 0,
+        "formula": "",
+        "fields": [],
+        "explanation": "δ的变换为1，利用线性性质，2δ变为常数2。"
+      }
+    },
+    {
+      "lessonID": "ss-a-2",
+      "conceptID": "ss-a-2-preview-concept",
+      "conceptTitle": "因果指数的变换与ROC",
+      "previewQuestionID": "ss-a-2-preview-v1",
+      "followup": {
+        "id": "ss-a-2-followup-v1",
+        "stage": "followup",
+        "prompt": "x(t)=e^(−4t)u(t)的双边拉氏变换与ROC是哪一项？",
+        "options": [
+          "$1/(s-4)$，Re(s)>4",
+          "$1/(s+4)$，Re(s)>−4",
+          "$s+4$，全平面",
+          "$1/(s+4)$，Re(s)<−4"
+        ],
+        "answer": 1,
+        "formula": "",
+        "fields": [],
+        "explanation": "∫₀∞e^(−(s+4)t)dt=1/(s+4)，收敛要求Re(s+4)>0。"
+      }
+    },
+    {
+      "lessonID": "ss-a-3",
+      "conceptID": "ss-a-3-preview-concept",
+      "conceptTitle": "单边与双边微分性质差异",
+      "previewQuestionID": "ss-a-3-preview-v1",
+      "followup": {
+        "id": "ss-a-3-followup-v1",
+        "stage": "followup",
+        "prompt": "f(0−)=2。用单边拉氏求导数变换时，若直接写sF(s)，漏掉了什么？",
+        "options": [
+          "额外的幅度平方",
+          "DFT点数N",
+          "−2的初始值边界项",
+          "无需任何项，单边总与双边一致"
+        ],
+        "answer": 2,
+        "formula": "",
+        "fields": [],
+        "explanation": "单边积分下限在0−，分部积分产生−f(0−)；应写sF(s)−2。"
+      }
+    },
+    {
+      "lessonID": "ss-a-4",
+      "conceptID": "ss-a-4-preview-concept",
+      "conceptTitle": "延迟冲激的卷积恒等式",
+      "previewQuestionID": "ss-a-4-preview-v1",
+      "followup": {
+        "id": "ss-a-4-followup-v1",
+        "stage": "followup",
+        "prompt": "已知y(t)=x(t)*δ(t−4)，x的一个峰原来在t=1，该峰在y中位于哪里？",
+        "options": [
+          "t=−3",
+          "t=1/4",
+          "t=1",
+          "t=5"
+        ],
+        "answer": 3,
+        "formula": "",
+        "fields": [],
+        "explanation": "卷积使信号延迟4，原峰位置1变为1+4=5。"
+      }
+    },
+    {
+      "lessonID": "ss-a-5",
+      "conceptID": "ss-a-5-preview-concept",
+      "conceptTitle": "连续状态内部渐近稳定",
+      "previewQuestionID": "ss-a-5-preview-v1",
+      "followup": {
+        "id": "ss-a-5-followup-v1",
+        "stage": "followup",
+        "prompt": "有限维连续LTI系统A的特征值为−2和+1。能否内部渐近稳定？",
+        "options": [
+          "不能，+1对应指数增长状态模态",
+          "能，因为有一个负特征值",
+          "能，只要特征值绝对值不超过2",
+          "只需检查传递函数分子即可"
+        ],
+        "answer": 0,
+        "formula": "",
+        "fields": [],
+        "explanation": "连续内部渐近稳定要求全部特征值实部严格小于0，任一正实部就不满足。"
+      }
+    },
+    {
+      "lessonID": "ss-a-6",
+      "conceptID": "ss-a-6-preview-concept",
+      "conceptTitle": "采样周期与采样率互逆",
+      "previewQuestionID": "ss-a-6-preview-v1",
+      "followup": {
+        "id": "ss-a-6-followup-v1",
+        "stage": "followup",
+        "prompt": "采样周期Ts=0.002 s，采样率fs是多少？",
+        "options": [
+          "0.002 Hz",
+          "500 Hz",
+          "2000 Hz",
+          "2 Hz"
+        ],
+        "answer": 1,
+        "formula": "",
+        "fields": [],
+        "explanation": "fs=1/Ts=1/0.002=500 Hz，毫秒需先转为秒。"
+      }
+    },
+    {
+      "lessonID": "ss-a-7",
+      "conceptID": "ss-a-7-preview-concept",
+      "conceptTitle": "拉氏代入虚轴的收敛前提",
+      "previewQuestionID": "ss-a-7-preview-v1",
+      "followup": {
+        "id": "ss-a-7-followup-v1",
+        "stage": "followup",
+        "prompt": "一个双边拉氏ROC是Re(s)>1。仅将代数式代s=jω，能否据此保证存在通常傅里叶频响？",
+        "options": [
+          "能，任何代数代入都保证积分收敛",
+          "能，只要分子是常数",
+          "不能，ROC不包含虚轴",
+          "只需把ω改成Hz就可以"
+        ],
+        "answer": 2,
+        "formula": "",
+        "fields": [],
+        "explanation": "虚轴Re(s)=0不在ROC中；代入得到的代数式不能代替收敛性条件。"
+      }
+    },
+    {
+      "lessonID": "ss-b-1",
+      "conceptID": "ss-b-1-preview-concept",
+      "conceptTitle": "能量信号的平方可积条件",
+      "previewQuestionID": "ss-b-1-preview-v1",
+      "followup": {
+        "id": "ss-b-1-followup-v1",
+        "stage": "followup",
+        "prompt": "x(t)=1/√t（0<t<1），其余为零。尽管持续时间有限，它是否为能量信号？",
+        "options": [
+          "是，有限时长无条件保证有限能量",
+          "是，能量恰好为1",
+          "是，峰值不影响任何积分",
+          "不是，能量积分∫₀¹dt/t发散"
+        ],
+        "answer": 3,
+        "formula": "",
+        "fields": [],
+        "explanation": "能量需要∫|x|²有限；这里平方后为1/t，在零点对数发散，不能只看持续时间。"
+      }
+    },
+    {
+      "lessonID": "ss-b-2",
+      "conceptID": "ss-b-2-preview-concept",
+      "conceptTitle": "关键点方程定位",
+      "previewQuestionID": "ss-b-2-preview-v1",
+      "followup": {
+        "id": "ss-b-2-followup-v1",
+        "stage": "followup",
+        "prompt": "x(t)的峰在t=2，y(t)=x(−2t+6)。y的对应峰在哪里？",
+        "options": [
+          "t=2",
+          "t=−2",
+          "t=4",
+          "t=8"
+        ],
+        "answer": 0,
+        "formula": "",
+        "fields": [],
+        "explanation": "将新自变量等于原峰位置：−2t+6=2，解得t=2。"
+      }
+    },
+    {
+      "lessonID": "ss-b-3",
+      "conceptID": "ss-b-3-preview-concept",
+      "conceptTitle": "输入与初始状态贡献分离",
+      "previewQuestionID": "ss-b-3-preview-v1",
+      "followup": {
+        "id": "ss-b-3-followup-v1",
+        "stage": "followup",
+        "prompt": "线性系统初始储能非零且接入新输入。若仅算输入与h的卷积，通常少了哪部分？",
+        "options": [
+          "全部零状态响应",
+          "零输入响应",
+          "系统每一个零点",
+          "输入本身的平方"
+        ],
+        "answer": 1,
+        "formula": "",
+        "fields": [],
+        "explanation": "卷积只计算零状态贡献，完整响应还需由初始状态决定的零输入项。"
+      }
+    },
+    {
+      "lessonID": "ss-b-4",
+      "conceptID": "ss-b-4-preview-concept",
+      "conceptTitle": "卷积积分的重叠区间",
+      "previewQuestionID": "ss-b-4-preview-v1",
+      "followup": {
+        "id": "ss-b-4-followup-v1",
+        "stage": "followup",
+        "prompt": "x(τ)仅在[0,2]为1，h(t−τ)仅在τ∈[t−3,t]为1。t=1时实际积分区间是什么？",
+        "options": [
+          "[0,2]",
+          "[−2,1]",
+          "[0,1]",
+          "始终[0,3]"
+        ],
+        "answer": 2,
+        "formula": "",
+        "fields": [],
+        "explanation": "t=1时第二支撑为[−2,1]，与[0,2]取交集，得到[0,1]。"
+      }
+    },
+    {
+      "lessonID": "ss-b-5",
+      "conceptID": "ss-b-5-preview-concept",
+      "conceptTitle": "实偶信号的频谱对称性",
+      "previewQuestionID": "ss-b-5-preview-v1",
+      "followup": {
+        "id": "ss-b-5-followup-v1",
+        "stage": "followup",
+        "prompt": "x(t)=e^(−|t|)为实偶可积信号。其傅里叶变换应具有哪种性质？",
+        "options": [
+          "纯虚且奇对称",
+          "必定恒为零",
+          "只在正频率非零",
+          "实值且偶对称"
+        ],
+        "answer": 3,
+        "formula": "",
+        "fields": [],
+        "explanation": "实偶信号的正弦积分因奇对称消失，余弦积分给出实偶频谱。"
+      }
+    },
+    {
+      "lessonID": "ss-b-6",
+      "conceptID": "ss-b-6-preview-concept",
+      "conceptTitle": "部分分式结果的独立核对",
+      "previewQuestionID": "ss-b-6-preview-v1",
+      "followup": {
+        "id": "ss-b-6-followup-v1",
+        "stage": "followup",
+        "prompt": "声称1/[(s+1)(s+2)]=1/(s+1)+1/(s+2)。最快可用哪种办法发现错误？",
+        "options": [
+          "代入s=0，左边1/2而右边3/2",
+          "删除ROC后认为等式成立",
+          "只比较分母次数，不比较值",
+          "把所有留数都改成正数"
+        ],
+        "answer": 0,
+        "formula": "",
+        "fields": [],
+        "explanation": "特殊值代入独立于展开过程，能快速发现符号错误；正确展开第二项系数应为−1。"
+      }
+    },
+    {
+      "lessonID": "ss-b-7",
+      "conceptID": "ss-b-7-preview-concept",
+      "conceptTitle": "内部稳定需查看完整实现",
+      "previewQuestionID": "ss-b-7-preview-v1",
+      "followup": {
+        "id": "ss-b-7-followup-v1",
+        "stage": "followup",
+        "prompt": "两个状态实现约分后的H(s)相同，但一个实现含不可观测的+2特征值。能否据相同H(s)认为两者内部稳定性相同？",
+        "options": [
+          "能，H(s)相同会强制状态矩阵相同",
+          "不能，隐藏模态不一定出现在H(s)中",
+          "能，不可观测模态自动消失",
+          "只要所有零点为负即可"
+        ],
+        "answer": 1,
+        "formula": "",
+        "fields": [],
+        "explanation": "内部稳定需检查完整A或未消去内部结构；不可观测不等于该状态模态不存在。"
+      }
+    },
+    {
+      "lessonID": "ss-b-8",
+      "conceptID": "ss-b-8-preview-concept",
+      "conceptTitle": "采样前抗混叠优先",
+      "previewQuestionID": "ss-b-8-preview-v1",
+      "followup": {
+        "id": "ss-b-8-followup-v1",
+        "stage": "followup",
+        "prompt": "采样前未滤波导致高频分量混叠。仅将所得短记录补零100倍，能否恢复丢失的原频率信息？",
+        "options": [
+          "能，FFT点数足够大就自动反混叠",
+          "能，补零会延长真实观察时间",
+          "不能，补零只加密DFT频率网格",
+          "能，补零改变已发生的采样率"
+        ],
+        "answer": 2,
+        "formula": "",
+        "fields": [],
+        "explanation": "混叠发生于采样阶段；补零不增加真实样本信息，需在采样前控制带宽与采样率。"
+      }
+    },
+    {
+      "lessonID": "ss-b-9",
+      "conceptID": "ss-b-9-preview-concept",
+      "conceptTitle": "状态空间传递函数的零状态前提",
+      "previewQuestionID": "ss-b-9-preview-v1",
+      "followup": {
+        "id": "ss-b-9-followup-v1",
+        "stage": "followup",
+        "prompt": "公式H(s)=C(sI−A)⁻¹B+D所描述的输入输出传递关系，采用什么初始状态？",
+        "options": [
+          "任意状态，无须另外初始项",
+          "所有状态必须等于1",
+          "只需输出初始值为零，内部状态任意",
+          "零初始状态"
+        ],
+        "answer": 3,
+        "formula": "",
+        "fields": [],
+        "explanation": "非零状态额外贡献C(sI−A)⁻¹x(0−)，不属于H(s)X(s)的零状态关系。"
+      }
+    },
+    {
+      "lessonID": "ss-b-10",
+      "conceptID": "ss-b-10-preview-concept",
+      "conceptTitle": "能量定义中的幅度平方",
+      "previewQuestionID": "ss-b-10-preview-v1",
+      "followup": {
+        "id": "ss-b-10-followup-v1",
+        "stage": "followup",
+        "prompt": "某信号x(t)能量为3。仅将幅度变为2x(t)、时间尺度不变，新能量是多少？",
+        "options": [
+          "12",
+          "6",
+          "3",
+          "9"
+        ],
+        "answer": 0,
+        "formula": "",
+        "fields": [],
+        "explanation": "|2x|²=4|x|²，因此能量乘4，结果为12；幅度倍率不能直接当作能量倍率。"
+      }
+    }
+  ]
+}

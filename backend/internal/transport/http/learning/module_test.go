@@ -187,7 +187,7 @@ func testRouter(t *testing.T) *gin.Engine {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = sqlDB.Close() })
-	if err := db.AutoMigrate(&models.LearningAttempt{}, &models.LearningLessonAttempt{}, &models.LearningVirtualLab{}); err != nil {
+	if err := db.AutoMigrate(&models.LearningAttempt{}, &models.LearningLessonAttempt{}, &models.LearningVirtualLab{}, &models.LearningQuizRound{}); err != nil {
 		t.Fatal(err)
 	}
 	router := gin.New()
@@ -231,7 +231,7 @@ func progress(t *testing.T, router *gin.Engine, userID uint) LearningProgressRes
 	if err := json.Unmarshal(result.Body.Bytes(), &envelope); err != nil {
 		t.Fatal(err)
 	}
-	if len(envelope.Data.Questions) != 12 {
+	if len(envelope.Data.Questions) != 80 {
 		t.Fatalf("catalog: %+v", envelope.Data.Questions)
 	}
 	if envelope.Data.AccountID != userID {

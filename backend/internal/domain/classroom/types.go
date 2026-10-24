@@ -31,20 +31,28 @@ const (
 // QuizQuestion is stored as JSON on the quiz record. Answer is the zero-based
 // index of the correct option and is never exposed to students.
 type QuizQuestion struct {
-	ID      string
-	Prompt  string
-	Options []string
-	Answer  int
+	ID           string
+	LessonID     string
+	ConceptID    string
+	ConceptTitle string
+	Explanation  string
+	Followup     *QuizQuestion
+	Prompt       string
+	Options      []string
+	Answer       int
 }
 
 // QuizLesson describes a course lesson whose preview question can be assigned.
 type QuizLesson struct {
-	ID      string
-	Number  string
-	Title   string
-	Chapter string
-	Prompt  string
-	Options []string
+	ID          string
+	Number      string
+	Title       string
+	Chapter     string
+	Prompt      string
+	Options     []string
+	Answer      int
+	Explanation string
+	Followup    *QuizQuestion
 }
 
 type Quiz struct {
@@ -53,6 +61,7 @@ type Quiz struct {
 	ClassroomID     uint
 	TeacherID       uint
 	Title           string
+	SourceQuizID    string
 	Phase           string
 	Status          string
 	Questions       []QuizQuestion

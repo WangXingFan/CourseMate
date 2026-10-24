@@ -25,15 +25,16 @@ func (ClassroomStudent) TableName() string { return "classroom_students" }
 // published. Answers remain server-side; student responses store option indices.
 type ClassroomQuiz struct {
 	ControlPlaneModel
-	PublicID    string `gorm:"size:32;not null;uniqueIndex"`
-	ClassroomID uint   `gorm:"not null;index"`
-	TeacherID   uint   `gorm:"not null;index"`
-	Title       string `gorm:"size:120;not null"`
-	Phase       string `gorm:"size:16;not null;index"`
-	Status      string `gorm:"size:16;not null;index"`
-	Questions   string `gorm:"type:text;not null"`
-	OpenedAt    *time.Time
-	ClosedAt    *time.Time
+	PublicID     string  `gorm:"size:32;not null;uniqueIndex"`
+	ClassroomID  uint    `gorm:"not null;index"`
+	TeacherID    uint    `gorm:"not null;index"`
+	Title        string  `gorm:"size:120;not null"`
+	SourceQuizID *string `gorm:"size:32;uniqueIndex"`
+	Phase        string  `gorm:"size:16;not null;index"`
+	Status       string  `gorm:"size:16;not null;index"`
+	Questions    string  `gorm:"type:text;not null"`
+	OpenedAt     *time.Time
+	ClosedAt     *time.Time
 }
 
 func (ClassroomQuiz) TableName() string { return "classroom_quizzes" }

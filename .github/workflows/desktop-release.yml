@@ -44,7 +44,7 @@ name: Desktop Release
 
 on:
   pull_request:
-    branches: [dev, main]
+    branches: [main]
     paths:
       - apps/desktop/**
       - .github/workflows/desktop-release.yml

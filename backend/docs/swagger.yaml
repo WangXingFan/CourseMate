@@ -3856,6 +3856,58 @@ definitions:
     - suggestedVariantId
     - topic
     type: object
+  LearningQuizAnswerRequest:
+    properties:
+      questionId:
+        maxLength: 64
+        type: string
+      selected:
+        maximum: 3
+        minimum: 0
+        type: integer
+    required:
+    - questionId
+    - selected
+    type: object
+  LearningQuizCatalogResponse:
+    properties:
+      chapters:
+        items:
+          $ref: '#/definitions/QuizChapter'
+        type: array
+    required:
+    - chapters
+    type: object
+  LearningQuizLeaderboardResponse:
+    properties:
+      rankings:
+        items:
+          $ref: '#/definitions/QuizRanking'
+        type: array
+    required:
+    - rankings
+    type: object
+  LearningQuizRoundResponse:
+    properties:
+      round:
+        $ref: '#/definitions/QuizRound'
+      serverTime:
+        type: string
+    required:
+    - round
+    - serverTime
+    type: object
+  LearningQuizStartRequest:
+    properties:
+      chapterId:
+        maxLength: 8
+        type: string
+      id:
+        type: string
+    required:
+    - chapterId
+    - id
+    type: object
   LearningReviewRequest:
     properties:
       baseQuestionId:
@@ -5749,6 +5801,116 @@ definitions:
     - vendorIcon
     - vendorName
     type: object
+  QuizAnswer:
+    properties:
+      correct:
+        type: boolean
+      questionId:
+        type: string
+      selected:
+        type: integer
+    required:
+    - correct
+    - questionId
+    - selected
+    type: object
+  QuizChapter:
+    properties:
+      id:
+        type: string
+      questionIds:
+        items:
+          type: string
+        type: array
+      roundSize:
+        type: integer
+    required:
+    - id
+    - questionIds
+    - roundSize
+    type: object
+  QuizComparisonResponse:
+    properties:
+      afterId:
+        type: string
+      afterOnly:
+        type: integer
+      afterStatus:
+        type: string
+      afterTitle:
+        type: string
+      beforeId:
+        type: string
+      beforeOnly:
+        type: integer
+      beforeTitle:
+        type: string
+      neither:
+        type: integer
+      pairedCount:
+        type: integer
+      questions:
+        items:
+          $ref: '#/definitions/QuizConceptComparisonResponse'
+        type: array
+      students:
+        items:
+          $ref: '#/definitions/QuizStudentComparisonResponse'
+        type: array
+    required:
+    - afterId
+    - afterOnly
+    - afterStatus
+    - afterTitle
+    - beforeId
+    - beforeOnly
+    - beforeTitle
+    - neither
+    - pairedCount
+    - questions
+    - students
+    type: object
+  QuizConceptChangeResponse:
+    properties:
+      conceptId:
+        type: string
+      outcome:
+        type: string
+    required:
+    - conceptId
+    - outcome
+    type: object
+  QuizConceptComparisonResponse:
+    properties:
+      afterCorrect:
+        type: integer
+      beforeCorrect:
+        type: integer
+      conceptId:
+        type: string
+      conceptTitle:
+        type: string
+      improved:
+        type: integer
+      pairedCount:
+        type: integer
+      regressed:
+        type: integer
+      retained:
+        type: integer
+      unresolved:
+        type: integer
+    required:
+    - afterCorrect
+    - beforeCorrect
+    - conceptId
+    - conceptTitle
+    - improved
+    - pairedCount
+    - regressed
+    - retained
+    - unresolved
+    type: object
   QuizDataResponse:
     properties:
       quiz:
@@ -5767,8 +5929,16 @@ definitions:
     type: object
   QuizLessonResponse:
     properties:
+      answer:
+        type: integer
       chapter:
         type: string
+      explanation:
+        type: string
+      followup:
+        allOf:
+        - $ref: '#/definitions/QuizQuestionResponse'
+        x-nullable: true
       id:
         type: string
       number:
@@ -5782,7 +5952,10 @@ definitions:
       title:
         type: string
     required:
+    - answer
     - chapter
+    - explanation
+    - followup
     - id
     - number
     - options
@@ -5802,7 +5975,15 @@ definitions:
     properties:
       answer:
         type: integer
+      conceptId:
+        type: string
+      conceptTitle:
+        type: string
+      explanation:
+        type: string
       id:
+        type: string
+      lessonId:
         type: string
       options:
         items:
@@ -5812,7 +5993,11 @@ definitions:
         type: string
     required:
     - answer
+    - conceptId
+    - conceptTitle
+    - explanation
     - id
+    - lessonId
     - options
     - prompt
     type: object
@@ -5820,8 +6005,12 @@ definitions:
     properties:
       answer:
         type: integer
+      conceptTitle:
+        type: string
       correctCount:
         type: integer
+      explanation:
+        type: string
       id:
         type: string
       optionCounts:
@@ -5836,14 +6025,39 @@ definitions:
         type: string
     required:
     - answer
+    - conceptTitle
     - correctCount
+    - explanation
     - id
     - optionCounts
     - options
     - prompt
     type: object
+  QuizRanking:
+    properties:
+      elapsedMs:
+        type: integer
+      isCurrentUser:
+        type: boolean
+      name:
+        type: string
+      rank:
+        type: integer
+      score:
+        type: integer
+    required:
+    - elapsedMs
+    - isCurrentUser
+    - name
+    - rank
+    - score
+    type: object
   QuizReportResponse:
     properties:
+      comparison:
+        allOf:
+        - $ref: '#/definitions/QuizComparisonResponse'
+        x-nullable: true
       missing:
         items:
           $ref: '#/definitions/StudentResponse'
@@ -5861,6 +6075,7 @@ definitions:
           $ref: '#/definitions/QuizSubmissionResponse'
         type: array
     required:
+    - comparison
     - missing
     - quiz
     - statistics
@@ -5883,6 +6098,8 @@ definitions:
         items:
           $ref: '#/definitions/QuizQuestionResponse'
         type: array
+      sourceQuizId:
+        type: string
       status:
         type: string
       submissionCount:
@@ -5896,9 +6113,52 @@ definitions:
     - openedAt
     - phase
     - questions
+    - sourceQuizId
     - status
     - submissionCount
     - title
+    type: object
+  QuizRound:
+    properties:
+      answers:
+        items:
+          $ref: '#/definitions/QuizAnswer'
+        type: array
+      bestStreak:
+        type: integer
+      chapterId:
+        type: string
+      correctCount:
+        type: integer
+      deadlineAt:
+        type: string
+      elapsedMs:
+        type: integer
+      finishedAt:
+        type: string
+        x-nullable: true
+      id:
+        type: string
+      questionIds:
+        items:
+          type: string
+        type: array
+      score:
+        type: integer
+      startedAt:
+        type: string
+    required:
+    - answers
+    - bestStreak
+    - chapterId
+    - correctCount
+    - deadlineAt
+    - elapsedMs
+    - finishedAt
+    - id
+    - questionIds
+    - score
+    - startedAt
     type: object
   QuizStatisticsResponse:
     properties:
@@ -5917,6 +6177,36 @@ definitions:
     - questions
     - studentCount
     - submissionCount
+    type: object
+  QuizStudentComparisonResponse:
+    properties:
+      afterScore:
+        type: integer
+      afterSubmitted:
+        type: boolean
+      beforeScore:
+        type: integer
+      beforeSubmitted:
+        type: boolean
+      changes:
+        items:
+          $ref: '#/definitions/QuizConceptChangeResponse'
+        type: array
+      studentId:
+        type: string
+      studentName:
+        type: string
+      username:
+        type: string
+    required:
+    - afterScore
+    - afterSubmitted
+    - beforeScore
+    - beforeSubmitted
+    - changes
+    - studentId
+    - studentName
+    - username
     type: object
   QuizSubmissionResponse:
     properties:
@@ -12957,7 +13247,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: 仅限班级所属教师；创建学生角色账号，返回随机初始密码，首次登录须修改密码。已有账号不会被覆盖。
+      description: 仅限班级所属教师；创建学生角色账号，默认初始密码为 student，首次登录须修改密码。已有账号不会被覆盖。
       parameters:
       - description: 班级公开 ID
         in: path
@@ -13007,7 +13297,7 @@ paths:
       consumes:
       - application/json
       description: 仅限班级所属教师。UTF-8 CSV 表头为 username,displayName,email 或 学号,姓名,邮箱（邮箱列可省略），最多
-        200 行、1 MiB；逐行创建并加入班级，已有账号跳过且不覆盖，返回初始密码和逐行结果。
+        200 行、1 MiB；逐行创建并加入班级，默认初始密码为 student，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和逐行结果。
       parameters:
       - description: 班级公开 ID
         in: path
@@ -13046,6 +13336,51 @@ paths:
       security:
       - BearerAuth: []
       summary: 教师导入学生名单并创建账号
+      tags:
+      - classrooms
+  /classrooms/{id}/students/accounts/import/file:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 支持教务系统导出的 XLSX 点名册，自动识别学号、姓名列并忽略标题、空行及考勤列；兼容 UTF-8 CSV。最多 200 人、1
+        MiB；默认初始密码为 student，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和原始行号。
+      parameters:
+      - description: 班级公开 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Excel 点名册（.xlsx）或 UTF-8 CSV
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ClassroomStudentImportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 教师上传 Excel 点名册并创建学生账号
       tags:
       - classrooms
   /context-artifacts/{id}:
@@ -14782,6 +15117,112 @@ paths:
       summary: Read personal practice, diagnosis, and spaced-review progress
       tags:
       - learning
+  /learning/quiz/chapters:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningQuizCatalogResponse'
+      security:
+      - BearerAuth: []
+      summary: Read chapter question sets for timed quizzes
+      tags:
+      - learning
+  /learning/quiz/leaderboard:
+    get:
+      parameters:
+      - description: Chapter ID
+        in: query
+        name: chapterId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningQuizLeaderboardResponse'
+      security:
+      - BearerAuth: []
+      summary: Read the best result per student for a chapter, score descending then
+        elapsed time ascending
+      tags:
+      - learning
+  /learning/quiz/rounds:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Chapter and retry ID
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/LearningQuizStartRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningQuizRoundResponse'
+      security:
+      - BearerAuth: []
+      summary: Start an account-owned timed chapter quiz (idempotent)
+      tags:
+      - learning
+  /learning/quiz/rounds/{id}/answers:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Round ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Answer
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/LearningQuizAnswerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningQuizRoundResponse'
+      security:
+      - BearerAuth: []
+      summary: Grade a chapter quiz answer and save personal practice history
+      tags:
+      - learning
+  /learning/quiz/rounds/{id}/finish:
+    post:
+      parameters:
+      - description: Round ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningQuizRoundResponse'
+      security:
+      - BearerAuth: []
+      summary: Finish a chapter quiz with server-measured elapsed time
+      tags:
+      - learning
   /learning/reviews:
     post:
       consumes:
@@ -15915,6 +16356,39 @@ paths:
       security:
       - BearerAuth: []
       summary: 截止班级小测
+      tags:
+      - classrooms
+  /quizzes/{id}/followup:
+    post:
+      description: 每份预习测最多关联一份复测，重复请求返回同一份；题目使用创建预习测时保存的变式快照。
+      parameters:
+      - description: 预习测公开 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/QuizDataResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 为已截止的预习测创建同知识点复测草稿
       tags:
       - classrooms
   /quizzes/{id}/open:

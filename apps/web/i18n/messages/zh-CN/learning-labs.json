@@ -12,7 +12,7 @@
     "optionsLabel": "选择一个答案",
     "reasonLabel": "你的理由",
     "reasonPlaceholder": "例如：因为极点实部为负，包络按 e^{σt} 衰减，所以……",
-    "reasonHint": "至少写 {count} 个字。写清“因为……所以……”比只写结论更有效。",
+    "reasonHint": "至少 {count} 字，说明判断理由。",
     "submit": "提交并解锁图形",
     "retry": "修改后重试",
     "noPenalty": "答错不扣分，但需要重新提交理由。",
@@ -421,7 +421,6 @@
   },
   "progress": {
     "title": "学习记录与错题本",
-    "description": "把每一次作答留下来，找到需要再想一遍的知识点。记录随账号保存，可在其他设备查看。",
     "loading": "正在读取学习记录…",
     "saving": "正在保存作答…",
     "synced": "已与账号同步",
@@ -436,7 +435,7 @@
     "accuracy": "累计正确率",
     "unresolved": "复习中",
     "corrected": "复习完成",
-    "scope": "记录覆盖快问快答与变式复习。原题答对后仍保留最近错误；复习阶段与到期时间以服务器为准。",
+    "scope": "错题历史会保留；变式复习更新复习阶段与到期时间。",
     "viewLabel": "学习记录视图",
     "mistakes": "错题本",
     "history": "最近作答",
@@ -445,7 +444,7 @@
     "includeCorrected": "显示最近已答对的错题",
     "practiceMistakes": "练习待订正错题",
     "emptyTitle": "从第一次练习开始",
-    "emptyHint": "完成快问快答后，答错的题目会自动收进这里。每道错题都能回看解析，再做一次验证理解。",
+    "emptyHint": "完成快问快答后，错题会自动收录。",
     "noPending": "当前筛选没有题目",
     "noPendingHint": "切换复习状态或知识点查看其他题目。",
     "historyHint": "展示最近 40 次作答；上方累计数据包含全部记录。",
@@ -459,7 +458,7 @@
     "showExplanation": "展开答案与解析",
     "reviewLesson": "回看对应实验",
     "practiceTitle": "错题重练",
-    "practiceDescription": "放慢一点，先独立判断，再用解析核对思路。本轮不限时，作答会更新到学习记录。",
+    "practiceDescription": "不限时，作答会保存到学习记录。",
     "practiceRule": "每题选择一次后显示解析。答对后标记为最近已答对，原有错题历史继续保留。",
     "noPracticeQuestions": "当前没有符合条件的题目，可以返回错题本或开始一轮快问快答。",
     "untimed": "不限时",
@@ -472,7 +471,26 @@
       "fourier-transform": "傅里叶变换",
       "second-order": "二阶系统",
       "poles": "极点与稳定性",
-      "modulation": "调制与带宽"
+      "modulation": "调制与带宽",
+      "frequency-units": "频率单位",
+      "signal-transformation": "信号变换",
+      "impulse": "阶跃与冲激",
+      "system-properties": "系统性质",
+      "system-model": "系统建模",
+      "zero-state": "零状态与全响应",
+      "zero-input": "零输入响应",
+      "initial-values": "初始值与跳变",
+      "step-response": "冲激与阶跃响应",
+      "correlation": "相关函数",
+      "frequency-response": "频率响应",
+      "spectral-energy": "能量谱",
+      "laplace-roc": "拉氏变换与收敛域",
+      "laplace-properties": "拉氏变换性质",
+      "laplace-inverse": "拉氏逆变换",
+      "circuit-model": "电路 s 域模型",
+      "stability": "稳定性",
+      "block-diagrams": "框图与梅森公式",
+      "realization": "系统实现"
     },
     "diagnoses": {
       "energy-signal-power": {
@@ -618,6 +636,822 @@
       "imaginary-axis-grow": {
         "thought": "你可能把振荡频率非零误认为包络增长。",
         "correction": "检查 e^(σt) 中的 σ；虚轴上 σ=0，包络不随时间增长。"
+      },
+      "finite-energy-power-option-0": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "P=lim(E_T/(2T))=0，因为分子有界而观察时长趋于无穷。"
+      },
+      "finite-energy-power-option-2": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "P=lim(E_T/(2T))=0，因为分子有界而观察时长趋于无穷。"
+      },
+      "finite-energy-power-option-3": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "P=lim(E_T/(2T))=0，因为分子有界而观察时长趋于无穷。"
+      },
+      "cosine-average-power-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "cos² 的周期平均值为 1/2，P=2²/2=2。"
+      },
+      "cosine-average-power-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "cos² 的周期平均值为 1/2，P=2²/2=2。"
+      },
+      "cosine-average-power-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "cos² 的周期平均值为 1/2，P=2²/2=2。"
+      },
+      "rectangle-energy-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "E=幅度平方×时长=2²×3=12。"
+      },
+      "rectangle-energy-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "E=幅度平方×时长=2²×3=12。"
+      },
+      "rectangle-energy-option-2": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "E=幅度平方×时长=2²×3=12。"
+      },
+      "exponential-energy-option-1": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "E=∫₀∞4e^(−4t)dt=1。"
+      },
+      "exponential-energy-option-2": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "E=∫₀∞4e^(−4t)dt=1。"
+      },
+      "exponential-energy-option-3": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "E=∫₀∞4e^(−4t)dt=1。"
+      },
+      "angular-to-hertz-option-0": {
+        "thought": "选择“0 Hz”与题设条件不符。",
+        "correction": "f=ω/(2π)=20 Hz。"
+      },
+      "angular-to-hertz-option-2": {
+        "thought": "选择“1 Hz”与题设条件不符。",
+        "correction": "f=ω/(2π)=20 Hz。"
+      },
+      "angular-to-hertz-option-3": {
+        "thought": "选择“-1 Hz”与题设条件不符。",
+        "correction": "f=ω/(2π)=20 Hz。"
+      },
+      "harmonic-period-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "两频率为 1:2，基波角频率 2 rad/s，所以 T=2π/2。"
+      },
+      "harmonic-period-option-1": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "两频率为 1:2，基波角频率 2 rad/s，所以 T=2π/2。"
+      },
+      "harmonic-period-option-3": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "两频率为 1:2，基波角频率 2 rad/s，所以 T=2π/2。"
+      },
+      "time-width-scale-option-0": {
+        "thought": "选择“0 s”与题设条件不符。",
+        "correction": "正时间压缩 3 倍，宽度为 12/3=4 秒。"
+      },
+      "time-width-scale-option-1": {
+        "thought": "选择“1 s”与题设条件不符。",
+        "correction": "正时间压缩 3 倍，宽度为 12/3=4 秒。"
+      },
+      "time-width-scale-option-2": {
+        "thought": "选择“-1 s”与题设条件不符。",
+        "correction": "正时间压缩 3 倍，宽度为 12/3=4 秒。"
+      },
+      "support-delay-scale-option-1": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "解 0≤2t−4≤2，左端点为 4/2=2。"
+      },
+      "support-delay-scale-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "解 0≤2t−4≤2，左端点为 4/2=2。"
+      },
+      "support-delay-scale-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "解 0≤2t−4≤2，左端点为 4/2=2。"
+      },
+      "energy-time-scale-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "变量代换得 E新=E原/|a|=12/3=4。"
+      },
+      "energy-time-scale-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "变量代换得 E新=E原/|a|=12/3=4。"
+      },
+      "energy-time-scale-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "变量代换得 E新=E原/|a|=12/3=4。"
+      },
+      "impulse-scale-weight-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "δ(at)=δ(t)/|a|，因此 c=1/2。"
+      },
+      "impulse-scale-weight-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "δ(at)=δ(t)/|a|，因此 c=1/2。"
+      },
+      "impulse-scale-weight-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "δ(at)=δ(t)/|a|，因此 c=1/2。"
+      },
+      "impulse-sifting-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "冲激取样 t=2，结果 2²+3=7。"
+      },
+      "impulse-sifting-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "冲激取样 t=2，结果 2²+3=7。"
+      },
+      "impulse-sifting-option-2": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "冲激取样 t=2，结果 2²+3=7。"
+      },
+      "linear-superposition-option-1": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "T(x₁+x₂)=2(3+4)=14，与两输出之和一致。"
+      },
+      "linear-superposition-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "T(x₁+x₂)=2(3+4)=14，与两输出之和一致。"
+      },
+      "linear-superposition-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "T(x₁+x₂)=2(3+4)=14，与两输出之和一致。"
+      },
+      "square-homogeneity-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "T[ax]=(ax)²=36，一般不等于 aT[x]。"
+      },
+      "square-homogeneity-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "T[ax]=(ax)²=36，一般不等于 aT[x]。"
+      },
+      "square-homogeneity-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "T[ax]=(ax)²=36，一般不等于 aT[x]。"
+      },
+      "delay-causality-option-1": {
+        "thought": "选择“因果且无记忆”与题设条件不符。",
+        "correction": "输出依赖过去输入，因此因果，但不是仅依赖当前输入。"
+      },
+      "delay-causality-option-2": {
+        "thought": "选择“非因果且有记忆”与题设条件不符。",
+        "correction": "输出依赖过去输入，因此因果，但不是仅依赖当前输入。"
+      },
+      "delay-causality-option-3": {
+        "thought": "选择“线性所以无记忆”与题设条件不符。",
+        "correction": "输出依赖过去输入，因此因果，但不是仅依赖当前输入。"
+      },
+      "advance-causality-option-0": {
+        "thought": "选择“因果，因为线性”与题设条件不符。",
+        "correction": "时刻 t 的输出需要 t+1 的输入，即未来输入。"
+      },
+      "advance-causality-option-2": {
+        "thought": "选择“因果，因为增益为1”与题设条件不符。",
+        "correction": "时刻 t 的输出需要 t+1 的输入，即未来输入。"
+      },
+      "advance-causality-option-3": {
+        "thought": "选择“只取决于信号幅度”与题设条件不符。",
+        "correction": "时刻 t 的输出需要 t+1 的输入，即未来输入。"
+      },
+      "time-varying-multiplier-option-0": {
+        "thought": "选择“是，所有乘法系统都时不变”与题设条件不符。",
+        "correction": "移位输入得到 t^n x(t−t0)，移位输出为 (t−t0)^n x(t−t0)，一般不相同。"
+      },
+      "time-varying-multiplier-option-1": {
+        "thought": "选择“是，因为满足线性”与题设条件不符。",
+        "correction": "移位输入得到 t^n x(t−t0)，移位输出为 (t−t0)^n x(t−t0)，一般不相同。"
+      },
+      "time-varying-multiplier-option-3": {
+        "thought": "选择“只在输入为零时才能定义系统”与题设条件不符。",
+        "correction": "移位输入得到 t^n x(t−t0)，移位输出为 (t−t0)^n x(t−t0)，一般不相同。"
+      },
+      "bounded-gain-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "|y|=3|x|≤6，常数输入取边界可达到。"
+      },
+      "bounded-gain-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "|y|=3|x|≤6，常数输入取边界可达到。"
+      },
+      "bounded-gain-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "|y|=3|x|≤6，常数输入取边界可达到。"
+      },
+      "rc-time-units-option-0": {
+        "thought": "选择“0 s”与题设条件不符。",
+        "correction": "τ=RC=2×10³×100×10⁻⁶=0.2 s。"
+      },
+      "rc-time-units-option-1": {
+        "thought": "选择“1 s”与题设条件不符。",
+        "correction": "τ=RC=2×10³×100×10⁻⁶=0.2 s。"
+      },
+      "rc-time-units-option-3": {
+        "thought": "选择“-1 s”与题设条件不符。",
+        "correction": "τ=RC=2×10³×100×10⁻⁶=0.2 s。"
+      },
+      "total-response-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "全响应是两部分之和：5+(-2)=3。"
+      },
+      "total-response-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "全响应是两部分之和：5+(-2)=3。"
+      },
+      "total-response-option-2": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "全响应是两部分之和：5+(-2)=3。"
+      },
+      "decay-exponent-option-1": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "代入得 λ+2=0，所以 λ=−2。"
+      },
+      "decay-exponent-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "代入得 λ+2=0，所以 λ=−2。"
+      },
+      "decay-exponent-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "代入得 λ+2=0，所以 λ=−2。"
+      },
+      "constant-forced-response-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "稳态 y′=0，因此 y∞=6/2=3。"
+      },
+      "constant-forced-response-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "稳态 y′=0，因此 y∞=6/2=3。"
+      },
+      "constant-forced-response-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "稳态 y′=0，因此 y∞=6/2=3。"
+      },
+      "impulse-state-jump-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "跨零积分得 Δy=3，所以 y(0+)=4。"
+      },
+      "impulse-state-jump-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "跨零积分得 Δy=3，所以 y(0+)=4。"
+      },
+      "impulse-state-jump-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "跨零积分得 Δy=3，所以 y(0+)=4。"
+      },
+      "second-order-jump-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "无 δ′ 激励，y 连续；δ 系数匹配给出 Δy′=2，结果 3。"
+      },
+      "second-order-jump-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "无 δ′ 激励，y 连续；δ 系数匹配给出 Δy′=2，结果 3。"
+      },
+      "second-order-jump-option-2": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "无 δ′ 激励，y 连续；δ 系数匹配给出 Δy′=2，结果 3。"
+      },
+      "zero-input-initial-option-1": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "输入置零，无冲激引起跳变，A=y(0+)=3。"
+      },
+      "zero-input-initial-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "输入置零，无冲激引起跳变，A=y(0+)=3。"
+      },
+      "zero-input-initial-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "输入置零，无冲激引起跳变，A=y(0+)=3。"
+      },
+      "impulse-step-final-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "g∞=∫₀∞h(t)dt=4/2=2。"
+      },
+      "impulse-step-final-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "g∞=∫₀∞h(t)dt=4/2=2。"
+      },
+      "impulse-step-final-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "g∞=∫₀∞h(t)dt=4/2=2。"
+      },
+      "step-impulse-coefficient-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "h=g′，且 g 在零点连续为0，无 δ 项；A=2×3=6。"
+      },
+      "step-impulse-coefficient-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "h=g′，且 g 在零点连续为0，无 δ 项；A=2×3=6。"
+      },
+      "step-impulse-coefficient-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "h=g′，且 g 在零点连续为0，无 δ 项；A=2×3=6。"
+      },
+      "impulse-convolution-gain-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "延迟冲激负责平移，冲激权重保留为增益 2。"
+      },
+      "impulse-convolution-gain-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "延迟冲激负责平移，冲激权重保留为增益 2。"
+      },
+      "impulse-convolution-gain-option-2": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "延迟冲激负责平移，冲激权重保留为增益 2。"
+      },
+      "rectangle-convolution-peak-option-1": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "峰值等于最大重叠长度 min(2,5)=2。"
+      },
+      "rectangle-convolution-peak-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "峰值等于最大重叠长度 min(2,5)=2。"
+      },
+      "rectangle-convolution-peak-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "峰值等于最大重叠长度 min(2,5)=2。"
+      },
+      "rectangle-convolution-width-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "支撑端点相加，卷积支撑闭包为 [0,5]。"
+      },
+      "rectangle-convolution-width-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "支撑端点相加，卷积支撑闭包为 [0,5]。"
+      },
+      "rectangle-convolution-width-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "支撑端点相加，卷积支撑闭包为 [0,5]。"
+      },
+      "equal-exponential-convolution-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "积分内指数合为 e^(−1t)，积分区间长 t，A=6。"
+      },
+      "equal-exponential-convolution-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "积分内指数合为 e^(−1t)，积分区间长 t，A=6。"
+      },
+      "equal-exponential-convolution-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "积分内指数合为 e^(−1t)，积分区间长 t，A=6。"
+      },
+      "cascade-impulse-gain-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "级联用卷积，δ*δ=δ，增益相乘得 6。"
+      },
+      "cascade-impulse-gain-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "级联用卷积，δ*δ=δ，增益相乘得 6。"
+      },
+      "cascade-impulse-gain-option-2": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "级联用卷积，δ*δ=δ，增益相乘得 6。"
+      },
+      "parallel-impulse-gain-option-1": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "并联冲激响应相加：h=(2+(3))δ(t)，权重为 5。"
+      },
+      "parallel-impulse-gain-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "并联冲激响应相加：h=(2+(3))δ(t)，权重为 5。"
+      },
+      "parallel-impulse-gain-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "并联冲激响应相加：h=(2+(3))δ(t)，权重为 5。"
+      },
+      "autocorrelation-zero-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "零延迟自相关等于能量：2²×3=12。"
+      },
+      "autocorrelation-zero-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "零延迟自相关等于能量：2²×3=12。"
+      },
+      "autocorrelation-zero-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "零延迟自相关等于能量：2²×3=12。"
+      },
+      "autocorrelation-overlap-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "重叠长度为 4−1=3，即相关值。"
+      },
+      "autocorrelation-overlap-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "重叠长度为 4−1=3，即相关值。"
+      },
+      "autocorrelation-overlap-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "重叠长度为 4−1=3，即相关值。"
+      },
+      "continuous-convolution-step-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "离散求和需乘积分步长：120×0.01=1.2。"
+      },
+      "continuous-convolution-step-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "离散求和需乘积分步长：120×0.01=1.2。"
+      },
+      "continuous-convolution-step-option-2": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "离散求和需乘积分步长：120×0.01=1.2。"
+      },
+      "fourier-fundamental-frequency-option-1": {
+        "thought": "选择“0 Hz”与题设条件不符。",
+        "correction": "Δf=f0=1/T=50 Hz。"
+      },
+      "fourier-fundamental-frequency-option-2": {
+        "thought": "选择“1 Hz”与题设条件不符。",
+        "correction": "Δf=f0=1/T=50 Hz。"
+      },
+      "fourier-fundamental-frequency-option-3": {
+        "thought": "选择“-1 Hz”与题设条件不符。",
+        "correction": "Δf=f0=1/T=50 Hz。"
+      },
+      "fourier-cosine-coefficient-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "余弦拆为正负频率两项，每项系数 4/2=2。"
+      },
+      "fourier-cosine-coefficient-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "余弦拆为正负频率两项，每项系数 4/2=2。"
+      },
+      "fourier-cosine-coefficient-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "余弦拆为正负频率两项，每项系数 4/2=2。"
+      },
+      "pulse-train-average-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "周期平均值为幅度×占空比=2×0.25=0.5。"
+      },
+      "pulse-train-average-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "周期平均值为幅度×占空比=2×0.25=0.5。"
+      },
+      "pulse-train-average-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "周期平均值为幅度×占空比=2×0.25=0.5。"
+      },
+      "fourier-exponential-dc-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "X(j0)=∫x(t)dt=2/4=0.5。"
+      },
+      "fourier-exponential-dc-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "X(j0)=∫x(t)dt=2/4=0.5。"
+      },
+      "fourier-exponential-dc-option-2": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "X(j0)=∫x(t)dt=2/4=0.5。"
+      },
+      "fourier-scale-dc-option-1": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "时间尺度性质给出 Y(jω)=X(jω/3)/3，零频值为 4。"
+      },
+      "fourier-scale-dc-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "时间尺度性质给出 Y(jω)=X(jω/3)/3，零频值为 4。"
+      },
+      "fourier-scale-dc-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "时间尺度性质给出 Y(jω)=X(jω/3)/3，零频值为 4。"
+      },
+      "fourier-delay-phase-option-0": {
+        "thought": "选择“0 rad”与题设条件不符。",
+        "correction": "延迟因子 e^(−jωtd)，相位为 −ωtd=−3×2=-6 rad。"
+      },
+      "fourier-delay-phase-option-2": {
+        "thought": "选择“1 rad”与题设条件不符。",
+        "correction": "延迟因子 e^(−jωtd)，相位为 −ωtd=−3×2=-6 rad。"
+      },
+      "fourier-delay-phase-option-3": {
+        "thought": "选择“-1 rad”与题设条件不符。",
+        "correction": "延迟因子 e^(−jωtd)，相位为 −ωtd=−3×2=-6 rad。"
+      },
+      "modulation-upper-edge-option-0": {
+        "thought": "选择“0 kHz”与题设条件不符。",
+        "correction": "频谱移到 ±fc，上边界 fc+B=103 kHz。"
+      },
+      "modulation-upper-edge-option-1": {
+        "thought": "选择“1 kHz”与题设条件不符。",
+        "correction": "频谱移到 ±fc，上边界 fc+B=103 kHz。"
+      },
+      "modulation-upper-edge-option-3": {
+        "thought": "选择“-1 kHz”与题设条件不符。",
+        "correction": "频谱移到 ±fc，上边界 fc+B=103 kHz。"
+      },
+      "sinusoidal-output-amplitude-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "同频输出幅度为 |H|A=0.5×6=3。"
+      },
+      "sinusoidal-output-amplitude-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "同频输出幅度为 |H|A=0.5×6=3。"
+      },
+      "sinusoidal-output-amplitude-option-2": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "同频输出幅度为 |H|A=0.5×6=3。"
+      },
+      "linear-phase-delay-option-1": {
+        "thought": "选择“0 s”与题设条件不符。",
+        "correction": "τg=−dφ/dω=−d(−3ω)/dω=3 s。"
+      },
+      "linear-phase-delay-option-2": {
+        "thought": "选择“1 s”与题设条件不符。",
+        "correction": "τg=−dφ/dω=−d(−3ω)/dω=3 s。"
+      },
+      "linear-phase-delay-option-3": {
+        "thought": "选择“-1 s”与题设条件不符。",
+        "correction": "τg=−dφ/dω=−d(−3ω)/dω=3 s。"
+      },
+      "parseval-energy-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "Parseval：E=(1/(2π))∫|X|²dω=8/2=4。"
+      },
+      "parseval-energy-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "Parseval：E=(1/(2π))∫|X|²dω=8/2=4。"
+      },
+      "parseval-energy-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "Parseval：E=(1/(2π))∫|X|²dω=8/2=4。"
+      },
+      "rectangle-first-zero-option-0": {
+        "thought": "选择“0 Hz”与题设条件不符。",
+        "correction": "X(f)∝sinc(fT)，首个正零点 f=1/T=50 Hz。"
+      },
+      "rectangle-first-zero-option-1": {
+        "thought": "选择“1 Hz”与题设条件不符。",
+        "correction": "X(f)∝sinc(fT)，首个正零点 f=1/T=50 Hz。"
+      },
+      "rectangle-first-zero-option-3": {
+        "thought": "选择“-1 Hz”与题设条件不符。",
+        "correction": "X(f)∝sinc(fT)，首个正零点 f=1/T=50 Hz。"
+      },
+      "sampling-period-option-0": {
+        "thought": "选择“0 ms”与题设条件不符。",
+        "correction": "Ts=1/fs 秒=1000/1000=1 ms。"
+      },
+      "sampling-period-option-1": {
+        "thought": "选择“-1 ms”与题设条件不符。",
+        "correction": "Ts=1/fs 秒=1000/1000=1 ms。"
+      },
+      "sampling-period-option-2": {
+        "thought": "选择“2 ms”与题设条件不符。",
+        "correction": "Ts=1/fs 秒=1000/1000=1 ms。"
+      },
+      "dft-frequency-grid-option-1": {
+        "thought": "选择“0 Hz”与题设条件不符。",
+        "correction": "Δf=fs/N=800/400=2 Hz；频点间隔不等于所有信号条件下的实际分辨能力。"
+      },
+      "dft-frequency-grid-option-2": {
+        "thought": "选择“1 Hz”与题设条件不符。",
+        "correction": "Δf=fs/N=800/400=2 Hz；频点间隔不等于所有信号条件下的实际分辨能力。"
+      },
+      "dft-frequency-grid-option-3": {
+        "thought": "选择“-1 Hz”与题设条件不符。",
+        "correction": "Δf=fs/N=800/400=2 Hz；频点间隔不等于所有信号条件下的实际分辨能力。"
+      },
+      "real-spectrum-conjugate-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "实信号 F₋n=F_n*，虚部变号，所以为 -3。"
+      },
+      "real-spectrum-conjugate-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "实信号 F₋n=F_n*，虚部变号，所以为 -3。"
+      },
+      "real-spectrum-conjugate-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "实信号 F₋n=F_n*，虚部变号，所以为 -3。"
+      },
+      "periodic-transform-weight-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "X(jω)=2πΣF_nδ(ω−nΩ)，因此 K=2F₁=4。"
+      },
+      "periodic-transform-weight-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "X(jω)=2πΣF_nδ(ω−nΩ)，因此 K=2F₁=4。"
+      },
+      "periodic-transform-weight-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "X(jω)=2πΣF_nδ(ω−nΩ)，因此 K=2F₁=4。"
+      },
+      "laplace-right-roc-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "积分收敛要求 Re(s+2)>0，所以 b=−2，边界不含。"
+      },
+      "laplace-right-roc-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "积分收敛要求 Re(s+2)>0，所以 b=−2，边界不含。"
+      },
+      "laplace-right-roc-option-2": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "积分收敛要求 Re(s+2)>0，所以 b=−2，边界不含。"
+      },
+      "laplace-left-roc-option-0": {
+        "thought": "选择“e^(−2t)u(t)”与题设条件不符。",
+        "correction": "左半平面 ROC 对应左边指数信号；积分给出负号。"
+      },
+      "laplace-left-roc-option-2": {
+        "thought": "选择“δ(t)”与题设条件不符。",
+        "correction": "左半平面 ROC 对应左边指数信号；积分给出负号。"
+      },
+      "laplace-left-roc-option-3": {
+        "thought": "选择“e^(2t)u(t)”与题设条件不符。",
+        "correction": "左半平面 ROC 对应左边指数信号；积分给出负号。"
+      },
+      "unilateral-derivative-value-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "L[f′]=sF−f(0−)=1×5−2=3。"
+      },
+      "unilateral-derivative-value-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "L[f′]=sF−f(0−)=1×5−2=3。"
+      },
+      "unilateral-derivative-value-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "L[f′]=sF−f(0−)=1×5−2=3。"
+      },
+      "laplace-initial-value-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "初值定理 lim(s→∞)sF(s)=2。"
+      },
+      "laplace-initial-value-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "初值定理 lim(s→∞)sF(s)=2。"
+      },
+      "laplace-initial-value-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "初值定理 lim(s→∞)sF(s)=2。"
+      },
+      "laplace-final-value-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "终值定理适用：lim(s→0)sF=6/2=3。"
+      },
+      "laplace-final-value-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "终值定理适用：lim(s→0)sF=6/2=3。"
+      },
+      "laplace-final-value-option-2": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "终值定理适用：lim(s→0)sF=6/2=3。"
+      },
+      "laplace-repeated-pole-option-1": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "L[t²e^(−2t)u(t)]=2!/(s+2)³，所以 A=6/2=3。"
+      },
+      "laplace-repeated-pole-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "L[t²e^(−2t)u(t)]=2!/(s+2)³，所以 A=6/2=3。"
+      },
+      "laplace-repeated-pole-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "L[t²e^(−2t)u(t)]=2!/(s+2)³，所以 A=6/2=3。"
+      },
+      "partial-fraction-residue-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "两边乘(s+1)后代 s=−1，A=1/(2−1)=1。"
+      },
+      "partial-fraction-residue-option-2": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "两边乘(s+1)后代 s=−1，A=1/(2−1)=1。"
+      },
+      "partial-fraction-residue-option-3": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "两边乘(s+1)后代 s=−1，A=1/(2−1)=1。"
+      },
+      "inductor-initial-term-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "V=L(sI−i(0−))，所以 c=−L i(0−)=-6。"
+      },
+      "inductor-initial-term-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "V=L(sI−i(0−))，所以 c=−L i(0−)=-6。"
+      },
+      "inductor-initial-term-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "V=L(sI−i(0−))，所以 c=−L i(0−)=-6。"
+      },
+      "transfer-zero-location-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "分子为零给出 s=−3，与分母无公因式。"
+      },
+      "transfer-zero-location-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "分子为零给出 s=−3，与分母无公因式。"
+      },
+      "transfer-zero-location-option-2": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "分子为零给出 s=−3，与分母无公因式。"
+      },
+      "transfer-rightmost-pole-option-1": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "极点为 −1、−3，较大的实部为 −1。"
+      },
+      "transfer-rightmost-pole-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "极点为 −1、−3，较大的实部为 −1。"
+      },
+      "transfer-rightmost-pole-option-3": {
+        "thought": "选择“-2”与题设条件不符。",
+        "correction": "极点为 −1、−3，较大的实部为 −1。"
+      },
+      "absolute-impulse-integral-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "h 非负，绝对积分为 3/2=1.5<∞，该系统 BIBO 稳定。"
+      },
+      "absolute-impulse-integral-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "h 非负，绝对积分为 3/2=1.5<∞，该系统 BIBO 稳定。"
+      },
+      "absolute-impulse-integral-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "h 非负，绝对积分为 3/2=1.5<∞，该系统 BIBO 稳定。"
+      },
+      "amplitude-decibels-option-0": {
+        "thought": "选择“0 dB”与题设条件不符。",
+        "correction": "幅值比使用 20log10，得到 20 dB。"
+      },
+      "amplitude-decibels-option-1": {
+        "thought": "选择“1 dB”与题设条件不符。",
+        "correction": "幅值比使用 20log10，得到 20 dB。"
+      },
+      "amplitude-decibels-option-3": {
+        "thought": "选择“-1 dB”与题设条件不符。",
+        "correction": "幅值比使用 20log10，得到 20 dB。"
+      },
+      "lowpass-cutoff-radians-option-0": {
+        "thought": "选择“0 rad/s”与题设条件不符。",
+        "correction": "相对直流增益降为 1/√2 时 ω=2 rad/s；这里求角频率，不是 Hz。"
+      },
+      "lowpass-cutoff-radians-option-1": {
+        "thought": "选择“1 rad/s”与题设条件不符。",
+        "correction": "相对直流增益降为 1/√2 时 ω=2 rad/s；这里求角频率，不是 Hz。"
+      },
+      "lowpass-cutoff-radians-option-2": {
+        "thought": "选择“-1 rad/s”与题设条件不符。",
+        "correction": "相对直流增益降为 1/√2 时 ω=2 rad/s；这里求角频率，不是 Hz。"
+      },
+      "mason-single-loop-option-1": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "梅森公式 T=P/(1−L)=6/(1−(-2))=2。"
+      },
+      "mason-single-loop-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "梅森公式 T=P/(1−L)=6/(1−(-2))=2。"
+      },
+      "mason-single-loop-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "梅森公式 T=P/(1−L)=6/(1−(-2))=2。"
+      },
+      "mason-two-loops-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "Δ=1−L₁−L₂+L₁L₂=(1−0.5)(1−0.25)=0.375。"
+      },
+      "mason-two-loops-option-2": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "Δ=1−L₁−L₂+L₁L₂=(1−0.5)(1−0.25)=0.375。"
+      },
+      "mason-two-loops-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "Δ=1−L₁−L₂+L₁L₂=(1−0.5)(1−0.25)=0.375。"
+      },
+      "direct-two-integrators-option-0": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "标准直接 II 型使用一条 2 级共享状态积分链，需要 2 个积分器。"
+      },
+      "direct-two-integrators-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "标准直接 II 型使用一条 2 级共享状态积分链，需要 2 个积分器。"
+      },
+      "direct-two-integrators-option-3": {
+        "thought": "选择“-1”与题设条件不符。",
+        "correction": "标准直接 II 型使用一条 2 级共享状态积分链，需要 2 个积分器。"
+      },
+      "rc-pole-location-option-0": {
+        "thought": "选择“0 s⁻¹”与题设条件不符。",
+        "correction": "H=1/(1+τs)，极点为 s=−1/τ=-10 s⁻¹。"
+      },
+      "rc-pole-location-option-1": {
+        "thought": "选择“1 s⁻¹”与题设条件不符。",
+        "correction": "H=1/(1+τs)，极点为 s=−1/τ=-10 s⁻¹。"
+      },
+      "rc-pole-location-option-2": {
+        "thought": "选择“-1 s⁻¹”与题设条件不符。",
+        "correction": "H=1/(1+τs)，极点为 s=−1/τ=-10 s⁻¹。"
+      },
+      "hidden-unstable-mode-option-0": {
+        "thought": "选择“能，约分会删除物理状态”与题设条件不符。",
+        "correction": "代数对消只描述输入输出关系，内部渐近稳定仍需检查完整状态矩阵。"
+      },
+      "hidden-unstable-mode-option-2": {
+        "thought": "选择“能，只要输入为零”与题设条件不符。",
+        "correction": "代数对消只描述输入输出关系，内部渐近稳定仍需检查完整状态矩阵。"
+      },
+      "hidden-unstable-mode-option-3": {
+        "thought": "选择“只需检查所有零点”与题设条件不符。",
+        "correction": "代数对消只描述输入输出关系，内部渐近稳定仍需检查完整状态矩阵。"
       }
     },
     "reviewFilter": "复习状态",
@@ -643,7 +1477,6 @@
   },
   "quiz": {
     "title": "快问快答",
-    "subtitle": "90 秒内随机完成 12 道概念题。答对得分，连续答对有连击加成。",
     "formula": "\\text{score}=10\\times\\text{correct}+\\text{streak bonus}",
     "intro": {
       "title": "规则",
@@ -651,9 +1484,8 @@
       "questions": "题目数",
       "duration": "总时长",
       "perQuestion": "平均每题",
-      "ruleOne": "答对得 10 分，连续答对每次额外 +2 分（最多 +10）。",
-      "ruleTwo": "答错不扣分，但连击会清零。",
-      "ruleThree": "时间到自动结算；没答的题不计入正确率，保存作答时暂停计时。",
+      "ruleOne": "答对 +10 分；连对每题额外 +2（最多 +10）；答错不扣分，连击清零。",
+      "ruleThree": "时间到自动结束；保存答案时暂停计时。",
       "start": "开始挑战"
     },
     "hud": {
@@ -667,7 +1499,6 @@
     },
     "result": {
       "title": "本轮结束",
-      "description": "先看总分，再回顾错题；错题比分数更值得花时间。",
       "score": "总分",
       "correct": "答对",
       "accuracy": "正确率",
@@ -677,7 +1508,6 @@
     },
     "review": {
       "title": "错题与回顾",
-      "description": "这里列出你本轮作答的题目与正确答案。",
       "empty": "时间到之前没有作答记录。",
       "answer": "正确答案：{answer}"
     },
@@ -699,15 +1529,15 @@
         "explain": "与延迟冲激卷积会把输入整体右移 2：y(t) = x(t − 2)。"
       },
       "step-response": {
-        "prompt": "一阶系统 y(t)=K(1−e^{−t/τ})，在 t=τ 时达到最终值的？",
+        "prompt": "标准一阶低通 H(s)=K/(1+τs)，K≠0、τ>0。零状态单位阶跃响应在 t=τ 达到终值的约多少？",
         "option1": "50%",
         "option2": "63.2%",
         "option3": "86.5%",
         "option4": "95%",
-        "explain": "1 − e^{−1} ≈ 0.632，所以一个时间常数达到 63.2%。"
+        "explain": "g(t)=K(1−e^(−t/τ))u(t)，归一化后 1−e^(−1)≈63.2%。"
       },
       "aliasing": {
-        "prompt": "f0=5 Hz，fs=8 Hz 时，混叠后的表观频率是？",
+        "prompt": "5 Hz 实余弦以 8 Hz 均匀采样，折叠到 [0,fs/2] 后对应的频率是多少？",
         "option1": "5 Hz",
         "option2": "8 Hz",
         "option3": "13 Hz",
@@ -715,20 +1545,20 @@
         "explain": "|5 − 8| = 3 Hz；采样后高频折叠到 3 Hz。"
       },
       "nyquist": {
-        "prompt": "信号最高频率为 4 kHz，理论上最小采样率为？",
+        "prompt": "基带带限信号最高频率为 4 kHz，其奈奎斯特速率阈值 2fmax 是多少？本题求阈值，通用安全采样需 fs>2fmax。",
         "option1": "8 kHz",
         "option2": "4 kHz",
         "option3": "2 kHz",
         "option4": "16 kHz",
-        "explain": "奈奎斯特率是最高频率的两倍，即 8 kHz。"
+        "explain": "奈奎斯特速率阈值为 8 kHz。等号采样对临界频率分量不能普遍保证重建，实际还需抗混叠过渡带。"
       },
       "square-wave": {
-        "prompt": "对称周期方波的傅里叶级数中偶次谐波为零，直接原因是？",
+        "prompt": "零均值、50% 占空比、幅值为 ±A 的理想周期方波，为何没有偶次谐波？",
         "option1": "偶函数",
-        "option2": "具有半波对称性",
+        "option2": "具有半波反对称性",
         "option3": "周期函数",
         "option4": "能量信号",
-        "explain": "奇对称使余弦项消失；半波对称进一步让偶次谐波为零。"
+        "explain": "半波反对称 x(t+T/2)=−x(t) 消去直流和偶次谐波。仅有奇对称并不足以消去偶次谐波。"
       },
       "pulse-spectrum": {
         "prompt": "矩形脉冲越宽，其频谱主瓣？",
@@ -739,45 +1569,612 @@
         "explain": "时域展宽对应频域压缩：主瓣宽度与 1/τ 成正比。"
       },
       "time-constant": {
-        "prompt": "一阶系统 τ 增大，截止频率 fc 会？",
+        "prompt": "标准一阶低通 H(s)=K/(1+τs)，τ>0。保持 K 不变、增大 τ，−3 dB 截止频率如何变化？",
         "option1": "降低",
         "option2": "升高",
         "option3": "不变",
         "option4": "先升后降",
-        "explain": "fc = 1/(2πτ)，τ 越大，带宽越窄。"
+        "explain": "ωc=1/τ，fc=1/(2πτ)，因此 τ 越大截止频率越低。"
       },
       "damping": {
-        "prompt": "二阶系统阻尼比 ζ 从 0.3 增到 0.7，超调量通常？",
+        "prompt": "标准无零点二阶低通 H(s)=ωn²/(s²+2ζωns+ωn²)，ωn>0。零状态单位阶跃下，ζ 从 0.3 增至 0.7，超调量如何变化？",
         "option1": "增大",
         "option2": "减小",
         "option3": "不变",
         "option4": "变为无穷大",
-        "explain": "超调随 ζ 增大而减小；ζ ≥ 1 时超调为零。"
+        "explain": "0<ζ<1 时 Mp=e^(−πζ/√(1−ζ²))，随 ζ 增大而减小。该结论使用题设标准二阶形式。"
       },
       "right-half-plane": {
-        "prompt": "因果有理连续时间 LTI 系统有右半平面极点（无极零抵消），其 BIBO 稳定性是？",
+        "prompt": "因果、适当有理且已约分的连续 LTI 系统，若 H(s) 有右半平面极点，其 BIBO 稳定性如何？",
         "option1": "稳定",
         "option2": "临界稳定",
         "option3": "无法判断",
         "option4": "不稳定",
-        "explain": "右半平面极点对应增长的指数项，因此系统不稳定。"
+        "explain": "未对消的右半平面极点产生增长模态；因果 ROC 不含整个虚轴，所以不满足 BIBO 稳定。"
       },
       "am-bandwidth": {
-        "prompt": "基带最高频率为 fm 的 AM 信号，带宽约为？",
+        "prompt": "单音双边带 AM，载频 fc>fm>0，调制频率为 fm。正频率上下边带之间的带宽是多少？",
         "option1": "fm",
         "option2": "4fm",
         "option3": "2fm",
         "option4": "0.5fm",
-        "explain": "上下边带各占 fm，因此总带宽为 2fm。"
+        "explain": "两条边带位于 fc−fm 和 fc+fm，带宽为 2fm；单边带调制不适用此结论。"
       },
       "imaginary-axis": {
-        "prompt": "虚轴上的单对共轭极点对应的冲激响应是？",
+        "prompt": "因果有理系统有一对未对消的单极点 s=±jω0（ω0>0），留数非零。这对极点对应的实冲激响应模态如何变化？",
         "option1": "等幅振荡",
         "option2": "衰减振荡",
         "option3": "单调衰减",
         "option4": "增长振荡",
-        "explain": "实部为零，包络不衰减也不增长，因此是等幅振荡。"
+        "explain": "单虚轴共轭极点对应等幅正弦模态；这里描述该对极点的分量，不代表含其他极点时的完整响应。"
+      },
+      "finite-energy-power": {
+        "prompt": "已知非零信号总能量 E=3<∞，按双边时间平均定义，其平均功率是多少？",
+        "option1": "1",
+        "option2": "0",
+        "option3": "-1",
+        "option4": "2",
+        "explain": "P=lim(E_T/(2T))=0，因为分子有界而观察时长趋于无穷。"
+      },
+      "cosine-average-power": {
+        "prompt": "x(t)=2cos(3t)，其平均功率是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "2",
+        "option4": "-1",
+        "explain": "cos² 的周期平均值为 1/2，P=2²/2=2。"
+      },
+      "rectangle-energy": {
+        "prompt": "矩形信号在 [0,3] 秒内幅度为 2，其余为零。总能量是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "12",
+        "explain": "E=幅度平方×时长=2²×3=12。"
+      },
+      "exponential-energy": {
+        "prompt": "x(t)=2e^(−2t)u(t)，总能量是多少？",
+        "option1": "1",
+        "option2": "0",
+        "option3": "-1",
+        "option4": "2",
+        "explain": "E=∫₀∞4e^(−4t)dt=1。"
+      },
+      "angular-to-hertz": {
+        "prompt": "角频率 ω=40π rad/s，对应频率是多少 Hz？",
+        "option1": "0 Hz",
+        "option2": "20 Hz",
+        "option3": "1 Hz",
+        "option4": "-1 Hz",
+        "explain": "f=ω/(2π)=20 Hz。"
+      },
+      "harmonic-period": {
+        "prompt": "x(t)=cos(2t)+cos(4t)，最小正周期 T=kπ 秒，k 是多少？",
+        "option1": "0",
+        "option2": "-1",
+        "option3": "1",
+        "option4": "2",
+        "explain": "两频率为 1:2，基波角频率 2 rad/s，所以 T=2π/2。"
+      },
+      "time-width-scale": {
+        "prompt": "x(t) 非零区间宽度为 12 秒，x(3t) 的非零区间宽度是多少秒？",
+        "option1": "0 s",
+        "option2": "1 s",
+        "option3": "-1 s",
+        "option4": "4 s",
+        "explain": "正时间压缩 3 倍，宽度为 12/3=4 秒。"
+      },
+      "support-delay-scale": {
+        "prompt": "x(t) 仅在 [0,2] 非零。x(2t−4) 非零区间的左端点是多少？",
+        "option1": "2",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "解 0≤2t−4≤2，左端点为 4/2=2。"
+      },
+      "energy-time-scale": {
+        "prompt": "x(t) 的能量为 12，x(-3t) 的能量是多少？",
+        "option1": "0",
+        "option2": "4",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "变量代换得 E新=E原/|a|=12/3=4。"
+      },
+      "impulse-scale-weight": {
+        "prompt": "δ(2t)=cδ(t)，系数 c 是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "0.5",
+        "option4": "-1",
+        "explain": "δ(at)=δ(t)/|a|，因此 c=1/2。"
+      },
+      "impulse-sifting": {
+        "prompt": "全实轴积分 ∫(t²+3)δ(t−2)dt 等于多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "7",
+        "explain": "冲激取样 t=2，结果 2²+3=7。"
+      },
+      "linear-superposition": {
+        "prompt": "线性系统 y(t)=2x(t)。同一时刻 x₁=3、x₂=4，输入 x₁+x₂ 的输出是多少？",
+        "option1": "14",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "T(x₁+x₂)=2(3+4)=14，与两输出之和一致。"
+      },
+      "square-homogeneity": {
+        "prompt": "非线性系统 T[x]=x²。对某时刻 x=3，T[2x] 的值是多少？",
+        "option1": "0",
+        "option2": "36",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "T[ax]=(ax)²=36，一般不等于 aT[x]。"
+      },
+      "delay-causality": {
+        "prompt": "y(t)=x(t−1)，在全实轴信号上，该系统是否因果、是否有记忆？",
+        "option1": "因果且有记忆",
+        "option2": "因果且无记忆",
+        "option3": "非因果且有记忆",
+        "option4": "线性所以无记忆",
+        "explain": "输出依赖过去输入，因此因果，但不是仅依赖当前输入。"
+      },
+      "advance-causality": {
+        "prompt": "y(t)=x(t+1)，其因果性如何？",
+        "option1": "因果，因为线性",
+        "option2": "非因果，需要未来输入",
+        "option3": "因果，因为增益为1",
+        "option4": "只取决于信号幅度",
+        "explain": "时刻 t 的输出需要 t+1 的输入，即未来输入。"
+      },
+      "time-varying-multiplier": {
+        "prompt": "y(t)=t^1x(t)，在全实轴上属于时不变系统吗？",
+        "option1": "是，所有乘法系统都时不变",
+        "option2": "是，因为满足线性",
+        "option3": "否，显式时间系数使移位检验不成立",
+        "option4": "只在输入为零时才能定义系统",
+        "explain": "移位输入得到 t^n x(t−t0)，移位输出为 (t−t0)^n x(t−t0)，一般不相同。"
+      },
+      "bounded-gain": {
+        "prompt": "y=3x 且 |x(t)|≤2，最紧的统一输出幅度上界是多少？",
+        "option1": "0",
+        "option2": "6",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "|y|=3|x|≤6，常数输入取边界可达到。"
+      },
+      "rc-time-units": {
+        "prompt": "RC y′+y=x，R=2 kΩ、C=100 μF，时间常数为多少秒？",
+        "option1": "0 s",
+        "option2": "1 s",
+        "option3": "0.2 s",
+        "option4": "-1 s",
+        "explain": "τ=RC=2×10³×100×10⁻⁶=0.2 s。"
+      },
+      "total-response": {
+        "prompt": "线性系统某时刻零输入响应为 5，零状态响应为 -2，全响应是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "3",
+        "explain": "全响应是两部分之和：5+(-2)=3。"
+      },
+      "decay-exponent": {
+        "prompt": "齐次方程 y′+2y=0，解 y=Ce^(λt) 中 λ 是多少？",
+        "option1": "-2",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "代入得 λ+2=0，所以 λ=−2。"
+      },
+      "constant-forced-response": {
+        "prompt": "y′+2y=6，稳定稳态常值是多少？",
+        "option1": "0",
+        "option2": "3",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "稳态 y′=0，因此 y∞=6/2=3。"
+      },
+      "impulse-state-jump": {
+        "prompt": "y′+2y=3δ(t)，y(0−)=1，求 y(0+)。",
+        "option1": "0",
+        "option2": "1",
+        "option3": "4",
+        "option4": "-1",
+        "explain": "跨零积分得 Δy=3，所以 y(0+)=4。"
+      },
+      "second-order-jump": {
+        "prompt": "y″+3y′+2y=2δ(t)，y(0−) 有限，y′(0−)=1。求 y′(0+)。",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "3",
+        "explain": "无 δ′ 激励，y 连续；δ 系数匹配给出 Δy′=2，结果 3。"
+      },
+      "zero-input-initial": {
+        "prompt": "y′+2y=x，y(0−)=3。零输入响应 A e^(−2t) 在 t≥0 的系数 A 是多少？",
+        "option1": "3",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "输入置零，无冲激引起跳变，A=y(0+)=3。"
+      },
+      "impulse-step-final": {
+        "prompt": "h(t)=4e^(−2t)u(t)，零状态单位阶跃响应终值是多少？",
+        "option1": "0",
+        "option2": "2",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "g∞=∫₀∞h(t)dt=4/2=2。"
+      },
+      "step-impulse-coefficient": {
+        "prompt": "零状态阶跃响应 g(t)=2(1−e^(−3t))u(t)，h(t)=A e^(−3t)u(t)，A 是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "6",
+        "option4": "-1",
+        "explain": "h=g′，且 g 在零点连续为0，无 δ 项；A=2×3=6。"
+      },
+      "impulse-convolution-gain": {
+        "prompt": "x(t)*[2δ(t−3)]=A x(t−3)，A 是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "2",
+        "explain": "延迟冲激负责平移，冲激权重保留为增益 2。"
+      },
+      "rectangle-convolution-peak": {
+        "prompt": "两幅度1的因果矩形宽度分别为 2 s、5 s，其卷积峰值是多少？",
+        "option1": "2",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "峰值等于最大重叠长度 min(2,5)=2。"
+      },
+      "rectangle-convolution-width": {
+        "prompt": "两单位幅度因果矩形支撑为 [0,2] 和 [0,3]，卷积的非零支撑闭包宽度是多少？",
+        "option1": "0",
+        "option2": "5",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "支撑端点相加，卷积支撑闭包为 [0,5]。"
+      },
+      "equal-exponential-convolution": {
+        "prompt": "x=2e^(−1t)u(t)，h=3e^(−1t)u(t)。卷积为 A t e^(−1t)u(t)，A 是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "6",
+        "option4": "-1",
+        "explain": "积分内指数合为 e^(−1t)，积分区间长 t，A=6。"
+      },
+      "cascade-impulse-gain": {
+        "prompt": "两 LTI 系统级联，h₁=2δ(t)、h₂=3δ(t)。总 h=Aδ(t)，A 是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "6",
+        "explain": "级联用卷积，δ*δ=δ，增益相乘得 6。"
+      },
+      "parallel-impulse-gain": {
+        "prompt": "两 LTI 支路并联，输入相同且输出相加，h₁=2δ(t)、h₂=3δ(t)。总冲激权重是多少？",
+        "option1": "5",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "并联冲激响应相加：h=(2+(3))δ(t)，权重为 5。"
+      },
+      "autocorrelation-zero": {
+        "prompt": "实矩形信号在 [0,3] 幅度为 2，定义 Rxx(τ)=∫x(t)x(t−τ)dt，Rxx(0) 是多少？",
+        "option1": "0",
+        "option2": "12",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "零延迟自相关等于能量：2²×3=12。"
+      },
+      "autocorrelation-overlap": {
+        "prompt": "x(t) 为 [0,4] 上幅度1矩形。Rxx(τ)=∫x(t)x(t−τ)dt，求 Rxx(1)。",
+        "option1": "0",
+        "option2": "1",
+        "option3": "3",
+        "option4": "-1",
+        "explain": "重叠长度为 4−1=3，即相关值。"
+      },
+      "continuous-convolution-step": {
+        "prompt": "连续卷积的黎曼和近似中，离散 conv 结果某点为 120，dt=0.01 s。积分近似值是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "1.2",
+        "explain": "离散求和需乘积分步长：120×0.01=1.2。"
+      },
+      "fourier-fundamental-frequency": {
+        "prompt": "周期 T=0.02 s，傅里叶级数谱线间隔是多少 Hz？",
+        "option1": "50 Hz",
+        "option2": "0 Hz",
+        "option3": "1 Hz",
+        "option4": "-1 Hz",
+        "explain": "Δf=f0=1/T=50 Hz。"
+      },
+      "fourier-cosine-coefficient": {
+        "prompt": "x(t)=2+4cos(Ωt)，复指数级数系数 F₁ 是多少？",
+        "option1": "0",
+        "option2": "2",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "余弦拆为正负频率两项，每项系数 4/2=2。"
+      },
+      "pulse-train-average": {
+        "prompt": "周期矩形脉冲串高电平为 2、低电平为0，占空比 25%。直流系数是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "0.5",
+        "option4": "-1",
+        "explain": "周期平均值为幅度×占空比=2×0.25=0.5。"
+      },
+      "fourier-exponential-dc": {
+        "prompt": "x(t)=2e^(−4t)u(t)，X(j0) 是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "0.5",
+        "explain": "X(j0)=∫x(t)dt=2/4=0.5。"
+      },
+      "fourier-scale-dc": {
+        "prompt": "可积信号 X(j0)=12，y(t)=x(3t)，Y(j0) 是多少？",
+        "option1": "4",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "时间尺度性质给出 Y(jω)=X(jω/3)/3，零频值为 4。"
+      },
+      "fourier-delay-phase": {
+        "prompt": "y(t)=x(t−2)，在 ω=3 rad/s，延迟因子引入的未折叠相位是多少 rad？",
+        "option1": "0 rad",
+        "option2": "-6 rad",
+        "option3": "1 rad",
+        "option4": "-1 rad",
+        "explain": "延迟因子 e^(−jωtd)，相位为 −ωtd=−3×2=-6 rad。"
+      },
+      "modulation-upper-edge": {
+        "prompt": "基带频谱支撑 [−3,3] kHz，乘 cos(2π·100kHz·t)。平移后正频率频带的上界是多少 kHz？",
+        "option1": "0 kHz",
+        "option2": "1 kHz",
+        "option3": "103 kHz",
+        "option4": "-1 kHz",
+        "explain": "频谱移到 ±fc，上边界 fc+B=103 kHz。"
+      },
+      "sinusoidal-output-amplitude": {
+        "prompt": "稳定 LTI 系统在输入余弦频率处 |H|=0.5，输入幅度为 6。正弦稳态输出幅度是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "3",
+        "explain": "同频输出幅度为 |H|A=0.5×6=3。"
+      },
+      "linear-phase-delay": {
+        "prompt": "H(jω)=2e^(−j3ω)，群时延是多少秒？",
+        "option1": "3 s",
+        "option2": "0 s",
+        "option3": "1 s",
+        "option4": "-1 s",
+        "explain": "τg=−dφ/dω=−d(−3ω)/dω=3 s。"
+      },
+      "parseval-energy": {
+        "prompt": "采用角频率傅里叶约定，∫|X(jω)|²dω=8π，总能量是多少？",
+        "option1": "0",
+        "option2": "4",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "Parseval：E=(1/(2π))∫|X|²dω=8/2=4。"
+      },
+      "rectangle-first-zero": {
+        "prompt": "单位幅度、宽度 0.02 s 的单个矩形脉冲，其频谱第一个正零点是多少 Hz？",
+        "option1": "0 Hz",
+        "option2": "1 Hz",
+        "option3": "50 Hz",
+        "option4": "-1 Hz",
+        "explain": "X(f)∝sinc(fT)，首个正零点 f=1/T=50 Hz。"
+      },
+      "sampling-period": {
+        "prompt": "均匀采样率 fs=1000 Hz，采样周期是多少毫秒？",
+        "option1": "0 ms",
+        "option2": "-1 ms",
+        "option3": "2 ms",
+        "option4": "1 ms",
+        "explain": "Ts=1/fs 秒=1000/1000=1 ms。"
+      },
+      "dft-frequency-grid": {
+        "prompt": "fs=800 Hz，采集 400 个真实样本，不补零。DFT 频点间隔是多少 Hz？",
+        "option1": "2 Hz",
+        "option2": "0 Hz",
+        "option3": "1 Hz",
+        "option4": "-1 Hz",
+        "explain": "Δf=fs/N=800/400=2 Hz；频点间隔不等于所有信号条件下的实际分辨能力。"
+      },
+      "real-spectrum-conjugate": {
+        "prompt": "实周期信号复系数 F₂=2+j(3)，F₋₂ 的虚部是多少？",
+        "option1": "0",
+        "option2": "-3",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "实信号 F₋n=F_n*，虚部变号，所以为 -3。"
+      },
+      "periodic-transform-weight": {
+        "prompt": "周期信号复指数级数系数 F₁=2，傅里叶变换在 ω=Ω 的冲激系数为 Kπ，K 是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "4",
+        "option4": "-1",
+        "explain": "X(jω)=2πΣF_nδ(ω−nΩ)，因此 K=2F₁=4。"
+      },
+      "laplace-right-roc": {
+        "prompt": "x=e^(−2t)u(t) 的双边拉氏 ROC 为 Re(s)>b，b 是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "-2",
+        "explain": "积分收敛要求 Re(s+2)>0，所以 b=−2，边界不含。"
+      },
+      "laplace-left-roc": {
+        "prompt": "X(s)=1/(s+2)，ROC 为 Re(s)<−2。其双边逆变换是什么？",
+        "option1": "e^(−2t)u(t)",
+        "option2": "−e^(−2t)u(−t)",
+        "option3": "δ(t)",
+        "option4": "e^(2t)u(t)",
+        "explain": "左半平面 ROC 对应左边指数信号；积分给出负号。"
+      },
+      "unilateral-derivative-value": {
+        "prompt": "采用 0− 起点的单边拉氏变换，f(0−)=2，F(1)=5，L[f′] 在 s=1 的值是多少？",
+        "option1": "0",
+        "option2": "3",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "L[f′]=sF−f(0−)=1×5−2=3。"
+      },
+      "laplace-initial-value": {
+        "prompt": "因果 F(s)=2/(s+3)，原信号无冲激，f(0+) 是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "2",
+        "option4": "-1",
+        "explain": "初值定理 lim(s→∞)sF(s)=2。"
+      },
+      "laplace-final-value": {
+        "prompt": "因果 F(s)=6/[s(s+2)]，sF 的极点严格位于左半平面。f(∞) 是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "3",
+        "explain": "终值定理适用：lim(s→0)sF=6/2=3。"
+      },
+      "laplace-repeated-pole": {
+        "prompt": "因果 X(s)=6/(s+2)³，x(t)=A t²e^(−2t)u(t)，A 是多少？",
+        "option1": "3",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "L[t²e^(−2t)u(t)]=2!/(s+2)³，所以 A=6/2=3。"
+      },
+      "partial-fraction-residue": {
+        "prompt": "1/[(s+1)(s+2)]=A/(s+1)+B/(s+2)，A 是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "2",
+        "explain": "两边乘(s+1)后代 s=−1，A=1/(2−1)=1。"
+      },
+      "inductor-initial-term": {
+        "prompt": "被动参考方向电感 L=2 H、i(0−)=3 A，单边拉氏 V=sLI+c，初始源常数项 c 是多少？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-6",
+        "option4": "-1",
+        "explain": "V=L(sI−i(0−))，所以 c=−L i(0−)=-6。"
+      },
+      "transfer-zero-location": {
+        "prompt": "已约分 H(s)=(s+3)/[(s+1)(s+2)]，有限零点在哪里？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "-3",
+        "explain": "分子为零给出 s=−3，与分母无公因式。"
+      },
+      "transfer-rightmost-pole": {
+        "prompt": "H(s)=1/[(s+1)(s+3)]，最靠右的极点实部是多少？",
+        "option1": "-1",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-2",
+        "explain": "极点为 −1、−3，较大的实部为 −1。"
+      },
+      "absolute-impulse-integral": {
+        "prompt": "h(t)=3e^(−2t)u(t)，∫|h(t)|dt 是多少？",
+        "option1": "0",
+        "option2": "1.5",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "h 非负，绝对积分为 3/2=1.5<∞，该系统 BIBO 稳定。"
+      },
+      "amplitude-decibels": {
+        "prompt": "幅值增益 |H|=10，用 20log10|H| 表示为多少 dB？",
+        "option1": "0 dB",
+        "option2": "1 dB",
+        "option3": "20 dB",
+        "option4": "-1 dB",
+        "explain": "幅值比使用 20log10，得到 20 dB。"
+      },
+      "lowpass-cutoff-radians": {
+        "prompt": "H(s)=2/(s+2)，−3 dB 截止角频率是多少 rad/s？",
+        "option1": "0 rad/s",
+        "option2": "1 rad/s",
+        "option3": "-1 rad/s",
+        "option4": "2 rad/s",
+        "explain": "相对直流增益降为 1/√2 时 ω=2 rad/s；这里求角频率，不是 Hz。"
+      },
+      "mason-single-loop": {
+        "prompt": "信号流图仅一条前向通路增益 P=6、一个接触通路的回路 L=-2。总传输增益是多少？",
+        "option1": "2",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "梅森公式 T=P/(1−L)=6/(1−(-2))=2。"
+      },
+      "mason-two-loops": {
+        "prompt": "仅有两个互不接触回路 L₁=0.5、L₂=0.25，梅森行列式 Δ 是多少？",
+        "option1": "0",
+        "option2": "0.375",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "Δ=1−L₁−L₂+L₁L₂=(1−0.5)(1−0.25)=0.375。"
+      },
+      "direct-two-integrators": {
+        "prompt": "一个 2 阶、严格真有理传递函数采用标准连续直接 II 型实现，需要多少个积分器？",
+        "option1": "0",
+        "option2": "1",
+        "option3": "2",
+        "option4": "-1",
+        "explain": "标准直接 II 型使用一条 2 级共享状态积分链，需要 2 个积分器。"
+      },
+      "rc-pole-location": {
+        "prompt": "一阶 RC 低通时间常数 τ=0.1 s，其极点 s 是多少 s⁻¹？",
+        "option1": "0 s⁻¹",
+        "option2": "1 s⁻¹",
+        "option3": "-1 s⁻¹",
+        "option4": "-10 s⁻¹",
+        "explain": "H=1/(1+τs)，极点为 s=−1/τ=-10 s⁻¹。"
+      },
+      "hidden-unstable-mode": {
+        "prompt": "某实现内部含模态 e^(1t)，但在约分后的输入输出传递函数中被零点对消。能否据约分后 H(s) 断言内部渐近稳定？",
+        "option1": "能，约分会删除物理状态",
+        "option2": "不能，可能存在隐藏的不稳定模态",
+        "option3": "能，只要输入为零",
+        "option4": "只需检查所有零点",
+        "explain": "代数对消只描述输入输出关系，内部渐近稳定仍需检查完整状态矩阵。"
       }
+    },
+    "chooseChapter": "选择章节",
+    "chapterDescription": "从本章 20 题中随机抽取 10 题，每轮不重复。",
+    "rankingRule": "本版题库 · 每人本章最佳成绩；分数高优先，同分用时短优先。",
+    "resultRankingHint": "本轮成绩已保存。",
+    "leaderboard": "本章排行榜",
+    "rank": "排名",
+    "student": "同学",
+    "elapsed": "用时",
+    "you": "我",
+    "rankingEmpty": "本章还没有成绩，来完成第一轮挑战吧。",
+    "rankingLoading": "正在加载本章排名…",
+    "refresh": "刷新",
+    "progressLink": "学习记录与错题本",
+    "retry": "重试原请求",
+    "retryHint": "请重试原请求，已保存的答案不会重复计分。",
+    "saving": "正在评分并保存…",
+    "starting": "正在开启挑战…",
+    "chapters": {
+      "1": "第1章 信号与系统基本概念",
+      "2": "第2章 连续系统时域分析",
+      "3": "第3章 连续系统频域分析",
+      "4": "第4章 连续系统s域分析"
     }
   },
   "tutor": {
@@ -793,7 +2190,6 @@
   },
   "workbench": {
     "title": "自定义信号工作台",
-    "description": "组合两个信号源，观察变换和运算如何改变曲线。",
     "rule": "变换顺序：反转 → 尺度 → 平移。s>0 向右移动；a>1 拉伸。",
     "reset": "恢复示例",
     "source": "信号源 {id}",

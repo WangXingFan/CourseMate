@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  CourseMate · 课知伴 — 面向《信号与系统》的 AI 学习伙伴。
+  课知伴 — 面向《信号与系统》的 AI 学习伙伴。
 </p>
 
 <p align="center">
@@ -15,7 +15,7 @@
 
 <p align="center">
   <a href="https://github.com/WangXingFan/CourseMate"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-CourseMate-181717?logo=github&logoColor=white" /></a>
-  <a href="https://github.com/WangXingFan/CourseMate/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/WangXingFan/CourseMate/actions/workflows/ci.yml/badge.svg?branch=dev" /></a>
+  <a href="https://github.com/WangXingFan/CourseMate/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/WangXingFan/CourseMate/actions/workflows/ci.yml/badge.svg?branch=main" /></a>
   <a href="https://www.apache.org/licenses/LICENSE-2.0"><img alt="开源协议" src="https://img.shields.io/badge/License-Apache%202.0-blue" /></a>
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-black" />
   <img alt="React" src="https://img.shields.io/badge/React-19-149eca" />
@@ -24,7 +24,7 @@
 
 ## 项目简介
 
-课知伴（CourseMate）是一款可自行部署的开源 AI 学习伙伴，当前围绕 **《信号与系统》** 课程，整合交互式课程、章节实验、课程助教、快问快答和错题复习。学生可以先做预测，再调节信号参数、观察结果，通过变式练习和间隔复习巩固理解。
+课知伴是一款可自行部署的开源 AI 学习伙伴，当前围绕 **《信号与系统》** 课程，整合交互式课程、章节实验、课程助教、快问快答和错题复习。学生可以先做预测，再调节信号参数、观察结果，通过变式练习和间隔复习巩固理解。
 
 学习功能复用已有的 AI 对话、教学资料检索、模型路由、账号管理和后台管理能力。浏览器前端与 Go API 可由同一个 Docker 容器提供服务，也可通过 Tauri 桌面客户端访问。
 

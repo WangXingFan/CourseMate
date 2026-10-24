@@ -16,10 +16,10 @@ import (
 )
 
 const (
-	defaultAppName                      = "CourseMate"
-	defaultBrandTitle                   = "CourseMate"
-	defaultBrandShortName               = "CourseMate"
-	defaultBrandDescription             = "CourseMate is an interactive Signals and Systems learning companion with experiments, AI tutoring, quizzes and spaced review."
+	defaultAppName                      = "课知伴"
+	defaultBrandTitle                   = "课知伴"
+	defaultBrandShortName               = "课知伴"
+	defaultBrandDescription             = "课知伴是《信号与系统》互动学习助手，支持信号实验、AI 助教、练习与间隔复习。"
 	defaultBrandFaviconURL              = "/favicon.ico"
 	defaultBrandPWAIcon192URL           = "/pwa/icon-192.png"
 	defaultBrandPWAIcon512URL           = "/pwa/icon-512.png"

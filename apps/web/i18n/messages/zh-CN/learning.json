@@ -1,21 +1,14 @@
 {
   "common": {
-    "back": "返回学习实验室",
-    "interactive": "可交互"
+    "back": "返回学习实验室"
   },
   "hub": {
     "eyebrow": "信号与系统实验室",
     "title": "概念看明白，算题练扎实",
-    "description": "探索信号与系统的核心概念，调节参数观察变化，再练习相关计算。",
-    "interactive": "可交互",
-    "footer": "所有曲线都在浏览器本地计算。先改变参数并预测结果，再观察图形验证。",
     "sections": {
       "concepts": "概念实验",
-      "conceptsDescription": "先动手改参数，再回到公式解释现象。",
       "tools": "学习工具",
-      "toolsDescription": "用这些工具自由探索信号与系统。",
-      "practice": "算题入口",
-      "practiceDescription": "按目标选择：分阶段练习、限时快问快答、错题复盘。"
+      "practice": "算题入口"
     },
     "quick": {
       "progress": {
@@ -24,28 +17,26 @@
       },
       "quiz": {
         "title": "快问快答",
-        "description": "90 秒随机 12 题，练反应也查漏洞。"
+        "description": "按章节完成限时挑战，与同学比拼得分和用时。"
       },
       "workbench": {
         "title": "信号工作台",
         "description": "自定义信号与变换，组合运算和卷积。"
       },
       "knowledge": {
-        "title": "知识与阶段练习",
-        "description": "52 节讲义，配套课前、课中、课后题目；预习测由老师下发。"
+        "title": "课程知识",
+        "description": "按章节阅读课程讲义，梳理知识要点。"
       }
     },
     "paths": {
       "label": "学习路径",
       "concepts": {
         "title": "概念学习",
-        "meta": "8 个概念实验",
-        "description": "先改参数、看图形，再回到公式理解现象。"
+        "meta": "8 个概念实验"
       },
       "practice": {
         "title": "算题训练",
-        "meta": "3 类练习",
-        "description": "分阶段算题、快问快答和错题复盘。"
+        "meta": "2 种训练"
       }
     }
   },
@@ -270,8 +261,8 @@
   },
   "knowledge": {
     "back": "返回学习实验室",
-    "title": "知识与阶段练习",
-    "description": "{count} 个小节，循着预习、课中练习、课后巩固逐步掌握。先独立作答，再核对公式与推导。",
+    "title": "课程知识",
+    "description": "{count} 个小节",
     "total": "{count} 个阶段已作答",
     "catalog": "小节目录",
     "search": "搜索编号、标题或章节",
@@ -281,7 +272,6 @@
     "empty": "没有匹配的小节",
     "loading": "正在加载课程内容…",
     "lessonNavigation": "相邻小节",
-    "source": "中文课程资料 · 根据导入原稿校订，附录 C 速记收录在 B.10。内容用于学习辅助，结论使用前请核对适用条件。",
     "notes": "本节知识讲义",
     "collapse": "收起",
     "expand": "展开",
@@ -310,23 +300,21 @@
     "retryHelp": "提交内容已锁定，可安全重试同一次作答",
     "reload": "重新加载",
     "mastered": "最新作答全对：{count} 个阶段",
-    "studentDescription": "{count} 个小节的知识讲义。预习题由老师统一下发，请在课堂活动中完成。",
     "assignedTitle": "预习题由老师下发",
-    "assignedDescription": "本页可阅读知识讲义。老师发布预习测后，请前往课堂活动作答。",
     "goToActivities": "查看课堂活动"
   },
   "virtualLab": {
     "title": "信号与系统 · 三次完整实验",
-    "subtitle": "共 12 项任务，每次实验 4 × 45 分钟。按预测、操作、测量、解释和导出的顺序完成。",
+    "subtitle": "3 次实验 · 12 项任务 · 每次 4 × 45 分钟",
     "duration": "4 项任务 · 180 分钟",
     "open": "进入实验工作台",
     "back": "返回实验目录",
     "guide": "教师开课指南",
-    "guideSubtitle": "覆盖三次实验的全部 12 项任务：课前准备、10 分钟示范、逐项带课步骤、参考结果与作业检查。",
+    "guideSubtitle": "三次实验的带课步骤、参考结果与检查要点",
     "teacherOnly": "仅教师和管理员可查看开课指南。",
     "workflowTitle": "这一节课怎么完成",
     "workflow": "先保存预测 → 改参数并读图 → 保存本次试验 → 写推导与分析 → 核对成果要求 → 下载 JSON / 打印 PDF。",
-    "accountNote": "直接使用当前 CourseMate 账号。姓名与账号自动带入，实验记录自动保存到账号下；离开前请确认“已保存”。JSON / PDF 按教师要求提交至教学平台，任务完成标记不等于评分。",
+    "accountNote": "记录随账号保存，离开前请确认「已保存」。按教师要求提交 JSON / PDF；完成标记不等于评分。",
     "frameTitle": "信号与系统实验工作台",
     "retry": "重试",
     "backup": "下载当前记录 JSON",
@@ -358,6 +346,103 @@
         "description": "时域与拉氏变换对应、零状态响应、含初始条件响应、脉冲持续时间设计。"
       }
     },
-    "directory": "实验目录与开课说明 →"
+    "directory": "实验目录与开课说明 →",
+    "native": {
+      "overview": "课程总览",
+      "records": "我的实验记录",
+      "help": "使用指南",
+      "navigation": "实验导航",
+      "title": "信号与系统 · 三次完整实验",
+      "intro": "从时域到频域，再到拉普拉斯变换。先预测，再操作与测量，最后用数据解释每一条曲线。",
+      "courseCount": "3 次完整实验",
+      "taskCount": "12 项探究任务",
+      "computeLocally": "本机计算 · 记录自动同步到当前账号",
+      "course": "实验 {number}",
+      "completedCount": "已完成 {done}/{total}",
+      "objectives": "实验目标",
+      "startCourse": "进入本次实验",
+      "chooseTask": "选择实验任务",
+      "taskGuide": "操作步骤与完成要求",
+      "evidenceCheck": "完成前核对",
+      "prediction": "实验前预测",
+      "predictionHint": "保留最初想法；后续修改会作为修订保存。",
+      "savePrediction": "保存初始预测",
+      "saveRevision": "保存预测修订",
+      "predictionSaved": "预测已保存，原稿会继续保留。",
+      "predictionHistory": "已保留初始预测与 {count} 次修订",
+      "revision": "修订 {number}",
+      "observe": "图形与测量",
+      "cursorHint": "点击图形放置游标；聚焦图形后可用左右方向键微调，Shift 加速。",
+      "exportPNG": "导出图形 PNG",
+      "pngSaved": "图形已导出，包含参数、坐标与单位。",
+      "saveTrial": "保存本次试验",
+      "trialSaved": "已保存参数、测量结果与图形快照。",
+      "trialRecords": "参数与测量记录",
+      "noTrials": "还没有保存试验。调整参数、观察图形后，点击“保存本次试验”。",
+      "sequence": "序号 / 时间",
+      "measurements": "参数、模板与测量",
+      "actions": "操作",
+      "restore": "恢复参数",
+      "explain": "解释、修正与完成",
+      "derivation": "推导与判定依据",
+      "analysis": "结果分析与预测修正",
+      "selfCheckHint": "确认完成为自查标记，最终成果由教师评分。",
+      "selfCheck": "自查",
+      "confirmed": "已确认完成",
+      "notConfirmed": "待确认完成",
+      "confirmCompletion": "检查并确认本任务完成",
+      "missing": "请先完成",
+      "cancel": "取消",
+      "confirm": "确认",
+      "previous": "上一任务 / 实验安排",
+      "next": "下一任务",
+      "parameters": "参数控制",
+      "reset": "重置",
+      "quickPresets": "快速设置 · 每次仅替换相关参数",
+      "parameterHint": "调整参数不会删除已经保存的试验记录。",
+      "templates": "受限模板填写 · 形成性反馈",
+      "invalidParameter": "请输入范围内的有效数值。尺度 a 不能为 0；图形保留上次有效参数。",
+      "invalidAnswer": "模板只接受 −100 至 100 的有限数值；当前无效输入尚未保存。",
+      "actionFailed": "操作未完成，请重试。",
+      "play": "播放",
+      "pause": "暂停",
+      "singleStep": "单步 +0.05 s",
+      "hints": "探索提示",
+      "nextHint": "展开下一条",
+      "evidence": "本任务成果",
+      "name": "姓名",
+      "studentNumber": "学号",
+      "classroom": "班级",
+      "chooseRecords": "选择实验记录",
+      "recordsHint": "PDF 按当前实验导出；JSON 包含三次实验。",
+      "openTask": "进入任务",
+      "export": "导出记录 JSON",
+      "import": "导入记录",
+      "importWarning": "导入会替换当前账号在此页面的三次实验记录。请先下载 JSON 备份；姓名和学号仍使用当前账号信息。",
+      "print": "打印 / 保存 PDF",
+      "reportTitle": "信号与系统 · 实验 {number} 报告",
+      "draft": "尚未保存为正式预测的草稿",
+      "trialNumber": "试验 {number}",
+      "helpSteps": {
+        "predict": {
+          "title": "先预测，保留原始想法",
+          "body": "先写对关键点、曲线或系统性质的预测并保存。后续修改保存为修订，原稿继续保留。"
+        },
+        "operate": {
+          "title": "改参数、测量、保存试验",
+          "body": "使用精确值、滑块或快速设置改变参数；点击图形读数，再保存本次试验。历史试验可以恢复参数，也可以导出 PNG。"
+        },
+        "explain": {
+          "title": "结合证据完成解释",
+          "body": "在推导与分析区说明现象、验证预测。按任务成果清单补齐比较，确认完成只代表学生自查。"
+        },
+        "backup": {
+          "title": "账号同步与报告备份",
+          "body": "页面自动同步到当前账号，失败时请重试或下载 JSON。冲突时先备份当前草稿，再选择是否载入服务器记录；每次实验可打印为 PDF。"
+        }
+      },
+      "clearRecords": "清空实验记录",
+      "clearWarning": "将清空当前账号三次实验的全部记录，并同步到服务器。建议先下载 JSON 备份。"
+    }
   }
 }

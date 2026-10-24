@@ -36,7 +36,7 @@ export function AppLogo({
 }
 
 export function CourseMateLogo({
-  alt = "CourseMate",
+  alt = "课知伴",
   width,
   height,
   priority,

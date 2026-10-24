@@ -27,8 +27,8 @@
     "finishNavigation": "Finish onboarding navigation"
   },
   "bootstrapTitle": "Admin setup",
-  "adminWelcomeTitle": "Welcome to CourseMate Admin",
-  "userWelcomeTitle": "Welcome to CourseMate",
+  "adminWelcomeTitle": "Welcome to 课知伴 Admin",
+  "userWelcomeTitle": "Welcome to 课知伴",
   "adminWelcomeDescription": "Finish admin account security first, then configure upstreams, platform models, logs, identity providers, and system policies.",
   "userWelcomeDescription": "Finish your profile and security setup before using chats, files, and tools.",
   "adminAccountTitle": "Complete admin account",

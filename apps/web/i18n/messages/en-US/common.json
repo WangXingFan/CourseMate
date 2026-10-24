@@ -48,6 +48,7 @@
     "files": "Files",
     "knowledgeBases": "Knowledge bases",
     "classrooms": "Classes",
+    "rollCall": "Random roll call",
     "activities": "Class activities",
     "learning": "Learning lab",
     "experiments": "Experiments",
@@ -86,7 +87,8 @@
     "fallbackUser": "User",
     "today": "Today",
     "archived": "Archived",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "courseKnowledge": "Course knowledge"
   },
   "time": {
     "todayTime": "{time}",
@@ -154,7 +156,7 @@
     "format": "Format",
     "loading": "Loading editor..."
   },
-  "appName": "CourseMate",
+  "appName": "课知伴",
   "appVersion": {
     "title": "New version available",
     "description": "Refresh the page to use the latest version.",
@@ -163,6 +165,6 @@
   },
   "attribution": {
     "poweredBy": "Powered by",
-    "githubLink": "CourseMate on GitHub"
+    "githubLink": "课知伴 on GitHub"
   }
 }
