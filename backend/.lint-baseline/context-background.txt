@@ -1,0 +1,2 @@
+internal/application/conversation/generation_stream.go: lifecycleCtx, lifecycleCancel := context.WithCancel(context.Background())
+internal/application/conversation/generation_stream.go: parent = context.Background()

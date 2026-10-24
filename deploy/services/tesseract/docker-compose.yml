@@ -1,0 +1,24 @@
+services:
+  tesseract:
+    image: coursemate-tesseract:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      # Optional. Localhost-only by default. Configure the app to use http://tesseract:8004/ocr on the shared network.
+      - "127.0.0.1:${COURSEMATE_TESSERACT_PORT:-8006}:8004"
+    environment:
+      TESSERACT_LANG: ${TESSERACT_LANG:-chi_sim+eng}
+      TESSERACT_PSM: ${TESSERACT_PSM:-3}
+      TESSERACT_OEM: ${TESSERACT_OEM:-3}
+      TESSERACT_RENDER_SCALE: ${TESSERACT_RENDER_SCALE:-2.0}
+      TESSERACT_GRAYSCALE: ${TESSERACT_GRAYSCALE:-true}
+    restart: unless-stopped
+    networks:
+      - coursemate
+
+networks:
+  coursemate:
+    # Required. Start a root compose profile first, or create this network manually.
+    external: true
+    name: coursemate-network

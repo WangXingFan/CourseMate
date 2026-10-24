@@ -1,0 +1,81 @@
+name: coursemate
+
+services:
+  app:
+    image: ${COURSEMATE_IMAGE:-ghcr.io/wangxingfan/coursemate:latest}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      # Full compose connects to bundled services on the compose network.
+      # These environment variables override database and Redis values in config.yaml.
+      POSTGRES_DSN: "postgres://deeix_chat:deeix_chat_2026@postgres:5432/deeix_chat?sslmode=disable&TimeZone=Asia/Shanghai"
+      REDIS_ADDR: "redis:6379"
+      REDIS_USERNAME: ""
+      REDIS_PASSWORD: "deeix_chat_2026"
+    ports:
+      # Localhost-only by default. 8081 avoids colliding with an existing DEEIX Chat stack on 8080.
+      # Override COURSEMATE_HOST_PORT when another port is already in use.
+      - "127.0.0.1:${COURSEMATE_HOST_PORT:-8081}:8080"
+    volumes:
+      - app_storage:/app/storage
+      - app_data:/app/data
+      # The image runs from /app and reads /app/config.yaml automatically.
+      - ./config.yaml:/app/config.yaml:ro
+    networks:
+      - coursemate
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: deeix_chat
+      POSTGRES_PASSWORD: deeix_chat_2026
+      POSTGRES_DB: deeix_chat
+    ports:
+      # Optional. Localhost-only for local administration; the app uses the internal Docker network.
+      # 5433 avoids colliding with a host or DEEIX Chat PostgreSQL service on 5432.
+      - "127.0.0.1:${COURSEMATE_POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - coursemate
+
+  redis:
+    image: redis:7
+    command: redis-server --requirepass deeix_chat_2026
+    ports:
+      # Optional. Localhost-only for local administration; the app uses the internal Docker network.
+      # 6380 avoids colliding with a host or DEEIX Chat Redis service on 6379.
+      - "127.0.0.1:${COURSEMATE_REDIS_PORT:-6380}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "deeix_chat_2026", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - coursemate
+
+volumes:
+  app_storage:
+    name: coursemate-app-storage
+  app_data:
+    name: coursemate-app-data
+  postgres_data:
+    name: coursemate-postgres-data
+  redis_data:
+    name: coursemate-redis-data
+
+networks:
+  coursemate:
+    name: coursemate-network

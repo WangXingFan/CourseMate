@@ -1,0 +1,205 @@
+package conversation
+
+import (
+	"context"
+	"errors"
+	"testing"
+	"time"
+
+	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/models"
+	persistenceconversation "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/conversation"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/repository"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+)
+
+type assistantEditTraceRepository struct {
+	repository.ConversationRepository
+	message model.Message
+}
+
+func (r *assistantEditTraceRepository) GetMessageByPublicIDForUser(
+	context.Context,
+	uint,
+	string,
+) (*model.Message, error) {
+	item := r.message
+	return &item, nil
+}
+
+func (r *assistantEditTraceRepository) UpdateMessageContent(
+	_ context.Context,
+	_ uint,
+	_ string,
+	content string,
+	editedAt time.Time,
+) (*model.Message, error) {
+	r.message.Content = content
+	r.message.EditedAt = &editedAt
+	item := r.message
+	return &item, nil
+}
+
+func (r *assistantEditTraceRepository) GetUserMessageFeedbackMap(
+	context.Context,
+	uint,
+	[]uint,
+) (map[uint]string, error) {
+	return map[uint]string{}, nil
+}
+
+func (r *assistantEditTraceRepository) GetMessageFeedbackCounts(
+	context.Context,
+	[]uint,
+) (map[uint]map[string]int64, error) {
+	return map[uint]map[string]int64{}, nil
+}
+
+func (r *assistantEditTraceRepository) ListConversationMessageTracesByMessageIDs(
+	context.Context,
+	[]uint,
+) ([]model.MessageTrace, error) {
+	return []model.MessageTrace{{
+		MessageID:       r.message.ID,
+		TraceType:       messageTraceTypeProcess,
+		Title:           "Processing complete",
+		ContentMarkdown: "Retained processing details",
+		Status:          messageTraceStatusCompleted,
+	}}, nil
+}
+
+func (r *assistantEditTraceRepository) ListConversationMessageTraceEventsByMessageIDs(
+	context.Context,
+	[]uint,
+) ([]model.MessageTraceEventRow, error) {
+	return []model.MessageTraceEventRow{{
+		MessageID: r.message.ID,
+		EventID:   "event_step_1",
+		EventType: "process",
+		Title:     "Step complete",
+		Status:    messageTraceStatusCompleted,
+		Seq:       1,
+	}}, nil
+}
+
+func TestAssistantEditResponseRetainsProcessTrace(t *testing.T) {
+	repo := &assistantEditTraceRepository{
+		message: model.Message{
+			ID:             41,
+			ConversationID: 17,
+			UserID:         9,
+			PublicID:       "message_assistant_edit",
+			Role:           "assistant",
+			Status:         "success",
+			Content:        "before",
+		},
+	}
+	service := &Service{
+		cfg: config.NewRuntime(config.Config{
+			ProcessTraceEnabled: true,
+		}),
+		repo: repo,
+	}
+
+	updated, err := service.UpdateMessageContent(
+		context.Background(),
+		repo.message.UserID,
+		repo.message.PublicID,
+		"after",
+	)
+	if err != nil {
+		t.Fatalf("edit assistant message: %v", err)
+	}
+	if updated.Content != "after" || updated.EditedAt == nil {
+		t.Fatalf("unexpected edited message: %#v", updated)
+	}
+	if updated.ProcessTrace == nil || updated.ProcessTrace.Process == nil {
+		t.Fatalf("edited response lost process trace: %#v", updated.ProcessTrace)
+	}
+	if len(updated.ProcessTrace.Events) != 1 || updated.ProcessTrace.Events[0].EventID != "event_step_1" {
+		t.Fatalf("edited response lost execution events: %#v", updated.ProcessTrace)
+	}
+}
+
+func TestCanceledTraceSettlementPersistsCompleteReasoningForReload(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file:trace_cancel_settlement?mode=memory&cache=shared"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("open sqlite: %v", err)
+	}
+	if err := db.AutoMigrate(&models.ChatRunEvent{}); err != nil {
+		t.Fatalf("migrate trace table: %v", err)
+	}
+
+	repo := persistenceconversation.NewRepo(db)
+	cfg := config.Config{
+		ProcessTraceEnabled: true,
+	}
+	service := &Service{cfg: config.NewRuntime(cfg), repo: repo}
+	assistant := &model.Message{
+		ID:             41,
+		ConversationID: 17,
+		UserID:         9,
+		RunID:          "run_cancel_settlement",
+		Role:           "assistant",
+	}
+
+	generationCtx, cancelGeneration := context.WithCancel(context.Background())
+	recorder := newMessageTraceRecorder(service, generationCtx, assistant, nil)
+	recorder.appendUpstreamReasoning(messageTraceThinkKindContent, "嗯", nil)
+	recorder.appendUpstreamReasoning(messageTraceThinkKindContent, "，继续分析并保留终止前的完整思考", nil)
+	cancelGeneration()
+	if generationCtx.Err() == nil {
+		t.Fatal("expected generation context to be canceled")
+	}
+
+	recorder.failWithContext(context.Background(), ErrMessageGenerationCanceled)
+
+	reloaded := []model.Message{{ID: assistant.ID, Role: "assistant"}}
+	reloadService := &Service{cfg: config.NewRuntime(cfg), repo: repo}
+	if err := reloadService.hydrateMessageProcessTraces(context.Background(), reloaded); err != nil {
+		t.Fatalf("hydrate persisted trace: %v", err)
+	}
+	trace := reloaded[0].ProcessTrace
+	if trace == nil || trace.UpstreamThink == nil {
+		t.Fatalf("expected persisted upstream reasoning after reload, got %#v", trace)
+	}
+	if got, want := trace.UpstreamThink.ContentMarkdown, "嗯，继续分析并保留终止前的完整思考"; got != want {
+		t.Fatalf("reloaded reasoning = %q, want %q", got, want)
+	}
+	if trace.UpstreamThink.Status != messageTraceStatusError {
+		t.Fatalf("reloaded reasoning status = %q, want %q", trace.UpstreamThink.Status, messageTraceStatusError)
+	}
+}
+
+func TestUpdateMessageContentAllowsUserAndAssistantOnly(t *testing.T) {
+	cases := []struct {
+		role    string
+		wantErr error
+	}{
+		{role: "user"},
+		{role: "assistant"},
+		{role: "system", wantErr: ErrMessageEditTargetInvalid},
+		{role: "tool", wantErr: ErrMessageEditTargetInvalid},
+	}
+	for _, tc := range cases {
+		repo := &assistantEditTraceRepository{
+			message: model.Message{ID: 1, ConversationID: 1, UserID: 9, PublicID: "message_" + tc.role, Role: tc.role, Status: "success", Content: "before"},
+		}
+		service := &Service{cfg: config.NewRuntime(config.Config{}), repo: repo}
+		updated, err := service.UpdateMessageContent(context.Background(), 9, repo.message.PublicID, "after")
+		if tc.wantErr != nil {
+			if !errors.Is(err, tc.wantErr) {
+				t.Fatalf("%s: got %v, want %v", tc.role, err, tc.wantErr)
+			}
+			continue
+		}
+		if err != nil {
+			t.Fatalf("%s: %v", tc.role, err)
+		}
+		if updated.Content != "after" || updated.EditedAt == nil {
+			t.Fatalf("%s: unexpected result %#v", tc.role, updated)
+		}
+	}
+}

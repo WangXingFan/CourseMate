@@ -1,0 +1,703 @@
+package admin
+
+import (
+	"time"
+
+	appadmin "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/admin"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/userview"
+	domainaudit "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/audit"
+	domainchannel "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/channel"
+	domainconversation "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
+	domainuser "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/user"
+)
+
+// ── 请求 DTO ────────────────────────────────────────────────────────────────
+
+// CreateUserRequest 管理员创建用户请求。
+type CreateUserRequest struct {
+	Username    string `json:"username" binding:"required,min=3,max=16"`
+	Password    string `json:"password" binding:"required,min=8,max=128"`
+	AvatarURL   string `json:"avatarURL,omitempty" binding:"max=2048"`
+	DisplayName string `json:"displayName,omitempty" binding:"omitempty,min=3,max=16"`
+	Email       string `json:"email,omitempty" binding:"omitempty,max=128,email"`
+	Phone       string `json:"phone,omitempty" binding:"max=32"`
+	Timezone    string `json:"timezone,omitempty" binding:"max=64"`
+	Locale      string `json:"locale,omitempty" binding:"max=16"`
+}
+
+// UpdateUserStatusRequest 管理员更新用户状态请求。
+type UpdateUserStatusRequest struct {
+	Status string `json:"status" binding:"required,max=32"`
+	Reason string `json:"reason,omitempty" binding:"max=255"`
+}
+
+// PatchUserRequest 管理员局部更新用户请求。
+type PatchUserRequest struct {
+	AvatarURL          *string `json:"avatarURL,omitempty" binding:"omitempty,max=2048"`
+	DisplayName        *string `json:"displayName,omitempty" binding:"omitempty,min=3,max=16"`
+	Email              *string `json:"email,omitempty" binding:"omitempty,max=128"`
+	Phone              *string `json:"phone,omitempty" binding:"omitempty,max=32"`
+	Role               *string `json:"role,omitempty" binding:"omitempty,max=32"`
+	Status             *string `json:"status,omitempty" binding:"omitempty,max=32"`
+	Timezone           *string `json:"timezone,omitempty" binding:"omitempty,max=64"`
+	Locale             *string `json:"locale,omitempty" binding:"omitempty,max=16"`
+	ProfilePreferences *string `json:"profilePreferences,omitempty" binding:"omitempty,max=1024"`
+	Reason             string  `json:"reason,omitempty" binding:"max=255"`
+}
+
+// ResetUserPasswordRequest 管理员重置用户密码请求。
+type ResetUserPasswordRequest struct {
+	NewPassword       string `json:"newPassword" binding:"required,min=8,max=128"`
+	MustResetPassword *bool  `json:"mustResetPassword,omitempty"`
+}
+
+// CleanupLogsRequest 管理员日志清理请求。
+type CleanupLogsRequest struct {
+	Type   string `json:"type" binding:"required"`
+	Before string `json:"before" binding:"required"`
+}
+
+// CreatePermissionGroupRequest 创建权限组请求。
+type CreatePermissionGroupRequest struct {
+	Name        string `json:"name" binding:"required,max=128"`
+	Description string `json:"description,omitempty" binding:"max=512"`
+}
+
+// UpdatePermissionGroupRequest 更新权限组请求。
+type UpdatePermissionGroupRequest struct {
+	Name        string `json:"name" binding:"required,max=128"`
+	Description string `json:"description,omitempty" binding:"max=512"`
+}
+
+// SetGroupModelsRequest 设置权限组模型请求。
+type SetGroupModelsRequest struct {
+	ModelIDs []uint                            `json:"modelIDs,omitempty"`
+	Rules    []PermissionGroupModelRuleRequest `json:"rules,omitempty"`
+}
+
+// SetModelPermissionGroupsRequest 设置模型手动授权权限组请求。
+type SetModelPermissionGroupsRequest struct {
+	GroupIDs []uint `json:"groupIDs,omitempty"`
+}
+
+// PermissionGroupModelRuleRequest 设置权限组动态模型访问规则请求。
+type PermissionGroupModelRuleRequest struct {
+	Type  string `json:"type" binding:"required,max=32"`
+	Value string `json:"value,omitempty" binding:"max=128"`
+}
+
+// SetGroupUsersRequest 设置权限组用户请求。
+type SetGroupUsersRequest struct {
+	UserIDs []uint `json:"userIDs,omitempty"`
+}
+
+// ── 响应 DTO ────────────────────────────────────────────────────────────────
+
+// UserIdentityProviderSummaryResponse 用户绑定身份源摘要。
+type UserIdentityProviderSummaryResponse struct {
+	ID      uint   `json:"id"`
+	Type    string `json:"type"`
+	Name    string `json:"name"`
+	Slug    string `json:"slug"`
+	LogoURL string `json:"logoURL"`
+}
+
+// UserResponse 面向前端的用户视图响应。
+type UserResponse struct {
+	ID                     uint                                  `json:"id"`
+	PublicID               string                                `json:"publicID"`
+	Username               string                                `json:"username"`
+	DisplayName            string                                `json:"displayName"`
+	AvatarURL              string                                `json:"avatarURL"`
+	Email                  string                                `json:"email"`
+	Phone                  string                                `json:"phone"`
+	Role                   string                                `json:"role"`
+	Status                 string                                `json:"status"`
+	Timezone               string                                `json:"timezone"`
+	Locale                 string                                `json:"locale"`
+	ProfilePreferences     string                                `json:"profilePreferences"`
+	AppearancePreferences  string                                `json:"appearancePreferences"`
+	EmailVerifiedAt        *time.Time                            `json:"emailVerifiedAt" extensions:"x-nullable,!x-omitempty"`
+	PhoneVerifiedAt        *time.Time                            `json:"phoneVerifiedAt" extensions:"x-nullable,!x-omitempty"`
+	TwoFactorAvailable     bool                                  `json:"twoFactorAvailable"`
+	TwoFactorEnabled       bool                                  `json:"twoFactorEnabled"`
+	TwoFactorRequired      bool                                  `json:"twoFactorRequired"`
+	TwoFactorRecoveryCount int                                   `json:"twoFactorRecoveryCount"`
+	LastLoginAt            *time.Time                            `json:"lastLoginAt" extensions:"x-nullable,!x-omitempty"`
+	LastActiveAt           *time.Time                            `json:"lastActiveAt" extensions:"x-nullable,!x-omitempty"`
+	CreatedAt              time.Time                             `json:"createdAt"`
+	UpdatedAt              time.Time                             `json:"updatedAt"`
+	IdentityProviders      []UserIdentityProviderSummaryResponse `json:"identityProviders"`
+}
+
+// UserDataResponse 用户操作响应。
+type UserDataResponse struct {
+	User UserResponse `json:"user"`
+}
+
+// RevokeUserSessionsResponse 管理员吊销用户会话响应。
+type RevokeUserSessionsResponse struct {
+	Revoked bool `json:"revoked"`
+}
+
+// ResetUserPasswordResponse 管理员重置密码响应。
+type ResetUserPasswordResponse struct {
+	Reset bool `json:"reset"`
+}
+
+type ResetUserTwoFactorResponse struct {
+	Reset bool `json:"reset"`
+}
+
+// DeleteUserResponse 管理员删除用户响应。
+type DeleteUserResponse struct {
+	Deleted bool `json:"deleted"`
+}
+
+// CleanupLogsResponse 管理员日志清理响应。
+type CleanupLogsResponse struct {
+	Type         string    `json:"type"`
+	Before       time.Time `json:"before"`
+	DeletedCount int64     `json:"deletedCount"`
+}
+
+// AuthEventResponse 认证事件响应。
+type AuthEventResponse struct {
+	ID              uint      `json:"id"`
+	RequestID       string    `json:"requestID"`
+	UserID          uint      `json:"userID"`
+	Username        string    `json:"username"`
+	UserDisplayName string    `json:"userDisplayName"`
+	UserLabel       string    `json:"userLabel"`
+	EventType       string    `json:"eventType"`
+	Result          string    `json:"result"`
+	Reason          string    `json:"reason"`
+	ClientIP        string    `json:"clientIP"`
+	UserAgent       string    `json:"userAgent"`
+	DetailJSON      string    `json:"detailJSON"`
+	OccurredAt      time.Time `json:"occurredAt"`
+	CreatedAt       time.Time `json:"createdAt"`
+	UpdatedAt       time.Time `json:"updatedAt"`
+}
+
+// AuditLogResponse 审计日志响应。
+type AuditLogResponse struct {
+	ID               uint      `json:"id"`
+	RequestID        string    `json:"requestID"`
+	ActorUserID      uint      `json:"actorUserID"`
+	ActorUsername    string    `json:"actorUsername"`
+	ActorDisplayName string    `json:"actorDisplayName"`
+	ActorLabel       string    `json:"actorLabel"`
+	Action           string    `json:"action"`
+	Resource         string    `json:"resource"`
+	ResourceID       string    `json:"resourceID"`
+	IP               string    `json:"ip"`
+	UserAgent        string    `json:"userAgent"`
+	DetailJSON       string    `json:"detailJSON"`
+	CreatedAt        time.Time `json:"createdAt"`
+	UpdatedAt        time.Time `json:"updatedAt"`
+}
+
+// ConversationEventResponse 对话事件响应。
+type ConversationEventResponse struct {
+	ID                uint       `json:"id"`
+	MessageID         uint       `json:"messageID"`
+	ConversationID    uint       `json:"conversationID"`
+	UserID            uint       `json:"userID"`
+	Username          string     `json:"username"`
+	UserDisplayName   string     `json:"userDisplayName"`
+	UserLabel         string     `json:"userLabel"`
+	RunID             string     `json:"runID"`
+	ProviderProtocol  string     `json:"providerProtocol"`
+	UpstreamName      string     `json:"upstreamName"`
+	PlatformModelName string     `json:"platformModelName"`
+	RoutedBindingCode string     `json:"routedBindingCode"`
+	UpstreamModelName string     `json:"upstreamModelName"`
+	EventScope        string     `json:"eventScope"`
+	EventID           string     `json:"eventID"`
+	EventType         string     `json:"eventType"`
+	Phase             string     `json:"phase"`
+	Stage             string     `json:"stage"`
+	RoundID           string     `json:"roundID"`
+	ParentEventID     string     `json:"parentEventID"`
+	Status            string     `json:"status"`
+	Title             string     `json:"title"`
+	Summary           string     `json:"summary"`
+	ContentMarkdown   string     `json:"contentMarkdown"`
+	PayloadJSON       string     `json:"payloadJSON"`
+	PayloadSizeBytes  int64      `json:"payloadSizeBytes"`
+	PayloadOmitted    bool       `json:"payloadOmitted"`
+	Seq               int        `json:"seq"`
+	LatencyMS         int64      `json:"latencyMS"`
+	InputJSON         string     `json:"inputJSON"`
+	InputSizeBytes    int64      `json:"inputSizeBytes"`
+	InputOmitted      bool       `json:"inputOmitted"`
+	OutputJSON        string     `json:"outputJSON"`
+	OutputSizeBytes   int64      `json:"outputSizeBytes"`
+	OutputOmitted     bool       `json:"outputOmitted"`
+	ErrorJSON         string     `json:"errorJSON"`
+	ErrorSizeBytes    int64      `json:"errorSizeBytes"`
+	ErrorOmitted      bool       `json:"errorOmitted"`
+	StartedAt         time.Time  `json:"startedAt"`
+	EndedAt           *time.Time `json:"endedAt" extensions:"x-nullable,!x-omitempty"`
+	CreatedAt         time.Time  `json:"createdAt"`
+	UpdatedAt         time.Time  `json:"updatedAt"`
+}
+
+// PermissionGroupResponse 权限组响应。
+type PermissionGroupResponse struct {
+	ID               uint      `json:"id"`
+	Name             string    `json:"name"`
+	Description      string    `json:"description"`
+	IsDefault        bool      `json:"isDefault"`
+	ModelCount       int64     `json:"modelCount"`
+	ManualModelCount int64     `json:"manualModelCount"`
+	RuleModelCount   int64     `json:"ruleModelCount"`
+	UserCount        int64     `json:"userCount"`
+	ManualUserCount  int64     `json:"manualUserCount"`
+	CreatedAt        time.Time `json:"createdAt"`
+	UpdatedAt        time.Time `json:"updatedAt"`
+}
+
+// PermissionGroupListResponse 权限组列表响应。
+type PermissionGroupListResponse struct {
+	Results []PermissionGroupResponse `json:"results"`
+}
+
+// PermissionGroupDataResponse 单个权限组响应。
+type PermissionGroupDataResponse struct {
+	Group PermissionGroupResponse `json:"group"`
+}
+
+// GroupModelsResponse 权限组模型 ID 响应。
+type GroupModelsResponse struct {
+	ModelIDs []uint                             `json:"modelIDs"`
+	Rules    []PermissionGroupModelRuleResponse `json:"rules"`
+}
+
+// ModelPermissionGroupsResponse 模型权限组响应。
+type ModelPermissionGroupsResponse struct {
+	ManualGroupIDs    []uint `json:"manualGroupIDs"`
+	MatchedGroupIDs   []uint `json:"matchedGroupIDs"`
+	EffectiveGroupIDs []uint `json:"effectiveGroupIDs"`
+	Unassigned        bool   `json:"unassigned"`
+}
+
+// PermissionGroupModelRuleResponse 权限组动态模型访问规则响应。
+type PermissionGroupModelRuleResponse struct {
+	Type  string `json:"type"`
+	Value string `json:"value"`
+}
+
+// GroupUsersResponse 权限组用户 ID 响应。
+type GroupUsersResponse struct {
+	UserIDs []uint `json:"userIDs"`
+}
+
+// DeletePermissionGroupResponse 删除权限组响应。
+type DeletePermissionGroupResponse struct {
+	Deleted bool                                 `json:"deleted"`
+	Summary PermissionGroupDeleteSummaryResponse `json:"summary"`
+}
+
+// PermissionGroupDeleteSummaryResponse 删除权限组影响摘要。
+type PermissionGroupDeleteSummaryResponse struct {
+	ManualModelCount int64 `json:"manualModelCount"`
+	RuleCount        int64 `json:"ruleCount"`
+	ManualUserCount  int64 `json:"manualUserCount"`
+}
+
+// ── Swagger 文档 DTO ────────────────────────────────────────────────────────
+
+// UserListResponseDoc 用户分页响应。
+type UserListResponseDoc struct {
+	ErrorMsg string `json:"errorMsg"`
+	Data     struct {
+		Total   int64          `json:"total"`
+		Results []UserResponse `json:"results"`
+	} `json:"data"`
+}
+
+// CreateUserResponseDoc 创建用户响应。
+type CreateUserResponseDoc struct {
+	ErrorMsg string           `json:"errorMsg"`
+	Data     UserDataResponse `json:"data"`
+}
+
+// RevokeUserSessionsResponseDoc 管理员吊销用户会话响应。
+type RevokeUserSessionsResponseDoc struct {
+	ErrorMsg string                     `json:"errorMsg"`
+	Data     RevokeUserSessionsResponse `json:"data"`
+}
+
+// UpdateUserStatusResponseDoc 管理员更新用户状态响应。
+type UpdateUserStatusResponseDoc struct {
+	ErrorMsg string           `json:"errorMsg"`
+	Data     UserDataResponse `json:"data"`
+}
+
+// ResetUserPasswordResponseDoc 管理员重置用户密码响应。
+type ResetUserPasswordResponseDoc struct {
+	ErrorMsg string                    `json:"errorMsg"`
+	Data     ResetUserPasswordResponse `json:"data"`
+}
+
+// ResetUserTwoFactorResponseDoc 管理员重置用户双因素认证响应。
+type ResetUserTwoFactorResponseDoc struct {
+	ErrorMsg string                     `json:"errorMsg"`
+	Data     ResetUserTwoFactorResponse `json:"data"`
+}
+
+// DeleteUserResponseDoc 管理员删除用户响应。
+type DeleteUserResponseDoc struct {
+	ErrorMsg string             `json:"errorMsg"`
+	Data     DeleteUserResponse `json:"data"`
+}
+
+// PermissionGroupListResponseDoc 权限组列表响应。
+type PermissionGroupListResponseDoc struct {
+	ErrorMsg string                      `json:"errorMsg"`
+	Data     PermissionGroupListResponse `json:"data"`
+}
+
+// PermissionGroupDataResponseDoc 权限组详情响应。
+type PermissionGroupDataResponseDoc struct {
+	ErrorMsg string                      `json:"errorMsg"`
+	Data     PermissionGroupDataResponse `json:"data"`
+}
+
+// GroupModelsResponseDoc 权限组模型 ID 响应。
+type GroupModelsResponseDoc struct {
+	ErrorMsg string              `json:"errorMsg"`
+	Data     GroupModelsResponse `json:"data"`
+}
+
+// ModelPermissionGroupsResponseDoc 模型权限组响应。
+type ModelPermissionGroupsResponseDoc struct {
+	ErrorMsg string                        `json:"errorMsg"`
+	Data     ModelPermissionGroupsResponse `json:"data"`
+}
+
+// GroupUsersResponseDoc 权限组用户 ID 响应。
+type GroupUsersResponseDoc struct {
+	ErrorMsg string             `json:"errorMsg"`
+	Data     GroupUsersResponse `json:"data"`
+}
+
+// DeletePermissionGroupResponseDoc 删除权限组响应。
+type DeletePermissionGroupResponseDoc struct {
+	ErrorMsg string                        `json:"errorMsg"`
+	Data     DeletePermissionGroupResponse `json:"data"`
+}
+
+// CleanupLogsResponseDoc 管理员日志清理响应。
+type CleanupLogsResponseDoc struct {
+	ErrorMsg string              `json:"errorMsg"`
+	Data     CleanupLogsResponse `json:"data"`
+}
+
+// ImportRosterUsersRowResponse 是名单导入中单行的处理结论。
+type ImportRosterUsersRowResponse struct {
+	Line        int    `json:"line"`
+	Username    string `json:"username"`
+	DisplayName string `json:"displayName"`
+	Email       string `json:"email"`
+	Status      string `json:"status"`
+	Message     string `json:"message"`
+}
+
+// ImportRosterUsersCredentialResponse 是正式导入后一次性返回的初始凭据。
+type ImportRosterUsersCredentialResponse struct {
+	Username        string `json:"username"`
+	DisplayName     string `json:"displayName"`
+	InitialPassword string `json:"initialPassword"`
+}
+
+// ImportRosterUsersResponse 学生名单导入结果。
+type ImportRosterUsersResponse struct {
+	Total       int                                   `json:"total"`
+	Ready       int                                   `json:"ready"`
+	Imported    int                                   `json:"imported"`
+	Skipped     int                                   `json:"skipped"`
+	Invalid     int                                   `json:"invalid"`
+	Failed      int                                   `json:"failed"`
+	Truncated   bool                                  `json:"truncated"`
+	Rows        []ImportRosterUsersRowResponse        `json:"rows"`
+	Credentials []ImportRosterUsersCredentialResponse `json:"credentials,omitempty"`
+}
+
+// ImportRosterUsersResponseDoc 学生名单导入响应。
+type ImportRosterUsersResponseDoc struct {
+	ErrorMsg string                    `json:"errorMsg"`
+	Data     ImportRosterUsersResponse `json:"data"`
+}
+
+// UserAuthEventListResponseDoc 用户认证事件分页响应。
+type UserAuthEventListResponseDoc struct {
+	ErrorMsg string `json:"errorMsg"`
+	Data     struct {
+		Total   int64               `json:"total"`
+		Results []AuthEventResponse `json:"results"`
+	} `json:"data"`
+}
+
+// AuditLogListResponseDoc 审计日志分页响应。
+type AuditLogListResponseDoc struct {
+	ErrorMsg string `json:"errorMsg"`
+	Data     struct {
+		Total   int64              `json:"total"`
+		Results []AuditLogResponse `json:"results"`
+	} `json:"data"`
+}
+
+// ConversationEventListResponseDoc 对话事件分页响应。
+type ConversationEventListResponseDoc struct {
+	ErrorMsg string `json:"errorMsg"`
+	Data     struct {
+		Total   int64                       `json:"total"`
+		Results []ConversationEventResponse `json:"results"`
+	} `json:"data"`
+}
+
+// ConversationEventDetailResponseDoc 对话事件详情响应。
+type ConversationEventDetailResponseDoc struct {
+	ErrorMsg string                    `json:"errorMsg"`
+	Data     ConversationEventResponse `json:"data"`
+}
+
+// ErrorDoc 错误响应。
+type ErrorDoc struct {
+	ErrorMsg  string `json:"errorMsg"`
+	ErrorCode string `json:"errorCode,omitempty"`
+	Details   any    `json:"details,omitempty"`
+	RequestID string `json:"requestId,omitempty"`
+	Data      any    `json:"data"`
+}
+
+// ── mapping 函数 ──────────────────────────────────────────────────────────────
+
+func toUserResponse(v userview.UserView) UserResponse {
+	return UserResponse{
+		ID:                     v.ID,
+		PublicID:               v.PublicID,
+		Username:               v.Username,
+		DisplayName:            v.DisplayName,
+		AvatarURL:              v.AvatarURL,
+		Email:                  v.Email,
+		Phone:                  v.Phone,
+		Role:                   v.Role,
+		Status:                 v.Status,
+		Timezone:               v.Timezone,
+		Locale:                 v.Locale,
+		ProfilePreferences:     v.ProfilePreferences,
+		AppearancePreferences:  v.AppearancePreferences,
+		EmailVerifiedAt:        v.EmailVerifiedAt,
+		PhoneVerifiedAt:        v.PhoneVerifiedAt,
+		TwoFactorAvailable:     v.TwoFactorAvailable,
+		TwoFactorEnabled:       v.TwoFactorEnabled,
+		TwoFactorRequired:      v.TwoFactorRequired,
+		TwoFactorRecoveryCount: v.TwoFactorRecoveryCount,
+		LastLoginAt:            v.LastLoginAt,
+		LastActiveAt:           v.LastActiveAt,
+		CreatedAt:              v.CreatedAt,
+		UpdatedAt:              v.UpdatedAt,
+		IdentityProviders:      toUserIdentityProviderSummaryResponses(v.IdentityProviders),
+	}
+}
+
+func toUserIdentityProviderSummaryResponses(items []userview.IdentityProviderSummary) []UserIdentityProviderSummaryResponse {
+	results := make([]UserIdentityProviderSummaryResponse, 0, len(items))
+	for _, item := range items {
+		results = append(results, UserIdentityProviderSummaryResponse{
+			ID:      item.ID,
+			Type:    item.Type,
+			Name:    item.Name,
+			Slug:    item.Slug,
+			LogoURL: item.LogoURL,
+		})
+	}
+	return results
+}
+
+func toImportRosterUsersResponse(result *appadmin.RosterImportResult) ImportRosterUsersResponse {
+	if result == nil {
+		return ImportRosterUsersResponse{Rows: []ImportRosterUsersRowResponse{}}
+	}
+	rows := make([]ImportRosterUsersRowResponse, 0, len(result.Rows))
+	for _, row := range result.Rows {
+		rows = append(rows, ImportRosterUsersRowResponse{
+			Line:        row.Line,
+			Username:    row.Username,
+			DisplayName: row.DisplayName,
+			Email:       row.Email,
+			Status:      string(row.Status),
+			Message:     row.Message,
+		})
+	}
+	credentials := make([]ImportRosterUsersCredentialResponse, 0, len(result.Credentials))
+	for _, credential := range result.Credentials {
+		credentials = append(credentials, ImportRosterUsersCredentialResponse{
+			Username:        credential.Username,
+			DisplayName:     credential.DisplayName,
+			InitialPassword: credential.InitialPassword,
+		})
+	}
+	return ImportRosterUsersResponse{
+		Total:       result.Total,
+		Ready:       result.Ready,
+		Imported:    result.Imported,
+		Skipped:     result.Skipped,
+		Invalid:     result.Invalid,
+		Failed:      result.Failed,
+		Truncated:   result.Truncated,
+		Rows:        rows,
+		Credentials: credentials,
+	}
+}
+
+func toAuthEventResponse(e domainuser.AuthEvent, label appadmin.UserLabel) AuthEventResponse {
+	return AuthEventResponse{
+		ID:              e.ID,
+		RequestID:       e.RequestID,
+		UserID:          e.UserID,
+		Username:        label.Username,
+		UserDisplayName: label.DisplayName,
+		UserLabel:       label.Label,
+		EventType:       e.EventType,
+		Result:          e.Result,
+		Reason:          e.Reason,
+		ClientIP:        e.ClientIP,
+		UserAgent:       e.UserAgent,
+		DetailJSON:      e.DetailJSON,
+		OccurredAt:      e.OccurredAt,
+		CreatedAt:       e.CreatedAt,
+		UpdatedAt:       e.UpdatedAt,
+	}
+}
+
+func toAuditLogResponse(l domainaudit.Log, label appadmin.UserLabel) AuditLogResponse {
+	return AuditLogResponse{
+		ID:               l.ID,
+		RequestID:        l.RequestID,
+		ActorUserID:      l.ActorUserID,
+		ActorUsername:    label.Username,
+		ActorDisplayName: label.DisplayName,
+		ActorLabel:       label.Label,
+		Action:           l.Action,
+		Resource:         l.Resource,
+		ResourceID:       l.ResourceID,
+		IP:               l.IP,
+		UserAgent:        l.UserAgent,
+		DetailJSON:       l.DetailJSON,
+		CreatedAt:        l.CreatedAt,
+		UpdatedAt:        l.UpdatedAt,
+	}
+}
+
+func toConversationEventResponse(item domainconversation.EventLog, label appadmin.UserLabel) ConversationEventResponse {
+	return ConversationEventResponse{
+		ID:                item.ID,
+		MessageID:         item.MessageID,
+		ConversationID:    item.ConversationID,
+		UserID:            item.UserID,
+		Username:          label.Username,
+		UserDisplayName:   label.DisplayName,
+		UserLabel:         label.Label,
+		RunID:             item.RunID,
+		ProviderProtocol:  item.ProviderProtocol,
+		UpstreamName:      item.UpstreamName,
+		PlatformModelName: item.PlatformModelName,
+		RoutedBindingCode: item.RoutedBindingCode,
+		UpstreamModelName: item.UpstreamModelName,
+		EventScope:        item.EventScope,
+		EventID:           item.EventID,
+		EventType:         item.EventType,
+		Phase:             item.Phase,
+		Stage:             item.Stage,
+		RoundID:           item.RoundID,
+		ParentEventID:     item.ParentEventID,
+		Status:            item.Status,
+		Title:             item.Title,
+		Summary:           item.Summary,
+		ContentMarkdown:   item.ContentMarkdown,
+		PayloadJSON:       item.PayloadJSON,
+		PayloadSizeBytes:  item.PayloadSizeBytes,
+		PayloadOmitted:    item.PayloadOmitted,
+		Seq:               item.Seq,
+		LatencyMS:         item.LatencyMS,
+		InputJSON:         item.InputJSON,
+		InputSizeBytes:    item.InputSizeBytes,
+		InputOmitted:      item.InputOmitted,
+		OutputJSON:        item.OutputJSON,
+		OutputSizeBytes:   item.OutputSizeBytes,
+		OutputOmitted:     item.OutputOmitted,
+		ErrorJSON:         item.ErrorJSON,
+		ErrorSizeBytes:    item.ErrorSizeBytes,
+		ErrorOmitted:      item.ErrorOmitted,
+		StartedAt:         item.StartedAt,
+		EndedAt:           item.EndedAt,
+		CreatedAt:         item.CreatedAt,
+		UpdatedAt:         item.UpdatedAt,
+	}
+}
+
+func toPermissionGroupResponse(item domainchannel.PermissionGroup) PermissionGroupResponse {
+	return PermissionGroupResponse{
+		ID:               item.ID,
+		Name:             item.Name,
+		Description:      item.Description,
+		IsDefault:        item.IsDefault,
+		ModelCount:       item.ModelCount,
+		ManualModelCount: item.ManualModelCount,
+		RuleModelCount:   item.RuleModelCount,
+		UserCount:        item.UserCount,
+		ManualUserCount:  item.ManualUserCount,
+		CreatedAt:        item.CreatedAt,
+		UpdatedAt:        item.UpdatedAt,
+	}
+}
+
+func toPermissionGroupDeleteSummaryResponse(item domainchannel.PermissionGroupDeleteSummary) PermissionGroupDeleteSummaryResponse {
+	return PermissionGroupDeleteSummaryResponse{
+		ManualModelCount: item.ManualModelCount,
+		RuleCount:        item.RuleCount,
+		ManualUserCount:  item.ManualUserCount,
+	}
+}
+
+func toPermissionGroupModelRuleResponses(rules []domainchannel.PermissionGroupModelRule) []PermissionGroupModelRuleResponse {
+	results := make([]PermissionGroupModelRuleResponse, 0, len(rules))
+	for _, rule := range rules {
+		results = append(results, PermissionGroupModelRuleResponse{
+			Type:  rule.RuleType,
+			Value: rule.Value,
+		})
+	}
+	return results
+}
+
+func toPermissionGroupModelRules(req []PermissionGroupModelRuleRequest) []domainchannel.PermissionGroupModelRule {
+	results := make([]domainchannel.PermissionGroupModelRule, 0, len(req))
+	for _, rule := range req {
+		results = append(results, domainchannel.PermissionGroupModelRule{
+			RuleType: rule.Type,
+			Value:    rule.Value,
+		})
+	}
+	return results
+}
+
+func toAppPatchUserInput(req PatchUserRequest) appadmin.PatchUserInput {
+	return appadmin.PatchUserInput{
+		AvatarURL:          req.AvatarURL,
+		DisplayName:        req.DisplayName,
+		Email:              req.Email,
+		Phone:              req.Phone,
+		Role:               req.Role,
+		Status:             req.Status,
+		Timezone:           req.Timezone,
+		Locale:             req.Locale,
+		ProfilePreferences: req.ProfilePreferences,
+		Reason:             req.Reason,
+	}
+}

@@ -1,0 +1,9 @@
+packages:
+  - backend
+  - "apps/*"
+  - "packages/*"
+
+onlyBuiltDependencies:
+  - "@parcel/watcher"
+  - "@swc/core"
+  - sharp

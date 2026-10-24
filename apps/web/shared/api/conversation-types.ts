@@ -1,0 +1,234 @@
+import type {
+  ContextArtifactResponse,
+  CreateConversationRequest as ContractCreateConversationRequest,
+  RenameConversationRequest as ContractRenameConversationRequest,
+  SendMessageRequest as ContractSendMessageRequest,
+  SetConversationArchiveRequest as ContractSetConversationArchiveRequest,
+  SetConversationStarRequest as ContractSetConversationStarRequest,
+  SetMessageFeedbackRequest as ContractSetMessageFeedbackRequest,
+  UpdateConversationLabelsRequest as ContractUpdateConversationLabelsRequest,
+  UpdateMessageRequest as ContractUpdateMessageRequest,
+  ConversationDefaultModelCandidateResponse,
+  ConversationDeleteResponse,
+  ConversationPreviewMessageResponse,
+  ConversationResponse,
+  ConversationSearchPageResponse,
+  ConversationSearchResultResponse,
+  MessageDeleteResponse,
+  MessageFeedbackResponse,
+  MessageProcessTraceResponse,
+  MessagePromptTraceBlockResponse,
+  MessagePromptTraceResponse,
+  MessagePromptTraceSourceResponse,
+  MessageResponse,
+  MessageTraceBlockResponse,
+  MessageTraceEventResponse,
+  ModelProbeDebugResponse,
+  ConversationRunStatusResponse,
+  RunResponse,
+  SendMessageResponse,
+} from "@deeix/api-contract";
+import type { UserStorageQuotaDTO } from "@/shared/api/file-types";
+
+export type ConversationDTO = ConversationResponse;
+
+export type MessageDeleteDTO = MessageDeleteResponse;
+
+export type ConversationSearchResultDTO = ConversationSearchResultResponse;
+
+export type ActiveConversationRunSnapshot = {
+  runID: string;
+  conversationPublicID: string;
+};
+
+export type ActiveConversationRunEvent =
+  | { type: "snapshot"; runs: ActiveConversationRunSnapshot[] }
+  | { type: "started" | "finished"; runID: string; conversationPublicID?: string };
+
+export type ConversationSearchPageDTO = Omit<ConversationSearchPageResponse, "results"> & {
+  results: ConversationSearchResultDTO[];
+};
+
+export type ConversationPreviewMessageDTO = ConversationPreviewMessageResponse;
+
+export type ConversationDefaultModelCandidateDTO = ConversationDefaultModelCandidateResponse;
+
+export type ConversationStatusFilter = "active" | "archived" | "all";
+export type ConversationStarredFilter = "all" | "starred" | "unstarred";
+export type MessageDTO = Omit<
+  MessageResponse,
+  | "modelIcon"
+  | "modelVendor"
+  | "platformModelName"
+  | "processTrace"
+  | "upstreamModelName"
+> & {
+  branchReason: "default" | "retry" | "edit";
+  platformModelName?: string;
+  upstreamModelName?: string;
+  modelVendor?: string;
+  modelIcon?: string;
+  processTrace?: MessageProcessTraceDTO;
+  myFeedback: "up" | "down" | "";
+};
+
+export type ConversationRunDTO = Omit<RunResponse, "taskType">;
+
+export type ConversationRunStatusDTO = ConversationRunStatusResponse;
+
+export type TraceBlockDTO = MessageTraceBlockResponse;
+
+export type PromptTraceBlockDTO = Omit<MessagePromptTraceBlockResponse, "sourceRefs"> & {
+  sourceRefs?: PromptTraceSourceDTO[];
+};
+
+export type PromptTraceSourceDTO = MessagePromptTraceSourceResponse;
+
+export type ContextArtifactDTO = ContextArtifactResponse;
+
+export type PromptTraceDTO = Omit<MessagePromptTraceResponse, "blocks"> & {
+  blocks: PromptTraceBlockDTO[];
+};
+
+export type ReasoningDeltaDTO = {
+  event_type: string;
+  item_id?: string;
+  status?: string;
+  kind: "summary_text" | "content_text" | "signature";
+  signature?: string;
+  encrypted_content?: string;
+};
+
+export type MessageProcessTraceDTO = Omit<
+  MessageProcessTraceResponse,
+  "events" | "process" | "promptTrace" | "tools" | "upstreamThink"
+> & {
+  process?: TraceBlockDTO;
+  tools?: TraceBlockDTO;
+  upstreamThink?: TraceBlockDTO;
+  promptTrace?: PromptTraceDTO;
+  events?: TraceEventDTO[];
+};
+
+export type TraceEventDTO = MessageTraceEventResponse;
+
+export type CreateConversationRequest = ContractCreateConversationRequest;
+
+export type ConversationOptions = Record<string, unknown>;
+
+export type UpstreamDebugInfo = ModelProbeDebugResponse;
+
+export type RenameConversationRequest = ContractRenameConversationRequest;
+
+export type UpdateConversationLabelsRequest = ContractUpdateConversationLabelsRequest;
+
+export type SetConversationStarRequest = ContractSetConversationStarRequest;
+
+export type SetConversationArchiveRequest = ContractSetConversationArchiveRequest;
+
+export type DeleteConversationData = Omit<ConversationDeleteResponse, "quota"> & {
+  quota?: UserStorageQuotaDTO;
+};
+
+export type SetMessageFeedbackRequest = ContractSetMessageFeedbackRequest;
+
+export type UpdateMessageRequest = ContractUpdateMessageRequest;
+
+export type MessageFeedbackResult = Omit<MessageFeedbackResponse, "myFeedback"> & {
+  myFeedback: "up" | "down" | "";
+};
+
+export type SendMessageRequest = Omit<ContractSendMessageRequest, "options"> & {
+  options?: ConversationOptions;
+};
+
+export type SendMessageResult = Omit<SendMessageResponse, "assistantMessage" | "metadataRefreshHint" | "userMessage"> & {
+  userMessage: MessageDTO;
+  assistantMessage: MessageDTO;
+  metadataRefreshHint?: "pending" | "not_needed" | "skipped_no_titleable_content" | string;
+};
+
+export type StreamMessageEvent =
+  | {
+      type: "file_proc";
+      seq?: number;
+      message: string;
+    }
+  | {
+      type: "rag_search";
+      seq?: number;
+      message: string;
+    }
+  | {
+      type: "process_update";
+      seq?: number;
+      status: string;
+      block?: TraceBlockDTO;
+      trace?: MessageProcessTraceDTO;
+    }
+  | {
+      type: "upstream_think_delta";
+      seq?: number;
+      status: string;
+      title?: string;
+      summary?: string;
+      stage?: string;
+      roundID?: string;
+      eventID?: string;
+      startedAt?: string;
+      endedAt?: string;
+      kind?: ReasoningDeltaDTO["kind"] | string;
+      delta?: string;
+      contentMarkdown?: string;
+      block?: TraceBlockDTO;
+      trace?: MessageProcessTraceDTO;
+      reasoning?: ReasoningDeltaDTO;
+    }
+  | {
+      type: "delta";
+      seq?: number;
+      delta: string;
+      replace?: boolean;
+    }
+  | {
+      type: "usage";
+      seq?: number;
+      input_tokens: number;
+      output_tokens: number;
+      cache_read_tokens: number;
+      cache_write_tokens: number;
+      reasoning_tokens: number;
+    }
+  | {
+      type: "completed";
+      seq?: number;
+      data: SendMessageResult;
+    }
+  | {
+      type: "moderation_checking";
+      seq?: number;
+    }
+  | {
+      type: "moderation_blocked";
+      seq?: number;
+      eventID?: string;
+      direction?: "input" | "output" | string;
+      categories?: string[];
+    }
+  | {
+      type: "compact_done";
+      seq?: number;
+      method: string;
+      freed_tokens: number;
+      kept_turns: number;
+      summary_preview: string;
+    }
+  | {
+      type: "error";
+      seq?: number;
+      status?: number;
+      message: string;
+      errorCode?: string;
+      debug?: UpstreamDebugInfo;
+      data?: SendMessageResult;
+    };

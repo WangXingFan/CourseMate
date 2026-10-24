@@ -1,0 +1,97 @@
+{
+  "title": "Recent",
+  "timeGroup": {
+    "yesterday": "Yesterday",
+    "lastSevenDays": "Last 7 days",
+    "earlier": "Earlier"
+  },
+  "collapseSection": "Collapse recent conversations",
+  "expandSection": "Expand recent conversations",
+  "collapseStarredSection": "Collapse starred conversations",
+  "expandStarredSection": "Expand starred conversations",
+  "allConversations": "All conversations",
+  "allConversationsDescription": "All CourseMate conversations",
+  "newChat": "New chat",
+  "all": "All",
+  "active": "Active",
+  "archived": "Archived",
+  "starred": "Starred",
+  "unstarred": "Unstarred",
+  "status": "Status",
+  "star": "Starred",
+  "select": "Select",
+  "selectedCount": "{count} conversations selected",
+  "enterSelection": "Select multiple",
+  "exitSelection": "Cancel selection",
+  "archiveSelected": "Archive",
+  "unarchiveSelected": "Unarchive",
+  "deleteSelected": "Delete",
+  "searchPlaceholder": "Search conversations",
+  "empty": "No conversations yet",
+  "untitled": "New chat",
+  "justNow": "Updated just now",
+  "updatedAt": "Last updated {time}",
+  "selectConversation": "Select conversation {title}",
+  "loadMoreFailed": "Failed to load more",
+  "loadingMore": "Loading more...",
+  "retry": "Retry",
+  "conversationCount": "{count}",
+  "deleteConversationLabel": "\"{title}\"",
+  "selectedConversationCountLabel": "{count} conversations selected",
+  "row": {
+    "cancelSelect": "Deselect",
+    "selectItem": "Select",
+    "unstar": "Unstar",
+    "star": "Star",
+    "rename": "Rename",
+    "autoRename": "Auto rename",
+    "menu": "Conversation menu",
+    "unarchive": "Unarchive",
+    "archive": "Archive",
+    "delete": "Delete"
+  },
+  "emptyState": {
+    "searchTitle": "No matching conversations",
+    "searchDescription": "Try another keyword or create a new chat.",
+    "allTitle": "No conversations yet",
+    "allDescription": "Create your first conversation from the top right.",
+    "filteredTitle": "No {filters} conversations",
+    "conjunction": " and "
+  },
+  "dialogs": {
+    "renameTitle": "Rename",
+    "renameDescription": "Enter a new conversation name.",
+    "renamePlaceholder": "Enter a new conversation name",
+    "autoRename": "Auto rename",
+    "autoRenameFailed": "Auto rename failed",
+    "deleteTitle": "Delete conversation",
+    "deleteDescription": "Delete {label}? This cannot be undone.",
+    "deleteFilesLabel": "Also delete files in the conversation",
+    "deleteFilesDescription": "Only files not referenced by other conversations are deleted. Files still used elsewhere stay available.",
+    "thisConversation": "this conversation",
+    "untitled": "New chat",
+    "bulk": {
+      "archive": {
+        "title": "Archive selected conversations",
+        "description": "Archive the selected {count} conversations?",
+        "confirm": "Archive"
+      },
+      "unarchive": {
+        "title": "Unarchive selected conversations",
+        "description": "Unarchive the selected {count} conversations?",
+        "confirm": "Unarchive"
+      },
+      "pending": "Processing..."
+    },
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete"
+  },
+  "starredSearch": {
+    "title": "All starred conversations",
+    "description": "Search starred conversations by ID, title, label, or model",
+    "placeholder": "Search by ID, title, label, or model",
+    "loading": "Loading starred conversations...",
+    "empty": "No matching starred conversations"
+  }
+}

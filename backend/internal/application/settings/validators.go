@@ -1,0 +1,247 @@
+package settings
+
+import (
+	"fmt"
+	"net/url"
+	"strconv"
+	"strings"
+
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/security"
+)
+
+// settingValidator 校验去除首尾空白后的配置值；key 是 namespace:key，用于错误文案。
+type settingValidator func(value string, key string) error
+
+func boolValue() settingValidator {
+	return func(value string, key string) error {
+		if _, err := strconv.ParseBool(value); err != nil {
+			return settingRule("bool", "")
+		}
+		return nil
+	}
+}
+
+func integerValue() settingValidator {
+	return func(value string, key string) error {
+		if _, err := strconv.Atoi(value); err != nil {
+			return settingRule("integer", "")
+		}
+		return nil
+	}
+}
+
+func intRange(min int, max int) settingValidator {
+	return func(value string, key string) error {
+		v, err := strconv.Atoi(value)
+		if err != nil || v < min || v > max {
+			return settingRule("integer_range", fmt.Sprintf("%d,%d", min, max))
+		}
+		return nil
+	}
+}
+
+// optionalIntZeroOrRange 接受空值、0 或区间内的整数：空与 0 都表示关闭该限制。
+func optionalIntZeroOrRange(min int, max int) settingValidator {
+	return func(value string, key string) error {
+		if value == "" {
+			return nil
+		}
+		v, err := strconv.Atoi(value)
+		if err != nil || v < 0 || (v > 0 && (v < min || v > max)) {
+			return settingRule("optional_integer_range", fmt.Sprintf("%d,%d", min, max))
+		}
+		return nil
+	}
+}
+
+func int64Min(min int64) settingValidator {
+	return func(value string, key string) error {
+		v, err := strconv.ParseInt(value, 10, 64)
+		if err != nil || v < min {
+			return settingRule("integer_min", strconv.FormatInt(min, 10))
+		}
+		return nil
+	}
+}
+
+func optionalInt64Min(min int64) settingValidator {
+	return func(value string, key string) error {
+		if value == "" {
+			return nil
+		}
+		v, err := strconv.ParseInt(value, 10, 64)
+		if err != nil || v < min {
+			return settingRule("optional_integer_min", strconv.FormatInt(min, 10))
+		}
+		return nil
+	}
+}
+
+func floatRange(min float64, max float64) settingValidator {
+	return func(value string, key string) error {
+		v, err := strconv.ParseFloat(value, 64)
+		if err != nil || v < min || v > max {
+			return settingRule("float_range", fmt.Sprintf("%g,%g", min, max))
+		}
+		return nil
+	}
+}
+
+func maxLength(max int) settingValidator {
+	return func(value string, key string) error {
+		if len([]rune(value)) > max {
+			return settingRule("max_length", strconv.Itoa(max))
+		}
+		return nil
+	}
+}
+
+func oneOf(allowed ...string) settingValidator {
+	return func(value string, key string) error {
+		for _, candidate := range allowed {
+			if value == candidate {
+				return nil
+			}
+		}
+		return settingRule("enum", strings.Join(allowed, ","))
+	}
+}
+
+// optionalHTTPURL 只要求 http(s) 前缀，用于允许指向内网自建服务的地址。
+func optionalHTTPURL() settingValidator {
+	return func(value string, key string) error {
+		if value == "" {
+			return nil
+		}
+		if !strings.HasPrefix(value, "http://") && !strings.HasPrefix(value, "https://") {
+			return settingRule("http_url", "")
+		}
+		return nil
+	}
+}
+
+// optionalTrustedHTTPURL 要求地址通过出站信任策略，用于会携带凭据访问的第三方端点。
+func optionalTrustedHTTPURL() settingValidator {
+	return func(value string, key string) error {
+		if value == "" {
+			return nil
+		}
+		if err := security.ValidateTrustedOutboundHTTPURL(value); err != nil {
+			return settingRule("trusted_http_url", "")
+		}
+		return nil
+	}
+}
+
+func validateLoginDefaultNextPath(value string, key string) error {
+	if value == "" {
+		return settingRule("required", "")
+	}
+	if !strings.HasPrefix(value, "/") || strings.HasPrefix(value, "//") {
+		return settingRule("local_path", "")
+	}
+	return maxLength(120)(value, key)
+}
+
+// maxDesktopDownloadURLLength 限制下载页地址长度（按字节计）。
+const maxDesktopDownloadURLLength = 200
+
+// validateDesktopDownloadURL 要求下载页地址为不含凭据的 http(s) 绝对地址。
+// 空值直接拒绝而不是回退默认值：与 login_default_next_path 一致，避免管理员误清空后入口静默指向别处；
+// 关闭入口应使用 desktop:download_enabled。
+func validateDesktopDownloadURL(value string, key string) error {
+	if value == "" {
+		return settingRule("required", "")
+	}
+	if len(value) > maxDesktopDownloadURLLength {
+		return settingRule("max_length", strconv.Itoa(maxDesktopDownloadURLLength))
+	}
+	if !IsValidDesktopDownloadURL(value) {
+		return settingRule("download_url", "")
+	}
+	return nil
+}
+
+// IsValidDesktopDownloadURL 判断地址是否为可对用户展示的下载页地址：http(s) 绝对地址、有主机名且不含用户信息。
+func IsValidDesktopDownloadURL(value string) bool {
+	value = strings.TrimSpace(value)
+	if value == "" || len(value) > maxDesktopDownloadURLLength {
+		return false
+	}
+	parsed, err := url.Parse(value)
+	if err != nil || parsed.User != nil || parsed.Hostname() == "" {
+		return false
+	}
+	return parsed.Scheme == "http" || parsed.Scheme == "https"
+}
+
+func validateEmailDomainList(value string, key string) error {
+	if len([]rune(value)) > 1024 {
+		return settingRule("max_length", "1024")
+	}
+	for _, domain := range splitList(value) {
+		domain = strings.TrimPrefix(strings.ToLower(strings.TrimSpace(domain)), "@")
+		if strings.Contains(domain, "@") || strings.Contains(domain, "://") || !strings.Contains(domain, ".") {
+			return settingRule("domain", "")
+		}
+	}
+	return nil
+}
+
+func splitList(value string) []string {
+	return strings.FieldsFunc(value, func(r rune) bool {
+		return r == ',' || r == '\n' || r == '\r' || r == '\t' || r == ' '
+	})
+}
+
+func validateAllowedMIMETypes(value string, key string) error {
+	if value == "" {
+		return settingRule("required", "")
+	}
+	for _, part := range strings.Split(value, ",") {
+		part = strings.TrimSpace(part)
+		if !strings.Contains(part, "/") {
+			return settingRule("mime", "")
+		}
+	}
+	return nil
+}
+
+func validateMinerUFileTypes(value string, key string) error {
+	allowed := map[string]struct{}{
+		"pdf":          {},
+		"word":         {},
+		"presentation": {},
+		"excel":        {},
+	}
+	for _, part := range strings.Split(value, ",") {
+		item := strings.ToLower(strings.TrimSpace(part))
+		if item == "" {
+			continue
+		}
+		if _, ok := allowed[item]; !ok {
+			return settingRule("file_type", "pdf,word,presentation,excel")
+		}
+	}
+	return nil
+}
+
+// validateKnowledgeBaseIDList 校验默认检索知识库的 public_id 列表：逗号分隔，最多 8 项，
+// 每项 1..32 字符且不重复。空值合法，表示不预置默认知识库。
+func validateKnowledgeBaseIDList(value string, key string) error {
+	ids := splitList(value)
+	if len(ids) > 8 {
+		return settingRule("list_count", "0,8")
+	}
+	seen := make(map[string]struct{}, len(ids))
+	for _, id := range ids {
+		if len(id) > 32 || strings.TrimSpace(id) != id {
+			return settingRule("public_id", "")
+		}
+		if _, ok := seen[id]; ok {
+			return settingRule("duplicate", id)
+		}
+		seen[id] = struct{}{}
+	}
+	return nil
+}

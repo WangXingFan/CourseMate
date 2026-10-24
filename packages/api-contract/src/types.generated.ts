@@ -1,0 +1,8482 @@
+// Generated from backend/docs/swagger.json. Do not edit manually.
+// Run `pnpm api:generate` from the workspace root to regenerate.
+/* eslint-disable */
+/* tslint:disable */
+/*
+ * ---------------------------------------------------------------
+ * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
+ * ##                                                           ##
+ * ## AUTHOR: acacode                                           ##
+ * ## SOURCE: https://github.com/acacode/swagger-typescript-api ##
+ * ---------------------------------------------------------------
+ */
+
+export interface ActiveMessageGenerationEventResponse {
+  conversationPublicID?: string;
+  runID?: string;
+  runs?: ActiveMessageGenerationResponse[];
+  type: string;
+}
+
+export interface ActiveMessageGenerationResponse {
+  conversationPublicID: string;
+  runID: string;
+}
+
+export interface ActiveSessionListResponse {
+  results: ActiveSessionResponse[];
+  total: number;
+}
+
+export interface ActiveSessionListResponseDoc {
+  data: ActiveSessionListResponse;
+  errorMsg: string;
+}
+
+export interface ActiveSessionResponse {
+  browserName: string;
+  cityName: string;
+  clientIP: string;
+  countryCode: string;
+  createdAt: string;
+  current: boolean;
+  deviceLabel: string;
+  deviceName: string;
+  deviceType: string;
+  expiresAt: string;
+  geoAccuracy: string;
+  geoSource: string;
+  ipLatitude: number | null;
+  ipLongitude: number | null;
+  lastSeenAt: string | null;
+  locationLabel: string;
+  osName: string;
+  preciseAccuracyMeters: number | null;
+  preciseLatitude: number | null;
+  preciseLocatedAt: string | null;
+  preciseLongitude: number | null;
+  regionName: string;
+  sessionID: string;
+  timezoneName: string;
+  updatedAt: string;
+}
+
+export interface AddKnowledgeBaseFilesRequest {
+  /**
+   * @maxItems 100
+   * @minItems 1
+   */
+  fileIDs: string[];
+}
+
+export interface AddStudentRequest {
+  /** @example "s20260001" */
+  username: string;
+}
+
+export interface AdminErrorDoc {
+  data: any;
+  details?: any;
+  errorCode?: string;
+  errorMsg: string;
+  requestId?: string;
+}
+
+export interface AdminUserIdentityProviderSummaryResponse {
+  id: number;
+  logoURL: string;
+  name: string;
+  slug: string;
+  type: string;
+}
+
+export interface AdminUserResponse {
+  appearancePreferences: string;
+  avatarURL: string;
+  createdAt: string;
+  displayName: string;
+  email: string;
+  emailVerifiedAt: string | null;
+  id: number;
+  identityProviders: AdminUserIdentityProviderSummaryResponse[];
+  lastActiveAt: string | null;
+  lastLoginAt: string | null;
+  locale: string;
+  phone: string;
+  phoneVerifiedAt: string | null;
+  profilePreferences: string;
+  publicID: string;
+  role: string;
+  status: string;
+  timezone: string;
+  twoFactorAvailable: boolean;
+  twoFactorEnabled: boolean;
+  twoFactorRecoveryCount: number;
+  twoFactorRequired: boolean;
+  updatedAt: string;
+  username: string;
+}
+
+export interface AuditLogListResponseDoc {
+  data: {
+    results: AuditLogResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface AuditLogResponse {
+  action: string;
+  actorDisplayName: string;
+  actorLabel: string;
+  actorUserID: number;
+  actorUsername: string;
+  createdAt: string;
+  detailJSON: string;
+  id: number;
+  ip: string;
+  requestID: string;
+  resource: string;
+  resourceID: string;
+  updatedAt: string;
+  userAgent: string;
+}
+
+export interface AuthErrorDoc {
+  data: any;
+  details?: any;
+  errorCode?: string;
+  errorMsg: string;
+  requestId?: string;
+}
+
+export interface AuthEventResponse {
+  clientIP: string;
+  createdAt: string;
+  detailJSON: string;
+  eventType: string;
+  id: number;
+  occurredAt: string;
+  reason: string;
+  requestID: string;
+  result: string;
+  updatedAt: string;
+  userAgent: string;
+  userDisplayName: string;
+  userID: number;
+  userLabel: string;
+  username: string;
+}
+
+export interface AuthUserIdentityProviderSummaryResponse {
+  id: number;
+  logoURL: string;
+  name: string;
+  slug: string;
+  type: string;
+}
+
+export interface AuthUserResponse {
+  appearancePreferences: string;
+  avatarURL: string;
+  createdAt: string;
+  displayName: string;
+  email: string;
+  emailBootstrapUsedAt: string | null;
+  emailSource: string;
+  emailVerifiedAt: string | null;
+  id: number;
+  identityProviders: AuthUserIdentityProviderSummaryResponse[];
+  initialSecurityRequired: boolean;
+  initialUsernameRequired: boolean;
+  lastActiveAt: string | null;
+  lastLoginAt: string | null;
+  locale: string;
+  mustResetPassword: boolean;
+  onboardingCompletedAt: string | null;
+  passwordEnabled: boolean;
+  passwordOrigin: string;
+  passwordSetAt: string | null;
+  phone: string;
+  phoneVerifiedAt: string | null;
+  profilePreferences: string;
+  publicID: string;
+  role: string;
+  status: string;
+  timezone: string;
+  twoFactorAvailable: boolean;
+  twoFactorEnabled: boolean;
+  twoFactorRecoveryCount: number;
+  twoFactorRequired: boolean;
+  updatedAt: string;
+  username: string;
+  usernameChangedAt: string | null;
+}
+
+export interface BatchDeleteRequest {
+  /** @minItems 1 */
+  ids: number[];
+}
+
+export interface BatchDeleteResponse {
+  failedCount: number;
+  notFoundCount: number;
+  results: BatchDeleteResultResponse[];
+  successCount: number;
+  total: number;
+}
+
+export interface BatchDeleteResponseDoc {
+  data: BatchDeleteResponse;
+  errorMsg: string;
+}
+
+export interface BatchDeleteResultResponse {
+  error?: string;
+  id: number;
+  status: string;
+}
+
+export interface BindModelUpstreamSourceRequest {
+  /** @min 0 */
+  cbDurationMin?: number;
+  /** @min 0 */
+  cbFailureThreshold?: number;
+  /** @min 0 */
+  cbWindowMin?: number;
+  priority?: number;
+  /** @maxLength 64 */
+  protocol?: string;
+  status?: "active" | "inactive";
+  upstreamID: number;
+  upstreamModelID: number;
+  weight?: number;
+}
+
+export interface BrandingManifestIcon {
+  purpose: string;
+  sizes: string;
+  src: string;
+  type: string;
+}
+
+export interface BrandingManifestResponse {
+  background_color: string;
+  categories: string[];
+  description: string;
+  display: string;
+  icons: BrandingManifestIcon[];
+  id: string;
+  lang: string;
+  name: string;
+  scope: string;
+  short_name: string;
+  start_url: string;
+  theme_color: string;
+}
+
+export interface BrandingResponse {
+  appleTouchIcon180URL: string;
+  pwaIcon192URL: string;
+  pwaIcon512URL: string;
+  pwaMaskableIcon512URL: string;
+  description: string;
+  faviconURL: string;
+  logoURL: string;
+  shortName: string;
+  title: string;
+}
+
+export interface BrandingResponseDoc {
+  data: BrandingResponse;
+  errorMsg: string;
+}
+
+export interface Capabilities {
+  /** AccountSecurity 密码、邮箱、两步验证、会话、注销账号。 */
+  accountSecurity: boolean;
+  /** BillingGating 计费门禁能力。契约键保留，但本产品不含套餐、余额、兑换码与支付，恒为 false。 */
+  billingGating: boolean;
+  /** ContentModeration 内容审核。 */
+  contentModeration: boolean;
+  /** IdentityProviders 第三方登录与身份绑定。 */
+  identityProviders: boolean;
+  /** MultiUser 存在多个账号：账号管理、权限组。 */
+  multiUser: boolean;
+  /** Registration 可自行注册账号。 */
+  registration: boolean;
+  /** UsageMetering 记录对话 token 用量与请求追踪。 */
+  usageMetering: boolean;
+}
+
+export interface CapabilitiesResponse {
+  features: Capabilities;
+}
+
+export interface CapabilitiesResponseDoc {
+  data: CapabilitiesResponse;
+  errorMsg: string;
+}
+
+export interface ChangePasswordRequest {
+  /**
+   * @minLength 6
+   * @maxLength 32
+   */
+  code?: string;
+  /** @maxLength 128 */
+  currentPassword?: string;
+  /**
+   * @minLength 8
+   * @maxLength 128
+   */
+  newPassword: string;
+  verificationMethod?: "none" | "two_factor" | "email";
+}
+
+export interface ChangePasswordResponse {
+  changed: boolean;
+}
+
+export interface ChangePasswordResponseDoc {
+  data: ChangePasswordResponse;
+  errorMsg: string;
+}
+
+export interface ChannelErrorDoc {
+  data: any;
+  details?: any;
+  errorCode?: string;
+  errorMsg: string;
+  requestId?: string;
+}
+
+export interface ChatFilePolicyResponse {
+  allowedMIMETypes: string[];
+  capabilityMode: string;
+  docMaxBytes: number;
+  effectiveDocMaxBytes: number;
+  effectiveImageMaxBytes: number;
+  fileMode: string;
+  fullContextMaxBytes: number;
+  fullContextMaxTokens: number;
+  fullContextPDFMaxPages: number;
+  imageMaxBytes: number;
+  maxMessageFiles: number;
+  maxUploadFileBytes: number;
+  ragAvailabilityReason: string;
+  ragAvailable: boolean;
+}
+
+export interface ChatFilePolicyResponseDoc {
+  data: ChatFilePolicyResponse;
+  errorMsg: string;
+}
+
+export interface CircuitResetResponse {
+  reset: boolean;
+}
+
+export interface ClassroomDataResponse {
+  classroom: ClassroomResponse;
+}
+
+export interface ClassroomListResponse {
+  classrooms: ClassroomResponse[];
+}
+
+export interface ClassroomMutationResponse {
+  updated: boolean;
+}
+
+export interface ClassroomResponse {
+  createdAt: string;
+  description: string;
+  id: string;
+  name: string;
+  studentCount: number;
+  teacherName: string;
+}
+
+export interface ClassroomStudentCredentialResponse {
+  displayName: string;
+  initialPassword: string;
+  username: string;
+}
+
+export interface ClassroomStudentImportResponse {
+  created: number;
+  credentials: ClassroomStudentCredentialResponse[];
+  failed: number;
+  rows: ClassroomStudentImportRowResponse[];
+  skipped: number;
+  total: number;
+}
+
+export interface ClassroomStudentImportRowResponse {
+  line: number;
+  status: "created" | "duplicate" | "exists" | "invalid" | "failed";
+  username: string;
+}
+
+export interface CleanupLogsRequest {
+  before: string;
+  type: string;
+}
+
+export interface CleanupLogsResponse {
+  before: string;
+  deletedCount: number;
+  type: string;
+}
+
+export interface CleanupLogsResponseDoc {
+  data: CleanupLogsResponse;
+  errorMsg: string;
+}
+
+export interface ContentModerationCategoryCatalogResponse {
+  image: string[];
+  text: string[];
+}
+
+export interface ContentModerationConfigDataResponse {
+  categories: ContentModerationCategoryCatalogResponse;
+  config: ContentModerationServiceConfigResponse;
+}
+
+export interface ContentModerationConfigResponseDoc {
+  data: ContentModerationConfigDataResponse;
+  errorMsg: string;
+}
+
+export interface ContentModerationConfigUpdateDataResponse {
+  config: ContentModerationServiceConfigResponse;
+}
+
+export interface ContentModerationConfigUpdateResponseDoc {
+  data: ContentModerationConfigUpdateDataResponse;
+  errorMsg: string;
+}
+
+export interface ContentModerationDailyStatResponse {
+  category: string;
+  checkCount: number;
+  contentItems: number;
+  direction: string;
+  failureCount: number;
+  hitCount: number;
+  latencyCount: number;
+  latencySumMS: number;
+  modality: string;
+  result: string;
+  statDate: string;
+}
+
+export interface ContentModerationEventDetailResponse {
+  categoryScores: Record<string, number>;
+  decryptedText?: string;
+  event: ContentModerationEventResponse;
+  images: ContentModerationIsolatedImageResponse[];
+  imagesAvailable: boolean;
+  textAvailable: boolean;
+}
+
+export interface ContentModerationEventDetailResponseDoc {
+  data: ContentModerationEventDetailResponse;
+  errorMsg: string;
+}
+
+export interface ContentModerationEventListDataResponse {
+  items: ContentModerationEventResponse[];
+  page: number;
+  pageSize: number;
+  total: number;
+}
+
+export interface ContentModerationEventListResponseDoc {
+  data: ContentModerationEventListDataResponse;
+  errorMsg: string;
+}
+
+export interface ContentModerationEventResponse {
+  categories: string[];
+  contentSummary: string;
+  conversationID: number;
+  createdAt: string;
+  direction: string;
+  errorCode: string;
+  errorMessage: string;
+  latencyMS: number;
+  messagePublicID: string;
+  modality: string;
+  model: string;
+  policyVersion: number;
+  publicID: string;
+  result: string;
+  runID: string;
+  userID: number;
+  userLabel?: string;
+  username?: string;
+}
+
+export interface ContentModerationIsolatedImageResponse {
+  sha256: string;
+  index: number;
+  mimeType: string;
+  sizeBytes: number;
+  sourceFileID?: string;
+}
+
+export interface ContentModerationPolicyRequest {
+  inputImageCategories: string[];
+  inputTextCategories: string[];
+  outputImageCategories: string[];
+  outputTextCategories: string[];
+}
+
+export interface ContentModerationPolicyResponse {
+  inputImageCategories: string[];
+  inputTextCategories: string[];
+  outputImageCategories: string[];
+  outputTextCategories: string[];
+  version: number;
+}
+
+export interface ContentModerationProbeResponse {
+  image: ContentModerationProbeResultResponse;
+  text: ContentModerationProbeResultResponse;
+}
+
+export interface ContentModerationProbeResponseDoc {
+  data: ContentModerationProbeResponse;
+  errorMsg: string;
+}
+
+export interface ContentModerationProbeResultResponse {
+  error?: string;
+  latencyMS: number;
+  model?: string;
+  valid: boolean;
+}
+
+export interface ContentModerationServiceConfigResponse {
+  apiKeyMasked?: string;
+  baseUrl: string;
+  enabled: boolean;
+  hasAPIKey: boolean;
+  maxConcurrency: number;
+  model: string;
+  policy: ContentModerationPolicyResponse;
+  queueCapacity: number;
+  timeoutSeconds: number;
+}
+
+export interface ContentModerationStatsDataResponse {
+  items: ContentModerationDailyStatResponse[];
+}
+
+export interface ContentModerationStatsResponseDoc {
+  data: ContentModerationStatsDataResponse;
+  errorMsg: string;
+}
+
+export interface ContentModerationUpdateConfigRequest {
+  apiKey?: string;
+  baseUrl?: string;
+  clearAPIKey?: boolean;
+  enabled?: boolean;
+  maxConcurrency?: number;
+  model?: string;
+  policy?: ContentModerationPolicyRequest;
+  queueCapacity?: number;
+  timeoutSeconds?: number;
+}
+
+export interface ContentmoderationErrorDoc {
+  data: any;
+  details?: any;
+  errorCode?: string;
+  errorMsg: string;
+  requestId?: string;
+}
+
+export interface ContextArtifactResponse {
+  content: string;
+  createdAt: string;
+  expiresAt?: string;
+  id: number;
+  kind: string;
+  messageID: number;
+  metadataJSON: string;
+  runID: string;
+  score: number;
+  sourceID: string;
+  sourceTitle: string;
+  sourceType: string;
+  tokenEstimate: number;
+}
+
+export interface ContextArtifactResponseDoc {
+  data: ContextArtifactResponse;
+  errorMsg: string;
+}
+
+export interface ConversationCreateResponseDoc {
+  data: ConversationResponse;
+  errorMsg: string;
+}
+
+export interface ConversationDefaultModelCandidateResponse {
+  platformModelName: string;
+  source: string;
+  usedAt: string | null;
+}
+
+export interface ConversationDefaultModelCandidateResponseDoc {
+  data: ConversationDefaultModelCandidateResponse;
+  errorMsg: string;
+}
+
+export interface ConversationDeleteResponse {
+  deleted: boolean;
+  deletedFileCount?: number;
+  quota?: StorageQuotaResponse;
+}
+
+export interface ConversationDeleteResponseDoc {
+  data: ConversationDeleteResponse;
+  errorMsg: string;
+}
+
+export interface ConversationErrorDoc {
+  data: any;
+  details?: any;
+  errorCode?: string;
+  errorMsg: string;
+  requestId?: string;
+}
+
+export interface ConversationEventDetailResponseDoc {
+  data: ConversationEventResponse;
+  errorMsg: string;
+}
+
+export interface ConversationEventListResponseDoc {
+  data: {
+    results: ConversationEventResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface ConversationEventResponse {
+  contentMarkdown: string;
+  conversationID: number;
+  createdAt: string;
+  endedAt: string | null;
+  errorJSON: string;
+  errorOmitted: boolean;
+  errorSizeBytes: number;
+  eventID: string;
+  eventScope: string;
+  eventType: string;
+  id: number;
+  inputJSON: string;
+  inputOmitted: boolean;
+  inputSizeBytes: number;
+  latencyMS: number;
+  messageID: number;
+  outputJSON: string;
+  outputOmitted: boolean;
+  outputSizeBytes: number;
+  parentEventID: string;
+  payloadJSON: string;
+  payloadOmitted: boolean;
+  payloadSizeBytes: number;
+  phase: string;
+  platformModelName: string;
+  providerProtocol: string;
+  roundID: string;
+  routedBindingCode: string;
+  runID: string;
+  seq: number;
+  stage: string;
+  startedAt: string;
+  status: string;
+  summary: string;
+  title: string;
+  updatedAt: string;
+  upstreamModelName: string;
+  upstreamName: string;
+  userDisplayName: string;
+  userID: number;
+  userLabel: string;
+  username: string;
+}
+
+export interface ConversationListResponseDoc {
+  data: {
+    results: ConversationResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface ConversationPreviewMessageListResponseDoc {
+  data: ConversationPreviewMessageResponse[];
+  errorMsg: string;
+}
+
+export interface ConversationPreviewMessageResponse {
+  content: string;
+  errorMessage: string;
+  publicID: string;
+  role: "user" | "assistant";
+}
+
+export interface ConversationResponse {
+  contextPolicyJSON: string;
+  createdAt: string;
+  isStarred: boolean;
+  labelsJSON: string;
+  lastCompactedAt: string | null;
+  lastResponseID: string;
+  messageCount: number;
+  model: string;
+  provider: string;
+  publicID: string;
+  sessionKey: string;
+  starredAt: string | null;
+  status: string;
+  title: string;
+  updatedAt: string;
+  userID: number;
+}
+
+export interface ConversationRunListResponseDoc {
+  data: {
+    results: RunResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface ConversationRunStatusResponse {
+  runID: string;
+  status: string;
+}
+
+export interface ConversationSearchListResponseDoc {
+  data: ConversationSearchPageResponse;
+  errorMsg: string;
+}
+
+export interface ConversationSearchPageResponse {
+  hasMore: boolean;
+  results: ConversationSearchResultResponse[];
+}
+
+export interface ConversationSearchResultResponse {
+  isStarred: boolean;
+  labelsJSON: string;
+  messageCount: number;
+  publicID: string;
+  status: string;
+  title: string;
+  updatedAt: string;
+}
+
+export interface ConversationUpdateResponseDoc {
+  data: ConversationResponse;
+  errorMsg: string;
+}
+
+export interface CreateClassroomRequest {
+  /** @example "计算机基础课程行政班" */
+  description: string;
+  /** @example "2026 级一班" */
+  name: string;
+}
+
+export interface CreateClassroomStudentAccountResponse {
+  student: ClassroomStudentCredentialResponse;
+}
+
+export interface CreateConversationRequest {
+  /** @maxLength 128 */
+  model?: string;
+  /** @maxLength 255 */
+  title?: string;
+}
+
+export interface CreateModelDisplayGroupRequest {
+  /** @maxLength 2048 */
+  icon?: string;
+  /** @maxItems 10000 */
+  modelIDs?: number[];
+  /** @maxLength 64 */
+  name: string;
+}
+
+export interface CreateModelRequest {
+  accessScope?: "public" | "internal";
+  /** @maxLength 10000 */
+  capabilitiesJSON?: string;
+  /** @min 0 */
+  cbDurationMin?: number;
+  /** @min 0 */
+  cbFailureThreshold?: number;
+  cbPolicyMode?: "default" | "enforced";
+  /** @min 0 */
+  cbWindowMin?: number;
+  /** @maxLength 10000 */
+  description?: string;
+  displayGroupID?: number;
+  /** @maxLength 2048 */
+  icon?: string;
+  /** @maxLength 1000 */
+  kindsJSON?: string;
+  /**
+   * @minLength 2
+   * @maxLength 128
+   */
+  platformModelName: string;
+  status?: "active" | "inactive";
+  /** @maxLength 20000 */
+  systemPrompt?: string;
+  /** @maxLength 64 */
+  vendor?: string;
+}
+
+export interface CreateModelResponseDoc {
+  data: ModelDataResponse;
+  errorMsg: string;
+}
+
+export interface CreateModelVendorRequest {
+  /** @maxLength 2048 */
+  icon?: string;
+  /** @maxLength 64 */
+  key: string;
+  /** @maxLength 64 */
+  name: string;
+}
+
+export interface CreatePermissionGroupRequest {
+  /** @maxLength 512 */
+  description?: string;
+  /** @maxLength 128 */
+  name: string;
+}
+
+export interface CreateQuizRequest {
+  /**
+   * @maxItems 10
+   * @minItems 1
+   */
+  lessonIds: string[];
+  /** @maxLength 120 */
+  title: string;
+}
+
+export interface CreateStudentAccountRequest {
+  /** @maxLength 128 */
+  displayName: string;
+  /** @maxLength 128 */
+  email: string;
+  /** @maxLength 16 */
+  username: string;
+}
+
+export interface CreateUpstreamRequest {
+  /**
+   * @minLength 2
+   * @maxLength 10000
+   */
+  apiKeys: string;
+  /** @maxLength 512 */
+  baseURL: string;
+  cbDurationMin?: number;
+  cbFailureThreshold?: number;
+  cbModelThreshold?: number;
+  cbThresholdLogic?: "or" | "and";
+  cbWindowMin?: number;
+  compatible?:
+    | "openai"
+    | "anthropic"
+    | "google"
+    | "xai"
+    | "openrouter"
+    | "custom";
+  connectTimeoutMS?: number;
+  /** @maxLength 10000 */
+  headersJSON?: string;
+  /**
+   * @minLength 2
+   * @maxLength 128
+   */
+  name: string;
+  /** @maxLength 10000 */
+  protocolDefaultsJSON?: string;
+  readTimeoutMS?: number;
+  status?: "active" | "inactive";
+  streamIdleTimeoutMS?: number;
+}
+
+export interface CreateUpstreamResponseDoc {
+  data: UpstreamDataResponse;
+  errorMsg: string;
+}
+
+export interface CreateUserRequest {
+  /** @maxLength 2048 */
+  avatarURL?: string;
+  /**
+   * @minLength 3
+   * @maxLength 16
+   */
+  displayName?: string;
+  /** @maxLength 128 */
+  email?: string;
+  /** @maxLength 16 */
+  locale?: string;
+  /**
+   * @minLength 8
+   * @maxLength 128
+   */
+  password: string;
+  /** @maxLength 32 */
+  phone?: string;
+  /** @maxLength 64 */
+  timezone?: string;
+  /**
+   * @minLength 3
+   * @maxLength 16
+   */
+  username: string;
+}
+
+export interface CreateUserResponseDoc {
+  data: UserDataResponse;
+  errorMsg: string;
+}
+
+export interface DeleteAccountRequest {
+  /**
+   * @minLength 6
+   * @maxLength 32
+   */
+  code: string;
+  verificationMethod: "two_factor" | "email";
+}
+
+export interface DeleteAccountResponse {
+  deleted: boolean;
+}
+
+export interface DeleteAccountResponseDoc {
+  data: DeleteAccountResponse;
+  errorMsg: string;
+}
+
+export interface DeleteFileResponse {
+  deleted: boolean;
+  fileID: string;
+  quota: StorageQuotaResponse;
+}
+
+export interface DeleteFileResponseDoc {
+  data: DeleteFileResponse;
+  errorMsg: string;
+}
+
+export interface DeletePermissionGroupResponse {
+  deleted: boolean;
+  summary: PermissionGroupDeleteSummaryResponse;
+}
+
+export interface DeletePermissionGroupResponseDoc {
+  data: DeletePermissionGroupResponse;
+  errorMsg: string;
+}
+
+export interface DeleteUserIdentityResponse {
+  deleted: boolean;
+}
+
+export interface DeleteUserIdentityResponseDoc {
+  data: DeleteUserIdentityResponse;
+  errorMsg: string;
+}
+
+export interface DeleteUserResponse {
+  deleted: boolean;
+}
+
+export interface DeleteUserResponseDoc {
+  data: DeleteUserResponse;
+  errorMsg: string;
+}
+
+export interface EmailBootstrapCompleteRequest {
+  code?: string;
+  /** @maxLength 128 */
+  email: string;
+}
+
+export interface EmailChangeCompleteRequest {
+  /**
+   * @minLength 6
+   * @maxLength 32
+   */
+  currentCode?: string;
+  currentVerificationMethod?: "none" | "two_factor" | "email";
+  /** @maxLength 128 */
+  email: string;
+  newCode?: string;
+}
+
+export interface EmailRegistrationCompleteRequest {
+  code?: string;
+  /** @maxLength 128 */
+  email: string;
+  /**
+   * @minLength 8
+   * @maxLength 128
+   */
+  password: string;
+  /** @maxLength 2048 */
+  turnstileToken?: string;
+}
+
+export interface EmailRegistrationStartRequest {
+  /** @maxLength 128 */
+  email: string;
+  /** @maxLength 2048 */
+  turnstileToken?: string;
+}
+
+export interface EmailRegistrationStartResponse {
+  expiresAt: string;
+  sent: boolean;
+}
+
+export interface EmailRegistrationStartResponseDoc {
+  data: EmailRegistrationStartResponse;
+  errorMsg: string;
+}
+
+export interface EmailVerificationCompleteRequest {
+  code: string;
+}
+
+export interface EmailVerificationStartRequest {
+  /** @maxLength 128 */
+  email: string;
+}
+
+export interface EmailVerificationStartResponse {
+  availableMethods: string[];
+  expiresAt: string;
+  sent: boolean;
+  verificationMethod: string;
+}
+
+export interface EmailVerificationStartResponseDoc {
+  data: EmailVerificationStartResponse;
+  errorMsg: string;
+}
+
+export interface EmbeddingIndexStatusResponse {
+  /** EmptyCount 是提取完成但无文本的文件数；这些文件不参与自动重建。 */
+  emptyCount: number;
+  failedCount: number;
+  modelSignature: string;
+  needsReindex: boolean;
+  pendingCount: number;
+  readyCount: number;
+  staleCount: number;
+}
+
+export interface EmbeddingIndexStatusResponseDoc {
+  data: EmbeddingIndexStatusResponse;
+  errorMsg: string;
+}
+
+export interface EmbeddingReindexResponse {
+  message: string;
+  submitted: number;
+}
+
+export interface EmbeddingReindexResponseDoc {
+  data: EmbeddingReindexResponse;
+  errorMsg: string;
+}
+
+export interface Envelope {
+  data: any;
+  details?: any;
+  errorCode?: string;
+  errorMsg: string;
+  requestId?: string;
+}
+
+export interface FeaturePolicyResponse {
+  /** DefaultKnowledgeBaseIDs 是服务端为未显式选择范围的新会话应用的默认知识库 public_id 列表。 */
+  defaultKnowledgeBaseIDs: string[];
+  /** DesktopDownloadEnabled 为 true 时网页端用户菜单展示「下载桌面端」入口；桌面端内由前端自行隐藏。 */
+  desktopDownloadEnabled: boolean;
+  /** DesktopDownloadURL 为桌面端下载页地址；入口关闭时为空串。 */
+  desktopDownloadURL: string;
+  knowledgeBaseEnabled: boolean;
+  processTraceEnabled: boolean;
+}
+
+export interface FeaturePolicyResponseDoc {
+  data: FeaturePolicyResponse;
+  errorMsg: string;
+}
+
+export interface FileEmbeddingSkipResponse {
+  fileID: string;
+  reason: string;
+}
+
+export interface FileEmbeddingSubmissionResponse {
+  skipped: FileEmbeddingSkipResponse[];
+  submittedFileIDs: string[];
+}
+
+export interface FileEmbeddingSubmissionResponseDoc {
+  data: FileEmbeddingSubmissionResponse;
+  errorMsg: string;
+}
+
+export interface FileExtractResponse {
+  extractChars: number;
+  extractPages: number;
+  extractText: string;
+  fileID: string;
+  ocrUsed: boolean;
+  previewText: string;
+}
+
+export interface FileExtractResponseDoc {
+  data: FileExtractResponse;
+  errorMsg: string;
+}
+
+export interface FileListResponse {
+  quota: StorageQuotaResponse;
+  results: FileObjectResponse[];
+  total: number;
+}
+
+export interface FileListResponseDoc {
+  data: FileListResponse;
+  errorMsg: string;
+}
+
+export interface FileObjectResponse {
+  sha256: string;
+  canVectorize: boolean;
+  chunkCount: number;
+  createdAt: string;
+  detectedMIME: string;
+  embedError: string;
+  embedStatus: string;
+  expiresAt: string | null;
+  extractStatus: string;
+  fileCategory: string;
+  fileID: string;
+  fileName: string;
+  lastAccessedAt: string | null;
+  mimeType: string;
+  processingErrorCode: string;
+  processingErrorMessage: string;
+  processingReady: boolean;
+  processingStatus: string;
+  purpose: string;
+  ragOptOut: boolean;
+  sizeBytes: number;
+  status: string;
+  updatedAt: string;
+  vectorizationReason: string;
+}
+
+export interface FileProcessingStatusResponse {
+  canVectorize: boolean;
+  chunkCount: number;
+  completedAt: string | null;
+  detectedMIME: string;
+  embedError: string;
+  embedStatus: string;
+  errorCode: string;
+  errorMessage: string;
+  extractChars: number;
+  extractPages: number;
+  extractStatus: string;
+  fileCategory: string;
+  fileID: string;
+  ocrUsed: boolean;
+  previewText: string;
+  processingReady: boolean;
+  processingStatus: string;
+  ragReady: boolean;
+  ragReason: string;
+  startedAt: string | null;
+  updatedAt: string;
+  vectorizationReason: string;
+}
+
+export interface FileProcessingStatusResponseDoc {
+  data: FileProcessingStatusResponse;
+  errorMsg: string;
+}
+
+export interface FileUpdateResponseDoc {
+  data: FileObjectResponse;
+  errorMsg: string;
+}
+
+export interface FileUploadResponse {
+  file: FileObjectResponse;
+  quota: StorageQuotaResponse;
+  reused: boolean;
+}
+
+export interface GetConversationRunStatusesRequest {
+  /**
+   * @maxItems 100
+   * @minItems 1
+   */
+  runIDs: string[];
+}
+
+export interface GetFileProcessingStatusesRequest {
+  /**
+   * @maxItems 100
+   * @minItems 1
+   */
+  fileIDs: string[];
+}
+
+export interface GetKnowledgeBaseFileProcessingSnapshotRequest {
+  /** @maxItems 100 */
+  fileIDs: string[];
+}
+
+export interface GetKnowledgeBaseFileProcessingStatusesRequest {
+  /**
+   * @maxItems 100
+   * @minItems 1
+   */
+  fileIDs: string[];
+}
+
+export interface GroupModelsResponse {
+  modelIDs: number[];
+  rules: PermissionGroupModelRuleResponse[];
+}
+
+export interface GroupModelsResponseDoc {
+  data: GroupModelsResponse;
+  errorMsg: string;
+}
+
+export interface GroupUsersResponse {
+  userIDs: number[];
+}
+
+export interface GroupUsersResponseDoc {
+  data: GroupUsersResponse;
+  errorMsg: string;
+}
+
+export interface IdentityProviderDeleteResponse {
+  deleted: boolean;
+}
+
+export interface IdentityProviderDeleteResponseDoc {
+  data: IdentityProviderDeleteResponse;
+  errorMsg: string;
+}
+
+export interface IdentityProviderListResponse {
+  results: IdentityProviderResponse[];
+  total: number;
+}
+
+export interface IdentityProviderListResponseDoc {
+  data: IdentityProviderListResponse;
+  errorMsg: string;
+}
+
+export interface IdentityProviderReorderResponse {
+  updated: boolean;
+}
+
+export interface IdentityProviderReorderResponseDoc {
+  data: IdentityProviderReorderResponse;
+  errorMsg: string;
+}
+
+export interface IdentityProviderResponse {
+  authURL?: string;
+  avatarField: string;
+  clientID?: string;
+  createdAt: string;
+  defaultRole: "user" | "admin" | "superadmin";
+  discoveryURL?: string;
+  emailField: string;
+  emailVerifiedField: string;
+  issuerURL?: string;
+  jwksURL?: string;
+  loginEnabled: boolean;
+  logoURL: string;
+  name: string;
+  nameField: string;
+  publicID: string;
+  registrationEnabled: boolean;
+  scopes: string;
+  slug: string;
+  subjectField: string;
+  tokenURL?: string;
+  type: "oidc" | "oauth2";
+  updatedAt: string;
+  userinfoURL?: string;
+}
+
+export interface IdentityProviderResponseDoc {
+  data: IdentityProviderResponse;
+  errorMsg: string;
+}
+
+export interface ImportClassroomStudentsRequest {
+  csv: string;
+}
+
+export interface ImportRosterUsersCredentialResponse {
+  displayName: string;
+  initialPassword: string;
+  username: string;
+}
+
+export interface ImportRosterUsersResponse {
+  credentials?: ImportRosterUsersCredentialResponse[];
+  failed: number;
+  imported: number;
+  invalid: number;
+  ready: number;
+  rows: ImportRosterUsersRowResponse[];
+  skipped: number;
+  total: number;
+  truncated: boolean;
+}
+
+export interface ImportRosterUsersResponseDoc {
+  data: ImportRosterUsersResponse;
+  errorMsg: string;
+}
+
+export interface ImportRosterUsersRowResponse {
+  displayName: string;
+  email: string;
+  line: number;
+  message: string;
+  status: string;
+  username: string;
+}
+
+export interface ImportUpstreamModelItemRequest {
+  /** @maxLength 1000 */
+  kindsJSON?: string;
+  /**
+   * @minLength 2
+   * @maxLength 128
+   */
+  platformModelName: string;
+  priority?: number;
+  /** @maxLength 64 */
+  protocol?: string;
+  protocols?: string[];
+  status?: "active" | "inactive";
+  /**
+   * @minLength 1
+   * @maxLength 128
+   */
+  upstreamModelName: string;
+}
+
+export interface ImportUpstreamModelResultResponse {
+  bindingCode: string;
+  createdPlatform: boolean;
+  createdRoute: boolean;
+  createdRoutes: number;
+  error?: string;
+  existingRoutes: number;
+  platformModelName: string;
+  protocols: string[];
+  status: string;
+  upstreamModelName: string;
+}
+
+export interface ImportUpstreamModelsRequest {
+  /** @minItems 1 */
+  items: ImportUpstreamModelItemRequest[];
+  permissionGroupIDs?: number[];
+}
+
+export interface ImportUpstreamModelsResponse {
+  createdPlatform: number;
+  createdRoutes: number;
+  existingRoutes: number;
+  failedCount: number;
+  importedCount: number;
+  results: ImportUpstreamModelResultResponse[];
+  total: number;
+}
+
+export interface ImportUpstreamModelsResponseDoc {
+  data: ImportUpstreamModelsResponse;
+  errorMsg: string;
+}
+
+export interface KnowledgeBaseDataResponse {
+  knowledgeBase: KnowledgeBaseResponse;
+}
+
+export interface KnowledgeBaseDeleteDataResponse {
+  deleted: boolean;
+  deletedFileCount?: number;
+}
+
+export interface KnowledgeBaseDeleteResponseDoc {
+  data: KnowledgeBaseDeleteDataResponse;
+  errorMsg: string;
+}
+
+export interface KnowledgeBaseFileDataResponse {
+  file: KnowledgeBaseFileResponse;
+}
+
+export interface KnowledgeBaseFileEmbeddingSkipResponse {
+  fileID: string;
+  reason: string;
+}
+
+export interface KnowledgeBaseFileEmbeddingSubmissionResponse {
+  skipped: KnowledgeBaseFileEmbeddingSkipResponse[];
+  submittedFileIDs: string[];
+}
+
+export interface KnowledgeBaseFileEmbeddingSubmissionResponseDoc {
+  data: KnowledgeBaseFileEmbeddingSubmissionResponse;
+  errorMsg: string;
+}
+
+export interface KnowledgeBaseFileMutationDataResponse {
+  updated: boolean;
+}
+
+export interface KnowledgeBaseFileMutationResponseDoc {
+  data: KnowledgeBaseFileMutationDataResponse;
+  errorMsg: string;
+}
+
+export interface KnowledgeBaseFilePageResponseDoc {
+  data: {
+    results: KnowledgeBaseFileResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface KnowledgeBaseFileProcessingSnapshotResponse {
+  knowledgeBase: KnowledgeBaseResponse;
+  statuses: KnowledgeBaseFileProcessingStatusResponse[];
+}
+
+export interface KnowledgeBaseFileProcessingStatusResponse {
+  canVectorize: boolean;
+  chunkCount: number;
+  detectedMIME: string;
+  embedError: string;
+  embedStatus: string;
+  extractStatus: string;
+  fileCategory: string;
+  fileID: string;
+  processing: boolean;
+  processingReady: boolean;
+  processingStatus: string;
+  ragOptOut: boolean;
+  updatedAt: string;
+  vectorizationReason: string;
+}
+
+export interface KnowledgeBaseFileResponse {
+  canVectorize: boolean;
+  chunkCount: number;
+  createdAt: string;
+  detectedMIME: string;
+  embedError: string;
+  embedStatus: string;
+  extractStatus: string;
+  fileCategory: string;
+  fileID: string;
+  fileName: string;
+  mimeType: string;
+  processing: boolean;
+  processingReady: boolean;
+  processingStatus: string;
+  ragOptOut: boolean;
+  sizeBytes: number;
+  updatedAt: string;
+  vectorizationReason: string;
+}
+
+export interface KnowledgeBaseFileResponseDoc {
+  data: KnowledgeBaseFileDataResponse;
+  errorMsg: string;
+}
+
+export interface KnowledgeBasePageResponseDoc {
+  data: {
+    results: KnowledgeBaseResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface KnowledgeBaseResponse {
+  createdAt: string;
+  description: string;
+  enabled: boolean;
+  fileCount: number;
+  name: string;
+  processingFileCount: number;
+  publicID: string;
+  readyFileCount: number;
+  revision: number;
+  scope: "builtin" | "user";
+  sortOrder: number;
+  updatedAt: string;
+}
+
+export interface KnowledgeBaseResponseDoc {
+  data: KnowledgeBaseDataResponse;
+  errorMsg: string;
+}
+
+export interface KnowledgebaseErrorDoc {
+  errorMsg: string;
+}
+
+export interface LearningAttemptData {
+  attempt: LearningAttemptResponse;
+  explanation: string;
+}
+
+export interface LearningAttemptRequest {
+  id: string;
+  /** @maxLength 64 */
+  questionId: string;
+  /**
+   * @min 0
+   * @max 3
+   */
+  selected: number;
+}
+
+export interface LearningAttemptResponse {
+  answer: number;
+  correct: boolean;
+  createdAt: string;
+  id: string;
+  mode: string;
+  nextReviewAt?: string | null;
+  questionId: string;
+  reviewStage: number;
+  selected: number;
+  variantId: string;
+}
+
+export interface LearningCourseField {
+  id: string;
+  label: string;
+  unit: string;
+}
+
+export interface LearningCourseLessonResponse {
+  attempts: LearningLessonAttemptResponse[];
+  canPractice: boolean;
+  lesson: LearningCourseLessonSummary;
+  markdown: string;
+  questions: LearningCourseQuestion[];
+  version: string;
+}
+
+export interface LearningCourseLessonSummary {
+  chapter: string;
+  completedStages: number;
+  id: string;
+  masteredStages: number;
+  number: string;
+  title: string;
+}
+
+export interface LearningCourseQuestion {
+  fields: LearningCourseField[];
+  formula: string;
+  id: string;
+  options: string[];
+  prompt: string;
+  stage: string;
+}
+
+export interface LearningCourseResponse {
+  canPractice: boolean;
+  id: string;
+  language: string;
+  lessons: LearningCourseLessonSummary[];
+  sourceName: string;
+  title: string;
+  version: string;
+}
+
+export interface LearningLessonAttemptRequest {
+  answers: Record<string, string>;
+  id: string;
+  /** @maxLength 64 */
+  lessonId: string;
+  /** @maxLength 96 */
+  questionId: string;
+  /** @maxLength 32 */
+  version: string;
+}
+
+export interface LearningLessonAttemptResponse {
+  answers: Record<string, string>;
+  createdAt: string;
+  explanation: string;
+  id: string;
+  lessonId: string;
+  questionId: string;
+  results: LearningLessonFieldResult[];
+  score: number;
+  stage: string;
+  total: number;
+  version: string;
+}
+
+export interface LearningLessonFieldResult {
+  correct: boolean;
+  expected: string;
+  id: string;
+}
+
+export interface LearningProgressResponse {
+  accountId: number;
+  questions: LearningQuestionResponse[];
+  recent: LearningAttemptResponse[];
+}
+
+export interface LearningQuestionResponse {
+  answer: number;
+  attempts: number;
+  correctCount: number;
+  id: string;
+  latest?: LearningAttemptResponse | null;
+  latestWrong?: LearningAttemptResponse | null;
+  lesson: string;
+  misconception: string;
+  nextReviewAt?: string | null;
+  reviewDue: boolean;
+  reviewStage: number;
+  suggestedVariantId: string;
+  topic: string;
+}
+
+export interface LearningReviewRequest {
+  /** @maxLength 64 */
+  baseQuestionId: string;
+  id: string;
+  /** @maxLength 16 */
+  locale: string;
+  /**
+   * @min 0
+   * @max 3
+   */
+  selected: number;
+  /** @maxLength 64 */
+  variantId: string;
+}
+
+export interface LearningTutorCitation {
+  chapter: string;
+  href: string;
+  id: string;
+  section: string;
+}
+
+export interface LearningTutorRequest {
+  action: "hint" | "explain";
+  correct: boolean;
+  /** @maxLength 64 */
+  experimentId: string;
+  /** @maxLength 16 */
+  locale: string;
+  parameters: Record<string, any>;
+  /** @maxLength 2000 */
+  plotSummary: string;
+  /** @maxLength 1200 */
+  reason: string;
+  /** @maxLength 200 */
+  selected: string;
+}
+
+export interface LearningTutorResponse {
+  citations: LearningTutorCitation[];
+  source: string;
+  steps: string[];
+  summary: string;
+}
+
+export interface LearningVariantResponse {
+  baseQuestionId: string;
+  id: string;
+  lesson: string;
+  options: string[];
+  prompt: string;
+}
+
+export interface LearningVirtualLabGuideResponse {
+  html: string;
+}
+
+export interface LearningVirtualLabRequest {
+  document: string;
+  /** @max 9007199254740990 */
+  revision: number;
+}
+
+export interface LearningVirtualLabResponse {
+  accountId: number;
+  document: string;
+  revision: number;
+  updatedAt: string;
+}
+
+export interface LocalGrantExchangeRequest {
+  grant: string;
+}
+
+export interface LoginOptionsResponse {
+  emailEnabled: boolean;
+  emailRegistrationEnabled: boolean;
+  emailVerificationEnabled: boolean;
+  passwordResetEnabled: boolean;
+  providerAuthBridge: ProviderAuthBridgeResponse;
+  providers: IdentityProviderResponse[];
+  turnstileRegistrationEnabled: boolean;
+  turnstileSiteKey: string;
+  usernameEnabled: boolean;
+}
+
+export interface LoginOptionsResponseDoc {
+  data: LoginOptionsResponse;
+  errorMsg: string;
+}
+
+export interface LoginRequest {
+  /**
+   * @minLength 6
+   * @maxLength 128
+   */
+  password: string;
+  /**
+   * @minLength 3
+   * @maxLength 128
+   */
+  username: string;
+}
+
+export interface LoginResponse {
+  accessToken: string;
+  expiresAt: string;
+  refreshExpiresAt: string;
+  /**
+   * RefreshToken 仅在原生客户端（X-Client-Platform: desktop|mobile）请求时填充，
+   * 由客户端存入系统 keychain / SecureStore；浏览器响应中始终为空。
+   */
+  refreshToken?: string;
+  sessionID: string;
+  twoFactorChallengeToken?: string;
+  twoFactorRequired: boolean;
+  user: AuthUserResponse;
+  verificationMethods?: string[];
+}
+
+export interface LoginResponseDoc {
+  data: LoginResponse;
+  errorMsg: string;
+}
+
+export interface LogoutResponse {
+  revoked: boolean;
+}
+
+export interface LogoutResponseDoc {
+  data: LogoutResponse;
+  errorMsg: string;
+}
+
+export interface MeResponse {
+  user: AuthUserResponse;
+}
+
+export interface MeResponseDoc {
+  data: MeResponse;
+  errorMsg: string;
+}
+
+export interface MessageDeleteResponse {
+  deleted: boolean;
+  reparentedMessageCount: number;
+}
+
+export interface MessageDeleteResponseDoc {
+  data: MessageDeleteResponse;
+  errorMsg: string;
+}
+
+export interface MessageFeedbackResponse {
+  messageID: number;
+  messagePublicID: string;
+  myFeedback: string;
+  thumbsDownCount: number;
+  thumbsUpCount: number;
+}
+
+export interface MessageFeedbackResponseDoc {
+  data: MessageFeedbackResponse;
+  errorMsg: string;
+}
+
+export interface MessageKnowledgeSourceResponse {
+  chunkIndex: number;
+  fileID: string;
+  fileName: string;
+  modality?: string;
+  preview: string;
+  score: number;
+}
+
+export interface MessageListResponseDoc {
+  data: {
+    results: MessageResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface MessageModerationResponse {
+  categories?: string[];
+  direction?: string;
+  eventID?: string;
+  state?: string;
+}
+
+export interface MessageProcessTraceResponse {
+  enabled: boolean;
+  events?: MessageTraceEventResponse[];
+  process?: MessageTraceBlockResponse;
+  promptTrace?: MessagePromptTraceResponse;
+  status: string;
+  tools?: MessageTraceBlockResponse;
+  upstreamThink?: MessageTraceBlockResponse;
+}
+
+export interface MessagePromptTraceBlockResponse {
+  cacheable: boolean;
+  kind: string;
+  sourceCount: number;
+  sourceRefs?: MessagePromptTraceSourceResponse[];
+  title: string;
+  tokenEstimate: number;
+}
+
+export interface MessagePromptTraceResponse {
+  blocks: MessagePromptTraceBlockResponse[];
+  fullMessageCount: number;
+  mode: string;
+  promptFingerprint: string;
+  sentMessageCount: number;
+  sentTokenEstimate: number;
+  statefulDisabledReason: string;
+  statefulSavedMessages: number;
+  statefulSavedTokens: number;
+  statefulUsed: boolean;
+  totalTokenEstimate: number;
+}
+
+export interface MessagePromptTraceSourceResponse {
+  artifactID?: number;
+  sourceID: string;
+  sourceType: string;
+  title: string;
+}
+
+export interface MessageResponse {
+  attachments: string;
+  branchReason: string;
+  cacheReadTokens: number;
+  cacheWriteTokens: number;
+  content: string;
+  contentType: string;
+  conversationID: number;
+  createdAt: string;
+  editedAt: string | null;
+  errorCode: string;
+  errorMessage: string;
+  id: number;
+  inputTokens: number;
+  knowledgeSources?: MessageKnowledgeSourceResponse[];
+  latencyMS: number;
+  modelIcon: string;
+  modelVendor: string;
+  moderation?: MessageModerationResponse;
+  myFeedback: string;
+  outputTokens: number;
+  parentMessageID: number | null;
+  parentPublicID: string;
+  platformModelName: string;
+  processTrace?: MessageProcessTraceResponse;
+  publicID: string;
+  reasoningTokens: number;
+  role: string;
+  runID: string;
+  sourceMessageID: number | null;
+  sourcePublicID: string;
+  status: string;
+  thumbsDownCount: number;
+  thumbsUpCount: number;
+  tokenUsage: number;
+  updatedAt: string;
+  upstreamModelName: string;
+  userID: number;
+}
+
+export interface MessageResponseDoc {
+  data: MessageResponse;
+  errorMsg: string;
+}
+
+export interface MessageTraceBlockResponse {
+  contentMarkdown: string;
+  parentEventID?: string;
+  payloadJSON?: string;
+  roundID?: string;
+  stage?: string;
+  startedAt?: string;
+  status: string;
+  summary: string;
+  title: string;
+  updatedAt: string;
+}
+
+export interface MessageTraceEventResponse {
+  contentMarkdown: string;
+  endedAt?: string;
+  eventID: string;
+  eventType: string;
+  parentEventID?: string;
+  payloadJSON?: string;
+  phase: string;
+  roundID?: string;
+  seq: number;
+  stage?: string;
+  startedAt: string;
+  status: string;
+  summary: string;
+  title: string;
+  updatedAt: string;
+}
+
+export interface ModelDataResponse {
+  model: ModelResponse;
+}
+
+export interface ModelDisplayGroupDataResponse {
+  group: ModelDisplayGroupResponse;
+}
+
+export interface ModelDisplayGroupDataResponseDoc {
+  data: ModelDisplayGroupDataResponse;
+  errorMsg: string;
+}
+
+export interface ModelDisplayGroupListResponseDoc {
+  data: {
+    results: ModelDisplayGroupResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface ModelDisplayGroupResponse {
+  createdAt: string;
+  icon: string;
+  id: number;
+  name: string;
+  sortOrder: number;
+  updatedAt: string;
+}
+
+export interface ModelIconAssetDeleteConflictDetails {
+  conversationRuns: number;
+  displayGroups: number;
+  models: number;
+  referenceCount: number;
+  vendors: number;
+}
+
+export interface ModelIconAssetDeleteConflictDoc {
+  data: any;
+  details: ModelIconAssetDeleteConflictDetails;
+  errorCode: string;
+  errorMsg: string;
+  requestId?: string;
+}
+
+export interface ModelIconAssetListItemResponse {
+  contentType: string;
+  createdAt: string;
+  height: number;
+  publicID: string;
+  ref: string;
+  sizeBytes: number;
+  width: number;
+}
+
+export interface ModelIconAssetListResponseDoc {
+  data: {
+    results: ModelIconAssetListItemResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface ModelIconAssetResponse {
+  contentType: string;
+  height: number;
+  publicID: string;
+  ref: string;
+  reused: boolean;
+  sizeBytes: number;
+  width: number;
+}
+
+export interface ModelIconAssetResponseDoc {
+  data: ModelIconAssetResponse;
+  errorMsg: string;
+}
+
+export interface ModelListResponseDoc {
+  data: {
+    results: ModelResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface ModelPermissionGroupsResponse {
+  effectiveGroupIDs: number[];
+  manualGroupIDs: number[];
+  matchedGroupIDs: number[];
+  unassigned: boolean;
+}
+
+export interface ModelPermissionGroupsResponseDoc {
+  data: ModelPermissionGroupsResponse;
+  errorMsg: string;
+}
+
+export interface ModelProbeBatchResponse {
+  failedCount: number;
+  results: ModelProbeResponse[];
+  successCount: number;
+  totalCount: number;
+  unsupportedCount: number;
+}
+
+export interface ModelProbeBatchResponseDoc {
+  data: ModelProbeBatchResponse;
+  errorMsg: string;
+}
+
+export interface ModelProbeDebugRequestResponse {
+  body: string;
+  headers?: Record<string, string>;
+  method: string;
+  path: string;
+}
+
+export interface ModelProbeDebugResponse {
+  request: ModelProbeDebugRequestResponse;
+  response: ModelProbeDebugResponseResponse;
+}
+
+export interface ModelProbeDebugResponseResponse {
+  body: string;
+  headers?: Record<string, string>;
+  statusCode: number;
+}
+
+export interface ModelProbeRequest {
+  taskType?: "chat";
+}
+
+export interface ModelProbeResponse {
+  bindingCode: string;
+  debug?: ModelProbeDebugResponse;
+  endpoint: string;
+  errorCode?: string;
+  errorMessage?: string;
+  latencyMS: number;
+  platformModelID: number;
+  platformModelName: string;
+  protocol: string;
+  routeID: number;
+  status: string;
+  success: boolean;
+  upstreamID: number;
+  upstreamModelID: number;
+  upstreamModelName: string;
+  upstreamName: string;
+  upstreamStatusCode?: number;
+}
+
+export interface ModelProbeResponseDoc {
+  data: ModelProbeResponse;
+  errorMsg: string;
+}
+
+export interface ModelResponse {
+  accessScope: string;
+  activeSourceCount: number;
+  capabilitiesJSON: string;
+  cbDurationMin: number;
+  cbFailureThreshold: number;
+  cbPolicyMode: string;
+  cbWindowMin: number;
+  contextWindow: number;
+  createdAt: string;
+  description: string;
+  displayGroupID: number | null;
+  displayGroupIcon: string;
+  displayGroupName: string;
+  icon: string;
+  id: number;
+  kindsJSON: string;
+  platformModelName: string;
+  protocolsJSON: string;
+  sortOrder: number;
+  sourceCount: number;
+  status: string;
+  systemPrompt: string;
+  updatedAt: string;
+  upstreamNamesJSON: string;
+  vendor: string;
+  vendorIcon: string;
+  vendorName: string;
+}
+
+export interface ModelUpstreamSourceDataResponse {
+  source: ModelUpstreamSourceResponse;
+}
+
+export interface ModelUpstreamSourceListResponseDoc {
+  data: {
+    results: ModelUpstreamSourceResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface ModelUpstreamSourceResponse {
+  baseURL: string;
+  bindingCode: string;
+  cbDurationMin: number;
+  cbFailureThreshold: number;
+  cbWindowMin: number;
+  circuitOpen: boolean;
+  circuitScope: string;
+  circuitUntil: string;
+  createdAt: string;
+  headersJSON: string;
+  id: number;
+  priority: number;
+  protocol: string;
+  source: string;
+  status: string;
+  suggestedProtocol: string;
+  updatedAt: string;
+  upstreamID: number;
+  upstreamModelIcon: string;
+  upstreamModelKindsJSON: string;
+  upstreamModelName: string;
+  upstreamModelStatus: string;
+  upstreamModelVendor: string;
+  upstreamName: string;
+  upstreamStatus: string;
+  weight: number;
+}
+
+export interface ModelVendorDataResponse {
+  vendor: ModelVendorResponse;
+}
+
+export interface ModelVendorDataResponseDoc {
+  data: ModelVendorDataResponse;
+  errorMsg: string;
+}
+
+export interface ModelVendorDeleteConflictDetails {
+  models: ModelVendorReferenceResponse[];
+  reason: "built_in" | "referenced_models";
+  referenceCount: number;
+}
+
+export interface ModelVendorDeleteConflictDoc {
+  data: any;
+  details: ModelVendorDeleteConflictDetails;
+  errorCode: string;
+  errorMsg: string;
+  requestId?: string;
+}
+
+export interface ModelVendorListResponseDoc {
+  data: {
+    results: ModelVendorResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface ModelVendorReferenceResponse {
+  id: number;
+  platformModelName: string;
+}
+
+export interface ModelVendorResponse {
+  builtIn: boolean;
+  createdAt: string;
+  icon: string;
+  id: number;
+  key: string;
+  name: string;
+  sortOrder: number;
+  updatedAt: string;
+}
+
+export interface PasswordChangeVerificationStartResponse {
+  availableMethods: string[];
+  expiresAt: string;
+  sent: boolean;
+  verificationMethod: string;
+}
+
+export interface PasswordChangeVerificationStartResponseDoc {
+  data: PasswordChangeVerificationStartResponse;
+  errorMsg: string;
+}
+
+export interface PasswordResetCompleteRequest {
+  code: string;
+  /** @maxLength 128 */
+  email: string;
+  /**
+   * @minLength 8
+   * @maxLength 128
+   */
+  newPassword: string;
+}
+
+export interface PasswordResetCompleteResponse {
+  changed: boolean;
+}
+
+export interface PasswordResetCompleteResponseDoc {
+  data: PasswordResetCompleteResponse;
+  errorMsg: string;
+}
+
+export interface PasswordResetStartRequest {
+  /** @maxLength 128 */
+  email: string;
+}
+
+export interface PasswordResetStartResponse {
+  expiresAt: string;
+  sent: boolean;
+}
+
+export interface PasswordResetStartResponseDoc {
+  data: PasswordResetStartResponse;
+  errorMsg: string;
+}
+
+export interface PatchItem {
+  clear?: boolean;
+  key: string;
+  namespace: string;
+  value?: string;
+}
+
+export interface PatchKnowledgeBaseRequest {
+  /** @maxLength 255 */
+  description?: string;
+  enabled?: boolean;
+  /** @maxLength 80 */
+  name?: string;
+  sortOrder?: number;
+}
+
+export interface PatchMeRequest {
+  /** @maxLength 2048 */
+  appearancePreferences?: string;
+  /** @maxLength 2048 */
+  avatarURL?: string;
+  /**
+   * @minLength 3
+   * @maxLength 16
+   */
+  displayName?: string;
+  /** @maxLength 16 */
+  locale?: string;
+  /** @maxLength 1024 */
+  profilePreferences?: string;
+  /** @maxLength 64 */
+  timezone?: string;
+}
+
+export interface PatchMeResponseDoc {
+  data: MeResponse;
+  errorMsg: string;
+}
+
+export interface PatchMyKnowledgeBaseRequest {
+  /** @maxLength 255 */
+  description?: string;
+  /** @maxLength 80 */
+  name?: string;
+}
+
+export interface PatchUIComponentRequest {
+  /** @maxLength 256 */
+  description?: string;
+  enabled?: boolean;
+  /** @maxLength 64 */
+  name?: string;
+  /** @maxLength 16384 */
+  propsSchema?: string;
+  /** @maxLength 1024 */
+  propsSummary?: string;
+  /** @maxLength 262144 */
+  rendererSource?: string;
+  sortOrder?: number;
+  /** @min 1 */
+  version?: number;
+}
+
+export interface PatchUserRequest {
+  /** @maxLength 2048 */
+  avatarURL?: string;
+  /**
+   * @minLength 3
+   * @maxLength 16
+   */
+  displayName?: string;
+  /** @maxLength 128 */
+  email?: string;
+  /** @maxLength 16 */
+  locale?: string;
+  /** @maxLength 32 */
+  phone?: string;
+  /** @maxLength 1024 */
+  profilePreferences?: string;
+  /** @maxLength 255 */
+  reason?: string;
+  /** @maxLength 32 */
+  role?: string;
+  /** @maxLength 32 */
+  status?: string;
+  /** @maxLength 64 */
+  timezone?: string;
+}
+
+export interface PatchUsernameRequest {
+  /**
+   * @minLength 3
+   * @maxLength 16
+   */
+  username: string;
+}
+
+export interface PermissionGroupDataResponse {
+  group: PermissionGroupResponse;
+}
+
+export interface PermissionGroupDataResponseDoc {
+  data: PermissionGroupDataResponse;
+  errorMsg: string;
+}
+
+export interface PermissionGroupDeleteSummaryResponse {
+  manualModelCount: number;
+  manualUserCount: number;
+  ruleCount: number;
+}
+
+export interface PermissionGroupListResponse {
+  results: PermissionGroupResponse[];
+}
+
+export interface PermissionGroupListResponseDoc {
+  data: PermissionGroupListResponse;
+  errorMsg: string;
+}
+
+export interface PermissionGroupModelRuleRequest {
+  /** @maxLength 32 */
+  type: string;
+  /** @maxLength 128 */
+  value?: string;
+}
+
+export interface PermissionGroupModelRuleResponse {
+  type: string;
+  value: string;
+}
+
+export interface PermissionGroupResponse {
+  createdAt: string;
+  description: string;
+  id: number;
+  isDefault: boolean;
+  manualModelCount: number;
+  manualUserCount: number;
+  modelCount: number;
+  name: string;
+  ruleModelCount: number;
+  updatedAt: string;
+  userCount: number;
+}
+
+export interface PlatformFileDeleteDataResponse {
+  deleted: boolean;
+}
+
+export interface PlatformFileDeleteResponseDoc {
+  data: PlatformFileDeleteDataResponse;
+  errorMsg: string;
+}
+
+export interface ProviderAuthBridgeExchangeRequest {
+  /** @maxLength 128 */
+  clientID: string;
+  /**
+   * @minLength 43
+   * @maxLength 128
+   */
+  codeVerifier: string;
+  /**
+   * @minLength 43
+   * @maxLength 128
+   */
+  grant: string;
+}
+
+export interface ProviderAuthBridgeResponse {
+  callbackBaseURL: string;
+  enabled: boolean;
+  protocolVersion: number;
+}
+
+export interface ProviderAuthBridgeStartRequest {
+  /** @maxLength 128 */
+  clientID: string;
+  /**
+   * @minLength 43
+   * @maxLength 128
+   */
+  clientState: string;
+  /**
+   * @minLength 43
+   * @maxLength 128
+   */
+  codeChallenge: string;
+  intent?: "login" | "register";
+  /** @maxLength 2048 */
+  next?: string;
+  /** @maxLength 2048 */
+  redirectURI: string;
+}
+
+export interface ProviderAuthBridgeStartResponse {
+  authorizationURL: string;
+  expiresAt: string;
+}
+
+export interface ProviderAuthBridgeStartResponseDoc {
+  data: ProviderAuthBridgeStartResponse;
+  errorMsg: string;
+}
+
+export interface ProviderBindBridgeStartRequest {
+  /** @maxLength 128 */
+  clientID: string;
+  /**
+   * @minLength 43
+   * @maxLength 128
+   */
+  clientState: string;
+  /**
+   * @minLength 43
+   * @maxLength 128
+   */
+  codeChallenge: string;
+  /** @maxLength 2048 */
+  next?: string;
+  /** @maxLength 2048 */
+  redirectURI: string;
+}
+
+export interface PublicModelListResponseDoc {
+  data: PublicModelResponse[];
+  errorMsg: string;
+}
+
+export interface PublicModelResponse {
+  capabilitiesJSON: string;
+  description: string;
+  displayGroupID: number | null;
+  displayGroupIcon: string;
+  displayGroupName: string;
+  displayName: string;
+  icon: string;
+  kindsJSON: string;
+  platformModelName: string;
+  protocolsJSON: string;
+  sortOrder: number;
+  vendor: string;
+  vendorIcon: string;
+  vendorName: string;
+}
+
+export interface QuizDataResponse {
+  quiz: QuizResponse;
+}
+
+export interface QuizLessonListResponse {
+  lessons: QuizLessonResponse[];
+}
+
+export interface QuizLessonResponse {
+  chapter: string;
+  id: string;
+  number: string;
+  options: string[];
+  prompt: string;
+  title: string;
+}
+
+export interface QuizListResponse {
+  quizzes: QuizResponse[];
+}
+
+export interface QuizQuestionResponse {
+  answer: number;
+  id: string;
+  options: string[];
+  prompt: string;
+}
+
+export interface QuizQuestionStatisticsResponse {
+  answer: number;
+  correctCount: number;
+  id: string;
+  optionCounts: number[];
+  options: string[];
+  prompt: string;
+}
+
+export interface QuizReportResponse {
+  missing: StudentResponse[];
+  quiz: QuizResponse;
+  statistics: QuizStatisticsResponse;
+  students: StudentResponse[];
+  submissions: QuizSubmissionResponse[];
+}
+
+export interface QuizResponse {
+  closedAt: string;
+  createdAt: string;
+  id: string;
+  openedAt: string;
+  phase: string;
+  questions: QuizQuestionResponse[];
+  status: string;
+  submissionCount: number;
+  title: string;
+}
+
+export interface QuizStatisticsResponse {
+  averageScore: number;
+  questions: QuizQuestionStatisticsResponse[];
+  studentCount: number;
+  submissionCount: number;
+}
+
+export interface QuizSubmissionResponse {
+  answers: number[];
+  score: number;
+  studentId: string;
+  studentName: string;
+  submittedAt: string;
+  username: string;
+}
+
+export interface QuizSubmissionResultResponse {
+  score: number;
+  submitted: boolean;
+  total: number;
+}
+
+export interface RefreshTokenResponseDoc {
+  data: LoginResponse;
+  errorMsg: string;
+}
+
+export interface RenameConversationRequest {
+  /** @maxLength 255 */
+  title: string;
+}
+
+export interface ReorderIdentityProvidersRequest {
+  providerIDs: string[];
+}
+
+export interface ReorderModelsRequest {
+  /** @minItems 1 */
+  modelIDs: number[];
+}
+
+export interface ResetUpstreamCircuitResponseDoc {
+  data: CircuitResetResponse;
+  errorMsg: string;
+}
+
+export interface ResetUserPasswordRequest {
+  mustResetPassword?: boolean;
+  /**
+   * @minLength 8
+   * @maxLength 128
+   */
+  newPassword: string;
+}
+
+export interface ResetUserPasswordResponse {
+  reset: boolean;
+}
+
+export interface ResetUserPasswordResponseDoc {
+  data: ResetUserPasswordResponse;
+  errorMsg: string;
+}
+
+export interface ResetUserTwoFactorResponse {
+  reset: boolean;
+}
+
+export interface ResetUserTwoFactorResponseDoc {
+  data: ResetUserTwoFactorResponse;
+  errorMsg: string;
+}
+
+export interface RevokeUserSessionsResponse {
+  revoked: boolean;
+}
+
+export interface RevokeUserSessionsResponseDoc {
+  data: RevokeUserSessionsResponse;
+  errorMsg: string;
+}
+
+export interface RunResponse {
+  cacheReadTokens: number;
+  cacheWriteTokens: number;
+  conversationID: number;
+  createdAt: string;
+  endedAt: string | null;
+  endpoint: string;
+  errorCode: string;
+  errorMessage: string;
+  firstTokenLatencyMS: number;
+  id: number;
+  inputTokens: number;
+  modelIcon: string;
+  modelVendor: string;
+  outputTokens: number;
+  platformModelName: string;
+  provider: string;
+  providerProtocol: string;
+  reasoningTokens: number;
+  requestID: string;
+  requestedModelName: string;
+  routedBindingCode: string;
+  runID: string;
+  startedAt: string;
+  status: string;
+  taskType: string;
+  totalLatencyMS: number;
+  updatedAt: string;
+  upstreamID: number;
+  upstreamModelID: number;
+  upstreamModelName: string;
+  userID: number;
+}
+
+export interface SecurityVerificationStartRequest {
+  verificationMethod?: "none" | "two_factor" | "email";
+}
+
+export interface SendMessageRequest {
+  branchReason?: "default" | "retry" | "edit";
+  /** @maxLength 64 */
+  clientRunID?: string;
+  content: string;
+  contentType: "text" | "markdown" | "image" | "file" | "mixed";
+  /** @maxItems 20 */
+  fileIDs?: string[];
+  htmlVisualPrompt?: boolean;
+  /** @maxItems 8 */
+  knowledgeBaseIDs: string[];
+  /** @maxLength 128 */
+  model?: string;
+  options?: Record<string, any>;
+  /** @maxLength 32 */
+  parentMessagePublicID?: string;
+  /** @maxLength 32 */
+  sourceMessagePublicID?: string;
+  /**
+   * UIComponentIDs 是本次会话勾选的交互式组件；后端据此注入组件目录提示词，不可见的 ID 被忽略。
+   * @maxItems 32
+   */
+  uiComponentIDs?: number[];
+}
+
+export interface SendMessageResponse {
+  assistantMessage: MessageResponse;
+  metadataRefreshHint?: string;
+  userMessage: MessageResponse;
+}
+
+export interface SendMessageResponseDoc {
+  data: SendMessageResponse;
+  errorMsg: string;
+}
+
+export interface SetConversationArchiveRequest {
+  archived: boolean;
+}
+
+export interface SetConversationStarRequest {
+  starred: boolean;
+}
+
+export interface SetGroupModelsRequest {
+  modelIDs?: number[];
+  rules?: PermissionGroupModelRuleRequest[];
+}
+
+export interface SetGroupUsersRequest {
+  userIDs?: number[];
+}
+
+export interface SetMessageFeedbackRequest {
+  feedback?: "up" | "down";
+}
+
+export interface SetModelPermissionGroupsRequest {
+  groupIDs?: number[];
+}
+
+export interface SetModelProtocolsRequest {
+  /**
+   * @minLength 2
+   * @maxLength 1000
+   */
+  kindsJSON: string;
+  /**
+   * @maxItems 2
+   * @minItems 1
+   * @uniqueItems true
+   */
+  protocols: string[];
+}
+
+export interface SetModelProtocolsResponseDoc {
+  data: ModelDataResponse;
+  errorMsg: string;
+}
+
+export interface SetModelsDisplayGroupRequest {
+  displayGroupID: number;
+  /**
+   * @maxItems 1000
+   * @minItems 1
+   */
+  modelIDs: number[];
+}
+
+export interface SettingsPatchSettingsRequest {
+  /** @minItems 1 */
+  items: PatchItem[];
+}
+
+export interface StorageQuotaResponse {
+  createdAt: string;
+  id: number;
+  quotaBytes: number;
+  reservedBytes: number;
+  updatedAt: string;
+  usedBytes: number;
+  userID: number;
+}
+
+export interface StudentListResponse {
+  students: StudentResponse[];
+}
+
+export interface StudentQuizListResponse {
+  classroom: ClassroomResponse;
+  quizzes: StudentQuizResponse[];
+}
+
+export interface StudentQuizQuestionResponse {
+  id: string;
+  options: string[];
+  prompt: string;
+}
+
+export interface StudentQuizResponse {
+  answers: number[];
+  id: string;
+  openedAt: string;
+  phase: string;
+  questions: StudentQuizQuestionResponse[];
+  score: number;
+  status: string;
+  submitted: boolean;
+  title: string;
+}
+
+export interface StudentResponse {
+  displayName: string;
+  id: string;
+  username: string;
+}
+
+export interface SubmitFileEmbeddingsRequest {
+  /**
+   * @maxItems 100
+   * @minItems 1
+   */
+  fileIDs: string[];
+}
+
+export interface SubmitPlatformFileEmbeddingsRequest {
+  /**
+   * @maxItems 100
+   * @minItems 1
+   */
+  fileIDs: string[];
+}
+
+export interface SubmitQuizRequest {
+  answers: number[];
+}
+
+export interface SuccessDoc {
+  data: any;
+  details?: any;
+  /** @example "" */
+  errorCode?: string;
+  /** @example "" */
+  errorMsg: string;
+  /** @example "" */
+  requestId?: string;
+}
+
+export interface SyncUpstreamModelsResponse {
+  createdUpstreamModels: number;
+  existingUpstreamModels: number;
+  inactivatedModels: number;
+  protectedUpstreamModels: number;
+  reactivatedModels: number;
+  skippedUpstreamModels: number;
+  snapshotID: string;
+  syncedModels: UpstreamSyncModelResponse[];
+  totalUpstream: number;
+  unchangedUpstreamModels: number;
+  updatedUpstreamModels: number;
+}
+
+export interface SyncUpstreamModelsResponseDoc {
+  data: SyncUpstreamModelsResponse;
+  errorMsg: string;
+}
+
+export interface TwoFactorCodeRequest {
+  /**
+   * @minLength 6
+   * @maxLength 32
+   */
+  code: string;
+}
+
+export interface TwoFactorDisableResponse {
+  disabled: boolean;
+}
+
+export interface TwoFactorDisableResponseDoc {
+  data: TwoFactorDisableResponse;
+  errorMsg: string;
+}
+
+export interface TwoFactorEmailStartRequest {
+  /**
+   * @minLength 20
+   * @maxLength 4096
+   */
+  challengeToken: string;
+}
+
+export interface TwoFactorRecoveryCodesResponse {
+  recoveryCodes: string[];
+  status: TwoFactorStatusResponse;
+}
+
+export interface TwoFactorRecoveryCodesResponseDoc {
+  data: TwoFactorRecoveryCodesResponse;
+  errorMsg: string;
+}
+
+export interface TwoFactorSetupCancelResponse {
+  canceled: boolean;
+}
+
+export interface TwoFactorSetupCancelResponseDoc {
+  data: TwoFactorSetupCancelResponse;
+  errorMsg: string;
+}
+
+export interface TwoFactorSetupStartResponse {
+  expiresAt: string;
+  otpauthURL: string;
+  secret: string;
+}
+
+export interface TwoFactorSetupStartResponseDoc {
+  data: TwoFactorSetupStartResponse;
+  errorMsg: string;
+}
+
+export interface TwoFactorStatusResponse {
+  available: boolean;
+  enabledAt: string | null;
+  recoveryCount: number;
+  required: boolean;
+  totpEnabled: boolean;
+}
+
+export interface TwoFactorStatusResponseDoc {
+  data: TwoFactorStatusResponse;
+  errorMsg: string;
+}
+
+export interface TwoFactorVerifyRequest {
+  /**
+   * @minLength 20
+   * @maxLength 4096
+   */
+  challengeToken: string;
+  /**
+   * @minLength 6
+   * @maxLength 32
+   */
+  code: string;
+  verificationMethod?: "two_factor" | "email";
+}
+
+export interface UIComponentDataResponse {
+  component: UIComponentResponse;
+}
+
+export interface UIComponentDeleteDataResponse {
+  deleted: boolean;
+}
+
+export interface UIComponentDeleteResponseDoc {
+  data: UIComponentDeleteDataResponse;
+  errorMsg: string;
+}
+
+export interface UIComponentPageResponseDoc {
+  data: {
+    results: UIComponentResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface UIComponentResponse {
+  createdAt: string;
+  createdByUserID: number;
+  description: string;
+  enabled: boolean;
+  id: number;
+  name: string;
+  propsSchema: string;
+  propsSummary: string;
+  rendererKind: string;
+  rendererSource: string;
+  scope: string;
+  sortOrder: number;
+  updatedAt: string;
+  updatedByUserID: number;
+  version: number;
+}
+
+export interface UIComponentResponseDoc {
+  data: UIComponentDataResponse;
+  errorMsg: string;
+}
+
+export interface UicomponentErrorDoc {
+  errorMsg: string;
+}
+
+export interface UpdateClassroomRequest {
+  /** @example "计算机基础课程行政班" */
+  description: string;
+  /** @example "2026 级二班" */
+  name: string;
+}
+
+export interface UpdateConversationLabelsRequest {
+  /** @maxItems 6 */
+  labels: string[];
+}
+
+export interface UpdateCurrentSessionLocationRequest {
+  /**
+   * @min 0
+   * @max 1000000
+   */
+  accuracyMeters?: number;
+  latitude: number;
+  longitude: number;
+  /** @maxLength 64 */
+  timezone?: string;
+}
+
+export interface UpdateCurrentSessionLocationResponseDoc {
+  data: ActiveSessionResponse;
+  errorMsg: string;
+}
+
+export interface UpdateFileRequest {
+  fileName?: string;
+  ragOptOut?: boolean;
+}
+
+export interface UpdateMessageRequest {
+  content: string;
+}
+
+export interface UpdateModelDisplayGroupRequest {
+  /** @maxLength 2048 */
+  icon?: string;
+  /** @maxItems 10000 */
+  modelIDs?: number[];
+  /** @maxLength 64 */
+  name?: string;
+}
+
+export interface UpdateModelRequest {
+  accessScope?: "public" | "internal";
+  /** @maxLength 10000 */
+  capabilitiesJSON?: string;
+  /** @min 0 */
+  cbDurationMin?: number;
+  /** @min 0 */
+  cbFailureThreshold?: number;
+  cbPolicyMode?: "default" | "enforced";
+  /** @min 0 */
+  cbWindowMin?: number;
+  /** @maxLength 10000 */
+  description?: string;
+  displayGroupID?: number;
+  /** @maxLength 2048 */
+  icon?: string;
+  /** @maxLength 1000 */
+  kindsJSON?: string;
+  /**
+   * @minLength 2
+   * @maxLength 128
+   */
+  platformModelName?: string;
+  status?: "active" | "inactive";
+  /** @maxLength 20000 */
+  systemPrompt?: string;
+  /** @maxLength 64 */
+  vendor?: string;
+}
+
+export interface UpdateModelResponseDoc {
+  data: ModelDataResponse;
+  errorMsg: string;
+}
+
+export interface UpdateModelUpstreamSourceRequest {
+  /** @min 0 */
+  cbDurationMin?: number;
+  /** @min 0 */
+  cbFailureThreshold?: number;
+  /** @min 0 */
+  cbWindowMin?: number;
+  priority?: number;
+  /** @maxLength 64 */
+  protocol?: string;
+  status?: "active" | "inactive";
+  weight?: number;
+}
+
+export interface UpdateModelUpstreamSourceResponseDoc {
+  data: ModelUpstreamSourceDataResponse;
+  errorMsg: string;
+}
+
+export interface UpdateModelVendorRequest {
+  /** @maxLength 2048 */
+  icon?: string;
+  /** @maxLength 64 */
+  name?: string;
+}
+
+export interface UpdatePermissionGroupRequest {
+  /** @maxLength 512 */
+  description?: string;
+  /** @maxLength 128 */
+  name: string;
+}
+
+export interface UpdateUpstreamRequest {
+  /**
+   * @minLength 2
+   * @maxLength 10000
+   */
+  addAPIKeys?: string;
+  /**
+   * @minLength 2
+   * @maxLength 10000
+   */
+  apiKeys?: string;
+  /** @maxLength 512 */
+  baseURL?: string;
+  cbDurationMin?: number;
+  cbFailureThreshold?: number;
+  cbModelThreshold?: number;
+  cbThresholdLogic?: "or" | "and";
+  cbWindowMin?: number;
+  compatible?:
+    | "openai"
+    | "anthropic"
+    | "google"
+    | "xai"
+    | "openrouter"
+    | "custom";
+  connectTimeoutMS?: number;
+  deleteAPIKeyIDs?: string[];
+  /** @maxLength 10000 */
+  headersJSON?: string;
+  /**
+   * @minLength 2
+   * @maxLength 128
+   */
+  name?: string;
+  /** @maxLength 10000 */
+  protocolDefaultsJSON?: string;
+  readTimeoutMS?: number;
+  status?: "active" | "inactive";
+  streamIdleTimeoutMS?: number;
+}
+
+export interface UpdateUpstreamResponseDoc {
+  data: UpstreamDataResponse;
+  errorMsg: string;
+}
+
+export interface UpdateUserStatusRequest {
+  /** @maxLength 255 */
+  reason?: string;
+  /** @maxLength 32 */
+  status: string;
+}
+
+export interface UpdateUserStatusResponseDoc {
+  data: UserDataResponse;
+  errorMsg: string;
+}
+
+export interface UploadFileResponseDoc {
+  data: FileUploadResponse;
+  errorMsg: string;
+}
+
+export interface UpsertIdentityProviderRequest {
+  /** @maxLength 512 */
+  authURL?: string;
+  /** @maxLength 64 */
+  avatarField?: string;
+  /** @maxLength 255 */
+  clientID: string;
+  /** @maxLength 4096 */
+  clientSecret?: string;
+  defaultRole?: "user" | "admin" | "superadmin";
+  /** @maxLength 512 */
+  discoveryURL?: string;
+  /** @maxLength 64 */
+  emailField?: string;
+  /** @maxLength 64 */
+  emailVerifiedField?: string;
+  /** @maxLength 512 */
+  issuerURL?: string;
+  /** @maxLength 512 */
+  jwksURL?: string;
+  loginEnabled?: boolean;
+  /** @maxLength 512 */
+  logoURL?: string;
+  /** @maxLength 80 */
+  name: string;
+  /** @maxLength 64 */
+  nameField?: string;
+  registrationEnabled?: boolean;
+  /** @maxLength 255 */
+  scopes?: string;
+  /** @maxLength 64 */
+  slug?: string;
+  /** @maxLength 64 */
+  subjectField?: string;
+  /** @maxLength 512 */
+  tokenURL?: string;
+  type: "oidc" | "oauth2";
+  /** @maxLength 512 */
+  userinfoURL?: string;
+}
+
+export interface UpsertUpstreamModelRequest {
+  /** @min 0 */
+  cbDurationMin?: number;
+  /** @min 0 */
+  cbFailureThreshold?: number;
+  /** @min 0 */
+  cbWindowMin?: number;
+  /** @maxLength 10000 */
+  headersJSON?: string;
+  /** @maxLength 1000 */
+  kindsJSON?: string;
+  /**
+   * @minLength 2
+   * @maxLength 128
+   */
+  platformModelName: string;
+  priority?: number;
+  /**
+   * Protocols 为空数组时根据模型能力和上游默认配置自动推断完整协议集合。
+   * @maxItems 2
+   * @uniqueItems true
+   */
+  protocols: string[];
+  /**
+   * @maxItems 2
+   * @uniqueItems true
+   */
+  routeIDs?: number[];
+  /** @maxLength 64 */
+  source?: string;
+  /** 路由配置字段省略时保留已有协议各自的配置；新增协议使用服务端默认值或现有绑定模板。 */
+  status?: "active" | "inactive";
+  /**
+   * @minLength 1
+   * @maxLength 128
+   */
+  upstreamModelName: string;
+  weight?: number;
+}
+
+export interface UpsertUpstreamModelResponseDoc {
+  data: UpstreamModelDataResponse;
+  errorMsg: string;
+}
+
+export interface UpstreamAPIKeyResponse {
+  id: string;
+  index: number;
+  keyMasked: string;
+  note: string;
+  status: string;
+}
+
+export interface UpstreamDataResponse {
+  upstream: UpstreamResponse;
+}
+
+export interface UpstreamListResponseDoc {
+  data: {
+    results: UpstreamResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface UpstreamModelDataResponse {
+  binding: UpstreamModelResponse;
+}
+
+export interface UpstreamModelListResponseDoc {
+  data: {
+    results: UpstreamModelResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface UpstreamModelResponse {
+  bindingCode: string;
+  cbDurationMin: number;
+  cbFailureThreshold: number;
+  cbWindowMin: number;
+  circuitOpen: boolean;
+  circuitUntil: string;
+  createdAt: string;
+  headersJSON: string;
+  id: number;
+  modelIcon: string;
+  modelKindsJSON: string;
+  modelVendor: string;
+  platformModelID: number;
+  platformModelName: string;
+  priority: number;
+  protocol: string;
+  routeID: number;
+  routeStatus: string;
+  source: string;
+  suggestedProtocol: string;
+  updatedAt: string;
+  upstreamID: number;
+  upstreamModelIcon: string;
+  upstreamModelKindsJSON: string;
+  upstreamModelName: string;
+  upstreamModelStatus: string;
+  upstreamModelVendor: string;
+  weight: number;
+}
+
+export interface UpstreamModelSyncPlanResponse {
+  addedModels: string[];
+  inactivatedModels: string[];
+  protectedModels: string[];
+  reactivatedModels: string[];
+  unchangedModels: string[];
+  updatedModels: string[];
+}
+
+export interface UpstreamRemoteModelResponse {
+  alreadyBound: boolean;
+  alreadySynced: boolean;
+  bindingCode: string;
+  boundPlatformModels: string[];
+  suggestedKindsJSON: string;
+  suggestedPlatformModelName: string;
+  suggestedProtocol: string;
+  suggestedProtocols: string[];
+  upstreamModelName: string;
+  upstreamModelStatus: string;
+}
+
+export interface UpstreamRemoteModelsResponse {
+  items: UpstreamRemoteModelResponse[];
+  snapshotID: string;
+  syncPlan: UpstreamModelSyncPlanResponse;
+  total: number;
+}
+
+export interface UpstreamRemoteModelsResponseDoc {
+  data: UpstreamRemoteModelsResponse;
+  errorMsg: string;
+}
+
+export interface UpstreamResponse {
+  activeModelsCount: number;
+  apiKeyItems: UpstreamAPIKeyResponse[];
+  apiKeysMasked: string;
+  baseURL: string;
+  cbDurationMin: number;
+  cbFailureThreshold: number;
+  cbModelThreshold: number;
+  cbThresholdLogic: string;
+  cbWindowMin: number;
+  circuitOpen: boolean;
+  circuitUntil: string;
+  compatible: string;
+  connectTimeoutMS: number;
+  createdAt: string;
+  headersJSON: string;
+  id: number;
+  modelsCount: number;
+  name: string;
+  protocolDefaultsJSON: string;
+  readTimeoutMS: number;
+  status: string;
+  streamIdleTimeoutMS: number;
+  updatedAt: string;
+}
+
+export interface UpstreamSyncModelResponse {
+  bindingCode: string;
+  created: boolean;
+  kindsJSON: string;
+  protected: boolean;
+  reactivated: boolean;
+  status: string;
+  suggestedProtocol: string;
+  updated: boolean;
+  upstreamModelName: string;
+}
+
+export interface UserAuthEventListResponseDoc {
+  data: {
+    results: AuthEventResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface UserDailyActivityItem {
+  date: string;
+  requestCount: number;
+  tokenUsage: number;
+}
+
+export interface UserDailyActivityListResponseDoc {
+  data: UserDailyActivityItem[];
+  errorMsg: string;
+}
+
+export interface UserDataResponse {
+  user: AdminUserResponse;
+}
+
+export interface UserErrorDoc {
+  errorMsg: string;
+}
+
+export interface UserIdentityListResponse {
+  results: UserIdentityResponse[];
+}
+
+export interface UserIdentityListResponseDoc {
+  data: UserIdentityListResponse;
+  errorMsg: string;
+}
+
+export interface UserIdentityResponse {
+  email: string;
+  emailVerified: boolean;
+  id: number;
+  lastLoginAt: string | null;
+  linkedAt: string;
+  providerDisplayName: string;
+  providerID: number;
+  providerLogoURL: string;
+  providerName: string;
+  providerSlug: string;
+  providerType: string;
+}
+
+export interface UserIdentityResponseData {
+  identity: UserIdentityResponse;
+}
+
+export interface UserIdentityResponseDoc {
+  data: UserIdentityResponseData;
+  errorMsg: string;
+}
+
+export interface UserListResponseDoc {
+  data: {
+    results: AdminUserResponse[];
+    total: number;
+  };
+  errorMsg: string;
+}
+
+export interface UserSettingsPatchSettingsRequest {
+  settings: Record<string, string>;
+}
+
+export interface UserSettingsResponse {
+  settings: Record<string, string>;
+}
+
+export interface UserSettingsResponseDoc {
+  data: UserSettingsResponse;
+  errorMsg: string;
+}
+
+export interface WriteKnowledgeBaseRequest {
+  /** @maxLength 255 */
+  description?: string;
+  enabled?: boolean;
+  /** @maxLength 80 */
+  name: string;
+  sortOrder?: number;
+}
+
+export interface WriteMyKnowledgeBaseRequest {
+  /** @maxLength 255 */
+  description?: string;
+  /** @maxLength 80 */
+  name: string;
+}
+
+export interface WriteUIComponentRequest {
+  /** @maxLength 256 */
+  description: string;
+  enabled?: boolean;
+  /** @maxLength 64 */
+  name: string;
+  /** @maxLength 16384 */
+  propsSchema?: string;
+  /** @maxLength 1024 */
+  propsSummary: string;
+  /** @maxLength 262144 */
+  rendererSource: string;
+  sortOrder?: number;
+  /** @min 1 */
+  version?: number;
+}
+
+export namespace Admin {
+  /**
+   * @description 管理员分页查看全量可追溯审计日志
+   * @tags admin
+   * @name AuditLogsList
+   * @summary 管理员查询审计日志
+   * @request GET:/admin/audit-logs
+   * @secure
+   */
+  export namespace AuditLogsList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 动作 */
+      action?: string;
+      /** 操作人用户ID */
+      actor_user_id?: number;
+      /** 创建时间起点(RFC3339) */
+      created_from?: string;
+      /** 创建时间终点(RFC3339) */
+      created_to?: string;
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 搜索关键词 */
+      query?: string;
+      /** 资源类型 */
+      resource?: string;
+      /** 排序方式 */
+      sort?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AuditLogListResponseDoc;
+  }
+
+  /**
+   * @description 管理员保存第三方身份源的展示顺序
+   * @tags admin-auth
+   * @name AuthProviderOrderPartialUpdate
+   * @summary 调整第三方身份源顺序
+   * @request PATCH:/admin/auth/provider-order
+   * @secure
+   */
+  export namespace AuthProviderOrderPartialUpdate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = ReorderIdentityProvidersRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = IdentityProviderReorderResponseDoc;
+  }
+
+  /**
+   * @description 管理员查看已配置的 OIDC 和 OAuth2 身份源
+   * @tags admin-auth
+   * @name AuthProvidersList
+   * @summary 获取第三方身份源列表
+   * @request GET:/admin/auth/providers
+   * @secure
+   */
+  export namespace AuthProvidersList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = IdentityProviderListResponseDoc;
+  }
+
+  /**
+   * @description 管理员创建一个 OIDC 或 OAuth2 身份源
+   * @tags admin-auth
+   * @name AuthProvidersCreate
+   * @summary 创建第三方身份源
+   * @request POST:/admin/auth/providers
+   * @secure
+   */
+  export namespace AuthProvidersCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = UpsertIdentityProviderRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = IdentityProviderResponseDoc;
+  }
+
+  /**
+   * @description 管理员删除第三方身份源；force=true 时允许删除仍有关联用户的身份源
+   * @tags admin-auth
+   * @name AuthProvidersDelete
+   * @summary 删除第三方身份源
+   * @request DELETE:/admin/auth/providers/{provider_id}
+   * @secure
+   */
+  export namespace AuthProvidersDelete {
+    export type RequestParams = {
+      /** 身份源 ID */
+      providerId: string;
+    };
+    export type RequestQuery = {
+      /** 是否强制删除 */
+      force?: boolean;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = IdentityProviderDeleteResponseDoc;
+  }
+
+  /**
+   * @description 管理员更新一个 OIDC 或 OAuth2 身份源
+   * @tags admin-auth
+   * @name AuthProvidersPartialUpdate
+   * @summary 更新第三方身份源
+   * @request PATCH:/admin/auth/providers/{provider_id}
+   * @secure
+   */
+  export namespace AuthProvidersPartialUpdate {
+    export type RequestParams = {
+      /** 身份源 ID */
+      providerId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpsertIdentityProviderRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = IdentityProviderResponseDoc;
+  }
+
+  /**
+   * @description 返回当前内容审核配置与可选审核类别目录
+   * @tags admin-content-moderation
+   * @name ContentModerationConfigList
+   * @summary 查询内容审核配置
+   * @request GET:/admin/content-moderation/config
+   * @secure
+   */
+  export namespace ContentModerationConfigList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ContentModerationConfigResponseDoc;
+  }
+
+  /**
+   * @description 保存内容审核服务、策略与队列配置；启用时必须提供审核服务配置与策略
+   * @tags admin-content-moderation
+   * @name ContentModerationConfigUpdate
+   * @summary 更新内容审核配置
+   * @request PUT:/admin/content-moderation/config
+   * @secure
+   */
+  export namespace ContentModerationConfigUpdate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = ContentModerationUpdateConfigRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ContentModerationConfigUpdateResponseDoc;
+  }
+
+  /**
+   * @description 按结果、方向、模态、类别、用户、运行与时间范围筛选审核事件，按事件 ID 倒序返回
+   * @tags admin-content-moderation
+   * @name ContentModerationEventsList
+   * @summary 分页查询内容审核事件
+   * @request GET:/admin/content-moderation/events
+   * @secure
+   */
+  export namespace ContentModerationEventsList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 类别筛选 */
+      category?: string;
+      /** 方向筛选（input/output） */
+      direction?: string;
+      /** 起始时间（RFC3339） */
+      from?: string;
+      /** 模态筛选（text/image） */
+      modality?: string;
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 按事件、用户、运行、模型、结果或摘要精确搜索 */
+      query?: string;
+      /** 审核结果筛选（hit/failed_open/passed） */
+      result?: string;
+      /** 运行 ID */
+      run_id?: string;
+      /** 结束时间（RFC3339） */
+      to?: string;
+      /** 用户 ID */
+      user_id?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ContentModerationEventListResponseDoc;
+  }
+
+  /**
+   * @description 返回单个审核事件；文本仍在保留期内时一并返回解密后的文本，并记录审计日志
+   * @tags admin-content-moderation
+   * @name ContentModerationEventsDetail
+   * @summary 查询内容审核事件详情
+   * @request GET:/admin/content-moderation/events/{eventID}
+   * @secure
+   */
+  export namespace ContentModerationEventsDetail {
+    export type RequestParams = {
+      /** 审核事件 ID */
+      eventId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ContentModerationEventDetailResponseDoc;
+  }
+
+  /**
+   * @description 返回审核事件中按序号指定的隔离图片原始内容，并记录审计日志
+   * @tags admin-content-moderation
+   * @name ContentModerationEventsImagesDetail
+   * @summary 读取审核事件的隔离图片
+   * @request GET:/admin/content-moderation/events/{eventID}/images/{index}
+   * @secure
+   */
+  export namespace ContentModerationEventsImagesDetail {
+    export type RequestParams = {
+      /** 审核事件 ID */
+      eventId: string;
+      /** 图片序号（从 0 开始） */
+      index: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Blob;
+  }
+
+  /**
+   * @description 使用当前配置向审核服务发送探测请求，验证连通性以及文本与图片审核能力
+   * @tags admin-content-moderation
+   * @name ContentModerationProbeCreate
+   * @summary 探测内容审核服务
+   * @request POST:/admin/content-moderation/probe
+   * @secure
+   */
+  export namespace ContentModerationProbeCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ContentModerationProbeResponseDoc;
+  }
+
+  /**
+   * @description 按天汇总指定时间范围内的内容审核结果
+   * @tags admin-content-moderation
+   * @name ContentModerationStatsList
+   * @summary 查询内容审核每日统计
+   * @request GET:/admin/content-moderation/stats
+   * @secure
+   */
+  export namespace ContentModerationStatsList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 起始时间（RFC3339） */
+      from?: string;
+      /** 结束时间（RFC3339） */
+      to?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ContentModerationStatsResponseDoc;
+  }
+
+  /**
+   * @description 管理员分页查看对话运行轨迹与处理事件
+   * @tags admin
+   * @name ConversationEventsList
+   * @summary 管理员查询对话事件
+   * @request GET:/admin/conversation-events
+   * @secure
+   */
+  export namespace ConversationEventsList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 会话ID */
+      conversation_id?: number;
+      /** 创建时间起点(RFC3339) */
+      created_from?: string;
+      /** 创建时间终点(RFC3339) */
+      created_to?: string;
+      /** 事件范围(trace_block/trace_event/tool_call) */
+      event_scope?: string;
+      /** 事件类型 */
+      event_type?: string;
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 搜索运行ID、事件、阶段、标题、工具名 */
+      query?: string;
+      /** 排序方式 */
+      sort?: string;
+      /** 事件状态 */
+      status?: string;
+      /** 用户ID */
+      user_id?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationEventListResponseDoc;
+  }
+
+  /**
+   * @description 管理员按事件 ID 查看单条对话运行事件详情；超大历史负载会被安全省略
+   * @tags admin
+   * @name ConversationEventsDetail
+   * @summary 管理员查询对话事件详情
+   * @request GET:/admin/conversation-events/{id}
+   * @secure
+   */
+  export namespace ConversationEventsDetail {
+    export type RequestParams = {
+      /** 事件 ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationEventDetailResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesList
+   * @summary 查询内置知识库
+   * @request GET:/admin/knowledge-bases
+   * @secure
+   */
+  export namespace KnowledgeBasesList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 可用状态 */
+      enabled?: boolean;
+      /** 知识库ID */
+      id?: string[];
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 搜索关键词 */
+      q?: string;
+      /** 排序方式(default/name/created/updated/files) */
+      sort?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBasePageResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesCreate
+   * @summary 创建内置知识库
+   * @request POST:/admin/knowledge-bases
+   * @secure
+   */
+  export namespace KnowledgeBasesCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = WriteKnowledgeBaseRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseResponseDoc;
+  }
+
+  /**
+   * @description 分页返回供内置知识库复用的全部平台资料
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesFilesList
+   * @summary 查询平台资料
+   * @request GET:/admin/knowledge-bases/files
+   * @secure
+   */
+  export namespace KnowledgeBasesFilesList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 文件名搜索关键词 */
+      q?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFilePageResponseDoc;
+  }
+
+  /**
+   * @description 上传平台级资料，不占用管理员个人存储额度
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesFilesCreate
+   * @summary 上传内置知识库资料
+   * @request POST:/admin/knowledge-bases/files
+   * @secure
+   */
+  export namespace KnowledgeBasesFilesCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = {
+      /**
+       * 文件
+       * @format binary
+       */
+      file: File;
+    };
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFileResponseDoc;
+  }
+
+  /**
+   * @description 为管理员选中的平台资料提交向量化任务，最多100个；重复提交会幂等跳过
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesFilesEmbeddingsCreate
+   * @summary 批量提交平台资料向量化
+   * @request POST:/admin/knowledge-bases/files/embeddings
+   * @secure
+   */
+  export namespace KnowledgeBasesFilesEmbeddingsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = SubmitPlatformFileEmbeddingsRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFileEmbeddingSubmissionResponseDoc;
+  }
+
+  /**
+   * @description 仅允许删除未被任何知识库、会话或账户资料引用的平台资料
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesFilesDelete
+   * @summary 删除平台资料
+   * @request DELETE:/admin/knowledge-bases/files/{file_id}
+   * @secure
+   */
+  export namespace KnowledgeBasesFilesDelete {
+    export type RequestParams = {
+      /** 文件ID */
+      fileId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = PlatformFileDeleteResponseDoc;
+  }
+
+  /**
+   * @description 仅允许管理员读取平台资料池中的文件
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesFilesContentList
+   * @summary 获取平台资料内容
+   * @request GET:/admin/knowledge-bases/files/{file_id}/content
+   * @secure
+   */
+  export namespace KnowledgeBasesFilesContentList {
+    export type RequestParams = {
+      /** 文件ID */
+      fileId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Blob;
+  }
+
+  /**
+   * No description
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesDetail
+   * @summary 查询内置知识库详情
+   * @request GET:/admin/knowledge-bases/{id}
+   * @secure
+   */
+  export namespace KnowledgeBasesDetail {
+    export type RequestParams = {
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesDelete
+   * @summary 删除内置知识库
+   * @request DELETE:/admin/knowledge-bases/{id}
+   * @secure
+   */
+  export namespace KnowledgeBasesDelete {
+    export type RequestParams = {
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** 是否同步删除不再被其他资源引用的知识库文件 */
+      delete_files?: boolean;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseDeleteResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesPartialUpdate
+   * @summary 更新内置知识库
+   * @request PATCH:/admin/knowledge-bases/{id}
+   * @secure
+   */
+  export namespace KnowledgeBasesPartialUpdate {
+    export type RequestParams = {
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = PatchKnowledgeBaseRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseResponseDoc;
+  }
+
+  /**
+   * @description 分页返回尚未关联到指定内置知识库的平台资料
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesAvailableFilesList
+   * @summary 查询可加入内置知识库的文件
+   * @request GET:/admin/knowledge-bases/{id}/available-files
+   * @secure
+   */
+  export namespace KnowledgeBasesAvailableFilesList {
+    export type RequestParams = {
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 文件名搜索关键词 */
+      q?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFilePageResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesFilesList2
+   * @summary 查询内置知识库文件
+   * @request GET:/admin/knowledge-bases/{id}/files
+   * @originalName knowledgeBasesFilesList
+   * @duplicate
+   * @secure
+   */
+  export namespace KnowledgeBasesFilesList2 {
+    export type RequestParams = {
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFilePageResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesFilesCreate2
+   * @summary 将平台资料加入内置知识库
+   * @request POST:/admin/knowledge-bases/{id}/files
+   * @originalName knowledgeBasesFilesCreate
+   * @duplicate
+   * @secure
+   */
+  export namespace KnowledgeBasesFilesCreate2 {
+    export type RequestParams = {
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AddKnowledgeBaseFilesRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFileMutationResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesFilesProcessingSnapshotCreate
+   * @summary 查询内置知识库处理快照
+   * @request POST:/admin/knowledge-bases/{id}/files/processing/snapshot
+   * @secure
+   */
+  export namespace KnowledgeBasesFilesProcessingSnapshotCreate {
+    export type RequestParams = {
+      /** 知识库公开ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = GetKnowledgeBaseFileProcessingSnapshotRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFileProcessingSnapshotResponse;
+  }
+
+  /**
+   * No description
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesFilesProcessingStatusesCreate
+   * @summary 批量查询内置知识库文件处理状态
+   * @request POST:/admin/knowledge-bases/{id}/files/processing/statuses
+   * @secure
+   */
+  export namespace KnowledgeBasesFilesProcessingStatusesCreate {
+    export type RequestParams = {
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = GetKnowledgeBaseFileProcessingStatusesRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFileProcessingStatusResponse[];
+  }
+
+  /**
+   * No description
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesFilesDelete2
+   * @summary 将文件移出内置知识库
+   * @request DELETE:/admin/knowledge-bases/{id}/files/{file_id}
+   * @originalName knowledgeBasesFilesDelete
+   * @duplicate
+   * @secure
+   */
+  export namespace KnowledgeBasesFilesDelete2 {
+    export type RequestParams = {
+      /** 文件ID */
+      fileId: string;
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFileMutationResponseDoc;
+  }
+
+  /**
+   * @description 仅允许读取仍与指定内置知识库关联的文件
+   * @tags admin-knowledge-bases
+   * @name KnowledgeBasesFilesContentList2
+   * @summary 获取内置知识库文件内容
+   * @request GET:/admin/knowledge-bases/{id}/files/{file_id}/content
+   * @originalName knowledgeBasesFilesContentList
+   * @duplicate
+   * @secure
+   */
+  export namespace KnowledgeBasesFilesContentList2 {
+    export type RequestParams = {
+      /** 文件ID */
+      fileId: string;
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Blob;
+  }
+
+  /**
+   * @description 分页查询仍在图标库中的已上传图标，按上传时间倒序返回
+   * @tags llm
+   * @name LlmIconAssetsList
+   * @summary 管理员查询已上传的模型展示图标
+   * @request GET:/admin/llm/icon-assets
+   * @secure
+   */
+  export namespace LlmIconAssetsList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelIconAssetListResponseDoc;
+  }
+
+  /**
+   * @description 上传 PNG、JPEG 或 WebP 图标；后端校验内容、尺寸并按 SHA-256 去重
+   * @tags llm
+   * @name LlmIconAssetsCreate
+   * @summary 管理员上传模型展示图标
+   * @request POST:/admin/llm/icon-assets
+   * @secure
+   */
+  export namespace LlmIconAssetsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = {
+      /**
+       * 图标文件，最大 1 MiB
+       * @format binary
+       */
+      file: File;
+    };
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelIconAssetResponseDoc;
+  }
+
+  /**
+   * @description 仅允许移除无引用图标；立即从图标库隐藏，持续 24 小时无引用后物理清理
+   * @tags llm
+   * @name LlmIconAssetsDelete
+   * @summary 管理员从图标库移除已上传图标
+   * @request DELETE:/admin/llm/icon-assets/{public_id}
+   * @secure
+   */
+  export namespace LlmIconAssetsDelete {
+    export type RequestParams = {
+      /** 图标公开 ID */
+      publicId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessDoc;
+  }
+
+  /**
+   * @description 分页查询自定义展示分组；未绑定分组的模型继续按技术厂商展示
+   * @tags llm
+   * @name LlmModelDisplayGroupsList
+   * @summary 管理员查询模型展示分组
+   * @request GET:/admin/llm/model-display-groups
+   * @secure
+   */
+  export namespace LlmModelDisplayGroupsList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 搜索名称 */
+      q?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelDisplayGroupListResponseDoc;
+  }
+
+  /**
+   * @description 创建仅影响用户界面归类的自定义模型分组
+   * @tags llm
+   * @name LlmModelDisplayGroupsCreate
+   * @summary 管理员创建模型展示分组
+   * @request POST:/admin/llm/model-display-groups
+   * @secure
+   */
+  export namespace LlmModelDisplayGroupsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateModelDisplayGroupRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelDisplayGroupDataResponseDoc;
+  }
+
+  /**
+   * @description 删除展示分组后，关联模型恢复按技术厂商展示
+   * @tags llm
+   * @name LlmModelDisplayGroupsDelete
+   * @summary 管理员删除模型展示分组
+   * @request DELETE:/admin/llm/model-display-groups/{id}
+   * @secure
+   */
+  export namespace LlmModelDisplayGroupsDelete {
+    export type RequestParams = {
+      /** 展示分组 ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessDoc;
+  }
+
+  /**
+   * No description
+   * @tags llm
+   * @name LlmModelDisplayGroupsPartialUpdate
+   * @summary 管理员更新模型展示分组
+   * @request PATCH:/admin/llm/model-display-groups/{id}
+   * @secure
+   */
+  export namespace LlmModelDisplayGroupsPartialUpdate {
+    export type RequestParams = {
+      /** 展示分组 ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateModelDisplayGroupRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelDisplayGroupDataResponseDoc;
+  }
+
+  /**
+   * @description 分页查询模型技术厂商目录；技术厂商是路由和权限使用的稳定身份
+   * @tags llm
+   * @name LlmModelVendorsList
+   * @summary 管理员查询模型技术厂商
+   * @request GET:/admin/llm/model-vendors
+   * @secure
+   */
+  export namespace LlmModelVendorsList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 搜索 key 或名称 */
+      q?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelVendorListResponseDoc;
+  }
+
+  /**
+   * @description 创建新的稳定技术厂商身份；创建后可供平台模型选择
+   * @tags llm
+   * @name LlmModelVendorsCreate
+   * @summary 管理员创建模型技术厂商
+   * @request POST:/admin/llm/model-vendors
+   * @secure
+   */
+  export namespace LlmModelVendorsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateModelVendorRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelVendorDataResponseDoc;
+  }
+
+  /**
+   * @description 仅允许删除未被平台模型引用的非内置厂商；冲突响应包含关联模型预览
+   * @tags llm
+   * @name LlmModelVendorsDelete
+   * @summary 管理员删除自定义模型技术厂商
+   * @request DELETE:/admin/llm/model-vendors/{key}
+   * @secure
+   */
+  export namespace LlmModelVendorsDelete {
+    export type RequestParams = {
+      /** 技术厂商 key */
+      key: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessDoc;
+  }
+
+  /**
+   * @description 更新厂商展示名称和图标；稳定技术 key 不可修改
+   * @tags llm
+   * @name LlmModelVendorsPartialUpdate
+   * @summary 管理员更新模型技术厂商
+   * @request PATCH:/admin/llm/model-vendors/{key}
+   * @secure
+   */
+  export namespace LlmModelVendorsPartialUpdate {
+    export type RequestParams = {
+      /** 技术厂商 key */
+      key: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateModelVendorRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelVendorDataResponseDoc;
+  }
+
+  /**
+   * @description 管理员分页查询平台模型目录，可按 only_active 过滤
+   * @tags llm
+   * @name LlmModelsList
+   * @summary 管理员查询模型目录
+   * @request GET:/admin/llm/models
+   * @secure
+   */
+  export namespace LlmModelsList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 仅查询启用模型 */
+      only_active?: boolean;
+      /** 仅查询公开且可路由模型 */
+      only_available?: boolean;
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 接口协议 */
+      protocol?: string;
+      /** 搜索关键词 */
+      q?: string;
+      /** 排序：sortOrder_asc/updated_desc/id_desc/platformModelName_asc/sourceCount_desc */
+      sort?: string;
+      /** 状态：active/inactive */
+      status?: string;
+      /** 上游 ID */
+      upstream?: number;
+      /** 模型厂商 */
+      vendor?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelListResponseDoc;
+  }
+
+  /**
+   * @description 管理员新增平台模型目录项
+   * @tags llm
+   * @name LlmModelsCreate
+   * @summary 管理员创建模型
+   * @request POST:/admin/llm/models
+   * @secure
+   */
+  export namespace LlmModelsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateModelRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = CreateModelResponseDoc;
+  }
+
+  /**
+   * @description 管理员批量删除模型目录及其关联路由绑定，保留上游
+   * @tags llm
+   * @name LlmModelsBatchDeleteCreate
+   * @summary 管理员批量删除模型
+   * @request POST:/admin/llm/models/batch-delete
+   * @secure
+   */
+  export namespace LlmModelsBatchDeleteCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = BatchDeleteRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = BatchDeleteResponseDoc;
+  }
+
+  /**
+   * @description 在单个事务中将指定模型归入展示分组；displayGroupID 为 0 时恢复按技术厂商展示
+   * @tags llm
+   * @name LlmModelsDisplayGroupPartialUpdate
+   * @summary 管理员批量设置模型展示分组
+   * @request PATCH:/admin/llm/models/display-group
+   * @secure
+   */
+  export namespace LlmModelsDisplayGroupPartialUpdate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = SetModelsDisplayGroupRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessDoc;
+  }
+
+  /**
+   * @description 管理员调整平台模型在用户侧模型选择器中的展示顺序
+   * @tags llm
+   * @name LlmModelsOrderCreate
+   * @summary 管理员调整模型顺序
+   * @request POST:/admin/llm/models/order
+   * @secure
+   */
+  export namespace LlmModelsOrderCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = ReorderModelsRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessDoc;
+  }
+
+  /**
+   * @description 管理员删除平台模型目录项及其关联路由绑定
+   * @tags llm
+   * @name LlmModelsDelete
+   * @summary 管理员删除模型
+   * @request DELETE:/admin/llm/models/{id}
+   * @secure
+   */
+  export namespace LlmModelsDelete {
+    export type RequestParams = {
+      /** 模型ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessDoc;
+  }
+
+  /**
+   * @description 管理员更新平台模型目录项
+   * @tags llm
+   * @name LlmModelsPartialUpdate
+   * @summary 管理员更新模型
+   * @request PATCH:/admin/llm/models/{id}
+   * @secure
+   */
+  export namespace LlmModelsPartialUpdate {
+    export type RequestParams = {
+      /** 模型ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateModelRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpdateModelResponseDoc;
+  }
+
+  /**
+   * @description 在单个数据库事务中更新平台模型能力类型，并将该模型全部上游绑定替换为指定的完整协议集合
+   * @tags llm
+   * @name LlmModelsProtocolsPartialUpdate
+   * @summary 管理员替换模型全部来源的协议集合
+   * @request PATCH:/admin/llm/models/{id}/protocols
+   * @secure
+   */
+  export namespace LlmModelsProtocolsPartialUpdate {
+    export type RequestParams = {
+      /** 模型ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = SetModelProtocolsRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = SetModelProtocolsResponseDoc;
+  }
+
+  /**
+   * @description 管理员分页查询指定模型在各上游上的路由来源
+   * @tags llm
+   * @name LlmModelsSourcesList
+   * @summary 管理员查询模型上游来源
+   * @request GET:/admin/llm/models/{id}/sources
+   * @secure
+   */
+  export namespace LlmModelsSourcesList {
+    export type RequestParams = {
+      /** 模型ID */
+      id: number;
+    };
+    export type RequestQuery = {
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelUpstreamSourceListResponseDoc;
+  }
+
+  /**
+   * @description 管理员将当前平台模型绑定到一个已存在的上游模型
+   * @tags llm
+   * @name LlmModelsSourcesCreate
+   * @summary 管理员绑定模型上游来源
+   * @request POST:/admin/llm/models/{id}/sources
+   * @secure
+   */
+  export namespace LlmModelsSourcesCreate {
+    export type RequestParams = {
+      /** 模型ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = BindModelUpstreamSourceRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelUpstreamSourceDataResponse;
+  }
+
+  /**
+   * @description 管理员快速启停指定模型在某上游上的来源
+   * @tags llm
+   * @name LlmModelsSourcesPartialUpdate
+   * @summary 管理员更新模型上游来源
+   * @request PATCH:/admin/llm/models/{id}/sources/{route_id}
+   * @secure
+   */
+  export namespace LlmModelsSourcesPartialUpdate {
+    export type RequestParams = {
+      /** 模型ID */
+      id: number;
+      /** 路由绑定ID */
+      routeId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateModelUpstreamSourceRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpdateModelUpstreamSourceResponseDoc;
+  }
+
+  /**
+   * @description 按平台模型当前活跃路由选择一个来源执行轻量连通性测试；返回结果内的调试信息已脱敏且不包含 Base URL 或密钥
+   * @tags llm
+   * @name LlmModelsTestCreate
+   * @summary 管理员测试平台模型路由
+   * @request POST:/admin/llm/models/{id}/test
+   * @secure
+   */
+  export namespace LlmModelsTestCreate {
+    export type RequestParams = {
+      /** 模型ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ModelProbeRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelProbeResponseDoc;
+  }
+
+  /**
+   * @description 按平台模型当前全部匹配的活跃路由并发执行轻量连通性测试；返回结果内的调试信息已脱敏且不包含 Base URL 或密钥
+   * @tags llm
+   * @name LlmModelsTestAllCreate
+   * @summary 管理员批量测试平台模型全部路由
+   * @request POST:/admin/llm/models/{id}/test-all
+   * @secure
+   */
+  export namespace LlmModelsTestAllCreate {
+    export type RequestParams = {
+      /** 模型ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ModelProbeRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelProbeBatchResponseDoc;
+  }
+
+  /**
+   * @description 管理员查询 LLM 全局设置列表
+   * @tags llm
+   * @name LlmSettingsList
+   * @summary 管理员查询全局设置
+   * @request GET:/admin/llm/settings
+   * @secure
+   */
+  export namespace LlmSettingsList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessDoc;
+  }
+
+  /**
+   * @description 管理员更新指定 LLM 全局设置项
+   * @tags llm
+   * @name LlmSettingsPartialUpdate
+   * @summary 管理员更新全局设置
+   * @request PATCH:/admin/llm/settings/{key}
+   * @secure
+   */
+  export namespace LlmSettingsPartialUpdate {
+    export type RequestParams = {
+      /** 设置键 */
+      key: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = Record<string, string>;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessDoc;
+  }
+
+  /**
+   * @description 管理员分页查询 LLM 上游配置
+   * @tags llm
+   * @name LlmUpstreamsList
+   * @summary 管理员查询上游列表
+   * @request GET:/admin/llm/upstreams
+   * @secure
+   */
+  export namespace LlmUpstreamsList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 兼容类型 */
+      compatible?: string;
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 搜索关键词 */
+      q?: string;
+      /** 排序：id_desc/id_asc/name_asc/updated_desc */
+      sort?: string;
+      /** 状态：active/inactive/circuit */
+      status?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpstreamListResponseDoc;
+  }
+
+  /**
+   * @description 管理员新增上游来源配置，内部标识自动分配
+   * @tags llm
+   * @name LlmUpstreamsCreate
+   * @summary 管理员创建上游
+   * @request POST:/admin/llm/upstreams
+   * @secure
+   */
+  export namespace LlmUpstreamsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateUpstreamRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = CreateUpstreamResponseDoc;
+  }
+
+  /**
+   * @description 管理员批量删除上游及其关联路由绑定，保留模型目录
+   * @tags llm
+   * @name LlmUpstreamsBatchDeleteCreate
+   * @summary 管理员批量删除上游
+   * @request POST:/admin/llm/upstreams/batch-delete
+   * @secure
+   */
+  export namespace LlmUpstreamsBatchDeleteCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = BatchDeleteRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = BatchDeleteResponseDoc;
+  }
+
+  /**
+   * @description 管理员删除上游配置及其关联路由绑定
+   * @tags llm
+   * @name LlmUpstreamsDelete
+   * @summary 管理员删除上游
+   * @request DELETE:/admin/llm/upstreams/{id}
+   * @secure
+   */
+  export namespace LlmUpstreamsDelete {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessDoc;
+  }
+
+  /**
+   * @description 管理员更新上游配置（地址、密钥、状态等）
+   * @tags llm
+   * @name LlmUpstreamsPartialUpdate
+   * @summary 管理员更新上游
+   * @request PATCH:/admin/llm/upstreams/{id}
+   * @secure
+   */
+  export namespace LlmUpstreamsPartialUpdate {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateUpstreamRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpdateUpstreamResponseDoc;
+  }
+
+  /**
+   * @description 管理员手动开启上游熔断状态
+   * @tags llm
+   * @name LlmUpstreamsCircuitOpenCreate
+   * @summary 管理员手动触发上游熔断
+   * @request POST:/admin/llm/upstreams/{id}/circuit/open
+   * @secure
+   */
+  export namespace LlmUpstreamsCircuitOpenCreate {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessDoc;
+  }
+
+  /**
+   * @description 管理员手动清空上游失败计数并关闭熔断状态
+   * @tags llm
+   * @name LlmUpstreamsCircuitResetCreate
+   * @summary 管理员重置上游熔断
+   * @request POST:/admin/llm/upstreams/{id}/circuit/reset
+   * @secure
+   */
+  export namespace LlmUpstreamsCircuitResetCreate {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResetUpstreamCircuitResponseDoc;
+  }
+
+  /**
+   * @description 管理员分页查询指定上游的路由绑定列表
+   * @tags llm
+   * @name LlmUpstreamsModelsList
+   * @summary 管理员查询上游模型路由绑定
+   * @request GET:/admin/llm/upstreams/{id}/models
+   * @secure
+   */
+  export namespace LlmUpstreamsModelsList {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+    };
+    export type RequestQuery = {
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 接口协议 */
+      protocol?: string;
+      /** 搜索关键词 */
+      q?: string;
+      /** 路由状态：bound/active/inactive */
+      route_status?: string;
+      /** 排序：upstream_asc/upstream_desc/platform_asc/platform_desc/status_asc/protocol_asc */
+      sort?: string;
+      /** 上游模型状态：active/inactive */
+      upstream_status?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpstreamModelListResponseDoc;
+  }
+
+  /**
+   * @description 管理员配置平台模型到指定上游真实模型的路由绑定与覆盖请求头
+   * @tags llm
+   * @name LlmUpstreamsModelsCreate
+   * @summary 管理员新增或更新上游模型路由绑定
+   * @request POST:/admin/llm/upstreams/{id}/models
+   * @secure
+   */
+  export namespace LlmUpstreamsModelsCreate {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpsertUpstreamModelRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpsertUpstreamModelResponseDoc;
+  }
+
+  /**
+   * @description 管理员批量删除指定上游下的路由绑定，保留模型目录
+   * @tags llm
+   * @name LlmUpstreamsModelsBatchDeleteCreate
+   * @summary 管理员批量删除上游模型路由绑定
+   * @request POST:/admin/llm/upstreams/{id}/models/batch-delete
+   * @secure
+   */
+  export namespace LlmUpstreamsModelsBatchDeleteCreate {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = BatchDeleteRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = BatchDeleteResponseDoc;
+  }
+
+  /**
+   * @description 选择性导入上游模型，支持绑定平台模型与自定义条目
+   * @tags llm
+   * @name LlmUpstreamsModelsImportCreate
+   * @summary 管理员批量导入上游模型
+   * @request POST:/admin/llm/upstreams/{id}/models/import
+   * @secure
+   */
+  export namespace LlmUpstreamsModelsImportCreate {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ImportUpstreamModelsRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ImportUpstreamModelsResponseDoc;
+  }
+
+  /**
+   * @description 调用上游 models 接口，返回可导入模型与目录变更预览，不直接落库
+   * @tags llm
+   * @name LlmUpstreamsModelsRemoteList
+   * @summary 管理员预览上游远程模型
+   * @request GET:/admin/llm/upstreams/{id}/models/remote
+   * @secure
+   */
+  export namespace LlmUpstreamsModelsRemoteList {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpstreamRemoteModelsResponseDoc;
+  }
+
+  /**
+   * @description 调用上游 models 接口获取完整目录，原子更新远端管理模型可用状态，不删除平台模型或路由配置
+   * @tags llm
+   * @name LlmUpstreamsModelsSyncCreate
+   * @summary 管理员同步上游模型目录
+   * @request POST:/admin/llm/upstreams/{id}/models/sync
+   * @secure
+   */
+  export namespace LlmUpstreamsModelsSyncCreate {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+    };
+    export type RequestQuery = {
+      /** 确认允许空模型目录对账 */
+      allow_empty?: boolean;
+      /** 用户确认的远端目录快照标识 */
+      expected_snapshot?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SyncUpstreamModelsResponseDoc;
+  }
+
+  /**
+   * @description 管理员删除指定上游的路由绑定
+   * @tags llm
+   * @name LlmUpstreamsModelsDelete
+   * @summary 管理员删除上游模型路由绑定
+   * @request DELETE:/admin/llm/upstreams/{id}/models/{route_id}
+   * @secure
+   */
+  export namespace LlmUpstreamsModelsDelete {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+      /** 路由绑定ID */
+      routeId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessDoc;
+  }
+
+  /**
+   * @description 管理员手动开启上游模型路由绑定熔断状态
+   * @tags llm
+   * @name LlmUpstreamsModelsCircuitOpenCreate
+   * @summary 管理员手动触发上游模型路由熔断
+   * @request POST:/admin/llm/upstreams/{id}/models/{route_id}/circuit/open
+   * @secure
+   */
+  export namespace LlmUpstreamsModelsCircuitOpenCreate {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+      /** 路由绑定ID */
+      routeId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessDoc;
+  }
+
+  /**
+   * @description 管理员手动清空上游模型路由绑定失败计数并关闭熔断状态
+   * @tags llm
+   * @name LlmUpstreamsModelsCircuitResetCreate
+   * @summary 管理员重置上游模型路由熔断
+   * @request POST:/admin/llm/upstreams/{id}/models/{route_id}/circuit/reset
+   * @secure
+   */
+  export namespace LlmUpstreamsModelsCircuitResetCreate {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+      /** 路由绑定ID */
+      routeId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResetUpstreamCircuitResponseDoc;
+  }
+
+  /**
+   * @description 管理员停用该路由绑定，后续路由不会选中
+   * @tags llm
+   * @name LlmUpstreamsModelsDisablePartialUpdate
+   * @summary 管理员停用上游模型路由绑定
+   * @request PATCH:/admin/llm/upstreams/{id}/models/{route_id}/disable
+   * @secure
+   */
+  export namespace LlmUpstreamsModelsDisablePartialUpdate {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+      /** 路由绑定ID */
+      routeId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessDoc;
+  }
+
+  /**
+   * @description 管理员启用该路由绑定，使该上游模型重新参与路由
+   * @tags llm
+   * @name LlmUpstreamsModelsEnablePartialUpdate
+   * @summary 管理员启用上游模型路由绑定
+   * @request PATCH:/admin/llm/upstreams/{id}/models/{route_id}/enable
+   * @secure
+   */
+  export namespace LlmUpstreamsModelsEnablePartialUpdate {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+      /** 路由绑定ID */
+      routeId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessDoc;
+  }
+
+  /**
+   * @description 使用指定路由绑定的当前上游配置执行一次轻量连通性测试；返回结果内的调试信息已脱敏且不包含 Base URL 或密钥
+   * @tags llm
+   * @name LlmUpstreamsModelsTestCreate
+   * @summary 管理员测试上游模型路由绑定
+   * @request POST:/admin/llm/upstreams/{id}/models/{route_id}/test
+   * @secure
+   */
+  export namespace LlmUpstreamsModelsTestCreate {
+    export type RequestParams = {
+      /** 上游ID */
+      id: number;
+      /** 路由绑定ID */
+      routeId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ModelProbeRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelProbeResponseDoc;
+  }
+
+  /**
+   * @description 按日志类型物理删除指定时间点之前的日志；操作不可恢复
+   * @tags admin
+   * @name LogsCleanupCreate
+   * @summary 管理员清理日志
+   * @request POST:/admin/logs/cleanup
+   * @secure
+   */
+  export namespace LogsCleanupCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CleanupLogsRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = CleanupLogsResponseDoc;
+  }
+
+  /**
+   * @description 返回平台模型的手动权限组与动态规则命中的有效权限组
+   * @tags admin
+   * @name ModelsPermissionGroupsList
+   * @summary 管理员列出模型权限组
+   * @request GET:/admin/models/{modelID}/permission-groups
+   * @secure
+   */
+  export namespace ModelsPermissionGroupsList {
+    export type RequestParams = {
+      /** 平台模型ID */
+      modelId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelPermissionGroupsResponseDoc;
+  }
+
+  /**
+   * @description 全量替换平台模型的手动权限组，不影响权限组动态规则
+   * @tags admin
+   * @name ModelsPermissionGroupsUpdate
+   * @summary 管理员设置模型手动权限组
+   * @request PUT:/admin/models/{modelID}/permission-groups
+   * @secure
+   */
+  export namespace ModelsPermissionGroupsUpdate {
+    export type RequestParams = {
+      /** 平台模型ID */
+      modelId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = SetModelPermissionGroupsRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ModelPermissionGroupsResponseDoc;
+  }
+
+  /**
+   * @description 返回全部模型访问权限组，默认组优先
+   * @tags admin
+   * @name PermissionGroupsList
+   * @summary 管理员列出权限组
+   * @request GET:/admin/permission-groups
+   * @secure
+   */
+  export namespace PermissionGroupsList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = PermissionGroupListResponseDoc;
+  }
+
+  /**
+   * @description 创建模型访问权限组
+   * @tags admin
+   * @name PermissionGroupsCreate
+   * @summary 管理员创建权限组
+   * @request POST:/admin/permission-groups
+   * @secure
+   */
+  export namespace PermissionGroupsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreatePermissionGroupRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = PermissionGroupDataResponseDoc;
+  }
+
+  /**
+   * @description 删除权限组及其模型、用户关联；默认组不可删除
+   * @tags admin
+   * @name PermissionGroupsDelete
+   * @summary 管理员删除权限组
+   * @request DELETE:/admin/permission-groups/{id}
+   * @secure
+   */
+  export namespace PermissionGroupsDelete {
+    export type RequestParams = {
+      /** 权限组ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = DeletePermissionGroupResponseDoc;
+  }
+
+  /**
+   * @description 更新权限组名称与说明
+   * @tags admin
+   * @name PermissionGroupsPartialUpdate
+   * @summary 管理员更新权限组
+   * @request PATCH:/admin/permission-groups/{id}
+   * @secure
+   */
+  export namespace PermissionGroupsPartialUpdate {
+    export type RequestParams = {
+      /** 权限组ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdatePermissionGroupRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = PermissionGroupDataResponseDoc;
+  }
+
+  /**
+   * @description 返回权限组授权的平台模型 ID 集合
+   * @tags admin
+   * @name PermissionGroupsModelsList
+   * @summary 管理员列出权限组模型
+   * @request GET:/admin/permission-groups/{id}/models
+   * @secure
+   */
+  export namespace PermissionGroupsModelsList {
+    export type RequestParams = {
+      /** 权限组ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GroupModelsResponseDoc;
+  }
+
+  /**
+   * @description 全量替换权限组授权的平台模型 ID 集合与动态访问规则
+   * @tags admin
+   * @name PermissionGroupsModelsUpdate
+   * @summary 管理员设置权限组模型
+   * @request PUT:/admin/permission-groups/{id}/models
+   * @secure
+   */
+  export namespace PermissionGroupsModelsUpdate {
+    export type RequestParams = {
+      /** 权限组ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = SetGroupModelsRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = GroupModelsResponseDoc;
+  }
+
+  /**
+   * @description 返回权限组内的用户 ID 集合
+   * @tags admin
+   * @name PermissionGroupsUsersList
+   * @summary 管理员列出权限组用户
+   * @request GET:/admin/permission-groups/{id}/users
+   * @secure
+   */
+  export namespace PermissionGroupsUsersList {
+    export type RequestParams = {
+      /** 权限组ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = GroupUsersResponseDoc;
+  }
+
+  /**
+   * @description 全量替换权限组内的用户 ID 集合
+   * @tags admin
+   * @name PermissionGroupsUsersUpdate
+   * @summary 管理员设置权限组用户
+   * @request PUT:/admin/permission-groups/{id}/users
+   * @secure
+   */
+  export namespace PermissionGroupsUsersUpdate {
+    export type RequestParams = {
+      /** 权限组ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = SetGroupUsersRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = GroupUsersResponseDoc;
+  }
+
+  /**
+   * @description 按 namespace 分组返回全部动态配置项
+   * @tags admin/settings
+   * @name SettingsList
+   * @summary 查询全部动态配置
+   * @request GET:/admin/settings
+   * @secure
+   */
+  export namespace SettingsList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * @description 批量更新动态配置并清除缓存，下次读取自动刷新
+   * @tags admin/settings
+   * @name SettingsPartialUpdate
+   * @summary 批量更新配置项
+   * @request PATCH:/admin/settings
+   * @secure
+   */
+  export namespace SettingsPartialUpdate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = SettingsPatchSettingsRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * No description
+   * @tags admin/settings
+   * @name SettingsDoclingRuntimeList
+   * @summary 查询 Docling 运行状态
+   * @request GET:/admin/settings/docling/runtime
+   * @secure
+   */
+  export namespace SettingsDoclingRuntimeList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * @description include_empty=true 时同时重试提取无文本的 empty 文件，适用于更换 OCR 引擎后
+   * @tags admin/settings
+   * @name SettingsEmbeddingReindexCreate
+   * @summary 触发向量重建（重索引所有 stale/failed 文件）
+   * @request POST:/admin/settings/embedding/reindex
+   * @secure
+   */
+  export namespace SettingsEmbeddingReindexCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 是否包含 empty 终态文件 */
+      include_empty?: boolean;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = EmbeddingReindexResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags admin/settings
+   * @name SettingsEmbeddingRuntimeList
+   * @summary 查询 Embedding 服务运行状态
+   * @request GET:/admin/settings/embedding/runtime
+   * @secure
+   */
+  export namespace SettingsEmbeddingRuntimeList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * No description
+   * @tags admin/settings
+   * @name SettingsEmbeddingStatusList
+   * @summary 查询向量索引健康状态
+   * @request GET:/admin/settings/embedding/status
+   * @secure
+   */
+  export namespace SettingsEmbeddingStatusList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = EmbeddingIndexStatusResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags admin/settings
+   * @name SettingsMineruRuntimeList
+   * @summary 查询 MinerU 运行状态
+   * @request GET:/admin/settings/mineru/runtime
+   * @secure
+   */
+  export namespace SettingsMineruRuntimeList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * No description
+   * @tags admin/settings
+   * @name SettingsRapidocrRuntimeList
+   * @summary 查询 RapidOCR 运行状态
+   * @request GET:/admin/settings/rapidocr/runtime
+   * @secure
+   */
+  export namespace SettingsRapidocrRuntimeList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * No description
+   * @tags admin/settings
+   * @name SettingsRapidocrRuntimeRestartCreate
+   * @summary 重启托管 RapidOCR
+   * @request POST:/admin/settings/rapidocr/runtime/restart
+   * @secure
+   */
+  export namespace SettingsRapidocrRuntimeRestartCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * No description
+   * @tags admin/settings
+   * @name SettingsRapidocrRuntimeStartCreate
+   * @summary 启动托管 RapidOCR
+   * @request POST:/admin/settings/rapidocr/runtime/start
+   * @secure
+   */
+  export namespace SettingsRapidocrRuntimeStartCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * No description
+   * @tags admin/settings
+   * @name SettingsRapidocrRuntimeStopCreate
+   * @summary 停止托管 RapidOCR
+   * @request POST:/admin/settings/rapidocr/runtime/stop
+   * @secure
+   */
+  export namespace SettingsRapidocrRuntimeStopCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * No description
+   * @tags admin/settings
+   * @name SettingsTesseractRuntimeList
+   * @summary 查询 Tesseract OCR 运行状态
+   * @request GET:/admin/settings/tesseract/runtime
+   * @secure
+   */
+  export namespace SettingsTesseractRuntimeList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * No description
+   * @tags admin/settings
+   * @name SettingsTikaRuntimeList
+   * @summary 查询 Tika 运行状态
+   * @request GET:/admin/settings/tika/runtime
+   * @secure
+   */
+  export namespace SettingsTikaRuntimeList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * No description
+   * @tags admin/settings
+   * @name SettingsTikaRuntimeRestartCreate
+   * @summary 重启托管 Tika
+   * @request POST:/admin/settings/tika/runtime/restart
+   * @secure
+   */
+  export namespace SettingsTikaRuntimeRestartCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * No description
+   * @tags admin/settings
+   * @name SettingsTikaRuntimeStartCreate
+   * @summary 启动托管 Tika
+   * @request POST:/admin/settings/tika/runtime/start
+   * @secure
+   */
+  export namespace SettingsTikaRuntimeStartCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * No description
+   * @tags admin/settings
+   * @name SettingsTikaRuntimeStopCreate
+   * @summary 停止托管 Tika
+   * @request POST:/admin/settings/tika/runtime/stop
+   * @secure
+   */
+  export namespace SettingsTikaRuntimeStopCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * @description 查询指定 namespace 下的全部配置项
+   * @tags admin/settings
+   * @name SettingsDetail
+   * @summary 查询指定 namespace 的配置
+   * @request GET:/admin/settings/{namespace}
+   * @secure
+   */
+  export namespace SettingsDetail {
+    export type RequestParams = {
+      /** 命名空间 */
+      namespace: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * No description
+   * @tags admin/ui-components
+   * @name UiComponentsList
+   * @summary 查询内置与平台组件
+   * @request GET:/admin/ui-components
+   * @secure
+   */
+  export namespace UiComponentsList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 是否启用 */
+      enabled?: boolean;
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 搜索关键词 */
+      q?: string;
+      /** 作用域：builtin 或 platform，留空为全部 */
+      scope?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UIComponentPageResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags admin/ui-components
+   * @name UiComponentsCreate
+   * @summary 创建平台组件
+   * @request POST:/admin/ui-components
+   * @secure
+   */
+  export namespace UiComponentsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = WriteUIComponentRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = UIComponentResponseDoc;
+  }
+
+  /**
+   * @description 内置组件受保护，不允许删除
+   * @tags admin/ui-components
+   * @name UiComponentsDelete
+   * @summary 删除平台组件
+   * @request DELETE:/admin/ui-components/{id}
+   * @secure
+   */
+  export namespace UiComponentsDelete {
+    export type RequestParams = {
+      /** 组件ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UIComponentDeleteResponseDoc;
+  }
+
+  /**
+   * @description 内置组件只允许修改启用状态、描述与排序
+   * @tags admin/ui-components
+   * @name UiComponentsPartialUpdate
+   * @summary 更新内置或平台组件
+   * @request PATCH:/admin/ui-components/{id}
+   * @secure
+   */
+  export namespace UiComponentsPartialUpdate {
+    export type RequestParams = {
+      /** 组件ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = PatchUIComponentRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = UIComponentResponseDoc;
+  }
+
+  /**
+   * @description 管理员分页查询认证事件，支持 user_id/event_type/result 过滤
+   * @tags admin
+   * @name UserAuthEventsList
+   * @summary 管理员查询用户认证事件
+   * @request GET:/admin/user-auth-events
+   * @secure
+   */
+  export namespace UserAuthEventsList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 事件类型过滤 */
+      event_type?: string;
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 结果过滤(success/failure/blocked) */
+      result?: string;
+      /** 用户ID过滤 */
+      user_id?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UserAuthEventListResponseDoc;
+  }
+
+  /**
+   * @description 管理员分页查看所有用户，实现账户隔离管理
+   * @tags admin
+   * @name UsersList
+   * @summary 管理员查询用户
+   * @request GET:/admin/users
+   * @secure
+   */
+  export namespace UsersList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 身份源 slug 过滤 */
+      identity_provider?: string;
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 搜索用户名、昵称、邮箱或公开ID */
+      q?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UserListResponseDoc;
+  }
+
+  /**
+   * @description 创建普通用户账号；需要授予管理员权限时，可在账户编辑中调整角色
+   * @tags admin
+   * @name UsersCreate
+   * @summary 管理员创建用户
+   * @request POST:/admin/users
+   * @secure
+   */
+  export namespace UsersCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateUserRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = CreateUserResponseDoc;
+  }
+
+  /**
+   * @description 上传 UTF-8 CSV 名单（列为 username,displayName,email），可先预览校验再正式创建学生账号；正式导入返回一次性初始密码，已存在用户默认跳过且不覆盖
+   * @tags admin
+   * @name UsersImportRosterCreate
+   * @summary 管理员导入学生名单
+   * @request POST:/admin/users/import/roster
+   * @secure
+   */
+  export namespace UsersImportRosterCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = {
+      /** 仅预览校验，不写入账号 */
+      dryRun?: boolean;
+      /**
+       * UTF-8 CSV 名单，表头为 username,displayName,email
+       * @format binary
+       */
+      file: File;
+    };
+    export type RequestHeaders = {};
+    export type ResponseBody = ImportRosterUsersResponseDoc;
+  }
+
+  /**
+   * @description 管理员硬删除指定普通用户及其主要用户域数据
+   * @tags admin
+   * @name UsersDelete
+   * @summary 管理员删除用户
+   * @request DELETE:/admin/users/{id}
+   * @secure
+   */
+  export namespace UsersDelete {
+    export type RequestParams = {
+      /** 用户ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = DeleteUserResponseDoc;
+  }
+
+  /**
+   * @description 管理员统一维护角色、状态、时区等可编辑字段
+   * @tags admin
+   * @name UsersPartialUpdate
+   * @summary 管理员更新用户可编辑字段
+   * @request PATCH:/admin/users/{id}
+   * @secure
+   */
+  export namespace UsersPartialUpdate {
+    export type RequestParams = {
+      /** 用户ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = PatchUserRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpdateUserStatusResponseDoc;
+  }
+
+  /**
+   * @description 管理员清除指定用户的 TOTP 与恢复码并吊销其全部会话；不允许重置超级管理员
+   * @tags admin
+   * @name UsersReset2FaCreate
+   * @summary 管理员重置用户双因素认证
+   * @request POST:/admin/users/{id}/reset-2fa
+   * @secure
+   */
+  export namespace UsersReset2FaCreate {
+    export type RequestParams = {
+      /** 用户ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResetUserTwoFactorResponseDoc;
+  }
+
+  /**
+   * @description 管理员重置指定用户密码并吊销其全部会话
+   * @tags admin
+   * @name UsersResetPasswordCreate
+   * @summary 管理员重置用户密码
+   * @request POST:/admin/users/{id}/reset-password
+   * @secure
+   */
+  export namespace UsersResetPasswordCreate {
+    export type RequestParams = {
+      /** 用户ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ResetUserPasswordRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResetUserPasswordResponseDoc;
+  }
+
+  /**
+   * @description 管理员吊销指定用户全部活跃会话，用于安全治理和风险控制
+   * @tags admin
+   * @name UsersRevokeSessionsCreate
+   * @summary 管理员吊销用户全部会话
+   * @request POST:/admin/users/{id}/revoke-sessions
+   * @secure
+   */
+  export namespace UsersRevokeSessionsCreate {
+    export type RequestParams = {
+      /** 用户ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = RevokeUserSessionsResponseDoc;
+  }
+
+  /**
+   * @description 管理员维护用户状态（active/locked/suspended/deactivated），并联动会话治理
+   * @tags admin
+   * @name UsersStatusPartialUpdate
+   * @summary 管理员更新用户状态
+   * @request PATCH:/admin/users/{id}/status
+   * @secure
+   */
+  export namespace UsersStatusPartialUpdate {
+    export type RequestParams = {
+      /** 用户ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateUserStatusRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpdateUserStatusResponseDoc;
+  }
+}
+
+export namespace Auth {
+  /**
+   * @description 为待完成的双因素登录挑战向用户已验证邮箱发送验证码
+   * @tags auth
+   * @name TwoFactorEmailStartCreate
+   * @summary 发送登录双因素邮箱验证码
+   * @request POST:/auth/2fa/email/start
+   */
+  export namespace TwoFactorEmailStartCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = TwoFactorEmailStartRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = EmailVerificationStartResponseDoc;
+  }
+
+  /**
+   * @description 使用登录挑战令牌与 TOTP、恢复码或邮箱验证码完成双因素登录，成功后返回会话
+   * @tags auth
+   * @name TwoFactorVerifyCreate
+   * @summary 校验登录双因素验证码
+   * @request POST:/auth/2fa/verify
+   */
+  export namespace TwoFactorVerifyCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = TwoFactorVerifyRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LoginResponseDoc;
+  }
+
+  /**
+   * @description 仅在服务器以本地 sidecar 模式运行时可用；一次性授权凭证由启动握手交给桌面壳，只能使用一次
+   * @tags auth
+   * @name LocalExchangeCreate
+   * @summary 本地模式：用一次性授权凭证换取会话
+   * @request POST:/auth/local/exchange
+   */
+  export namespace LocalExchangeCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = LocalGrantExchangeRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LoginResponseDoc;
+  }
+
+  /**
+   * @description 登录后返回JWT访问令牌
+   * @tags auth
+   * @name LoginCreate
+   * @summary 用户登录
+   * @request POST:/auth/login
+   */
+  export namespace LoginCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = LoginRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LoginResponseDoc;
+  }
+
+  /**
+   * @description 获取用户名、邮箱、OAuth/OIDC 登录入口，以及邮箱注册 Turnstile 公共配置
+   * @tags auth
+   * @name LoginOptionsList
+   * @summary 获取登录入口配置
+   * @request GET:/auth/login-options
+   */
+  export namespace LoginOptionsList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LoginOptionsResponseDoc;
+  }
+
+  /**
+   * @description 吊销当前 access token 对应会话
+   * @tags auth
+   * @name LogoutCreate
+   * @summary 登出当前会话
+   * @request POST:/auth/logout
+   * @secure
+   */
+  export namespace LogoutCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LogoutResponseDoc;
+  }
+
+  /**
+   * @description 吊销当前用户所有活跃会话
+   * @tags auth
+   * @name LogoutAllCreate
+   * @summary 登出全部会话
+   * @request POST:/auth/logout-all
+   * @secure
+   */
+  export namespace LogoutAllCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LogoutResponseDoc;
+  }
+
+  /**
+   * @description 校验当前密码及安全验证码后修改密码；成功后吊销该用户全部会话并清除刷新令牌 Cookie
+   * @tags auth
+   * @name PasswordChangeCompleteCreate
+   * @summary 修改当前用户密码
+   * @request POST:/auth/password/change/complete
+   * @secure
+   */
+  export namespace PasswordChangeCompleteCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = ChangePasswordRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ChangePasswordResponseDoc;
+  }
+
+  /**
+   * @description 为当前用户发起修改密码前的安全验证；请求体可省略，未指定验证方式时由服务端选择可用方式
+   * @tags auth
+   * @name PasswordChangeStartCreate
+   * @summary 发起修改密码安全验证
+   * @request POST:/auth/password/change/start
+   * @secure
+   */
+  export namespace PasswordChangeStartCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = SecurityVerificationStartRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = PasswordChangeVerificationStartResponseDoc;
+  }
+
+  /**
+   * @description 使用邮箱、验证码和新密码完成密码重置；失败时返回通用错误，避免暴露账号状态
+   * @tags auth
+   * @name PasswordResetCompleteCreate
+   * @summary 完成密码重置
+   * @request POST:/auth/password/reset/complete
+   */
+  export namespace PasswordResetCompleteCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = PasswordResetCompleteRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = PasswordResetCompleteResponseDoc;
+  }
+
+  /**
+   * @description SMTP 配置可用时，向已验证邮箱发送密码重置验证码；失败时返回通用错误，避免暴露账号状态
+   * @tags auth
+   * @name PasswordResetStartCreate
+   * @summary 发送密码重置验证码
+   * @request POST:/auth/password/reset/start
+   */
+  export namespace PasswordResetStartCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = PasswordResetStartRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = PasswordResetStartResponseDoc;
+  }
+
+  /**
+   * @description 为 Web、App 或桌面公共客户端创建 PKCE 保护的 OAuth 授权事务；外部身份源仅回调当前 CourseMate 实例
+   * @tags auth
+   * @name ProvidersAuthorizeCreate
+   * @summary 创建第三方登录授权桥事务
+   * @request POST:/auth/providers/{slug}/authorize
+   */
+  export namespace ProvidersAuthorizeCreate {
+    export type RequestParams = {
+      /** 身份源 slug */
+      slug: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ProviderAuthBridgeStartRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ProviderAuthBridgeStartResponseDoc;
+  }
+
+  /**
+   * @description 外部身份源完成授权后回调当前实例；校验 state 并签发一次性授权凭证后以 302 重定向回客户端 redirect_uri
+   * @tags auth
+   * @name ProvidersCallbackList
+   * @summary 第三方身份源授权回调
+   * @request GET:/auth/providers/{slug}/callback
+   */
+  export namespace ProvidersCallbackList {
+    export type RequestParams = {
+      /** 身份源 slug */
+      slug: string;
+    };
+    export type RequestQuery = {
+      /** 授权码 */
+      code?: string;
+      /** 身份源返回的错误码 */
+      error?: string;
+      /** 授权事务 state */
+      state?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = any;
+  }
+
+  /**
+   * @description 使用客户端 PKCE verifier 原子兑换服务端回调签发的一次性授权凭证，并进入统一 2FA/会话流程
+   * @tags auth
+   * @name ProvidersExchangeCreate
+   * @summary 兑换第三方登录一次性授权凭证
+   * @request POST:/auth/providers/{slug}/exchange
+   */
+  export namespace ProvidersExchangeCreate {
+    export type RequestParams = {
+      /** 身份源 slug */
+      slug: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ProviderAuthBridgeExchangeRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LoginResponseDoc;
+  }
+
+  /**
+   * @description 使用 HttpOnly refresh cookie 轮换并签发新的 access token
+   * @tags auth
+   * @name RefreshCreate
+   * @summary 刷新访问令牌
+   * @request POST:/auth/refresh
+   */
+  export namespace RefreshCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = RefreshTokenResponseDoc;
+  }
+
+  /**
+   * @description 使用邮箱、密码和验证码完成注册；未开启邮箱验证码但启用 Turnstile 时需要提交 turnstileToken
+   * @tags auth
+   * @name RegisterEmailCompleteCreate
+   * @summary 完成邮箱注册
+   * @request POST:/auth/register/email/complete
+   */
+  export namespace RegisterEmailCompleteCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = EmailRegistrationCompleteRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LoginResponseDoc;
+  }
+
+  /**
+   * @description 邮箱验证码注册开启时发送验证码；启用 Turnstile 后需要提交 turnstileToken
+   * @tags auth
+   * @name RegisterEmailStartCreate
+   * @summary 发送邮箱注册验证码
+   * @request POST:/auth/register/email/start
+   */
+  export namespace RegisterEmailStartCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = EmailRegistrationStartRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = EmailRegistrationStartResponseDoc;
+  }
+
+  /**
+   * @description 查询当前登录用户仍然有效的活跃会话列表
+   * @tags auth
+   * @name SessionsList
+   * @summary 当前活跃会话
+   * @request GET:/auth/sessions
+   * @secure
+   */
+  export namespace SessionsList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ActiveSessionListResponseDoc;
+  }
+
+  /**
+   * @description 用户授权后，用浏览器定位能力补充当前登录会话的精确位置
+   * @tags auth
+   * @name SessionsCurrentLocationUpdate
+   * @summary 更新当前会话精确位置
+   * @request PUT:/auth/sessions/current/location
+   * @secure
+   */
+  export namespace SessionsCurrentLocationUpdate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = UpdateCurrentSessionLocationRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = UpdateCurrentSessionLocationResponseDoc;
+  }
+
+  /**
+   * @description 吊销当前用户指定 session_id 对应的活跃会话
+   * @tags auth
+   * @name SessionsLogoutCreate
+   * @summary 登出指定会话
+   * @request POST:/auth/sessions/{session_id}/logout
+   * @secure
+   */
+  export namespace SessionsLogoutCreate {
+    export type RequestParams = {
+      /** 会话ID */
+      sessionId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LogoutResponseDoc;
+  }
+}
+
+export namespace Branding {
+  /**
+   * No description
+   * @tags settings
+   * @name BrandingList
+   * @summary 查询公开品牌配置
+   * @request GET:/branding
+   */
+  export namespace BrandingList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = BrandingResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags settings
+   * @name ManifestWebmanifestList
+   * @summary 查询品牌 Web App Manifest
+   * @request GET:/branding/manifest.webmanifest
+   */
+  export namespace ManifestWebmanifestList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = BrandingManifestResponse;
+  }
+}
+
+export namespace Capabilities {
+  /**
+   * @description 返回这台服务器提供哪些功能。客户端据此决定显示什么；能力关闭的功能其端点返回 404 feature.disabled。
+   * @tags system
+   * @name CapabilitiesList
+   * @summary 查询服务器能力声明
+   * @request GET:/capabilities
+   */
+  export namespace CapabilitiesList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = CapabilitiesResponseDoc;
+  }
+}
+
+export namespace Classrooms {
+  /**
+   * @description 教师查询自己创建的班级，管理员查询全部班级。
+   * @tags classrooms
+   * @name ClassroomsList
+   * @summary 查询班级
+   * @request GET:/classrooms
+   * @secure
+   */
+  export namespace ClassroomsList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomListResponse;
+  }
+
+  /**
+   * @description 仅教师账号可创建班级，并成为班级的唯一管理者。
+   * @tags classrooms
+   * @name ClassroomsCreate
+   * @summary 创建班级
+   * @request POST:/classrooms
+   * @secure
+   */
+  export namespace ClassroomsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateClassroomRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomDataResponse;
+  }
+
+  /**
+   * @description 教师删除自己创建的班级；班级内学生随即恢复为未分班状态。
+   * @tags classrooms
+   * @name ClassroomsDelete
+   * @summary 删除班级
+   * @request DELETE:/classrooms/{id}
+   * @secure
+   */
+  export namespace ClassroomsDelete {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomMutationResponse;
+  }
+
+  /**
+   * @description 教师更新自己创建的班级名称或说明。
+   * @tags classrooms
+   * @name ClassroomsPartialUpdate
+   * @summary 更新班级
+   * @request PATCH:/classrooms/{id}
+   * @secure
+   */
+  export namespace ClassroomsPartialUpdate {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateClassroomRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomMutationResponse;
+  }
+
+  /**
+   * @description 教师从课程章节中选择预习题，无需手动录入题目。
+   * @tags classrooms
+   * @name QuizLessonsList
+   * @summary 查询可下发的课程预习题
+   * @request GET:/classrooms/{id}/quiz-lessons
+   * @secure
+   */
+  export namespace QuizLessonsList {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = QuizLessonListResponse;
+  }
+
+  /**
+   * @description 教师查询自己班级内的小测，包含正确答案与提交人数。
+   * @tags classrooms
+   * @name QuizzesList
+   * @summary 查询班级小测
+   * @request GET:/classrooms/{id}/quizzes
+   * @secure
+   */
+  export namespace QuizzesList {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = QuizListResponse;
+  }
+
+  /**
+   * @description 教师选择课程章节，系统读取对应的课前预习题创建草稿；发布后学生才能作答。
+   * @tags classrooms
+   * @name QuizzesCreate
+   * @summary 创建班级小测
+   * @request POST:/classrooms/{id}/quizzes
+   * @secure
+   */
+  export namespace QuizzesCreate {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = CreateQuizRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = QuizDataResponse;
+  }
+
+  /**
+   * @description 教师查询自己的班级成员，管理员可查看全部班级成员。
+   * @tags classrooms
+   * @name StudentsList
+   * @summary 查询班级学生
+   * @request GET:/classrooms/{id}/students
+   * @secure
+   */
+  export namespace StudentsList {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = StudentListResponse;
+  }
+
+  /**
+   * @description 教师按用户名添加学生。一名学生最多属于一个班级，已分班学生须先从原班级移出。
+   * @tags classrooms
+   * @name StudentsCreate
+   * @summary 添加班级学生
+   * @request POST:/classrooms/{id}/students
+   * @secure
+   */
+  export namespace StudentsCreate {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AddStudentRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomMutationResponse;
+  }
+
+  /**
+   * @description 仅限班级所属教师；创建学生角色账号，返回随机初始密码，首次登录须修改密码。已有账号不会被覆盖。
+   * @tags classrooms
+   * @name StudentsAccountsCreate
+   * @summary 教师创建学生账号并加入班级
+   * @request POST:/classrooms/{id}/students/accounts
+   * @secure
+   */
+  export namespace StudentsAccountsCreate {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = CreateStudentAccountRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = CreateClassroomStudentAccountResponse;
+  }
+
+  /**
+   * @description 仅限班级所属教师。UTF-8 CSV 表头为 username,displayName,email 或 学号,姓名,邮箱（邮箱列可省略），最多 200 行、1 MiB；逐行创建并加入班级，已有账号跳过且不覆盖，返回初始密码和逐行结果。
+   * @tags classrooms
+   * @name StudentsAccountsImportCreate
+   * @summary 教师导入学生名单并创建账号
+   * @request POST:/classrooms/{id}/students/accounts/import
+   * @secure
+   */
+  export namespace StudentsAccountsImportCreate {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ImportClassroomStudentsRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomStudentImportResponse;
+  }
+
+  /**
+   * @description 教师把学生从自己的班级移出；移出后学生可以加入其他班级。
+   * @tags classrooms
+   * @name StudentsDelete
+   * @summary 移出班级学生
+   * @request DELETE:/classrooms/{id}/students/{student_id}
+   * @secure
+   */
+  export namespace StudentsDelete {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+      /** 学生公开 ID */
+      studentId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomMutationResponse;
+  }
+}
+
+export namespace ContextArtifacts {
+  /**
+   * @description 查询当前用户可访问的上下文证据详情，用于 Prompt Trace 来源查看
+   * @tags chat
+   * @name ContextArtifactsDetail
+   * @summary 查询上下文证据详情
+   * @request GET:/context-artifacts/{id}
+   * @secure
+   */
+  export namespace ContextArtifactsDetail {
+    export type RequestParams = {
+      /** 上下文证据 ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ContextArtifactResponseDoc;
+  }
+}
+
+export namespace ConversationRuns {
+  /**
+   * @description 按运行 ID 一次查询当前用户多个会话任务的最小状态快照
+   * @tags chat
+   * @name StatusesCreate
+   * @summary 批量查询会话运行状态
+   * @request POST:/conversation-runs/statuses
+   * @secure
+   */
+  export namespace StatusesCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = GetConversationRunStatusesRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationRunStatusResponse[];
+  }
+
+  /**
+   * @description 先推送当前用户进行中运行的权威快照，再持续推送该用户范围内的运行状态事件；快照会定期重发，供客户端对账
+   * @tags chat
+   * @name StreamList
+   * @summary 订阅进行中的会话生成
+   * @request GET:/conversation-runs/stream
+   * @secure
+   */
+  export namespace StreamList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ActiveMessageGenerationEventResponse;
+  }
+
+  /**
+   * @description 仅在用户显式点击暂停时取消对应 run；浏览器刷新或断开连接不会调用此接口
+   * @tags chat
+   * @name CancelCreate
+   * @summary 取消流式生成
+   * @request POST:/conversation-runs/{run_id}/cancel
+   * @secure
+   */
+  export namespace CancelCreate {
+    export type RequestParams = {
+      /** 运行 ID */
+      runId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessDoc;
+  }
+
+  /**
+   * @description 页面刷新后按 run_id 重新订阅仍在运行的生成流，返回 NDJSON 事件
+   * @tags chat
+   * @name StreamList2
+   * @summary 恢复流式生成订阅
+   * @request GET:/conversation-runs/{run_id}/stream
+   * @originalName streamList
+   * @duplicate
+   * @secure
+   */
+  export namespace StreamList2 {
+    export type RequestParams = {
+      /** 运行 ID */
+      runId: string;
+    };
+    export type RequestQuery = {
+      /** 已接收的最后事件序号 */
+      after?: number;
+      /** 是否返回正文与当前思考轮次的权威内容快照 */
+      snapshot?: boolean;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
+  }
+}
+
+export namespace Conversations {
+  /**
+   * @description 查询当前用户会话列表
+   * @tags chat
+   * @name ConversationsList
+   * @summary 会话分页列表
+   * @request GET:/conversations
+   * @secure
+   */
+  export namespace ConversationsList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 搜索关键词，匹配会话元数据、标签和消息正文 */
+      q?: string;
+      /** 星标筛选: all|starred|unstarred */
+      starred?: string;
+      /** 状态筛选: active|archived|all */
+      status?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationListResponseDoc;
+  }
+
+  /**
+   * @description 创建新的聊天会话
+   * @tags chat
+   * @name ConversationsCreate
+   * @summary 创建会话
+   * @request POST:/conversations
+   * @secure
+   */
+  export namespace ConversationsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = CreateConversationRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationCreateResponseDoc;
+  }
+
+  /**
+   * @description 返回后台配置的新会话系统推荐模型；未配置时返回空候选
+   * @tags chat
+   * @name DefaultModelCandidateList
+   * @summary 查询新会话默认模型候选
+   * @request GET:/conversations/default-model-candidate
+   * @secure
+   */
+  export namespace DefaultModelCandidateList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationDefaultModelCandidateResponseDoc;
+  }
+
+  /**
+   * @description 分页搜索当前用户的会话标题、元数据、标签和消息正文，并返回是否还有下一页
+   * @tags chat
+   * @name SearchList
+   * @summary 搜索会话
+   * @request GET:/conversations/search
+   * @secure
+   */
+  export namespace SearchList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 搜索关键词；为空时返回最近会话 */
+      q?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationSearchListResponseDoc;
+  }
+
+  /**
+   * @description 查询当前用户的单个会话元信息
+   * @tags chat
+   * @name ConversationsDetail
+   * @summary 查询会话
+   * @request GET:/conversations/{id}
+   * @secure
+   */
+  export namespace ConversationsDetail {
+    export type RequestParams = {
+      /** 会话 public_id */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationUpdateResponseDoc;
+  }
+
+  /**
+   * @description 删除指定会话
+   * @tags chat
+   * @name ConversationsDelete
+   * @summary 删除会话
+   * @request DELETE:/conversations/{id}
+   * @secure
+   */
+  export namespace ConversationsDelete {
+    export type RequestParams = {
+      /** 会话 public_id */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** 是否同步删除不再被其他会话引用的会话文件 */
+      delete_files?: boolean;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationDeleteResponseDoc;
+  }
+
+  /**
+   * @description 设置指定会话归档状态
+   * @tags chat
+   * @name ArchivePartialUpdate
+   * @summary 设置会话归档
+   * @request PATCH:/conversations/{id}/archive
+   * @secure
+   */
+  export namespace ArchivePartialUpdate {
+    export type RequestParams = {
+      /** 会话 public_id */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = SetConversationArchiveRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationUpdateResponseDoc;
+  }
+
+  /**
+   * @description 替换指定会话的标签；传入空数组可清空标签
+   * @tags chat
+   * @name LabelsPartialUpdate
+   * @summary 更新会话标签
+   * @request PATCH:/conversations/{id}/labels
+   * @secure
+   */
+  export namespace LabelsPartialUpdate {
+    export type RequestParams = {
+      /** 会话 public_id */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateConversationLabelsRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationUpdateResponseDoc;
+  }
+
+  /**
+   * @description 查询会话内消息列表
+   * @tags chat
+   * @name MessagesList
+   * @summary 查询会话消息
+   * @request GET:/conversations/{id}/messages
+   * @secure
+   */
+  export namespace MessagesList {
+    export type RequestParams = {
+      /** 会话 public_id */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = MessageListResponseDoc;
+  }
+
+  /**
+   * @description 在会话中发送消息，支持文件/图片等多模态附件
+   * @tags chat
+   * @name MessagesCreate
+   * @summary 发送消息
+   * @request POST:/conversations/{id}/messages
+   * @secure
+   */
+  export namespace MessagesCreate {
+    export type RequestParams = {
+      /** 会话 public_id */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = SendMessageRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = SendMessageResponseDoc;
+  }
+
+  /**
+   * @description 返回当前用户会话最新分支最近 10 条用户或助手消息
+   * @tags chat
+   * @name MessagesPreviewList
+   * @summary 查询会话预览消息
+   * @request GET:/conversations/{id}/messages/preview
+   * @secure
+   */
+  export namespace MessagesPreviewList {
+    export type RequestParams = {
+      /** 会话 public_id */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationPreviewMessageListResponseDoc;
+  }
+
+  /**
+   * @description 在会话中发送消息并以 NDJSON 流式返回 assistant 增量文本
+   * @tags chat
+   * @name MessagesStreamCreate
+   * @summary 流式发送消息
+   * @request POST:/conversations/{id}/messages/stream
+   * @secure
+   */
+  export namespace MessagesStreamCreate {
+    export type RequestParams = {
+      /** 会话 public_id */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = SendMessageRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
+  }
+
+  /**
+   * @description 删除会话中任意位置的一条消息；其子消息将重接到被删消息的父消息上，后续消息保留并向前衔接。会话第一条消息与生成中的消息不允许删除
+   * @tags chat
+   * @name MessagesDelete
+   * @summary 删除指定消息
+   * @request DELETE:/conversations/{id}/messages/{message_id}
+   * @secure
+   */
+  export namespace MessagesDelete {
+    export type RequestParams = {
+      /** 会话 public_id */
+      id: string;
+      /** 消息 public_id */
+      messageId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = MessageDeleteResponseDoc;
+  }
+
+  /**
+   * @description 仅允许从助手消息 fork；将会话从开头到指定助手消息（含）的祖先链复制为一个新会话，保留历史展示轨迹；不携带原会话的运行记录，附件以引用方式复用
+   * @tags chat
+   * @name MessagesForkCreate
+   * @summary 从指定消息 fork 新会话
+   * @request POST:/conversations/{id}/messages/{message_id}/fork
+   * @secure
+   */
+  export namespace MessagesForkCreate {
+    export type RequestParams = {
+      /** 会话 public_id */
+      id: string;
+      /** 消息 public_id */
+      messageId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationUpdateResponseDoc;
+  }
+
+  /**
+   * @description 查询会话内模型调用运行日志（tokens/时长/错误）
+   * @tags chat
+   * @name RunsList
+   * @summary 查询会话运行日志
+   * @request GET:/conversations/{id}/runs
+   * @secure
+   */
+  export namespace RunsList {
+    export type RequestParams = {
+      /** 会话 public_id */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationRunListResponseDoc;
+  }
+
+  /**
+   * @description 设置指定会话是否星标
+   * @tags chat
+   * @name StarPartialUpdate
+   * @summary 设置会话星标
+   * @request PATCH:/conversations/{id}/star
+   * @secure
+   */
+  export namespace StarPartialUpdate {
+    export type RequestParams = {
+      /** 会话 public_id */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = SetConversationStarRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationUpdateResponseDoc;
+  }
+
+  /**
+   * @description 修改指定会话标题
+   * @tags chat
+   * @name TitlePartialUpdate
+   * @summary 重命名会话
+   * @request PATCH:/conversations/{id}/title
+   * @secure
+   */
+  export namespace TitlePartialUpdate {
+    export type RequestParams = {
+      /** 会话 public_id */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = RenameConversationRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationUpdateResponseDoc;
+  }
+
+  /**
+   * @description 根据指定会话已有内容重新生成标题
+   * @tags chat
+   * @name TitleRegenerateCreate
+   * @summary 自动重新命名会话
+   * @request POST:/conversations/{id}/title/regenerate
+   * @secure
+   */
+  export namespace TitleRegenerateCreate {
+    export type RequestParams = {
+      /** 会话 public_id */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConversationUpdateResponseDoc;
+  }
+}
+
+export namespace Files {
+  /**
+   * @description 查询当前用户上传的文件
+   * @tags chat
+   * @name FilesList
+   * @summary 文件分页列表
+   * @request GET:/files
+   * @secure
+   */
+  export namespace FilesList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 筛选，支持单值或逗号分隔多值: image,document,spreadsheet,presentation,code,pdf,audio,video */
+      kind?: string;
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 搜索关键词 */
+      q?: string;
+      /** 排序: created|name|size|last_used */
+      sort?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = FileListResponseDoc;
+  }
+
+  /**
+   * @description 上传对话附件文件，统一存储并扣减用户配额（默认100MB）
+   * @tags chat
+   * @name FilesCreate
+   * @summary 上传文件
+   * @request POST:/files
+   * @secure
+   */
+  export namespace FilesCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = {
+      /**
+       * 文件
+       * @format binary
+       */
+      file: File;
+      /** 文件用途 */
+      purpose?: string;
+    };
+    export type RequestHeaders = {};
+    export type ResponseBody = UploadFileResponseDoc;
+  }
+
+  /**
+   * @description 为当前用户已完成文本提取的文件提交向量化任务，最多100个；重复提交会幂等跳过
+   * @tags chat
+   * @name EmbeddingsCreate
+   * @summary 批量提交指定文件向量化
+   * @request POST:/files/embeddings
+   * @secure
+   */
+  export namespace EmbeddingsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = SubmitFileEmbeddingsRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = FileEmbeddingSubmissionResponseDoc;
+  }
+
+  /**
+   * @description 一次查询当前用户多个文件的处理状态
+   * @tags chat
+   * @name ProcessingStatusesCreate
+   * @summary 批量查询文件处理状态
+   * @request POST:/files/processing/statuses
+   * @secure
+   */
+  export namespace ProcessingStatusesCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = GetFileProcessingStatusesRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = FileProcessingStatusResponse[];
+  }
+
+  /**
+   * @description 删除指定文件并回收用户配额
+   * @tags chat
+   * @name FilesDelete
+   * @summary 删除文件
+   * @request DELETE:/files/{file_id}
+   * @secure
+   */
+  export namespace FilesDelete {
+    export type RequestParams = {
+      /** 文件ID */
+      fileId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = DeleteFileResponseDoc;
+  }
+
+  /**
+   * @description 修改文件名或 RAG 检索开关，file_name 和 rag_opt_out 至少填一个
+   * @tags chat
+   * @name FilesPartialUpdate
+   * @summary 更新文件属性
+   * @request PATCH:/files/{file_id}
+   * @secure
+   */
+  export namespace FilesPartialUpdate {
+    export type RequestParams = {
+      /** 文件ID */
+      fileId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateFileRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = FileUpdateResponseDoc;
+  }
+
+  /**
+   * @description 按当前登录用户权限读取文件内容，用于在线预览或下载
+   * @tags chat
+   * @name ContentList
+   * @summary 获取文件内容
+   * @request GET:/files/{file_id}/content
+   * @secure
+   */
+  export namespace ContentList {
+    export type RequestParams = {
+      /** 文件ID */
+      fileId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Blob;
+  }
+
+  /**
+   * @description 返回当前用户文件已完成提取的文本内容；提取尚未就绪时返回 409
+   * @tags chat
+   * @name ExtractList
+   * @summary 获取文件提取文本
+   * @request GET:/files/{file_id}/extract
+   * @secure
+   */
+  export namespace ExtractList {
+    export type RequestParams = {
+      /** 文件ID */
+      fileId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = FileExtractResponseDoc;
+  }
+
+  /**
+   * @description 查询当前用户单个文件的文本提取与向量化处理状态
+   * @tags chat
+   * @name ProcessingList
+   * @summary 查询文件处理状态
+   * @request GET:/files/{file_id}/processing
+   * @secure
+   */
+  export namespace ProcessingList {
+    export type RequestParams = {
+      /** 文件ID */
+      fileId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = FileProcessingStatusResponseDoc;
+  }
+}
+
+export namespace KnowledgeBases {
+  /**
+   * No description
+   * @tags knowledge-bases
+   * @name KnowledgeBasesList
+   * @summary 查询当前用户可用知识库
+   * @request GET:/knowledge-bases
+   * @secure
+   */
+  export namespace KnowledgeBasesList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 知识库ID */
+      id?: string[];
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 搜索关键词 */
+      q?: string;
+      /** 排序方式(default/name/created/updated/files) */
+      sort?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBasePageResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags knowledge-bases
+   * @name MineList
+   * @summary 查询我的知识库
+   * @request GET:/knowledge-bases/mine
+   * @secure
+   */
+  export namespace MineList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 可用状态 */
+      enabled?: boolean;
+      /** 知识库ID */
+      id?: string[];
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 搜索关键词 */
+      q?: string;
+      /** 排序方式(default/name/created/updated/files) */
+      sort?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBasePageResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags knowledge-bases
+   * @name MineCreate
+   * @summary 创建个人知识库
+   * @request POST:/knowledge-bases/mine
+   * @secure
+   */
+  export namespace MineCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = WriteMyKnowledgeBaseRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags knowledge-bases
+   * @name MineDelete
+   * @summary 删除个人知识库
+   * @request DELETE:/knowledge-bases/mine/{id}
+   * @secure
+   */
+  export namespace MineDelete {
+    export type RequestParams = {
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** 是否同步删除不再被其他资源引用的知识库文件 */
+      delete_files?: boolean;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseDeleteResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags knowledge-bases
+   * @name MinePartialUpdate
+   * @summary 更新个人知识库
+   * @request PATCH:/knowledge-bases/mine/{id}
+   * @secure
+   */
+  export namespace MinePartialUpdate {
+    export type RequestParams = {
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = PatchMyKnowledgeBaseRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseResponseDoc;
+  }
+
+  /**
+   * @description 分页返回当前用户尚未关联到指定个人知识库的有效文件
+   * @tags knowledge-bases
+   * @name MineAvailableFilesList
+   * @summary 查询可加入个人知识库的文件
+   * @request GET:/knowledge-bases/mine/{id}/available-files
+   * @secure
+   */
+  export namespace MineAvailableFilesList {
+    export type RequestParams = {
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 文件名搜索关键词 */
+      q?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFilePageResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags knowledge-bases
+   * @name MineFilesCreate
+   * @summary 将已有文件加入个人知识库
+   * @request POST:/knowledge-bases/mine/{id}/files
+   * @secure
+   */
+  export namespace MineFilesCreate {
+    export type RequestParams = {
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AddKnowledgeBaseFilesRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFileMutationResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags knowledge-bases
+   * @name MineFilesDelete
+   * @summary 将文件移出个人知识库
+   * @request DELETE:/knowledge-bases/mine/{id}/files/{file_id}
+   * @secure
+   */
+  export namespace MineFilesDelete {
+    export type RequestParams = {
+      /** 文件ID */
+      fileId: string;
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFileMutationResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags knowledge-bases
+   * @name KnowledgeBasesDetail
+   * @summary 查询知识库详情
+   * @request GET:/knowledge-bases/{id}
+   * @secure
+   */
+  export namespace KnowledgeBasesDetail {
+    export type RequestParams = {
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags knowledge-bases
+   * @name FilesList
+   * @summary 查询知识库文件
+   * @request GET:/knowledge-bases/{id}/files
+   * @secure
+   */
+  export namespace FilesList {
+    export type RequestParams = {
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFilePageResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags knowledge-bases
+   * @name FilesProcessingSnapshotCreate
+   * @summary 查询当前用户可见知识库处理快照
+   * @request POST:/knowledge-bases/{id}/files/processing/snapshot
+   * @secure
+   */
+  export namespace FilesProcessingSnapshotCreate {
+    export type RequestParams = {
+      /** 知识库公开ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = GetKnowledgeBaseFileProcessingSnapshotRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFileProcessingSnapshotResponse;
+  }
+
+  /**
+   * No description
+   * @tags knowledge-bases
+   * @name FilesProcessingStatusesCreate
+   * @summary 批量查询知识库文件处理状态
+   * @request POST:/knowledge-bases/{id}/files/processing/statuses
+   * @secure
+   */
+  export namespace FilesProcessingStatusesCreate {
+    export type RequestParams = {
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = GetKnowledgeBaseFileProcessingStatusesRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = KnowledgeBaseFileProcessingStatusResponse[];
+  }
+
+  /**
+   * @description 仅允许读取当前用户可见且仍与知识库关联的文件
+   * @tags knowledge-bases
+   * @name FilesContentList
+   * @summary 获取知识库文件内容
+   * @request GET:/knowledge-bases/{id}/files/{file_id}/content
+   * @secure
+   */
+  export namespace FilesContentList {
+    export type RequestParams = {
+      /** 文件ID */
+      fileId: string;
+      /** 知识库ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Blob;
+  }
+}
+
+export namespace Learning {
+  /**
+   * No description
+   * @tags learning
+   * @name AttemptsCreate
+   * @summary Save a personal practice answer, deduplicated by account and attempt ID
+   * @request POST:/learning/attempts
+   * @secure
+   */
+  export namespace AttemptsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = LearningAttemptRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningAttemptData;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name CourseList
+   * @summary Read the course catalog; standalone practice is limited to teaching previews
+   * @request GET:/learning/course
+   * @secure
+   */
+  export namespace CourseList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningCourseResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name LessonAttemptsCreate
+   * @summary Grade and save a staged answer with partial credit and idempotent retries
+   * @request POST:/learning/lesson-attempts
+   * @secure
+   */
+  export namespace LessonAttemptsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = LearningLessonAttemptRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningLessonAttemptResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name LessonsDetail
+   * @summary Read lesson notes; students receive no standalone questions or answer keys
+   * @request GET:/learning/lessons/{id}
+   * @secure
+   */
+  export namespace LessonsDetail {
+    export type RequestParams = {
+      /** Stable knowledge lesson ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningCourseLessonResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name ProgressList
+   * @summary Read personal practice, diagnosis, and spaced-review progress
+   * @request GET:/learning/progress
+   * @secure
+   */
+  export namespace ProgressList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningProgressResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name ReviewsCreate
+   * @summary Submit a server-graded variant review and schedule the next review
+   * @request POST:/learning/reviews
+   * @secure
+   */
+  export namespace ReviewsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = LearningReviewRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningAttemptData;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name TutorCreate
+   * @summary Request a grounded hint or explanation for an interactive experiment
+   * @request POST:/learning/tutor
+   * @secure
+   */
+  export namespace TutorCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = LearningTutorRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningTutorResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name VariantsDetail
+   * @summary Read a localized review variant without its answer or explanation
+   * @request GET:/learning/variants/{id}
+   * @secure
+   */
+  export namespace VariantsDetail {
+    export type RequestParams = {
+      /** Variant ID */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** Locale */
+      locale?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningVariantResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name VirtualLabList
+   * @summary Read the current account's three-experiment evidence
+   * @request GET:/learning/virtual-lab
+   * @secure
+   */
+  export namespace VirtualLabList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningVirtualLabResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name VirtualLabUpdate
+   * @summary Save account-scoped experiment evidence with optimistic concurrency
+   * @request PUT:/learning/virtual-lab
+   * @secure
+   */
+  export namespace VirtualLabUpdate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = LearningVirtualLabRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningVirtualLabResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name VirtualLabGuideList
+   * @summary Read the teacher-only guide for all twelve tasks
+   * @request GET:/learning/virtual-lab/guide
+   * @secure
+   */
+  export namespace VirtualLabGuideList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningVirtualLabGuideResponse;
+  }
+}
+
+export namespace Llm {
+  /**
+   * @description 公开读取经过后端校验的不可变模型展示图标
+   * @tags llm
+   * @name IconAssetsDetail
+   * @summary 读取模型展示图标
+   * @request GET:/llm/icon-assets/{public_id}
+   */
+  export namespace IconAssetsDetail {
+    export type RequestParams = {
+      /** 图标公开 ID */
+      publicId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Blob;
+  }
+}
+
+export namespace Me {
+  /**
+   * @description 查询当前登录用户资料
+   * @tags auth
+   * @name GetMe
+   * @summary 当前用户信息
+   * @request GET:/me
+   * @secure
+   */
+  export namespace GetMe {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = MeResponseDoc;
+  }
+
+  /**
+   * @description 删除当前登录用户账户及主要用户域数据
+   * @tags auth
+   * @name DeleteMe
+   * @summary 删除当前用户账户
+   * @request DELETE:/me
+   * @secure
+   */
+  export namespace DeleteMe {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = DeleteAccountRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = DeleteAccountResponseDoc;
+  }
+
+  /**
+   * @description 更新当前登录用户的头像、昵称、时区、对话偏好
+   * @tags auth
+   * @name PatchMe
+   * @summary 更新当前用户资料
+   * @request PATCH:/me
+   * @secure
+   */
+  export namespace PatchMe {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = PatchMeRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = PatchMeResponseDoc;
+  }
+
+  /**
+   * @description 返回 TOTP 是否可用、是否已启用、是否强制及剩余恢复码数量
+   * @tags auth
+   * @name TwoFactorStatusList
+   * @summary 获取当前用户双因素认证状态
+   * @request GET:/me/2fa
+   * @secure
+   */
+  export namespace TwoFactorStatusList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = TwoFactorStatusResponseDoc;
+  }
+
+  /**
+   * @description 校验 TOTP 验证码或恢复码后关闭当前用户的双因素认证
+   * @tags auth
+   * @name TwoFactorDisableCreate
+   * @summary 关闭双因素认证
+   * @request POST:/me/2fa/disable
+   * @secure
+   */
+  export namespace TwoFactorDisableCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = TwoFactorCodeRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = TwoFactorDisableResponseDoc;
+  }
+
+  /**
+   * @description 校验 TOTP 验证码或恢复码（恢复码校验通过即被消耗）后作废旧恢复码，并返回新的一次性恢复码
+   * @tags auth
+   * @name TwoFactorRecoveryRegenerateCreate
+   * @summary 重新生成双因素恢复码
+   * @request POST:/me/2fa/recovery/regenerate
+   * @secure
+   */
+  export namespace TwoFactorRecoveryRegenerateCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = TwoFactorCodeRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = TwoFactorRecoveryCodesResponseDoc;
+  }
+
+  /**
+   * @description 丢弃当前用户尚未确认的 TOTP 设置
+   * @tags auth
+   * @name TwoFactorSetupDelete
+   * @summary 取消双因素认证设置
+   * @request DELETE:/me/2fa/setup
+   * @secure
+   */
+  export namespace TwoFactorSetupDelete {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = TwoFactorSetupCancelResponseDoc;
+  }
+
+  /**
+   * @description 使用 TOTP 验证码确认设置并启用双因素认证，返回一次性恢复码
+   * @tags auth
+   * @name TwoFactorSetupConfirmCreate
+   * @summary 确认启用双因素认证
+   * @request POST:/me/2fa/setup/confirm
+   * @secure
+   */
+  export namespace TwoFactorSetupConfirmCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = TwoFactorCodeRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = TwoFactorRecoveryCodesResponseDoc;
+  }
+
+  /**
+   * @description 为当前用户生成新的 TOTP 密钥与 otpauth URL，需在过期前确认
+   * @tags auth
+   * @name TwoFactorSetupStartCreate
+   * @summary 开始设置双因素认证
+   * @request POST:/me/2fa/setup/start
+   * @secure
+   */
+  export namespace TwoFactorSetupStartCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = TwoFactorSetupStartResponseDoc;
+  }
+
+  /**
+   * @description 发送删除当前账号前所需的邮箱验证码，或返回可用的两步验证方式
+   * @tags auth
+   * @name DeleteStartCreate
+   * @summary 开始删除账号验证
+   * @request POST:/me/delete/start
+   * @secure
+   */
+  export namespace DeleteStartCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = SecurityVerificationStartRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = EmailVerificationStartResponseDoc;
+  }
+
+  /**
+   * @description 使用邮箱与验证码为当前用户绑定初始邮箱，返回更新后的用户信息
+   * @tags auth
+   * @name EmailBootstrapCompleteCreate
+   * @summary 完成初始邮箱绑定
+   * @request POST:/me/email/bootstrap/complete
+   * @secure
+   */
+  export namespace EmailBootstrapCompleteCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = EmailBootstrapCompleteRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = MeResponseDoc;
+  }
+
+  /**
+   * @description 为尚未绑定邮箱的当前用户向指定邮箱发送验证码
+   * @tags auth
+   * @name EmailBootstrapStartCreate
+   * @summary 发送初始邮箱验证码
+   * @request POST:/me/email/bootstrap/start
+   * @secure
+   */
+  export namespace EmailBootstrapStartCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = EmailVerificationStartRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = EmailVerificationStartResponseDoc;
+  }
+
+  /**
+   * @description 校验当前身份验证码与新邮箱验证码后更换邮箱，返回更新后的用户信息
+   * @tags auth
+   * @name EmailChangeCompleteCreate
+   * @summary 完成邮箱更换
+   * @request POST:/me/email/change/complete
+   * @secure
+   */
+  export namespace EmailChangeCompleteCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = EmailChangeCompleteRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = MeResponseDoc;
+  }
+
+  /**
+   * @description 更换邮箱前先按指定方式验证当前身份；请求体可省略，未指定验证方式时由服务端选择可用方式
+   * @tags auth
+   * @name EmailChangeStartCurrentCreate
+   * @summary 发起更换邮箱的当前身份验证
+   * @request POST:/me/email/change/start-current
+   * @secure
+   */
+  export namespace EmailChangeStartCurrentCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = SecurityVerificationStartRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = EmailVerificationStartResponseDoc;
+  }
+
+  /**
+   * @description 更换邮箱时向新邮箱发送验证码
+   * @tags auth
+   * @name EmailChangeStartNewCreate
+   * @summary 发送新邮箱验证码
+   * @request POST:/me/email/change/start-new
+   * @secure
+   */
+  export namespace EmailChangeStartNewCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = EmailVerificationStartRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = EmailVerificationStartResponseDoc;
+  }
+
+  /**
+   * @description 使用验证码验证当前用户已绑定的邮箱，返回更新后的用户信息
+   * @tags auth
+   * @name EmailVerifyCurrentCompleteCreate
+   * @summary 完成当前邮箱验证
+   * @request POST:/me/email/verify-current/complete
+   * @secure
+   */
+  export namespace EmailVerifyCurrentCompleteCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = EmailVerificationCompleteRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = MeResponseDoc;
+  }
+
+  /**
+   * @description 向当前用户已绑定但未验证的邮箱发送验证码
+   * @tags auth
+   * @name EmailVerifyCurrentStartCreate
+   * @summary 发送当前邮箱验证码
+   * @request POST:/me/email/verify-current/start
+   * @secure
+   */
+  export namespace EmailVerifyCurrentStartCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = EmailVerificationStartResponseDoc;
+  }
+
+  /**
+   * @description 列出当前用户已关联的 OIDC/OAuth2 第三方身份
+   * @tags auth
+   * @name IdentitiesList
+   * @summary 获取当前用户已绑定的第三方身份
+   * @request GET:/me/identities
+   * @secure
+   */
+  export namespace IdentitiesList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UserIdentityListResponseDoc;
+  }
+
+  /**
+   * @description 为当前登录用户创建 PKCE 保护的绑定事务；外部身份源仅回调当前 CourseMate 实例，绑定在兑换时才生效
+   * @tags auth
+   * @name IdentitiesProvidersAuthorizeCreate
+   * @summary 创建第三方身份绑定授权桥事务
+   * @request POST:/me/identities/providers/{slug}/authorize
+   * @secure
+   */
+  export namespace IdentitiesProvidersAuthorizeCreate {
+    export type RequestParams = {
+      /** 身份源 slug */
+      slug: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ProviderBindBridgeStartRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ProviderAuthBridgeStartResponseDoc;
+  }
+
+  /**
+   * @description 使用客户端 PKCE verifier 兑换绑定用的一次性授权凭证，将身份绑到当前登录用户
+   * @tags auth
+   * @name IdentitiesProvidersExchangeCreate
+   * @summary 兑换第三方身份绑定一次性授权凭证
+   * @request POST:/me/identities/providers/{slug}/exchange
+   * @secure
+   */
+  export namespace IdentitiesProvidersExchangeCreate {
+    export type RequestParams = {
+      /** 身份源 slug */
+      slug: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ProviderAuthBridgeExchangeRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = UserIdentityResponseDoc;
+  }
+
+  /**
+   * @description 解除当前用户与指定第三方身份的关联；不允许移除最后一种登录方式
+   * @tags auth
+   * @name IdentitiesDelete
+   * @summary 解绑当前用户的第三方身份
+   * @request DELETE:/me/identities/{identity_id}
+   * @secure
+   */
+  export namespace IdentitiesDelete {
+    export type RequestParams = {
+      /** 身份ID */
+      identityId: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = DeleteUserIdentityResponseDoc;
+  }
+
+  /**
+   * @description 标记当前用户已完成首次引导
+   * @tags auth
+   * @name OnboardingCompleteCreate
+   * @summary 完成首次引导
+   * @request POST:/me/onboarding/complete
+   * @secure
+   */
+  export namespace OnboardingCompleteCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = PatchMeResponseDoc;
+  }
+
+  /**
+   * @description 当前用户仅可自主修改一次登录用户名
+   * @tags auth
+   * @name UsernamePartialUpdate
+   * @summary 修改当前用户用户名
+   * @request PATCH:/me/username
+   * @secure
+   */
+  export namespace UsernamePartialUpdate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = PatchUsernameRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = PatchMeResponseDoc;
+  }
+}
+
+export namespace Messages {
+  /**
+   * @description 就地更新当前用户会话中的 user 或 assistant 消息内容并标记为已编辑，不触发重新生成
+   * @tags chat
+   * @name MessagesPartialUpdate
+   * @summary 更新消息内容
+   * @request PATCH:/messages/{id}
+   * @secure
+   */
+  export namespace MessagesPartialUpdate {
+    export type RequestParams = {
+      /** 消息 public_id */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = UpdateMessageRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = MessageResponseDoc;
+  }
+
+  /**
+   * @description 对 assistant 消息设置点赞/点踩，传空 feedback 表示取消反馈
+   * @tags chat
+   * @name FeedbackUpdate
+   * @summary 设置消息反馈
+   * @request PUT:/messages/{id}/feedback
+   * @secure
+   */
+  export namespace FeedbackUpdate {
+    export type RequestParams = {
+      /** 消息 public_id */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = SetMessageFeedbackRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = MessageFeedbackResponseDoc;
+  }
+}
+
+export namespace Models {
+  /**
+   * @description 用户侧查询启用模型目录，用于聊天模型选择器
+   * @tags llm
+   * @name ModelsList
+   * @summary 查询可用模型目录
+   * @request GET:/models
+   * @secure
+   */
+  export namespace ModelsList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = PublicModelListResponseDoc;
+  }
+}
+
+export namespace Quizzes {
+  /**
+   * @description 教师截止小测后，学生不能再提交答案。
+   * @tags classrooms
+   * @name CloseCreate
+   * @summary 截止班级小测
+   * @request POST:/quizzes/{id}/close
+   * @secure
+   */
+  export namespace CloseCreate {
+    export type RequestParams = {
+      /** 小测公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomMutationResponse;
+  }
+
+  /**
+   * @description 教师发布小测后，班级学生可在学生端看到题目。
+   * @tags classrooms
+   * @name OpenCreate
+   * @summary 发布班级小测
+   * @request POST:/quizzes/{id}/open
+   * @secure
+   */
+  export namespace OpenCreate {
+    export type RequestParams = {
+      /** 小测公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomMutationResponse;
+  }
+
+  /**
+   * @description 教师查看提交率、选项分布、未提交名单与逐份提交记录。
+   * @tags classrooms
+   * @name SubmissionsList
+   * @summary 查询小测统计
+   * @request GET:/quizzes/{id}/submissions
+   * @secure
+   */
+  export namespace SubmissionsList {
+    export type RequestParams = {
+      /** 小测公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = QuizReportResponse;
+  }
+
+  /**
+   * @description 学生提交一次答案并得到得分；重复提交返回 409。
+   * @tags classrooms
+   * @name SubmissionsCreate
+   * @summary 提交小测答案
+   * @request POST:/quizzes/{id}/submissions
+   * @secure
+   */
+  export namespace SubmissionsCreate {
+    export type RequestParams = {
+      /** 小测公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = SubmitQuizRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = QuizSubmissionResultResponse;
+  }
+}
+
+export namespace Runtime {
+  /**
+   * @description 返回当前用户在聊天中上传与使用文件的运行时策略（大小、数量、类型与处理模式等）
+   * @tags chat
+   * @name ChatFilePolicyList
+   * @summary 获取聊天文件策略
+   * @request GET:/runtime/chat-file-policy
+   * @secure
+   */
+  export namespace ChatFilePolicyList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ChatFilePolicyResponseDoc;
+  }
+}
+
+export namespace Settings {
+  /**
+   * No description
+   * @tags settings
+   * @name ChatContextPolicyList
+   * @summary 查询聊天上下文策略
+   * @request GET:/settings/chat-context-policy
+   * @secure
+   */
+  export namespace ChatContextPolicyList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * @description 返回管理员配置的用户侧功能开关，包括知识库、处理轨迹与网页端「下载桌面端」入口
+   * @tags settings
+   * @name FeaturePolicyList
+   * @summary 查询用户侧功能开关策略
+   * @request GET:/settings/feature-policy
+   * @secure
+   */
+  export namespace FeaturePolicyList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = FeaturePolicyResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags settings
+   * @name LoginPageList
+   * @summary 查询公开登录页配置
+   * @request GET:/settings/login-page
+   */
+  export namespace LoginPageList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * No description
+   * @tags settings
+   * @name ModelOptionPolicyList
+   * @summary 查询模型 options 透传策略
+   * @request GET:/settings/model-option-policy
+   * @secure
+   */
+  export namespace ModelOptionPolicyList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+}
+
+export namespace Student {
+  /**
+   * @description 学生查询当前班级已发布的小测；响应不包含正确答案。
+   * @tags classrooms
+   * @name QuizzesList
+   * @summary 查询学生端小测
+   * @request GET:/student/quizzes
+   * @secure
+   */
+  export namespace QuizzesList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = StudentQuizListResponse;
+  }
+}
+
+export namespace UiComponents {
+  /**
+   * @description 返回已启用的内置、平台组件与当前用户自定义组件，含渲染源，用于会话勾选与消息渲染
+   * @tags ui-components
+   * @name UiComponentsList
+   * @summary 查询当前用户可用的交互式组件
+   * @request GET:/ui-components
+   * @secure
+   */
+  export namespace UiComponentsList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 搜索关键词 */
+      q?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UIComponentPageResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags ui-components
+   * @name MineList
+   * @summary 查询我的自定义组件
+   * @request GET:/ui-components/mine
+   * @secure
+   */
+  export namespace MineList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 是否启用 */
+      enabled?: boolean;
+      /** 页码（从 1 开始，默认 1） */
+      page?: number;
+      /** 每页数量（1-1000，默认 20） */
+      page_size?: number;
+      /** 搜索关键词 */
+      q?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UIComponentPageResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags ui-components
+   * @name MineCreate
+   * @summary 创建我的自定义组件
+   * @request POST:/ui-components/mine
+   * @secure
+   */
+  export namespace MineCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = WriteUIComponentRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = UIComponentResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags ui-components
+   * @name MineDelete
+   * @summary 删除我的自定义组件
+   * @request DELETE:/ui-components/mine/{id}
+   * @secure
+   */
+  export namespace MineDelete {
+    export type RequestParams = {
+      /** 组件ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UIComponentDeleteResponseDoc;
+  }
+
+  /**
+   * No description
+   * @tags ui-components
+   * @name MinePartialUpdate
+   * @summary 更新我的自定义组件
+   * @request PATCH:/ui-components/mine/{id}
+   * @secure
+   */
+  export namespace MinePartialUpdate {
+    export type RequestParams = {
+      /** 组件ID */
+      id: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = PatchUIComponentRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = UIComponentResponseDoc;
+  }
+}
+
+export namespace User {
+  /**
+   * @description 返回当前用户全部个人偏好配置，缺失项以默认值填充
+   * @tags user/settings
+   * @name SettingsList
+   * @summary 获取当前用户的配置
+   * @request GET:/user/settings
+   * @secure
+   */
+  export namespace SettingsList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UserSettingsResponseDoc;
+  }
+
+  /**
+   * @description 批量更新用户个人偏好配置，返回更新后的全量配置
+   * @tags user/settings
+   * @name SettingsPartialUpdate
+   * @summary 更新当前用户的配置
+   * @request PATCH:/user/settings
+   * @secure
+   */
+  export namespace SettingsPartialUpdate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = UserSettingsPatchSettingsRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = UserSettingsResponseDoc;
+  }
+
+  /**
+   * @description 查询当前用户按用量归属日聚合的模型请求数与 token 消耗，逐日补零
+   * @tags user
+   * @name StatsActivityList
+   * @summary 查询每日活跃度
+   * @request GET:/user/stats/activity
+   * @secure
+   */
+  export namespace StatsActivityList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 统计天数(默认365，最大366) */
+      days?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UserDailyActivityListResponseDoc;
+  }
+}
+
+export namespace Users {
+  /**
+   * @description 公开读取用户当前上传的头像图片。头像须为已上传的图片文件，实际类型受上传 MIME 白名单约束（默认 PNG/JPEG/WebP/GIF，SVG 等活动内容始终拒绝）；未上传头像时返回 404，错误响应为 JSON
+   * @tags user
+   * @name AvatarList
+   * @summary 获取用户头像
+   * @request GET:/users/{public_id}/avatar
+   */
+  export namespace AvatarList {
+    export type RequestParams = {
+      /** 用户 public_id */
+      publicId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = File;
+  }
+}
