@@ -82,11 +82,7 @@ fn serve_once<R: Runtime>(app: AppHandle<R>, listener: TcpListener, port: u16) {
     }
 
     let url = format!("http://127.0.0.1:{port}{target}");
-    let _ = respond(
-        stream,
-        200,
-        "Sign-in complete. You can return to 课知伴.",
-    );
+    let _ = respond(stream, 200, "Sign-in complete. You can return to 课知伴.");
     clear_if_current(&app, port);
 
     if let Some(window) = app.get_webview_window("main") {
