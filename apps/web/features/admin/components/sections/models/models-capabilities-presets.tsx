@@ -1,0 +1,598 @@
+"use client";
+
+import { Check, Copy, Search } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogHeightTransition,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { AdminLLMAdapter, AdminLLMModelDTO } from "@/features/admin/api/llm-types";
+import { cn } from "@/lib/utils";
+import {
+  MODEL_OPTION_POLICY_PROTOCOL_LABELS,
+  MODEL_OPTION_POLICY_PROTOCOLS,
+  parseProtocolsJSON,
+  resolveModelOptionPolicyProtocol,
+} from "@/entities/model";
+import { isOneOf } from "@/shared/lib/type-guards";
+
+const isModelOptionPolicyProtocol = isOneOf(MODEL_OPTION_POLICY_PROTOCOLS);
+
+const PRESET_DIALOG_TABS = ["presets", "models"] as const;
+type PresetDialogTab = (typeof PRESET_DIALOG_TABS)[number];
+const isPresetDialogTab = isOneOf(PRESET_DIALOG_TABS);
+
+type CapabilityPreset = {
+  id: string;
+  protocol: AdminLLMAdapter;
+  payload: Record<string, unknown>;
+};
+
+const OPENAI_REASONING_EFFORT_OPTIONS = ["none", "minimal", "low", "medium", "high", "xhigh", "max"];
+
+const MODEL_CAPABILITY_PRESETS: CapabilityPreset[] = [
+  {
+    id: "openai_chat_completions",
+    protocol: "openai_chat_completions",
+    payload: {
+      promptCache: {
+        enabled: true,
+      },
+      defaultOptions: {
+        reasoning_effort: "high",
+        verbosity: "medium",
+      },
+      optionControls: [
+        {
+          path: "reasoning_effort",
+          type: "select",
+          label: "Reasoning Effort",
+          options: OPENAI_REASONING_EFFORT_OPTIONS,
+        },
+        {
+          path: "verbosity",
+          type: "select",
+          label: "Verbosity",
+          options: ["low", "medium", "high"],
+        },
+      ],
+    },
+  },
+  {
+    id: "openai_responses",
+    protocol: "openai_responses",
+    payload: {
+      promptCache: {
+        enabled: true,
+      },
+      defaultOptions: {
+        reasoning: {
+          effort: "high",
+          summary: "auto",
+        },
+        text: {
+          verbosity: "medium",
+        },
+        store: false,
+      },
+      optionControls: [
+        {
+          path: "reasoning.effort",
+          type: "select",
+          label: "Reasoning Effort",
+          options: OPENAI_REASONING_EFFORT_OPTIONS,
+        },
+        {
+          path: "reasoning.summary",
+          type: "select",
+          label: "Reasoning Summary",
+          options: ["auto", "concise", "detailed"],
+        },
+        {
+          path: "text.verbosity",
+          type: "select",
+          label: "Text Verbosity",
+          options: ["low", "medium", "high"],
+        },
+        {
+          path: "store",
+          type: "boolean",
+          label: "Store",
+        },
+      ],
+    },
+  },
+  {
+    id: "anthropic_messages",
+    protocol: "anthropic_messages",
+    payload: {
+      defaultOptions: {
+        max_tokens: 64000,
+        thinking: {
+          type: "adaptive",
+          display: "summarized",
+        },
+        output_config: {
+          effort: "high",
+        },
+        cache_control: {
+          type: "ephemeral",
+          ttl: "5m",
+        },
+      },
+      optionControls: [
+        {
+          path: "max_tokens",
+          type: "number",
+          label: "Max Tokens",
+        },
+        {
+          path: "thinking.type",
+          type: "select",
+          label: "Thinking Type",
+          options: ["adaptive"],
+        },
+        {
+          path: "thinking.display",
+          type: "select",
+          label: "Thinking Display",
+          options: ["summarized", "omitted"],
+        },
+        {
+          path: "output_config.effort",
+          type: "select",
+          label: "Output Config Effort",
+          options: ["low", "medium", "high", "xhigh", "max"],
+        },
+        {
+          path: "cache_control.type",
+          type: "select",
+          label: "Cache Control Type",
+          options: ["ephemeral"],
+        },
+        {
+          path: "cache_control.ttl",
+          type: "select",
+          label: "Cache Control TTL",
+          options: ["5m", "1h"],
+        },
+      ],
+    },
+  },
+  {
+    id: "google_generate_content",
+    protocol: "google_generate_content",
+    payload: {
+      defaultOptions: {
+        generationConfig: {
+          thinkingConfig: {
+            includeThoughts: true,
+            thinkingLevel: "high",
+          },
+        },
+      },
+      optionControls: [
+        {
+          path: "generationConfig.thinkingConfig.includeThoughts",
+          type: "boolean",
+        },
+        {
+          path: "generationConfig.thinkingConfig.thinkingLevel",
+          type: "select",
+          label: "Thinking Level",
+          options: ["low", "medium", "high"],
+        },
+      ],
+    },
+  },
+  {
+    id: "gemini_interactions",
+    protocol: "gemini_interactions",
+    payload: {
+      defaultOptions: {
+        generation_config: {
+          thinking_level: "medium",
+          thinking_summaries: "auto",
+        },
+      },
+      optionControls: [
+        {
+          path: "generation_config.thinking_level",
+          type: "select",
+          label: "Thinking Level",
+          description: "Controls the depth of the model's internal reasoning.",
+          options: ["minimal", "low", "medium", "high"],
+        },
+        {
+          path: "generation_config.thinking_summaries",
+          type: "select",
+          label: "Thinking Summaries",
+          description: "Controls whether thought summaries are included in the response.",
+          options: ["none", "auto"],
+        },
+        {
+          path: "generation_config.max_output_tokens",
+          type: "number",
+          label: "Max Output Tokens",
+          description: "Maximum number of tokens to include in the response.",
+        },
+      ],
+    },
+  },
+  {
+    id: "xai_responses",
+    protocol: "xai_responses",
+    payload: {
+      defaultOptions: {
+        reasoning: {
+          effort: "low",
+        },
+        parallel_tool_calls: true,
+        store: true,
+        temperature: 1,
+        top_p: 1,
+      },
+      optionControls: [
+        {
+          path: "reasoning.effort",
+          type: "select",
+          label: "Reasoning Effort",
+          description: "Constrains reasoning effort for supported Grok models.",
+          options: ["none", "low", "medium", "high"],
+        },
+        {
+          path: "temperature",
+          type: "number",
+          label: "Temperature",
+          description: "Sampling temperature between 0 and 2.",
+        },
+        {
+          path: "top_p",
+          type: "number",
+          label: "Top P",
+          description: "Nucleus sampling threshold between 0 and 1.",
+        },
+        {
+          path: "max_output_tokens",
+          type: "number",
+          label: "Max Output Tokens",
+          description: "Maximum combined output and reasoning tokens.",
+        },
+        {
+          path: "top_k",
+          type: "number",
+          label: "Top K",
+          description: "Limits sampling to the most probable tokens.",
+        },
+        {
+          path: "min_p",
+          type: "number",
+          label: "Min P",
+          description: "Excludes tokens below the relative probability threshold.",
+        },
+        {
+          path: "parallel_tool_calls",
+          type: "boolean",
+          label: "Parallel Tool Calls",
+          description: "Allows the model to run tool calls in parallel.",
+        },
+        {
+          path: "store",
+          type: "boolean",
+          label: "Store",
+          description: "Stores the input and response for later retrieval.",
+        },
+      ],
+    },
+  },
+];
+const MODEL_CAPABILITY_PRESET_ORDER = new Map(MODEL_CAPABILITY_PRESETS.map((preset, index) => [preset.id, index]));
+
+function flattenDefaultOptions(value: unknown, prefix: string[] = []): { path: string }[] {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return Object.entries(value).flatMap(([key, child]) => flattenDefaultOptions(child, [...prefix, key]));
+  }
+  return prefix.length > 0 ? [{ path: prefix.join(".") }] : [];
+}
+
+function capabilityPresetPayload(preset: CapabilityPreset): Record<string, unknown> {
+  return preset.payload;
+}
+
+function formatCapabilitiesJSON(value: Record<string, unknown>): string {
+  return Object.keys(value).length > 0 ? JSON.stringify(value, null, 2) : "";
+}
+
+function capabilityPresetMatched(preset: CapabilityPreset, routeProtocolSet: Set<string>): boolean {
+  return routeProtocolSet.size === 0 || routeProtocolSet.has(resolveModelOptionPolicyProtocol(preset.protocol));
+}
+
+function hasModelCapabilities(value: string | null | undefined): boolean {
+  const normalized = value?.trim() ?? "";
+  return Boolean(normalized && normalized !== "{}");
+}
+
+function capabilityPresetSummary(preset: CapabilityPreset): { defaults: number; controls: number } {
+  const defaultOptions = preset.payload.defaultOptions;
+  const optionControls = preset.payload.optionControls;
+  return {
+    defaults: flattenDefaultOptions(defaultOptions).length,
+    controls: Array.isArray(optionControls) ? optionControls.length : 0,
+  };
+}
+
+function capabilityPresetProtocolLabel(protocol: AdminLLMAdapter): string {
+  const resolvedProtocol = resolveModelOptionPolicyProtocol(protocol);
+  return MODEL_OPTION_POLICY_PROTOCOL_LABELS[resolvedProtocol] ?? protocol;
+}
+
+function capabilityModelProtocolLabel(model: AdminLLMModelDTO): string {
+  const protocols = parseProtocolsJSON(model.protocolsJSON);
+  return protocols
+    .map((protocol) => (isModelOptionPolicyProtocol(protocol) ? MODEL_OPTION_POLICY_PROTOCOL_LABELS[protocol] : protocol))
+    .join(" / ");
+}
+
+export function ModelCapabilitiesPresetDialog({
+  open,
+  onOpenChange,
+  models,
+  currentModelID,
+  routeProtocols,
+  t,
+  commonT,
+  onApply,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  models: AdminLLMModelDTO[];
+  currentModelID?: number | null;
+  routeProtocols: string[];
+  t: (key: string, values?: Record<string, string | number>) => string;
+  commonT: (key: string) => string;
+  onApply: (value: string) => void;
+}) {
+  const [activeTab, setActiveTab] = useState<PresetDialogTab>("presets");
+  const routeProtocolSet = new Set(routeProtocols.map((protocol) => resolveModelOptionPolicyProtocol(protocol)).filter(Boolean));
+  const sortedPresets = [...MODEL_CAPABILITY_PRESETS].sort((left, right) => {
+    const leftMatched = capabilityPresetMatched(left, routeProtocolSet);
+    const rightMatched = capabilityPresetMatched(right, routeProtocolSet);
+    if (leftMatched !== rightMatched) {
+      return leftMatched ? -1 : 1;
+    }
+    return (MODEL_CAPABILITY_PRESET_ORDER.get(left.id) ?? 0) - (MODEL_CAPABILITY_PRESET_ORDER.get(right.id) ?? 0);
+  });
+  const reusableModels = models.filter((model) =>
+    model.id !== currentModelID
+      && hasModelCapabilities(model.capabilitiesJSON),
+  );
+  const [selectedPresetID, setSelectedPresetID] = useState("");
+  const [selectedModelID, setSelectedModelID] = useState("");
+  const [modelSearch, setModelSearch] = useState("");
+  const selectedPreset = sortedPresets.find((preset) => preset.id === selectedPresetID);
+  const selectedModel = reusableModels.find((model) => String(model.id) === selectedModelID);
+  const reusableModelItems = reusableModels.map((model) => {
+    const protocolLabel = capabilityModelProtocolLabel(model);
+    return {
+      model,
+      protocolLabel,
+      searchText: [model.platformModelName, model.vendor, protocolLabel].join(" ").toLowerCase(),
+    };
+  });
+  const normalizedModelSearch = modelSearch.trim().toLowerCase();
+  const filteredReusableModelItems = normalizedModelSearch
+    ? reusableModelItems.filter((item) => item.searchText.includes(normalizedModelSearch))
+    : reusableModelItems;
+
+  function resetSelection() {
+    setSelectedPresetID("");
+    setSelectedModelID("");
+    setModelSearch("");
+    setActiveTab("presets");
+  }
+
+  function updateModelSearch(value: string) {
+    setModelSearch(value);
+    const normalized = value.trim().toLowerCase();
+    if (!normalized || !selectedModelID) {
+      return;
+    }
+    const selectedItem = reusableModelItems.find((item) => String(item.model.id) === selectedModelID);
+    if (selectedItem && !selectedItem.searchText.includes(normalized)) {
+      setSelectedModelID("");
+    }
+  }
+
+  function applyPreset() {
+    if (!selectedPreset) {
+      return;
+    }
+    onApply(formatCapabilitiesJSON(capabilityPresetPayload(selectedPreset)));
+    toast.success(t("sheet.capabilitiesPreset.applied"));
+    onOpenChange(false);
+  }
+
+  function applyModel() {
+    if (!selectedModel) {
+      return;
+    }
+    onApply(selectedModel.capabilitiesJSON);
+    toast.success(t("sheet.capabilitiesPreset.applied"));
+    onOpenChange(false);
+  }
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (nextOpen) {
+          resetSelection();
+        }
+        onOpenChange(nextOpen);
+      }}
+    >
+      <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-[520px]">
+        <DialogHeightTransition contentClassName="max-h-[min(82vh,520px)]">
+          <DialogHeader className="shrink-0 px-4 pt-4 pb-2">
+            <DialogTitle>{t("sheet.capabilitiesPreset.title")}</DialogTitle>
+            <DialogDescription>{t("sheet.capabilitiesPreset.description")}</DialogDescription>
+          </DialogHeader>
+
+          <div className="min-h-0 min-w-0 overflow-hidden px-4 py-1">
+            <Tabs
+              value={activeTab}
+              onValueChange={(nextValue) => {
+                if (isPresetDialogTab(nextValue)) setActiveTab(nextValue);
+              }}
+              className="min-h-0 min-w-0 overflow-hidden"
+            >
+              <TabsList className="grid h-8 w-full grid-cols-2">
+                <TabsTrigger value="presets" className="min-w-0">
+                  <span className="min-w-0 truncate">{t("sheet.capabilitiesPreset.presetsTab")}</span>
+                </TabsTrigger>
+                <TabsTrigger value="models" className="min-w-0">
+                  <span className="min-w-0 truncate">{t("sheet.capabilitiesPreset.modelsTab")}</span>
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="presets" className="mt-2 min-h-0 space-y-2 overflow-hidden">
+                <div className="max-h-[min(44vh,260px)] overflow-y-auto rounded-md bg-muted/25 p-1">
+                  <div className="space-y-0.5">
+                    {sortedPresets.map((preset) => {
+                      const matched = capabilityPresetMatched(preset, routeProtocolSet);
+                      const selected = selectedPreset?.id === preset.id;
+                      const summary = capabilityPresetSummary(preset);
+                      const protocolLabel = capabilityPresetProtocolLabel(preset.protocol);
+                      return (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          aria-pressed={selected}
+                          onClick={() => setSelectedPresetID(preset.id)}
+                          className={cn(
+                            "group flex min-h-9 w-full min-w-0 items-center gap-3 rounded-md px-2.5 py-1.5 text-left transition-colors hover:bg-background/60",
+                            selected && "bg-background/80",
+                          )}
+                        >
+                          <span className="min-w-0 flex-1 truncate text-xs font-medium leading-5 text-foreground">
+                            {protocolLabel}
+                          </span>
+                          <span className="hidden min-w-0 shrink-0 truncate text-[11px] leading-5 text-muted-foreground sm:block">
+                            {t("sheet.capabilitiesPreset.presetSummary", {
+                              defaults: summary.defaults,
+                              controls: summary.controls,
+                            })}
+                          </span>
+                          <span className="flex h-5 w-[76px] shrink-0 items-center justify-end">
+                            {selected ? (
+                              <Check className="size-4 text-foreground" strokeWidth={1.8} />
+                            ) : matched ? (
+                              <span className="sr-only">
+                                {protocolLabel}
+                              </span>
+                            ) : (
+                              <Badge variant="secondary" className="h-5 rounded-md px-1.5 text-[10px] font-normal text-muted-foreground shadow-none">
+                                {t("sheet.capabilitiesPreset.protocolNotMatched")}
+                              </Badge>
+                            )}
+                          </span>
+                          <span className="sr-only">
+                            {t("sheet.capabilitiesPreset.presetSummary", {
+                              defaults: summary.defaults,
+                              controls: summary.controls,
+                            })}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="models" className="mt-2 min-h-0 space-y-2 overflow-hidden">
+                {reusableModels.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center rounded-md bg-muted/30 px-3 py-7 text-center">
+                    <Copy className="mb-2 size-5 text-muted-foreground" strokeWidth={1.5} />
+                    <p className="text-xs text-muted-foreground">{t("sheet.capabilitiesPreset.emptyModels")}</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="relative">
+                      <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" strokeWidth={1.5} />
+                      <Input
+                        value={modelSearch}
+                        onChange={(event) => updateModelSearch(event.target.value)}
+                        placeholder={t("sheet.capabilitiesPreset.modelSearchPlaceholder")}
+                        className="h-8 border-transparent bg-muted/25 pr-2 pl-8 text-xs shadow-none focus-visible:border-border/50 focus-visible:ring-0"
+                      />
+                    </div>
+                    <div className="max-h-[min(44vh,260px)] overflow-y-auto rounded-md bg-muted/25 p-1">
+                      {filteredReusableModelItems.length === 0 ? (
+                        <div className="px-2.5 py-6 text-center text-xs text-muted-foreground">
+                          {t("sheet.capabilitiesPreset.emptySearchModels")}
+                        </div>
+                      ) : (
+                        <div className="space-y-0.5">
+                          {filteredReusableModelItems.map(({ model, protocolLabel }) => {
+                            const selected = selectedModel?.id === model.id;
+                            return (
+                              <button
+                                key={model.id}
+                                type="button"
+                                aria-pressed={selected}
+                                onClick={() => setSelectedModelID(String(model.id))}
+                                className={cn(
+                                  "group flex min-h-9 w-full min-w-0 items-center gap-3 rounded-md px-2.5 py-1.5 text-left transition-colors hover:bg-background/60",
+                                  selected && "bg-background/80",
+                                )}
+                              >
+                                <span className="min-w-0 flex-1 truncate text-xs font-medium leading-5 text-foreground">
+                                  {model.platformModelName}
+                                </span>
+                                <span className="hidden min-w-0 shrink truncate text-[11px] leading-5 text-muted-foreground sm:block">
+                                  {protocolLabel || t("sheet.capabilitiesPreset.noProtocol")}
+                                </span>
+                                <Check className={cn("size-4 shrink-0 text-foreground transition-opacity", selected ? "opacity-100" : "opacity-0")} strokeWidth={1.8} />
+                                <span className="sr-only">
+                                  {protocolLabel || t("sheet.capabilitiesPreset.noProtocol")}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          <DialogFooter className="shrink-0 px-4 py-3">
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
+              {commonT("actions.cancel")}
+            </Button>
+            <Button
+              type="button"
+              onClick={activeTab === "models" ? applyModel : applyPreset}
+              disabled={activeTab === "models" ? !selectedModel : !selectedPreset}
+            >
+              {commonT("actions.confirm")}
+            </Button>
+          </DialogFooter>
+        </DialogHeightTransition>
+      </DialogContent>
+    </Dialog>
+  );
+}

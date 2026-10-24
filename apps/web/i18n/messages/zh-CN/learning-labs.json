@@ -1,0 +1,851 @@
+{
+  "common": {
+    "scenario": "本题参数",
+    "seed": "题目编号",
+    "newQuestion": "换一题",
+    "hidden": "先提交预测，图形才会解锁。图形不是答案，它只是用来验证你的推理。"
+  },
+  "prediction": {
+    "title": "先预测，再看图",
+    "predictFirst": "不可跳过",
+    "description": "先根据公式和参数做出判断，并写下理由。提交后才会显示图形。",
+    "optionsLabel": "选择一个答案",
+    "reasonLabel": "你的理由",
+    "reasonPlaceholder": "例如：因为极点实部为负，包络按 e^{σt} 衰减，所以……",
+    "reasonHint": "至少写 {count} 个字。写清“因为……所以……”比只写结论更有效。",
+    "submit": "提交并解锁图形",
+    "retry": "修改后重试",
+    "noPenalty": "答错不扣分，但需要重新提交理由。",
+    "correct": "判断正确",
+    "incorrect": "还不对",
+    "correctHint": "图形已解锁。对照曲线，检查你的理由是否解释了关键特征。",
+    "incorrectHint": "图形已解锁。先别急着改答案，找出与你预期不一致的那一段。",
+    "codeLabel": "完成码",
+    "copyRecord": "复制记录",
+    "copied": "已复制"
+  },
+  "fourierTransform": {
+    "title": "傅里叶变换：矩形脉冲与 sinc",
+    "subtitle": "矩形脉冲越窄，频谱主瓣越宽；脉冲面积决定直流分量。拖动宽度，观察时域与频域的此消彼长。",
+    "formula": "X(j\\omega)=A\\tau\\,\\operatorname{sinc}\\left(\\frac{\\omega\\tau}{2}\\right)",
+    "controls": {
+      "title": "参数",
+      "description": "x(t) 是宽度为 τ、幅度为 A、关于原点对称的矩形脉冲。",
+      "width": "脉冲宽度 τ",
+      "widthHint": "宽度改变时，频谱的零点位置随之移动。",
+      "amplitude": "脉冲幅度 A",
+      "amplitudeHint": "幅度只做线性缩放。"
+    },
+    "readouts": {
+      "width": "脉冲宽度",
+      "dc": "直流分量 X(0)",
+      "dcHint": "等于脉冲面积 Aτ",
+      "firstZero": "第一个零点",
+      "firstZeroHint": "满足 f = 1/τ",
+      "area": "脉冲面积",
+      "areaHint": "Aτ，决定频谱的整体高度"
+    },
+    "plot": {
+      "timeTitle": "时域：矩形脉冲",
+      "timeDescription": "阴影面积就是 Aτ，也就是 X(0)。",
+      "timeAxis": "t (s)",
+      "pulse": "x(t)",
+      "spectrumTitle": "频域：sinc 包络",
+      "spectrumDescription": "虚线标出第一个零点。旁瓣会随频率升高而衰减。",
+      "freqAxis": "f (Hz)",
+      "spectrum": "|X(jω)|",
+      "firstZeroLabel": "首个零点"
+    },
+    "insight": {
+      "title": "观察重点",
+      "duality": "矩形 ↔ sinc 是一对基本变换对；时域越“方”，频域越“散”。",
+      "scaling": "把 τ 减半，主瓣宽度加倍；把 A 加倍，整体高度加倍。",
+      "zeros": "零点出现在 f = k/τ（k = ±1, ±2, …），不是随便的位置。",
+      "uncertainty": "时域越窄，频域越宽，这就是不确定性原理在信号里的版本。"
+    },
+    "experiment": {
+      "title": "动手试试",
+      "narrow": "把 τ 从 2 s 调到 0.5 s，先预测主瓣会变宽还是变窄。",
+      "predict": "先算 1/τ，再对照图上第一个零点的位置。",
+      "connect": "固定 τ，只改 A，确认零点不动而高度按比例变化。"
+    }
+  },
+  "laplace": {
+    "title": "拉普拉斯变换：极点与收敛域",
+    "subtitle": "把一对共轭极点拖过虚轴：左半平面衰减，虚轴等幅，右半平面发散。ROC 决定因果性与稳定性。",
+    "formula": "H(s)=\\frac{\\omega_0^2}{(s-\\sigma)^2+\\omega^2},\\qquad \\omega_0^2=\\sigma^2+\\omega^2",
+    "controls": {
+      "title": "参数",
+      "description": "极点位于 σ ± jω；这里只考虑因果系统，因此 ROC 在最有侧极点的右边。",
+      "sigma": "极点实部 σ",
+      "sigmaHint": "σ < 0 稳定，σ = 0 临界，σ > 0 不稳定。",
+      "omega": "虚部 ω",
+      "omegaHint": "ω 决定振荡角频率，|σ| 决定包络衰减或增长的速度。"
+    },
+    "readouts": {
+      "poles": "极点",
+      "stability": "稳定性",
+      "stabilityHint": "看极点是否全部在左半平面",
+      "roc": "收敛域",
+      "oscillation": "振荡频率",
+      "oscillationHint": "f = ω/(2π)",
+      "stable": "稳定",
+      "unstable": "不稳定",
+      "marginal": "临界稳定",
+      "decayTitle": "从极点读响应",
+      "decayDescription": "实部控制包络，虚部控制振荡；两者共同决定 h(t) 的形状。",
+      "poleRadius": "极点模值 |p|",
+      "decayTime": "衰减时间常数",
+      "decayTimeHint": "1/|σ|",
+      "rocAxis": "ROC 与虚轴",
+      "includesAxis": "包含虚轴",
+      "excludesAxis": "不包含虚轴",
+      "responseType": "响应形态",
+      "decaying": "衰减振荡",
+      "growing": "增长振荡",
+      "constant": "等幅振荡"
+    },
+    "plot": {
+      "pzTitle": "s 平面与 ROC",
+      "pzDescription": "阴影是最右侧极点右边的区域；因果系统的 ROC 必须向右延伸。",
+      "impulseTitle": "冲激响应 h(t)",
+      "impulseDescription": "包络为 e^{σt}，振荡由 ω 决定。",
+      "clipped": "峰值约 {peak}，纵轴已截断显示。",
+      "timeAxis": "t (s)",
+      "impulse": "h(t)"
+    },
+    "insight": {
+      "title": "观察重点",
+      "left": "左半平面极点 → 包络 e^{σt} 衰减，系统稳定。",
+      "axis": "虚轴上的单极点 → 等幅振荡，属于临界稳定。",
+      "right": "右半平面极点 → 包络增长，系统不稳定。",
+      "roc": "ROC 包含虚轴 ⇔ 系统稳定；因果系统的 ROC 是最右极点右侧。"
+    },
+    "experiment": {
+      "title": "动手试试",
+      "cross": "把 σ 从 −2 慢慢调到 1，预测 h(t) 的包络会怎样变化。",
+      "omega": "固定 σ，只改 ω，观察振荡变密但包络不变。",
+      "roc": "当 σ = 0 时，ROC 还包含虚轴吗？系统还稳定吗？"
+    }
+  },
+  "secondOrder": {
+    "title": "二阶系统：阻尼比决定一切",
+    "subtitle": "ζ 控制超调，ωn 控制速度。把阻尼比从欠阻尼调到过阻尼，观察峰值时间和调节时间如何变化。",
+    "formula": "H(s)=\\frac{\\omega_n^2}{s^2+2\\zeta\\omega_n s+\\omega_n^2}",
+    "controls": {
+      "title": "参数",
+      "description": "ζ 是阻尼比，ωn 是无阻尼自然频率；阶跃输入的最终值为 1。",
+      "zeta": "阻尼比 ζ",
+      "zetaHint": "ζ < 1 欠阻尼，ζ = 1 临界阻尼，ζ > 1 过阻尼。",
+      "naturalFrequency": "自然频率 ωn",
+      "naturalFrequencyHint": "ωn 越大，响应整体越快。"
+    },
+    "readouts": {
+      "overshoot": "超调量",
+      "overshootHint": "只有 ζ < 1 才会超调",
+      "peakTime": "峰值时间",
+      "settling": "调节时间 (2%)",
+      "settlingHint": "约 4/(ζωn)",
+      "dampedFrequency": "阻尼振荡频率"
+    },
+    "plot": {
+      "title": "阶跃响应",
+      "description": "虚线是最终值 1；标记点是第一次峰值。",
+      "timeAxis": "t (s)",
+      "finalValue": "最终值",
+      "response": "y(t)",
+      "peak": "峰值"
+    },
+    "insight": {
+      "title": "观察重点",
+      "under": "ζ 越小，超调越大、振荡越明显，但上升更快。",
+      "critical": "ζ = 1 时不超调，是“最快且无超调”的边界。",
+      "over": "ζ > 1 时没有超调，但两个实极点分开，响应变慢。",
+      "natural": "固定 ζ 增大 ωn，整条响应在时间轴上被压缩。"
+    },
+    "experiment": {
+      "title": "动手试试",
+      "fixed": "固定 ωn = 2，把 ζ 从 0.1 调到 1.0，记录超调量。",
+      "cross": "让 ζ 刚好等于 1，确认超调量为 0。",
+      "compare": "比较 ζ = 0.5 与 ζ = 2 的调节时间，解释为什么过阻尼不一定更快。"
+    }
+  },
+  "modulation": {
+    "title": "调制与解调：把频谱搬到载波附近",
+    "subtitle": "用基带余弦去控制载波幅度。观察载波、上下边带，以及 m > 1 时包络发生的过调制。",
+    "formula": "x(t)=\\left[1+m\\cos(2\\pi f_m t)\\right]\\cos(2\\pi f_c t)",
+    "controls": {
+      "title": "参数",
+      "description": "fm 是基带频率，fc 是载波频率，m 是调幅指数。",
+      "message": "基带频率 fm",
+      "messageHint": "包络变化的快慢。",
+      "carrier": "载波频率 fc",
+      "carrierHint": "频谱搬移的目标位置。",
+      "index": "调幅指数 m",
+      "indexHint": "m > 1 时包络穿过零点，称为过调制。"
+    },
+    "readouts": {
+      "bandwidth": "带宽",
+      "bandwidthHint": "AM 带宽为 2fm",
+      "sidebands": "上下边带",
+      "status": "调制状态",
+      "normal": "正常调制",
+      "normalHint": "包络始终为正",
+      "overmodulated": "过调制",
+      "overmodulatedHint": "包络出现反相，包络检波会失真",
+      "powerSplit": "载波功率占比",
+      "powerSplitHint": "Pc/Ptotal = 1/(1+m²/2)"
+    },
+    "plot": {
+      "timeTitle": "时域：载波与包络",
+      "timeDescription": "虚线是 ±[1 + m cos(2πfm t)]，它决定了已调信号的包络。",
+      "timeAxis": "t (s)",
+      "signal": "x(t)",
+      "spectrumTitle": "频域：载波与边带",
+      "spectrumDescription": "调制把基带频谱搬到了 fc 两侧；每条谱线的高度由 m 决定。",
+      "freqAxis": "f (Hz)",
+      "amplitudeAxis": "幅度"
+    },
+    "insight": {
+      "title": "观察重点",
+      "shift": "乘法把基带频谱搬到 ±fc，这是“搬移”而不是“复制”。",
+      "sidebands": "单频调制只产生 fc − fm 与 fc + fm 两条边带。",
+      "bandwidth": "AM 带宽是基带带宽的两倍：B = 2fm。",
+      "overmodulation": "m > 1 时包络为负，简单包络检波无法正确恢复基带。"
+    },
+    "experiment": {
+      "title": "动手试试",
+      "zero": "把 m 调到 0，观察只剩载波、边带消失。",
+      "increase": "把 m 从 0.5 调到 1.4，观察时域包络和频谱高度。",
+      "observe": "固定 m，改变 fc，确认边带间隔只由 fm 决定。"
+    }
+  },
+  "experimentHub": {
+    "title": "四章闯关实验",
+    "subtitle": "每个实验都会随机生成参数。先预测，再看图，最后用自己的话解释；答对后生成完成码。",
+    "minutes": "{count} 分钟",
+    "topics": {
+      "experiment-signal": {
+        "title": "实验一：信号分类",
+        "description": "随机给出能量、功率或增长信号，判断它属于哪一类。",
+        "tag": "第一章"
+      },
+      "experiment-time": {
+        "title": "实验二：时间常数",
+        "description": "随机 τ 与 k，预测 kτ 时刻响应走了多少。",
+        "tag": "第二章"
+      },
+      "experiment-frequency": {
+        "title": "实验三：脉冲频谱",
+        "description": "随机脉宽，预测首个零点或直流分量。",
+        "tag": "第三章"
+      },
+      "experiment-s": {
+        "title": "实验四：极点定性",
+        "description": "随机极点位置，判断冲激响应的形态与稳定性。",
+        "tag": "第四章"
+      }
+    },
+    "how": {
+      "title": "怎么算完成",
+      "description": "图形不是答案，而是验证工具。",
+      "steps": {
+        "seed": {
+          "title": "随机题目",
+          "description": "每次“换一题”都会得到新的参数组合和题目编号。"
+        },
+        "predict": {
+          "title": "先锁图预测",
+          "description": "提交前看不到图，避免“照着图找答案”。"
+        },
+        "explain": {
+          "title": "写理由",
+          "description": "至少 20 字，必须说明“因为……所以……”。"
+        },
+        "code": {
+          "title": "完成码",
+          "description": "答对后生成，连同题目编号交给老师核验。"
+        }
+      },
+      "note": "建议在课堂上随机抽取题目编号，让学生现场解释图形，而不是只交代码。"
+    }
+  },
+  "experiments": {
+    "signalBasics": {
+      "title": "实验一：信号分类",
+      "subtitle": "随机给出一个信号，判断它是能量信号、功率信号，还是两者都不是。先看表达式，再决定。",
+      "formula": "E=\\int_{-\\infty}^{\\infty}|x(t)|^2dt,\\qquad P=\\lim_{T\\to\\infty}\\frac{1}{T}\\int_{-T/2}^{T/2}|x(t)|^2dt",
+      "scenarioDescription": "根据表达式判断，不要先看波形。",
+      "question": "这个信号属于哪一类？",
+      "questionFallback": "这个信号属于哪一类？",
+      "options": {
+        "energy": "能量信号",
+        "power": "功率信号",
+        "neither": "都不是",
+        "both": "既是能量信号又是功率信号"
+      },
+      "scenario": {
+        "energy": "x(t) = {a}·e^{−{d}t}·u(t)",
+        "power": "x(t) = {a}·cos(2π·{f}t)",
+        "ramp": "x(t) = {a}·t·u(t)"
+      },
+      "type": {
+        "energy": "单边衰减指数",
+        "power": "等幅余弦",
+        "ramp": "单边斜坡"
+      },
+      "readouts": {
+        "type": "信号类型",
+        "energy": "能量 E",
+        "power": "平均功率 P"
+      },
+      "plot": {
+        "timeTitle": "波形验证",
+        "timeDescription": "提交后显示。注意信号在无穷远处是否衰减到 0。",
+        "timeAxis": "t (s)",
+        "amplitude": "幅度"
+      },
+      "insight": {
+        "title": "判断依据",
+        "energy": "能量信号：E 有限且大于 0，平均功率为 0。",
+        "power": "功率信号：平均功率有限且大于 0，能量为无穷大。",
+        "neither": "斜坡 t·u(t) 的能量和功率都发散，因此两者都不是。"
+      }
+    },
+    "timeDomain": {
+      "title": "实验二：时间常数",
+      "subtitle": "给定一阶系统的 K 与 τ，预测 t = kτ 时响应达到最终值的百分比。先算，再看曲线。",
+      "formula": "y(t)=K\\left(1-e^{-t/\\tau}\\right)",
+      "scenarioDescription": "参数每次随机；先根据公式估算，不要直接读图。",
+      "scenario": "K = {gain}，τ = {tau} s，求 t = {k}τ 时的响应。",
+      "question": "t = {k}τ 时，y(t) 约为最终值的多少？",
+      "questionFallback": "t = kτ 时，y(t) 约为最终值的多少？",
+      "plot": {
+        "title": "阶跃响应验证",
+        "description": "提交后显示；虚线为最终值 K，标记点为 kτ 处。",
+        "timeAxis": "t (s)",
+        "finalValue": "最终值 K",
+        "response": "y(t)"
+      },
+      "readouts": {
+        "gain": "直流增益 K",
+        "tau": "时间常数 τ",
+        "valueAt": "y({k}τ)",
+        "valueAtHint": "用公式计算，不由图上读取",
+        "settling": "5τ 调节时间"
+      },
+      "insight": {
+        "title": "记住这三个数",
+        "tau": "t = τ：63.2%；t = 2τ：86.5%；t = 3τ：95.0%。",
+        "multiples": "这些百分比与 K、τ 的具体取值无关，只与倍数 k 有关。",
+        "gain": "K 只改变最终值，不改变达到 63.2% 的时间。"
+      }
+    },
+    "frequencyDomain": {
+      "title": "实验三：矩形脉冲的频谱",
+      "subtitle": "随机给出脉宽 τ 与幅度 A，预测频谱的第一个零点或直流分量。答案来自公式，不来自图形。",
+      "formula": "X(f)=A\\tau\\,\\operatorname{sinc}(f\\tau)",
+      "scenarioDescription": "先写出 X(f) 的表达式，再判断题目问的是零点还是直流。",
+      "scenario": "x(t) = {a}·rect(t/{tau})，其中 rect 在 |t| < τ/2 时为 1。",
+      "question": {
+        "zero": "频谱 |X(f)| 的第一个正零点在哪个频率？",
+        "dc": "频谱在 f = 0 处的值 |X(0)| 是多少？"
+      },
+      "plot": {
+        "timeTitle": "时域脉冲",
+        "timeDescription": "提交后显示。",
+        "pulse": "x(t)",
+        "timeAxis": "t (s)",
+        "spectrumTitle": "幅度谱",
+        "spectrumDescription": "提交后显示；虚线标出第一个零点。",
+        "spectrum": "|X(f)|",
+        "freqAxis": "f (Hz)",
+        "firstZero": "首个零点"
+      },
+      "readouts": {
+        "dc": "直流分量 |X(0)|",
+        "firstZero": "首个零点",
+        "mainLobe": "主瓣宽度"
+      },
+      "insight": {
+        "title": "公式给出的答案",
+        "sinc": "矩形脉冲的频谱是 sinc：X(f) = Aτ·sinc(fτ)。",
+        "inverse": "零点满足 fτ = 1，因此 f = 1/τ。",
+        "dc": "直流分量等于脉冲面积 Aτ。"
+      }
+    },
+    "sDomain": {
+      "title": "实验四：极点决定响应",
+      "subtitle": "随机给出极点位置，判断冲激响应的形态与稳定性。先看 s 平面条件，再看时域曲线。",
+      "formula": "H(s)=\\frac{1}{(s-p_1)(s-p_2)},\\qquad h(t)=\\mathcal{L}^{-1}\\{H(s)\\}",
+      "scenarioDescription": "只根据极点位置判断，不要先看 h(t)。",
+      "scenario": {
+        "complex": "H(s) 的一对共轭极点为 {sigma} ± j{omega}。",
+        "real": "H(s) 在 s = {sigma} 处有二重实极点。"
+      },
+      "question": "该系统的冲激响应最可能是哪一种形态？",
+      "options": {
+        "decay": "衰减振荡",
+        "constant": "等幅振荡",
+        "grow": "增长振荡",
+        "monotonic": "单调衰减（无振荡）"
+      },
+      "stability": {
+        "stable": "稳定",
+        "marginal": "临界稳定",
+        "unstable": "不稳定"
+      },
+      "plot": {
+        "pzTitle": "s 平面与 ROC",
+        "pzDescription": "阴影是收敛域；因果系统的 ROC 在最右极点右侧。",
+        "impulseTitle": "冲激响应 h(t)",
+        "impulseDescription": "提交后显示；注意包络与振荡。",
+        "timeAxis": "t (s)"
+      },
+      "readouts": {
+        "title": "核对答案",
+        "poles": "极点",
+        "doublePole": "{sigma}（二重）",
+        "stability": "稳定性",
+        "roc": "ROC",
+        "shape": "响应形态"
+      },
+      "insight": {
+        "title": "判断依据",
+        "left": "左半平面共轭极点 → 衰减振荡。",
+        "axis": "虚轴上的共轭极点 → 等幅振荡，临界稳定。",
+        "right": "右半平面共轭极点 → 增长振荡，不稳定。",
+        "repeat": "二重实极点 → t·e^{σt} 形态，仍然单调（可能先增后减）。"
+      }
+    }
+  },
+  "progress": {
+    "title": "学习记录与错题本",
+    "description": "把每一次作答留下来，找到需要再想一遍的知识点。记录随账号保存，可在其他设备查看。",
+    "loading": "正在读取学习记录…",
+    "saving": "正在保存作答…",
+    "synced": "已与账号同步",
+    "loadFailed": "学习记录加载失败。",
+    "accountChanged": "账号已切换，请刷新页面后继续。",
+    "accountUnavailable": "无法读取当前账号，请刷新页面重试。",
+    "saveFailed": "还有 {count} 条作答未保存，请重试。",
+    "retry": "重新加载",
+    "retrySave": "重试保存",
+    "newQuiz": "开始快问快答",
+    "totalAnswers": "累计作答",
+    "accuracy": "累计正确率",
+    "unresolved": "复习中",
+    "corrected": "复习完成",
+    "scope": "记录覆盖快问快答与变式复习。原题答对后仍保留最近错误；复习阶段与到期时间以服务器为准。",
+    "viewLabel": "学习记录视图",
+    "mistakes": "错题本",
+    "history": "最近作答",
+    "topicLabel": "知识点",
+    "allTopics": "全部知识点",
+    "includeCorrected": "显示最近已答对的错题",
+    "practiceMistakes": "练习待订正错题",
+    "emptyTitle": "从第一次练习开始",
+    "emptyHint": "完成快问快答后，答错的题目会自动收进这里。每道错题都能回看解析，再做一次验证理解。",
+    "noPending": "当前筛选没有题目",
+    "noPendingHint": "切换复习状态或知识点查看其他题目。",
+    "historyHint": "展示最近 40 次作答；上方累计数据包含全部记录。",
+    "historyEmpty": "当前范围还没有作答记录。",
+    "yourAnswer": "你的选择：{answer}",
+    "correctAnswer": "正确答案：{answer}",
+    "retryQuestion": "重练这题",
+    "mistakeCount": "累计答错 {count} 次",
+    "latestCorrect": "最近已答对",
+    "needsPractice": "待练习",
+    "showExplanation": "展开答案与解析",
+    "reviewLesson": "回看对应实验",
+    "practiceTitle": "错题重练",
+    "practiceDescription": "放慢一点，先独立判断，再用解析核对思路。本轮不限时，作答会更新到学习记录。",
+    "practiceRule": "每题选择一次后显示解析。答对后标记为最近已答对，原有错题历史继续保留。",
+    "noPracticeQuestions": "当前没有符合条件的题目，可以返回错题本或开始一轮快问快答。",
+    "untimed": "不限时",
+    "topics": {
+      "signal-classification": "信号分类",
+      "convolution": "卷积与时移",
+      "time-constant": "一阶系统与时间常数",
+      "sampling": "采样与混叠",
+      "fourier-series": "傅里叶级数",
+      "fourier-transform": "傅里叶变换",
+      "second-order": "二阶系统",
+      "poles": "极点与稳定性",
+      "modulation": "调制与带宽"
+    },
+    "diagnoses": {
+      "energy-signal-power": {
+        "thought": "你可能把无限时长等同于功率信号。",
+        "correction": "持续时间无限不代表平均功率非零；先检查平方积分是否收敛。"
+      },
+      "energy-signal-neither": {
+        "thought": "你可能认为无限时长必然使总能量发散。",
+        "correction": "指数衰减可以抵消无限积分区间；写出平方后的指数再积分。"
+      },
+      "energy-signal-both": {
+        "thought": "你可能认为有限能量也意味着有限非零平均功率。",
+        "correction": "有限总能量除以无限观察时间，平均功率趋于零；两类定义不能同时满足。"
+      },
+      "convolution-shift-direction": {
+        "thought": "你可能把 δ(t−2) 当成向左移动。",
+        "correction": "先让冲激括号内为零：位置在 t=2；延迟冲激使卷积输出向右移动。"
+      },
+      "convolution-shift-scale": {
+        "thought": "你可能把时移和时间尺度变换混淆。",
+        "correction": "x(2t) 会改变持续时间；与延迟冲激卷积只改变时间位置。"
+      },
+      "convolution-shift-ignore": {
+        "thought": "你可能只记住与 δ(t) 卷积不变，忽略了冲激的延迟。",
+        "correction": "保留冲激参数中的位移，再使用筛选性质。"
+      },
+      "step-response-half": {
+        "thought": "你可能把指数逼近看成线性增长。",
+        "correction": "时间常数不是达到一半的时间；将 t/τ=1 代入指数。"
+      },
+      "step-response-two-tau": {
+        "thought": "你可能把一个时间常数和两个时间常数的响应比例混淆。",
+        "correction": "先计算无量纲比值 t/τ，避免直接套用记忆中的百分比。"
+      },
+      "step-response-settling": {
+        "thought": "你可能把一个时间常数当成接近调节完成的时刻。",
+        "correction": "区分 1τ 与 3τ、5τ；指数响应在有限时间内只是逼近终值。"
+      },
+      "aliasing-no-fold": {
+        "thought": "你可能保留了原频率，没有折叠到第一奈奎斯特区间。",
+        "correction": "先检查 f0 是否超过 fs/2；超过时寻找与整数倍 fs 的频率差。"
+      },
+      "aliasing-sample-rate": {
+        "thought": "你可能把采样频率当成了采样后的信号频率。",
+        "correction": "fs 决定频谱副本的间隔，表观频率仍来自这些副本折叠后的位置。"
+      },
+      "aliasing-add-frequencies": {
+        "thought": "你可能把一个频谱副本的位置直接当成基带频率。",
+        "correction": "f0+fs 是副本位置之一；还要折叠回 [0, fs/2]。"
+      },
+      "nyquist-equal": {
+        "thought": "你可能认为每个周期一个采样点就足够恢复信号。",
+        "correction": "奈奎斯特率由最高频率的两倍决定；实际采样还需留出余量。"
+      },
+      "nyquist-half": {
+        "thought": "你可能把采样率与最高频率的倍数关系取反。",
+        "correction": "检查单位并写出 fs 与 2fmax 的关系；降低采样率会增加混叠风险。"
+      },
+      "nyquist-double-again": {
+        "thought": "你可能对奈奎斯特的倍数关系重复乘了二。",
+        "correction": "本题问理论奈奎斯特率，实际工程余量不能改变这个定义。"
+      },
+      "square-wave-even": {
+        "thought": "你可能把偶函数对傅里叶系数的影响与半波对称混淆。",
+        "correction": "偶对称使正弦项消失；偶次谐波消失需要检查半波反对称。"
+      },
+      "square-wave-period": {
+        "thought": "你可能认为周期性本身就能消除偶次谐波。",
+        "correction": "周期性只给出离散谐波；具体哪些系数为零还取决于对称性。"
+      },
+      "square-wave-energy": {
+        "thought": "你可能把能量分类当成了谐波选择的原因。",
+        "correction": "非零持续周期方波通常是功率信号；系数为零由波形对称性决定。"
+      },
+      "pulse-spectrum-same-width": {
+        "thought": "你可能认为时域和频域宽度同向变化。",
+        "correction": "先写出第一个频谱零点 1/T，再判断脉宽变化后的方向。"
+      },
+      "pulse-spectrum-direct": {
+        "thought": "你可能只注意了频谱高度，忽略脉宽对零点的影响。",
+        "correction": "幅度与主瓣宽度是不同量；零点间距随脉宽变化。"
+      },
+      "pulse-spectrum-nonmonotonic": {
+        "thought": "你可能把 sinc 的振荡形状当成了主瓣宽度的非单调变化。",
+        "correction": "固定主瓣的定义为两侧第一零点之间，再比较 1/T。"
+      },
+      "time-constant-inverse": {
+        "thought": "你可能把时间常数增大理解为系统响应更快、带宽更大。",
+        "correction": "由 fc=1/(2πτ) 判断倒数关系；更慢的响应对应更窄带宽。"
+      },
+      "time-constant-independent": {
+        "thought": "你可能把时间响应与频率响应看成互不相关。",
+        "correction": "它们由同一个极点决定；τ 同时控制响应速度与截止频率。"
+      },
+      "time-constant-peaking": {
+        "thought": "你可能把二阶系统的共振直觉用到了一阶系统。",
+        "correction": "固定增益的一阶低通截止频率与 τ 成反比，不存在先升后降的关系。"
+      },
+      "damping-more-overshoot": {
+        "thought": "你可能把阻尼增强理解为振荡更剧烈。",
+        "correction": "阻尼消耗振荡能量；在欠阻尼范围用超调公式核对变化方向。"
+      },
+      "damping-no-effect": {
+        "thought": "你可能只考虑自然频率，忽略阻尼比对包络的作用。",
+        "correction": "自然频率与阻尼比作用不同；改变 ζ 会改变超调量和衰减速度。"
+      },
+      "damping-infinite": {
+        "thought": "你可能把有限欠阻尼参数变化误判为失稳。",
+        "correction": "正阻尼比 0.3 与 0.7 都对应稳定的标准二阶系统；用有限超调公式比较。"
+      },
+      "rhp-stable": {
+        "thought": "你可能忽略了极点实部为正对应的增长项。",
+        "correction": "因果系统的右半平面极点产生增长响应；检查 ROC 是否包含虚轴。"
+      },
+      "rhp-marginal": {
+        "thought": "你可能把右半平面极点与虚轴简单极点混淆。",
+        "correction": "实部为正对应增长；实部为零才可能出现等幅振荡的边界情况。"
+      },
+      "rhp-undecidable": {
+        "thought": "你可能注意到稳定性依赖 ROC，但忽略题目已给出因果性。",
+        "correction": "因果有理系统的 ROC 位于最右极点右侧；有右半平面极点时不能包含虚轴。"
+      },
+      "am-single-sideband": {
+        "thought": "你可能只计算了一个边带的宽度。",
+        "correction": "本题为普通双边带 AM；载频两侧各有一个边带。"
+      },
+      "am-double-sideband-twice": {
+        "thought": "你可能把上下边带的宽度重复计算。",
+        "correction": "从 fc−fm 到 fc+fm 直接相减，避免对双边带再次乘二。"
+      },
+      "am-half": {
+        "thought": "你可能把基带最高频率与带宽的倍数关系倒置。",
+        "correction": "先标出两个最外侧边带，再计算它们之间的跨度。"
+      },
+      "imaginary-axis-decay": {
+        "thought": "你可能把非零虚部当成衰减的来源。",
+        "correction": "虚部控制振荡，实部控制指数包络；虚轴极点的实部为零。"
+      },
+      "imaginary-axis-real": {
+        "thought": "你可能把共轭虚极点当成负实极点。",
+        "correction": "负实极点产生非振荡衰减；共轭虚极点产生正弦或余弦项。"
+      },
+      "imaginary-axis-grow": {
+        "thought": "你可能把振荡频率非零误认为包络增长。",
+        "correction": "检查 e^(σt) 中的 σ；虚轴上 σ=0，包络不随时间增长。"
+      }
+    },
+    "reviewFilter": "复习状态",
+    "filters": {
+      "all": "全部薄弱题",
+      "due": "已到期",
+      "active": "复习中",
+      "done": "已完成"
+    },
+    "diagnosis": "误区诊断",
+    "reviewStage": "复习阶段 {stage}/5",
+    "reviewCompleted": "复习已完成",
+    "dueNow": "已到期，可开始复习",
+    "nextReview": "下次复习：{date}",
+    "variantReview": "变式复习",
+    "reviewMode": "变式复习",
+    "quizMode": "快问快答",
+    "variantHistory": "变式 {variant} · 所选选项 {choice}",
+    "lastMistake": "最近原题错误：{answer}",
+    "lastReviewCorrect": "最近变式复习：答对",
+    "lastReviewIncorrect": "最近变式复习：答错",
+    "reviewBaseQuestion": "关联原题：{question}"
+  },
+  "quiz": {
+    "title": "快问快答",
+    "subtitle": "90 秒内随机完成 12 道概念题。答对得分，连续答对有连击加成。",
+    "formula": "\\text{score}=10\\times\\text{correct}+\\text{streak bonus}",
+    "intro": {
+      "title": "规则",
+      "description": "题目覆盖四章；提交后立即显示解析。",
+      "questions": "题目数",
+      "duration": "总时长",
+      "perQuestion": "平均每题",
+      "ruleOne": "答对得 10 分，连续答对每次额外 +2 分（最多 +10）。",
+      "ruleTwo": "答错不扣分，但连击会清零。",
+      "ruleThree": "时间到自动结算；没答的题不计入正确率，保存作答时暂停计时。",
+      "start": "开始挑战"
+    },
+    "hud": {
+      "progress": "第 {current}/{total} 题"
+    },
+    "question": {
+      "eyebrow": "当前题目",
+      "description": "选择一个答案；提交后不能修改。",
+      "next": "下一题",
+      "finish": "查看结果"
+    },
+    "result": {
+      "title": "本轮结束",
+      "description": "先看总分，再回顾错题；错题比分数更值得花时间。",
+      "score": "总分",
+      "correct": "答对",
+      "accuracy": "正确率",
+      "streak": "最高连击",
+      "restart": "再来一轮",
+      "back": "返回说明"
+    },
+    "review": {
+      "title": "错题与回顾",
+      "description": "这里列出你本轮作答的题目与正确答案。",
+      "empty": "时间到之前没有作答记录。",
+      "answer": "正确答案：{answer}"
+    },
+    "questions": {
+      "energy-signal": {
+        "prompt": "x(t) = e^{−2t}u(t) 属于哪类信号？",
+        "option1": "能量信号",
+        "option2": "功率信号",
+        "option3": "都不是",
+        "option4": "既是能量信号又是功率信号",
+        "explain": "指数衰减信号的能量有限，平均功率为 0，因此是能量信号。"
+      },
+      "convolution-shift": {
+        "prompt": "若 h(t) = δ(t − 2)，则 y(t) = x(t) * h(t) 等于？",
+        "option1": "x(t + 2)",
+        "option2": "x(2t)",
+        "option3": "x(t − 2)",
+        "option4": "x(t)",
+        "explain": "与延迟冲激卷积会把输入整体右移 2：y(t) = x(t − 2)。"
+      },
+      "step-response": {
+        "prompt": "一阶系统 y(t)=K(1−e^{−t/τ})，在 t=τ 时达到最终值的？",
+        "option1": "50%",
+        "option2": "63.2%",
+        "option3": "86.5%",
+        "option4": "95%",
+        "explain": "1 − e^{−1} ≈ 0.632，所以一个时间常数达到 63.2%。"
+      },
+      "aliasing": {
+        "prompt": "f0=5 Hz，fs=8 Hz 时，混叠后的表观频率是？",
+        "option1": "5 Hz",
+        "option2": "8 Hz",
+        "option3": "13 Hz",
+        "option4": "3 Hz",
+        "explain": "|5 − 8| = 3 Hz；采样后高频折叠到 3 Hz。"
+      },
+      "nyquist": {
+        "prompt": "信号最高频率为 4 kHz，理论上最小采样率为？",
+        "option1": "8 kHz",
+        "option2": "4 kHz",
+        "option3": "2 kHz",
+        "option4": "16 kHz",
+        "explain": "奈奎斯特率是最高频率的两倍，即 8 kHz。"
+      },
+      "square-wave": {
+        "prompt": "对称周期方波的傅里叶级数中偶次谐波为零，直接原因是？",
+        "option1": "偶函数",
+        "option2": "具有半波对称性",
+        "option3": "周期函数",
+        "option4": "能量信号",
+        "explain": "奇对称使余弦项消失；半波对称进一步让偶次谐波为零。"
+      },
+      "pulse-spectrum": {
+        "prompt": "矩形脉冲越宽，其频谱主瓣？",
+        "option1": "越宽",
+        "option2": "不变",
+        "option3": "越窄",
+        "option4": "先宽后窄",
+        "explain": "时域展宽对应频域压缩：主瓣宽度与 1/τ 成正比。"
+      },
+      "time-constant": {
+        "prompt": "一阶系统 τ 增大，截止频率 fc 会？",
+        "option1": "降低",
+        "option2": "升高",
+        "option3": "不变",
+        "option4": "先升后降",
+        "explain": "fc = 1/(2πτ)，τ 越大，带宽越窄。"
+      },
+      "damping": {
+        "prompt": "二阶系统阻尼比 ζ 从 0.3 增到 0.7，超调量通常？",
+        "option1": "增大",
+        "option2": "减小",
+        "option3": "不变",
+        "option4": "变为无穷大",
+        "explain": "超调随 ζ 增大而减小；ζ ≥ 1 时超调为零。"
+      },
+      "right-half-plane": {
+        "prompt": "因果有理连续时间 LTI 系统有右半平面极点（无极零抵消），其 BIBO 稳定性是？",
+        "option1": "稳定",
+        "option2": "临界稳定",
+        "option3": "无法判断",
+        "option4": "不稳定",
+        "explain": "右半平面极点对应增长的指数项，因此系统不稳定。"
+      },
+      "am-bandwidth": {
+        "prompt": "基带最高频率为 fm 的 AM 信号，带宽约为？",
+        "option1": "fm",
+        "option2": "4fm",
+        "option3": "2fm",
+        "option4": "0.5fm",
+        "explain": "上下边带各占 fm，因此总带宽为 2fm。"
+      },
+      "imaginary-axis": {
+        "prompt": "虚轴上的单对共轭极点对应的冲激响应是？",
+        "option1": "等幅振荡",
+        "option2": "衰减振荡",
+        "option3": "单调衰减",
+        "option4": "增长振荡",
+        "explain": "实部为零，包络不衰减也不增长，因此是等幅振荡。"
+      }
+    }
+  },
+  "tutor": {
+    "title": "实验助教",
+    "hint": "给我一个提示",
+    "explain": "解释我的判断",
+    "loading": "正在整理…",
+    "retry": "重试",
+    "model": "AI 解释",
+    "curated": "课程精选",
+    "hintDescription": "先明确观察方向，再提交你的预测和理由。",
+    "explainDescription": "对照课程来源，检查推理中的关键关系。"
+  },
+  "workbench": {
+    "title": "自定义信号工作台",
+    "description": "组合两个信号源，观察变换和运算如何改变曲线。",
+    "rule": "变换顺序：反转 → 尺度 → 平移。s>0 向右移动；a>1 拉伸。",
+    "reset": "恢复示例",
+    "source": "信号源 {id}",
+    "kind": "基本信号",
+    "combine": "组合运算",
+    "output": "运算结果",
+    "range": "结果时间范围",
+    "sampling": "采样间隔",
+    "samples": "结果采样点",
+    "reversed": "反转时间轴",
+    "impulseNote": "窄脉冲是单位冲激的有限宽度近似。变换前面积等于幅度参数，缩放时间轴也会缩放面积。",
+    "approximation": "输入采样范围为 [−8, 8] s；卷积按 Σ x[k]h[n−k]·Δt 计算，输出扩展到 [−16, 16] s。无限时长信号在采样窗口外按零处理；窄脉冲近似与有限采样会引入数值误差。",
+    "kinds": {
+      "step": "阶跃",
+      "impulse": "窄脉冲",
+      "rectangle": "矩形脉冲",
+      "exponential": "单边指数",
+      "sine": "正弦"
+    },
+    "operations": {
+      "a": "仅 A",
+      "b": "仅 B",
+      "add": "A + B",
+      "subtract": "A − B",
+      "multiply": "A × B",
+      "convolve": "A ∗ B（卷积）"
+    },
+    "parameters": {
+      "amplitude": "幅度（窄脉冲为面积）",
+      "shift": "平移 s / s",
+      "scale": "尺度 a",
+      "width": "脉宽 / s",
+      "decay": "衰减率 / s⁻¹",
+      "frequency": "频率 / Hz"
+    },
+    "resolutionWarning": "当前脉冲过窄或振荡过快，采样点不足以准确表现细节。增大尺度、增大脉宽或降低频率后再比较。"
+  },
+  "review": {
+    "title": "变式复习",
+    "description": "用同类题检验理解，提交后查看解析和下一次复习时间。",
+    "loading": "正在加载题目…",
+    "retry": "重新加载",
+    "choose": "选择一个答案",
+    "submit": "提交答案",
+    "saving": "正在保存…",
+    "retrySubmission": "重试原提交",
+    "correct": "回答正确",
+    "incorrect": "还需巩固",
+    "answer": "正确答案：{answer}",
+    "stage": "当前复习阶段：{stage}/5",
+    "next": "下次复习：{date}",
+    "completed": "本轮复习已完成，已退出到期队列。",
+    "close": "返回错题本"
+  }
+}

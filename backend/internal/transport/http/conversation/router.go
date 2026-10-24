@@ -1,0 +1,46 @@
+package conversation
+
+import (
+	"github.com/gin-gonic/gin"
+
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/middleware"
+)
+
+// RegisterRoutes 注册会话域路由。
+func (m *Module) RegisterRoutes(authRequired *gin.RouterGroup, gate middleware.FeatureGate) {
+	authRequired.POST("/conversations", m.Handler.CreateConversation)
+	authRequired.GET("/conversations", m.Handler.ListConversations)
+	authRequired.GET("/conversations/search", m.Handler.SearchConversations)
+	authRequired.GET("/conversations/default-model-candidate", m.Handler.GetConversationDefaultModelCandidate)
+	authRequired.GET("/conversations/:id", m.Handler.GetConversation)
+	authRequired.PATCH("/conversations/:id/title", m.Handler.RenameConversation)
+	authRequired.POST("/conversations/:id/title/regenerate", m.Handler.RegenerateConversationTitle)
+	authRequired.PATCH("/conversations/:id/labels", m.Handler.UpdateConversationLabels)
+	authRequired.PATCH("/conversations/:id/star", m.Handler.SetConversationStar)
+	authRequired.PATCH("/conversations/:id/archive", m.Handler.SetConversationArchive)
+	authRequired.DELETE("/conversations/:id", m.Handler.DeleteConversation)
+	authRequired.GET("/conversations/:id/messages", m.Handler.ListMessages)
+	authRequired.GET("/conversations/:id/messages/preview", m.Handler.ListConversationPreviewMessages)
+	authRequired.GET("/conversations/:id/runs", m.Handler.ListConversationRuns)
+	authRequired.POST("/conversations/:id/messages", m.Handler.SendMessage)
+	authRequired.POST("/conversations/:id/messages/stream", m.Handler.StreamMessage)
+	authRequired.POST("/conversations/:id/messages/:message_id/fork", m.Handler.ForkConversationFromMessage)
+	authRequired.DELETE("/conversations/:id/messages/:message_id", m.Handler.DeleteMessage)
+	authRequired.GET("/context-artifacts/:id", m.Handler.GetContextArtifact)
+	authRequired.GET("/conversation-runs/stream", m.Handler.StreamActiveMessageGenerations)
+	authRequired.POST("/conversation-runs/statuses", m.Handler.GetConversationRunStatuses)
+	authRequired.GET("/conversation-runs/:run_id/stream", m.Handler.ResumeMessageGenerationStream)
+	authRequired.POST("/conversation-runs/:run_id/cancel", m.Handler.CancelMessageGeneration)
+	authRequired.PATCH("/messages/:id", m.Handler.UpdateMessage)
+	authRequired.PUT("/messages/:id/feedback", m.Handler.SetMessageFeedback)
+	authRequired.POST("/files", m.Handler.UploadFile)
+	authRequired.GET("/files", m.Handler.ListFiles)
+	authRequired.POST("/files/processing/statuses", m.Handler.GetFileProcessingStatuses)
+	authRequired.POST("/files/embeddings", m.Handler.SubmitFileEmbeddings)
+	authRequired.GET("/files/:file_id/processing", m.Handler.GetFileProcessingStatus)
+	authRequired.GET("/files/:file_id/extract", m.Handler.GetFileExtract)
+	authRequired.PATCH("/files/:file_id", m.Handler.UpdateFile)
+	authRequired.GET("/files/:file_id/content", m.Handler.GetFileContent)
+	authRequired.DELETE("/files/:file_id", m.Handler.DeleteFile)
+	authRequired.GET("/runtime/chat-file-policy", m.Handler.GetChatFilePolicy)
+}

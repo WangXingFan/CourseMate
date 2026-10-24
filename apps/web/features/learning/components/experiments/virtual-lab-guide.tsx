@@ -1,0 +1,21 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { LessonShell } from "@/features/learning/components/shared/lesson-shell";
+import { useLearningVirtualLabGuide } from "@/features/learning/hooks/use-learning-virtual-lab-guide";
+
+export function VirtualLabGuide() {
+  const t = useTranslations("learning.virtualLab");
+  const { allowed, state, retry } = useLearningVirtualLabGuide();
+  return (
+    <LessonShell title={t("guide")} subtitle={t("guideSubtitle")} className="max-w-6xl">
+      {!allowed ? <p className="text-sm">{t("teacherOnly")}</p> : state?.failed ? (
+        <div><p className="mb-3 text-sm">{t("loadFailed")}</p><Button onClick={retry}>{t("retry")}</Button></div>
+      ) : state?.html ? (
+        <iframe title={t("guide")} srcDoc={state.html} sandbox="allow-scripts allow-modals allow-popups allow-popups-to-escape-sandbox"
+          className="h-[75vh] min-h-96 w-full rounded-xl border border-border bg-white" />
+      ) : <p className="text-sm">{t("status.loading")}</p>}
+    </LessonShell>
+  );
+}

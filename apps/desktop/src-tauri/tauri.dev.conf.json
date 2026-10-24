@@ -1,0 +1,5 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "identifier": "io.github.wangxingfan.coursemate.dev",
+  "productName": "CourseMate Dev"
+}

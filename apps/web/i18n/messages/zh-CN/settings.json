@@ -1,0 +1,529 @@
+{
+  "title": "设置",
+  "general": "通用",
+  "account": "账户",
+  "chat": "对话",
+  "upstreams": "上游",
+  "upstreamsPage": {
+    "title": "上游",
+    "description": "自行添加服务商并勾选要使用的模型。凭据仅用于你的请求。",
+    "addTitle": "添加上游",
+    "name": "名称",
+    "baseURL": "接口地址",
+    "compatible": "兼容协议",
+    "apiKey": "API Key",
+    "add": "添加",
+    "edit": "修改",
+    "editTitle": "修改上游",
+    "editDescription": "修改上游连接信息；API Key 留空表示保留原配置。",
+    "apiKeyOptional": "API Key（留空保持不变）",
+    "save": "保存",
+    "yourUpstreams": "已添加的上游",
+    "loading": "加载中…",
+    "empty": "还没有上游",
+    "delete": "删除",
+    "deleteTitle": "删除上游",
+    "cancel": "取消",
+    "confirmDelete": "确定删除这个上游及其私有模型吗？",
+    "discover": "发现模型",
+    "discoverTitle": "选择要添加的模型",
+    "discoverDescription": "勾选需要保留的模型，点击“同步”后统一添加或移除。",
+    "modelsPlaceholder": "输入模型名，多个模型用逗号分隔",
+    "selectModels": "加入选择",
+    "selectedModels": "已选择模型（{count}）",
+    "pendingAdd": "待添加",
+    "pendingRemove": "待移除",
+    "pendingChanges": "待添加 {additions} 个 · 待移除 {removals} 个",
+    "sync": "同步",
+    "syncing": "同步中…",
+    "syncFailed": "同步未完成，已保留当前选择，请重试",
+    "available": "可用",
+    "unavailable": "当前不可用",
+    "searchModels": "搜索模型",
+    "noRemoteModels": "没有发现模型。可点击“发现模型”重试，或在下方手动输入模型名。",
+    "noMatchingModels": "没有匹配的模型",
+    "retry": "重试",
+    "loadFailed": "加载上游或已添加模型失败",
+    "discoverFailed": "发现模型失败",
+    "saveFailed": "保存失败",
+    "upstreamAdded": "上游已添加",
+    "upstreamUpdated": "上游已更新",
+    "upstreamDeleted": "上游已删除",
+    "modelsSynced": "模型已同步",
+    "createTitle": "添加上游",
+    "creating": "创建中…",
+    "saving": "保存中…",
+    "apiKeysPlaceholder": "每行一个 API Key",
+    "apiKeysDescription": "每行一个 Key，多个 Key 会按故障转移轮换使用。",
+    "allStatus": "全部状态",
+    "allCompatible": "全部兼容协议",
+    "compatibleCustom": "自定义",
+    "modelCountSummary": "可用 {active} / 共 {total}",
+    "manageModelsTitle": "管理模型（{name}）",
+    "table": {
+      "searchPlaceholder": "搜索名称、地址",
+      "name": "名称",
+      "url": "接口地址",
+      "compatible": "兼容协议",
+      "models": "模型",
+      "status": "状态",
+      "updatedAt": "更新时间",
+      "actions": "操作"
+    },
+    "status": {
+      "active": "正常",
+      "inactive": "停用",
+      "circuitOpen": "熔断中"
+    },
+    "sort": {
+      "idDesc": "ID 从新到旧",
+      "idAsc": "ID 从旧到新",
+      "nameAsc": "名称 A-Z",
+      "updatedDesc": "最近更新"
+    },
+    "actions": {
+      "edit": "编辑",
+      "manageModels": "管理模型",
+      "delete": "删除"
+    }
+  },
+  "about": "关于",
+  "navigation": "设置导航",
+  "aboutPage": {
+    "title": "关于",
+    "description": "课知伴是《信号与系统》互动学习助手，支持课程章节、信号实验、AI 助教、快问快答和间隔复习，帮助你理解概念、动手验证并巩固所学。",
+    "details": "产品信息",
+    "product": "产品",
+    "version": "版本",
+    "console": "控制台",
+    "userConsole": "用户端",
+    "repository": "仓库",
+    "contact": "问题反馈",
+    "copyright": "© 2026 WangXingFan · CourseMate",
+    "license": "代码遵循 Apache License 2.0 授权。",
+    "author": "作者",
+    "notices": "来源声明"
+  },
+  "appearance": "外观",
+  "language": "语言",
+  "languageDescription": "选择当前浏览器和账户使用的界面语言。",
+  "generalPage": {
+    "profile": {
+      "avatar": "头像",
+      "avatarAlt": "用户头像",
+      "username": "用户名",
+      "usernamePlaceholder": "设置用户名",
+      "displayName": "显示名称",
+      "displayNamePlaceholder": "界面中显示的名称",
+      "displayNameInvalid": "显示名称需为 3-16 个字符。",
+      "timezone": "时区",
+      "conversationPreferences": "对话偏好",
+      "conversationPreferencesPlaceholder": "偏好的风格、语言习惯、输出格式和常用工作流。"
+    },
+    "username": {
+      "invalid": "用户名需为 3-16 位小写字母、数字、下划线或短横线，且不能使用保留名称。",
+      "alreadyChanged": "用户名只能设置一次。",
+      "taken": "该用户名已被占用。"
+    },
+    "toast": {
+      "initialUsernameRequired": "请修改初始化用户名。",
+      "setUsernameFailed": "设置用户名失败",
+      "usernameUpdated": "用户名已更新",
+      "profileUpdated": "个人资料已更新",
+      "saveProfileFailed": "保存个人资料失败"
+    },
+    "notifications": {
+      "responseCompletionTitle": "回复完成通知",
+      "responseCompletionDescription": "当模型完成回复时通知你，适合工具调用、研究等耗时较长的任务。",
+      "toggleResponseCompletion": "切换回复完成通知",
+      "unsupportedTitle": "当前浏览器不支持通知",
+      "unsupportedDescription": "请使用支持 Notification API 的桌面浏览器。",
+      "deniedTitle": "通知权限被拒绝",
+      "deniedDescription": "请在浏览器的站点权限设置里允许通知后再开启。",
+      "enabledTitle": "已开启浏览器通知",
+      "enabledDescription": "当回复在后台完成时，你会收到系统通知。",
+      "defaultHelp": "开启后会调用浏览器通知权限，通过系统通知提醒你。",
+      "unsupportedHelp": "当前浏览器不支持系统通知。",
+      "deniedHelp": "浏览器已阻止通知，请在浏览器设置中手动允许。",
+      "grantedHelp": "已启用浏览器通知。开启后，模型回复完成时会弹出提醒。"
+    },
+    "appearance": {
+      "colorMode": "颜色模式",
+      "themePreset": "主题",
+      "fontSize": "字体大小",
+      "preset": {
+        "default": "默认",
+        "azure": "Azure",
+        "cobalt": "Cobalt",
+        "graphite": "Graphite",
+        "lagoon": "Lagoon",
+        "ink": "Ink",
+        "ochre": "Ochre",
+        "sepia": "Sepia"
+      },
+      "theme": {
+        "light": "浅色",
+        "system": "跟随系统",
+        "dark": "深色"
+      },
+      "fontSizeOption": {
+        "small": "小号",
+        "standard": "标准",
+        "medium": "中号",
+        "large": "大号"
+      },
+      "toastPosition": "通知位置",
+      "toastPositionOption": {
+        "top-left": "左上",
+        "top-center": "顶部居中",
+        "top-right": "右上",
+        "bottom-left": "左下",
+        "bottom-center": "底部居中",
+        "bottom-right": "右下"
+      },
+      "toastPositionPreview": "通知会显示在这里"
+    },
+    "avatarDialog": {
+      "title": "编辑头像",
+      "description": "上传图片、输入头像 URL，或生成像素风头像。",
+      "avatarURL": "头像 URL",
+      "upload": "上传图片",
+      "uploading": "上传中",
+      "uploaded": "头像已上传",
+      "uploadFailed": "头像上传失败",
+      "uploadInvalid": "请选择图片文件",
+      "generate": "生成头像",
+      "apply": "应用"
+    }
+  },
+  "profile": "个人资料",
+  "security": "安全",
+  "notifications": "通知",
+  "accountPage": {
+    "title": "账户",
+    "password": "登录密码",
+    "twoFactor": "两步验证",
+    "logoutAllDevices": "登出您的所有在线设备",
+    "deleteAccount": "删除您的账号",
+    "publicID": "用户公开 ID",
+    "copyPublicID": "复制用户公开 ID",
+    "email": {
+      "label": "邮箱",
+      "withAddress": "邮箱（{email}）",
+      "verified": "已验证",
+      "unverified": "未验证"
+    },
+    "actions": {
+      "set": "设置",
+      "update": "更新",
+      "manage": "管理",
+      "generating": "生成中",
+      "logOut": "登出",
+      "loggingOut": "登出中",
+      "deleteAccount": "删除账号",
+      "deleting": "删除中",
+      "bind": "绑定",
+      "cancel": "取消",
+      "verify": "验证"
+    },
+    "identity": {
+      "title": "绑定身份源",
+      "provider": "身份源",
+      "username": "用户名",
+      "email": "邮箱",
+      "linkedAt": "绑定时间",
+      "empty": "当前没有绑定第三方身份源",
+      "unlink": "解绑身份源",
+      "unlinkDisabled": "请先设置密码或绑定其他身份源"
+    },
+    "session": {
+      "title": "活跃会话",
+      "device": "设备",
+      "location": "位置",
+      "createdAt": "创建时间",
+      "updatedAt": "更新时间",
+      "empty": "当前没有可用的活跃会话",
+      "current": "当前会话",
+      "actions": "会话操作",
+      "logoutThisSession": "登出此会话",
+      "unknownDevice": "未知设备",
+      "unknownLocation": "未知地区",
+      "unknownIP": "未知 IP"
+    },
+    "logoutAllDialog": {
+      "title": "登出所有在线设备？",
+      "description": "确认后，此账号在其他浏览器、桌面端或移动设备上的在线会话都会失效。当前设备也会回到登录页。",
+      "confirm": "确认登出所有设备"
+    },
+    "deleteDialog": {
+      "title": "删除账户",
+      "description": "删除账号是永久性的。您将无法恢复您的账号或聊天记录。",
+      "verificationTitle": "验证删除账号",
+      "verificationDescription": {
+        "twoFactor": "输入认证器验证码或恢复码后删除账号。",
+        "email": "发送验证码到已验证邮箱，输入后删除账号。"
+      },
+      "verificationUnavailable": "删除账号需要先验证身份。请先验证邮箱或启用两步验证。"
+    },
+    "securityDialog": {
+      "common": {
+        "cancel": "取消",
+        "save": "保存",
+        "saving": "保存中",
+        "sending": "发送中",
+        "sendCode": "发送",
+        "resendIn": "{seconds}s 后重发",
+        "processing": "处理中",
+        "done": "完成",
+        "verify": "验证",
+        "continue": "继续",
+        "back": "返回",
+        "debugCode": "开发验证码：{code}",
+        "copiedLabel": "{label}已复制",
+        "copyFailed": "复制失败",
+        "copyManually": "请手动选择内容复制。"
+      },
+      "password": {
+        "title": {
+          "required": "首次设置密码",
+          "change": "修改密码",
+          "set": "设置密码"
+        },
+        "description": {
+          "required": "首次启动需要修改初始化密码。完成后当前会话会失效，需要使用新密码重新登录。",
+          "change": "修改后当前登录会话会失效，需要使用新密码重新登录。",
+          "set": "设置后可使用账号密码登录，并作为解绑身份源前的安全凭证。"
+        },
+        "verificationTitle": "验证密码修改",
+        "verificationDescription": {
+          "twoFactor": "输入认证器验证码或恢复码后继续。",
+          "email": "发送验证码到已验证邮箱，输入后继续。"
+        },
+        "labels": {
+          "currentPassword": "当前密码",
+          "newPassword": "新密码",
+          "loginPassword": "登录密码",
+          "twoFactorCode": "两步验证码",
+          "emailCode": "邮箱验证码"
+        },
+        "placeholders": {
+          "password": "至少 8 位，不能为纯数字",
+          "otpOrRecovery": "验证码或恢复码",
+          "sixDigitCode": "6 位验证码"
+        }
+      },
+      "email": {
+        "title": {
+          "set": "设置邮箱",
+          "change": "修改邮箱"
+        },
+        "description": {
+          "bootstrapVerified": "首次设置邮箱需要验证新邮箱所有权。",
+          "saveOnly": "保存后将更新邮箱。",
+          "change": "课知伴会根据当前账号安全状态要求必要验证，通过后保存修改。"
+        },
+        "labels": {
+          "newEmail": "新邮箱"
+        }
+      },
+      "verification": {
+        "title": {
+          "emailBootstrap": "验证新邮箱",
+          "emailChange": "验证邮箱修改",
+          "currentEmail": "验证邮箱"
+        },
+        "description": {
+          "emailBootstrap": "发送验证码到新邮箱，输入后保存邮箱。",
+          "emailChange": "完成必要验证后保存邮箱修改。",
+          "currentEmail": "发送验证码到 {email}，输入后将该邮箱标记为已验证。"
+        },
+        "labels": {
+          "twoFactorCode": "两步验证码",
+          "emailCode": "邮箱验证码",
+          "currentEmailCode": "当前邮箱验证码",
+          "newEmail": "新邮箱",
+          "newEmailCode": "新邮箱验证码",
+          "verificationCode": "验证码"
+        },
+        "placeholders": {
+          "otpOrRecovery": "验证码或恢复码",
+          "sixDigitCode": "6 位验证码"
+        },
+        "actions": {
+          "useEmail": "使用邮箱验证",
+          "useTwoFactor": "使用两步验证"
+        }
+      },
+      "twoFactor": {
+        "title": {
+          "setup": "开启两步验证",
+          "manage": "两步验证管理",
+          "recovery": "备用验证码保存"
+        },
+        "description": {
+          "setup": "使用认证器 App 扫码或手动绑定。",
+          "manage": "输入验证码或备用验证码后继续操作。",
+          "recovery": "备用验证码只显示一次，请保存到安全位置。"
+        },
+        "tabs": {
+          "qr": "二维码",
+          "manual": "手动绑定"
+        },
+        "errors": {
+          "codeRequired": "请输入验证码"
+        },
+        "qrLabel": "两步验证二维码",
+        "setupExpired": "本次设置已过期",
+        "qrUnavailable": "二维码暂不可用，请使用手动密钥绑定。",
+        "scanThenVerify": "扫码后输入验证码完成绑定",
+        "regenerate": "重新生成",
+        "validUntil": "{time} 前有效",
+        "secret": "密钥",
+        "copySecret": "复制密钥",
+        "otpAuthUri": "OTP Auth URI",
+        "copyOtpUri": "复制 OTP Auth URI",
+        "code": "验证码",
+        "sixDigitCode": "6 位验证码",
+        "codeOrRecovery": "验证码或备用验证码",
+        "regenerateRecoveryCodes": "重新生成恢复码",
+        "recoveryCodes": "备用验证码",
+        "copyRecoveryCodes": "复制备用验证码",
+        "enable": "启用",
+        "disable": "关闭"
+      }
+    },
+    "toasts": {
+      "retryLater": "请稍后重试。",
+      "sessionMissing": "未检测到登录态",
+      "loadFailed": "加载账户信息失败",
+      "publicIDCopied": "已复制公开 ID",
+      "copyFailed": "复制失败",
+      "codeSent": "验证码已发送",
+      "sendCodeFailed": "验证码发送失败",
+      "passwordChanged": "密码已修改",
+      "passwordChangedDescription": "请使用新密码重新登录。",
+      "changePasswordFailed": "修改密码失败",
+      "emailSet": "邮箱已设置",
+      "setEmailFailed": "设置邮箱失败",
+      "emailVerified": "邮箱已验证",
+      "verifyEmailFailed": "验证邮箱失败",
+      "currentEmailCodeSent": "当前邮箱验证码已发送",
+      "newEmailCodeSent": "新邮箱验证码已发送",
+      "deleteAccountCodeSent": "删除账号验证码已发送",
+      "emailChanged": "邮箱已修改",
+      "changeEmailFailed": "修改邮箱失败",
+      "deleteAccountFailed": "删除账户失败",
+      "sessionLoggedOut": "会话已登出",
+      "logoutSessionFailed": "登出会话失败",
+      "identityUnlinked": "身份源已解绑",
+      "unlinkIdentityFailed": "解绑身份源失败",
+      "startTwoFactorFailed": "启动两步验证失败",
+      "twoFactorEnabled": "两步验证已启用",
+      "enableTwoFactorFailed": "启用两步验证失败",
+      "twoFactorDisabled": "两步验证已关闭",
+      "disableTwoFactorFailed": "关闭两步验证失败",
+      "recoveryCodesRegenerated": "恢复码已重新生成",
+      "regenerateRecoveryCodesFailed": "重新生成恢复码失败",
+      "providerUnavailable": "该身份源暂不可绑定",
+      "bindIdentityFailed": "绑定身份源失败"
+    }
+  },
+  "chatPage": {
+    "defaultModel": {
+      "sectionTitle": "基础会话",
+      "title": "新会话默认模型",
+      "description": "开启新对话时预选的模型。留空则使用系统推荐的第一个可用模型。",
+      "systemRecommended": "系统默认",
+      "autoTitle": "自动生成标题",
+      "autoTitleDescription": "关闭后，新对话使用第一条消息的前 16 个字符作为标题。",
+      "titleModel": "标题生成模型",
+      "titleModelDescription": "选择用于生成对话标题的模型。",
+      "titleModelFollow": "跟随当前对话模型",
+      "titleModelUnavailable": "已选模型不可用，请重新选择",
+      "autoLabels": "自动生成标签",
+      "autoLabelsDescription": "关闭后，系统将不再自动生成会话标签，可减少辅助模型调用及相应的 Token 消耗。"
+    },
+    "input": {
+      "sectionTitle": "输入与发送",
+      "shortcutTitle": "发送快捷键",
+      "shortcutDescription": "当前平台使用 {shortcut} 提交消息。",
+      "heightTitle": "输入区域高度",
+      "heightDescription": "控制输入框自动扩展时允许占用的最大高度。",
+      "height": {
+        "compact": "紧凑",
+        "standard": "标准",
+        "loose": "宽松"
+      },
+      "restoreDraftTitle": "自动恢复草稿",
+      "restoreDraftDescription": "控制发送失败时是否自动恢复本次发送的文字和附件。",
+      "preserveDraftTitle": "保留会话草稿",
+      "preserveDraftDescription": "控制切换会话后是否保留并恢复当前会话的未发送内容。",
+      "reuseModelOptionsTitle": "复用模型配置",
+      "reuseModelOptionsDescription": "开启后，新会话选择同一模型时会自动填充上次使用的模型参数。",
+      "deleteFilesDefaultTitle": "删除会话时默认删除文件",
+      "deleteFilesDefaultDescription": "开启后，删除会话确认框会默认勾选同时删除文件；仍被其他会话引用的文件会保留。"
+    },
+    "display": {
+      "sectionTitle": "显示与渲染",
+      "markdownTitle": "Markdown 渲染",
+      "markdownDescription": "控制 AI 回复是否渲染为格式化 Markdown 内容。",
+      "autoExpandThinkingTitle": "自动展开深度思考",
+      "autoExpandThinkingDescription": "回复生成时自动展开当前深度思考。",
+      "autoExpandToolCallsTitle": "自动展开工具调用",
+      "autoExpandToolCallsDescription": "工具运行时自动展开当前调用详情。",
+      "modelTitle": "显示调用模型",
+      "modelDescription": "控制 AI 回复下方是否展示本次调用的模型。",
+      "tokenTitle": "显示 Token 用量",
+      "tokenDescription": "控制 AI 回复下方是否展示本次请求消耗的 Token 用量。",
+      "latencyTitle": "显示调用总耗时",
+      "latencyDescription": "控制 AI 回复下方是否展示本次调用的总耗时。",
+      "processTraceTitle": "显示处理过程",
+      "processTraceDescription": "控制 AI 回复上方是否展示本轮的处理过程，如上下文规划、检索与工具调用摘要。",
+      "widthTitle": "对话区域宽度",
+      "width": {
+        "compact": "紧凑",
+        "standard": "标准",
+        "wide": "宽屏"
+      },
+      "chatFont": "对话字体",
+      "chatFontWeight": "对话字重",
+      "font": {
+        "default": "默认",
+        "songti": "衬线",
+        "heiti": "无衬线",
+        "mono": "等宽"
+      },
+      "fontWeight": {
+        "regular": "常规",
+        "medium": "中等",
+        "semibold": "半粗",
+        "bold": "粗体"
+      }
+    },
+    "context": {
+      "sectionTitle": "上下文管理",
+      "autoCompactTitle": "自动压缩上下文",
+      "autoCompactDescription": "开启后，当对话超过轮次或 Token 阈值时，系统会自动将较早消息压缩为摘要，并保留最近几轮原文，以减少上下文。关闭后，将不会自动压缩对话上下文。",
+      "reasoningPassbackTitle": "回传推理上下文",
+      "reasoningPassbackDescription": "开启后，支持的 Chat Completions 推理模型会在后续轮次携带上一轮推理内容，以提升多步推理连贯性。"
+    },
+    "file": {
+      "sectionTitle": "文件处理",
+      "modeTitle": "文件处理模式",
+      "mode": {
+        "auto": "自动",
+        "fullContext": "全文注入",
+        "rag": "向量检索"
+      },
+      "modeDescription": {
+        "auto": "当前：自动 — 系统根据文件大小、类型、上下文预算与检索能力自动选择全文注入或 RAG（推荐）。",
+        "fullContext": "当前：全文注入 — 后续每轮尽量将会话文件内容放入上下文，适合小文件精确分析。",
+        "rag": "当前：RAG — 后续每轮优先检索会话文件相关片段；检索不可用时回退全文注入。"
+      }
+    },
+    "toasts": {
+      "saveFailed": "保存失败",
+      "retryLater": "请稍后重试。"
+    }
+  }
+}

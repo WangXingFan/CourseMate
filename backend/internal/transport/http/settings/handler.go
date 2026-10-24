@@ -1,0 +1,636 @@
+package settings
+
+import (
+	"context"
+	"errors"
+	"net/http"
+	"net/url"
+	"strconv"
+	"strings"
+	"time"
+
+	appembedding "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/embedding"
+	appruntime "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/runtime"
+	appsettings "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/settings"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/response"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/middleware"
+	"github.com/gin-gonic/gin"
+)
+
+const runtimeActionTimeout = 5 * time.Minute
+
+// Handler 封装 settings HTTP 处理。
+type Handler struct {
+	service                  *appsettings.Service
+	runtimeSettings          *appsettings.RuntimeSettings
+	runtimeSvc               *appruntime.Service
+	runtime                  *config.Runtime
+	embeddingSvc             *appembedding.Service       // 可选，用于模型变更后触发向量失效
+	builtinEmbeddingBackfill func(context.Context) error // 可选，用于补偿平台内置资料
+}
+
+// NewHandler 创建处理器。
+func NewHandler(service *appsettings.Service, runtimeSettings *appsettings.RuntimeSettings, runtimeSvc *appruntime.Service, runtime *config.Runtime) *Handler {
+	return &Handler{
+		service:         service,
+		runtimeSettings: runtimeSettings,
+		runtimeSvc:      runtimeSvc,
+		runtime:         runtime,
+	}
+}
+
+// SetEmbeddingService 注入 Embedding 服务（可选），用于在模型配置变更时自动标记向量失效。
+func (h *Handler) SetEmbeddingService(svc *appembedding.Service) {
+	h.embeddingSvc = svc
+}
+
+// SetBuiltinEmbeddingBackfiller 注入平台内置知识库的定向向量补偿。
+// 回调由组合根记录错误；补偿失败不得回滚已成功保存的设置。
+func (h *Handler) SetBuiltinEmbeddingBackfiller(backfill func(context.Context) error) {
+	h.builtinEmbeddingBackfill = backfill
+}
+
+// ListAll godoc
+// @Summary 查询全部动态配置
+// @Description 按 namespace 分组返回全部动态配置项
+// @Tags admin/settings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Envelope
+// @Router /admin/settings [get]
+func (h *Handler) ListAll(c *gin.Context) {
+	data, err := h.service.ListAll(c.Request.Context())
+	if err != nil {
+		response.InternalError(c)
+		return
+	}
+	response.Success(c, toSettingResponseMap(data))
+}
+
+// ListByNamespace godoc
+// @Summary 查询指定 namespace 的配置
+// @Description 查询指定 namespace 下的全部配置项
+// @Tags admin/settings
+// @Produce json
+// @Security BearerAuth
+// @Param namespace path string true "命名空间"
+// @Success 200 {object} response.Envelope
+// @Router /admin/settings/{namespace} [get]
+func (h *Handler) ListByNamespace(c *gin.Context) {
+	ns := c.Param("namespace")
+	if !appsettings.IsValidNamespace(ns) {
+		response.ErrorFrom(c, http.StatusBadRequest, errInvalidNamespace)
+		return
+	}
+
+	data, err := h.service.ListByNamespace(c.Request.Context(), ns)
+	if err != nil {
+		response.InternalError(c)
+		return
+	}
+	response.Success(c, toSettingResponseList(data))
+}
+
+// GetLoginPageSettings godoc
+// @Summary 查询公开登录页配置
+// @Tags settings
+// @Produce json
+// @Success 200 {object} response.Envelope
+// @Router /settings/login-page [get]
+func (h *Handler) GetLoginPageSettings(c *gin.Context) {
+	items, err := h.service.ListByNamespace(c.Request.Context(), "auth")
+	if err != nil {
+		response.InternalError(c)
+		return
+	}
+	values := map[string]string{
+		"login_default_next_path": "/chat",
+	}
+	for _, item := range items {
+		if _, ok := values[item.Key]; ok {
+			values[item.Key] = item.Value
+		}
+	}
+	if strings.TrimSpace(values["login_default_next_path"]) == "" ||
+		!strings.HasPrefix(values["login_default_next_path"], "/") ||
+		strings.HasPrefix(values["login_default_next_path"], "//") {
+		values["login_default_next_path"] = "/chat"
+	}
+	response.Success(c, LoginPageSettingsResponse{
+		DefaultNextPath: values["login_default_next_path"],
+	})
+}
+
+// GetBranding godoc
+// @Summary 查询公开品牌配置
+// @Tags settings
+// @Produce json
+// @Success 200 {object} BrandingResponseDoc
+// @Router /branding [get]
+func (h *Handler) GetBranding(c *gin.Context) {
+	c.Header("Cache-Control", "no-cache")
+	response.Success(c, brandingResponse(h.runtime.Snapshot()))
+}
+
+// GetBrandingManifest godoc
+// @Summary 查询品牌 Web App Manifest
+// @Tags settings
+// @Produce application/manifest+json
+// @Success 200 {object} BrandingManifestResponse
+// @Router /branding/manifest.webmanifest [get]
+func (h *Handler) GetBrandingManifest(c *gin.Context) {
+	cfg := h.runtime.Snapshot()
+	branding := brandingResponse(cfg)
+	c.Header("Cache-Control", "no-cache")
+	c.Header("Content-Type", "application/manifest+json; charset=utf-8")
+	c.JSON(http.StatusOK, BrandingManifestResponse{
+		Name:            branding.Title,
+		ShortName:       branding.ShortName,
+		Description:     branding.Description,
+		ID:              publicBrandURL(cfg.PublicWebBaseURL, "/"),
+		StartURL:        publicBrandURL(cfg.PublicWebBaseURL, "/chat"),
+		Scope:           publicBrandURL(cfg.PublicWebBaseURL, "/"),
+		Display:         "standalone",
+		BackgroundColor: "#ffffff",
+		ThemeColor:      "#0f172a",
+		Categories:      []string{"productivity", "business", "utilities"},
+		Lang:            "en",
+		Icons: []BrandingManifestIcon{
+			{Src: publicBrandURL(cfg.PublicWebBaseURL, branding.PWAIcon192URL), Sizes: "192x192", Type: "image/png", Purpose: "any"},
+			{Src: publicBrandURL(cfg.PublicWebBaseURL, branding.PWAIcon512URL), Sizes: "512x512", Type: "image/png", Purpose: "any"},
+			{Src: publicBrandURL(cfg.PublicWebBaseURL, branding.PWAMaskableIcon512URL), Sizes: "512x512", Type: "image/png", Purpose: "maskable"},
+		},
+	})
+}
+
+func publicBrandURL(baseURL string, value string) string {
+	normalized := strings.TrimSpace(value)
+	if normalized == "" {
+		return normalized
+	}
+	reference, err := url.Parse(normalized)
+	if err != nil || reference.IsAbs() {
+		return normalized
+	}
+	base, err := url.Parse(strings.TrimRight(strings.TrimSpace(baseURL), "/") + "/")
+	if err != nil || base.Host == "" {
+		return normalized
+	}
+	return base.ResolveReference(reference).String()
+}
+
+func brandingResponse(cfg config.Config) BrandingResponse {
+	return BrandingResponse{
+		Title:                 cfg.BrandTitle,
+		ShortName:             cfg.BrandShortName,
+		Description:           cfg.BrandDescription,
+		LogoURL:               cfg.BrandLogoURL,
+		FaviconURL:            cfg.BrandFaviconURL,
+		PWAIcon192URL:         cfg.BrandPWAIcon192URL,
+		PWAIcon512URL:         cfg.BrandPWAIcon512URL,
+		PWAMaskableIcon512URL: cfg.BrandPWAMaskableIcon512URL,
+		AppleTouchIcon180URL:  cfg.BrandAppleTouchIcon180URL,
+	}
+}
+
+// GetModelOptionPolicy godoc
+// @Summary 查询模型 options 透传策略
+// @Tags settings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Envelope
+// @Router /settings/model-option-policy [get]
+func (h *Handler) GetModelOptionPolicy(c *gin.Context) {
+	items, err := h.service.RuntimeValuesByNamespace(c.Request.Context(), "chat")
+	if err != nil {
+		response.InternalError(c)
+		return
+	}
+	mode := strings.TrimSpace(items["model_option_policy_mode"])
+	if mode == "" {
+		mode = "allowlist"
+	}
+	allowedPathsJSON := strings.TrimSpace(items["model_option_allowed_paths"])
+	if allowedPathsJSON == "" {
+		allowedPathsJSON = config.DefaultModelOptionAllowedPathsJSON()
+	}
+	deniedPathsJSON := strings.TrimSpace(items["model_option_denied_paths"])
+	if deniedPathsJSON == "" {
+		deniedPathsJSON = config.DefaultModelOptionDeniedPathsJSON()
+	}
+	response.Success(c, ModelOptionPolicyResponse{
+		Mode:             mode,
+		AllowedPathsJSON: allowedPathsJSON,
+		DeniedPathsJSON:  deniedPathsJSON,
+	})
+}
+
+// GetChatContextPolicy godoc
+// @Summary 查询聊天上下文策略
+// @Tags settings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Envelope
+// @Router /settings/chat-context-policy [get]
+func (h *Handler) GetChatContextPolicy(c *gin.Context) {
+	cfg := h.runtime.Snapshot()
+	response.Success(c, ChatContextPolicyResponse{ContextCompactEnabled: cfg.ContextCompactEnabled})
+}
+
+// GetFeaturePolicy godoc
+// @Summary 查询用户侧功能开关策略
+// @Description 返回管理员配置的用户侧功能开关，包括知识库、处理轨迹与网页端「下载桌面端」入口
+// @Tags settings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} FeaturePolicyResponseDoc
+// @Router /settings/feature-policy [get]
+func (h *Handler) GetFeaturePolicy(c *gin.Context) {
+	response.Success(c, featurePolicyResponse(h.runtime.Snapshot()))
+}
+
+// featurePolicyResponse 把运行时配置映射为用户侧功能开关；下载地址不合法时一并关闭下载入口。
+func featurePolicyResponse(cfg config.Config) FeaturePolicyResponse {
+	resp := FeaturePolicyResponse{
+		KnowledgeBaseEnabled:    cfg.KnowledgeBaseEnabled,
+		ProcessTraceEnabled:     cfg.ProcessTraceEnabled,
+		DefaultKnowledgeBaseIDs: cfg.DefaultKnowledgeBaseIDs(),
+	}
+	downloadURL := strings.TrimSpace(cfg.DesktopDownloadURL)
+	if cfg.DesktopDownloadEnabled && appsettings.IsValidDesktopDownloadURL(downloadURL) {
+		resp.DesktopDownloadEnabled = true
+		resp.DesktopDownloadURL = downloadURL
+	}
+	return resp
+}
+
+// Patch godoc
+// @Summary 批量更新配置项
+// @Description 批量更新动态配置并清除缓存，下次读取自动刷新
+// @Tags admin/settings
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param body body PatchSettingsRequest true "更新项"
+// @Success 200 {object} response.Envelope
+// @Router /admin/settings [patch]
+func (h *Handler) Patch(c *gin.Context) {
+	var req PatchSettingsRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.InvalidRequestBody(c, err)
+		return
+	}
+
+	// 在与用户可见配置相同的设置写入中派生并持久化向量空间签名。
+	// 因此检索会原子地切换到新空间，
+	// 绝不会用新端点查询旧分块。
+	prevCfg := h.runtime.Snapshot()
+	nextModel, nextDimensions, nextHost := prospectiveEmbeddingSpace(prevCfg, req.Items)
+	embeddingSettingsTouched := touchesEmbeddingSpace(req.Items)
+	embeddingSpaceChanged := strings.TrimSpace(nextModel) != strings.TrimSpace(prevCfg.RAGModel) ||
+		nextDimensions != prevCfg.EmbeddingOutputDimensions ||
+		normalizeEmbeddingEndpoint(nextHost) != normalizeEmbeddingEndpoint(prevCfg.EmbeddingHost)
+	signatureMissing := strings.TrimSpace(prevCfg.EmbeddingModelSignature) == "" && strings.TrimSpace(nextModel) != ""
+	nextEmbeddingSignature := strings.TrimSpace(prevCfg.EmbeddingModelSignature)
+	patchItems := toAppPatchItems(req.Items)
+	if embeddingSpaceChanged {
+		nextEmbeddingSignature = appembedding.ComputeSpaceSignature(nextModel, nextDimensions, nextHost)
+	} else if signatureMissing {
+		// 仅回填该内部设置时保留旧版签名，
+		// 避免升级导致原本兼容的向量失效。
+		nextEmbeddingSignature = appembedding.ComputeModelSignature(nextModel, nextDimensions)
+	}
+	if embeddingSpaceChanged || signatureMissing || containsSettingPatch(req.Items, "file", "embedding_model_signature") {
+		// embedding_model_signature 由服务端派生。绝不信任 API 客户端
+		// 提交的值，即使该 key 仍保留在设置 schema 中
+		// 以用于持久化与向后兼容。
+		patchItems = upsertSettingPatchItem(patchItems, appsettings.PatchItem{
+			Namespace: "file",
+			Key:       "embedding_model_signature",
+			Value:     nextEmbeddingSignature,
+		})
+	}
+
+	data, err := h.service.BatchUpdate(c.Request.Context(), patchItems)
+	if err != nil {
+		if errors.Is(err, appsettings.ErrInvalidSetting) {
+			writeSettingValidationError(c, err)
+			return
+		}
+		response.InternalError(c)
+		return
+	}
+
+	// 清除 Redis 缓存，下次读取自动从 DB 刷新
+	h.runtimeSettings.InvalidateCacheMulti(c.Request.Context(), patchItems)
+
+	// 先发布新的运行时，再使旧文件失效。进行中的任务携带
+	// 其启动时的签名，因此在此之后无法将旧向量空间发布为
+	// 就绪。基于签名的失效处理也会保留并发完成的
+	// 新空间文件。
+	if err = h.runtimeSettings.ApplyTo(c.Request.Context(), h.runtime); err != nil {
+		response.InternalError(c)
+		return
+	}
+	// 只要提交了向量空间相关设置就执行对账，即使取值
+	// 未变。这使失败的失效处理可通过同一幂等设置请求
+	// 安全重试，而无需重启。
+	if (embeddingSettingsTouched || signatureMissing) && h.embeddingSvc != nil {
+		if reconcileErr := h.reconcileEmbeddingSettings(c.Request.Context()); reconcileErr != nil {
+			response.InternalError(c)
+			return
+		}
+	}
+
+	h.service.RecordAudit(c.Request.Context(), appsettings.AuditInput{
+		UserID:    middleware.MustUserID(c),
+		RequestID: middleware.MustRequestID(c),
+		Action:    "settings.update",
+		ClientIP:  c.ClientIP(),
+		UserAgent: c.Request.UserAgent(),
+		Detail:    sanitizePatchItemsForAudit(req.Items),
+	})
+
+	response.Success(c, toSettingResponseMap(data))
+}
+
+func (h *Handler) reconcileEmbeddingSettings(ctx context.Context) error {
+	if h.embeddingSvc != nil {
+		if _, err := h.embeddingSvc.ReconcileIndex(ctx); err != nil {
+			return err
+		}
+	}
+	h.backfillBuiltinEmbeddings(ctx)
+	return nil
+}
+
+func (h *Handler) backfillBuiltinEmbeddings(ctx context.Context) {
+	if h.builtinEmbeddingBackfill == nil {
+		return
+	}
+	// Best effort: settings persistence and cache invalidation already succeeded.
+	_ = h.builtinEmbeddingBackfill(ctx)
+}
+
+func writeSettingValidationError(c *gin.Context, err error) {
+	var validationErr *appsettings.SettingValidationError
+	if errors.As(err, &validationErr) {
+		response.ErrorWithDetails(c, http.StatusBadRequest, validationErr.Code(), toSettingValidationDetailsResponse(validationErr.Details()))
+		return
+	}
+	response.ErrorFrom(c, http.StatusBadRequest, err)
+}
+
+func prospectiveEmbeddingSpace(cfg config.Config, items []PatchItem) (string, int, string) {
+	model := cfg.RAGModel
+	dimensions := cfg.EmbeddingOutputDimensions
+	host := cfg.EmbeddingHost
+	for _, item := range items {
+		if item.Namespace != "file" {
+			continue
+		}
+		switch item.Key {
+		case "rag_model":
+			model = item.Value
+		case "embedding_output_dimensions":
+			if parsed, err := strconv.Atoi(strings.TrimSpace(item.Value)); err == nil {
+				dimensions = parsed
+			}
+		case "embedding_host":
+			host = item.Value
+		}
+	}
+	return model, dimensions, host
+}
+
+func normalizeEmbeddingEndpoint(value string) string {
+	return strings.TrimRight(strings.TrimSpace(value), "/")
+}
+
+func touchesEmbeddingSpace(items []PatchItem) bool {
+	for _, item := range items {
+		if item.Namespace != "file" {
+			continue
+		}
+		switch item.Key {
+		case "rag_model", "embedding_output_dimensions", "embedding_host", "embedding_enabled":
+			return true
+		}
+	}
+	return false
+}
+
+func containsSettingPatch(items []PatchItem, namespace string, key string) bool {
+	for _, item := range items {
+		if item.Namespace == namespace && item.Key == key {
+			return true
+		}
+	}
+	return false
+}
+
+func upsertSettingPatchItem(items []appsettings.PatchItem, value appsettings.PatchItem) []appsettings.PatchItem {
+	for index := range items {
+		if items[index].Namespace == value.Namespace && items[index].Key == value.Key {
+			items[index] = value
+			return items
+		}
+	}
+	return append(items, value)
+}
+
+// GetTikaRuntime godoc
+// @Summary 查询 Tika 运行状态
+// @Tags admin/settings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Envelope
+// @Router /admin/settings/tika/runtime [get]
+func (h *Handler) GetTikaRuntime(c *gin.Context) {
+	if h.runtimeSvc == nil {
+		response.ErrorFrom(c, http.StatusInternalServerError, errTikaRuntimeServiceUnavailable)
+		return
+	}
+	response.Success(c, toTikaRuntimeResponse(h.runtimeSvc.GetTikaStatus(c.Request.Context())))
+}
+
+// GetDoclingRuntime godoc
+// @Summary 查询 Docling 运行状态
+// @Tags admin/settings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Envelope
+// @Router /admin/settings/docling/runtime [get]
+func (h *Handler) GetDoclingRuntime(c *gin.Context) {
+	if h.runtimeSvc == nil {
+		response.ErrorFrom(c, http.StatusInternalServerError, errDoclingRuntimeServiceUnavailable)
+		return
+	}
+	response.Success(c, toDoclingRuntimeResponse(h.runtimeSvc.GetDoclingStatus(c.Request.Context())))
+}
+
+// GetTesseractRuntime godoc
+// @Summary 查询 Tesseract OCR 运行状态
+// @Tags admin/settings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Envelope
+// @Router /admin/settings/tesseract/runtime [get]
+func (h *Handler) GetTesseractRuntime(c *gin.Context) {
+	if h.runtimeSvc == nil {
+		response.ErrorFrom(c, http.StatusInternalServerError, errTesseractRuntimeServiceUnavailable)
+		return
+	}
+	response.Success(c, toTesseractRuntimeResponse(h.runtimeSvc.GetTesseractStatus(c.Request.Context())))
+}
+
+// GetRapidOCRRuntime godoc
+// @Summary 查询 RapidOCR 运行状态
+// @Tags admin/settings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Envelope
+// @Router /admin/settings/rapidocr/runtime [get]
+func (h *Handler) GetRapidOCRRuntime(c *gin.Context) {
+	if h.runtimeSvc == nil {
+		response.ErrorFrom(c, http.StatusInternalServerError, errRapidocrRuntimeServiceUnavailable)
+		return
+	}
+	response.Success(c, toRapidOCRRuntimeResponse(h.runtimeSvc.GetRapidOCRStatus(c.Request.Context())))
+}
+
+// GetMinerURuntime godoc
+// @Summary 查询 MinerU 运行状态
+// @Tags admin/settings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Envelope
+// @Router /admin/settings/mineru/runtime [get]
+func (h *Handler) GetMinerURuntime(c *gin.Context) {
+	if h.runtimeSvc == nil {
+		response.ErrorFrom(c, http.StatusInternalServerError, errMineruRuntimeServiceUnavailable)
+		return
+	}
+	response.Success(c, toMinerURuntimeResponse(h.runtimeSvc.GetMinerUStatus(c.Request.Context())))
+}
+
+// StartTikaRuntime godoc
+// @Summary 启动托管 Tika
+// @Tags admin/settings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Envelope
+// @Router /admin/settings/tika/runtime/start [post]
+func (h *Handler) StartTikaRuntime(c *gin.Context) {
+	if h.runtimeSvc == nil {
+		response.ErrorFrom(c, http.StatusInternalServerError, errTikaRuntimeServiceUnavailable)
+		return
+	}
+	h.handleTikaRuntimeAction(c, h.runtimeSvc.StartTika)
+}
+
+// StartRapidOCRRuntime godoc
+// @Summary 启动托管 RapidOCR
+// @Tags admin/settings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Envelope
+// @Router /admin/settings/rapidocr/runtime/start [post]
+func (h *Handler) StartRapidOCRRuntime(c *gin.Context) {
+	if h.runtimeSvc == nil {
+		response.ErrorFrom(c, http.StatusInternalServerError, errRapidocrRuntimeServiceUnavailable)
+		return
+	}
+	h.handleRapidOCRRuntimeAction(c, h.runtimeSvc.StartRapidOCR)
+}
+
+// StopTikaRuntime godoc
+// @Summary 停止托管 Tika
+// @Tags admin/settings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Envelope
+// @Router /admin/settings/tika/runtime/stop [post]
+func (h *Handler) StopTikaRuntime(c *gin.Context) {
+	if h.runtimeSvc == nil {
+		response.ErrorFrom(c, http.StatusInternalServerError, errTikaRuntimeServiceUnavailable)
+		return
+	}
+	h.handleTikaRuntimeAction(c, h.runtimeSvc.StopTika)
+}
+
+// StopRapidOCRRuntime godoc
+// @Summary 停止托管 RapidOCR
+// @Tags admin/settings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Envelope
+// @Router /admin/settings/rapidocr/runtime/stop [post]
+func (h *Handler) StopRapidOCRRuntime(c *gin.Context) {
+	if h.runtimeSvc == nil {
+		response.ErrorFrom(c, http.StatusInternalServerError, errRapidocrRuntimeServiceUnavailable)
+		return
+	}
+	h.handleRapidOCRRuntimeAction(c, h.runtimeSvc.StopRapidOCR)
+}
+
+// RestartTikaRuntime godoc
+// @Summary 重启托管 Tika
+// @Tags admin/settings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Envelope
+// @Router /admin/settings/tika/runtime/restart [post]
+func (h *Handler) RestartTikaRuntime(c *gin.Context) {
+	if h.runtimeSvc == nil {
+		response.ErrorFrom(c, http.StatusInternalServerError, errTikaRuntimeServiceUnavailable)
+		return
+	}
+	h.handleTikaRuntimeAction(c, h.runtimeSvc.RestartTika)
+}
+
+// RestartRapidOCRRuntime godoc
+// @Summary 重启托管 RapidOCR
+// @Tags admin/settings
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.Envelope
+// @Router /admin/settings/rapidocr/runtime/restart [post]
+func (h *Handler) RestartRapidOCRRuntime(c *gin.Context) {
+	if h.runtimeSvc == nil {
+		response.ErrorFrom(c, http.StatusInternalServerError, errRapidocrRuntimeServiceUnavailable)
+		return
+	}
+	h.handleRapidOCRRuntimeAction(c, h.runtimeSvc.RestartRapidOCR)
+}
+
+func (h *Handler) handleTikaRuntimeAction(c *gin.Context, action func(ctx context.Context) (appruntime.ServiceRuntimeView, error)) {
+	if h.runtimeSvc == nil {
+		response.ErrorFrom(c, http.StatusInternalServerError, errTikaRuntimeServiceUnavailable)
+		return
+	}
+	actionCtx, cancel := context.WithTimeout(c.Request.Context(), runtimeActionTimeout)
+	defer cancel()
+	view, err := action(actionCtx)
+	if err != nil {
+		response.InternalError(c)
+		return
+	}
+	response.Success(c, toTikaRuntimeResponse(view))
+}
+
+func (h *Handler) handleRapidOCRRuntimeAction(c *gin.Context, action func(ctx context.Context) (appruntime.ServiceRuntimeView, error)) {
+	if h.runtimeSvc == nil {
+		response.ErrorFrom(c, http.StatusInternalServerError, errRapidocrRuntimeServiceUnavailable)
+		return
+	}
+	actionCtx, cancel := context.WithTimeout(c.Request.Context(), runtimeActionTimeout)
+	defer cancel()
+	view, err := action(actionCtx)
+	if err != nil {
+		response.InternalError(c)
+		return
+	}
+	response.Success(c, toRapidOCRRuntimeResponse(view))
+}

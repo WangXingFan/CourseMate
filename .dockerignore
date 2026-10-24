@@ -1,0 +1,20 @@
+.git
+.next
+**/.next
+**/node_modules
+**/out
+**/.turbo
+**/.cache
+**/dist
+**/build
+**/*.log
+config.yaml
+config.yml
+# Deployment assets are never part of the image build context (may hold real config).
+deploy
+backend/config.yaml
+backend/config.yml
+apps/web/package-lock.json
+backend/storage
+storage
+tmp

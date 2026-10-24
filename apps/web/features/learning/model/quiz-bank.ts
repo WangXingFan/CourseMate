@@ -1,0 +1,2 @@
+export const QUIZ_DURATION_SECONDS = 90;
+export const QUIZ_SECONDS_PER_QUESTION = 7.5;

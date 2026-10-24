@@ -1,0 +1,27 @@
+// Public entry of the model entity; code outside entities/model/ imports only this file.
+// Unused re-exports are tree-shaken (package.json "sideEffects"), so UI and logic share one entry.
+export { ModelIcon } from "@/entities/model/components/model-icon";
+export { ModelOptionIcon } from "@/entities/model/components/model-option-icon";
+export { ModelSelect } from "@/entities/model/components/model-select";
+export { resolveModelIconURL, resolveModelIdentity } from "@/entities/model/lib/model-identity";
+export {
+  isRoutableChatPlatformModel,
+  resolveModelOptionIconUrl,
+  resolveModelOptionLabel,
+} from "@/entities/model/lib/model-option-display";
+export {
+  HARD_DENIED_MODEL_OPTION_PATHS,
+  MODEL_OPTION_POLICY_PROTOCOLS,
+  MODEL_OPTION_POLICY_PROTOCOL_LABELS,
+  type ModelOptionPolicy,
+  type ModelOptionRuleMap,
+  isModelOptionPathFiltered,
+  parseModelOptionRuleMap,
+  resolveModelOptionPolicyProtocol,
+  uniqueModelOptionPaths,
+} from "@/entities/model/lib/model-option-policy";
+export { resolveModelPresentationGroup } from "@/entities/model/lib/model-presentation";
+export { parseProtocolsJSON } from "@/entities/model/lib/model-protocols";
+export { parseKindsJSON, stringifyKinds } from "@/entities/model/model/llm-schema";
+export { UPSTREAM_COMPATIBLE_OPTIONS } from "@/entities/model/model/upstream-compatible";
+export type { ModelSelectOption } from "@/entities/model/types/model-select";

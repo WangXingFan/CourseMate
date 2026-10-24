@@ -1,0 +1,406 @@
+{
+  "admin": {
+    "defaultPermissionGroupDeleteNotAllowed": "The default permission group cannot be deleted.",
+    "permissionGroupNotFound": "Permission group not found.",
+    "invalidPermissionGroupName": "Permission group name is required.",
+    "invalidPermissionGroupModels": "Permission group model configuration is invalid.",
+    "invalidPermissionGroupUsers": "Permission group member configuration is invalid.",
+    "defaultPermissionGroupUsersImplicit": "Default permission group members are managed automatically.",
+    "permissionGroupRepoUnavailable": "The permission group service is temporarily unavailable."
+  },
+  "avatar": {
+    "notFound": "Avatar not found."
+  },
+  "beforeMessage": {
+    "invalidId": "Invalid message cursor ID."
+  },
+  "learning": {
+    "invalidAttempt": "Invalid practice answer. Please reopen the quiz.",
+    "attemptConflict": "This answer ID was already used for another answer. Please reopen the quiz.",
+    "teacher_assigned": "Answer through a class activity published by your teacher."
+  },
+  "classroom": {
+    "forbidden": "Only teacher accounts can manage classes.",
+    "invalid": "Enter a class name of at most 80 characters and a description of at most 255 characters.",
+    "invalidId": "Invalid class ID.",
+    "invalidStudentId": "Invalid student ID.",
+    "notFound": "Class not found.",
+    "studentAssigned": "This student already belongs to a class. Remove them from the current class first.",
+    "studentExists": "The username or email is already in use. No new account was created.",
+    "studentInvalid": "Check the student username, name, and email format.",
+    "studentCsvInvalid": "The roster format is invalid or exceeds the 1 MiB / 200 student limit.",
+    "studentNotFound": "Student account not found.",
+    "quizNotFound": "Quiz not found.",
+    "quizInvalid": "The quiz is incomplete. Check every prompt, option, and correct answer.",
+    "quizClosed": "This quiz is closed and no longer accepts answers.",
+    "quizAlreadySubmitted": "You have already submitted this quiz.",
+    "notJoined": "You have not joined a class yet. Ask your teacher to add you.",
+    "invalidQuizId": "Invalid quiz ID."
+  },
+  "auth": {
+    "accountLocked": "This account is temporarily locked after too many failed sign-in attempts. Try again later.",
+    "adminRequired": "Administrator permission is required.",
+    "authorizationCodeRequired": "Authorization code is required.",
+    "emailAliasNotAllowed": "Email aliases are not allowed.",
+    "emailAlreadyExists": "This email is already in use.",
+    "emailBootstrapNotAllowed": "Email setup is not allowed for this account.",
+    "emailDomainNotAllowed": "This email domain is not allowed.",
+    "emailNotVerified": "The email address is not verified.",
+    "emailRegistrationDisabled": "Email registration is disabled.",
+    "emailUnchanged": "The new email must be different.",
+    "emailVerificationDisabled": "Email verification is disabled.",
+    "forbidden": "You do not have permission to perform this action.",
+    "invalidCredentials": "Invalid username or password.",
+    "invalidCurrentPassword": "The current password is incorrect.",
+    "invalidEmail": "Invalid email address.",
+    "invalidLocalGrant": "The local sign-in grant is invalid or has already been used. Please restart the app and try again.",
+    "invalidPassword": "Password must be at least 8 characters and not digits only.",
+    "invalidPkce": "Invalid sign-in verification parameters. Sign in again.",
+    "invalidRedirectUri": "Invalid callback URL.",
+    "invalidRefreshToken": "Your session has expired. Please sign in again.",
+    "invalidToken": "Invalid session token. Please sign in again.",
+    "invalidTwoFactorCode": "Invalid two-factor code.",
+    "lastLoginMethodRequired": "Set a password or link another identity provider first.",
+    "oauthIntentMismatch": "The OAuth flow does not match. Try again.",
+    "oauthStateExpired": "The OAuth state expired. Sign in again.",
+    "oauthStateInvalid": "Invalid OAuth state. Sign in again.",
+    "passwordResetFailed": "Password reset failed. Check your email, code, and new password.",
+    "passwordResetRequired": "Password reset is required.",
+    "passwordReuseNotAllowed": "The new password must be different from the bootstrap password.",
+    "providerAccountNotRegistered": "This provider account is not registered.",
+    "providerAlreadyBound": "This provider is already linked.",
+    "providerAuthUrlNotConfigured": "Provider authorization URL is not configured.",
+    "providerBindEndpointRequired": "Use the account binding flow to link this provider.",
+    "providerCallbackMisconfigured": "Provider callback URL is misconfigured.",
+    "providerClientIdRequired": "Provider client ID is required.",
+    "providerClientSecretRequired": "Provider client secret is required.",
+    "providerDefaultRoleInvalid": "Provider default role is invalid.",
+    "providerEmailConflict": "This email belongs to another account.",
+    "providerIdRequired": "Provider ID is required.",
+    "providerIdentityConflict": "This provider identity is already linked to another account.",
+    "providerInvalid": "Provider authentication failed.",
+    "providerLoginDisabled": "Provider sign-in is disabled.",
+    "providerLogoUrlInvalid": "Provider logo URL is invalid.",
+    "providerNameRequired": "Provider name is required.",
+    "providerOauthUrlsRequired": "OAuth2 authorization URL, token URL, and userinfo URL are required.",
+    "providerOidcIssuerRequired": "OIDC issuer URL or discovery URL is required.",
+    "providerOrderInvalid": "Provider IDs must be unique.",
+    "providerRegistrationDisabled": "Provider registration is disabled.",
+    "providerRegistrationRequiresLogin": "Provider login must be enabled before provider registration.",
+    "providerSlugRequired": "Provider slug is required.",
+    "providerSubjectMissing": "Provider subject is missing.",
+    "providerSuperadminDefaultRoleProtected": "Only super administrators can set a provider default role to superadmin.",
+    "providerTypeInvalid": "Provider type is invalid.",
+    "providerUpstreamFailed": "Provider authentication failed.",
+    "sessionInvalid": "Your session has expired. Please sign in again.",
+    "superadminRequired": "Super administrator permission is required.",
+    "turnstileInvalid": "Human verification failed. Please try again.",
+    "turnstileNotConfigured": "Human verification is not configured.",
+    "turnstileRequired": "Complete the human verification first.",
+    "twoFactorAlreadyEnabled": "Two-factor authentication is already enabled.",
+    "twoFactorChallengeExpired": "Two-factor verification expired. Sign in again.",
+    "twoFactorExpired": "Two-factor verification expired. Try again.",
+    "twoFactorNotStarted": "Two-factor verification has not started.",
+    "unauthorized": "Your session has expired. Please sign in again.",
+    "usernameChangeRequired": "Change the initial username.",
+    "verificationCodeAttemptsExceeded": "Too many verification attempts. Request a new code.",
+    "verificationCodeInvalid": "Verification code is invalid or expired.",
+    "verificationCodeRecent": "A verification code was sent recently. Try again later.",
+    "verificationMethodUnavailable": "The selected verification method is unavailable."
+  },
+  "config": {
+    "invalidJson": "Invalid JSON configuration."
+  },
+  "conversation": {
+    "invalidId": "Invalid conversation ID.",
+    "invalidTitle": "Invalid conversation title.",
+    "messageDeleteRootInvalid": "The first message of a conversation cannot be deleted.",
+    "messageDeleteStateInvalid": "Wait for this message to finish generating before deleting it.",
+    "messageDeleteTargetInvalid": "This message cannot be deleted.",
+    "messageForkHistoryIncomplete": "This conversation is too deep or its message history is incomplete, so it cannot be forked here.",
+    "messageForkStateInvalid": "Wait for this message to finish generating before forking the conversation.",
+    "messageForkTargetInvalid": "Only assistant messages can be forked into a new conversation.",
+    "messageParentDeleted": "The message being replied to was deleted. Please try again.",
+    "noTitleableContent": "This conversation has no content that can be used to generate a title.",
+    "notFound": "Conversation not found."
+  },
+  "conversationEvent": {
+    "invalidId": "Invalid conversation event ID.",
+    "notFound": "Conversation event not found."
+  },
+  "conversationRun": {
+    "canceled": "Generation was canceled.",
+    "streamInterrupted": "The generation connection was interrupted. Retry this message.",
+    "streamNotFound": "Generation stream not found."
+  },
+  "contextArtifact": {
+    "invalidId": "Invalid context artifact ID.",
+    "notFound": "Context artifact not found."
+  },
+  "cors": {
+    "originForbidden": "This origin is not allowed."
+  },
+  "embedding": {
+    "serviceNotConfigured": "Enable and configure the embedding service first.",
+    "serviceUnavailable": "Embedding service is unavailable.",
+    "submitFailed": "Failed to submit vectorization jobs. Please try again later.",
+    "tooManyFiles": "You can submit up to 100 files for vectorization at a time."
+  },
+  "file": {
+    "embeddingUnavailable": "Embedding is unavailable for this file.",
+    "extractNotReady": "File extraction is not ready.",
+    "invalidId": "Invalid file ID.",
+    "invalidName": "Invalid file name.",
+    "invalidReference": "Invalid file reference.",
+    "invalidStream": "Invalid file stream.",
+    "inUse": "This file is in use and cannot be deleted.",
+    "notFound": "File not found.",
+    "notReady": "File is not ready.",
+    "required": "File is required.",
+    "tooLarge": "File is too large.",
+    "tooLargeForContext": "File is too large for full-context injection.",
+    "typeBlocked": "This file type is not allowed."
+  },
+  "identityProvider": {
+    "deleteConflict": "Deleting this identity provider would remove the only login method for some users."
+  },
+  "identity": {
+    "invalidId": "Invalid identity ID.",
+    "notFound": "Identity not found."
+  },
+  "internal": {
+    "error": "Internal server error. Please try again later."
+  },
+  "knowledgeBase": {
+    "conflict": "A knowledge base with the same name already exists in this scope.",
+    "disabled": "Knowledge base retrieval is disabled.",
+    "fileCleanupUnavailable": "Platform source cleanup is temporarily unavailable. Try again later.",
+    "internal": "The knowledge base operation failed. Please try again later.",
+    "invalid": "The knowledge base configuration is invalid.",
+    "invalidReference": "The selected knowledge base is unavailable or you no longer have access.",
+    "notFound": "The knowledge base was not found.",
+    "notReady": "The selected knowledge base has no searchable files yet. Wait for indexing to finish.",
+    "ownerFileReference": "This account still owns files referenced by a built-in knowledge base. Remove them or have another administrator upload replacements first.",
+    "platformFileInUse": "This platform source is still referenced by another resource. Remove the reference before deleting.",
+    "scopeEmpty": "No default knowledge base is configured, so knowledge base Q&A cannot start yet. Ask an administrator to configure one.",
+    "unavailable": "Knowledge base retrieval is temporarily unavailable. Try again later, or ask an administrator to check the embedding service if the issue persists."
+  },
+  "toolRun": {
+    "finalAnswerMissing": "The tool run reached its limit before the model produced a final answer. Retry or enable fewer tools for this message."
+  },
+  "llm": {
+    "apiKeysRequired": "API keys are required.",
+    "circuitBreakerDisabled": "Model circuit breaking is disabled. Enable it before performing this action.",
+    "emptyResponse": "The model returned an empty response.",
+    "invalidAdapter": "This interface protocol is not supported. Choose another protocol.",
+    "invalidApiKeysConfig": "Invalid API keys configuration.",
+    "invalidCompatible": "Invalid compatibility mode.",
+    "invalidHeadersConfig": "Invalid headers configuration.",
+    "invalidKinds": "Invalid model kinds.",
+    "invalidModelCapabilities": "The context window must be between 4,096 and 16,000,000 tokens, and the output token limit must be smaller than the context window.",
+    "invalidPlatformModelName": "Invalid platform model name.",
+    "invalidRouteProtocolCombination": "This protocol combination is not available. Each binding accepts a single protocol only.",
+    "systemPromptTooLong": "System prompt must be at most 20000 characters.",
+    "invalidProtocolDefaultsConfig": "Invalid protocol defaults configuration.",
+    "modelAccessDenied": "You do not have access to this model.",
+    "modelRouteNotConfigured": "Model route is not configured.",
+    "modelIconInvalid": "Invalid model icon. Use a built-in icon name, an uploaded icon, or an http(s) image URL.",
+    "modelIconFileInvalid": "Invalid icon file. Only PNG, JPEG, and WebP are supported.",
+    "modelIconFileTooLarge": "The icon file cannot exceed 1 MiB.",
+    "modelIconAssetNotFound": "The icon asset no longer exists. Upload it again.",
+    "modelIconAssetUnavailable": "The icon asset is temporarily unavailable.",
+    "modelIconAssetInUse": "This icon is still in use. Remove its references first.",
+    "modelVendorBuiltin": "Built-in vendors cannot be deleted.",
+    "modelVendorInUse": "This vendor still has associated models. Move them first.",
+    "noActiveApiKey": "No active API key is available.",
+    "platformModelNameExists": "Platform model name already exists.",
+    "platformModelNameRequired": "Platform model name is required.",
+    "protocolRequired": "Protocol is required.",
+    "remoteModelsEmptyConfirmationRequired": "The upstream returned an empty model catalog. Refresh and confirm before syncing it.",
+    "remoteModelsSnapshotChanged": "The upstream model catalog changed after the preview. The latest changes have been reloaded for confirmation.",
+    "remoteModelsUnavailable": "Remote models are unavailable.",
+    "upstreamModelBindingChanged": "The upstream model binding changed. Reload and try again.",
+    "upstreamModelConflict": "This model already has a conflicting upstream source.",
+    "upstreamSourceUnavailable": "The upstream model source is unavailable.",
+    "routeConflict": "This upstream model already has a binding for the same platform model and protocol. Remove the duplicate binding before saving.",
+    "routesUnavailable": "All model routes are unavailable."
+  },
+  "message": {
+    "feedbackTargetInvalid": "Invalid message feedback target.",
+    "editStateInvalid": "This message cannot be edited in its current state.",
+    "editTargetInvalid": "Only AI replies can be edited.",
+    "invalidBranch": "Invalid message branch.",
+    "invalidContent": "Invalid message content.",
+    "invalidFeedback": "Invalid message feedback.",
+    "invalidId": "Invalid message ID.",
+    "multipleImageProcessors": "Select only one image attachment processor.",
+    "notFound": "Message not found.",
+    "tooManyFiles": "Too many files in one message.",
+    "tooManySelectedTools": "Too many tools selected for this message."
+  },
+  "messageGenerationRun": {
+    "alreadyExists": "This message generation has already been submitted."
+  },
+  "quota": {
+    "exceeded": "Quota exceeded."
+  },
+  "rateLimit": {
+    "authenticationExceeded": "Too many authentication attempts. Try again later.",
+    "exceeded": "Too many requests. Try again later.",
+    "refreshExceeded": "Too many session refresh attempts. Try again later."
+  },
+  "request": {
+    "invalid": "Invalid request. Check the form and try again.",
+    "invalid_": "Invalid request parameter.",
+    "invalidBody": "Invalid request. Check the form and try again.",
+    "invalidId": "Invalid ID.",
+    "invalidQuery": "Invalid query parameter.",
+    "required": "A required field is missing.",
+    "invalidAppearancePreferences": "Invalid appearance preferences.",
+    "invalidConversationLabels": "Invalid conversation labels.",
+    "invalidConversationRunIds": "Invalid conversation run IDs.",
+    "invalidDailyActivityDays": "Invalid daily activity day count.",
+    "invalidFile": "Invalid file.",
+    "invalidImageIndex": "Invalid image index.",
+    "invalidImportDsn": "Invalid import data source.",
+    "invalidLocationPayload": "Invalid location data.",
+    "invalidLogCleanupBefore": "Invalid log cleanup cutoff.",
+    "invalidLogCleanupType": "Invalid log cleanup type.",
+    "invalidModelAccessScope": "Invalid model access scope.",
+    "invalidModelDisplayGroup": "Invalid model display group.",
+    "invalidModelOrder": "Invalid model order.",
+    "invalidModelVendor": "Invalid model vendor.",
+    "invalidOverwriteCustomizedMetadata": "Invalid metadata overwrite option.",
+    "invalidRunIds": "Invalid run IDs.",
+    "invalidTwoFactorChallenge": "Invalid two-factor challenge.",
+    "invalidUpstreamBaseUrl": "Invalid upstream base URL.",
+    "invalidUserid": "Invalid user ID.",
+    "invalidUiComponent": "Invalid component."
+  },
+  "resource": {
+    "conflict": "Resource conflict. Refresh and try again.",
+    "notFound": "Resource not found."
+  },
+  "model": {
+    "invalidId": "Invalid model ID.",
+    "notFound": "Model not found."
+  },
+  "modelDisplayGroup": {
+    "alreadyExists": "Model display group already exists.",
+    "invalidId": "Invalid model display group ID.",
+    "notFound": "Model display group not found."
+  },
+  "modelUpstreamSources": {
+    "notFound": "Model upstream sources not found."
+  },
+  "modelVendor": {
+    "alreadyExists": "Model vendor already exists.",
+    "invalidId": "Invalid model vendor ID.",
+    "notFound": "Model vendor not found."
+  },
+  "permissionGroup": {
+    "invalidId": "Invalid permission group ID."
+  },
+  "route": {
+    "invalidId": "Invalid route ID.",
+    "notFound": "Route not found."
+  },
+  "run": {
+    "invalidId": "Invalid run ID."
+  },
+  "runtime": {
+    "doclingUnavailable": "Docling runtime is unavailable.",
+    "mineruUnavailable": "MinerU runtime is unavailable.",
+    "rapidocrUnavailable": "RapidOCR runtime is unavailable.",
+    "tesseractUnavailable": "Tesseract runtime is unavailable.",
+    "tikaUnavailable": "Tika runtime is unavailable."
+  },
+  "logCleanup": {
+    "beforeInFuture": "The log cleanup cutoff cannot be in the future."
+  },
+  "service": {
+    "unavailable": "Service is unavailable. Try again later."
+  },
+  "settings": {
+    "embeddingInvalid": "Invalid embedding settings.",
+    "extractInvalid": "Invalid file extraction settings.",
+    "invalidKey": "Invalid setting key.",
+    "invalidNamespace": "Invalid setting namespace.",
+    "invalidValue": "Invalid setting value.",
+    "modelOptionPolicyInvalid": "Invalid model option policy settings.",
+    "notFound": "Setting not found.",
+    "serviceUnavailable": "Settings service is unavailable.",
+    "smtpInvalid": "Invalid SMTP settings."
+  },
+  "uiComponent": {
+    "invalidId": "Invalid component ID.",
+    "notFound": "Component not found.",
+    "alreadyExists": "A component with this name already exists in this scope.",
+    "builtinProtected": "Built-in components cannot be deleted or have their contract changed."
+  },
+  "toolCall": {
+    "invalidId": "Invalid tool call ID.",
+    "notFound": "Tool call not found."
+  },
+  "upstream": {
+    "invalidId": "Invalid upstream ID.",
+    "notFound": "Upstream not found.",
+    "rateLimited": "The upstream is rate limiting requests. Try again shortly.",
+    "unavailable": "Upstream service is unavailable."
+  },
+  "upstreamModel": {
+    "notFound": "Upstream model not found."
+  },
+  "upstreamEmptyResponse": "The upstream returned an empty response. Try again later or ask an administrator to check the model route.",
+  "upstreamRequestFailed": "The upstream request failed. Try again later or ask an administrator to check the model route.",
+  "user": {
+    "accountDeleteVerificationRequired": "Verify your identity before deleting the account.",
+    "emptyPatch": "Change at least one user field.",
+    "invalidAvatarUrl": "Invalid avatar URL.",
+    "invalidId": "Invalid user ID.",
+    "invalidEmail": "Invalid user email.",
+    "invalidLocale": "Invalid language.",
+    "invalidLocation": "Invalid location.",
+    "invalidPhone": "Invalid phone number.",
+    "invalidRole": "Invalid user role.",
+    "invalidStatus": "Invalid user status.",
+    "invalidTimeZone": "Invalid time zone.",
+    "notFound": "User not found.",
+    "invalidUsername": "Username must be 3-16 characters.",
+    "invalidDisplayName": "Display name must be 3-16 characters.",
+    "lastSuperadminRoleProtected": "Cannot change the role of the last super administrator.",
+    "selfDeleteNotAllowed": "You cannot delete your own account here.",
+    "selfRoleChangeNotAllowed": "You cannot change your own role.",
+    "selfStatusChangeNotAllowed": "You cannot change your own status.",
+    "superadminDeleteProtected": "Super administrator accounts cannot be deleted.",
+    "superadminPasswordResetProtected": "Super administrator passwords cannot be reset.",
+    "superadminManagementProtected": "Administrators cannot manage super administrator accounts.",
+    "superadminStatusProtected": "Super administrator status cannot be changed.",
+    "superadminTwoFactorResetProtected": "Super administrator two-factor authentication cannot be reset.",
+    "usernameAlreadyExists": "This username is already taken.",
+    "usernameChangeUsed": "Username change has already been used.",
+    "usernameTaken": "This username is already taken."
+  },
+  "userSettings": {
+    "invalidValue": "Invalid user setting value.",
+    "unknownKey": "Unknown user setting key."
+  },
+  "contentModeration": {
+    "blocked": "This content was blocked by safety checks.",
+    "invalidConfig": "Invalid content moderation configuration.",
+    "configRequired": "A complete service configuration and at least one policy category are required when content moderation is enabled.",
+    "probeFailed": "Content moderation connection test failed.",
+    "eventNotFound": "Content moderation event not found."
+  },
+  "feature": {
+    "disabled": "This feature is not available on this server.",
+    "byFeature": {
+      "multiUser": "This server has a single account; user and group management are not available.",
+      "registration": "Registration is not available on this server.",
+      "identityProviders": "Third-party sign-in is not available on this server.",
+      "accountSecurity": "Password, email, two-factor and session management are not available on this server.",
+      "usageMetering": "Usage metering is not available on this server.",
+      "contentModeration": "Content moderation is not available on this server."
+    }
+  }
+}

@@ -1,0 +1,656 @@
+package app
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"net"
+	"net/http"
+	"os"
+	"os/signal"
+	"strings"
+	"sync"
+	"syscall"
+	"time"
+
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/admin"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/audit"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/auth"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/channel"
+	appclassroom "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/classroom"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/compact"
+	appcontentmoderation "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/contentmoderation"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/conversation"
+	appembedding "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/embedding"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/extraction"
+	appknowledgebase "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/knowledgebase"
+	applearning "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/learning"
+	applogcleanup "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/logcleanup"
+	appstorage "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/objectstorage"
+	appprocessing "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/processing"
+	apprag "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/rag"
+	appruntime "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/runtime"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/settings"
+	appuicomponent "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/uicomponent"
+	appupload "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/upload"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/user"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/usersettings"
+	domainknowledgebase "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/knowledgebase"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/cache"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
+	moderationclient "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/contentmoderation"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/embedding"
+	extractionengines "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/extraction/engines"
+	extractionprobe "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/extraction/probe"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/geoip"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/identityprovider"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/llm"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/objectstorage"
+	platformlogger "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/observability/logger"
+	platformtracing "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/observability/tracing"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence"
+	auditrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/audit"
+	channelrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/channel"
+	classroomrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/classroom"
+	contentmoderationrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/contentmoderation"
+	conversationrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/conversation"
+	knowledgebaserepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/knowledgebase"
+	learningrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/learning"
+	logcleanuprepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/logcleanup"
+	settingsrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/settings"
+	uicomponentrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/uicomponent"
+	userrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/user"
+	usersettingsrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/usersettings"
+	platformruntime "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/runtime"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/background"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/lifecycle"
+	platformhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http"
+	adminhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/admin"
+	authhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/auth"
+	channelhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/channel"
+	classroomhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/classroom"
+	contentmoderationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/contentmoderation"
+	conversationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/conversation"
+	knowledgebasehttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/knowledgebase"
+	learninghttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/learning"
+	settingshttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/settings"
+	uicomponenthttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/uicomponent"
+	userhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/user"
+	usersettingshttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/usersettings"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+	"gorm.io/gorm"
+)
+
+// App 维护应用运行依赖。
+type App struct {
+	cfg                    config.Config
+	engine                 *gin.Engine
+	logger                 *zap.Logger
+	db                     *gorm.DB
+	cache                  cache.Backend
+	geoResolver            *geoip.Client
+	identityProviderClient *identityprovider.Client
+	llmClient              *llm.Client
+	embeddingClient        *embedding.Client
+	moderationClient       *moderationclient.Client
+	conversationService    *conversation.Service
+	contentModeration      *appcontentmoderation.Service
+	authService            *auth.Service
+	runtimeCfg             *config.Runtime
+	tracingShutdown        platformtracing.ShutdownFunc
+	backgroundCancel       context.CancelFunc
+	// shutdown 是进程关停排空信号：翻转就绪探针并断开订阅型长连接。
+	shutdown *lifecycle.Shutdown
+	// stopCh 由 RequestShutdown 关闭，与 SIGTERM 等价。
+	stopCh   chan struct{}
+	stopOnce sync.Once
+}
+
+type avatarContentOpener struct {
+	uploads *appupload.Service
+}
+
+func (o avatarContentOpener) OpenAvatarFileContent(ctx context.Context, userID uint, fileID string) (*user.AvatarFileContent, error) {
+	content, err := o.uploads.OpenFileContent(ctx, userID, fileID)
+	if err != nil {
+		return nil, err
+	}
+	return &user.AvatarFileContent{
+		Reader:      content.Reader,
+		ContentType: content.ContentType,
+		SizeBytes:   content.SizeBytes,
+		ModTime:     content.ModTime,
+		FileName:    content.File.FileName,
+	}, nil
+}
+
+// Options 控制应用的运行形态。零值等价于普通服务器部署。
+type Options struct {
+	// LocalDataDir 非空时以本地 sidecar 模式运行，所有数据落在该目录（见 config.ApplyLocalMode）。
+	LocalDataDir string
+}
+
+// NewApp 创建普通服务器部署形态的应用。
+func NewApp() (*App, error) {
+	return NewAppWithOptions(Options{})
+}
+
+// NewAppWithOptions 按 Options 创建应用。
+func NewAppWithOptions(opts Options) (*App, error) {
+	cfg := config.Load()
+	if opts.LocalDataDir != "" {
+		if err := cfg.ApplyLocalMode(opts.LocalDataDir); err != nil {
+			return nil, err
+		}
+	}
+	if err := cfg.Validate(); err != nil {
+		return nil, err
+	}
+	runtimeCfg := config.NewRuntime(cfg)
+
+	tracingShutdown, err := platformtracing.Init(context.Background(), platformtracing.Config{
+		ServiceName:  cfg.AppName,
+		Enabled:      cfg.OTelEnabled,
+		Endpoint:     cfg.OTelExporterOTLPEndpoint,
+		Headers:      cfg.OTelExporterOTLPHeaders,
+		Insecure:     cfg.OTelExporterOTLPInsecure,
+		Protocol:     cfg.OTelExporterOTLPProtocol,
+		SamplingRate: cfg.OTelSamplingRate,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("init tracing: %w", err)
+	}
+	keepTracing := false
+	defer func() {
+		if keepTracing {
+			return
+		}
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		_ = tracingShutdown(shutdownCtx)
+	}()
+
+	// 本地模式下 stdout 是与父进程的握手通道，日志改走 stderr。
+	newLogger := platformlogger.New
+	if cfg.LocalMode {
+		newLogger = platformlogger.NewStderr
+	}
+	log, err := newLogger(cfg.Env)
+	if err != nil {
+		return nil, err
+	}
+
+	db, err := persistence.Open(cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	cacheBackend, err := cache.Open(cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	auditRepo := auditrepo.NewRepo(db)
+	auditService := audit.NewService(auditRepo, log)
+	logCleanupRepo := logcleanuprepo.NewRepo(db)
+	logCleanupService := applogcleanup.NewService(logCleanupRepo, auditService)
+
+	// 初始化 settings 模块：种子数据 + 动态配置覆盖
+	settingsRepo := settingsrepo.NewRepo(db)
+	settingsService := settings.NewService(settingsRepo, cfg.DataEncryptionKey)
+	settingsService.SetAuditWriter(auditService)
+	runtimeService := appruntime.NewService(runtimeCfg, extractionprobe.Prober{})
+	runtimeService.SetDockerRunner(platformruntime.NewDockerRunner())
+	settingsCache := cacheBackend.Settings()
+	runtimeSettings := settings.NewRuntimeSettings(settingsRepo, settingsCache, cfg.DataEncryptionKey)
+	settingsHandler := settingshttp.NewHandler(settingsService, runtimeSettings, runtimeService, runtimeCfg)
+	settingsModule := settingshttp.NewModule(settingsHandler)
+	if err = settingsService.Seed(context.Background()); err != nil {
+		return nil, fmt.Errorf("seed settings: %w", err)
+	}
+	if err = runtimeSettings.ApplyTo(context.Background(), runtimeCfg); err != nil {
+		return nil, fmt.Errorf("apply settings: %w", err)
+	}
+
+	// 启动时补全旧版模型签名以兼容已有向量。后续真正修改模型、
+	// 维度或服务地址时，设置处理器会切换到包含服务地址的新空间签名。
+	if startCfg := runtimeCfg.Snapshot(); startCfg.EmbeddingModelSignature == "" && startCfg.RAGModel != "" {
+		initialSig := appembedding.ComputeModelSignature(startCfg.RAGModel, startCfg.EmbeddingOutputDimensions)
+		if _, seedErr := settingsService.BatchUpdate(context.Background(), []settings.PatchItem{
+			{Namespace: "file", Key: "embedding_model_signature", Value: initialSig},
+		}); seedErr == nil {
+			_ = runtimeSettings.ApplyTo(context.Background(), runtimeCfg)
+		}
+	}
+
+	userRepo := userrepo.NewRepo(db)
+	userService := user.NewService(userRepo)
+	// 对象存储工厂由组合根显式注入，避免服务实例依赖进程级可变状态。
+	objectStoreProvider := appstorage.NewRuntimeProvider(runtimeCfg, objectstorage.New)
+	// 抽取引擎工厂由组合根显式注入；具体客户端构造为 nil 时必须返回 nil 接口，避免 typed-nil 绕过判空。
+	extractionFactories := extraction.EngineFactories{
+		NewTika: func(cfg config.Config) extraction.DocumentExtractor {
+			if client := extractionengines.NewTika(cfg); client != nil {
+				return client
+			}
+			return nil
+		},
+		NewDocling: func(cfg config.Config) extraction.DocumentExtractor {
+			if client := extractionengines.NewDocling(cfg); client != nil {
+				return client
+			}
+			return nil
+		},
+		NewMinerU: func(cfg config.Config) extraction.DocumentExtractor {
+			if client := extractionengines.NewMinerU(cfg); client != nil {
+				return client
+			}
+			return nil
+		},
+		NewOCR: func(provider string, cfg config.Config) extraction.OCRExtractor {
+			if client := extractionengines.NewOCR(provider, cfg); client != nil {
+				return client
+			}
+			return nil
+		},
+		Builtin: extractionengines.Builtin{},
+	}
+	geoResolver := geoip.New(runtimeCfg.Snapshot())
+	// GeoIP 关闭时 geoip.New 返回 nil 指针，必须转成 nil 接口再注入，避免 typed-nil 绕过判空。
+	var authGeoResolver auth.GeoResolver
+	if geoResolver != nil {
+		authGeoResolver = geoResolver
+	}
+	identityProviderClient := identityprovider.New(cfg.StrictOutboundPolicy())
+	authService := auth.NewServiceWithRuntime(
+		runtimeCfg,
+		userRepo,
+		authGeoResolver,
+		identityProviderClient,
+	)
+	authService.SetLogger(log)
+	authService.SetProviderAuthBridge(cacheBackend.ProviderAuthBridge())
+	authService.SetObjectStoreProvider(objectStoreProvider)
+	authService.SetAuditWriter(auditService)
+	settingsService.SetAuthSafetyService(authService)
+	var bootstrapSuperAdmin *auth.BootstrapSuperAdmin
+	if cfg.LocalMode {
+		// 本地模式：唯一用户无密码、无初始化引导，通过启动握手拿到的一次性授权凭证登录。
+		if _, err = authService.EnsureLocalOwner(context.Background()); err != nil {
+			return nil, err
+		}
+	} else if bootstrapSuperAdmin, err = authService.EnsureBootstrapSuperAdmin(context.Background()); err != nil {
+		return nil, err
+	}
+	authHandler := authhttp.NewHandler(authService)
+	authModule := authhttp.NewModule(authHandler)
+	channelRepo := channelrepo.NewRepo(db)
+	channelCache := cacheBackend.Channel()
+	trustedOutboundPolicy := cfg.TrustedOutboundPolicy()
+	llmClient := llm.NewClient(trustedOutboundPolicy)
+	channelService := channel.NewServiceWithRuntime(runtimeCfg, channelRepo, channelRepo, channelCache, llmClient)
+	channelService.SetLogger(log)
+	channelService.SetObjectStoreProvider(objectStoreProvider)
+	channelService.SetModelIconAssetRepository(channelRepo)
+	channelService.SetPermissionGroupRepo(channelRepo)
+	channelHandler := channelhttp.NewHandler(channelService)
+	channelModule := channelhttp.NewModule(channelHandler)
+	conversationRepo := conversationrepo.NewRepo(db)
+	settingsService.SetVectorStoreAvailabilityService(conversationRepo)
+	conversationCache := cacheBackend.Conversation()
+	embedClient := embedding.New(trustedOutboundPolicy)
+	compactService := compact.NewServiceWithRuntime(runtimeCfg, conversationRepo, log)
+	extractionService := extraction.NewServiceWithRuntime(runtimeCfg, extractionFactories)
+	extractionService.SetObjectStoreProvider(objectStoreProvider)
+	embeddingService := appembedding.NewServiceWithRuntime(runtimeCfg, conversationRepo, extractionService, embedClient, log)
+	settingsHandler.SetEmbeddingService(embeddingService)
+	processingService := appprocessing.NewServiceWithRuntime(appprocessing.Dependencies{
+		Config:           runtimeCfg,
+		Repository:       conversationRepo,
+		Cache:            conversationCache,
+		ExtractService:   extractionService,
+		EmbeddingService: embeddingService,
+		Logger:           log,
+		ExtractorVersion: appprocessing.DefaultExtractorVersion,
+	})
+	uploadService := appupload.NewServiceWithRuntime(
+		runtimeCfg,
+		conversationRepo,
+		log,
+		appupload.Hooks{InitializeUploadedFile: processingService.InitializeUploadedFile},
+		conversation.UploadErrorSet(),
+		appprocessing.DefaultExtractorVersion,
+	)
+	uploadService.SetObjectStoreProvider(objectStoreProvider)
+	ragService := apprag.NewServiceWithRuntime(runtimeCfg, conversationRepo, conversationCache, embedClient)
+	conversationService := conversation.NewServiceWithRuntime(conversation.Dependencies{
+		Config:            runtimeCfg,
+		Repository:        conversationRepo,
+		Cache:             conversationCache,
+		RouteResolver:     channelService,
+		LLMClient:         llmClient,
+		CompactService:    compactService,
+		EmbeddingService:  embeddingService,
+		ProcessingService: processingService,
+		UploadService:     uploadService,
+		ExtractService:    extractionService,
+		RAGService:        ragService,
+		Logger:            log,
+	})
+	conversationService.SetAuditWriter(auditService)
+	conversationService.SetObjectStoreProvider(objectStoreProvider)
+	contentModerationRepo := contentmoderationrepo.NewRepo(db)
+	contentModerationService := appcontentmoderation.NewService(settingsRepo, contentModerationRepo, cfg.DataEncryptionKey, log)
+	moderationClient := moderationclient.New(trustedOutboundPolicy)
+	contentModerationService.SetProvider(moderationClient)
+	contentModerationService.SetAuditWriter(auditService)
+	conversationService.SetModerationService(contentModerationService)
+	contentModerationHandler := contentmoderationhttp.NewHandler(contentModerationService)
+	contentModerationModule := contentmoderationhttp.NewModule(contentModerationHandler)
+	userService.SetAvatarContentOpener(avatarContentOpener{uploads: uploadService})
+	userService.SetAvatarFileValidator(uploadService)
+	authService.SetAvatarFileValidator(uploadService)
+	shutdownSignal := lifecycle.NewShutdown()
+	conversationHandler := conversationhttp.NewHandler(conversationService, uploadService, processingService, runtimeCfg, shutdownSignal)
+	conversationModule := conversationhttp.NewModule(conversationHandler)
+	userHandler := userhttp.NewHandler(userService)
+	userModule := userhttp.NewModule(userHandler)
+	adminService := admin.NewService(userService, auditService)
+	adminService.SetAuthSecurityService(authService)
+	adminService.SetConversationEventService(conversationService)
+	adminService.SetLogCleanupService(logCleanupService)
+	adminService.SetPermissionGroupRepo(channelRepo)
+	adminService.SetPermissionGroupModelLookup(channelRepo)
+	adminHandler := adminhttp.NewHandler(adminService)
+	adminModule := adminhttp.NewModule(adminHandler)
+	contentModerationHandler.SetUserLabelResolver(adminService)
+	userSettingsRepo := usersettingsrepo.NewRepo(db)
+	userSettingsService := usersettings.NewService(userSettingsRepo)
+	userSettingsService.SetCacheRefresher(conversationService.RefreshUserSettingCache)
+	userSettingsHandler := usersettingshttp.NewHandler(userSettingsService)
+	userSettingsModule := usersettingshttp.NewModule(userSettingsHandler)
+	uiComponentService := appuicomponent.NewService(uicomponentrepo.NewRepo(db))
+	uiComponentService.SetFeatureEnabled(func() bool { return runtimeCfg.Snapshot().UIComponentsEnabled })
+	uiComponentService.SetAuditWriter(auditService)
+	conversationService.SetUIComponentResolver(uiComponentService)
+	uiComponentModule := uicomponenthttp.NewModule(uicomponenthttp.NewHandler(uiComponentService))
+	knowledgeBaseRepo := knowledgebaserepo.NewRepo(db)
+	knowledgeBaseService := appknowledgebase.NewService(knowledgeBaseRepo)
+	knowledgeBaseService.SetAuditWriter(auditService)
+	knowledgeBaseService.SetFileCleaner(uploadService)
+	knowledgeBaseService.SetFileContentOpener(uploadService)
+	knowledgeBaseService.SetFileUploader(uploadService)
+	knowledgeBaseService.SetFileEmbeddingSubmitter(processingService)
+	knowledgeBaseService.SetLogger(log)
+	signalsPack := domainknowledgebase.SignalsPackage()
+	seedCtx, cancelSeed := context.WithTimeout(context.Background(), 2*time.Minute)
+	seedErr := appknowledgebase.NewBuiltinSeeder(knowledgeBaseRepo, uploadService).Seed(seedCtx, signalsPack)
+	cancelSeed()
+	if seedErr != nil {
+		return nil, fmt.Errorf("seed builtin course knowledge base: %w", seedErr)
+	}
+	builtinEmbeddingBackfiller := appknowledgebase.NewBuiltinEmbeddingBackfiller(
+		knowledgeBaseRepo,
+		processingService,
+		signalsPack.Key,
+	)
+	settingsHandler.SetBuiltinEmbeddingBackfiller(func(ctx context.Context) error {
+		if backfillErr := builtinEmbeddingBackfiller.Backfill(ctx); backfillErr != nil {
+			if !errors.Is(backfillErr, appembedding.ErrEmbeddingServiceNotConfigured) {
+				log.Warn("builtin knowledge base embedding backfill failed after settings update", zap.Error(backfillErr))
+			}
+			return backfillErr
+		}
+		return nil
+	})
+	conversationService.SetKnowledgeBaseResolver(knowledgeBaseService)
+	knowledgeBaseHandler := knowledgebasehttp.NewHandler(knowledgeBaseService, runtimeCfg)
+	knowledgeBaseModule := knowledgebasehttp.NewModule(knowledgeBaseHandler)
+	classroomRepo := classroomrepo.NewRepo(db)
+	classroomService := appclassroom.NewService(classroomRepo, userRepo)
+	classroomHandler := classroomhttp.NewHandler(classroomService)
+	classroomModule := classroomhttp.NewModule(classroomHandler)
+	learningService := applearning.NewService(learningrepo.NewRepo(db))
+	learningService.SetTutor(channelService, llmClient)
+	learningModule := learninghttp.NewModule(learningService)
+
+	hc := newHealthChecker(db, cacheBackend)
+	rateLimiter := cacheBackend.RateLimiter()
+	engine, err := platformhttp.NewEngine(runtimeCfg, log, platformhttp.Modules{
+		Auth:              authModule,
+		AuthService:       authService,
+		Channel:           channelModule,
+		Classroom:         classroomModule,
+		Learning:          learningModule,
+		Conversation:      conversationModule,
+		Admin:             adminModule,
+		ContentModeration: contentModerationModule,
+		UIComponent:       uiComponentModule,
+		KnowledgeBase:     knowledgeBaseModule,
+		Settings:          settingsModule,
+		UserSettings:      userSettingsModule,
+		User:              userModule,
+		Shutdown:          shutdownSignal,
+		StartupLog: func(log *zap.Logger) {
+			if log == nil || bootstrapSuperAdmin == nil {
+				return
+			}
+			log.Info("bootstrap superadmin created",
+				zap.String("username", bootstrapSuperAdmin.Username),
+				zap.String("password", bootstrapSuperAdmin.Password),
+			)
+		},
+	}, hc, rateLimiter)
+	if err != nil {
+		return nil, err
+	}
+
+	backgroundCtx, backgroundCancel := context.WithCancel(context.Background())
+	if _, reconcileErr := embeddingService.ReconcileIndex(backgroundCtx); reconcileErr != nil {
+		log.Warn("embedding index reconciliation failed", zap.Error(reconcileErr))
+	}
+	embeddingService.StartBackgroundWorkers(backgroundCtx)
+	conversationService.StartBackgroundWorkers(backgroundCtx)
+	backfillCtx, cancelBackfill := context.WithTimeout(backgroundCtx, 30*time.Second)
+	backfillErr := builtinEmbeddingBackfiller.Backfill(backfillCtx)
+	cancelBackfill()
+	if backfillErr != nil && !errors.Is(backfillErr, appembedding.ErrEmbeddingServiceNotConfigured) {
+		log.Warn("builtin knowledge base embedding backfill failed", zap.Error(backfillErr))
+	}
+	background.Go(log, "builtin_embedding_backfill", func() {
+		builtinEmbeddingBackfiller.Run(backgroundCtx, func(err error) {
+			log.Warn("builtin knowledge base embedding backfill failed", zap.Error(err))
+		})
+	})
+	contentModerationService.StartBackgroundWorkers(backgroundCtx)
+	channelService.StartModelIconAssetCleanup(backgroundCtx)
+
+	app := &App{
+		stopCh:                 make(chan struct{}),
+		cfg:                    runtimeCfg.Snapshot(),
+		engine:                 engine,
+		logger:                 log,
+		db:                     db,
+		cache:                  cacheBackend,
+		geoResolver:            geoResolver,
+		identityProviderClient: identityProviderClient,
+		llmClient:              llmClient,
+		embeddingClient:        embedClient,
+		moderationClient:       moderationClient,
+		conversationService:    conversationService,
+		contentModeration:      contentModerationService,
+		authService:            authService,
+		runtimeCfg:             runtimeCfg,
+		tracingShutdown:        tracingShutdown,
+		backgroundCancel:       backgroundCancel,
+		shutdown:               shutdownSignal,
+	}
+	keepTracing = true
+	return app, nil
+}
+
+// IssueLocalGrant 为本地模式生成一次性登录授权凭证；非本地模式返回错误。
+func (a *App) IssueLocalGrant() (string, error) {
+	if !a.cfg.LocalMode {
+		return "", errors.New("local grant is only available in local mode")
+	}
+	return a.authService.IssueLocalGrant()
+}
+
+// Listen 绑定监听地址并返回实际地址。本地模式绑定 127.0.0.1:0，端口由系统分配；
+// 调用方在 Serve 之前即可据此完成与父进程的握手。
+func (a *App) Listen() (net.Listener, error) {
+	addr := strings.TrimSpace(a.cfg.HTTPListenAddr)
+	if addr == "" {
+		addr = fmt.Sprintf(":%s", a.cfg.HTTPPort)
+	}
+	listener, err := net.Listen("tcp", addr)
+	if err != nil {
+		return nil, err
+	}
+	if a.cfg.LocalMode {
+		origin := "http://" + listener.Addr().String()
+		a.cfg.SetLocalOrigin(origin)
+		snapshot := a.runtimeCfg.Snapshot()
+		snapshot.SetLocalOrigin(origin)
+		a.runtimeCfg.Store(snapshot)
+	}
+	return listener, nil
+}
+
+// Run 监听并服务，直到收到终止信号。
+func (a *App) Run() error {
+	listener, err := a.Listen()
+	if err != nil {
+		return err
+	}
+	return a.Serve(listener)
+}
+
+// RequestShutdown 触发与 SIGTERM 相同的优雅排空流程，可安全重复调用；
+// 本地模式下桌面壳退出时使用。
+func (a *App) RequestShutdown() {
+	a.stopOnce.Do(func() { close(a.stopCh) })
+}
+
+// Serve 在已绑定的监听器上服务，直到收到终止信号；随后分阶段排空。
+func (a *App) Serve(listener net.Listener) error {
+	srv := &http.Server{
+		Handler:           a.engine,
+		ReadHeaderTimeout: httpTimeoutSeconds(a.cfg.HTTPReadHeaderTimeoutSeconds, 10),
+		ReadTimeout:       httpTimeoutSeconds(a.cfg.HTTPReadTimeoutSeconds, 120),
+		IdleTimeout:       httpTimeoutSeconds(a.cfg.HTTPIdleTimeoutSeconds, 120),
+		MaxHeaderBytes:    httpMaxHeaderBytes(a.cfg.HTTPMaxHeaderBytes),
+	}
+
+	errCh := make(chan error, 1)
+	go func() {
+		a.logger.Info("server_starting", zap.String("addr", listener.Addr().String()))
+		if err := srv.Serve(listener); err != nil && err != http.ErrServerClosed {
+			errCh <- err
+		}
+		close(errCh)
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+	select {
+	case err := <-errCh:
+		return err
+	case sig := <-quit:
+		a.logger.Info("server_shutting_down", zap.String("signal", sig.String()))
+	case <-a.stopCh:
+		a.logger.Info("server_shutting_down", zap.String("signal", "parent_exit"))
+	}
+
+	// 阶段一：进入排空。就绪探针翻转为 503 引导负载均衡摘流，
+	// 订阅型 SSE（run 对账流、run 观看流）立即断开，客户端按既有逻辑重连。
+	a.shutdown.BeginDrain()
+
+	// 阶段二：排空 in-flight 请求。消息生成等有价值的流式请求在窗口内自然完成。
+	drainTimeout := httpTimeoutSeconds(a.cfg.HTTPShutdownTimeoutSeconds, 10)
+	ctx, cancel := context.WithTimeout(context.Background(), drainTimeout)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		// 阶段三：排空超时，强断剩余连接。被打断的生成已有落盘与前端恢复兜底，
+		// 属预期内降级而非故障，进程仍以成功状态退出。
+		a.logger.Warn("server_drain_timeout_force_close",
+			zap.Duration("drain_timeout", drainTimeout),
+			zap.Error(err),
+		)
+		if closeErr := srv.Close(); closeErr != nil {
+			a.logger.Warn("server_force_close_error", zap.Error(closeErr))
+		}
+	}
+
+	// HTTP 排空完成后再停后台 worker；资源释放由 cli.Run 的 defer Close() 收尾。
+	if a.backgroundCancel != nil {
+		a.backgroundCancel()
+	}
+	a.logger.Info("server_stopped")
+	return nil
+}
+
+func httpTimeoutSeconds(value int, fallback int) time.Duration {
+	if value <= 0 {
+		value = fallback
+	}
+	return time.Duration(value) * time.Second
+}
+
+func httpMaxHeaderBytes(value int) int {
+	if value <= 0 {
+		return 1 << 20
+	}
+	return value
+}
+
+// Close 关闭资源。
+func (a *App) Close() {
+	if a.backgroundCancel != nil {
+		a.backgroundCancel()
+	}
+	// Workers 必须在其依赖（cache、database）关闭前排空。
+	if a.contentModeration != nil {
+		a.contentModeration.Stop()
+	}
+	drainCtx, cancelDrain := context.WithTimeout(context.Background(), 5*time.Second)
+	if err := background.Wait(drainCtx); err != nil {
+		a.logger.Warn("background_tasks_drain_timeout", zap.Error(err))
+	}
+	cancelDrain()
+	if a.conversationService != nil {
+		a.conversationService.Close()
+	}
+	if a.cache != nil {
+		_ = a.cache.Close()
+	}
+	if a.geoResolver != nil {
+		a.geoResolver.Close()
+	}
+	if a.identityProviderClient != nil {
+		a.identityProviderClient.CloseIdleConnections()
+	}
+	if a.llmClient != nil {
+		a.llmClient.CloseIdleConnections()
+	}
+	if a.embeddingClient != nil {
+		a.embeddingClient.CloseIdleConnections()
+	}
+	if a.moderationClient != nil {
+		a.moderationClient.CloseIdleConnections()
+	}
+	if a.db != nil {
+		if sqlDB, err := a.db.DB(); err == nil {
+			_ = sqlDB.Close()
+		}
+	}
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if a.tracingShutdown != nil {
+		_ = a.tracingShutdown(shutdownCtx)
+	}
+	a.logger.Sync() //nolint:errcheck
+}

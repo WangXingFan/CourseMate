@@ -1,0 +1,327 @@
+package channel_test
+
+import (
+	"context"
+	"path/filepath"
+	"testing"
+
+	appchannel "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/channel"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/models"
+	channelrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/channel"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+)
+
+func TestSetModelProtocolsKeepsSharedUpstreamCatalogMetadata(t *testing.T) {
+	db := openModelProtocolsTestDB(t)
+	var err error
+
+	upstream := models.LLMUpstream{Name: "shared-upstream", Compatible: "openai", Status: "active"}
+	if err = db.Create(&upstream).Error; err != nil {
+		t.Fatalf("create upstream: %v", err)
+	}
+	upstreamModel := models.LLMUpstreamModel{
+		UpstreamID:        upstream.ID,
+		BindingCode:       "shared-upstream-model",
+		UpstreamModelName: "shared-upstream-model",
+		SuggestedProtocol: "openai_chat_completions",
+		KindsJSON:         `["chat"]`,
+		Status:            "active",
+	}
+	if err = db.Create(&upstreamModel).Error; err != nil {
+		t.Fatalf("create upstream model: %v", err)
+	}
+	platformModels := []models.LLMPlatformModel{
+		{Name: "platform-a", Vendor: "openai", KindsJSON: `["chat"]`, Status: "active"},
+		{Name: "platform-b", Vendor: "openai", KindsJSON: `["chat"]`, Status: "active"},
+	}
+	if err = db.Create(&platformModels).Error; err != nil {
+		t.Fatalf("create platform models: %v", err)
+	}
+	routes := []models.LLMPlatformModelRoute{
+		{PlatformModelID: platformModels[0].ID, UpstreamModelID: upstreamModel.ID, Protocol: "openai_chat_completions", Status: "active", Priority: 1, Weight: 1},
+		{PlatformModelID: platformModels[1].ID, UpstreamModelID: upstreamModel.ID, Protocol: "openai_chat_completions", Status: "active", Priority: 1, Weight: 1},
+	}
+	if err = db.Create(&routes).Error; err != nil {
+		t.Fatalf("create shared routes: %v", err)
+	}
+
+	repo := channelrepo.NewRepo(db)
+	service := appchannel.NewServiceWithRuntime(config.NewRuntime(config.Config{}), repo, repo, nil, nil)
+	if _, err = service.SetModelProtocols(context.Background(), platformModels[0].ID, appchannel.SetModelProtocolsInput{
+		Protocols: []string{"openai_responses"},
+		KindsJSON: `["chat"]`,
+	}); err != nil {
+		t.Fatalf("SetModelProtocols() error = %v", err)
+	}
+
+	var storedUpstreamModel models.LLMUpstreamModel
+	if err = db.First(&storedUpstreamModel, upstreamModel.ID).Error; err != nil {
+		t.Fatalf("load shared upstream model: %v", err)
+	}
+	if storedUpstreamModel.SuggestedProtocol != upstreamModel.SuggestedProtocol || storedUpstreamModel.KindsJSON != upstreamModel.KindsJSON {
+		t.Fatalf("expected shared upstream metadata to remain unchanged, got protocol=%q kinds=%q", storedUpstreamModel.SuggestedProtocol, storedUpstreamModel.KindsJSON)
+	}
+
+	var storedRoutes []models.LLMPlatformModelRoute
+	if err = db.Where("upstream_model_id = ?", upstreamModel.ID).Order("platform_model_id ASC").Find(&storedRoutes).Error; err != nil {
+		t.Fatalf("load shared routes: %v", err)
+	}
+	if len(storedRoutes) != 2 || storedRoutes[0].Protocol != "openai_responses" || storedRoutes[1].Protocol != "openai_chat_completions" {
+		t.Fatalf("expected only platform A route to change, got %#v", storedRoutes)
+	}
+}
+
+func TestSetModelProtocolsPreservesRetainedRouteConfiguration(t *testing.T) {
+	db := openModelProtocolsTestDB(t)
+	upstream := models.LLMUpstream{Name: "chat-upstream", Compatible: "openai", Status: "active"}
+	if err := db.Create(&upstream).Error; err != nil {
+		t.Fatalf("create upstream: %v", err)
+	}
+	upstreamModel := models.LLMUpstreamModel{
+		UpstreamID:        upstream.ID,
+		BindingCode:       "chat-upstream-model",
+		UpstreamModelName: "chat-upstream-model",
+		SuggestedProtocol: "openai_chat_completions",
+		KindsJSON:         `["chat"]`,
+		Status:            "active",
+	}
+	if err := db.Create(&upstreamModel).Error; err != nil {
+		t.Fatalf("create upstream model: %v", err)
+	}
+	platformModel := models.LLMPlatformModel{
+		Name: "chat-platform-model", Vendor: "openai", KindsJSON: `["chat"]`, Status: "active",
+	}
+	if err := db.Create(&platformModel).Error; err != nil {
+		t.Fatalf("create platform model: %v", err)
+	}
+	routes := []models.LLMPlatformModelRoute{
+		{
+			PlatformModelID: platformModel.ID, UpstreamModelID: upstreamModel.ID, Protocol: "openai_responses",
+			Status: "active", Priority: 2, Weight: 3, Source: "sync", CbFailureThreshold: 5, CbDurationMin: 7, CbWindowMin: 11,
+			HeadersJSON: `{"X-Route":"stale"}`,
+		},
+		{
+			PlatformModelID: platformModel.ID, UpstreamModelID: upstreamModel.ID, Protocol: "openai_chat_completions",
+			Status: "inactive", Priority: 13, Weight: 17, Source: "manual", CbFailureThreshold: 19, CbDurationMin: 23, CbWindowMin: 29,
+			HeadersJSON: `{"X-Route":"retained"}`,
+		},
+	}
+	if err := db.Create(&routes).Error; err != nil {
+		t.Fatalf("create protocol routes: %v", err)
+	}
+
+	repo := channelrepo.NewRepo(db)
+	service := appchannel.NewServiceWithRuntime(config.NewRuntime(config.Config{}), repo, repo, nil, nil)
+	if _, err := service.SetModelProtocols(context.Background(), platformModel.ID, appchannel.SetModelProtocolsInput{
+		Protocols: []string{"openai_chat_completions"},
+		KindsJSON: `["chat"]`,
+	}); err != nil {
+		t.Fatalf("SetModelProtocols() error = %v", err)
+	}
+
+	var storedRoutes []models.LLMPlatformModelRoute
+	if err := db.Where("platform_model_id = ? AND upstream_model_id = ?", platformModel.ID, upstreamModel.ID).Find(&storedRoutes).Error; err != nil {
+		t.Fatalf("load retained route: %v", err)
+	}
+	if len(storedRoutes) != 1 {
+		t.Fatalf("expected one retained route, got %#v", storedRoutes)
+	}
+	stored := storedRoutes[0]
+	want := routes[1]
+	if stored.ID != want.ID ||
+		stored.Protocol != want.Protocol ||
+		stored.Status != want.Status ||
+		stored.Priority != want.Priority ||
+		stored.Weight != want.Weight ||
+		stored.Source != want.Source ||
+		stored.CbFailureThreshold != want.CbFailureThreshold ||
+		stored.CbDurationMin != want.CbDurationMin ||
+		stored.CbWindowMin != want.CbWindowMin ||
+		stored.HeadersJSON != want.HeadersJSON {
+		t.Fatalf("expected retained route configuration to stay unchanged, got %#v", stored)
+	}
+}
+
+func TestUpsertUpstreamModelPreservesRouteConfigurationAndSharedCatalog(t *testing.T) {
+	db := openModelProtocolsTestDB(t)
+	upstream := models.LLMUpstream{Name: "binding-upstream", Compatible: "openai", Status: "active"}
+	if err := db.Create(&upstream).Error; err != nil {
+		t.Fatalf("create upstream: %v", err)
+	}
+	upstreamModel := models.LLMUpstreamModel{
+		UpstreamID:        upstream.ID,
+		BindingCode:       "binding-upstream-model",
+		UpstreamModelName: "binding-upstream-model",
+		SuggestedProtocol: "openai_chat_completions",
+		KindsJSON:         `["chat"]`,
+		Status:            "active",
+		Source:            "sync",
+		RawJSON:           `{"ownedBy":"catalog"}`,
+	}
+	if err := db.Create(&upstreamModel).Error; err != nil {
+		t.Fatalf("create upstream model: %v", err)
+	}
+	platformModels := []models.LLMPlatformModel{
+		{Name: "binding-platform-a", Vendor: "openai", KindsJSON: `["chat"]`, Status: "active"},
+		{Name: "binding-platform-b", Vendor: "openai", KindsJSON: `["chat"]`, Status: "active"},
+	}
+	if err := db.Create(&platformModels).Error; err != nil {
+		t.Fatalf("create platform models: %v", err)
+	}
+	routes := []models.LLMPlatformModelRoute{
+		{
+			PlatformModelID: platformModels[0].ID, UpstreamModelID: upstreamModel.ID, Protocol: "openai_responses",
+			Status: "active", Priority: 2, Weight: 3, Source: "sync", CbFailureThreshold: 5, CbDurationMin: 7, CbWindowMin: 11,
+			HeadersJSON: `{"X-Route":"stale"}`,
+		},
+		{
+			PlatformModelID: platformModels[0].ID, UpstreamModelID: upstreamModel.ID, Protocol: "openai_chat_completions",
+			Status: "inactive", Priority: 13, Weight: 17, Source: "manual", CbFailureThreshold: 19, CbDurationMin: 23, CbWindowMin: 29,
+			HeadersJSON: `{"X-Route":"retained"}`,
+		},
+		{
+			PlatformModelID: platformModels[1].ID, UpstreamModelID: upstreamModel.ID, Protocol: "openai_chat_completions",
+			Status: "active", Priority: 31, Weight: 37, Source: "manual",
+		},
+	}
+	if err := db.Create(&routes).Error; err != nil {
+		t.Fatalf("create routes: %v", err)
+	}
+
+	repo := channelrepo.NewRepo(db)
+	service := appchannel.NewServiceWithRuntime(config.NewRuntime(config.Config{}), repo, repo, nil, nil)
+	if _, err := service.UpsertUpstreamModel(context.Background(), upstream.ID, appchannel.UpsertUpstreamModelInput{
+		RouteIDs:          []uint{routes[0].ID, routes[1].ID},
+		PlatformModelName: platformModels[0].Name,
+		UpstreamModelName: upstreamModel.UpstreamModelName,
+		Protocols:         []string{"openai_chat_completions"},
+		KindsJSON:         platformModels[0].KindsJSON,
+	}); err != nil {
+		t.Fatalf("UpsertUpstreamModel() error = %v", err)
+	}
+
+	var storedCatalog models.LLMUpstreamModel
+	if err := db.First(&storedCatalog, upstreamModel.ID).Error; err != nil {
+		t.Fatalf("load upstream catalog model: %v", err)
+	}
+	if storedCatalog.SuggestedProtocol != upstreamModel.SuggestedProtocol ||
+		storedCatalog.KindsJSON != upstreamModel.KindsJSON ||
+		storedCatalog.Status != upstreamModel.Status ||
+		storedCatalog.Source != upstreamModel.Source ||
+		storedCatalog.RawJSON != upstreamModel.RawJSON {
+		t.Fatalf("expected shared upstream catalog metadata to remain unchanged, got %#v", storedCatalog)
+	}
+
+	var storedRoutes []models.LLMPlatformModelRoute
+	if err := db.Where("platform_model_id = ?", platformModels[0].ID).Order("id ASC").Find(&storedRoutes).Error; err != nil {
+		t.Fatalf("load preserved routes: %v", err)
+	}
+	if len(storedRoutes) != 1 {
+		t.Fatalf("expected one preserved route, got %#v", storedRoutes)
+	}
+	want := routes[1]
+	stored := storedRoutes[0]
+	if stored.ID != want.ID ||
+		stored.Protocol != want.Protocol ||
+		stored.Status != want.Status ||
+		stored.Priority != want.Priority ||
+		stored.Weight != want.Weight ||
+		stored.Source != want.Source ||
+		stored.CbFailureThreshold != want.CbFailureThreshold ||
+		stored.CbDurationMin != want.CbDurationMin ||
+		stored.CbWindowMin != want.CbWindowMin ||
+		stored.HeadersJSON != want.HeadersJSON {
+		t.Fatalf("expected retained route configuration to remain unchanged, got %#v", stored)
+	}
+
+	var sharedRoute models.LLMPlatformModelRoute
+	if err := db.First(&sharedRoute, routes[2].ID).Error; err != nil {
+		t.Fatalf("load unrelated shared route: %v", err)
+	}
+	if sharedRoute.Protocol != routes[2].Protocol || sharedRoute.Priority != routes[2].Priority || sharedRoute.Weight != routes[2].Weight {
+		t.Fatalf("expected unrelated shared route to remain unchanged, got %#v", sharedRoute)
+	}
+}
+
+func TestUpsertUpstreamModelAppliesOnlyExplicitRouteOverrides(t *testing.T) {
+	db := openModelProtocolsTestDB(t)
+	upstream := models.LLMUpstream{Name: "override-upstream", Compatible: "openai", Status: "active"}
+	if err := db.Create(&upstream).Error; err != nil {
+		t.Fatalf("create upstream: %v", err)
+	}
+	upstreamModel := models.LLMUpstreamModel{
+		UpstreamID: upstream.ID, BindingCode: "override-model", UpstreamModelName: "override-model",
+		SuggestedProtocol: "openai_chat_completions", KindsJSON: `["chat"]`, Status: "active",
+	}
+	if err := db.Create(&upstreamModel).Error; err != nil {
+		t.Fatalf("create upstream model: %v", err)
+	}
+	platformModel := models.LLMPlatformModel{
+		Name: "override-platform", Vendor: "openai", KindsJSON: `["chat"]`, Status: "active",
+	}
+	if err := db.Create(&platformModel).Error; err != nil {
+		t.Fatalf("create platform model: %v", err)
+	}
+	routes := []models.LLMPlatformModelRoute{
+		{PlatformModelID: platformModel.ID, UpstreamModelID: upstreamModel.ID, Protocol: "openai_chat_completions", Status: "active", Priority: 2, Weight: 3, Source: "sync", HeadersJSON: `{"X-Route":"retained"}`},
+	}
+	if err := db.Create(&routes).Error; err != nil {
+		t.Fatalf("create routes: %v", err)
+	}
+
+	status := "inactive"
+	repo := channelrepo.NewRepo(db)
+	service := appchannel.NewServiceWithRuntime(config.NewRuntime(config.Config{}), repo, repo, nil, nil)
+	if _, err := service.UpsertUpstreamModel(context.Background(), upstream.ID, appchannel.UpsertUpstreamModelInput{
+		RouteIDs:          []uint{routes[0].ID},
+		PlatformModelName: platformModel.Name,
+		UpstreamModelName: upstreamModel.UpstreamModelName,
+		Protocols:         []string{"openai_chat_completions"},
+		KindsJSON:         platformModel.KindsJSON,
+		Status:            &status,
+	}); err != nil {
+		t.Fatalf("UpsertUpstreamModel() error = %v", err)
+	}
+
+	var storedRoutes []models.LLMPlatformModelRoute
+	if err := db.Where("platform_model_id = ?", platformModel.ID).Order("id ASC").Find(&storedRoutes).Error; err != nil {
+		t.Fatalf("load overridden routes: %v", err)
+	}
+	if len(storedRoutes) != 1 {
+		t.Fatalf("expected one route, got %#v", storedRoutes)
+	}
+	want := routes[0]
+	stored := storedRoutes[0]
+	if stored.Status != status {
+		t.Fatalf("expected explicit status override, got %#v", stored)
+	}
+	if stored.Priority != want.Priority || stored.Weight != want.Weight || stored.Source != want.Source || stored.HeadersJSON != want.HeadersJSON {
+		t.Fatalf("expected non-overridden configuration to remain unchanged, got %#v", stored)
+	}
+}
+
+func openModelProtocolsTestDB(t *testing.T) *gorm.DB {
+	t.Helper()
+	db, err := gorm.Open(sqlite.Open(filepath.Join(t.TempDir(), "channel.db")), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("open sqlite: %v", err)
+	}
+	sqlDB, err := db.DB()
+	if err != nil {
+		t.Fatalf("resolve sqlite database: %v", err)
+	}
+	t.Cleanup(func() { _ = sqlDB.Close() })
+	if err = db.AutoMigrate(
+		&models.LLMUpstream{},
+		&models.LLMUpstreamModel{},
+		&models.LLMPlatformModel{},
+		&models.LLMPlatformModelRoute{},
+		&models.LLMModelVendor{},
+		&models.LLMModelDisplayGroup{},
+	); err != nil {
+		t.Fatalf("migrate channel tables: %v", err)
+	}
+	return db
+}

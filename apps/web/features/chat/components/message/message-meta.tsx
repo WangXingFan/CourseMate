@@ -1,0 +1,738 @@
+"use client";
+
+import {
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  Brain,
+  ClockArrowUp,
+  ClockCheck,
+  Cpu,
+  DatabaseSearch,
+  DatabaseZap,
+  FilePenLine,
+  Forward,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
+import * as React from "react";
+
+import { Brush } from "@/components/animate-ui/icons/brush";
+import { Check } from "@/components/animate-ui/icons/check";
+import { ChevronLeft } from "@/components/animate-ui/icons/chevron-left";
+import { ChevronRight } from "@/components/animate-ui/icons/chevron-right";
+import { Copy } from "@/components/animate-ui/icons/copy";
+import { GitFork } from "@/components/animate-ui/icons/git-fork";
+import { RotateCcw } from "@/components/animate-ui/icons/rotate-ccw";
+import { ThumbsDown } from "@/components/animate-ui/icons/thumbs-down";
+import { ThumbsUp } from "@/components/animate-ui/icons/thumbs-up";
+import { Trash2 } from "@/components/animate-ui/icons/trash-2";
+import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  durationBetweenMS,
+  firstDurationMS,
+  formatDurationMS,
+} from "@/features/chat/model/duration";
+import { useChatElapsedDurationMS } from "@/features/chat/hooks/use-chat-elapsed-duration";
+import { resolvePersistedPublicID } from "@/features/chat/model/message-submit";
+import type { ChatMessageBranchNavigator } from "@/features/chat/types/messages";
+import { cn } from "@/lib/utils";
+import { usePointerInteraction } from "@/shared/hooks/use-pointer-interaction";
+
+const META_ACTION_BUTTON_CLASSNAME =
+  "text-muted-foreground [&_svg:not([class*='size-'])]:size-3.5";
+
+export type ChatMetaMessage = {
+  publicID: string;
+  parentPublicID?: string | null;
+  status?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  editedAt?: string | null;
+  isPending?: boolean;
+  isStreaming?: boolean;
+  branchNavigator?: ChatMessageBranchNavigator;
+  platformModelName?: string;
+  // Token usage for assistant messages.
+  inputTokens?: number;
+  outputTokens?: number;
+  cacheReadTokens?: number;
+  cacheWriteTokens?: number;
+  reasoningTokens?: number;
+  latencyMS?: number;
+};
+
+export type AssistantReaction = "up" | "down" | null;
+
+type MessageTimestampLabel = {
+  label: string;
+  title: string;
+};
+
+type MessageTimestampValues = {
+  year: number;
+  month: number;
+  day: number;
+  time: string;
+};
+
+type MessageTimestampFormatter = (
+  key: "todayTime" | "thisYearDateTime" | "fullDateTime",
+  values: MessageTimestampValues,
+) => string;
+
+function formatMessageTimestamp(value: string | undefined, formatLabel: MessageTimestampFormatter): MessageTimestampLabel | null {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  const now = new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+  const isToday =
+    year === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    day === now.getDate();
+  const isCurrentYear = year === now.getFullYear();
+  const timeLabel = [hours, minutes, seconds].map((part) => String(part).padStart(2, "0")).join(":");
+  const values = { year, month, day, time: timeLabel };
+  const title = formatLabel("fullDateTime", values);
+
+  if (isToday) {
+    return { label: formatLabel("todayTime", values), title };
+  }
+
+  return {
+    label: formatLabel(isCurrentYear ? "thisYearDateTime" : "fullDateTime", values),
+    title,
+  };
+}
+
+function MessageTimestamp({ timestamp }: { timestamp: MessageTimestampLabel | null }) {
+  if (!timestamp) {
+    return null;
+  }
+
+  return (
+    <span className="inline-flex h-6 shrink-0 items-center leading-none tabular-nums" title={timestamp.title}>
+      {timestamp.label}
+    </span>
+  );
+}
+
+function BranchSwitcher({
+  item,
+  onCycle,
+}: {
+  item: ChatMetaMessage;
+  onCycle: (parentPublicID: string | null, direction: "previous" | "next") => void;
+}) {
+  const t = useTranslations("chat.messages");
+  if (!item.branchNavigator) {
+    return null;
+  }
+
+  return (
+    <div className="inline-flex items-center" data-screenshot-exclude="true">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className={META_ACTION_BUTTON_CLASSNAME}
+            aria-label={t("previousBranch")}
+            disabled={!item.branchNavigator.canPrevious}
+            onClick={() => onCycle(item.branchNavigator?.parentPublicID ?? null, "previous")}
+          >
+            <ChevronLeft strokeWidth={1.8} animateOnHover="default" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="top">{t("previousBranch")}</TooltipContent>
+      </Tooltip>
+      <span className="min-w-7 text-center tabular-nums text-xs font-medium tracking-[0.01em] text-muted-foreground">
+        {item.branchNavigator.index}/{item.branchNavigator.total}
+      </span>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className={META_ACTION_BUTTON_CLASSNAME}
+            aria-label={t("nextBranch")}
+            disabled={!item.branchNavigator.canNext}
+            onClick={() => onCycle(item.branchNavigator?.parentPublicID ?? null, "next")}
+          >
+            <ChevronRight strokeWidth={1.8} animateOnHover="default" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="top">{t("nextBranch")}</TooltipContent>
+      </Tooltip>
+    </div>
+  );
+}
+
+function MetaContainer({
+  align,
+  mobileStack = false,
+  alwaysVisible = false,
+  children,
+}: React.PropsWithChildren<{
+  align: "start" | "end";
+  mobileStack?: boolean;
+  alwaysVisible?: boolean;
+}>) {
+  const { hasTouchInput } = usePointerInteraction();
+  const actionsVisible = alwaysVisible || hasTouchInput;
+
+  return (
+    <div
+      data-hover-actions={!actionsVisible ? "true" : undefined}
+      className={[
+        "chat-message-meta mt-1.5 flex gap-1 text-xs text-muted-foreground opacity-100 transition-opacity duration-150",
+        actionsVisible ? "md:pointer-events-auto md:opacity-100" : "md:pointer-events-none md:opacity-0",
+        mobileStack ? "flex-col items-start md:flex-row md:items-center" : "items-center",
+        align === "end" ? "justify-end" : "justify-start",
+        !actionsVisible && align === "end"
+          ? "md:group-hover/user-message:pointer-events-auto md:group-hover/user-message:opacity-100 md:group-focus-within/user-message:pointer-events-auto md:group-focus-within/user-message:opacity-100"
+          : "",
+        !actionsVisible && align === "start"
+          ? "md:group-hover/assistant-message:pointer-events-auto md:group-hover/assistant-message:opacity-100 md:group-focus-within/assistant-message:pointer-events-auto md:group-focus-within/assistant-message:opacity-100"
+          : "",
+      ].join(" ")}
+    >
+      {children}
+    </div>
+  );
+}
+
+function MetaIconButton({
+  label,
+  disabled,
+  onClick,
+  className,
+  children,
+}: {
+  label: string;
+  disabled?: boolean;
+  onClick?: () => void;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          data-screenshot-exclude="true"
+          className={cn(META_ACTION_BUTTON_CLASSNAME, className)}
+          aria-label={label}
+          disabled={disabled}
+          onClick={onClick}
+        >
+          {children}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="top">{label}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+function ForkMessageButton({
+  disabled = false,
+  label,
+  onFork,
+}: {
+  disabled?: boolean;
+  label: string;
+  onFork: () => Promise<void> | void;
+}) {
+  const inFlightRef = React.useRef(false);
+  const [inFlight, setInFlight] = React.useState(false);
+
+  const handleFork = React.useCallback(async () => {
+    if (inFlightRef.current) {
+      return;
+    }
+    inFlightRef.current = true;
+    setInFlight(true);
+    try {
+      await onFork();
+    } finally {
+      inFlightRef.current = false;
+      setInFlight(false);
+    }
+  }, [onFork]);
+
+  return (
+    <MetaIconButton
+      label={label}
+      disabled={disabled || inFlight}
+      onClick={() => void handleFork()}
+    >
+      <GitFork strokeWidth={1.8} animateOnHover="default" />
+    </MetaIconButton>
+  );
+}
+
+function DeleteMessageButton({
+  disabled = false,
+  label,
+  confirmTitle,
+  confirmDescription,
+  confirmAction,
+  cancelAction,
+  onDelete,
+}: {
+  disabled?: boolean;
+  label: string;
+  confirmTitle: string;
+  confirmDescription: string;
+  confirmAction: string;
+  cancelAction: string;
+  onDelete: () => Promise<void> | void;
+}) {
+  const [confirmOpen, setConfirmOpen] = React.useState(false);
+  const [inFlight, setInFlight] = React.useState(false);
+
+  const handleDelete = React.useCallback(async () => {
+    if (inFlight) {
+      return;
+    }
+    setInFlight(true);
+    try {
+      await onDelete();
+      setConfirmOpen(false);
+    } finally {
+      setInFlight(false);
+    }
+  }, [inFlight, onDelete]);
+
+  return (
+    <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+      <MetaIconButton
+        label={label}
+        disabled={disabled}
+        onClick={() => setConfirmOpen(true)}
+      >
+        <Trash2 size={14} strokeWidth={1.8} animateOnHover="shake" />
+      </MetaIconButton>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{confirmTitle}</AlertDialogTitle>
+          <AlertDialogDescription>{confirmDescription}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={inFlight}>{cancelAction}</AlertDialogCancel>
+          <AlertDialogAction variant="destructive" disabled={inFlight} onClick={() => void handleDelete()}>
+            {confirmAction}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+export function UserMessageMeta({
+  item,
+  showRetry,
+  onCycleBranch,
+  onRetry,
+  onEdit,
+  onCopy,
+  onDelete,
+  copySucceeded = false,
+  readOnly = false,
+  alwaysVisible = false,
+  showBranchNavigator = true,
+}: {
+  item: ChatMetaMessage;
+  showRetry: boolean;
+  onCycleBranch: (parentPublicID: string | null, direction: "previous" | "next") => void;
+  onRetry: () => void;
+  onEdit: () => void;
+  onCopy: () => void;
+  onDelete?: () => Promise<void> | void;
+  copySucceeded?: boolean;
+  readOnly?: boolean;
+  alwaysVisible?: boolean;
+  showBranchNavigator?: boolean;
+}) {
+  const t = useTranslations("chat.messages");
+  const timeT = useTranslations("common.time");
+  const timestamp = formatMessageTimestamp(item.createdAt, (key, values) => timeT(key, values));
+  const hasPersistedMessage = Boolean(resolvePersistedPublicID(item.publicID));
+  const messagePending = Boolean(item.isPending || item.status?.trim().toLowerCase() === "pending");
+  const canShowBranchNavigator = Boolean(showBranchNavigator && item.branchNavigator);
+
+  return (
+    <MetaContainer align="end" alwaysVisible={alwaysVisible}>
+      {item.editedAt ? <EditedBadge messageRole="user" /> : null}
+      <MessageTimestamp timestamp={timestamp} />
+      {!readOnly ? (
+        <div className="flex items-center">
+          {showRetry && hasPersistedMessage ? (
+            <MetaIconButton
+              label={t("retryMessage")}
+              disabled={messagePending}
+              onClick={onRetry}
+            >
+              <RotateCcw strokeWidth={1.8} animateOnHover="default" />
+            </MetaIconButton>
+          ) : null}
+          <MetaIconButton
+            label={t("editMessage")}
+            disabled={messagePending || !hasPersistedMessage}
+            onClick={onEdit}
+          >
+            <Brush strokeWidth={1.8} animateOnHover="default" />
+          </MetaIconButton>
+          <MetaIconButton
+            label={t("copyMessage")}
+            disabled={messagePending}
+            onClick={onCopy}
+          >
+            {copySucceeded ? (
+              <Check strokeWidth={1.8} animate="default" />
+            ) : (
+              <Copy strokeWidth={1.8} animateOnHover="default" />
+            )}
+          </MetaIconButton>
+          {/* The backend forbids deleting the root message (empty parentPublicID), so the UI doesn't show the entry at all. */}
+          {onDelete && hasPersistedMessage && item.parentPublicID ? (
+            <DeleteMessageButton
+              disabled={messagePending}
+              label={t("deleteMessage")}
+              confirmTitle={t("deleteConfirmTitle")}
+              confirmDescription={t("deleteConfirmDescription")}
+              confirmAction={t("deleteConfirmAction")}
+              cancelAction={t("deleteCancelAction")}
+              onDelete={onDelete}
+            />
+          ) : null}
+        </div>
+      ) : null}
+      {canShowBranchNavigator ? <BranchSwitcher item={item} onCycle={onCycleBranch} /> : null}
+    </MetaContainer>
+  );
+}
+
+function TokenBadge({
+  inputTokens,
+  outputTokens,
+  cacheReadTokens,
+  cacheWriteTokens,
+  reasoningTokens,
+}: {
+  inputTokens?: number;
+  outputTokens?: number;
+  cacheReadTokens?: number;
+  cacheWriteTokens?: number;
+  reasoningTokens?: number;
+}) {
+  const t = useTranslations("chat.meta");
+  const inputValue = inputTokens ?? 0;
+  const outputValue = outputTokens ?? 0;
+  const cacheReadValue = cacheReadTokens ?? 0;
+  const cacheWriteValue = cacheWriteTokens ?? 0;
+  const reasoningValue = reasoningTokens ?? 0;
+  const hasUsage = inputValue > 0 || outputValue > 0 || cacheReadValue > 0 || cacheWriteValue > 0 || reasoningValue > 0;
+  if (!hasUsage) {
+    return null;
+  }
+
+  return (
+    <span className="ml-0.5 inline-flex items-center gap-1.5 rounded px-1.5 py-0.5 text-[10px] leading-3.5 font-mono text-muted-foreground/70 bg-muted/30 select-none whitespace-nowrap">
+      <TokenMetric label={t("inputTokens")} value={inputValue} icon={<ArrowUpFromLine className="size-3" strokeWidth={1.4} />} />
+      <TokenMetric label={t("cacheReadTokens")} value={cacheReadValue} icon={<DatabaseSearch className="size-3" strokeWidth={1.4} />} />
+      <TokenMetric label={t("reasoningTokens")} value={reasoningValue} icon={<Brain className="size-3" strokeWidth={1.4} />} />
+      <TokenMetric label={t("outputTokens")} value={outputValue} icon={<ArrowDownToLine className="size-3" strokeWidth={1.4} />} />
+      <TokenMetric label={t("cacheWriteTokens")} value={cacheWriteValue} icon={<DatabaseZap className="size-3" strokeWidth={1.4} />} />
+    </span>
+  );
+}
+
+function TokenMetric({ label, value, icon }: { label: string; value: number; icon: React.ReactNode }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="inline-flex items-center gap-0.5">
+          <span className="sr-only">{label}</span>
+          {icon}
+          {value.toLocaleString()}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+function LatencyBadge({ item }: { item: ChatMetaMessage }) {
+  const t = useTranslations("chat.meta");
+  const isLive = Boolean(item.isPending || item.isStreaming);
+  const liveLatencyMS = useChatElapsedDurationMS(isLive, item.createdAt);
+  const calculatedLatencyMS = durationBetweenMS(item.createdAt, item.updatedAt);
+  const latencyMS = isLive
+    ? firstDurationMS(liveLatencyMS, calculatedLatencyMS, item.latencyMS)
+    : firstDurationMS(item.latencyMS, calculatedLatencyMS);
+  const label = formatDurationMS(latencyMS);
+  if (!label) {
+    return null;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          className="ml-0.5 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] leading-3.5 font-mono text-muted-foreground/70 bg-muted/30 select-none whitespace-nowrap"
+        >
+          <span className="sr-only">{isLive ? t("generationDuration") : t("totalDuration")}</span>
+          {isLive ? (
+            <ClockArrowUp className="size-3" strokeWidth={1.4} />
+          ) : (
+            <ClockCheck className="size-3" strokeWidth={1.4} />
+          )}
+          {label}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>{isLive ? t("generationDuration") : t("totalDuration")}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+function EditedBadge({ messageRole = "assistant" }: { messageRole?: "user" | "assistant" }) {
+  const t = useTranslations("chat.messages");
+  const label = t("replyEditedDisclaimer");
+  const tooltip = t(messageRole === "user" ? "userEditedTooltip" : "replyEditedTooltip");
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          className="ml-0.5 inline-flex items-center gap-1 rounded bg-muted/30 px-1.5 py-0.5 text-[10px] leading-3.5 text-muted-foreground/70 select-none whitespace-nowrap"
+        >
+          <FilePenLine className="size-3" strokeWidth={1.4} />
+          {label}
+          <span className="sr-only">{tooltip}</span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-64">{tooltip}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+function ModelBadge({ label }: { label: string }) {
+  const t = useTranslations("chat.meta");
+  const normalized = label.trim();
+  if (!normalized) {
+    return null;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          className="ml-0.5 inline-flex max-w-48 items-center gap-1 rounded bg-muted/30 px-1.5 py-0.5 font-mono text-[10px] leading-3.5 text-muted-foreground/70 select-none whitespace-nowrap"
+        >
+          <span className="sr-only">{t("model")}</span>
+          <Cpu className="size-3 shrink-0" strokeWidth={1.4} />
+          <span className="truncate">{normalized}</span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>{normalized}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+export function AssistantMessageMeta({
+  item,
+  modelDisplayName,
+  busy,
+  reaction,
+  onCycleBranch,
+  onRetry,
+  onContinue,
+  onEdit,
+  onCopy,
+  onFork,
+  onDelete,
+  copySucceeded = false,
+  onReact,
+  showModelInfo = true,
+  showLatency = true,
+  showTokenUsage = true,
+  readOnly = false,
+  alwaysVisible = false,
+  showBranchNavigator = true,
+}: {
+  item: ChatMetaMessage;
+  busy: boolean;
+  modelDisplayName?: string;
+  reaction: AssistantReaction;
+  onCycleBranch: (parentPublicID: string | null, direction: "previous" | "next") => void;
+  onRetry: () => void;
+  onContinue?: () => void;
+  onEdit?: () => void;
+  onCopy: () => void;
+  onFork?: () => Promise<void> | void;
+  onDelete?: () => Promise<void> | void;
+  copySucceeded?: boolean;
+  onReact: (value: AssistantReaction) => void;
+  showModelInfo?: boolean;
+  showLatency?: boolean;
+  showTokenUsage?: boolean;
+  readOnly?: boolean;
+  alwaysVisible?: boolean;
+  showBranchNavigator?: boolean;
+}) {
+  const t = useTranslations("chat.messages");
+  const timeT = useTranslations("common.time");
+  const isLive = Boolean(item.isPending || item.isStreaming);
+  const timestamp = formatMessageTimestamp(
+    isLive ? item.createdAt : item.updatedAt || item.createdAt,
+    (key, values) => timeT(key, values),
+  );
+  const messagePending = Boolean(isLive || item.status?.trim().toLowerCase() === "pending");
+  const hasPersistedMessage = Boolean(resolvePersistedPublicID(item.publicID));
+  const canRetry = !readOnly && !messagePending && hasPersistedMessage;
+  const canEdit = Boolean(canRetry && !busy && onEdit);
+  const canContinue = Boolean(canRetry && !busy && item.status === "interrupted");
+  const canFork = Boolean(canRetry && onFork);
+  // The backend forbids deleting the root message (empty parentPublicID), so the UI doesn't show the entry at all.
+  const canDelete = Boolean(canRetry && !busy && onDelete && item.parentPublicID);
+  const canShowBranchNavigator = Boolean(showBranchNavigator && item.branchNavigator);
+  const hasTokenUsage = Boolean(
+    (item.inputTokens ?? 0) > 0 ||
+    (item.outputTokens ?? 0) > 0 ||
+    (item.cacheReadTokens ?? 0) > 0 ||
+    (item.cacheWriteTokens ?? 0) > 0 ||
+    (item.reasoningTokens ?? 0) > 0,
+  );
+  const hasLatencyBadge = Boolean(
+    showLatency &&
+    (
+      isLive ||
+      (item.latencyMS && item.latencyMS > 0) ||
+      durationBetweenMS(item.createdAt, item.updatedAt) !== undefined
+    ),
+  );
+  const hasDetailBadges = Boolean(
+    (showModelInfo && item.platformModelName?.trim()) ||
+    (showTokenUsage && hasTokenUsage) ||
+    hasLatencyBadge ||
+    item.editedAt,
+  );
+  const hasActionRow = Boolean(timestamp || !readOnly || canShowBranchNavigator);
+
+  return (
+    <MetaContainer align="start" alwaysVisible={alwaysVisible}>
+      <div className="flex min-w-0 max-w-full flex-col items-start gap-1.5 pt-0.5">
+        {hasDetailBadges ? (
+          <div className="flex min-w-0 max-w-full flex-wrap items-center gap-1">
+            {showModelInfo ? <ModelBadge label={modelDisplayName?.trim() || item.platformModelName?.trim() || ""} /> : null}
+            {showTokenUsage ? (
+              <TokenBadge
+                inputTokens={item.inputTokens}
+                outputTokens={item.outputTokens}
+                cacheReadTokens={item.cacheReadTokens}
+                cacheWriteTokens={item.cacheWriteTokens}
+                reasoningTokens={item.reasoningTokens}
+              />
+            ) : null}
+            {hasLatencyBadge ? <LatencyBadge item={item} /> : null}
+            {item.editedAt ? <EditedBadge /> : null}
+          </div>
+        ) : null}
+        {hasActionRow ? (
+          <div className="flex min-w-0 max-w-full flex-wrap items-center gap-1">
+            {!readOnly ? (
+              <>
+                <MetaIconButton
+                  label={t("copyReply")}
+                  disabled={!item.publicID}
+                  onClick={onCopy}
+                >
+                  {copySucceeded ? (
+                    <Check strokeWidth={1.8} animate="default" />
+                  ) : (
+                    <Copy strokeWidth={1.8} animateOnHover="default" />
+                  )}
+                </MetaIconButton>
+                {canEdit ? (
+                  <MetaIconButton
+                    label={t("editReply")}
+                    onClick={onEdit}
+                  >
+                    <Brush strokeWidth={1.8} animateOnHover="default" />
+                  </MetaIconButton>
+                ) : null}
+                <MetaIconButton
+                  label={t("likeReply")}
+                  className={reaction === "up" ? "text-foreground" : undefined}
+                  disabled={messagePending}
+                  onClick={() => onReact(reaction === "up" ? null : "up")}
+                >
+                  <ThumbsUp strokeWidth={1.8} animateOnHover="default" />
+                </MetaIconButton>
+                <MetaIconButton
+                  label={t("dislikeReply")}
+                  className={reaction === "down" ? "text-foreground" : undefined}
+                  disabled={messagePending}
+                  onClick={() => onReact(reaction === "down" ? null : "down")}
+                >
+                  <ThumbsDown strokeWidth={1.8} animateOnHover="default" />
+                </MetaIconButton>
+                {canRetry ? (
+                  <MetaIconButton
+                    label={t("retryReply")}
+                    onClick={onRetry}
+                  >
+                    <RotateCcw strokeWidth={1.8} animateOnHover="default" />
+                  </MetaIconButton>
+                ) : null}
+                {canDelete && onDelete ? (
+                  <DeleteMessageButton
+                    label={t("deleteMessage")}
+                    confirmTitle={t("deleteConfirmTitle")}
+                    confirmDescription={t("deleteConfirmDescription")}
+                    confirmAction={t("deleteConfirmAction")}
+                    cancelAction={t("deleteCancelAction")}
+                    onDelete={onDelete}
+                  />
+                ) : null}
+                {canContinue && onContinue ? (
+                  <MetaIconButton
+                    label={t("continueReply")}
+                    onClick={onContinue}
+                  >
+                    <Forward strokeWidth={1.8} />
+                  </MetaIconButton>
+                ) : null}
+                {canFork && onFork ? (
+                  <ForkMessageButton
+                    label={t("forkMessage")}
+                    onFork={onFork}
+                  />
+                ) : null}
+              </>
+            ) : null}
+            {canShowBranchNavigator ? <BranchSwitcher item={item} onCycle={onCycleBranch} /> : null}
+            <MessageTimestamp timestamp={timestamp} />
+          </div>
+        ) : null}
+      </div>
+    </MetaContainer>
+  );
+}

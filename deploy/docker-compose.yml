@@ -1,0 +1,27 @@
+name: coursemate
+
+services:
+  app:
+    image: ${COURSEMATE_IMAGE:-ghcr.io/wangxingfan/coursemate:latest}
+    ports:
+      # Localhost-only by default. 8081 avoids colliding with an existing DEEIX Chat stack on 8080.
+      # Override COURSEMATE_HOST_PORT when another port is already in use.
+      - "127.0.0.1:${COURSEMATE_HOST_PORT:-8081}:8080"
+    volumes:
+      - app_storage:/app/storage
+      - app_data:/app/data
+      # The image runs from /app and reads /app/config.yaml automatically.
+      - ./config.yaml:/app/config.yaml:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - coursemate
+volumes:
+  app_storage:
+    name: coursemate-app-storage
+  app_data:
+    name: coursemate-app-data
+
+networks:
+  coursemate:
+    name: coursemate-network

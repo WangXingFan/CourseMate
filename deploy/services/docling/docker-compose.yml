@@ -1,0 +1,18 @@
+services:
+  docling:
+    image: coursemate-docling:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      # Optional. Localhost-only by default. Configure the app to use http://docling:8005/ocr on the shared network.
+      - "127.0.0.1:${COURSEMATE_DOCLING_PORT:-8007}:8005"
+    restart: unless-stopped
+    networks:
+      - coursemate
+
+networks:
+  coursemate:
+    # Required. Start a root compose profile first, or create this network manually.
+    external: true
+    name: coursemate-network

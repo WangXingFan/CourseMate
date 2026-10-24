@@ -1,0 +1,327 @@
+{
+  "L1-1": {
+    "params": {
+      "mode": {
+        "type": "select",
+        "options": [
+          "transform",
+          "impulse"
+        ],
+        "default": "transform"
+      },
+      "A": {
+        "type": "number",
+        "min": 0.25,
+        "max": 3,
+        "default": 1
+      },
+      "a": {
+        "type": "number",
+        "min": -4,
+        "max": 4,
+        "default": 1
+      },
+      "shift": {
+        "type": "number",
+        "min": -3,
+        "max": 3,
+        "default": 0
+      },
+      "delta": {
+        "type": "number",
+        "min": 0.05,
+        "max": 0.5,
+        "default": 0.2
+      }
+    },
+    "answers": []
+  },
+  "L1-2": {
+    "params": {
+      "kind": {
+        "type": "select",
+        "options": [
+          "gain",
+          "square",
+          "varying"
+        ],
+        "default": "gain"
+      },
+      "test": {
+        "type": "select",
+        "options": [
+          "linearity",
+          "invariance"
+        ],
+        "default": "linearity"
+      },
+      "x1": {
+        "type": "select",
+        "options": [
+          "constant",
+          "sin",
+          "cos"
+        ],
+        "default": "constant"
+      },
+      "x2": {
+        "type": "select",
+        "options": [
+          "constant",
+          "sin",
+          "cos"
+        ],
+        "default": "constant"
+      },
+      "alpha": {
+        "type": "number",
+        "min": -2,
+        "max": 2,
+        "default": 1
+      },
+      "beta": {
+        "type": "number",
+        "min": -2,
+        "max": 2,
+        "default": 1
+      },
+      "delay": {
+        "type": "number",
+        "min": -2,
+        "max": 2,
+        "default": 1
+      }
+    },
+    "answers": []
+  },
+  "L1-3": {
+    "params": {
+      "enabled": {
+        "type": "select",
+        "options": [
+          "on",
+          "off"
+        ],
+        "default": "on"
+      },
+      "A": {
+        "type": "number",
+        "min": 0,
+        "max": 3,
+        "default": 1
+      },
+      "initial": {
+        "type": "number",
+        "min": -1,
+        "max": 3,
+        "default": 2
+      }
+    },
+    "answers": []
+  },
+  "L1-4": {
+    "params": {
+      "kind": {
+        "type": "select",
+        "options": [
+          "rr",
+          "rh"
+        ],
+        "default": "rr"
+      },
+      "time": {
+        "type": "number",
+        "min": -1,
+        "max": 5,
+        "default": 0.5
+      },
+      "speed": {
+        "type": "number",
+        "min": 0.25,
+        "max": 2,
+        "default": 0.5
+      }
+    },
+    "answers": []
+  },
+  "L2-1": {
+    "params": {
+      "K": {
+        "type": "select",
+        "options": [
+          "1",
+          "3",
+          "7",
+          "15"
+        ],
+        "default": "1"
+      },
+      "showComponents": {
+        "type": "select",
+        "options": [
+          "on",
+          "off"
+        ],
+        "default": "on"
+      }
+    },
+    "answers": []
+  },
+  "L2-2": {
+    "params": {
+      "A": {
+        "type": "number",
+        "min": 0.25,
+        "max": 3,
+        "default": 1
+      },
+      "T": {
+        "type": "number",
+        "min": 0.25,
+        "max": 2.5,
+        "default": 1
+      },
+      "center": {
+        "type": "number",
+        "min": -2,
+        "max": 2,
+        "default": 0
+      }
+    },
+    "answers": []
+  },
+  "L2-3": {
+    "params": {
+      "fc": {
+        "type": "number",
+        "min": 50,
+        "max": 1000,
+        "default": 200
+      },
+      "components": {
+        "type": "select",
+        "options": [
+          "both",
+          "combined"
+        ],
+        "default": "both"
+      }
+    },
+    "answers": []
+  },
+  "L2-4": {
+    "params": {
+      "fs": {
+        "type": "select",
+        "options": [
+          "100",
+          "25",
+          "15"
+        ],
+        "default": "100"
+      },
+      "candidate": {
+        "type": "number",
+        "min": 0,
+        "max": 30,
+        "default": 5
+      }
+    },
+    "answers": []
+  },
+  "L3-1": {
+    "params": {
+      "mode": {
+        "type": "select",
+        "options": [
+          "exp",
+          "step",
+          "pulse",
+          "delayed"
+        ],
+        "default": "exp"
+      },
+      "A": {
+        "type": "number",
+        "min": 0.25,
+        "max": 3,
+        "default": 1
+      },
+      "a": {
+        "type": "number",
+        "min": 0.25,
+        "max": 4,
+        "default": 1
+      },
+      "T": {
+        "type": "number",
+        "min": 0.1,
+        "max": 4,
+        "default": 1
+      },
+      "start": {
+        "type": "number",
+        "min": 0,
+        "max": 3,
+        "default": 1
+      }
+    },
+    "answers": [
+      "coefficient",
+      "denShift",
+      "delay1",
+      "delay2"
+    ]
+  },
+  "L3-2": {
+    "params": {
+      "measureTime": {
+        "type": "number",
+        "min": 0,
+        "max": 5,
+        "default": 1
+      }
+    },
+    "answers": [
+      "hShift",
+      "xGain",
+      "C",
+      "D"
+    ]
+  },
+  "L3-3": {
+    "params": {
+      "initial": {
+        "type": "select",
+        "options": [
+          "0",
+          "0.5",
+          "2"
+        ],
+        "default": "0"
+      },
+      "measureTime": {
+        "type": "number",
+        "min": 0,
+        "max": 5,
+        "default": 1
+      }
+    },
+    "answers": [
+      "initialTerm",
+      "C",
+      "D"
+    ]
+  },
+  "L3-4": {
+    "params": {
+      "T": {
+        "type": "number",
+        "min": 0.1,
+        "max": 4,
+        "default": 1
+      }
+    },
+    "answers": []
+  }
+}

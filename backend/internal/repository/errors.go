@@ -1,0 +1,58 @@
+package repository
+
+import "errors"
+
+var (
+	// ErrNotFound 表示记录不存在。
+	ErrNotFound = errors.New("record not found")
+	// ErrDuplicate 表示违反唯一约束。
+	ErrDuplicate = errors.New("duplicate record")
+	// ErrDuplicateUsername 表示用户名唯一约束冲突。
+	ErrDuplicateUsername = errors.New("duplicate username")
+	// ErrDuplicateUserIdentity 表示第三方身份唯一约束冲突。
+	ErrDuplicateUserIdentity = errors.New("duplicate user identity")
+	// ErrConflict 表示资源状态冲突，操作无法执行。
+	ErrConflict = errors.New("resource conflict")
+	// ErrInvalidInput 表示输入数据非法。
+	ErrInvalidInput = errors.New("invalid input")
+	// ErrRefreshTokenReuse 表示检测到已轮换的刷新令牌在宽限期外被再次使用；会话已被整体吊销。
+	ErrRefreshTokenReuse = errors.New("refresh token reuse detected")
+	// ErrLastSuperAdminRoleChange 表示操作会移除最后一个超级管理员。
+	ErrLastSuperAdminRoleChange = errors.New("last superadmin role change not allowed")
+	// ErrFileProcessingQueueFull 表示文件处理队列已达容量上限，暂时无法接收新任务。
+	ErrFileProcessingQueueFull = errors.New("file processing queue full")
+	// ErrFileNotFound 文件对象不存在或无权限。
+	ErrFileNotFound = errors.New("file not found")
+	// ErrStorageQuotaExceeded 用户存储配额超限。
+	ErrStorageQuotaExceeded = errors.New("storage quota exceeded")
+
+	// ErrMessageDeleteStateInvalid 消息仍在生成中，不允许删除。
+	ErrMessageDeleteStateInvalid = errors.New("message delete state invalid")
+	// ErrMessageDeleteRootInvalid 会话第一条消息不允许删除，否则历史将以助手消息开头。
+	ErrMessageDeleteRootInvalid = errors.New("message delete root invalid")
+	// ErrMessageParentDeleted 父消息已被删除，无法再挂在其下创建新消息。
+	ErrMessageParentDeleted = errors.New("message parent deleted")
+
+	// 上游与模型仓储语义错误。
+	ErrUpstreamNotFound           = errors.New("upstream not found")
+	ErrModelNotFound              = errors.New("model not found")
+	ErrModelVendorNotFound        = errors.New("model vendor not found")
+	ErrModelDisplayGroupNotFound  = errors.New("model display group not found")
+	ErrDuplicatePlatformModelName = errors.New("duplicate platform model name")
+	ErrUpstreamModelNotFound      = errors.New("upstream model not found")
+	ErrUpstreamModelConflict      = errors.New("upstream model conflict")
+	ErrLLMSettingNotFound         = errors.New("llm setting not found")
+)
+
+// IdentityProviderDeleteConflictError 表示删除身份源会导致部分账号失去最后一种登录方式。
+type IdentityProviderDeleteConflictError struct {
+	DependentUsers int
+}
+
+func (e *IdentityProviderDeleteConflictError) Error() string {
+	return "identity provider has dependent users"
+}
+
+func (e *IdentityProviderDeleteConflictError) Unwrap() error {
+	return ErrConflict
+}

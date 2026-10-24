@@ -1,0 +1,561 @@
+package admin
+
+import (
+	"context"
+	"errors"
+	"testing"
+	"time"
+
+	auditapp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/audit"
+	userapp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/user"
+	domainaudit "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/audit"
+	domainchannel "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/channel"
+	domainuser "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/user"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/repository"
+)
+
+func TestPatchUserByAdminAllowsAdditionalSuperAdmin(t *testing.T) {
+	users := newAdminUserServiceFake(map[uint]domainuser.User{
+		1: {ID: 1, Role: domainuser.RoleSuperAdmin},
+		2: {ID: 2, Role: domainuser.RoleUser},
+	})
+	service := NewService(users, auditServiceFake{})
+
+	nextRole := domainuser.RoleSuperAdmin
+	updated, err := service.PatchUserByAdmin(
+		context.Background(),
+		PatchUserByAdminInput{
+			RequestID:    "req_1",
+			ActorUserID:  1,
+			TargetUserID: 2,
+			Patch:        PatchUserInput{Role: &nextRole},
+			IP:           "127.0.0.1",
+			UserAgent:    "test",
+		},
+	)
+	if err != nil {
+		t.Fatalf("expected second superadmin promotion to succeed, got %v", err)
+	}
+	if updated.Role != domainuser.RoleSuperAdmin {
+		t.Fatalf("expected promoted role %q, got %q", domainuser.RoleSuperAdmin, updated.Role)
+	}
+}
+
+func TestPatchUserByAdminKeepsLastSuperAdminProtected(t *testing.T) {
+	count := int64(1)
+	users := newAdminUserServiceFake(map[uint]domainuser.User{
+		1: {ID: 1, Role: domainuser.RoleSuperAdmin},
+		2: {ID: 2, Role: domainuser.RoleSuperAdmin},
+	})
+	users.superAdminCount = &count
+	service := NewService(users, auditServiceFake{})
+
+	nextRole := domainuser.RoleUser
+	_, err := service.PatchUserByAdmin(
+		context.Background(),
+		PatchUserByAdminInput{
+			RequestID:    "req_1",
+			ActorUserID:  2,
+			TargetUserID: 1,
+			Patch:        PatchUserInput{Role: &nextRole},
+			IP:           "127.0.0.1",
+			UserAgent:    "test",
+		},
+	)
+	if !errors.Is(err, ErrLastSuperAdminRoleChangeNotAllowed) {
+		t.Fatalf("expected last superadmin protection, got %v", err)
+	}
+}
+
+func TestPatchUserByAdminAllowsAdminRole(t *testing.T) {
+	users := newAdminUserServiceFake(map[uint]domainuser.User{
+		1: {ID: 1, Role: domainuser.RoleAdmin},
+		2: {ID: 2, Role: domainuser.RoleUser},
+	})
+	service := NewService(users, auditServiceFake{})
+
+	nextRole := domainuser.RoleAdmin
+	updated, err := service.PatchUserByAdmin(
+		context.Background(),
+		PatchUserByAdminInput{
+			RequestID:    "req_1",
+			ActorUserID:  1,
+			TargetUserID: 2,
+			Patch:        PatchUserInput{Role: &nextRole},
+			IP:           "127.0.0.1",
+			UserAgent:    "test",
+		},
+	)
+	if err != nil {
+		t.Fatalf("expected admin role promotion to succeed, got %v", err)
+	}
+	if updated.Role != domainuser.RoleAdmin {
+		t.Fatalf("expected promoted role %q, got %q", domainuser.RoleAdmin, updated.Role)
+	}
+}
+
+func TestPatchUserByAdminRequiresAdminActor(t *testing.T) {
+	users := newAdminUserServiceFake(map[uint]domainuser.User{
+		1: {ID: 1, Role: domainuser.RoleUser},
+		2: {ID: 2, Role: domainuser.RoleUser},
+	})
+	service := NewService(users, auditServiceFake{})
+
+	nextRole := domainuser.RoleAdmin
+	_, err := service.PatchUserByAdmin(
+		context.Background(),
+		PatchUserByAdminInput{
+			RequestID:    "req_1",
+			ActorUserID:  1,
+			TargetUserID: 2,
+			Patch:        PatchUserInput{Role: &nextRole},
+			IP:           "127.0.0.1",
+			UserAgent:    "test",
+		},
+	)
+	if !errors.Is(err, ErrAdminPermissionRequired) {
+		t.Fatalf("expected admin permission protection, got %v", err)
+	}
+}
+
+func TestPatchUserByAdminCannotPromoteSuperAdmin(t *testing.T) {
+	users := newAdminUserServiceFake(map[uint]domainuser.User{
+		1: {ID: 1, Role: domainuser.RoleAdmin},
+		2: {ID: 2, Role: domainuser.RoleUser},
+	})
+	service := NewService(users, auditServiceFake{})
+
+	nextRole := domainuser.RoleSuperAdmin
+	_, err := service.PatchUserByAdmin(
+		context.Background(),
+		PatchUserByAdminInput{
+			RequestID:    "req_1",
+			ActorUserID:  1,
+			TargetUserID: 2,
+			Patch:        PatchUserInput{Role: &nextRole},
+			IP:           "127.0.0.1",
+			UserAgent:    "test",
+		},
+	)
+	if !errors.Is(err, ErrSuperAdminManagementNotAllowed) {
+		t.Fatalf("expected admin superadmin promotion protection, got %v", err)
+	}
+}
+
+func TestPatchUserByAdminCannotManageSuperAdmin(t *testing.T) {
+	users := newAdminUserServiceFake(map[uint]domainuser.User{
+		1: {ID: 1, Role: domainuser.RoleAdmin},
+		2: {ID: 2, Role: domainuser.RoleSuperAdmin},
+	})
+	service := NewService(users, auditServiceFake{})
+
+	displayName := "Root"
+	_, err := service.PatchUserByAdmin(
+		context.Background(),
+		PatchUserByAdminInput{
+			RequestID:    "req_1",
+			ActorUserID:  1,
+			TargetUserID: 2,
+			Patch:        PatchUserInput{DisplayName: &displayName},
+			IP:           "127.0.0.1",
+			UserAgent:    "test",
+		},
+	)
+	if !errors.Is(err, ErrSuperAdminManagementNotAllowed) {
+		t.Fatalf("expected admin superadmin management protection, got %v", err)
+	}
+}
+
+func TestPatchUserByAdminMapsRepositoryLastSuperAdminGuard(t *testing.T) {
+	users := newAdminUserServiceFake(map[uint]domainuser.User{
+		1: {ID: 1, Role: domainuser.RoleSuperAdmin},
+		2: {ID: 2, Role: domainuser.RoleSuperAdmin},
+	})
+	users.updateFieldsErr = repository.ErrLastSuperAdminRoleChange
+	service := NewService(users, auditServiceFake{})
+
+	nextRole := domainuser.RoleUser
+	_, err := service.PatchUserByAdmin(
+		context.Background(),
+		PatchUserByAdminInput{
+			RequestID:    "req_1",
+			ActorUserID:  2,
+			TargetUserID: 1,
+			Patch:        PatchUserInput{Role: &nextRole},
+			IP:           "127.0.0.1",
+			UserAgent:    "test",
+		},
+	)
+	if !errors.Is(err, ErrLastSuperAdminRoleChangeNotAllowed) {
+		t.Fatalf("expected repository guard to map to admin error, got %v", err)
+	}
+}
+
+func TestSetGroupModelsRejectsUnknownModelID(t *testing.T) {
+	service := NewService(newAdminUserServiceFake(nil), auditServiceFake{})
+	service.SetPermissionGroupRepo(permissionGroupRepoFake{
+		groups: map[uint]domainchannel.PermissionGroup{
+			1: {ID: 1, Name: "Team A"},
+		},
+	})
+	service.SetPermissionGroupModelLookup(permissionGroupModelLookupFake{
+		models: map[uint]domainchannel.PlatformModel{
+			10: {ID: 10, PlatformModelName: "gpt-test"},
+		},
+	})
+
+	err := service.SetGroupModels(context.Background(), 1, []uint{10, 99}, nil)
+	if !errors.Is(err, ErrInvalidPermissionGroupModels) {
+		t.Fatalf("expected invalid group models error, got %v", err)
+	}
+}
+
+func TestSetGroupUsersRejectsUnknownUserID(t *testing.T) {
+	service := NewService(newAdminUserServiceFake(map[uint]domainuser.User{
+		7: {ID: 7, Username: "alice"},
+	}), auditServiceFake{})
+	service.SetPermissionGroupRepo(permissionGroupRepoFake{
+		groups: map[uint]domainchannel.PermissionGroup{
+			1: {ID: 1, Name: "Team A"},
+		},
+	})
+
+	err := service.SetGroupUsers(context.Background(), 1, []uint{7, 99})
+	if !errors.Is(err, ErrInvalidPermissionGroupUsers) {
+		t.Fatalf("expected invalid group users error, got %v", err)
+	}
+}
+
+func TestSetGroupUsersRejectsDefaultGroup(t *testing.T) {
+	service := NewService(newAdminUserServiceFake(map[uint]domainuser.User{
+		7: {ID: 7, Username: "alice"},
+	}), auditServiceFake{})
+	service.SetPermissionGroupRepo(permissionGroupRepoFake{
+		groups: map[uint]domainchannel.PermissionGroup{
+			1: {ID: 1, Name: "Default", IsDefault: true},
+		},
+	})
+
+	err := service.SetGroupUsers(context.Background(), 1, []uint{7})
+	if !errors.Is(err, ErrDefaultPermissionGroupUsersImmutable) {
+		t.Fatalf("expected default group users immutable error, got %v", err)
+	}
+}
+
+func TestListGroupUsersRejectsDefaultGroup(t *testing.T) {
+	service := NewService(newAdminUserServiceFake(nil), auditServiceFake{})
+	service.SetPermissionGroupRepo(permissionGroupRepoFake{
+		groups: map[uint]domainchannel.PermissionGroup{
+			1: {ID: 1, Name: "Default", IsDefault: true},
+		},
+	})
+
+	_, err := service.ListGroupUsers(context.Background(), 1)
+	if !errors.Is(err, ErrDefaultPermissionGroupUsersImmutable) {
+		t.Fatalf("expected default group users immutable error, got %v", err)
+	}
+}
+
+func TestImportRosterDryRunValidatesWithoutWriting(t *testing.T) {
+	service := NewService(newAdminUserServiceFake(map[uint]domainuser.User{
+		1: {ID: 1, Role: domainuser.RoleAdmin},
+	}), auditServiceFake{})
+	csv := "username,displayName,email\n" +
+		"s20260001,Student 01,\n" +
+		"s20260001,Student Duplicate,s1@example.edu\n" +
+		"bad name!,Student 02,student02@example.edu\n" +
+		"s20260003,Student 03,not-an-email\n"
+
+	result, err := service.ImportRoster(
+		context.Background(),
+		"req_1",
+		1,
+		RosterImportInput{CSV: []byte(csv), DryRun: true},
+		"127.0.0.1",
+		"test",
+	)
+	if err != nil {
+		t.Fatalf("dry run should not fail: %v", err)
+	}
+	if result.Total != 4 || result.Ready != 1 || result.Imported != 0 {
+		t.Fatalf("unexpected dry run summary: %+v", result)
+	}
+	if len(result.Credentials) != 0 {
+		t.Fatalf("dry run must not return credentials, got %d", len(result.Credentials))
+	}
+	if result.Skipped != 0 || result.Invalid != 3 {
+		t.Fatalf("expected 3 invalid rows and no skips, got %+v", result)
+	}
+}
+
+func TestImportRosterRejectsUnexpectedHeader(t *testing.T) {
+	service := NewService(newAdminUserServiceFake(map[uint]domainuser.User{
+		1: {ID: 1, Role: domainuser.RoleAdmin},
+	}), auditServiceFake{})
+
+	_, err := service.ImportRoster(
+		context.Background(),
+		"req_1",
+		1,
+		RosterImportInput{CSV: []byte("name,email\nStudent,student@example.edu\n"), DryRun: true},
+		"127.0.0.1",
+		"test",
+	)
+	if !errors.Is(err, ErrInvalidRosterHeader) {
+		t.Fatalf("expected invalid header error, got %v", err)
+	}
+}
+
+func TestImportRosterSkipsExistingUsernameAndReturnsCredentials(t *testing.T) {
+	service := NewService(newAdminUserServiceFake(map[uint]domainuser.User{
+		1: {ID: 1, Role: domainuser.RoleAdmin},
+		2: {ID: 2, Role: domainuser.RoleUser, Username: "s20260001"},
+	}), auditServiceFake{})
+	csv := "username,displayName,email\n" +
+		"s20260001,Existing Student,\n" +
+		"s20260002,New Student,student02@example.edu\n"
+
+	result, err := service.ImportRoster(
+		context.Background(),
+		"req_1",
+		1,
+		RosterImportInput{CSV: []byte(csv)},
+		"127.0.0.1",
+		"test",
+	)
+	if err != nil {
+		t.Fatalf("import should not fail: %v", err)
+	}
+	if result.Imported != 1 || result.Skipped != 1 {
+		t.Fatalf("unexpected import summary: %+v", result)
+	}
+	if len(result.Credentials) != 1 || result.Credentials[0].Username != "s20260002" {
+		t.Fatalf("expected one credential for the new account, got %+v", result.Credentials)
+	}
+	if result.Credentials[0].InitialPassword == "" {
+		t.Fatal("expected a generated initial password")
+	}
+}
+
+type adminUserServiceFake struct {
+	users           map[uint]domainuser.User
+	updateFieldsErr error
+	superAdminCount *int64
+}
+
+func newAdminUserServiceFake(users map[uint]domainuser.User) *adminUserServiceFake {
+	copied := make(map[uint]domainuser.User, len(users))
+	for id, item := range users {
+		copied[id] = item
+	}
+	return &adminUserServiceFake{users: copied}
+}
+
+func (s *adminUserServiceFake) ListUsers(context.Context, int, int, repository.UserListFilter) ([]domainuser.User, int64, error) {
+	return nil, 0, nil
+}
+
+func (s *adminUserServiceFake) ListIdentityProviders(context.Context, bool) ([]domainuser.IdentityProvider, error) {
+	return []domainuser.IdentityProvider{}, nil
+}
+
+func (s *adminUserServiceFake) ListUserIdentitiesByUserIDs(context.Context, []uint) (map[uint][]domainuser.UserIdentity, error) {
+	return map[uint][]domainuser.UserIdentity{}, nil
+}
+
+func (s *adminUserServiceFake) ListLatestSessionActivityByUserIDs(context.Context, []uint) (map[uint]time.Time, error) {
+	return map[uint]time.Time{}, nil
+}
+
+func (s *adminUserServiceFake) CountSuperAdmins(context.Context) (int64, error) {
+	if s.superAdminCount != nil {
+		return *s.superAdminCount, nil
+	}
+	var count int64
+	for _, item := range s.users {
+		if item.Role == domainuser.RoleSuperAdmin {
+			count++
+		}
+	}
+	return count, nil
+}
+
+func (s *adminUserServiceFake) CreateUser(context.Context, userapp.CreateUserInput) (*domainuser.User, error) {
+	return nil, nil
+}
+
+func (s *adminUserServiceFake) GetByID(_ context.Context, userID uint) (*domainuser.User, error) {
+	item, ok := s.users[userID]
+	if !ok {
+		return nil, userapp.ErrUserNotFound
+	}
+	return &item, nil
+}
+
+func (s *adminUserServiceFake) RevokeAllSessions(context.Context, uint, string) error {
+	return nil
+}
+
+func (s *adminUserServiceFake) UpdateUserStatus(_ context.Context, userID uint, status string) error {
+	item, ok := s.users[userID]
+	if !ok {
+		return errors.New("user not found")
+	}
+	item.Status = status
+	s.users[userID] = item
+	return nil
+}
+
+func (s *adminUserServiceFake) UpdateFields(_ context.Context, userID uint, input repository.UpdateUserFieldsInput) (*domainuser.User, error) {
+	if s.updateFieldsErr != nil {
+		return nil, s.updateFieldsErr
+	}
+	item, ok := s.users[userID]
+	if !ok {
+		return nil, errors.New("user not found")
+	}
+	if input.Role != nil {
+		item.Role = *input.Role
+	}
+	if input.Timezone != nil {
+		item.Timezone = *input.Timezone
+	}
+	if input.Locale != nil {
+		item.Locale = *input.Locale
+	}
+	s.users[userID] = item
+	return &item, nil
+}
+
+func (s *adminUserServiceFake) ResetLoginFailure(context.Context, uint) error {
+	return nil
+}
+
+func (s *adminUserServiceFake) ResetPasswordByAdmin(context.Context, uint, string, bool) error {
+	return nil
+}
+
+func (s *adminUserServiceFake) DeleteAccountHard(context.Context, uint) error {
+	return nil
+}
+
+func (s *adminUserServiceFake) RecordAuthEvent(context.Context, repository.AuthEventInput) error {
+	return nil
+}
+
+func (s *adminUserServiceFake) ListAuthEvents(context.Context, userapp.AuthEventListInput) ([]domainuser.AuthEvent, int64, error) {
+	return nil, 0, nil
+}
+
+func (s *adminUserServiceFake) ListUsersByLowerEmails(context.Context, []string) (map[string]domainuser.User, error) {
+	return map[string]domainuser.User{}, nil
+}
+
+func (s *adminUserServiceFake) ListAllUsernames(context.Context) ([]string, error) {
+	usernames := make([]string, 0, len(s.users))
+	for _, item := range s.users {
+		usernames = append(usernames, item.Username)
+	}
+	return usernames, nil
+}
+
+func (s *adminUserServiceFake) ImportUsersWithCredentials(context.Context, []repository.UserImportRecord) ([]domainuser.User, error) {
+	return []domainuser.User{}, nil
+}
+
+type auditServiceFake struct{}
+
+func (auditServiceFake) Write(context.Context, auditapp.WriteInput) {}
+
+func (auditServiceFake) List(context.Context, int, int, auditapp.ListFilter) ([]domainaudit.Log, int64, error) {
+	return nil, 0, nil
+}
+
+type permissionGroupRepoFake struct {
+	groups   map[uint]domainchannel.PermissionGroup
+	modelIDs []uint
+	groupIDs []uint
+	userIDs  []uint
+}
+
+func (f permissionGroupRepoFake) ListPermissionGroups(context.Context) ([]domainchannel.PermissionGroup, error) {
+	return nil, nil
+}
+
+func (f permissionGroupRepoFake) GetPermissionGroup(_ context.Context, id uint) (*domainchannel.PermissionGroup, error) {
+	item, ok := f.groups[id]
+	if !ok {
+		return nil, repository.ErrNotFound
+	}
+	return &item, nil
+}
+
+func (f permissionGroupRepoFake) CreatePermissionGroup(context.Context, *domainchannel.PermissionGroup) error {
+	return nil
+}
+
+func (f permissionGroupRepoFake) UpdatePermissionGroup(context.Context, uint, string, string) (*domainchannel.PermissionGroup, error) {
+	return nil, nil
+}
+
+func (f permissionGroupRepoFake) DeletePermissionGroup(context.Context, uint) error {
+	return nil
+}
+
+func (f permissionGroupRepoFake) GetPermissionGroupDeleteSummary(context.Context, uint) (domainchannel.PermissionGroupDeleteSummary, error) {
+	return domainchannel.PermissionGroupDeleteSummary{}, nil
+}
+
+func (f permissionGroupRepoFake) ListGroupModelIDs(context.Context, uint) ([]uint, error) {
+	return f.modelIDs, nil
+}
+
+func (f permissionGroupRepoFake) ListGroupModelRules(context.Context, uint) ([]domainchannel.PermissionGroupModelRule, error) {
+	return nil, nil
+}
+
+func (f permissionGroupRepoFake) SetGroupModelAccess(context.Context, uint, []uint, []domainchannel.PermissionGroupModelRule) error {
+	return nil
+}
+
+func (f permissionGroupRepoFake) ListModelManualGroupIDs(context.Context, uint) ([]uint, error) {
+	return f.groupIDs, nil
+}
+
+func (f permissionGroupRepoFake) ListModelRuleGroupIDs(context.Context, uint) ([]uint, error) {
+	return nil, nil
+}
+
+func (f permissionGroupRepoFake) ListModelGroupIDs(context.Context, uint) ([]uint, error) {
+	return f.groupIDs, nil
+}
+
+func (f permissionGroupRepoFake) SetModelManualGroups(context.Context, uint, []uint) error {
+	return nil
+}
+
+func (f permissionGroupRepoFake) ListGroupUserIDs(context.Context, uint) ([]uint, error) {
+	return f.userIDs, nil
+}
+
+func (f permissionGroupRepoFake) SetGroupUsers(context.Context, uint, []uint) error {
+	return nil
+}
+
+type permissionGroupModelLookupFake struct {
+	models map[uint]domainchannel.PlatformModel
+}
+
+func (f permissionGroupModelLookupFake) GetModelByID(_ context.Context, modelID uint) (*domainchannel.PlatformModel, error) {
+	item, ok := f.models[modelID]
+	if !ok {
+		return nil, repository.ErrNotFound
+	}
+	return &item, nil
+}
+
+var _ userService = (*adminUserServiceFake)(nil)
+var _ rosterImportUserService = (*adminUserServiceFake)(nil)
+var _ auditService = auditServiceFake{}
+var _ permissionGroupRepo = permissionGroupRepoFake{}
+var _ permissionGroupModelLookup = permissionGroupModelLookupFake{}
