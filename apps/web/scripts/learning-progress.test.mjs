@@ -10,13 +10,13 @@ test("quiz queue rejects review payloads and malformed cached entries", () => {
   assert.deepEqual(parsePendingAttempts("not JSON"), []);
 });
 
-test("all 36 server misconception codes have both translations", () => {
-  const domain = readFileSync(new URL("../../../backend/internal/domain/learning/types.go", import.meta.url), "utf8");
-  const codes = [...domain.matchAll(/\d: "([a-z0-9-]+)"/g)].map((match) => match[1]);
-  assert.equal(codes.length, 36);
+test("all 240 server misconception codes have both translations", () => {
+  const bank = JSON.parse(readFileSync(new URL("../../../backend/internal/domain/learning/content/quick-questions.json", import.meta.url), "utf8"));
+  const codes = bank.questions.flatMap((q) => Object.values(q.misconceptions));
+  assert.equal(codes.length, 240);
   for (const locale of ["zh-CN", "en-US"]) {
     const messages = JSON.parse(readFileSync(new URL(`../i18n/messages/${locale}/learning-labs.json`, import.meta.url), "utf8"));
-    assert.equal(Object.keys(messages.progress.diagnoses).length, 36);
+    assert.equal(Object.keys(messages.progress.diagnoses).length, 240);
     for (const code of codes) {
       assert.ok(messages.progress.diagnoses[code]?.thought, `${locale}: ${code}`);
       assert.ok(messages.progress.diagnoses[code]?.correction, `${locale}: ${code}`);

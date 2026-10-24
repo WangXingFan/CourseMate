@@ -18,7 +18,7 @@ fn show(message: &str, link: Option<&str>) {
         SW_SHOWNORMAL,
     };
 
-    const TITLE: &str = "CourseMate";
+    const TITLE: &str = "课知伴";
 
     fn wide(s: &str) -> Vec<u16> {
         s.encode_utf16().chain(std::iter::once(0)).collect()

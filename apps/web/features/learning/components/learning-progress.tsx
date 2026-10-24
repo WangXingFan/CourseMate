@@ -34,7 +34,7 @@ export function LearningProgress() {
   const practiceHref = `/learn/quiz?practice=mistakes${topic === "all" ? "" : `&topic=${encodeURIComponent(topic)}`}`;
 
   return (
-    <LessonShell title={t("title")} subtitle={t("description")}>
+    <LessonShell title={t("title")}>
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <ProgressStatus model={model} />

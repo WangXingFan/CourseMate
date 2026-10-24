@@ -154,7 +154,8 @@ func TestResolveKnowledgeBaseScope(t *testing.T) {
 		{name: "feature disabled ignores selection", cfg: config.Config{KnowledgeBaseEnabled: false}, selected: []string{"kb-one"}},
 		{name: "explicit selection wins", cfg: config.Config{KnowledgeBaseEnabled: true, KnowledgeBaseDefaultIDs: "kb-default"}, selected: []string{"kb-explicit"}, want: []string{"kb-explicit"}},
 		{name: "empty selection falls back to defaults", cfg: config.Config{KnowledgeBaseEnabled: true, KnowledgeBaseDefaultIDs: "kb-a, kb-b"}, want: []string{"kb-a", "kb-b"}},
-		{name: "missing default scope is rejected", cfg: config.Config{KnowledgeBaseEnabled: true}, wantErr: ErrKnowledgeBaseScopeEmpty},
+		{name: "unconfigured default uses built-in signals library", cfg: config.Config{KnowledgeBaseEnabled: true}, want: []string{domainknowledgebase.SignalsPublicID}},
+		{name: "blank default uses built-in signals library", cfg: config.Config{KnowledgeBaseEnabled: true, KnowledgeBaseDefaultIDs: " , "}, want: []string{domainknowledgebase.SignalsPublicID}},
 	}
 
 	for _, tt := range tests {

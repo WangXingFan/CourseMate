@@ -21,6 +21,7 @@ func (m *Module) RegisterRoutes(group *gin.RouterGroup) {
 	group.POST("/classrooms/:id/students", m.Handler.AddStudent)
 	group.POST("/classrooms/:id/students/accounts", m.Handler.CreateStudentAccount)
 	group.POST("/classrooms/:id/students/accounts/import", m.Handler.ImportStudentAccounts)
+	group.POST("/classrooms/:id/students/accounts/import/file", m.Handler.ImportStudentAccountsFile)
 	group.DELETE("/classrooms/:id/students/:student_id", m.Handler.RemoveStudent)
 	group.GET("/classrooms/:id/quizzes", m.Handler.ListQuizzes)
 	group.GET("/classrooms/:id/quiz-lessons", m.Handler.ListQuizLessons)
@@ -28,6 +29,7 @@ func (m *Module) RegisterRoutes(group *gin.RouterGroup) {
 	group.POST("/quizzes/:id/open", m.Handler.OpenQuiz)
 	group.POST("/quizzes/:id/close", m.Handler.CloseQuiz)
 	group.GET("/quizzes/:id/submissions", m.Handler.QuizReport)
+	group.POST("/quizzes/:id/followup", m.Handler.CreateQuizFollowup)
 	group.POST("/quizzes/:id/submissions", m.Handler.SubmitQuiz)
 	group.GET("/student/quizzes", m.Handler.StudentQuizzes)
 }

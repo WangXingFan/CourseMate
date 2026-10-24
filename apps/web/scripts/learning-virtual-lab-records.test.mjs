@@ -1,12 +1,14 @@
-import { createRequire } from "node:module";
-import { fileURLToPath } from "node:url";
-const require = createRequire(import.meta.url);
-const {test}=require('node:test'),assert=require('node:assert/strict'),path=require('node:path');
-const dir=fileURLToPath(new URL('../public/vendor/signal-lab/assets/js',import.meta.url));
-for(const name of ['models','models-extra','tasks','tasks-extra','plotting','plotting-extra','experiment1','experiment2','experiment3'])require(path.join(dir,`${name}.js`));
-globalThis.window=globalThis;globalThis.dispatchEvent=()=>{};require(path.join(dir,'records.js'));
-const L=globalThis.SignalLab,M=L.models,R=L.records,close=(a,b,tol=1e-9)=>assert.ok(Math.abs(a-b)<=tol,`${a} != ${b} tol ${tol}`);
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { createVirtualLabEngine } from "../public/vendor/signal-lab/core.mjs";
+const L=createVirtualLabEngine(),M=L.models,R=L.records,close=(a,b,tol=1e-9)=>assert.ok(Math.abs(a-b)<=tol,`${a} != ${b} tol ${tol}`);
 const clone=v=>JSON.parse(JSON.stringify(v)),evidence={};
+test('native engine instances isolate account records and expose no window global',()=>{
+ const first=createVirtualLabEngine(),second=createVirtualLabEngine();
+ first.records.data.student.name='first';first.records.data.tasks['L1-1'].analysis='private draft';
+ assert.equal(second.records.data.student.name,'');assert.equal(second.records.data.tasks['L1-1'].analysis,'');
+ assert.equal(Object.hasOwn(globalThis,'SignalLab'),false);
+});
 test('all twelve default scenes render and export valid measurement sets',()=>{
  assert.equal(L.taskIds.length,12);
  for(const id of L.taskIds){const p=L.defaults(id),s=L.scene(id,p,L.defaultAnswers(id));assert.ok(L.validParams(id,p));assert.ok(s.formula&&s.metrics.length&&s.plots.length);

@@ -216,11 +216,11 @@ export function useClassroomPage(accessToken: string, canManage: boolean) {
     }
   }, [accessToken, creatingStudent, refresh, resolveErrorMessage, selected, t]);
 
-  const importStudents = React.useCallback(async (csv: string) => {
+  const importStudents = React.useCallback(async (roster: string | File) => {
     if (!selected || importingStudents) return;
     setImportingStudents(true);
     try {
-      const result = await importClassroomStudentAccounts(accessToken, selected.id, csv);
+      const result = await importClassroomStudentAccounts(accessToken, selected.id, roster);
       setImportStudentsResult(result);
       setCredentials(result.credentials);
       setImportStudentsOpen(false);

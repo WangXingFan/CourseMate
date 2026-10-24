@@ -1,0 +1,57 @@
+{
+  "project": "CourseMate · 课知伴",
+  "brief": "Signals and Systems learning companion: interactive experiments, AI tutoring, practice and spaced review.",
+  "requested_model": "gpt-image-2.5-sunburst",
+  "size": "1024x1024",
+  "quality": "high",
+  "concepts": [
+    {
+      "id": "01",
+      "name": "书页里的信号",
+      "english_name": "Signal Pages",
+      "filename": "01-signal-pages.png",
+      "description": "展开的书页与正弦波融合，直接表达课程与信号实验，延续项目的深蓝和青绿色。",
+      "prompt": "Use case: logo-brand. Create one original, expertly designed standalone logo symbol for CourseMate, an AI learning companion for university Signals and Systems students. On a pure white square canvas, combine an open book and ONE smooth sinusoidal signal into a single exceptionally simple geometric silhouette. The page edges should themselves become the wave: a clever structural fusion, not a waveform pasted onto a book. Communicate understanding, experimentation and clarity. Use deep ink navy #142B38 and restrained teal #087F8C, two flat spot colors only. Contemporary Swiss identity design, balanced optical proportions, precise rounded joins, bold shapes and generous deliberate negative space. Center one compact mark occupying about 60 percent of the canvas, with ample even margins. The symbol must remain recognizable as a 24px app icon and in a single-color reproduction. Flat vector-like artwork with crisp edges. No words, no letters, no numbers, no captions, no gradients, no shadows, no textures, no mockups, no stationery, no decorative sparkles, no border, no multiple alternatives. Deliver a finished isolated brand mark, not a concept sheet."
+    },
+    {
+      "id": "02",
+      "name": "CM 共振字母",
+      "english_name": "CM Resonance",
+      "filename": "02-cm-resonance.png",
+      "description": "将 C 与 M 设计成连续的几何字母标，兼具学习路径与波形节奏，适合极简品牌。",
+      "prompt": "Use case: logo-brand. Design an original premium CM monogram logo for CourseMate, a thoughtful learning companion for Signals and Systems. The only letterforms are a capital C and capital M, fused into ONE coherent abstract geometric mark. Construct them from a continuous broad ribbon: the C embraces an M whose two rounded peaks subtly evoke a periodic signal. Make the visual idea immediate and the silhouette strong, with a very small number of shapes and excellent negative space. Avoid an ordinary font rendering: this is custom lettering as a compact symbol. Sophisticated university technology identity, calm and memorable rather than corporate stock art. Use a single solid rich cobalt blue #3157D5 on a pure white background, no additional colors. Center the symbol at roughly 58 percent of a square canvas with generous margins. Carefully balanced stroke widths, optically corrected curves, flat vector-like finish, crisp edges, suitable for favicon and monochrome print. Do not include a wordmark, a slogan, other text, books, graduation caps, circuitry, robots, glows, gradients, shadows, bevels, texture, a surrounding badge or a presentation mockup. One logo only."
+    },
+    {
+      "id": "03",
+      "name": "同频伙伴",
+      "english_name": "Learning in Sync",
+      "filename": "03-learning-in-sync.png",
+      "description": "一对相互呼应的对话形状构成开放环，突出 AI 陪伴、交流与同频学习。",
+      "prompt": "Use case: logo-brand. Create a distinctive friendly logo symbol for CourseMate, an AI study companion that helps university students understand signals through conversation and experiments. Explore the idea of two companions learning in sync. Use TWO simple interlocking rounded speech-like forms, one deep navy #193B45 and one fresh jade #27A894. Their shared white negative space should resolve into ONE flowing wave or open path. The two forms should feel equal, mutually supportive and gently dynamic, like a precise visual dialogue. Give the logo a compact, asymmetric-but-balanced silhouette, with a confident minimal construction of broad soft curves. It must look like a mature, welcoming education technology brand, not a generic chat app or a children's toy. Pure white background, centered isolated mark filling about 60 percent of a square canvas, generous margins. Flat spot colors, crisp vector-like edges, no small detail. No faces, no eyes, no literal people, no hands, no book, no robot, no brain, no sparkles, no text or lettering, no gradient, no shadows, no 3D, no mockup, no frame. One finished logo symbol only."
+    },
+    {
+      "id": "04",
+      "name": "知行路径",
+      "english_name": "Path to Understanding",
+      "filename": "04-path-to-understanding.png",
+      "description": "用向上的连续路径与页角表达理解、实验、练习的成长过程，风格温暖克制。",
+      "prompt": "Use case: logo-brand. Design one original minimalist brand symbol for CourseMate, a learning companion where students move from concepts to experiments to understanding. Concept: a folded page becomes a clear rising pathway. Build a compact mark from two or three bold geometric planes with a single continuous white negative-space route that curves upward through them. Suggest a subtle forward direction and an unfolding page without drawing a literal road, mountain landscape, arrow icon or full book. The feeling is discovery, confidence and steady progress, with a warm editorial education identity. Use dark forest green #1B4D40 and a restrained warm amber #E5A640 as flat colors on a pure white canvas. Prioritize a beautiful immediately recognizable silhouette and ingenious use of negative space, with round-corner geometry and careful optical balance. Center the mark with about 60 percent canvas occupancy and ample white margins. Finished flat vector-like logo, legible at 24 pixels and in monochrome. No words, no letters, no numbers, no graduation cap, no light bulb, no sparkles, no fine lines, no gradients, no shadow, no 3D, no texture, no border, no mockup. Exactly one symbol."
+    },
+    {
+      "id": "05",
+      "name": "小知鸮",
+      "english_name": "The Curious Owl",
+      "filename": "05-curious-owl.png",
+      "description": "以猫头鹰做有记忆点的学习伙伴，翅膀暗含书页，兼顾亲和力与应用图标辨识度。",
+      "prompt": "Use case: logo-brand. Create a charming but refined original owl emblem for CourseMate, an AI learning companion for university engineering students. Use a strikingly simple frontal owl silhouette made of a few bold smooth shapes. Its folded wings should subtly resemble two open pages; its eyes should be two clean circular negative spaces, with an alert curious expression created entirely through geometry. Keep the character intelligent, calm and companionable, not childish, goofy or overly cute. A strong distinctive silhouette is more important than illustration detail. Flat midnight navy #142B38 body, a small warm gold #E5AF46 beak accent, pure white negative spaces and pure white canvas. No feathers drawn inside, no tiny strokes, no accessories, no hat, no perched branch, no enclosing shield. Center one compact finished emblem taking about 57 percent of a square image, with ample margins. Professional contemporary identity, crisp vector-like edges, consistent curve language, recognizable at favicon size. No text, no wordmark, no numbers, no gradient, no drop shadow, no texture, no photorealism, no 3D, no presentation board or product mockup. One owl logo only."
+    },
+    {
+      "id": "06",
+      "name": "频谱之窗",
+      "english_name": "Spectrum Window",
+      "filename": "06-spectrum-window.png",
+      "description": "以采样条带构成开放的 C 形窗口，突出信号分析与探索，偏现代工具型品牌。",
+      "prompt": "Use case: logo-brand. Design one exceptional abstract logo mark for CourseMate, an interactive Signals and Systems learning platform. Concept: an open window into the frequency domain. Arrange exactly five thick rounded geometric segments of different lengths along a precise circular rhythm, forming an open capital-C-like aperture with a deliberate gap on the right. The rhythm should suggest signal sampling or a compact frequency spectrum, while the overall silhouette reads as a single confident symbol. Use deep teal #087F8C for most segments and one restrained electric cyan #37BFD0 accent segment, flat colors on pure white. The result should feel like a polished scientific tool with a humane accessible personality: more crafted and iconic than a generic equalizer, with no chart axes. Keep the construction very simple, substantial and optically balanced, generous negative space and no tiny gaps. Center the mark occupying about 58 percent of a square canvas. Crisp flat vector-like design with clear edges, suitable for 24px favicon, app launcher, and monochrome reproduction. No words, no additional lettering, no numbers, no sine-wave squiggle, no atoms, no brain, no circuit board, no sparkles, no gradients, no glow, no shadows, no 3D, no border or mockup. Exactly one logo symbol."
+    }
+  ]
+}

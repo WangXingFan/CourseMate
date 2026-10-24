@@ -36,9 +36,9 @@ export function KnowledgeCourse() {
         <Link href="/learn" prefetch={false} className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground"><ArrowLeft className="size-3.5" />{t("back")}</Link>
         <header className="mt-5 mb-7 flex flex-wrap items-end justify-between gap-4 border-b border-border/60 pb-6">
           <div>
-            <p className="text-[10px] font-medium tracking-[0.16em] text-primary">COURSEMATE / SIGNALS & SYSTEMS</p>
+            <p className="text-[10px] font-medium tracking-[0.16em] text-primary">课知伴 / SIGNALS & SYSTEMS</p>
             <h1 className="mt-2 font-serif text-3xl tracking-tight md:text-4xl">{t("title")}</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">{catalog.data?.canPractice ? t("description", { count: practiceLessons.length }) : t("studentDescription", { count: practiceLessons.length })}</p>
+            <p className="mt-3 text-sm text-muted-foreground">{t("description", { count: practiceLessons.length })}</p>
           </div>
           {catalog.data?.canPractice && <div className="rounded-xl border border-border/60 bg-card px-4 py-3 text-xs text-muted-foreground"><p><span className="mr-2 font-mono text-xl text-primary">{completed}</span>/ {t("total", { count: practiceLessons.length * 3 })}</p><p className="mt-1">{t("mastered", { count: mastered })}</p></div>}
         </header>
@@ -87,9 +87,8 @@ function LessonContent({ data, onSaved }: { data: LearningCourseLessonData; onSa
   return <>
     <p className="text-xs text-primary">{data.lesson.chapter}</p>
     <h2 className="mt-2 mb-3 text-2xl font-semibold tracking-tight">{data.lesson.number} {data.lesson.title}</h2>
-    <p className="mb-6 text-xs leading-5 text-muted-foreground">{t("source")}</p>
     <div className="space-y-5">
-      {!data.canPractice && <section className="rounded-2xl border border-primary/20 bg-primary/5 p-4 md:p-5"><h3 className="text-sm font-medium">{t("assignedTitle")}</h3><p className="mt-2 text-xs leading-5 text-muted-foreground">{t("assignedDescription")}</p><Button asChild size="sm" variant="outline" className="mt-3"><Link href="/activities" prefetch={false}>{t("goToActivities")}<ArrowRight className="size-3.5" /></Link></Button></section>}
+      {!data.canPractice && <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-4 md:p-5"><h3 className="text-sm font-medium">{t("assignedTitle")}</h3><Button asChild size="sm" variant="outline"><Link href="/activities" prefetch={false}>{t("goToActivities")}<ArrowRight className="size-3.5" /></Link></Button></section>}
       {card("preview", "01")}
       <section className="min-w-0 rounded-2xl border border-border/60 bg-card p-4 md:p-6">
         <button type="button" aria-expanded={reading} aria-controls="lesson-reading" onClick={() => setReading((value) => !value)} className="flex w-full items-center justify-between gap-3 text-left text-sm font-medium"><span className="flex items-center gap-2"><BookOpen className="size-4 text-primary" />{t("notes")}</span><span className="text-xs text-muted-foreground">{reading ? t("collapse") : t("expand")}</span></button>

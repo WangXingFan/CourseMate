@@ -59,7 +59,8 @@ if [[ "$(uname)" == "Darwin" ]]; then
 fi
 
 if [[ "$(uname)" == "Darwin" ]]; then
-  app="$root/apps/desktop/src-tauri/target/release/bundle/macos/CourseMate.app"
+  product_name="$(node -p 'JSON.parse(require("node:fs").readFileSync(process.argv[1], "utf8")).productName' "$root/apps/desktop/src-tauri/tauri.conf.json")"
+  app="$root/apps/desktop/src-tauri/target/release/bundle/macos/$product_name.app"
   echo "--- codesign"
   codesign --verify --deep --strict --verbose=2 "$app"
   if [[ -n "${APPLE_TEAM_ID:-}" ]]; then

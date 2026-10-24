@@ -1,21 +1,14 @@
 {
   "common": {
-    "back": "Back to learning lab",
-    "interactive": "Interactive"
+    "back": "Back to learning lab"
   },
   "hub": {
     "eyebrow": "Signals & Systems Lab",
     "title": "Understand the concept, then practice the calculation",
-    "description": "Explore signals, test system behavior and practise calculations.",
-    "interactive": "Interactive",
-    "footer": "Every plot is computed locally in your browser. Change a parameter, predict what will happen, then check the result.",
     "sections": {
       "concepts": "Concept labs",
-      "conceptsDescription": "Change a parameter first, then return to the formula to explain it.",
       "tools": "Learning tools",
-      "toolsDescription": "Use these to explore signals and systems at your own pace.",
-      "practice": "Practice modes",
-      "practiceDescription": "Choose staged practice, a timed quick quiz, or mistake review."
+      "practice": "Practice modes"
     },
     "quick": {
       "progress": {
@@ -24,28 +17,26 @@
       },
       "quiz": {
         "title": "Quick quiz",
-        "description": "12 random questions in 90 seconds."
+        "description": "Take a timed chapter challenge and compare scores and times."
       },
       "workbench": {
         "title": "Signal workbench",
         "description": "Customize signals, transformations and convolution."
       },
       "knowledge": {
-        "title": "Knowledge & staged practice",
-        "description": "52 notes with preparation, in-class and follow-up questions. Teachers assign preview quizzes."
+        "title": "Course knowledge",
+        "description": "Read chapter notes and revisit key concepts."
       }
     },
     "paths": {
       "label": "Learning paths",
       "concepts": {
         "title": "Concept learning",
-        "meta": "8 concept labs",
-        "description": "Change parameters and inspect the plot before returning to the formula."
+        "meta": "8 concept labs"
       },
       "practice": {
         "title": "Calculation practice",
-        "meta": "3 practice tools",
-        "description": "Staged practice, quick quizzes and mistake review."
+        "meta": "2 practice modes"
       }
     }
   },
@@ -270,8 +261,8 @@
   },
   "knowledge": {
     "back": "Back to learning lab",
-    "title": "Knowledge & staged practice",
-    "description": "{count} sections with preparation, in-class practice and follow-up questions. Try each question before checking the formulas and reasoning.",
+    "title": "Course knowledge",
+    "description": "{count} sections",
     "total": "of {count} stages attempted",
     "catalog": "Section catalog",
     "search": "Search number, title or chapter",
@@ -281,7 +272,6 @@
     "empty": "No matching sections",
     "loading": "Loading course content…",
     "lessonNavigation": "Adjacent sections",
-    "source": "Chinese course material · Curated from the imported notes. Appendix C is included in B.10. Check each result’s assumptions before use.",
     "notes": "Section notes",
     "collapse": "Collapse",
     "expand": "Expand",
@@ -310,23 +300,21 @@
     "retryHelp": "Answers are locked; retry the same submission safely",
     "reload": "Reload",
     "mastered": "Latest attempt fully correct: {count} stages",
-    "studentDescription": "Course notes across {count} lessons. Your teacher assigns preview questions through class activities.",
     "assignedTitle": "Preview questions are assigned by your teacher",
-    "assignedDescription": "Read the lesson notes here. Answer preview quizzes in class activities once your teacher publishes them.",
     "goToActivities": "View class activities"
   },
   "virtualLab": {
     "title": "Signals & systems · Three complete labs",
-    "subtitle": "12 tasks across three labs. Each lab takes 4 × 45 minutes: predict, operate, measure, explain and export. The experiment materials are in Chinese.",
+    "subtitle": "3 labs · 12 tasks · 4 × 45 minutes per lab",
     "duration": "4 tasks · 180 minutes",
     "open": "Open lab workspace",
     "back": "Back to labs",
     "guide": "Teacher course guide",
-    "guideSubtitle": "All twelve tasks: preparation, a ten-minute demonstration, teaching steps, reference results and evidence checks. Guide content is in Chinese.",
+    "guideSubtitle": "Teaching steps, reference results and checkpoints for all three labs",
     "teacherOnly": "Only teachers and administrators can access this guide.",
     "workflowTitle": "Complete a lab session",
     "workflow": "Save a prediction → Change parameters and read plots → Save trials → Write derivations and analysis → Check evidence requirements → Export JSON / print PDF.",
-    "accountNote": "Use your existing CourseMate account. Your name and username are filled automatically and records are saved to your account. Check the saved status before leaving. Submit JSON / PDF as your teacher instructs; completion markers are not grades.",
+    "accountNote": "Records are saved to your account. Check the saved status before leaving. Submit JSON / PDF as instructed; completion markers are not grades.",
     "frameTitle": "Signals and systems lab workspace",
     "retry": "Retry",
     "backup": "Download current JSON",
@@ -358,6 +346,103 @@
         "description": "Transform pairs, zero-state response, initial conditions and pulse-duration design."
       }
     },
-    "directory": "Lab directory and teaching guide →"
+    "directory": "Lab directory and teaching guide →",
+    "native": {
+      "overview": "Overview",
+      "records": "My experiment records",
+      "help": "How to use",
+      "navigation": "Experiment navigation",
+      "title": "Signals & Systems · Three complete labs",
+      "intro": "Explore time, frequency and Laplace domains. Predict first, measure next, then explain every curve with evidence.",
+      "courseCount": "3 complete labs",
+      "taskCount": "12 inquiry tasks",
+      "computeLocally": "Local computation · Records sync to your account",
+      "course": "Lab {number}",
+      "completedCount": "Completed {done}/{total}",
+      "objectives": "Learning objectives",
+      "startCourse": "Open this lab",
+      "chooseTask": "Choose a task",
+      "taskGuide": "Steps and completion requirements",
+      "evidenceCheck": "Before confirming",
+      "prediction": "Prediction before experimenting",
+      "predictionHint": "The original is preserved; later edits are saved as revisions.",
+      "savePrediction": "Save initial prediction",
+      "saveRevision": "Save revision",
+      "predictionSaved": "Prediction saved; the original is preserved.",
+      "predictionHistory": "Initial prediction and {count} revisions preserved",
+      "revision": "Revision {number}",
+      "observe": "Plots and measurements",
+      "cursorHint": "Click a plot to set its cursor. Use arrow keys to adjust, or Shift for larger steps.",
+      "exportPNG": "Export PNG",
+      "pngSaved": "Plot exported with parameters, axes and units.",
+      "saveTrial": "Save this trial",
+      "trialSaved": "Parameters, measurements and figure snapshot saved.",
+      "trialRecords": "Trial records",
+      "noTrials": "No saved trials. Adjust parameters, inspect the plot, then save a trial.",
+      "sequence": "No. / time",
+      "measurements": "Parameters, answers and measurements",
+      "actions": "Actions",
+      "restore": "Restore",
+      "explain": "Explain, revise and complete",
+      "derivation": "Derivation and reasoning",
+      "analysis": "Analysis and prediction revision",
+      "selfCheckHint": "Completion is a self-check; your teacher grades the work.",
+      "selfCheck": "Self-check",
+      "confirmed": "Confirmed complete",
+      "notConfirmed": "Awaiting confirmation",
+      "confirmCompletion": "Check and confirm completion",
+      "missing": "Complete these first",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "previous": "Previous task / lab plan",
+      "next": "Next task",
+      "parameters": "Parameters",
+      "reset": "Reset",
+      "quickPresets": "Presets · Only related parameters change",
+      "parameterHint": "Parameter changes keep saved trials intact.",
+      "templates": "Answer templates and formative feedback",
+      "invalidParameter": "Enter a valid value within range. Scale a cannot be zero. The last valid plot is retained.",
+      "invalidAnswer": "Enter a finite number from −100 to 100. Invalid input has not been saved.",
+      "actionFailed": "Action failed. Please retry.",
+      "play": "Play",
+      "pause": "Pause",
+      "singleStep": "Step +0.05 s",
+      "hints": "Exploration hints",
+      "nextHint": "Show next hint",
+      "evidence": "Required evidence",
+      "name": "Name",
+      "studentNumber": "Student ID",
+      "classroom": "Class",
+      "chooseRecords": "Choose lab records",
+      "recordsHint": "PDF exports the selected lab; JSON includes all three labs.",
+      "openTask": "Open task",
+      "export": "Export JSON",
+      "import": "Import records",
+      "importWarning": "Import replaces all three labs in this account's workspace. Download a JSON backup first. Name and ID stay linked to this account.",
+      "print": "Print / Save PDF",
+      "reportTitle": "Signals & Systems · Lab {number} report",
+      "draft": "Uncommitted prediction draft",
+      "trialNumber": "Trial {number}",
+      "helpSteps": {
+        "predict": {
+          "title": "Predict and preserve your first idea",
+          "body": "Write and save a prediction before experimenting. Later edits become revisions without replacing the original."
+        },
+        "operate": {
+          "title": "Adjust, measure and save",
+          "body": "Use precise values, sliders or presets. Click plots for readings, then save. Restore saved parameters or export PNG figures."
+        },
+        "explain": {
+          "title": "Explain using evidence",
+          "body": "Record derivations and analysis, check the required evidence and confirm your self-check. Teachers evaluate the work."
+        },
+        "backup": {
+          "title": "Sync and back up",
+          "body": "Records sync to your account. Retry or download JSON on failure. Back up conflicting drafts before reloading server records. Print each lab as PDF."
+        }
+      },
+      "clearRecords": "Clear experiment records",
+      "clearWarning": "Clear all three experiments for this account and sync the change. Download a JSON backup first."
+    }
   }
 }

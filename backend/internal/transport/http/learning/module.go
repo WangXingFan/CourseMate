@@ -20,6 +20,11 @@ type Module struct{ service *app.Service }
 func NewModule(service *app.Service) *Module { return &Module{service: service} }
 
 func (m *Module) RegisterRoutes(group *gin.RouterGroup) {
+	group.GET("/learning/quiz/chapters", m.QuizCatalog)
+	group.GET("/learning/quiz/leaderboard", m.QuizLeaderboard)
+	group.POST("/learning/quiz/rounds", m.StartQuiz)
+	group.POST("/learning/quiz/rounds/:id/answers", m.AnswerQuiz)
+	group.POST("/learning/quiz/rounds/:id/finish", m.FinishQuiz)
 	group.GET("/learning/virtual-lab", m.VirtualLab)
 	group.PUT("/learning/virtual-lab", m.SaveVirtualLab)
 	group.GET("/learning/virtual-lab/guide", m.VirtualLabGuide)

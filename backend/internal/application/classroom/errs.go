@@ -10,7 +10,7 @@ var (
 	ErrAssigned        = apperr.New("classroom.student_assigned", "student already belongs to a classroom")
 	ErrStudentExists   = apperr.New("classroom.student_exists", "student username or email already exists")
 	ErrStudentInvalid  = apperr.New("classroom.student_invalid", "invalid student account details")
-	ErrStudentCSV      = apperr.New("classroom.student_csv_invalid", "invalid student CSV or too many rows")
+	ErrStudentCSV      = apperr.New("classroom.student_csv_invalid", "invalid student roster or too many rows")
 	ErrQuizNotFound    = apperr.New("classroom.quiz_not_found", "quiz not found")
 	ErrQuizInvalid     = apperr.New("classroom.quiz_invalid", "invalid quiz")
 	ErrQuizClosed      = apperr.New("classroom.quiz_closed", "quiz is not open")

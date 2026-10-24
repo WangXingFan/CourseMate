@@ -1,13 +1,9 @@
 // Keep server-side parameter validation aligned with the shipped experiment engine.
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import vm from "node:vm";
+import { createVirtualLabEngine } from "../public/vendor/signal-lab/core.mjs";
 
-const context = vm.createContext({});
-for (const name of ["models", "models-extra", "tasks", "tasks-extra"]) {
-  vm.runInContext(readFileSync(new URL(`../public/vendor/signal-lab/assets/js/${name}.js`, import.meta.url), "utf8"), context);
-}
-const lab = context.SignalLab;
+const lab = createVirtualLabEngine();
 const specs = Object.fromEntries(lab.taskIds.map((id) => [id, {
   params: Object.fromEntries(lab.tasks[id].params.map((p) => [p.key, { type: p.type, min: p.min, max: p.max, options: p.options?.map(([value]) => value), default: p.value }])),
   answers: (lab.tasks[id].answers || []).map((a) => a.key),

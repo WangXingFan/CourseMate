@@ -18,6 +18,7 @@ import {
 } from "@/features/learning/model/quiz-bank";
 import { cn } from "@/lib/utils";
 import { useAuthSession } from "@/shared/auth/auth-session-context";
+import { LearningQuizChallenge } from "./learning-quiz-challenge";
 
 type Phase = "idle" | "playing" | "done";
 
@@ -37,6 +38,7 @@ function QuizEntry() {
   const practice = params.get("practice") === "mistakes";
   const questionID = params.get("question") ?? "";
   const topic = params.get("topic") ?? "";
+  if (!practice && !questionID) return <LearningQuizChallenge key={`${user?.publicID}`} />;
   return <Quiz key={`${user?.publicID}:${practice}:${questionID}:${topic}`} practice={practice} questionID={questionID} topic={topic} />;
 }
 
@@ -121,7 +123,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
   }
 
   return (
-    <LessonShell title={targeted ? p("practiceTitle") : t("title")} subtitle={targeted ? p("practiceDescription") : t("subtitle")} formula={targeted ? undefined : t("formula")}>
+    <LessonShell title={targeted ? p("practiceTitle") : t("title")} formula={targeted ? undefined : t("formula")}>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <ProgressStatus model={model} />
         <Button asChild size="sm" variant="ghost"><Link href="/learn/progress">{p("title")}<ArrowRight className="size-3.5" /></Link></Button>
@@ -135,7 +137,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
               <Stat label={targeted ? p("topicLabel") : t("intro.perQuestion")} value={targeted ? String(new Set(pool.map((item) => item.topic)).size) : `~${QUIZ_SECONDS_PER_QUESTION}s`} />
             </div>
             <ul className="mt-3 space-y-2 text-xs leading-5 text-muted-foreground">
-              {targeted ? <li>{p("practiceRule")}</li> : <><li>{t("intro.ruleOne")}</li><li>{t("intro.ruleTwo")}</li><li>{t("intro.ruleThree")}</li></>}
+              {targeted ? <li>{p("practiceRule")}</li> : <><li>{t("intro.ruleOne")}</li><li>{t("intro.ruleThree")}</li></>}
             </ul>
             {model.data && !pool.length ? <p className="mt-3 text-xs leading-5 text-muted-foreground">{p("noPracticeQuestions")}</p> : null}
             <Button type="button" size="sm" className="mt-4" disabled={model.loading || !pool.length || model.pendingCount > 0} onClick={start}>
@@ -220,7 +222,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
 
       {phase === "done" ? (
         <div className="space-y-3">
-          <LessonPanel title={t("result.title")} description={t("result.description")}>
+          <LessonPanel title={t("result.title")}>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               <Stat label={t("result.score")} value={String(score)} />
               <Stat label={t("result.correct")} value={`${correctCount}/${answers.length}`} />
@@ -238,7 +240,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
             </div>
           </LessonPanel>
 
-          <LessonPanel title={t("review.title")} description={t("review.description")}>
+          <LessonPanel title={t("review.title")}>
             {answers.length === 0 ? (
               <p className="text-xs text-muted-foreground">{t("review.empty")}</p>
             ) : (

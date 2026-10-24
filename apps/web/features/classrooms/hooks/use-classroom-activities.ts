@@ -9,6 +9,7 @@ import { useLocalizedErrorMessage } from "@/i18n/use-localized-error";
 import {
   closeClassroomQuiz,
   createClassroomQuiz,
+  createClassroomQuizFollowup,
   getClassroomQuizReport,
   listClassroomQuizzes,
   listClassroomQuizLessons,
@@ -47,7 +48,15 @@ export function useClassroomActivities(accessToken: string, classroomID: string)
   const [busyQuizID, setBusyQuizID] = React.useState("");
   const [report, setReport] = React.useState<ClassroomQuizReportDTO | null>(null);
   const [reportLoading, setReportLoading] = React.useState(false);
+  const reportRequest = React.useRef(0);
+  const scope = React.useRef(`${accessToken}:${classroomID}`);
+  scope.current = `${accessToken}:${classroomID}`;
   const [picked, setPicked] = React.useState<ClassroomStudentDTO | null>(null);
+
+  React.useEffect(() => {
+    reportRequest.current += 1;
+    setReport(null); setReportLoading(false); setDraft(null); setBusyQuizID("");
+  }, [accessToken, classroomID]);
 
   React.useEffect(() => {
     if (!classroomID) {
@@ -148,22 +157,26 @@ export function useClassroomActivities(accessToken: string, classroomID: string)
   const setQuizStatus = React.useCallback(
     async (quiz: ClassroomQuizDTO, status: "open" | "closed") => {
       if (busyQuizID) return;
+      const identity = scope.current;
       setBusyQuizID(quiz.id);
       try {
         if (status === "open") {
           await openClassroomQuiz(accessToken, quiz.id);
+          if (scope.current !== identity) return;
           toast.success(t("toast.opened"));
         } else {
           await closeClassroomQuiz(accessToken, quiz.id);
+          if (scope.current !== identity) return;
           toast.success(t("toast.closed"));
         }
         refresh();
       } catch (error) {
+        if (scope.current !== identity) return;
         toast.error(status === "open" ? t("toast.openFailed") : t("toast.closeFailed"), {
           description: resolveErrorMessage(error),
         });
       } finally {
-        setBusyQuizID("");
+        if (scope.current === identity) setBusyQuizID("");
       }
     },
     [accessToken, busyQuizID, refresh, resolveErrorMessage, t],
@@ -171,20 +184,39 @@ export function useClassroomActivities(accessToken: string, classroomID: string)
 
   const openReport = React.useCallback(
     async (quiz: ClassroomQuizDTO) => {
+      const request = ++reportRequest.current;
       setReportLoading(true);
       setReport(null);
       setPicked(null);
       try {
         const data = await getClassroomQuizReport(accessToken, quiz.id);
-        setReport(data);
+        if (request === reportRequest.current) setReport(data);
       } catch (error) {
+        if (request !== reportRequest.current) return;
         toast.error(t("reportLoadFailed"), { description: resolveErrorMessage(error) });
       } finally {
-        setReportLoading(false);
+        if (request === reportRequest.current) setReportLoading(false);
       }
     },
     [accessToken, resolveErrorMessage, t],
   );
+
+  const createFollowup = React.useCallback(async (quiz: ClassroomQuizDTO) => {
+    if (busyQuizID) return;
+    const identity = scope.current;
+    setBusyQuizID(quiz.id);
+    try {
+      const data = await createClassroomQuizFollowup(accessToken, quiz.id);
+      if (scope.current !== identity) return;
+      refresh();
+      toast.success(t("toast.followupCreated"));
+      await openReport(data.quiz);
+    } catch (error) {
+      if (scope.current === identity) toast.error(t("toast.followupFailed"), { description: resolveErrorMessage(error) });
+    } finally {
+      if (scope.current === identity) setBusyQuizID("");
+    }
+  }, [accessToken, busyQuizID, openReport, refresh, resolveErrorMessage, t]);
 
   const closeReport = React.useCallback(() => {
     if (!reportLoading) {
@@ -226,6 +258,7 @@ export function useClassroomActivities(accessToken: string, classroomID: string)
       publish: (quiz: ClassroomQuizDTO) => setQuizStatus(quiz, "open"),
       close: (quiz: ClassroomQuizDTO) => setQuizStatus(quiz, "closed"),
       openReport,
+      createFollowup,
     },
     reportDialog: {
       report,

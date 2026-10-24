@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/frontendstatic"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/buildinfo"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/lifecycle"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/response"
@@ -259,17 +260,22 @@ func registerFrontendStatic(engine *gin.Engine, distDir string, log *zap.Logger)
 
 		if filePath, ok := resolveFrontendStaticFile(absoluteRoot, requestPath); ok {
 			applyFrontendCacheHeaders(c, requestPath)
-			// Only this trusted calculation surface is embedded by the same-site
-			// workspace. The workspace applies an opaque-origin sandbox.
 			if requestPath == "/vendor/signal-lab/index.html" {
-				c.Header("X-Frame-Options", "SAMEORIGIN")
-				c.Header("Content-Security-Policy", "frame-ancestors 'self'")
+				serveVirtualLabFile(c, filePath)
+				return
 			}
 			c.File(filePath)
 			return
 		}
 
 		if filePath, ok := resolveFrontendPageFile(absoluteRoot, requestPath); ok {
+			// Also support the directory URL cached by clients that received
+			// ServeFile's former index.html -> ./ permanent redirect.
+			if requestPath == "/vendor/signal-lab" && strings.HasSuffix(c.Request.URL.Path, "/") &&
+				filePath == filepath.Join(absoluteRoot, "vendor", "signal-lab", "index.html") {
+				serveVirtualLabFile(c, filePath)
+				return
+			}
 			c.Header("Cache-Control", "no-cache")
 			c.File(filePath)
 			return
@@ -284,6 +290,13 @@ func registerFrontendStatic(engine *gin.Engine, distDir string, log *zap.Logger)
 
 		response.ErrorWithCode(c, http.StatusNotFound, response.CodeResourceNotFound)
 	})
+}
+
+func serveVirtualLabFile(c *gin.Context, filePath string) {
+	// Legacy lab URLs redirect into the native React workspace. ServeContent
+	// preserves the requested URL without weakening the global frame policy.
+	c.Header("Cache-Control", "no-cache")
+	frontendstatic.ServeContent(c.Writer, c.Request, filePath)
 }
 
 func swaggerEnabled(env string) bool {

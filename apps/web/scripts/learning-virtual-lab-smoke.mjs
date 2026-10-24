@@ -1,5 +1,6 @@
 // Run from the workspace root after building the static frontend.
 // UI fixtures exercise the bridge and retry behavior; Go tests cover real auth/DB.
+// Set VIRTUAL_LAB_BASE_URL to also verify a running Go server's static responses.
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { createRequire } from "node:module";
@@ -25,8 +26,9 @@ const server = createServer(async (req, res) => {
     res.end(await readFile(path));
   } catch { res.writeHead(404).end("Not found"); }
 });
-await new Promise((done) => server.listen(0, "127.0.0.1", done));
-const base = `http://127.0.0.1:${server.address().port}`;
+const externalBase = process.env.VIRTUAL_LAB_BASE_URL?.replace(/\/$/, "");
+if (!externalBase) await new Promise((done) => server.listen(0, "127.0.0.1", done));
+const base = externalBase || `http://127.0.0.1:${server.address().port}`;
 const now = new Date().toISOString();
 let actor = 101, role = "student", failSave = false, failLoad = false;
 const records = new Map(), writes = [], errors = [];
@@ -74,7 +76,7 @@ try {
   page = await context.newPage();
   page.setDefaultTimeout(20000);
   page.on("pageerror", (error) => errors.push(error.message));
-  const frame = () => page.frameLocator('iframe[title="信号与系统实验工作台"]');
+  const frame = () => page.locator("[data-native-lab]");
   const saved = () => page.getByText("已保存到当前账号", { exact: true }).waitFor();
   await page.goto(`${base}/learn/experiments`);
   await page.getByRole("heading", { name: "信号与系统 · 三次完整实验", exact: true }).waitFor();
@@ -98,11 +100,8 @@ try {
   const png = await pngEvent;
   const pngBytes = await readFile(await png.path());
   assert.equal(pngBytes.subarray(1, 4).toString(), "PNG");
-  // The iframe has an opaque origin and receives no bearer token.
-  const child = page.frames().find((f) => f.url().includes("/vendor/signal-lab/index.html"));
-  assert.ok(await child.evaluate(() => {
-    try { return window.parent.localStorage.length < 0; } catch { return true; }
-  }));
+  assert.equal(await page.locator("iframe").count(), 0, "workspace must be native React");
+  assert.equal(await page.evaluate(() => Object.hasOwn(window, "SignalLab")), false, "engine leaked a global");
   await page.screenshot({ path: join(artifacts, "workspace-desktop.png") });
   await page.reload();
   await frame().locator("#analysis").waitFor();
@@ -141,31 +140,41 @@ try {
   assert.equal(document.tasks["L1-1"].analysis, "冲突后继续保留的草稿");
   await page.getByRole("button", { name: "载入服务器记录（放弃当前草稿）", exact: true }).click();
   await assertEventually(async () => assert.equal(await frame().locator("#analysis").inputValue(), "另一窗口的记录"));
-  // JSON download from inside the sandbox remains functional.
+  // Native JSON download retains the schema and current account identity.
   await page.evaluate(() => { window.location.hash = "records/L1"; });
   await frame().locator("#student-number").waitFor();
   assert.equal(await frame().locator("#student-number").inputValue(), "student101");
   assert.ok(await frame().locator("#student-number").getAttribute("readonly") !== null);
+  // Restoring from the records page must apply the selected trial, not merely
+  // navigate to the task. Importing also retains the current account identity.
+  await frame().getByRole("button", { name: "恢复参数", exact: true }).first().click();
+  await frame().locator("#prediction").waitFor();
+  assert.equal(await frame().locator("#param-shift").inputValue(), "1");
+  document = JSON.parse(records.get(101).document);
+  document.student.name = "Other account"; document.student.number = "other-student";
+  document.tasks["L1-1"].analysis = "导入的备份记录";
+  await page.locator("#import-file").setInputFiles({ name: "record.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(document)) });
+  await page.getByRole("alertdialog").getByRole("button", { name: "确认", exact: true }).click();
+  await saved();
+  await assertEventually(async () => assert.equal(JSON.parse(records.get(101).document).tasks["L1-1"].analysis, "导入的备份记录"));
+  assert.equal(JSON.parse(records.get(101).document).student.number, "student101");
+  assert.equal(JSON.parse(records.get(101).document).student.name, "实验测试101");
+  await page.evaluate(() => { window.location.hash = "records/L1"; });
+  await frame().locator("#student-number").waitFor();
   const exportEvent = page.waitForEvent("download");
   await frame().locator('[data-action="export"]').click();
   const exportFile = await exportEvent;
   assert.equal(Object.keys(JSON.parse(await readFile(await exportFile.path(), "utf8")).tasks).length, 12);
   await saved();
+  await page.evaluate(() => { window.print = () => {}; });
   await frame().locator('[data-action="print"]').click();
-  const report = await page.frames().find((f) => f.url().includes("/vendor/")).locator("#print-report").innerText();
+  await page.locator("#print-report").waitFor({ state: "attached" });
+  const report = await page.locator("#print-report").textContent();
   for (const id of ["L1-1", "L1-2", "L1-3", "L1-4"]) assert.ok(report.includes(id));
-  // Chromium cannot print an OOP iframe via CDP. Render its prepared print DOM
-  // with the same CSS in a temporary page to verify the generated report layout.
-  const printHTML = await page.frames().find((f) => f.url().includes("/vendor/")).evaluate(() => {
-    const copy = document.documentElement.cloneNode(true);
-    copy.querySelectorAll("script").forEach((script) => { script.remove(); });
-    copy.querySelectorAll("link[href]").forEach((link) => { link.setAttribute("href", link.href); });
-    return `<!doctype html>${copy.outerHTML}`;
-  });
-  const printPreview = await context.newPage();
-  await printPreview.setContent(printHTML, { waitUntil: "networkidle" });
-  await printPreview.pdf({ path: join(artifacts, "account-report.pdf"), format: "A4", printBackground: true, preferCSSPageSize: true });
-  await printPreview.close();
+  await page.emulateMedia({ media: "print" });
+  await page.pdf({ path: join(artifacts, "account-report.pdf"), format: "A4", printBackground: true, preferCSSPageSize: true });
+  await page.emulateMedia({ media: "screen" });
+  await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({ path: join(artifacts, "workspace-mobile.png") });
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
@@ -176,7 +185,7 @@ try {
   assert.equal(await page.locator("iframe").count(), 0);
   failLoad = false;
   await page.getByRole("button", { name: "重试", exact: true }).click();
-  await frame().getByRole("heading", { name: /按步骤操作/ }).waitFor();
+  await frame().getByRole("heading", { name: "信号与系统 · 三次完整实验", exact: true }).waitFor();
   // Pending drafts are isolated by account, including a switch in the same tab.
   failSave = true;
   await page.evaluate(() => { window.location.hash = "task/L1-1"; });
@@ -196,7 +205,7 @@ try {
   for (const [legacy, route] of [["signal-basics", "course/L1"], ["time-domain", "task/L1-3"], ["frequency-domain", "course/L2"], ["s-domain", "course/L3"]]) {
     await page.goto(`${base}/learn/experiments/${legacy}`);
     await frame().locator("#main h1").waitFor();
-    await assertEventually(async () => assert.equal(await page.frames().find((f) => f.url().includes("/vendor/")).evaluate(() => location.hash.slice(1)), route));
+    await assertEventually(async () => assert.equal(await page.locator("#main").getAttribute("data-lab-route"), route));
   }
   const validRecord = records.get(101);
   const invalidRecord = JSON.parse(validRecord.document);
@@ -209,9 +218,10 @@ try {
   records.set(101, validRecord);
   role = "teacher";
   await page.goto(`${base}/learn/experiments/guide`);
-  const guideFrame = page.frameLocator('iframe[title="教师开课指南"]');
+  const guideFrame = page.locator("[data-native-guide]");
+  assert.equal(await page.locator("iframe").count(), 0);
   await guideFrame.getByRole("heading", { name: "第一次实验 信号与时域系统", exact: true }).waitFor();
-  assert.equal(await guideFrame.locator("details.task").count(), 12);
+  assert.equal(await guideFrame.locator("details").count(), 12);
   const popupEvent = page.waitForEvent("popup");
   await guideFrame.getByRole("link", { name: "直接打开 L1-1 ↗", exact: true }).click();
   const popup = await popupEvent;
@@ -224,11 +234,11 @@ try {
   throw error;
 } finally {
   if (browser) await browser.close();
-  await new Promise((done) => server.close(done));
+  if (server.listening) await new Promise((done) => server.close(done));
 }
 
 async function childRoute(activePage) {
-  return activePage.frames().find((f) => f.url().includes("/vendor/")).evaluate(() => window.location.hash.slice(6));
+  return activePage.locator("[data-native-task]").getAttribute("data-native-task");
 }
 async function assertEventually(check) {
   const deadline = Date.now() + 20000;

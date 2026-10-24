@@ -116,6 +116,9 @@ func TestThinkSnapshotUsesFreshStartedAtPerRound(t *testing.T) {
 	recorder.service = nil
 
 	recorder.appendUpstreamReasoning(messageTraceThinkKindContent, "第一轮思考", nil)
+	// Use a distinct earlier start so coarse clocks cannot give both rounds the
+	// same timestamp even when completion and the next append run back-to-back.
+	recorder.upstreamThink.startedAt = time.Now().Add(-time.Minute)
 	firstStart := recorder.upstreamThink.startedAt
 	firstRound := recorder.upstreamThink.roundID
 	firstEventID := recorder.upstreamThink.eventID

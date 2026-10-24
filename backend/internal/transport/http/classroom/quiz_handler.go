@@ -66,7 +66,7 @@ func (h *Handler) ListQuizLessons(c *gin.Context) {
 	for _, item := range items {
 		views = append(views, QuizLessonResponse{
 			ID: item.ID, Number: item.Number, Title: item.Title, Chapter: item.Chapter,
-			Prompt: item.Prompt, Options: item.Options,
+			Prompt: item.Prompt, Options: item.Options, Answer: item.Answer, Explanation: item.Explanation, Followup: toOptionalQuizQuestion(item.Followup),
 		})
 	}
 	response.Success(c, QuizLessonListResponse{Lessons: views})
@@ -261,7 +261,8 @@ func toQuizResponse(item domainclassroom.Quiz) QuizResponse {
 	questions := make([]QuizQuestionResponse, 0, len(item.Questions))
 	for _, question := range item.Questions {
 		questions = append(questions, QuizQuestionResponse{
-			ID:      question.ID,
+			ID:       question.ID,
+			LessonID: question.LessonID, ConceptID: question.ConceptID, ConceptTitle: question.ConceptTitle, Explanation: question.Explanation,
 			Prompt:  question.Prompt,
 			Options: question.Options,
 			Answer:  question.Answer,
@@ -269,6 +270,7 @@ func toQuizResponse(item domainclassroom.Quiz) QuizResponse {
 	}
 	return QuizResponse{
 		ID:              item.PublicID,
+		SourceQuizID:    item.SourceQuizID,
 		Title:           item.Title,
 		Phase:           item.Phase,
 		Status:          item.Status,
@@ -326,6 +328,7 @@ func toQuizReportResponse(report appclassroom.QuizReport) QuizReportResponse {
 	for _, item := range report.Questions {
 		questions = append(questions, QuizQuestionStatisticsResponse{
 			ID:           item.Question.ID,
+			ConceptTitle: item.Question.ConceptTitle, Explanation: item.Question.Explanation,
 			Prompt:       item.Question.Prompt,
 			Options:      item.Question.Options,
 			Answer:       item.Question.Answer,
@@ -334,6 +337,7 @@ func toQuizReportResponse(report appclassroom.QuizReport) QuizReportResponse {
 		})
 	}
 	return QuizReportResponse{
+		Comparison:  toComparisonResponse(report.Comparison),
 		Quiz:        toQuizResponse(report.Quiz),
 		Students:    students,
 		Submissions: submissions,
@@ -369,4 +373,11 @@ func (h *Handler) writeQuizError(c *gin.Context, err error) bool {
 		return false
 	}
 	return true
+}
+
+func toOptionalQuizQuestion(q *domainclassroom.QuizQuestion) *QuizQuestionResponse {
+	if q == nil {
+		return nil
+	}
+	return &QuizQuestionResponse{ID: q.ID, Prompt: q.Prompt, Options: q.Options, Answer: q.Answer, LessonID: q.LessonID, ConceptID: q.ConceptID, ConceptTitle: q.ConceptTitle, Explanation: q.Explanation}
 }

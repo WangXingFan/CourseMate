@@ -23,9 +23,9 @@ const server = createServer(async (req, res) => {
 });
 await new Promise((done) => server.listen(0, "127.0.0.1", done));
 const base = `http://127.0.0.1:${server.address().port}`;
-const source = await readFile("backend/internal/domain/learning/types.go", "utf8");
-const catalog = [...source.matchAll(/ID: "([^"]+)", Answer: (\d), Topic: "([^"]+)", Lesson: "([^"]+)"/g)].map((m) => ({ id: m[1], answer: Number(m[2]), topic: m[3], lesson: m[4] }));
-assert.equal(catalog.length, 12);
+const bank = JSON.parse(await readFile("backend/internal/domain/learning/content/quick-questions.json", "utf8"));
+const catalog = bank.questions.map(({id,answer,topic,lesson}) => ({id,answer,topic,lesson}));
+assert.equal(catalog.length, 80);
 const now = new Date().toISOString();
 const wrong = { id: "c5dadce1-ce3e-42fd-95ae-c70461b32f46", questionId: "energy-signal", answer: 0, selected: 1, correct: false, mode: "quiz", variantId: "", reviewStage: 0, nextReviewAt: new Date(Date.now() - 86400000).toISOString(), createdAt: now };
 const user = { id: 101, publicID: "qa-student", username: "student101", displayName: "学习测试", role: "teacher", status: "active", locale: "zh-CN", timezone: "Asia/Shanghai", initialSecurityRequired: false, initialUsernameRequired: false, mustResetPassword: false, onboardingCompletedAt: now, appearancePreferences: "", profilePreferences: "", identityProviders: [], email: "", phone: "", passwordEnabled: true };
@@ -87,7 +87,7 @@ try {
     else if (url.pathname.endsWith("/me")) data = { user };
     else if (url.pathname.endsWith("/user/settings")) data = { settings: {} };
     else if (url.pathname.endsWith("/capabilities")) data = { features: { knowledgeBases: true, classrooms: true } };
-    else if (url.pathname.endsWith("/branding")) data = { title: "CourseMate", shortName: "CourseMate", description: "", logoURL: "", faviconURL: "/favicon.ico", pwaIcon192URL: "", pwaIcon512URL: "", pwaMaskableIcon512URL: "", appleTouchIcon180URL: "" };
+    else if (url.pathname.endsWith("/branding")) data = { title: "课知伴", shortName: "课知伴", description: "", logoURL: "", faviconURL: "/favicon.ico", pwaIcon192URL: "", pwaIcon512URL: "", pwaMaskableIcon512URL: "", appleTouchIcon180URL: "" };
     else if (url.pathname.endsWith("/version")) { await route.fulfill({ json: { version: "0.4.4-beta.3", buildID: "" } }); return; }
     else data = { total: 0, results: [], models: [], groups: [], conversations: [], knowledgeBases: [], settings: {} };
     await route.fulfill({ json: { errorMsg: "", data } });
@@ -158,8 +158,18 @@ try {
   await inClass.getByText("参考值：-1", { exact: true }).waitFor();
   await noOverflow();
   await inClass.scrollIntoViewIfNeeded(); await screenshot("knowledge-piecewise-mobile");
-  await page.locator("#knowledge-search").fill("小波");
-  assert.ok(await page.getByRole("navigation", { name: "小节目录" }).getByRole("link").count() > 0);
+  const catalogNavigation = page.getByRole("navigation", { name: "小节目录", exact: true });
+  const searchLesson = course.lessons.find((lesson) => lesson.id === "ss-2-5");
+  assert.ok(searchLesson, "search fixture lesson is missing from the course catalog");
+  await page.locator("#knowledge-search").fill(searchLesson.title);
+  await catalogNavigation.getByRole("link", { name: `${searchLesson.number} ${searchLesson.title}`, exact: false }).waitFor();
+  assert.equal(await catalogNavigation.getByRole("link").count(), course.lessons.filter((lesson) => `${lesson.number} ${lesson.title} ${lesson.chapter}`.includes(searchLesson.title)).length);
+  await page.locator("#knowledge-search").fill("不存在的小节-smoke");
+  await catalogNavigation.getByText("没有匹配的小节", { exact: true }).waitFor();
+  assert.equal(await catalogNavigation.getByRole("link").count(), 0);
+  await page.locator("#knowledge-search").fill("");
+  await catalogNavigation.getByRole("link").first().waitFor();
+  assert.equal(await catalogNavigation.getByRole("link").count(), course.lessons.length);
   await screenshot("knowledge-search-mobile");
   assert.deepEqual(errors, []);
   console.log("PASS: workbench desktop/mobile, diagnosis, due filter, immutable review retry, scheduling display, history mode labels");

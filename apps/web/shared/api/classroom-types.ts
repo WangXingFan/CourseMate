@@ -11,6 +11,7 @@ import type {
   CreateStudentAccountRequest as ContractCreateStudentAccountRequest,
   ImportClassroomStudentsRequest,
   CreateQuizRequest,
+  QuizComparisonResponse,
   QuizLessonListResponse,
   QuizLessonResponse,
   StudentListResponse,
@@ -43,11 +44,16 @@ export type ClassroomQuizQuestionDTO = {
   prompt: string;
   options: string[];
   answer: number;
+  lessonId: string;
+  conceptId: string;
+  conceptTitle: string;
+  explanation: string;
 };
 
 export type ClassroomQuizDTO = {
   id: string;
   title: string;
+  sourceQuizId: string;
   phase: ClassroomQuizPhase;
   status: ClassroomQuizStatus;
   questions: ClassroomQuizQuestionDTO[];
@@ -83,9 +89,12 @@ export type ClassroomQuizQuestionStatisticsDTO = {
   answer: number;
   optionCounts: number[];
   correctCount: number;
+  conceptTitle: string;
+  explanation: string;
 };
 
 export type ClassroomQuizReportDTO = {
+  comparison: QuizComparisonResponse | null;
   quiz: ClassroomQuizDTO;
   students: ClassroomStudentDTO[];
   submissions: ClassroomQuizSubmissionDTO[];

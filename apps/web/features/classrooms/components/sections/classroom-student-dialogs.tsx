@@ -110,30 +110,35 @@ export function ImportClassroomStudentsDialog({
   pending: boolean;
   result: StudentImportResultDTO | null;
   onClose: () => void;
-  onSubmit: (csv: string) => Promise<void>;
+  onSubmit: (roster: string | File) => Promise<void>;
 }) {
   const t = useTranslations("classrooms.studentAccounts");
   const [csv, setCSV] = React.useState("");
-  const [fileName, setFileName] = React.useState("");
+  const [rosterFile, setRosterFile] = React.useState<File | null>(null);
   const [readError, setReadError] = React.useState("");
 
   React.useEffect(() => {
     if (open) {
       setCSV("");
-      setFileName("");
+      setRosterFile(null);
       setReadError("");
     }
   }, [open]);
 
-  async function readFile(file: File | undefined) {
+  function selectFile(file: File | undefined) {
     if (!file) return;
+    setRosterFile(null);
+    if (!/\.(xlsx|csv)$/i.test(file.name)) {
+      setReadError(t("unsupportedFile"));
+      return;
+    }
     if (file.size > 1_048_576) {
       setReadError(t("fileTooLarge"));
       return;
     }
     setReadError("");
-    setCSV(await file.text());
-    setFileName(file.name);
+    setCSV("");
+    setRosterFile(file);
   }
 
   function exportCredentials() {
@@ -159,7 +164,7 @@ export function ImportClassroomStudentsDialog({
             <div className="max-h-52 overflow-y-auto rounded-md border border-border/60">
               <table className="w-full text-left text-xs">
                 <thead className="sticky top-0 bg-muted/80 text-muted-foreground">
-                  <tr><th className="px-3 py-2">{t("row")}</th><th className="px-3 py-2">{t("username")}</th><th className="px-3 py-2">{t("status")}</th></tr>
+                  <tr><th className="px-3 py-2">{t("row")}</th><th className="px-3 py-2">{t("username")}</th><th className="px-3 py-2">{t("statusLabel")}</th></tr>
                 </thead>
                 <tbody>{result.rows.map((row) => (
                   <tr key={`${row.line}-${row.username}`} className="border-t border-border/40">
@@ -182,7 +187,7 @@ export function ImportClassroomStudentsDialog({
           </div>
         ) : (
           <form className="space-y-3 px-4 pb-4"
-            onSubmit={(event) => { event.preventDefault(); void onSubmit(csv); }}>
+            onSubmit={(event) => { event.preventDefault(); if (rosterFile || csv.trim()) void onSubmit(rosterFile ?? csv); }}>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <Button type="button" variant="outline" size="sm"
                 onClick={() => downloadCSV("student-roster-template.csv", CSV_TEMPLATE)}>
@@ -190,22 +195,25 @@ export function ImportClassroomStudentsDialog({
               </Button>
               <label className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
                 <span className="sr-only">{t("chooseFile")}</span>
-                <input type="file" accept=".csv,text/csv" disabled={pending} className="max-w-52 text-xs file:mr-2 file:rounded-md file:border-0 file:bg-muted file:px-2 file:py-1 file:text-xs"
-                  onChange={(event) => void readFile(event.currentTarget.files?.[0])} />
+                <input type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" disabled={pending} className="max-w-52 text-xs file:mr-2 file:rounded-md file:border-0 file:bg-muted file:px-2 file:py-1 file:text-xs"
+                  onChange={(event) => { selectFile(event.currentTarget.files?.[0]); event.currentTarget.value = ""; }} />
               </label>
             </div>
-            {fileName && <p className="text-[11px] text-muted-foreground">{fileName}</p>}
+            {rosterFile && <div className="flex items-center justify-between gap-2 rounded-md border border-border/60 px-3 py-2">
+              <p className="min-w-0 break-all text-xs text-muted-foreground">{rosterFile.name}</p>
+              <Button type="button" variant="ghost" size="sm" disabled={pending} onClick={() => setRosterFile(null)}>{t("removeFile")}</Button>
+            </div>}
             {readError && <p role="alert" className="text-xs text-destructive">{readError}</p>}
-            <div className="space-y-1">
+            {!rosterFile && <div className="space-y-1">
               <Label htmlFor="student-roster-csv">{t("csvLabel")}</Label>
               <Textarea id="student-roster-csv" required disabled={pending} value={csv} maxLength={2_000_000}
                 className="min-h-40 resize-y font-mono text-[11px]" placeholder={t("csvPlaceholder")}
-                onChange={(event) => setCSV(event.target.value)} />
-            </div>
+                onChange={(event) => { setCSV(event.target.value); setReadError(""); }} />
+            </div>}
             <p className="text-[11px] leading-5 text-muted-foreground">{t("passwordNote")}</p>
             <DialogFooter>
               <Button type="button" variant="ghost" disabled={pending} onClick={onClose}>{t("cancel")}</Button>
-              <Button type="submit" disabled={!csv.trim() || pending || !!readError}>
+              <Button type="submit" disabled={(!rosterFile && !csv.trim()) || pending || !!readError}>
                 {pending ? <SpinnerLabel>{t("importing")}</SpinnerLabel> : t("import")}
               </Button>
             </DialogFooter>
@@ -241,7 +249,7 @@ export function ClassroomStudentCredentialsDialog({
             <div className="max-h-36 overflow-y-auto rounded-md border border-border/60">
               <table className="w-full text-left text-xs">
                 <thead className="sticky top-0 bg-muted/80 text-muted-foreground"><tr>
-                  <th className="px-3 py-2">{t("row")}</th><th className="px-3 py-2">{t("username")}</th><th className="px-3 py-2">{t("status")}</th>
+                  <th className="px-3 py-2">{t("row")}</th><th className="px-3 py-2">{t("username")}</th><th className="px-3 py-2">{t("statusLabel")}</th>
                 </tr></thead>
                 <tbody>{result.rows.map((row) => <tr key={`${row.line}-${row.username}`} className="border-t border-border/40">
                   <td className="px-3 py-1.5 tabular-nums text-muted-foreground">{row.line}</td>

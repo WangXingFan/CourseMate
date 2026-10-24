@@ -1,11 +1,10 @@
 "use client";
 
-import { ArrowLeft, FlaskConical } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type * as React from "react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/features/learning/components/shared/math-formula";
 import { cn } from "@/lib/utils";
@@ -18,7 +17,7 @@ export function LessonShell({
   className,
 }: {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   formula?: string;
   children: React.ReactNode;
   className?: string;
@@ -37,12 +36,8 @@ export function LessonShell({
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-lg font-semibold tracking-tight text-foreground md:text-xl">{title}</h1>
-              <Badge variant="secondary" className="gap-1 rounded-md px-1.5 text-[10px] font-normal">
-                <FlaskConical className="size-3" strokeWidth={1.6} />
-                {t("interactive")}
-              </Badge>
             </div>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">{subtitle}</p>
+            {subtitle && <p className="mt-1 text-xs leading-5 text-muted-foreground">{subtitle}</p>}
             {formula ? (
               <div className="mt-3 rounded-lg border border-border/60 bg-muted/25 px-3 py-2">
                 <MathFormula display>{formula}</MathFormula>

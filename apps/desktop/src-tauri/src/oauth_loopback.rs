@@ -85,7 +85,7 @@ fn serve_once<R: Runtime>(app: AppHandle<R>, listener: TcpListener, port: u16) {
     let _ = respond(
         stream,
         200,
-        "Sign-in complete. You can return to CourseMate.",
+        "Sign-in complete. You can return to 课知伴.",
     );
     clear_if_current(&app, port);
 
@@ -133,7 +133,7 @@ fn respond(mut stream: TcpStream, status: u16, body: &str) -> std::io::Result<()
         _ => "Not Found",
     };
     let html = format!(
-        "<!doctype html><meta charset=\"utf-8\"><title>CourseMate</title>\
+        "<!doctype html><meta charset=\"utf-8\"><title>课知伴</title>\
          <body style=\"font-family:system-ui;padding:2rem\">{body}</body>"
     );
     write!(

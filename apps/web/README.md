@@ -113,8 +113,9 @@ Next.js 的 route group（`(app)`、`(auth)`、`(project)`、`(shell)`）只用�
 | `/recent` | 最近会话 |
 | `/knowledge-bases` | 知识库管理 |
 | `/classrooms` | 教师班级管理、学生名单与课堂小测 |
+| `/roll-call` | 教师随机点名：选择班级、本轮不重复抽取、查看点名记录 |
 | `/activities` | 学生端课堂活动与已发布小测 |
-| `/learn/knowledge` | 课程知识讲义；教师可预览课程题目 |
+| `/learn/knowledge` | 侧边栏“课程知识”：按章节阅读讲义；教师可预览课程题目 |
 | `/learn` | 学习实验室：信号与系统互动概念页 |
 | `/learn/convolution` | 卷积的可视化实验 |
 | `/learn/sampling` | 采样与混叠实验 |
@@ -125,10 +126,10 @@ Next.js 的 route group（`(app)`、`(auth)`、`(project)`、`(shell)`）只用�
 | `/learn/second-order` | 二阶系统阻尼与超调实验 |
 | `/learn/modulation` | AM 调制与边带实验 |
 | `/learn/experiments` | 三次完整实验目录，共 12 项任务 |
-| `/learn/experiments/workspace` | 账号实验工作台；支持 #course/L1、#task/L2-4 等定位 |
+| `/learn/experiments/workspace` | 原生 React 实验工作台（无 iframe）；支持 #course/L1、#task/L2-4，兼容原有记录与导出 |
 | `/learn/experiments/guide` | 教师开课指南与参考结果，后端限制教师/管理员访问 |
 | `/learn/experiments/{signal-basics,time-domain,frequency-domain,s-domain}` | 兼容旧链接，挂载对应的完整实验 |
-| `/learn/quiz` | 90 秒快问快答 |
+| `/learn/quiz` | 按四章选择的 90 秒快问快答；按章展示学生最佳成绩，得分降序、同分用时升序 |
 | `/learn/progress` | 账号学习记录、按知识点筛选的错题本与不限时重练 |
 | `/learn/workbench` | 自定义信号、时间变换、组合运算与数值卷积 |
 | `/settings/general` | 通用偏好 |
@@ -143,6 +144,10 @@ Next.js 的 route group（`(app)`、`(auth)`、`(project)`、`(shell)`）只用�
 | `/desktop/tabs` | 桌面端壳 UI：标签栏 |
 
 新增管理后台页面时，必须同时在 `features/admin/model/admin-sections.ts` 的 `ADMIN_SECTIONS` 中登记，且路由段、`ADMIN_SECTIONS` 的 `id` 与 `features/admin/components/sections/<section>/` 目录同名，否则 `pnpm check:arch` 会失败。
+
+班级的“导入学生名单”支持直接上传教务系统导出的 `.xlsx` 点名册：自动查找“学号、姓名”表头，跳过标题、合并表头续行、空行和页脚，忽略序号、原班级、修读方式、考勤与总评等列。学号作为登录用户名，姓名作为显示名，新建账号加入当前选择的班级。新建学生账号（含单独创建与批量导入）的默认密码统一为 `student`，首次登录须修改。仍兼容 UTF-8 CSV；每次最多 200 人、文件不超过 1 MiB，已有账号及密码不会被覆盖。
+
+教师可从侧边栏进入“随机点名”（`/roll-call`），选择自己的班级后抽取学生回答问题。同一轮按学生 ID 去重、随机且不重复抽取，全部点到后可重新开始。页面展示姓名、学号、待点人数和本轮点名记录；记录仅保留于当前页面，切换班级、刷新名单或重新开始时清空。学生账号不显示该入口，也不能通过直达 URL 加载点名名单。
 
 ## API 契约
 

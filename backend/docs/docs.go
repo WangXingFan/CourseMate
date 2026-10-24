@@ -7964,7 +7964,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "仅限班级所属教师；创建学生角色账号，返回随机初始密码，首次登录须修改密码。已有账号不会被覆盖。",
+                "description": "仅限班级所属教师；创建学生角色账号，默认初始密码为 student，首次登录须修改密码。已有账号不会被覆盖。",
                 "consumes": [
                     "application/json"
                 ],
@@ -8040,7 +8040,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "仅限班级所属教师。UTF-8 CSV 表头为 username,displayName,email 或 学号,姓名,邮箱（邮箱列可省略），最多 200 行、1 MiB；逐行创建并加入班级，已有账号跳过且不覆盖，返回初始密码和逐行结果。",
+                "description": "仅限班级所属教师。UTF-8 CSV 表头为 username,displayName,email 或 学号,姓名,邮箱（邮箱列可省略），最多 200 行、1 MiB；逐行创建并加入班级，默认初始密码为 student，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和逐行结果。",
                 "consumes": [
                     "application/json"
                 ],
@@ -8067,6 +8067,74 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/ImportClassroomStudentsRequest"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ClassroomStudentImportResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/classrooms/{id}/students/accounts/import/file": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "支持教务系统导出的 XLSX 点名册，自动识别学号、姓名列并忽略标题、空行及考勤列；兼容 UTF-8 CSV。最多 200 人、1 MiB；默认初始密码为 student，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和原始行号。",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "教师上传 Excel 点名册并创建学生账号",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "班级公开 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Excel 点名册（.xlsx）或 UTF-8 CSV",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -10897,6 +10965,179 @@ const docTemplate = `{
                 }
             }
         },
+        "/learning/quiz/chapters": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Read chapter question sets for timed quizzes",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningQuizCatalogResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/quiz/leaderboard": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Read the best result per student for a chapter, score descending then elapsed time ascending",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Chapter ID",
+                        "name": "chapterId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningQuizLeaderboardResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/quiz/rounds": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Start an account-owned timed chapter quiz (idempotent)",
+                "parameters": [
+                    {
+                        "description": "Chapter and retry ID",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LearningQuizStartRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningQuizRoundResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/quiz/rounds/{id}/answers": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Grade a chapter quiz answer and save personal practice history",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Round ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Answer",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LearningQuizAnswerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningQuizRoundResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/quiz/rounds/{id}/finish": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Finish a chapter quiz with server-measured elapsed time",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Round ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningQuizRoundResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/learning/reviews": {
             "post": {
                 "security": [
@@ -12682,6 +12923,58 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/quizzes/{id}/followup": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "每份预习测最多关联一份复测，重复请求返回同一份；题目使用创建预习测时保存的变式快照。",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "为已截止的预习测创建同知识点复测草稿",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "预习测公开 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/QuizDataResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/Envelope"
                         }
@@ -18982,6 +19275,83 @@ const docTemplate = `{
                 }
             }
         },
+        "LearningQuizAnswerRequest": {
+            "type": "object",
+            "required": [
+                "questionId",
+                "selected"
+            ],
+            "properties": {
+                "questionId": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "selected": {
+                    "type": "integer",
+                    "maximum": 3,
+                    "minimum": 0
+                }
+            }
+        },
+        "LearningQuizCatalogResponse": {
+            "type": "object",
+            "required": [
+                "chapters"
+            ],
+            "properties": {
+                "chapters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QuizChapter"
+                    }
+                }
+            }
+        },
+        "LearningQuizLeaderboardResponse": {
+            "type": "object",
+            "required": [
+                "rankings"
+            ],
+            "properties": {
+                "rankings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QuizRanking"
+                    }
+                }
+            }
+        },
+        "LearningQuizRoundResponse": {
+            "type": "object",
+            "required": [
+                "round",
+                "serverTime"
+            ],
+            "properties": {
+                "round": {
+                    "$ref": "#/definitions/QuizRound"
+                },
+                "serverTime": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningQuizStartRequest": {
+            "type": "object",
+            "required": [
+                "chapterId",
+                "id"
+            ],
+            "properties": {
+                "chapterId": {
+                    "type": "string",
+                    "maxLength": 8
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
         "LearningReviewRequest": {
             "type": "object",
             "required": [
@@ -21678,6 +22048,162 @@ const docTemplate = `{
                 }
             }
         },
+        "QuizAnswer": {
+            "type": "object",
+            "required": [
+                "correct",
+                "questionId",
+                "selected"
+            ],
+            "properties": {
+                "correct": {
+                    "type": "boolean"
+                },
+                "questionId": {
+                    "type": "string"
+                },
+                "selected": {
+                    "type": "integer"
+                }
+            }
+        },
+        "QuizChapter": {
+            "type": "object",
+            "required": [
+                "id",
+                "questionIds",
+                "roundSize"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "questionIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "roundSize": {
+                    "type": "integer"
+                }
+            }
+        },
+        "QuizComparisonResponse": {
+            "type": "object",
+            "required": [
+                "afterId",
+                "afterOnly",
+                "afterStatus",
+                "afterTitle",
+                "beforeId",
+                "beforeOnly",
+                "beforeTitle",
+                "neither",
+                "pairedCount",
+                "questions",
+                "students"
+            ],
+            "properties": {
+                "afterId": {
+                    "type": "string"
+                },
+                "afterOnly": {
+                    "type": "integer"
+                },
+                "afterStatus": {
+                    "type": "string"
+                },
+                "afterTitle": {
+                    "type": "string"
+                },
+                "beforeId": {
+                    "type": "string"
+                },
+                "beforeOnly": {
+                    "type": "integer"
+                },
+                "beforeTitle": {
+                    "type": "string"
+                },
+                "neither": {
+                    "type": "integer"
+                },
+                "pairedCount": {
+                    "type": "integer"
+                },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QuizConceptComparisonResponse"
+                    }
+                },
+                "students": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QuizStudentComparisonResponse"
+                    }
+                }
+            }
+        },
+        "QuizConceptChangeResponse": {
+            "type": "object",
+            "required": [
+                "conceptId",
+                "outcome"
+            ],
+            "properties": {
+                "conceptId": {
+                    "type": "string"
+                },
+                "outcome": {
+                    "type": "string"
+                }
+            }
+        },
+        "QuizConceptComparisonResponse": {
+            "type": "object",
+            "required": [
+                "afterCorrect",
+                "beforeCorrect",
+                "conceptId",
+                "conceptTitle",
+                "improved",
+                "pairedCount",
+                "regressed",
+                "retained",
+                "unresolved"
+            ],
+            "properties": {
+                "afterCorrect": {
+                    "type": "integer"
+                },
+                "beforeCorrect": {
+                    "type": "integer"
+                },
+                "conceptId": {
+                    "type": "string"
+                },
+                "conceptTitle": {
+                    "type": "string"
+                },
+                "improved": {
+                    "type": "integer"
+                },
+                "pairedCount": {
+                    "type": "integer"
+                },
+                "regressed": {
+                    "type": "integer"
+                },
+                "retained": {
+                    "type": "integer"
+                },
+                "unresolved": {
+                    "type": "integer"
+                }
+            }
+        },
         "QuizDataResponse": {
             "type": "object",
             "required": [
@@ -21706,7 +22232,10 @@ const docTemplate = `{
         "QuizLessonResponse": {
             "type": "object",
             "required": [
+                "answer",
                 "chapter",
+                "explanation",
+                "followup",
                 "id",
                 "number",
                 "options",
@@ -21714,8 +22243,22 @@ const docTemplate = `{
                 "title"
             ],
             "properties": {
+                "answer": {
+                    "type": "integer"
+                },
                 "chapter": {
                     "type": "string"
+                },
+                "explanation": {
+                    "type": "string"
+                },
+                "followup": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/QuizQuestionResponse"
+                        }
+                    ],
+                    "x-nullable": true
                 },
                 "id": {
                     "type": "string"
@@ -21755,7 +22298,11 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "answer",
+                "conceptId",
+                "conceptTitle",
+                "explanation",
                 "id",
+                "lessonId",
                 "options",
                 "prompt"
             ],
@@ -21763,7 +22310,19 @@ const docTemplate = `{
                 "answer": {
                     "type": "integer"
                 },
+                "conceptId": {
+                    "type": "string"
+                },
+                "conceptTitle": {
+                    "type": "string"
+                },
+                "explanation": {
+                    "type": "string"
+                },
                 "id": {
+                    "type": "string"
+                },
+                "lessonId": {
                     "type": "string"
                 },
                 "options": {
@@ -21781,7 +22340,9 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "answer",
+                "conceptTitle",
                 "correctCount",
+                "explanation",
                 "id",
                 "optionCounts",
                 "options",
@@ -21791,8 +22352,14 @@ const docTemplate = `{
                 "answer": {
                     "type": "integer"
                 },
+                "conceptTitle": {
+                    "type": "string"
+                },
                 "correctCount": {
                     "type": "integer"
+                },
+                "explanation": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "string"
@@ -21814,9 +22381,37 @@ const docTemplate = `{
                 }
             }
         },
+        "QuizRanking": {
+            "type": "object",
+            "required": [
+                "elapsedMs",
+                "isCurrentUser",
+                "name",
+                "rank",
+                "score"
+            ],
+            "properties": {
+                "elapsedMs": {
+                    "type": "integer"
+                },
+                "isCurrentUser": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "rank": {
+                    "type": "integer"
+                },
+                "score": {
+                    "type": "integer"
+                }
+            }
+        },
         "QuizReportResponse": {
             "type": "object",
             "required": [
+                "comparison",
                 "missing",
                 "quiz",
                 "statistics",
@@ -21824,6 +22419,14 @@ const docTemplate = `{
                 "submissions"
             ],
             "properties": {
+                "comparison": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/QuizComparisonResponse"
+                        }
+                    ],
+                    "x-nullable": true
+                },
                 "missing": {
                     "type": "array",
                     "items": {
@@ -21859,6 +22462,7 @@ const docTemplate = `{
                 "openedAt",
                 "phase",
                 "questions",
+                "sourceQuizId",
                 "status",
                 "submissionCount",
                 "title"
@@ -21885,6 +22489,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/QuizQuestionResponse"
                     }
                 },
+                "sourceQuizId": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "string"
                 },
@@ -21892,6 +22499,64 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "QuizRound": {
+            "type": "object",
+            "required": [
+                "answers",
+                "bestStreak",
+                "chapterId",
+                "correctCount",
+                "deadlineAt",
+                "elapsedMs",
+                "finishedAt",
+                "id",
+                "questionIds",
+                "score",
+                "startedAt"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QuizAnswer"
+                    }
+                },
+                "bestStreak": {
+                    "type": "integer"
+                },
+                "chapterId": {
+                    "type": "string"
+                },
+                "correctCount": {
+                    "type": "integer"
+                },
+                "deadlineAt": {
+                    "type": "string"
+                },
+                "elapsedMs": {
+                    "type": "integer"
+                },
+                "finishedAt": {
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "id": {
+                    "type": "string"
+                },
+                "questionIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "startedAt": {
                     "type": "string"
                 }
             }
@@ -21919,6 +22584,48 @@ const docTemplate = `{
                 },
                 "submissionCount": {
                     "type": "integer"
+                }
+            }
+        },
+        "QuizStudentComparisonResponse": {
+            "type": "object",
+            "required": [
+                "afterScore",
+                "afterSubmitted",
+                "beforeScore",
+                "beforeSubmitted",
+                "changes",
+                "studentId",
+                "studentName",
+                "username"
+            ],
+            "properties": {
+                "afterScore": {
+                    "type": "integer"
+                },
+                "afterSubmitted": {
+                    "type": "boolean"
+                },
+                "beforeScore": {
+                    "type": "integer"
+                },
+                "beforeSubmitted": {
+                    "type": "boolean"
+                },
+                "changes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QuizConceptChangeResponse"
+                    }
+                },
+                "studentId": {
+                    "type": "string"
+                },
+                "studentName": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },

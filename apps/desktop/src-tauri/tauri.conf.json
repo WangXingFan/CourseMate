@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "CourseMate",
+  "productName": "课知伴",
   "version": "0.4.4-beta.3",
   "identifier": "io.github.wangxingfan.coursemate",
   "build": {
@@ -32,8 +32,8 @@
       "icons/icon.ico"
     ],
     "category": "Productivity",
-    "shortDescription": "CourseMate learning companion",
-    "longDescription": "CourseMate (课知伴): interactive Signals and Systems lessons, experiments, AI assistance, quizzes and spaced review.",
+    "shortDescription": "课知伴学习助手",
+    "longDescription": "课知伴: interactive Signals and Systems lessons, experiments, AI assistance, quizzes and spaced review.",
     "copyright": "Copyright 2026 WangXingFan. Includes DEEIX Chat code; see NOTICE and LICENSE.",
     "createUpdaterArtifacts": true,
     "linux": {

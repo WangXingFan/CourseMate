@@ -47,7 +47,7 @@ export function StudentActivitiesEntry() {
     );
   }
 
-  return <StudentActivities accessToken={accessToken} />;
+  return <StudentActivities key={user.publicID} accessToken={accessToken} />;
 }
 
 function StudentActivities({ accessToken }: { accessToken: string }) {
@@ -61,6 +61,10 @@ function StudentActivities({ accessToken }: { accessToken: string }) {
         <SpinnerLabel>{t("loading")}</SpinnerLabel>
       </main>
     );
+  }
+
+  if (model.loadError) {
+    return <main className="flex h-full items-center justify-center bg-background px-6"><div role="alert" className="max-w-md text-center"><h1 className="font-medium">{t("loadFailed")}</h1><p className="mt-2 text-sm text-muted-foreground">{model.loadError}</p><Button className="mt-4" variant="outline" onClick={model.refresh}><RefreshCw className="size-4" />{t("refresh")}</Button></div></main>;
   }
 
   if (model.notJoined || !model.data) {
@@ -84,7 +88,6 @@ function StudentActivities({ accessToken }: { accessToken: string }) {
                 {classroom.name}
               </Badge>
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">{t("subtitle")}</p>
             <p className="mt-1 text-[11px] text-muted-foreground">
               {t("teacher")}: {classroom.teacherName || "-"}
             </p>
@@ -118,7 +121,6 @@ function StudentActivities({ accessToken }: { accessToken: string }) {
                 <ClipboardList className="size-5 text-muted-foreground" strokeWidth={1.5} />
               </div>
               <p className="text-sm font-medium text-foreground">{t("empty")}</p>
-              <p className="max-w-sm text-xs leading-5 text-muted-foreground">{t("emptyDescription")}</p>
             </div>
           )}
         </div>
@@ -230,7 +232,7 @@ function QuizCard({
             {studentT("closedNote")}
           </span>
         ) : (
-          <span className="text-[10px] text-muted-foreground">{t("description")}</span>
+          <span className="text-[10px] text-muted-foreground">{studentT("locked")}</span>
         )}
         {!quiz.submitted && quiz.status === "open" ? (
           <Button type="button" size="sm" className="h-7 px-3" disabled={submitting} onClick={onSubmit}>

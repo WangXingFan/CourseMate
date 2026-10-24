@@ -1,13 +1,8 @@
 package classroom
 
 import (
-	"bytes"
 	"context"
-	"crypto/rand"
-	"encoding/base64"
-	"encoding/csv"
 	"errors"
-	"io"
 	"strings"
 	"time"
 	"unicode"
@@ -22,6 +17,7 @@ import (
 
 const StudentCSVMaxBytes = 1 << 20
 const StudentCSVMaxRows = 200
+const StudentDefaultPassword = "student"
 
 type StudentAccountInput struct {
 	Username    string
@@ -82,12 +78,7 @@ func (s *Service) CreateStudentAccount(ctx context.Context, actor uint, publicID
 }
 
 func (s *Service) createStudentAccount(ctx context.Context, actor, classroomID uint, input StudentAccountInput) (*StudentCredential, error) {
-	secret := make([]byte, 15)
-	if _, err := rand.Read(secret); err != nil {
-		return nil, err
-	}
-	password := base64.RawURLEncoding.EncodeToString(secret)
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	hash, err := bcrypt.GenerateFromPassword([]byte(StudentDefaultPassword), 12)
 	if err != nil {
 		return nil, err
 	}
@@ -111,51 +102,21 @@ func (s *Service) createStudentAccount(ctx context.Context, actor, classroomID u
 	if err != nil {
 		return nil, mapError(err)
 	}
-	return &StudentCredential{Username: input.Username, DisplayName: input.DisplayName, InitialPassword: password}, nil
+	return &StudentCredential{Username: input.Username, DisplayName: input.DisplayName, InitialPassword: StudentDefaultPassword}, nil
 }
 
-// ImportStudentAccounts accepts UTF-8 CSV (including Excel's BOM). Invalid rows
-// and existing accounts are reported without changing existing credentials.
+// ImportStudentAccounts accepts an Excel attendance roster or UTF-8 CSV.
+// Invalid rows and existing accounts never change existing credentials.
 func (s *Service) ImportStudentAccounts(ctx context.Context, actor uint, publicID string, raw []byte) (*StudentImportResult, error) {
 	classroom, err := s.owned(ctx, actor, publicID)
 	if err != nil {
 		return nil, err
 	}
-	if len(raw) > StudentCSVMaxBytes || !utf8.Valid(raw) {
-		return nil, ErrStudentCSV
-	}
-	reader := csv.NewReader(bytes.NewReader(bytes.TrimPrefix(raw, []byte{0xef, 0xbb, 0xbf})))
-	reader.TrimLeadingSpace = true
-	reader.FieldsPerRecord = -1
-	header, err := reader.Read()
-	if err != nil || len(header) < 2 || len(header) > 3 {
-		return nil, ErrStudentCSV
-	}
-	for i := range header {
-		header[i] = strings.TrimSpace(header[i])
-	}
-	if (header[0] != "username" && header[0] != "学号" && header[0] != "账号") ||
-		(header[1] != "displayName" && header[1] != "姓名") ||
-		(len(header) == 3 && header[2] != "email" && header[2] != "邮箱") {
-		return nil, ErrStudentCSV
-	}
-	// Parse the whole document before creating any accounts: malformed CSV or an
-	// exceeded row limit must not cause an undisclosed partial import.
-	type candidate struct {
-		line   int
-		fields []string
-	}
-	candidates := make([]candidate, 0)
-	for {
-		fields, readErr := reader.Read()
-		if errors.Is(readErr, io.EOF) {
-			break
-		}
-		if readErr != nil || len(candidates) >= StudentCSVMaxRows {
-			return nil, ErrStudentCSV
-		}
-		line, _ := reader.FieldPos(0)
-		candidates = append(candidates, candidate{line: line, fields: fields})
+	// Validate the complete document before creating any accounts, so malformed
+	// files and exceeded limits cannot produce an undisclosed partial import.
+	candidates, err := parseStudentRoster(raw)
+	if err != nil {
+		return nil, err
 	}
 	result := &StudentImportResult{Total: len(candidates), Rows: []StudentImportRow{}, Credentials: []StudentCredential{}}
 	seen := make(map[string]bool)
@@ -163,18 +124,10 @@ func (s *Service) ImportStudentAccounts(ctx context.Context, actor uint, publicI
 		if err := ctx.Err(); err != nil {
 			return result, err
 		}
-		fields := candidate.fields
-		row := StudentImportRow{Line: candidate.line, Username: strings.TrimSpace(fields[0]), Status: "invalid"}
-		input := StudentAccountInput{Username: fields[0]}
-		if len(fields) >= 2 {
-			input.DisplayName = fields[1]
-		}
-		if len(fields) == 3 {
-			input.Email = fields[2]
-		}
-		input, normalizeErr := normalizeStudent(input)
+		row := StudentImportRow{Line: candidate.line, Username: strings.TrimSpace(candidate.input.Username), Status: "invalid"}
+		input, normalizeErr := normalizeStudent(candidate.input)
 		switch {
-		case len(fields) != len(header) || normalizeErr != nil:
+		case !candidate.valid || normalizeErr != nil:
 			result.Failed++
 		case seen[input.Username]:
 			row.Status = "duplicate"

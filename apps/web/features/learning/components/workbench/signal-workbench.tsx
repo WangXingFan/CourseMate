@@ -35,7 +35,7 @@ export function SignalWorkbench() {
 
   function reset() { setA({ ...DEFAULT_SOURCE }); setB({ ...DEFAULT_SOURCE, width: 1 }); setOperation("convolve"); }
 
-  return <LessonShell title={t("title")} subtitle={t("description")} formula={String.raw`y(t)=x\!\left(\frac{r(t-s)}{a}\right),\quad r\in\{-1,1\},\;a>0`}>
+  return <LessonShell title={t("title")} formula={String.raw`y(t)=x\!\left(\frac{r(t-s)}{a}\right),\quad r\in\{-1,1\},\;a>0`}>
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-xs leading-6 text-muted-foreground">{t("rule")}</p><Button size="sm" variant="outline" onClick={reset}><RotateCcw className="size-3.5" />{t("reset")}</Button></div>
       <div className="grid gap-4 lg:grid-cols-2"><SourceControls id="A" source={a} onChange={setA} /><SourceControls id="B" source={b} onChange={setB} /></div>

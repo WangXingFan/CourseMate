@@ -1,12 +1,12 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./apps/web/public/logo-white.svg" />
-    <img src="./apps/web/public/logo-black.svg" alt="CourseMate" width="160" />
+    <img src="./apps/web/public/logo-black.svg" alt="课知伴" width="160" />
   </picture>
 </p>
 
 <p align="center">
-  CourseMate · 课知伴 — an AI learning companion for Signals and Systems.
+  课知伴 — an AI learning companion for Signals and Systems.
 </p>
 
 <p align="center">
@@ -15,7 +15,7 @@
 
 <p align="center">
   <a href="https://github.com/WangXingFan/CourseMate"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-CourseMate-181717?logo=github&logoColor=white" /></a>
-  <a href="https://github.com/WangXingFan/CourseMate/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/WangXingFan/CourseMate/actions/workflows/ci.yml/badge.svg?branch=dev" /></a>
+  <a href="https://github.com/WangXingFan/CourseMate/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/WangXingFan/CourseMate/actions/workflows/ci.yml/badge.svg?branch=main" /></a>
   <a href="https://www.apache.org/licenses/LICENSE-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue" /></a>
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-black" />
   <img alt="React" src="https://img.shields.io/badge/React-19-149eca" />
@@ -24,7 +24,7 @@
 
 ## Overview
 
-CourseMate (课知伴) is an open-source, self-hosted learning companion for students studying **Signals and Systems**. It combines interactive lessons, chapter experiments, course-aware assistance, quizzes, and mistake review in one workspace. Students can make a prediction, adjust a signal, inspect the result, and reinforce their understanding through variant exercises and scheduled review.
+课知伴 is an open-source, self-hosted learning companion for students studying **Signals and Systems**. It combines interactive lessons, chapter experiments, course-aware assistance, quizzes, and mistake review in one workspace. Students can make a prediction, adjust a signal, inspect the result, and reinforce their understanding through variant exercises and scheduled review.
 
 The learning tools share an existing platform for AI conversations, teaching-material retrieval, model routing, account management, and administration. The browser frontend and Go API can run together in one Docker container; a Tauri desktop client is also available.
 

@@ -1,0 +1,56 @@
+{
+  "project": "CourseMate · 课知伴",
+  "requested_model": "gpt-image-2.5-sunburst",
+  "mode": "installed gpt-imagegen CLI via configured Images API",
+  "updated_at": "2026-10-24T11:10:22.442561+00:00",
+  "results": {
+    "02": {
+      "state": "complete",
+      "filename": "02-cm-resonance.png",
+      "model_argument": "gpt-image-2.5-sunburst",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1036563
+    },
+    "01": {
+      "state": "complete",
+      "filename": "01-signal-pages.png",
+      "model_argument": "gpt-image-2.5-sunburst",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1089398
+    },
+    "04": {
+      "state": "complete",
+      "filename": "04-path-to-understanding.png",
+      "model_argument": "gpt-image-2.5-sunburst",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1073410
+    },
+    "03": {
+      "state": "complete",
+      "filename": "03-learning-in-sync.png",
+      "model_argument": "gpt-image-2.5-sunburst",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1107111
+    },
+    "05": {
+      "state": "complete",
+      "filename": "05-curious-owl.png",
+      "model_argument": "gpt-image-2.5-sunburst",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1124512
+    },
+    "06": {
+      "state": "complete",
+      "filename": "06-spectrum-window.png",
+      "model_argument": "gpt-image-2.5-sunburst",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1080597
+    }
+  }
+}

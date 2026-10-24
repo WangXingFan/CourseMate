@@ -5,8 +5,8 @@ import "testing"
 func TestCatalogCompleteness(t *testing.T) {
 	seen := map[string]bool{}
 	misconceptions := map[string]bool{}
-	if len(Variants()) != 24 {
-		t.Fatal("expected 24 variants")
+	if len(Variants()) != 160 {
+		t.Fatal("expected 160 variants")
 	}
 	for _, question := range Questions() {
 		if len(question.Misconceptions) != 3 {
@@ -24,8 +24,8 @@ func TestCatalogCompleteness(t *testing.T) {
 			}
 		}
 	}
-	if len(misconceptions) != 36 {
-		t.Fatal("expected 36 diagnoses")
+	if len(misconceptions) != 240 {
+		t.Fatal("expected 240 diagnoses")
 	}
 	for _, variant := range Variants() {
 		if seen[variant.ID] || FindQuestion(variant.BaseQuestionID) == nil || variant.Answer < 0 || variant.Answer > 3 {

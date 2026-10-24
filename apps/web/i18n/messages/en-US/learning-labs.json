@@ -12,7 +12,7 @@
     "optionsLabel": "Choose one answer",
     "reasonLabel": "Your reasoning",
     "reasonPlaceholder": "For example: because the real part of the pole is negative, the envelope decays as e^{σt}, so ...",
-    "reasonHint": "Write at least {count} characters. A because-therefore sentence is more useful than a bare conclusion.",
+    "reasonHint": "Explain your reasoning in at least {count} characters.",
     "submit": "Submit and unlock",
     "retry": "Edit and retry",
     "noPenalty": "A wrong answer is not penalised, but you must resubmit your reasoning.",
@@ -421,7 +421,6 @@
   },
   "progress": {
     "title": "Progress & mistakes",
-    "description": "Keep your answers, find the concepts to revisit, and review your account's progress on any device.",
     "loading": "Loading practice history…",
     "saving": "Saving your answer…",
     "synced": "Synced to your account",
@@ -436,7 +435,7 @@
     "accuracy": "Overall accuracy",
     "unresolved": "In review",
     "corrected": "Review completed",
-    "scope": "Records cover quick quizzes and variant reviews. A correct quiz answer preserves mistake history. Review stages and due dates come from the server.",
+    "scope": "Mistake history is retained; variant reviews update the review stage and due date.",
     "viewLabel": "Practice history view",
     "mistakes": "Mistakes",
     "history": "Recent answers",
@@ -445,7 +444,7 @@
     "includeCorrected": "Include mistakes answered correctly most recently",
     "practiceMistakes": "Practice unresolved mistakes",
     "emptyTitle": "Start with one round",
-    "emptyHint": "Missed quiz questions appear here automatically. Review the explanation and try again to check your understanding.",
+    "emptyHint": "Missed quiz questions are added automatically.",
     "noPending": "No questions match these filters",
     "noPendingHint": "Try another review status or topic.",
     "historyHint": "The latest 40 answers are shown; totals above include your entire history.",
@@ -459,7 +458,7 @@
     "showExplanation": "Show answer and explanation",
     "reviewLesson": "Revisit the experiment",
     "practiceTitle": "Mistake practice",
-    "practiceDescription": "Take your time. Decide independently, then check your reasoning against the explanation. Your answers update your practice history.",
+    "practiceDescription": "Untimed; answers are saved to your practice history.",
     "practiceRule": "Each answer reveals an explanation. A correct retry updates the latest-answer status while preserving the mistake history.",
     "noPracticeQuestions": "No matching questions. Return to your mistakes or start a full quiz.",
     "untimed": "Untimed",
@@ -472,7 +471,26 @@
       "fourier-transform": "Fourier transform",
       "second-order": "Second-order systems",
       "poles": "Poles and stability",
-      "modulation": "Modulation and bandwidth"
+      "modulation": "Modulation and bandwidth",
+      "frequency-units": "Frequency units",
+      "signal-transformation": "Signal transformations",
+      "impulse": "Steps and impulses",
+      "system-properties": "System properties",
+      "system-model": "System modeling",
+      "zero-state": "Zero-state and total responses",
+      "zero-input": "Zero-input response",
+      "initial-values": "Initial values and jumps",
+      "step-response": "Impulse and step responses",
+      "correlation": "Correlation",
+      "frequency-response": "Frequency response",
+      "spectral-energy": "Energy spectra",
+      "laplace-roc": "Laplace transform and ROC",
+      "laplace-properties": "Laplace properties",
+      "laplace-inverse": "Inverse Laplace transform",
+      "circuit-model": "Circuit s-domain models",
+      "stability": "Stability",
+      "block-diagrams": "Block diagrams and Mason’s rule",
+      "realization": "System realization"
     },
     "diagnoses": {
       "energy-signal-power": {
@@ -618,6 +636,822 @@
       "imaginary-axis-grow": {
         "thought": "You may be confusing nonzero oscillation frequency with envelope growth.",
         "correction": "Check σ in e^(σt). On the imaginary axis σ=0, so the envelope does not grow."
+      },
+      "finite-energy-power-option-0": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "P=lim(E_T/(2T))=0: energy is bounded while observation length tends to infinity."
+      },
+      "finite-energy-power-option-2": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "P=lim(E_T/(2T))=0: energy is bounded while observation length tends to infinity."
+      },
+      "finite-energy-power-option-3": {
+        "thought": "The choice “2” does not satisfy the stated conditions.",
+        "correction": "P=lim(E_T/(2T))=0: energy is bounded while observation length tends to infinity."
+      },
+      "cosine-average-power-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "The period average of cos² is 1/2, so P=2²/2=2."
+      },
+      "cosine-average-power-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "The period average of cos² is 1/2, so P=2²/2=2."
+      },
+      "cosine-average-power-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "The period average of cos² is 1/2, so P=2²/2=2."
+      },
+      "rectangle-energy-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "E=amplitude squared × duration=2²×3=12."
+      },
+      "rectangle-energy-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "E=amplitude squared × duration=2²×3=12."
+      },
+      "rectangle-energy-option-2": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "E=amplitude squared × duration=2²×3=12."
+      },
+      "exponential-energy-option-1": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "E=∫₀∞4e^(−4t)dt=1."
+      },
+      "exponential-energy-option-2": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "E=∫₀∞4e^(−4t)dt=1."
+      },
+      "exponential-energy-option-3": {
+        "thought": "The choice “2” does not satisfy the stated conditions.",
+        "correction": "E=∫₀∞4e^(−4t)dt=1."
+      },
+      "angular-to-hertz-option-0": {
+        "thought": "The choice “0 Hz” does not satisfy the stated conditions.",
+        "correction": "f=ω/(2π)=20 Hz."
+      },
+      "angular-to-hertz-option-2": {
+        "thought": "The choice “1 Hz” does not satisfy the stated conditions.",
+        "correction": "f=ω/(2π)=20 Hz."
+      },
+      "angular-to-hertz-option-3": {
+        "thought": "The choice “-1 Hz” does not satisfy the stated conditions.",
+        "correction": "f=ω/(2π)=20 Hz."
+      },
+      "harmonic-period-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "The frequencies are in a 1:2 ratio, so ω0=2 rad/s and T=2π/2."
+      },
+      "harmonic-period-option-1": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "The frequencies are in a 1:2 ratio, so ω0=2 rad/s and T=2π/2."
+      },
+      "harmonic-period-option-3": {
+        "thought": "The choice “2” does not satisfy the stated conditions.",
+        "correction": "The frequencies are in a 1:2 ratio, so ω0=2 rad/s and T=2π/2."
+      },
+      "time-width-scale-option-0": {
+        "thought": "The choice “0 s” does not satisfy the stated conditions.",
+        "correction": "Time compression by 3 divides width by 3: 4 seconds."
+      },
+      "time-width-scale-option-1": {
+        "thought": "The choice “1 s” does not satisfy the stated conditions.",
+        "correction": "Time compression by 3 divides width by 3: 4 seconds."
+      },
+      "time-width-scale-option-2": {
+        "thought": "The choice “-1 s” does not satisfy the stated conditions.",
+        "correction": "Time compression by 3 divides width by 3: 4 seconds."
+      },
+      "support-delay-scale-option-1": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Solve 0≤2t−4≤2; the left endpoint is 4/2=2."
+      },
+      "support-delay-scale-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Solve 0≤2t−4≤2; the left endpoint is 4/2=2."
+      },
+      "support-delay-scale-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Solve 0≤2t−4≤2; the left endpoint is 4/2=2."
+      },
+      "energy-time-scale-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "A change of variable gives Enew=Eold/|a|=4."
+      },
+      "energy-time-scale-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "A change of variable gives Enew=Eold/|a|=4."
+      },
+      "energy-time-scale-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "A change of variable gives Enew=Eold/|a|=4."
+      },
+      "impulse-scale-weight-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "δ(at)=δ(t)/|a|, hence c=1/2."
+      },
+      "impulse-scale-weight-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "δ(at)=δ(t)/|a|, hence c=1/2."
+      },
+      "impulse-scale-weight-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "δ(at)=δ(t)/|a|, hence c=1/2."
+      },
+      "impulse-sifting-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Sifting evaluates the polynomial at t=2: 7."
+      },
+      "impulse-sifting-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Sifting evaluates the polynomial at t=2: 7."
+      },
+      "impulse-sifting-option-2": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Sifting evaluates the polynomial at t=2: 7."
+      },
+      "linear-superposition-option-1": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "T(x₁+x₂)=2(3+4)=14, the sum of the separate outputs."
+      },
+      "linear-superposition-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "T(x₁+x₂)=2(3+4)=14, the sum of the separate outputs."
+      },
+      "linear-superposition-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "T(x₁+x₂)=2(3+4)=14, the sum of the separate outputs."
+      },
+      "square-homogeneity-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "T[ax]=(ax)²=36, generally different from aT[x]."
+      },
+      "square-homogeneity-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "T[ax]=(ax)²=36, generally different from aT[x]."
+      },
+      "square-homogeneity-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "T[ax]=(ax)²=36, generally different from aT[x]."
+      },
+      "delay-causality-option-1": {
+        "thought": "The choice “Causal, memoryless” does not satisfy the stated conditions.",
+        "correction": "It uses past input, so it is causal but not memoryless."
+      },
+      "delay-causality-option-2": {
+        "thought": "The choice “Noncausal, with memory” does not satisfy the stated conditions.",
+        "correction": "It uses past input, so it is causal but not memoryless."
+      },
+      "delay-causality-option-3": {
+        "thought": "The choice “Linear, therefore memoryless” does not satisfy the stated conditions.",
+        "correction": "It uses past input, so it is causal but not memoryless."
+      },
+      "advance-causality-option-0": {
+        "thought": "The choice “Causal because it is linear” does not satisfy the stated conditions.",
+        "correction": "The output at t needs the future input at t+1."
+      },
+      "advance-causality-option-2": {
+        "thought": "The choice “Causal because gain is 1” does not satisfy the stated conditions.",
+        "correction": "The output at t needs the future input at t+1."
+      },
+      "advance-causality-option-3": {
+        "thought": "The choice “Depends only on amplitude” does not satisfy the stated conditions.",
+        "correction": "The output at t needs the future input at t+1."
+      },
+      "time-varying-multiplier-option-0": {
+        "thought": "The choice “Yes: all multipliers are time invariant” does not satisfy the stated conditions.",
+        "correction": "Shifting the input gives t^n x(t−t0), while shifting the output gives (t−t0)^n x(t−t0); these generally differ."
+      },
+      "time-varying-multiplier-option-1": {
+        "thought": "The choice “Yes because it is linear” does not satisfy the stated conditions.",
+        "correction": "Shifting the input gives t^n x(t−t0), while shifting the output gives (t−t0)^n x(t−t0); these generally differ."
+      },
+      "time-varying-multiplier-option-3": {
+        "thought": "The choice “The system is defined only for zero input” does not satisfy the stated conditions.",
+        "correction": "Shifting the input gives t^n x(t−t0), while shifting the output gives (t−t0)^n x(t−t0); these generally differ."
+      },
+      "bounded-gain-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "|y|=3|x|≤6; a constant boundary input attains this bound."
+      },
+      "bounded-gain-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "|y|=3|x|≤6; a constant boundary input attains this bound."
+      },
+      "bounded-gain-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "|y|=3|x|≤6; a constant boundary input attains this bound."
+      },
+      "rc-time-units-option-0": {
+        "thought": "The choice “0 s” does not satisfy the stated conditions.",
+        "correction": "τ=RC=2×10³×100×10⁻⁶=0.2 s."
+      },
+      "rc-time-units-option-1": {
+        "thought": "The choice “1 s” does not satisfy the stated conditions.",
+        "correction": "τ=RC=2×10³×100×10⁻⁶=0.2 s."
+      },
+      "rc-time-units-option-3": {
+        "thought": "The choice “-1 s” does not satisfy the stated conditions.",
+        "correction": "τ=RC=2×10³×100×10⁻⁶=0.2 s."
+      },
+      "total-response-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "The total response is their sum: 5+(-2)=3."
+      },
+      "total-response-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "The total response is their sum: 5+(-2)=3."
+      },
+      "total-response-option-2": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "The total response is their sum: 5+(-2)=3."
+      },
+      "decay-exponent-option-1": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Substitution gives λ+2=0, hence λ=−2."
+      },
+      "decay-exponent-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Substitution gives λ+2=0, hence λ=−2."
+      },
+      "decay-exponent-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Substitution gives λ+2=0, hence λ=−2."
+      },
+      "constant-forced-response-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "At steady state y′=0, so y∞=6/2=3."
+      },
+      "constant-forced-response-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "At steady state y′=0, so y∞=6/2=3."
+      },
+      "constant-forced-response-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "At steady state y′=0, so y∞=6/2=3."
+      },
+      "impulse-state-jump-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Integrating across zero gives Δy=3, hence y(0+)=4."
+      },
+      "impulse-state-jump-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Integrating across zero gives Δy=3, hence y(0+)=4."
+      },
+      "impulse-state-jump-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Integrating across zero gives Δy=3, hence y(0+)=4."
+      },
+      "second-order-jump-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "With no δ′ input, y is continuous; matching δ gives Δy′=2, so the result is 3."
+      },
+      "second-order-jump-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "With no δ′ input, y is continuous; matching δ gives Δy′=2, so the result is 3."
+      },
+      "second-order-jump-option-2": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "With no δ′ input, y is continuous; matching δ gives Δy′=2, so the result is 3."
+      },
+      "zero-input-initial-option-1": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Set the input to zero. With no impulse jump, A=y(0+)=3."
+      },
+      "zero-input-initial-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Set the input to zero. With no impulse jump, A=y(0+)=3."
+      },
+      "zero-input-initial-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Set the input to zero. With no impulse jump, A=y(0+)=3."
+      },
+      "impulse-step-final-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "g∞=∫₀∞h(t)dt=4/2=2."
+      },
+      "impulse-step-final-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "g∞=∫₀∞h(t)dt=4/2=2."
+      },
+      "impulse-step-final-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "g∞=∫₀∞h(t)dt=4/2=2."
+      },
+      "step-impulse-coefficient-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "h=g′. Since g is continuous and zero at the origin, there is no δ term; A=6."
+      },
+      "step-impulse-coefficient-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "h=g′. Since g is continuous and zero at the origin, there is no δ term; A=6."
+      },
+      "step-impulse-coefficient-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "h=g′. Since g is continuous and zero at the origin, there is no δ term; A=6."
+      },
+      "impulse-convolution-gain-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "The impulse delay shifts the signal and its weight remains the gain 2."
+      },
+      "impulse-convolution-gain-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "The impulse delay shifts the signal and its weight remains the gain 2."
+      },
+      "impulse-convolution-gain-option-2": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "The impulse delay shifts the signal and its weight remains the gain 2."
+      },
+      "rectangle-convolution-peak-option-1": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "The peak is the maximum overlap length min(2,5)=2."
+      },
+      "rectangle-convolution-peak-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "The peak is the maximum overlap length min(2,5)=2."
+      },
+      "rectangle-convolution-peak-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "The peak is the maximum overlap length min(2,5)=2."
+      },
+      "rectangle-convolution-width-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Support endpoints add, giving [0,5]."
+      },
+      "rectangle-convolution-width-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Support endpoints add, giving [0,5]."
+      },
+      "rectangle-convolution-width-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Support endpoints add, giving [0,5]."
+      },
+      "equal-exponential-convolution-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "The exponential product is e^(−1t) and the integration interval has length t, giving A=6."
+      },
+      "equal-exponential-convolution-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "The exponential product is e^(−1t) and the integration interval has length t, giving A=6."
+      },
+      "equal-exponential-convolution-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "The exponential product is e^(−1t) and the integration interval has length t, giving A=6."
+      },
+      "cascade-impulse-gain-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Cascade uses convolution; δ*δ=δ, so gains multiply to 6."
+      },
+      "cascade-impulse-gain-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Cascade uses convolution; δ*δ=δ, so gains multiply to 6."
+      },
+      "cascade-impulse-gain-option-2": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Cascade uses convolution; δ*δ=δ, so gains multiply to 6."
+      },
+      "parallel-impulse-gain-option-1": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Parallel impulse responses add, giving weight 5."
+      },
+      "parallel-impulse-gain-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Parallel impulse responses add, giving weight 5."
+      },
+      "parallel-impulse-gain-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Parallel impulse responses add, giving weight 5."
+      },
+      "autocorrelation-zero-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Zero-lag autocorrelation is energy: 2²×3=12."
+      },
+      "autocorrelation-zero-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Zero-lag autocorrelation is energy: 2²×3=12."
+      },
+      "autocorrelation-zero-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Zero-lag autocorrelation is energy: 2²×3=12."
+      },
+      "autocorrelation-overlap-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "The overlap length and correlation value are 4−1=3."
+      },
+      "autocorrelation-overlap-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "The overlap length and correlation value are 4−1=3."
+      },
+      "autocorrelation-overlap-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "The overlap length and correlation value are 4−1=3."
+      },
+      "continuous-convolution-step-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Multiply the discrete sum by the integration step: 120×0.01=1.2."
+      },
+      "continuous-convolution-step-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Multiply the discrete sum by the integration step: 120×0.01=1.2."
+      },
+      "continuous-convolution-step-option-2": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Multiply the discrete sum by the integration step: 120×0.01=1.2."
+      },
+      "fourier-fundamental-frequency-option-1": {
+        "thought": "The choice “0 Hz” does not satisfy the stated conditions.",
+        "correction": "Δf=f0=1/T=50 Hz."
+      },
+      "fourier-fundamental-frequency-option-2": {
+        "thought": "The choice “1 Hz” does not satisfy the stated conditions.",
+        "correction": "Δf=f0=1/T=50 Hz."
+      },
+      "fourier-fundamental-frequency-option-3": {
+        "thought": "The choice “-1 Hz” does not satisfy the stated conditions.",
+        "correction": "Δf=f0=1/T=50 Hz."
+      },
+      "fourier-cosine-coefficient-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "The cosine splits into positive and negative frequencies, each with coefficient 2."
+      },
+      "fourier-cosine-coefficient-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "The cosine splits into positive and negative frequencies, each with coefficient 2."
+      },
+      "fourier-cosine-coefficient-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "The cosine splits into positive and negative frequencies, each with coefficient 2."
+      },
+      "pulse-train-average-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "The period average is amplitude × duty cycle=0.5."
+      },
+      "pulse-train-average-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "The period average is amplitude × duty cycle=0.5."
+      },
+      "pulse-train-average-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "The period average is amplitude × duty cycle=0.5."
+      },
+      "fourier-exponential-dc-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "X(j0)=∫x(t)dt=2/4=0.5."
+      },
+      "fourier-exponential-dc-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "X(j0)=∫x(t)dt=2/4=0.5."
+      },
+      "fourier-exponential-dc-option-2": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "X(j0)=∫x(t)dt=2/4=0.5."
+      },
+      "fourier-scale-dc-option-1": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Time scaling gives Y(jω)=X(jω/3)/3, hence Y(j0)=4."
+      },
+      "fourier-scale-dc-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Time scaling gives Y(jω)=X(jω/3)/3, hence Y(j0)=4."
+      },
+      "fourier-scale-dc-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Time scaling gives Y(jω)=X(jω/3)/3, hence Y(j0)=4."
+      },
+      "fourier-delay-phase-option-0": {
+        "thought": "The choice “0 rad” does not satisfy the stated conditions.",
+        "correction": "The delay factor e^(−jωtd) adds phase −ωtd=-6 rad."
+      },
+      "fourier-delay-phase-option-2": {
+        "thought": "The choice “1 rad” does not satisfy the stated conditions.",
+        "correction": "The delay factor e^(−jωtd) adds phase −ωtd=-6 rad."
+      },
+      "fourier-delay-phase-option-3": {
+        "thought": "The choice “-1 rad” does not satisfy the stated conditions.",
+        "correction": "The delay factor e^(−jωtd) adds phase −ωtd=-6 rad."
+      },
+      "modulation-upper-edge-option-0": {
+        "thought": "The choice “0 kHz” does not satisfy the stated conditions.",
+        "correction": "The spectrum shifts to ±fc; the upper edge is fc+B=103 kHz."
+      },
+      "modulation-upper-edge-option-1": {
+        "thought": "The choice “1 kHz” does not satisfy the stated conditions.",
+        "correction": "The spectrum shifts to ±fc; the upper edge is fc+B=103 kHz."
+      },
+      "modulation-upper-edge-option-3": {
+        "thought": "The choice “-1 kHz” does not satisfy the stated conditions.",
+        "correction": "The spectrum shifts to ±fc; the upper edge is fc+B=103 kHz."
+      },
+      "sinusoidal-output-amplitude-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "The output amplitude is |H|A=3 at the same frequency."
+      },
+      "sinusoidal-output-amplitude-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "The output amplitude is |H|A=3 at the same frequency."
+      },
+      "sinusoidal-output-amplitude-option-2": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "The output amplitude is |H|A=3 at the same frequency."
+      },
+      "linear-phase-delay-option-1": {
+        "thought": "The choice “0 s” does not satisfy the stated conditions.",
+        "correction": "τg=−dφ/dω=3 s."
+      },
+      "linear-phase-delay-option-2": {
+        "thought": "The choice “1 s” does not satisfy the stated conditions.",
+        "correction": "τg=−dφ/dω=3 s."
+      },
+      "linear-phase-delay-option-3": {
+        "thought": "The choice “-1 s” does not satisfy the stated conditions.",
+        "correction": "τg=−dφ/dω=3 s."
+      },
+      "parseval-energy-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Parseval gives E=(1/(2π))∫|X|²dω=4."
+      },
+      "parseval-energy-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Parseval gives E=(1/(2π))∫|X|²dω=4."
+      },
+      "parseval-energy-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Parseval gives E=(1/(2π))∫|X|²dω=4."
+      },
+      "rectangle-first-zero-option-0": {
+        "thought": "The choice “0 Hz” does not satisfy the stated conditions.",
+        "correction": "X(f)∝sinc(fT), so the first positive zero is 1/T=50 Hz."
+      },
+      "rectangle-first-zero-option-1": {
+        "thought": "The choice “1 Hz” does not satisfy the stated conditions.",
+        "correction": "X(f)∝sinc(fT), so the first positive zero is 1/T=50 Hz."
+      },
+      "rectangle-first-zero-option-3": {
+        "thought": "The choice “-1 Hz” does not satisfy the stated conditions.",
+        "correction": "X(f)∝sinc(fT), so the first positive zero is 1/T=50 Hz."
+      },
+      "sampling-period-option-0": {
+        "thought": "The choice “0 ms” does not satisfy the stated conditions.",
+        "correction": "Ts=1/fs seconds=1 ms."
+      },
+      "sampling-period-option-1": {
+        "thought": "The choice “-1 ms” does not satisfy the stated conditions.",
+        "correction": "Ts=1/fs seconds=1 ms."
+      },
+      "sampling-period-option-2": {
+        "thought": "The choice “2 ms” does not satisfy the stated conditions.",
+        "correction": "Ts=1/fs seconds=1 ms."
+      },
+      "dft-frequency-grid-option-1": {
+        "thought": "The choice “0 Hz” does not satisfy the stated conditions.",
+        "correction": "Δf=fs/N=2 Hz; grid spacing is not a universal measure of actual resolvability."
+      },
+      "dft-frequency-grid-option-2": {
+        "thought": "The choice “1 Hz” does not satisfy the stated conditions.",
+        "correction": "Δf=fs/N=2 Hz; grid spacing is not a universal measure of actual resolvability."
+      },
+      "dft-frequency-grid-option-3": {
+        "thought": "The choice “-1 Hz” does not satisfy the stated conditions.",
+        "correction": "Δf=fs/N=2 Hz; grid spacing is not a universal measure of actual resolvability."
+      },
+      "real-spectrum-conjugate-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "For a real signal F₋n=F_n*, which negates the imaginary part to -3."
+      },
+      "real-spectrum-conjugate-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "For a real signal F₋n=F_n*, which negates the imaginary part to -3."
+      },
+      "real-spectrum-conjugate-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "For a real signal F₋n=F_n*, which negates the imaginary part to -3."
+      },
+      "periodic-transform-weight-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "X(jω)=2πΣF_nδ(ω−nΩ), hence K=2F₁=4."
+      },
+      "periodic-transform-weight-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "X(jω)=2πΣF_nδ(ω−nΩ), hence K=2F₁=4."
+      },
+      "periodic-transform-weight-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "X(jω)=2πΣF_nδ(ω−nΩ), hence K=2F₁=4."
+      },
+      "laplace-right-roc-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Convergence requires Re(s+2)>0, so b=−2; the boundary is excluded."
+      },
+      "laplace-right-roc-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Convergence requires Re(s+2)>0, so b=−2; the boundary is excluded."
+      },
+      "laplace-right-roc-option-2": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Convergence requires Re(s+2)>0, so b=−2; the boundary is excluded."
+      },
+      "laplace-left-roc-option-0": {
+        "thought": "The choice “e^(−2t)u(t)” does not satisfy the stated conditions.",
+        "correction": "A left-half-plane ROC selects a left-sided exponential with a negative sign."
+      },
+      "laplace-left-roc-option-2": {
+        "thought": "The choice “δ(t)” does not satisfy the stated conditions.",
+        "correction": "A left-half-plane ROC selects a left-sided exponential with a negative sign."
+      },
+      "laplace-left-roc-option-3": {
+        "thought": "The choice “e^(2t)u(t)” does not satisfy the stated conditions.",
+        "correction": "A left-half-plane ROC selects a left-sided exponential with a negative sign."
+      },
+      "unilateral-derivative-value-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "L[f′]=sF−f(0−)=3."
+      },
+      "unilateral-derivative-value-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "L[f′]=sF−f(0−)=3."
+      },
+      "unilateral-derivative-value-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "L[f′]=sF−f(0−)=3."
+      },
+      "laplace-initial-value-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "The initial-value theorem gives lim(s→∞)sF(s)=2."
+      },
+      "laplace-initial-value-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "The initial-value theorem gives lim(s→∞)sF(s)=2."
+      },
+      "laplace-initial-value-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "The initial-value theorem gives lim(s→∞)sF(s)=2."
+      },
+      "laplace-final-value-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "The final-value theorem applies: lim(s→0)sF=3."
+      },
+      "laplace-final-value-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "The final-value theorem applies: lim(s→0)sF=3."
+      },
+      "laplace-final-value-option-2": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "The final-value theorem applies: lim(s→0)sF=3."
+      },
+      "laplace-repeated-pole-option-1": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "L[t²e^(−2t)u(t)]=2!/(s+2)³, hence A=3."
+      },
+      "laplace-repeated-pole-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "L[t²e^(−2t)u(t)]=2!/(s+2)³, hence A=3."
+      },
+      "laplace-repeated-pole-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "L[t²e^(−2t)u(t)]=2!/(s+2)³, hence A=3."
+      },
+      "partial-fraction-residue-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Multiply by (s+1) and set s=−1: A=1/(2−1)=1."
+      },
+      "partial-fraction-residue-option-2": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Multiply by (s+1) and set s=−1: A=1/(2−1)=1."
+      },
+      "partial-fraction-residue-option-3": {
+        "thought": "The choice “2” does not satisfy the stated conditions.",
+        "correction": "Multiply by (s+1) and set s=−1: A=1/(2−1)=1."
+      },
+      "inductor-initial-term-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "V=L(sI−i(0−)), hence c=−L i(0−)=-6."
+      },
+      "inductor-initial-term-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "V=L(sI−i(0−)), hence c=−L i(0−)=-6."
+      },
+      "inductor-initial-term-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "V=L(sI−i(0−)), hence c=−L i(0−)=-6."
+      },
+      "transfer-zero-location-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "The numerator vanishes at s=−3, with no common denominator factor."
+      },
+      "transfer-zero-location-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "The numerator vanishes at s=−3, with no common denominator factor."
+      },
+      "transfer-zero-location-option-2": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "The numerator vanishes at s=−3, with no common denominator factor."
+      },
+      "transfer-rightmost-pole-option-1": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "The poles are −1 and −3; the larger real part is −1."
+      },
+      "transfer-rightmost-pole-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "The poles are −1 and −3; the larger real part is −1."
+      },
+      "transfer-rightmost-pole-option-3": {
+        "thought": "The choice “-2” does not satisfy the stated conditions.",
+        "correction": "The poles are −1 and −3; the larger real part is −1."
+      },
+      "absolute-impulse-integral-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "h is nonnegative, so its absolute integral is 1.5<∞; the system is BIBO stable."
+      },
+      "absolute-impulse-integral-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "h is nonnegative, so its absolute integral is 1.5<∞; the system is BIBO stable."
+      },
+      "absolute-impulse-integral-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "h is nonnegative, so its absolute integral is 1.5<∞; the system is BIBO stable."
+      },
+      "amplitude-decibels-option-0": {
+        "thought": "The choice “0 dB” does not satisfy the stated conditions.",
+        "correction": "Use 20log10 for an amplitude ratio, giving 20 dB."
+      },
+      "amplitude-decibels-option-1": {
+        "thought": "The choice “1 dB” does not satisfy the stated conditions.",
+        "correction": "Use 20log10 for an amplitude ratio, giving 20 dB."
+      },
+      "amplitude-decibels-option-3": {
+        "thought": "The choice “-1 dB” does not satisfy the stated conditions.",
+        "correction": "Use 20log10 for an amplitude ratio, giving 20 dB."
+      },
+      "lowpass-cutoff-radians-option-0": {
+        "thought": "The choice “0 rad/s” does not satisfy the stated conditions.",
+        "correction": "The gain falls to 1/√2 of its DC value at ω=2 rad/s, not 2 Hz."
+      },
+      "lowpass-cutoff-radians-option-1": {
+        "thought": "The choice “1 rad/s” does not satisfy the stated conditions.",
+        "correction": "The gain falls to 1/√2 of its DC value at ω=2 rad/s, not 2 Hz."
+      },
+      "lowpass-cutoff-radians-option-2": {
+        "thought": "The choice “-1 rad/s” does not satisfy the stated conditions.",
+        "correction": "The gain falls to 1/√2 of its DC value at ω=2 rad/s, not 2 Hz."
+      },
+      "mason-single-loop-option-1": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Mason’s rule gives T=P/(1−L)=2."
+      },
+      "mason-single-loop-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Mason’s rule gives T=P/(1−L)=2."
+      },
+      "mason-single-loop-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Mason’s rule gives T=P/(1−L)=2."
+      },
+      "mason-two-loops-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Δ=1−L₁−L₂+L₁L₂=0.375."
+      },
+      "mason-two-loops-option-2": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Δ=1−L₁−L₂+L₁L₂=0.375."
+      },
+      "mason-two-loops-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Δ=1−L₁−L₂+L₁L₂=0.375."
+      },
+      "direct-two-integrators-option-0": {
+        "thought": "The choice “0” does not satisfy the stated conditions.",
+        "correction": "Standard direct-form II uses a shared chain of 2 state integrators."
+      },
+      "direct-two-integrators-option-1": {
+        "thought": "The choice “1” does not satisfy the stated conditions.",
+        "correction": "Standard direct-form II uses a shared chain of 2 state integrators."
+      },
+      "direct-two-integrators-option-3": {
+        "thought": "The choice “-1” does not satisfy the stated conditions.",
+        "correction": "Standard direct-form II uses a shared chain of 2 state integrators."
+      },
+      "rc-pole-location-option-0": {
+        "thought": "The choice “0 s⁻¹” does not satisfy the stated conditions.",
+        "correction": "H=1/(1+τs), so the pole is s=−1/τ=-10 s⁻¹."
+      },
+      "rc-pole-location-option-1": {
+        "thought": "The choice “1 s⁻¹” does not satisfy the stated conditions.",
+        "correction": "H=1/(1+τs), so the pole is s=−1/τ=-10 s⁻¹."
+      },
+      "rc-pole-location-option-2": {
+        "thought": "The choice “-1 s⁻¹” does not satisfy the stated conditions.",
+        "correction": "H=1/(1+τs), so the pole is s=−1/τ=-10 s⁻¹."
+      },
+      "hidden-unstable-mode-option-0": {
+        "thought": "The choice “Yes: cancellation removes physical states” does not satisfy the stated conditions.",
+        "correction": "Algebraic cancellation describes input-output behavior; internal asymptotic stability still requires the full state matrix."
+      },
+      "hidden-unstable-mode-option-2": {
+        "thought": "The choice “Yes whenever the input is zero” does not satisfy the stated conditions.",
+        "correction": "Algebraic cancellation describes input-output behavior; internal asymptotic stability still requires the full state matrix."
+      },
+      "hidden-unstable-mode-option-3": {
+        "thought": "The choice “Only the zeros need checking” does not satisfy the stated conditions.",
+        "correction": "Algebraic cancellation describes input-output behavior; internal asymptotic stability still requires the full state matrix."
       }
     },
     "reviewFilter": "Review status",
@@ -643,7 +1477,6 @@
   },
   "quiz": {
     "title": "Quick quiz",
-    "subtitle": "Answer 12 random concept questions in 90 seconds. Correct answers score points and consecutive correct answers earn a streak bonus.",
     "formula": "\\text{score}=10\\times\\text{correct}+\\text{streak bonus}",
     "intro": {
       "title": "Rules",
@@ -651,9 +1484,8 @@
       "questions": "Questions",
       "duration": "Time limit",
       "perQuestion": "Average per question",
-      "ruleOne": "A correct answer is worth 10 points; each consecutive correct answer adds +2 (up to +10).",
-      "ruleTwo": "Wrong answers lose no points, but the streak resets.",
-      "ruleThree": "Time-up ends the round automatically; unanswered questions do not count toward accuracy. The timer pauses while saving.",
+      "ruleOne": "Correct: +10 points; a streak adds +2 per answer (up to +10). Wrong: no deduction; the streak resets.",
+      "ruleThree": "The round ends at time-up. The timer pauses while saving answers.",
       "start": "Start challenge"
     },
     "hud": {
@@ -667,7 +1499,6 @@
     },
     "result": {
       "title": "Round complete",
-      "description": "Check the score, then review the misses; the misses are worth more of your time than the score.",
       "score": "Score",
       "correct": "Correct",
       "accuracy": "Accuracy",
@@ -677,7 +1508,6 @@
     },
     "review": {
       "title": "Misses and review",
-      "description": "Every question you answered this round, with the correct answer.",
       "empty": "No answers were recorded before time ran out.",
       "answer": "Correct answer: {answer}"
     },
@@ -699,15 +1529,15 @@
         "explain": "Convolution with a delayed impulse shifts the input right by 2: y(t) = x(t − 2)."
       },
       "step-response": {
-        "prompt": "For a first-order system y(t)=K(1−e^{−t/τ}), at t=τ the response reaches what fraction of its final value?",
+        "prompt": "For H(s)=K/(1+τs), K≠0 and τ>0, what fraction of the final zero-state unit-step response is reached at t=τ?",
         "option1": "50%",
         "option2": "63.2%",
         "option3": "86.5%",
         "option4": "95%",
-        "explain": "1 − e^{−1} ≈ 0.632, so one time constant reaches 63.2%."
+        "explain": "g(t)=K(1−e^(−t/τ))u(t), so the fraction is 1−e^(−1)≈63.2%."
       },
       "aliasing": {
-        "prompt": "With f0=5 Hz and fs=8 Hz, what apparent frequency appears after aliasing?",
+        "prompt": "A real 5 Hz cosine is sampled uniformly at 8 Hz. What frequency does it fold to in [0,fs/2]?",
         "option1": "5 Hz",
         "option2": "8 Hz",
         "option3": "13 Hz",
@@ -715,20 +1545,20 @@
         "explain": "|5 − 8| = 3 Hz; after sampling the high frequency folds to 3 Hz."
       },
       "nyquist": {
-        "prompt": "A signal has a highest frequency of 4 kHz. What is the theoretical minimum sampling rate?",
+        "prompt": "A baseband signal is bandlimited to 4 kHz. What is its Nyquist-rate threshold 2fmax? This asks for the threshold; the general safe condition is fs>2fmax.",
         "option1": "8 kHz",
         "option2": "4 kHz",
         "option3": "2 kHz",
         "option4": "16 kHz",
-        "explain": "The Nyquist rate is twice the highest frequency, namely 8 kHz."
+        "explain": "The threshold is 8 kHz. Equality does not universally reconstruct components at the boundary; practical sampling also needs an antialias transition band."
       },
       "square-wave": {
-        "prompt": "What directly makes the even harmonics vanish in a symmetric periodic square wave?",
+        "prompt": "Why does an ideal zero-mean, 50%-duty bipolar square wave (±A) have no even harmonics?",
         "option1": "Even",
-        "option2": "Half-wave symmetry",
+        "option2": "It has half-wave antisymmetry",
         "option3": "Periodic",
         "option4": "An energy signal",
-        "explain": "Odd symmetry removes the cosine terms; half-wave symmetry then removes the even harmonics."
+        "explain": "Half-wave antisymmetry x(t+T/2)=−x(t) removes DC and even harmonics. Odd symmetry alone is not sufficient."
       },
       "pulse-spectrum": {
         "prompt": "As a rectangular pulse gets wider, its main spectral lobe becomes?",
@@ -739,45 +1569,612 @@
         "explain": "Widening in time compresses the spectrum: the main-lobe width scales with 1/τ."
       },
       "time-constant": {
-        "prompt": "For a first-order system, as τ increases the cutoff frequency fc will?",
+        "prompt": "For the standard first-order low-pass H(s)=K/(1+τs), τ>0, how does increasing τ at fixed K affect the −3 dB cutoff?",
         "option1": "Decrease",
         "option2": "Increase",
         "option3": "Stay the same",
         "option4": "First rise then fall",
-        "explain": "fc = 1/(2πτ), so a larger τ means a narrower bandwidth."
+        "explain": "ωc=1/τ and fc=1/(2πτ), so a larger τ lowers the cutoff."
       },
       "damping": {
-        "prompt": "As the damping ratio ζ of a second-order system increases from 0.3 to 0.7, the overshoot usually?",
+        "prompt": "For H(s)=ωn²/(s²+2ζωns+ωn²), ωn>0, how does zero-state unit-step overshoot change as ζ rises from 0.3 to 0.7?",
         "option1": "Increases",
         "option2": "Decreases",
         "option3": "Stays the same",
         "option4": "Becomes infinite",
-        "explain": "Overshoot decreases as ζ grows; at ζ ≥ 1 there is no overshoot."
+        "explain": "For 0<ζ<1, Mp=e^(−πζ/√(1−ζ²)) decreases as ζ increases. This uses the stated standard zero-free form."
       },
       "right-half-plane": {
-        "prompt": "A causal rational continuous-time LTI system has a right-half-plane pole (no pole-zero cancellation). Its BIBO stability is?",
+        "prompt": "A causal continuous-time LTI system has a proper, reduced rational H(s) with a right-half-plane pole. Is it BIBO stable?",
         "option1": "Stable",
         "option2": "Marginally stable",
         "option3": "Impossible to tell",
         "option4": "Unstable",
-        "explain": "A right-half-plane pole contributes a growing exponential, so the system is unstable."
+        "explain": "An uncancelled RHP pole produces a growing mode; the causal ROC excludes part of the imaginary axis, so the system is not BIBO stable."
       },
       "am-bandwidth": {
-        "prompt": "An AM signal whose baseband highest frequency is fm has a bandwidth of about?",
+        "prompt": "For single-tone double-sideband AM with fc>fm>0, what is the bandwidth between its positive-frequency sidebands?",
         "option1": "fm",
         "option2": "4fm",
         "option3": "2fm",
         "option4": "0.5fm",
-        "explain": "The upper and lower sidebands each occupy fm, so the total bandwidth is 2fm."
+        "explain": "The sidebands lie at fc−fm and fc+fm, giving bandwidth 2fm. This is not the SSB bandwidth."
       },
       "imaginary-axis": {
-        "prompt": "A conjugate pole pair on the imaginary axis corresponds to an impulse response that is?",
+        "prompt": "A causal rational system has uncancelled simple poles at s=±jω0, ω0>0, with nonzero residues. How does their real impulse-response mode behave?",
         "option1": "A constant-amplitude oscillation",
         "option2": "A decaying oscillation",
         "option3": "A monotonic decay",
         "option4": "A growing oscillation",
-        "explain": "The real part is zero, so the envelope neither decays nor grows: the oscillation has constant amplitude."
+        "explain": "This pole pair contributes a constant-amplitude sinusoid. This describes that component, not the entire response if other poles exist."
+      },
+      "finite-energy-power": {
+        "prompt": "A nonzero signal has finite total energy E=3. What is its two-sided time-average power?",
+        "option1": "1",
+        "option2": "0",
+        "option3": "-1",
+        "option4": "2",
+        "explain": "P=lim(E_T/(2T))=0: energy is bounded while observation length tends to infinity."
+      },
+      "cosine-average-power": {
+        "prompt": "What is the average power of x(t)=2cos(3t)?",
+        "option1": "0",
+        "option2": "1",
+        "option3": "2",
+        "option4": "-1",
+        "explain": "The period average of cos² is 1/2, so P=2²/2=2."
+      },
+      "rectangle-energy": {
+        "prompt": "A rectangle has amplitude 2 on [0,3] seconds and is zero elsewhere. What is its energy?",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "12",
+        "explain": "E=amplitude squared × duration=2²×3=12."
+      },
+      "exponential-energy": {
+        "prompt": "What is the energy of x(t)=2e^(−2t)u(t)?",
+        "option1": "1",
+        "option2": "0",
+        "option3": "-1",
+        "option4": "2",
+        "explain": "E=∫₀∞4e^(−4t)dt=1."
+      },
+      "angular-to-hertz": {
+        "prompt": "An angular frequency is ω=40π rad/s. What is its frequency in Hz?",
+        "option1": "0 Hz",
+        "option2": "20 Hz",
+        "option3": "1 Hz",
+        "option4": "-1 Hz",
+        "explain": "f=ω/(2π)=20 Hz."
+      },
+      "harmonic-period": {
+        "prompt": "For x(t)=cos(2t)+cos(4t), its fundamental period is T=kπ seconds. What is k?",
+        "option1": "0",
+        "option2": "-1",
+        "option3": "1",
+        "option4": "2",
+        "explain": "The frequencies are in a 1:2 ratio, so ω0=2 rad/s and T=2π/2."
+      },
+      "time-width-scale": {
+        "prompt": "x(t) has support width 12 seconds. What is the support width of x(3t)?",
+        "option1": "0 s",
+        "option2": "1 s",
+        "option3": "-1 s",
+        "option4": "4 s",
+        "explain": "Time compression by 3 divides width by 3: 4 seconds."
+      },
+      "support-delay-scale": {
+        "prompt": "x(t) is supported on [0,2]. What is the left endpoint of the support of x(2t−4)?",
+        "option1": "2",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "Solve 0≤2t−4≤2; the left endpoint is 4/2=2."
+      },
+      "energy-time-scale": {
+        "prompt": "The energy of x(t) is 12. What is the energy of x(-3t)?",
+        "option1": "0",
+        "option2": "4",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "A change of variable gives Enew=Eold/|a|=4."
+      },
+      "impulse-scale-weight": {
+        "prompt": "In δ(2t)=cδ(t), what is c?",
+        "option1": "0",
+        "option2": "1",
+        "option3": "0.5",
+        "option4": "-1",
+        "explain": "δ(at)=δ(t)/|a|, hence c=1/2."
+      },
+      "impulse-sifting": {
+        "prompt": "What is ∫(t²+3)δ(t−2)dt over the real line?",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "7",
+        "explain": "Sifting evaluates the polynomial at t=2: 7."
+      },
+      "linear-superposition": {
+        "prompt": "For y(t)=2x(t), at one instant x₁=3 and x₂=4. What is the output for x₁+x₂?",
+        "option1": "14",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "T(x₁+x₂)=2(3+4)=14, the sum of the separate outputs."
+      },
+      "square-homogeneity": {
+        "prompt": "For the nonlinear system T[x]=x² and x=3 at one instant, what is T[2x]?",
+        "option1": "0",
+        "option2": "36",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "T[ax]=(ax)²=36, generally different from aT[x]."
+      },
+      "delay-causality": {
+        "prompt": "For y(t)=x(t−1) on real-line signals, which classification is correct?",
+        "option1": "Causal, with memory",
+        "option2": "Causal, memoryless",
+        "option3": "Noncausal, with memory",
+        "option4": "Linear, therefore memoryless",
+        "explain": "It uses past input, so it is causal but not memoryless."
+      },
+      "advance-causality": {
+        "prompt": "Is y(t)=x(t+1) causal?",
+        "option1": "Causal because it is linear",
+        "option2": "Noncausal: future input is needed",
+        "option3": "Causal because gain is 1",
+        "option4": "Depends only on amplitude",
+        "explain": "The output at t needs the future input at t+1."
+      },
+      "time-varying-multiplier": {
+        "prompt": "Is y(t)=t^1x(t) time invariant on the real line?",
+        "option1": "Yes: all multipliers are time invariant",
+        "option2": "Yes because it is linear",
+        "option3": "No: the explicit time coefficient fails the shift test",
+        "option4": "The system is defined only for zero input",
+        "explain": "Shifting the input gives t^n x(t−t0), while shifting the output gives (t−t0)^n x(t−t0); these generally differ."
+      },
+      "bounded-gain": {
+        "prompt": "For y=3x and |x(t)|≤2, what is the tight uniform bound on |y(t)|?",
+        "option1": "0",
+        "option2": "6",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "|y|=3|x|≤6; a constant boundary input attains this bound."
+      },
+      "rc-time-units": {
+        "prompt": "For RC y′+y=x, R=2 kΩ and C=100 μF. What is the time constant in seconds?",
+        "option1": "0 s",
+        "option2": "1 s",
+        "option3": "0.2 s",
+        "option4": "-1 s",
+        "explain": "τ=RC=2×10³×100×10⁻⁶=0.2 s."
+      },
+      "total-response": {
+        "prompt": "At one instant, a linear system has zero-input response 5 and zero-state response -2. What is its total response?",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "3",
+        "explain": "The total response is their sum: 5+(-2)=3."
+      },
+      "decay-exponent": {
+        "prompt": "For y′+2y=0 and y=Ce^(λt), what is λ?",
+        "option1": "-2",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "Substitution gives λ+2=0, hence λ=−2."
+      },
+      "constant-forced-response": {
+        "prompt": "For y′+2y=6, what is the stable constant steady-state value?",
+        "option1": "0",
+        "option2": "3",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "At steady state y′=0, so y∞=6/2=3."
+      },
+      "impulse-state-jump": {
+        "prompt": "For y′+2y=3δ(t) and y(0−)=1, what is y(0+)?",
+        "option1": "0",
+        "option2": "1",
+        "option3": "4",
+        "option4": "-1",
+        "explain": "Integrating across zero gives Δy=3, hence y(0+)=4."
+      },
+      "second-order-jump": {
+        "prompt": "For y″+3y′+2y=2δ(t), with finite y(0−) and y′(0−)=1, find y′(0+).",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "3",
+        "explain": "With no δ′ input, y is continuous; matching δ gives Δy′=2, so the result is 3."
+      },
+      "zero-input-initial": {
+        "prompt": "For y′+2y=x and y(0−)=3, what is A in the zero-input response A e^(−2t), t≥0?",
+        "option1": "3",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "Set the input to zero. With no impulse jump, A=y(0+)=3."
+      },
+      "impulse-step-final": {
+        "prompt": "For h(t)=4e^(−2t)u(t), what is the final zero-state unit-step response?",
+        "option1": "0",
+        "option2": "2",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "g∞=∫₀∞h(t)dt=4/2=2."
+      },
+      "step-impulse-coefficient": {
+        "prompt": "The zero-state step response is g(t)=2(1−e^(−3t))u(t). In h(t)=A e^(−3t)u(t), what is A?",
+        "option1": "0",
+        "option2": "1",
+        "option3": "6",
+        "option4": "-1",
+        "explain": "h=g′. Since g is continuous and zero at the origin, there is no δ term; A=6."
+      },
+      "impulse-convolution-gain": {
+        "prompt": "In x(t)*[2δ(t−3)]=A x(t−3), what is A?",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "2",
+        "explain": "The impulse delay shifts the signal and its weight remains the gain 2."
+      },
+      "rectangle-convolution-peak": {
+        "prompt": "Two unit-amplitude causal rectangles have widths 2 s and 5 s. What is their convolution peak?",
+        "option1": "2",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "The peak is the maximum overlap length min(2,5)=2."
+      },
+      "rectangle-convolution-width": {
+        "prompt": "Two unit causal rectangles are supported on [0,2] and [0,3]. What is the width of the closure of their convolution support?",
+        "option1": "0",
+        "option2": "5",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "Support endpoints add, giving [0,5]."
+      },
+      "equal-exponential-convolution": {
+        "prompt": "x=2e^(−1t)u(t) and h=3e^(−1t)u(t). Their convolution is A t e^(−1t)u(t). Find A.",
+        "option1": "0",
+        "option2": "1",
+        "option3": "6",
+        "option4": "-1",
+        "explain": "The exponential product is e^(−1t) and the integration interval has length t, giving A=6."
+      },
+      "cascade-impulse-gain": {
+        "prompt": "Two cascaded LTI systems have h₁=2δ(t) and h₂=3δ(t). Find A in h=Aδ(t).",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "6",
+        "explain": "Cascade uses convolution; δ*δ=δ, so gains multiply to 6."
+      },
+      "parallel-impulse-gain": {
+        "prompt": "Two parallel LTI branches share an input and their outputs add, with h₁=2δ(t), h₂=3δ(t). What is the total impulse weight?",
+        "option1": "5",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "Parallel impulse responses add, giving weight 5."
+      },
+      "autocorrelation-zero": {
+        "prompt": "A real rectangle has amplitude 2 on [0,3]. With Rxx(τ)=∫x(t)x(t−τ)dt, find Rxx(0).",
+        "option1": "0",
+        "option2": "12",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "Zero-lag autocorrelation is energy: 2²×3=12."
+      },
+      "autocorrelation-overlap": {
+        "prompt": "x(t) is a unit rectangle on [0,4]. For Rxx(τ)=∫x(t)x(t−τ)dt, find Rxx(1).",
+        "option1": "0",
+        "option2": "1",
+        "option3": "3",
+        "option4": "-1",
+        "explain": "The overlap length and correlation value are 4−1=3."
+      },
+      "continuous-convolution-step": {
+        "prompt": "For a Riemann approximation of continuous convolution, discrete conv gives 120 at a sample and dt=0.01 s. What is the integral approximation?",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "1.2",
+        "explain": "Multiply the discrete sum by the integration step: 120×0.01=1.2."
+      },
+      "fourier-fundamental-frequency": {
+        "prompt": "For period T=0.02 s, what is the Fourier-series line spacing in Hz?",
+        "option1": "50 Hz",
+        "option2": "0 Hz",
+        "option3": "1 Hz",
+        "option4": "-1 Hz",
+        "explain": "Δf=f0=1/T=50 Hz."
+      },
+      "fourier-cosine-coefficient": {
+        "prompt": "For x(t)=2+4cos(Ωt), what is complex Fourier-series coefficient F₁?",
+        "option1": "0",
+        "option2": "2",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "The cosine splits into positive and negative frequencies, each with coefficient 2."
+      },
+      "pulse-train-average": {
+        "prompt": "A periodic pulse train has high level 2, low level 0 and duty cycle 25%. What is its DC coefficient?",
+        "option1": "0",
+        "option2": "1",
+        "option3": "0.5",
+        "option4": "-1",
+        "explain": "The period average is amplitude × duty cycle=0.5."
+      },
+      "fourier-exponential-dc": {
+        "prompt": "For x(t)=2e^(−4t)u(t), find X(j0).",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "0.5",
+        "explain": "X(j0)=∫x(t)dt=2/4=0.5."
+      },
+      "fourier-scale-dc": {
+        "prompt": "An integrable signal has X(j0)=12. For y(t)=x(3t), find Y(j0).",
+        "option1": "4",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "Time scaling gives Y(jω)=X(jω/3)/3, hence Y(j0)=4."
+      },
+      "fourier-delay-phase": {
+        "prompt": "For y(t)=x(t−2), what unwrapped phase in rad does the delay factor add at ω=3 rad/s?",
+        "option1": "0 rad",
+        "option2": "-6 rad",
+        "option3": "1 rad",
+        "option4": "-1 rad",
+        "explain": "The delay factor e^(−jωtd) adds phase −ωtd=-6 rad."
+      },
+      "modulation-upper-edge": {
+        "prompt": "A baseband spectrum is supported on [−3,3] kHz and is multiplied by a 100 kHz cosine. What is the upper edge of the translated positive-frequency support?",
+        "option1": "0 kHz",
+        "option2": "1 kHz",
+        "option3": "103 kHz",
+        "option4": "-1 kHz",
+        "explain": "The spectrum shifts to ±fc; the upper edge is fc+B=103 kHz."
+      },
+      "sinusoidal-output-amplitude": {
+        "prompt": "A stable LTI system has |H|=0.5 at the input cosine frequency and input amplitude 6. What is its sinusoidal steady-state output amplitude?",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "3",
+        "explain": "The output amplitude is |H|A=3 at the same frequency."
+      },
+      "linear-phase-delay": {
+        "prompt": "For H(jω)=2e^(−j3ω), what is the group delay in seconds?",
+        "option1": "3 s",
+        "option2": "0 s",
+        "option3": "1 s",
+        "option4": "-1 s",
+        "explain": "τg=−dφ/dω=3 s."
+      },
+      "parseval-energy": {
+        "prompt": "Under the angular-frequency Fourier convention, ∫|X(jω)|²dω=8π. What is the total energy?",
+        "option1": "0",
+        "option2": "4",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "Parseval gives E=(1/(2π))∫|X|²dω=4."
+      },
+      "rectangle-first-zero": {
+        "prompt": "A single unit rectangle has width 0.02 s. What is its first positive spectral zero in Hz?",
+        "option1": "0 Hz",
+        "option2": "1 Hz",
+        "option3": "50 Hz",
+        "option4": "-1 Hz",
+        "explain": "X(f)∝sinc(fT), so the first positive zero is 1/T=50 Hz."
+      },
+      "sampling-period": {
+        "prompt": "At a uniform sampling rate fs=1000 Hz, what is the sampling period in milliseconds?",
+        "option1": "0 ms",
+        "option2": "-1 ms",
+        "option3": "2 ms",
+        "option4": "1 ms",
+        "explain": "Ts=1/fs seconds=1 ms."
+      },
+      "dft-frequency-grid": {
+        "prompt": "At fs=800 Hz, 400 actual samples are collected without zero padding. What is the DFT bin spacing in Hz?",
+        "option1": "2 Hz",
+        "option2": "0 Hz",
+        "option3": "1 Hz",
+        "option4": "-1 Hz",
+        "explain": "Δf=fs/N=2 Hz; grid spacing is not a universal measure of actual resolvability."
+      },
+      "real-spectrum-conjugate": {
+        "prompt": "A real periodic signal has F₂=2+j(3). What is the imaginary part of F₋₂?",
+        "option1": "0",
+        "option2": "-3",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "For a real signal F₋n=F_n*, which negates the imaginary part to -3."
+      },
+      "periodic-transform-weight": {
+        "prompt": "A periodic signal has F₁=2. Its Fourier-transform impulse at ω=Ω has weight Kπ. Find K.",
+        "option1": "0",
+        "option2": "1",
+        "option3": "4",
+        "option4": "-1",
+        "explain": "X(jω)=2πΣF_nδ(ω−nΩ), hence K=2F₁=4."
+      },
+      "laplace-right-roc": {
+        "prompt": "For x=e^(−2t)u(t), the bilateral Laplace ROC is Re(s)>b. Find b.",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "-2",
+        "explain": "Convergence requires Re(s+2)>0, so b=−2; the boundary is excluded."
+      },
+      "laplace-left-roc": {
+        "prompt": "X(s)=1/(s+2) has ROC Re(s)<−2. What is its bilateral inverse?",
+        "option1": "e^(−2t)u(t)",
+        "option2": "−e^(−2t)u(−t)",
+        "option3": "δ(t)",
+        "option4": "e^(2t)u(t)",
+        "explain": "A left-half-plane ROC selects a left-sided exponential with a negative sign."
+      },
+      "unilateral-derivative-value": {
+        "prompt": "Using the unilateral Laplace transform from 0−, f(0−)=2 and F(1)=5. Find L[f′] at s=1.",
+        "option1": "0",
+        "option2": "3",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "L[f′]=sF−f(0−)=3."
+      },
+      "laplace-initial-value": {
+        "prompt": "For causal F(s)=2/(s+3), with no impulse in f, find f(0+).",
+        "option1": "0",
+        "option2": "1",
+        "option3": "2",
+        "option4": "-1",
+        "explain": "The initial-value theorem gives lim(s→∞)sF(s)=2."
+      },
+      "laplace-final-value": {
+        "prompt": "Causal F(s)=6/[s(s+2)] has all poles of sF strictly in the LHP. Find f(∞).",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "3",
+        "explain": "The final-value theorem applies: lim(s→0)sF=3."
+      },
+      "laplace-repeated-pole": {
+        "prompt": "For causal X(s)=6/(s+2)³ and x(t)=A t²e^(−2t)u(t), find A.",
+        "option1": "3",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "L[t²e^(−2t)u(t)]=2!/(s+2)³, hence A=3."
+      },
+      "partial-fraction-residue": {
+        "prompt": "In 1/[(s+1)(s+2)]=A/(s+1)+B/(s+2), find A.",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "2",
+        "explain": "Multiply by (s+1) and set s=−1: A=1/(2−1)=1."
+      },
+      "inductor-initial-term": {
+        "prompt": "With passive reference directions, an inductor has L=2 H and i(0−)=3 A. In unilateral V=sLI+c, find c.",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-6",
+        "option4": "-1",
+        "explain": "V=L(sI−i(0−)), hence c=−L i(0−)=-6."
+      },
+      "transfer-zero-location": {
+        "prompt": "For reduced H(s)=(s+3)/[(s+1)(s+2)], where is its finite zero?",
+        "option1": "0",
+        "option2": "1",
+        "option3": "-1",
+        "option4": "-3",
+        "explain": "The numerator vanishes at s=−3, with no common denominator factor."
+      },
+      "transfer-rightmost-pole": {
+        "prompt": "For H(s)=1/[(s+1)(s+3)], what is the real part of its rightmost pole?",
+        "option1": "-1",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-2",
+        "explain": "The poles are −1 and −3; the larger real part is −1."
+      },
+      "absolute-impulse-integral": {
+        "prompt": "For h(t)=3e^(−2t)u(t), find ∫|h(t)|dt.",
+        "option1": "0",
+        "option2": "1.5",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "h is nonnegative, so its absolute integral is 1.5<∞; the system is BIBO stable."
+      },
+      "amplitude-decibels": {
+        "prompt": "An amplitude gain is |H|=10. What is 20log10|H| in dB?",
+        "option1": "0 dB",
+        "option2": "1 dB",
+        "option3": "20 dB",
+        "option4": "-1 dB",
+        "explain": "Use 20log10 for an amplitude ratio, giving 20 dB."
+      },
+      "lowpass-cutoff-radians": {
+        "prompt": "For H(s)=2/(s+2), what is the −3 dB cutoff angular frequency in rad/s?",
+        "option1": "0 rad/s",
+        "option2": "1 rad/s",
+        "option3": "-1 rad/s",
+        "option4": "2 rad/s",
+        "explain": "The gain falls to 1/√2 of its DC value at ω=2 rad/s, not 2 Hz."
+      },
+      "mason-single-loop": {
+        "prompt": "A signal-flow graph has only one forward path P=6 and one touching loop L=-2. What is the transfer gain?",
+        "option1": "2",
+        "option2": "0",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "Mason’s rule gives T=P/(1−L)=2."
+      },
+      "mason-two-loops": {
+        "prompt": "There are only two nontouching loops L₁=0.5, L₂=0.25. What is Mason’s determinant Δ?",
+        "option1": "0",
+        "option2": "0.375",
+        "option3": "1",
+        "option4": "-1",
+        "explain": "Δ=1−L₁−L₂+L₁L₂=0.375."
+      },
+      "direct-two-integrators": {
+        "prompt": "A strictly proper order-2 transfer function uses the standard continuous-time direct-form II realization. How many integrators are required?",
+        "option1": "0",
+        "option2": "1",
+        "option3": "2",
+        "option4": "-1",
+        "explain": "Standard direct-form II uses a shared chain of 2 state integrators."
+      },
+      "rc-pole-location": {
+        "prompt": "A first-order RC low-pass has τ=0.1 s. Where is its pole in s⁻¹?",
+        "option1": "0 s⁻¹",
+        "option2": "1 s⁻¹",
+        "option3": "-1 s⁻¹",
+        "option4": "-10 s⁻¹",
+        "explain": "H=1/(1+τs), so the pole is s=−1/τ=-10 s⁻¹."
+      },
+      "hidden-unstable-mode": {
+        "prompt": "An implementation has an internal e^(1t) mode cancelled in its reduced input-output transfer function. Does the reduced H(s) prove internal asymptotic stability?",
+        "option1": "Yes: cancellation removes physical states",
+        "option2": "No: a hidden unstable mode may remain",
+        "option3": "Yes whenever the input is zero",
+        "option4": "Only the zeros need checking",
+        "explain": "Algebraic cancellation describes input-output behavior; internal asymptotic stability still requires the full state matrix."
       }
+    },
+    "chooseChapter": "Choose a chapter",
+    "chapterDescription": "10 random questions from this chapter’s 20-question bank, with no repeats.",
+    "rankingRule": "Current bank · Each student’s best chapter score; higher score first, then shorter time.",
+    "resultRankingHint": "Round result saved.",
+    "leaderboard": "Chapter leaderboard",
+    "rank": "Rank",
+    "student": "Student",
+    "elapsed": "Time",
+    "you": "You",
+    "rankingEmpty": "No results yet. Complete the first challenge in this chapter.",
+    "rankingLoading": "Loading chapter rankings…",
+    "refresh": "Refresh",
+    "progressLink": "Progress & mistakes",
+    "retry": "Retry request",
+    "retryHint": "Retry the same request. Saved answers are never counted twice.",
+    "saving": "Grading and saving…",
+    "starting": "Starting challenge…",
+    "chapters": {
+      "1": "Chapter 1 · Signals and systems",
+      "2": "Chapter 2 · Continuous-time analysis",
+      "3": "Chapter 3 · Frequency-domain analysis",
+      "4": "Chapter 4 · s-domain analysis"
     }
   },
   "tutor": {
@@ -793,7 +2190,6 @@
   },
   "workbench": {
     "title": "Signal workbench",
-    "description": "Combine two signal sources and explore how transformations and operations change their curves.",
     "rule": "Order: reverse → scale → shift. Positive s shifts right; a>1 stretches time.",
     "reset": "Reset example",
     "source": "Source {id}",

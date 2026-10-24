@@ -177,7 +177,7 @@ func (r *Repo) GetStudentClassroom(ctx context.Context, studentID uint) (*domain
 	err := r.db.WithContext(ctx).
 		Table("classroom_students AS membership").
 		Select("classrooms.public_id").
-		Joins("JOIN classrooms ON classrooms.id = membership.classroom_id AND classrooms.deleted_at IS NULL").
+		Joins("JOIN classrooms ON classrooms.id = membership.classroom_id").
 		Where("membership.student_id = ?", studentID).
 		Limit(1).
 		Scan(&publicID).Error
@@ -198,16 +198,32 @@ func (r *Repo) CreateQuiz(ctx context.Context, input domain.Quiz) (*domain.Quiz,
 	if err != nil {
 		return nil, err
 	}
-	record := models.ClassroomQuiz{
-		PublicID:    input.PublicID,
-		ClassroomID: input.ClassroomID,
-		TeacherID:   input.TeacherID,
-		Title:       input.Title,
-		Phase:       input.Phase,
-		Status:      input.Status,
-		Questions:   string(encoded),
+	var sourceID *string
+	if input.SourceQuizID != "" {
+		sourceID = &input.SourceQuizID
 	}
-	if err := r.db.WithContext(ctx).Create(&record).Error; err != nil {
+	record := models.ClassroomQuiz{
+		SourceQuizID: sourceID,
+		PublicID:     input.PublicID,
+		ClassroomID:  input.ClassroomID,
+		TeacherID:    input.TeacherID,
+		Title:        input.Title,
+		Phase:        input.Phase,
+		Status:       input.Status,
+		Questions:    string(encoded),
+	}
+	if err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if input.SourceQuizID != "" {
+			var parent models.ClassroomQuiz
+			if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("public_id = ? AND teacher_id = ? AND classroom_id = ?", input.SourceQuizID, input.TeacherID, input.ClassroomID).First(&parent).Error; err != nil {
+				return err
+			}
+			if parent.Status != domain.QuizStatusClosed || parent.Phase != domain.QuizPhasePreClass || parent.SourceQuizID != nil {
+				return repository.ErrInvalidInput
+			}
+		}
+		return tx.Create(&record).Error
+	}); err != nil {
 		return nil, dberror.Translate(err)
 	}
 	return r.GetOwnedQuiz(ctx, record.PublicID, record.TeacherID)
@@ -315,17 +331,32 @@ func (r *Repo) UpdateQuizStatus(ctx context.Context, publicID string, teacherID 
 	case domain.QuizStatusClosed:
 		updates["closed_at"] = now
 	}
-	result := r.db.WithContext(ctx).
-		Model(&models.ClassroomQuiz{}).
-		Where("public_id = ? AND teacher_id = ?", publicID, teacherID).
-		Updates(updates)
-	if result.Error != nil {
-		return dberror.Translate(result.Error)
-	}
-	if result.RowsAffected == 0 {
-		return repository.ErrNotFound
-	}
-	return nil
+	return dberror.Translate(r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		var quiz models.ClassroomQuiz
+		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("public_id = ? AND teacher_id = ?", publicID, teacherID).First(&quiz).Error; err != nil {
+			return err
+		}
+		if status == domain.QuizStatusOpen {
+			if quiz.SourceQuizID == nil {
+				var count int64
+				if err := tx.Model(&models.ClassroomQuiz{}).Where("source_quiz_id = ?", publicID).Count(&count).Error; err != nil {
+					return err
+				}
+				if count > 0 {
+					return repository.ErrInvalidInput
+				}
+			} else {
+				var parent models.ClassroomQuiz
+				if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("public_id = ? AND teacher_id = ? AND classroom_id = ?", *quiz.SourceQuizID, teacherID, quiz.ClassroomID).First(&parent).Error; err != nil {
+					return err
+				}
+				if parent.Status != domain.QuizStatusClosed {
+					return repository.ErrInvalidInput
+				}
+			}
+		}
+		return tx.Model(&models.ClassroomQuiz{}).Where("id = ?", quiz.ID).Updates(updates).Error
+	}))
 }
 
 func (r *Repo) ListStudentQuizzes(ctx context.Context, classroomID, studentID uint) ([]domain.Quiz, error) {
@@ -455,7 +486,12 @@ func toDomainQuiz(record models.ClassroomQuiz, submissionCount int64) (*domain.Q
 	if err := json.Unmarshal([]byte(record.Questions), &questions); err != nil {
 		return nil, err
 	}
+	sourceID := ""
+	if record.SourceQuizID != nil {
+		sourceID = *record.SourceQuizID
+	}
 	return &domain.Quiz{
+		SourceQuizID:    sourceID,
 		ID:              record.ID,
 		PublicID:        record.PublicID,
 		ClassroomID:     record.ClassroomID,

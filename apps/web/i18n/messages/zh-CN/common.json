@@ -48,6 +48,7 @@
     "files": "文件",
     "knowledgeBases": "知识库",
     "classrooms": "班级",
+    "rollCall": "随机点名",
     "activities": "课堂活动",
     "learning": "学习实验室",
     "experiments": "实验",
@@ -86,7 +87,8 @@
     "fallbackUser": "用户",
     "today": "今天",
     "archived": "已归档",
-    "yesterday": "昨天"
+    "yesterday": "昨天",
+    "courseKnowledge": "课程知识"
   },
   "time": {
     "todayTime": "{time}",
@@ -163,6 +165,6 @@
   },
   "attribution": {
     "poweredBy": "技术支持",
-    "githubLink": "GitHub 上的 CourseMate"
+    "githubLink": "GitHub 上的 课知伴"
   }
 }

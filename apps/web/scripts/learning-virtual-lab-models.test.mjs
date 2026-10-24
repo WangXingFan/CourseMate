@@ -1,12 +1,7 @@
-import { createRequire } from "node:module";
-import { fileURLToPath } from "node:url";
-const require = createRequire(import.meta.url);
-const { test } = require('node:test');
-const assert = require('node:assert/strict');
-const path = require('node:path');
-const app = fileURLToPath(new URL('../public/vendor/signal-lab/assets/js', import.meta.url));
-for (const file of ['models','models-extra','tasks','tasks-extra','plotting','plotting-extra','experiment1','experiment2','experiment3']) require(path.join(app, `${file}.js`));
-const L = globalThis.SignalLab, M = L.models;
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { createVirtualLabEngine } from "../public/vendor/signal-lab/core.mjs";
+const L = createVirtualLabEngine(), M = L.models;
 const close = (a, b, tolerance = 1e-9) => assert.ok(Math.abs(a - b) <= tolerance, `${a} ≠ ${b} (tol ${tolerance})`);
 
 test('L1-1: transformed support, peak and negative-scale key points', () => {
@@ -82,9 +77,6 @@ test('all four task scenes expose finite readings and labeled series', () => {
   assert.equal(L.validParams('L1-3', { ...L.defaults('L1-3'), A: Infinity }), false);
 });
 
-globalThis.window = globalThis;
-globalThis.dispatchEvent = () => {};
-require(path.join(app, 'records.js'));
 test('record round-trip preserves original prediction, revisions, trials and analysis', () => {
   const R = L.records, t = R.data.tasks['L1-1'];
   t.predictionDraft = '原始预测'; R.prediction('L1-1');

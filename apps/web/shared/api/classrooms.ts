@@ -93,11 +93,20 @@ export async function createClassroomStudentAccount(
 export async function importClassroomStudentAccounts(
   accessToken: string,
   classroomID: string,
-  csv: string,
+  roster: string | File,
 ): Promise<StudentImportResultDTO> {
+  if (typeof roster !== "string") {
+    const body = new FormData();
+    body.append("file", roster);
+    return authedRequest<StudentImportResultDTO>(
+      `${CLASSROOMS_PATH}/${pathParam(classroomID)}/students/accounts/import/file`,
+      { method: "POST", accessToken, body },
+      true,
+    );
+  }
   return authedRequest<StudentImportResultDTO>(
     `${CLASSROOMS_PATH}/${pathParam(classroomID)}/students/accounts/import`,
-    { method: "POST", accessToken, body: { csv } satisfies ImportStudentsPayload },
+    { method: "POST", accessToken, body: { csv: roster } satisfies ImportStudentsPayload },
     true,
   );
 }
@@ -195,4 +204,8 @@ export async function submitClassroomQuiz(
     { method: "POST", accessToken, body: payload },
     true,
   );
+}
+
+export async function createClassroomQuizFollowup(accessToken: string, quizID: string) {
+  return authedRequest<ClassroomQuizData>(`/api/v1/quizzes/${encodeURIComponent(quizID)}/followup`, { method: "POST", accessToken });
 }

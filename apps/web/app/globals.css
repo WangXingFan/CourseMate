@@ -6,6 +6,7 @@
 @import "../styles/markdown-table.css" layer(components);
 @import "../styles/font-scale.css" layer(utilities);
 @import "../styles/chat-typography.css" layer(utilities);
+@import "../styles/native-lab-print.css";
 @source "../node_modules/streamdown/dist/*.js";
 @source "../node_modules/@streamdown/code/dist/*.js";
 @source "../node_modules/@streamdown/mermaid/dist/*.js";

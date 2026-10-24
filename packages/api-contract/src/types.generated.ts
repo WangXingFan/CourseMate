@@ -1698,6 +1698,35 @@ export interface LearningQuestionResponse {
   topic: string;
 }
 
+export interface LearningQuizAnswerRequest {
+  /** @maxLength 64 */
+  questionId: string;
+  /**
+   * @min 0
+   * @max 3
+   */
+  selected: number;
+}
+
+export interface LearningQuizCatalogResponse {
+  chapters: QuizChapter[];
+}
+
+export interface LearningQuizLeaderboardResponse {
+  rankings: QuizRanking[];
+}
+
+export interface LearningQuizRoundResponse {
+  round: QuizRound;
+  serverTime: string;
+}
+
+export interface LearningQuizStartRequest {
+  /** @maxLength 8 */
+  chapterId: string;
+  id: string;
+}
+
 export interface LearningReviewRequest {
   /** @maxLength 64 */
   baseQuestionId: string;
@@ -2576,6 +2605,49 @@ export interface PublicModelResponse {
   vendorName: string;
 }
 
+export interface QuizAnswer {
+  correct: boolean;
+  questionId: string;
+  selected: number;
+}
+
+export interface QuizChapter {
+  id: string;
+  questionIds: string[];
+  roundSize: number;
+}
+
+export interface QuizComparisonResponse {
+  afterId: string;
+  afterOnly: number;
+  afterStatus: string;
+  afterTitle: string;
+  beforeId: string;
+  beforeOnly: number;
+  beforeTitle: string;
+  neither: number;
+  pairedCount: number;
+  questions: QuizConceptComparisonResponse[];
+  students: QuizStudentComparisonResponse[];
+}
+
+export interface QuizConceptChangeResponse {
+  conceptId: string;
+  outcome: string;
+}
+
+export interface QuizConceptComparisonResponse {
+  afterCorrect: number;
+  beforeCorrect: number;
+  conceptId: string;
+  conceptTitle: string;
+  improved: number;
+  pairedCount: number;
+  regressed: number;
+  retained: number;
+  unresolved: number;
+}
+
 export interface QuizDataResponse {
   quiz: QuizResponse;
 }
@@ -2585,7 +2657,10 @@ export interface QuizLessonListResponse {
 }
 
 export interface QuizLessonResponse {
+  answer: number;
   chapter: string;
+  explanation: string;
+  followup?: QuizQuestionResponse | null;
   id: string;
   number: string;
   options: string[];
@@ -2599,21 +2674,36 @@ export interface QuizListResponse {
 
 export interface QuizQuestionResponse {
   answer: number;
+  conceptId: string;
+  conceptTitle: string;
+  explanation: string;
   id: string;
+  lessonId: string;
   options: string[];
   prompt: string;
 }
 
 export interface QuizQuestionStatisticsResponse {
   answer: number;
+  conceptTitle: string;
   correctCount: number;
+  explanation: string;
   id: string;
   optionCounts: number[];
   options: string[];
   prompt: string;
 }
 
+export interface QuizRanking {
+  elapsedMs: number;
+  isCurrentUser: boolean;
+  name: string;
+  rank: number;
+  score: number;
+}
+
 export interface QuizReportResponse {
+  comparison?: QuizComparisonResponse | null;
   missing: StudentResponse[];
   quiz: QuizResponse;
   statistics: QuizStatisticsResponse;
@@ -2628,9 +2718,24 @@ export interface QuizResponse {
   openedAt: string;
   phase: string;
   questions: QuizQuestionResponse[];
+  sourceQuizId: string;
   status: string;
   submissionCount: number;
   title: string;
+}
+
+export interface QuizRound {
+  answers: QuizAnswer[];
+  bestStreak: number;
+  chapterId: string;
+  correctCount: number;
+  deadlineAt: string;
+  elapsedMs: number;
+  finishedAt?: string | null;
+  id: string;
+  questionIds: string[];
+  score: number;
+  startedAt: string;
 }
 
 export interface QuizStatisticsResponse {
@@ -2638,6 +2743,17 @@ export interface QuizStatisticsResponse {
   questions: QuizQuestionStatisticsResponse[];
   studentCount: number;
   submissionCount: number;
+}
+
+export interface QuizStudentComparisonResponse {
+  afterScore: number;
+  afterSubmitted: boolean;
+  beforeScore: number;
+  beforeSubmitted: boolean;
+  changes: QuizConceptChangeResponse[];
+  studentId: string;
+  studentName: string;
+  username: string;
 }
 
 export interface QuizSubmissionResponse {
@@ -6492,7 +6608,7 @@ export namespace Classrooms {
   }
 
   /**
-   * @description 仅限班级所属教师；创建学生角色账号，返回随机初始密码，首次登录须修改密码。已有账号不会被覆盖。
+   * @description 仅限班级所属教师；创建学生角色账号，默认初始密码为 student，首次登录须修改密码。已有账号不会被覆盖。
    * @tags classrooms
    * @name StudentsAccountsCreate
    * @summary 教师创建学生账号并加入班级
@@ -6511,7 +6627,7 @@ export namespace Classrooms {
   }
 
   /**
-   * @description 仅限班级所属教师。UTF-8 CSV 表头为 username,displayName,email 或 学号,姓名,邮箱（邮箱列可省略），最多 200 行、1 MiB；逐行创建并加入班级，已有账号跳过且不覆盖，返回初始密码和逐行结果。
+   * @description 仅限班级所属教师。UTF-8 CSV 表头为 username,displayName,email 或 学号,姓名,邮箱（邮箱列可省略），最多 200 行、1 MiB；逐行创建并加入班级，默认初始密码为 student，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和逐行结果。
    * @tags classrooms
    * @name StudentsAccountsImportCreate
    * @summary 教师导入学生名单并创建账号
@@ -6525,6 +6641,28 @@ export namespace Classrooms {
     };
     export type RequestQuery = {};
     export type RequestBody = ImportClassroomStudentsRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomStudentImportResponse;
+  }
+
+  /**
+   * @description 支持教务系统导出的 XLSX 点名册，自动识别学号、姓名列并忽略标题、空行及考勤列；兼容 UTF-8 CSV。最多 200 人、1 MiB；默认初始密码为 student，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和原始行号。
+   * @tags classrooms
+   * @name StudentsAccountsImportFileCreate
+   * @summary 教师上传 Excel 点名册并创建学生账号
+   * @request POST:/classrooms/{id}/students/accounts/import/file
+   * @secure
+   */
+  export namespace StudentsAccountsImportFileCreate {
+    export type RequestParams = {
+      /** 班级公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = {
+      /** Excel 点名册（.xlsx）或 UTF-8 CSV */
+      file: File;
+    };
     export type RequestHeaders = {};
     export type ResponseBody = ClassroomStudentImportResponse;
   }
@@ -7568,6 +7706,95 @@ export namespace Learning {
   /**
    * No description
    * @tags learning
+   * @name QuizChaptersList
+   * @summary Read chapter question sets for timed quizzes
+   * @request GET:/learning/quiz/chapters
+   * @secure
+   */
+  export namespace QuizChaptersList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningQuizCatalogResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name QuizLeaderboardList
+   * @summary Read the best result per student for a chapter, score descending then elapsed time ascending
+   * @request GET:/learning/quiz/leaderboard
+   * @secure
+   */
+  export namespace QuizLeaderboardList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Chapter ID */
+      chapterId: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningQuizLeaderboardResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name QuizRoundsCreate
+   * @summary Start an account-owned timed chapter quiz (idempotent)
+   * @request POST:/learning/quiz/rounds
+   * @secure
+   */
+  export namespace QuizRoundsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = LearningQuizStartRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningQuizRoundResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name QuizRoundsAnswersCreate
+   * @summary Grade a chapter quiz answer and save personal practice history
+   * @request POST:/learning/quiz/rounds/{id}/answers
+   * @secure
+   */
+  export namespace QuizRoundsAnswersCreate {
+    export type RequestParams = {
+      /** Round ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = LearningQuizAnswerRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningQuizRoundResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name QuizRoundsFinishCreate
+   * @summary Finish a chapter quiz with server-measured elapsed time
+   * @request POST:/learning/quiz/rounds/{id}/finish
+   * @secure
+   */
+  export namespace QuizRoundsFinishCreate {
+    export type RequestParams = {
+      /** Round ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningQuizRoundResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
    * @name ReviewsCreate
    * @summary Submit a server-graded variant review and schedule the next review
    * @request POST:/learning/reviews
@@ -8143,6 +8370,25 @@ export namespace Quizzes {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = ClassroomMutationResponse;
+  }
+
+  /**
+   * @description 每份预习测最多关联一份复测，重复请求返回同一份；题目使用创建预习测时保存的变式快照。
+   * @tags classrooms
+   * @name FollowupCreate
+   * @summary 为已截止的预习测创建同知识点复测草稿
+   * @request POST:/quizzes/{id}/followup
+   * @secure
+   */
+  export namespace FollowupCreate {
+    export type RequestParams = {
+      /** 预习测公开 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = QuizDataResponse;
   }
 
   /**

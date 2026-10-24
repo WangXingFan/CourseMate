@@ -15,6 +15,7 @@ export function useClassroomStudentActivities(accessToken: string) {
   const [data, setData] = React.useState<StudentClassroomQuizListData | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [notJoined, setNotJoined] = React.useState(false);
+  const [loadError, setLoadError] = React.useState("");
   const [reloadVersion, setReloadVersion] = React.useState(0);
   const [answers, setAnswers] = React.useState<Record<string, number[]>>({});
   const [submittingID, setSubmittingID] = React.useState("");
@@ -24,6 +25,8 @@ export function useClassroomStudentActivities(accessToken: string) {
     let cancelled = false;
     setLoading(true);
     setNotJoined(false);
+    setLoadError("");
+    setData(null);
     void (async () => {
       try {
         const next = await listStudentQuizzes(accessToken, controller.signal);
@@ -41,12 +44,12 @@ export function useClassroomStudentActivities(accessToken: string) {
         });
       } catch (error) {
         if (cancelled || controller.signal.aborted) return;
-        if (error instanceof ApiError && error.status === 403) {
+        if (error instanceof ApiError && error.errorCode === "classroom.not_joined") {
           setNotJoined(true);
           setData(null);
           return;
         }
-        toast.error(t("loadFailed"), { description: resolveErrorMessage(error) });
+        setLoadError(resolveErrorMessage(error));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -96,6 +99,7 @@ export function useClassroomStudentActivities(accessToken: string) {
     data,
     loading,
     notJoined,
+    loadError,
     submittingID,
     answers,
     refresh,

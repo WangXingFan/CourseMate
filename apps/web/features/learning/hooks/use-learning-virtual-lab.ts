@@ -144,7 +144,7 @@ export function useLearningVirtualLab() {
     if (!session || session.key !== key || !session.document) return;
     const url = URL.createObjectURL(new Blob([session.document], { type: "application/json" }));
     const a = document.createElement("a");
-    a.href = url; a.download = `CourseMate-experiments-${user?.username}.json`; a.click();
+    a.href = url; a.download = `课知伴-experiments-${user?.username}.json`; a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }, [key, user?.username]);
   const failRestore = useCallback(() => {

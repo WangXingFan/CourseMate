@@ -5,7 +5,7 @@ import { Search } from "@/components/animate-ui/icons/search";
 import { Sparkles } from "@/components/animate-ui/icons/sparkles";
 import { PlusIcon } from "@/components/ui/plus";
 import type { NavigationItem } from "@/features/shell/types/navigation";
-import { BarChart3, FlaskConical } from "lucide-react";
+import { BarChart3, FlaskConical, Shuffle } from "lucide-react";
 
 export const NAVIGATION_ITEMS = [
   {
@@ -38,6 +38,13 @@ export const NAVIGATION_ITEMS = [
     group: "secondary",
   },
   {
+    id: "courseKnowledge",
+    kind: "link",
+    href: "/learn/knowledge",
+    icon: BookOpen,
+    group: "secondary",
+  },
+  {
     id: "learning",
     kind: "link",
     href: "/learn",
@@ -56,6 +63,13 @@ export const NAVIGATION_ITEMS = [
     kind: "link",
     href: "/classrooms",
     icon: Blocks,
+    group: "secondary",
+  },
+  {
+    id: "rollCall",
+    kind: "link",
+    href: "/roll-call",
+    icon: Shuffle,
     group: "secondary",
   },
   {

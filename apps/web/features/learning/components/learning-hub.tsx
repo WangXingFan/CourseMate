@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, BookOpen, Calculator, FlaskConical, Gamepad2, Lightbulb, SlidersHorizontal, Trophy } from "lucide-react";
+import { ArrowUpRight, Calculator, FlaskConical, Gamepad2, Lightbulb, SlidersHorizontal, Trophy } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -17,7 +17,6 @@ const PATHS = [
 ] as const;
 
 const PRACTICE_LINKS = [
-  { id: "knowledge", href: "/learn/knowledge", icon: BookOpen, accent: "var(--chart-1)" },
   { id: "quiz", href: "/learn/quiz", icon: Gamepad2, accent: "var(--chart-2)" },
   { id: "progress", href: "/learn/progress", icon: Trophy, accent: "var(--chart-3)" },
 ] as const;
@@ -44,7 +43,6 @@ export function LearningHub() {
             {t("hub.eyebrow")}
           </div>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground md:text-3xl">{t("hub.title")}</h1>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">{t("hub.description")}</p>
         </header>
 
         <div role="tablist" aria-label={t("hub.paths.label")} className="grid gap-2 sm:grid-cols-2">
@@ -84,9 +82,6 @@ export function LearningHub() {
                     <span className="text-sm font-medium text-foreground">{t(`hub.paths.${path.id}.title`)}</span>
                     <span className="font-mono text-[10px] text-muted-foreground">{t(`hub.paths.${path.id}.meta`)}</span>
                   </span>
-                  <span className="mt-0.5 block text-[11px] leading-5 text-muted-foreground">
-                    {t(`hub.paths.${path.id}.description`)}
-                  </span>
                 </span>
               </button>
             );
@@ -118,7 +113,6 @@ function ConceptPanel({ concepts }: { concepts: LearningTopic[] }) {
     <>
       <SectionHeader
         title={t("hub.sections.concepts")}
-        description={t("hub.sections.conceptsDescription")}
         count={concepts.length}
       />
       <div className="grid gap-3 sm:grid-cols-2">
@@ -129,12 +123,11 @@ function ConceptPanel({ concepts }: { concepts: LearningTopic[] }) {
             title={t(`topics.${topic.id}.title`)}
             description={t(`topics.${topic.id}.description`)}
             tag={t(`topics.${topic.id}.tag`)}
-            interactive={t("hub.interactive")}
           />
         ))}
       </div>
 
-      <SectionHeader title={t("hub.sections.tools")} description={t("hub.sections.toolsDescription")} />
+      <SectionHeader title={t("hub.sections.tools")} />
       <div className="grid gap-2 sm:grid-cols-2">
         {TOOL_LINKS.map((link) => (
           <UtilityCard
@@ -147,7 +140,6 @@ function ConceptPanel({ concepts }: { concepts: LearningTopic[] }) {
           />
         ))}
       </div>
-      <p className="mt-5 max-w-3xl text-[11px] leading-5 text-muted-foreground">{t("hub.footer")}</p>
     </>
   );
 }
@@ -159,10 +151,9 @@ function PracticePanel() {
     <>
       <SectionHeader
         title={t("hub.sections.practice")}
-        description={t("hub.sections.practiceDescription")}
         count={PRACTICE_LINKS.length}
       />
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         {PRACTICE_LINKS.map((link) => (
           <EntryCard
             key={link.id}
@@ -181,18 +172,15 @@ function PracticePanel() {
 
 function SectionHeader({
   title,
-  description,
   count,
 }: {
   title: string;
-  description: string;
   count?: number;
 }) {
   return (
     <div className="mt-7 mb-3 flex items-end justify-between gap-3">
       <div>
         <h2 className="text-sm font-medium text-foreground">{title}</h2>
-        <p className="mt-0.5 text-[11px] leading-5 text-muted-foreground">{description}</p>
       </div>
       {typeof count === "number" ? (
         <Badge variant="outline" className="rounded-md font-mono text-[10px] font-normal tabular-nums">
@@ -285,13 +273,11 @@ function TopicCard({
   title,
   description,
   tag,
-  interactive,
 }: {
   topic: LearningTopic;
   title: string;
   description: string;
   tag: string;
-  interactive: string;
 }) {
   const Icon = topic.icon;
   return (
@@ -316,9 +302,6 @@ function TopicCard({
       <div className="mt-3 flex flex-wrap gap-1.5">
         <Badge variant="outline" className="rounded-md px-1.5 text-[10px] font-normal">
           {tag}
-        </Badge>
-        <Badge variant="secondary" className="rounded-md px-1.5 text-[10px] font-normal">
-          {interactive}
         </Badge>
       </div>
       <span
