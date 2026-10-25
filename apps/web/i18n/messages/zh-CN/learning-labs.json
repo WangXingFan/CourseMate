@@ -1513,7 +1513,7 @@
     },
     "questions": {
       "energy-signal": {
-        "prompt": "x(t) = e^'{'−2t'}'u(t) 属于哪类信号？",
+        "prompt": "x(t) = e^'{−2t}'u(t) 属于哪类信号？",
         "option1": "能量信号",
         "option2": "功率信号",
         "option3": "都不是",

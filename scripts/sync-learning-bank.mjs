@@ -1,5 +1,6 @@
 // The Go grader and bilingual web prompts must use one authored answer contract.
 import { readFileSync, writeFileSync } from "node:fs";
+import { learningBankMessage } from "./learning-bank-message.mjs";
 
 const bank = JSON.parse(readFileSync(new URL("../backend/internal/domain/learning/content/quick-questions.json", import.meta.url), "utf8"));
 const check = process.argv.includes("--check");
@@ -30,12 +31,12 @@ for (const [index, locale] of ["zh-CN", "en-US"].entries()) {
   const messages = JSON.parse(original);
   for (const q of bank.questions) {
     const text = q[index === 0 ? "zh" : "en"];
-    messages.quiz.questions[q.id] = { prompt: text.prompt, ...Object.fromEntries(text.options.map((option, i) => [`option${i + 1}`, option])), explain: text.explanation };
+    messages.quiz.questions[q.id] = { prompt: learningBankMessage(text.prompt), ...Object.fromEntries(text.options.map((option, i) => [`option${i + 1}`, learningBankMessage(option)])), explain: learningBankMessage(text.explanation) };
     for (const [option, code] of Object.entries(q.misconceptions)) {
       // Original individually authored diagnoses remain more specific.
       if (!messages.progress.diagnoses[code]) messages.progress.diagnoses[code] = {
-        thought: index === 0 ? `选择“${text.options[Number(option)]}”与题设条件不符。` : `The choice “${text.options[Number(option)]}” does not satisfy the stated conditions.`,
-        correction: text.explanation,
+        thought: learningBankMessage(index === 0 ? `选择“${text.options[Number(option)]}”与题设条件不符。` : `The choice “${text.options[Number(option)]}” does not satisfy the stated conditions.`),
+        correction: learningBankMessage(text.explanation),
       };
     }
   }
