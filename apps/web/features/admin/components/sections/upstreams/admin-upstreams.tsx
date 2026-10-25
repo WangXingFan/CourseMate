@@ -56,11 +56,11 @@ function BulkActionControlRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-7 w-full items-center gap-1.5">
+    <div className="flex h-9 w-full items-center gap-1.5">
       <Button
         type="button"
         variant="ghost"
-        className="h-7 w-16 shrink-0 justify-start gap-2 px-2 text-[11px] text-foreground/70 shadow-none hover:bg-muted hover:text-foreground"
+        className="h-9 w-16 shrink-0 justify-start gap-2 px-2 text-sm text-foreground/70 shadow-none hover:bg-muted hover:text-foreground"
         onClick={onApply}
         disabled={disabled}
       >
@@ -82,7 +82,7 @@ export function AdminUpstreamsPage() {
   return (
     <div className="space-y-3 pb-10">
       <div className="flex h-10 items-center justify-between gap-3 px-1">
-        <h3 className="text-sm font-semibold">{t("pageTitle")}</h3>
+        <h3 className="font-display text-2xl font-normal">{t("pageTitle")}</h3>
         <AdminCircuitBreakerControl
           available={circuitBreaker.available}
           enabled={circuitBreaker.enabled}
@@ -141,7 +141,7 @@ export function AdminUpstreamsPage() {
         bulkContent={
           <div className="space-y-1">
             <BulkActionControlRow
-              icon={<ToggleLeft className="size-3 stroke-1" />}
+              icon={<ToggleLeft className="size-4 stroke-1" />}
               label={t("actions.apply")}
               onApply={() => setStatusConfirmOpen(true)}
               disabled={upstreams.loading || upstreams.batchApplying || upstreams.selected.size === 0 || !upstreams.batchStatus}
@@ -153,12 +153,12 @@ export function AdminUpstreamsPage() {
                 }}
                 disabled={upstreams.loading || upstreams.batchApplying || upstreams.selected.size === 0}
               >
-                <SelectTrigger size="xs" className="h-7 px-2 text-[11px] text-muted-foreground">
+                <SelectTrigger size="xs" className="h-9 px-2 text-sm text-muted-foreground">
                   <SelectValue placeholder={t("fields.status")} />
                 </SelectTrigger>
                 <SelectContent position="popper" align="start" className="z-[100]">
                   {(["active", "inactive"] as const).map((status) => (
-                    <SelectItem key={status} value={status} className="text-[11px]">
+                    <SelectItem key={status} value={status} className="text-xs">
                       {t(`status.${status}`)}
                     </SelectItem>
                   ))}
@@ -181,7 +181,7 @@ export function AdminUpstreamsPage() {
         <Button
           type="button"
           size="sm"
-          className="h-7 gap-1 text-xs"
+          className="h-9 gap-1 text-sm"
           onClick={upstreams.handleOpenCreate}
           disabled={upstreams.loading}
         >

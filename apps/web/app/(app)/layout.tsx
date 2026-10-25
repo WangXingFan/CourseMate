@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Inter, JetBrains_Mono, Newsreader } from "next/font/google";
 
 import { DesktopBootstrap, DesktopUpdateNotifier } from "@/features/desktop";
 import { AppVersionGuard } from "@/features/shell";
@@ -37,6 +37,19 @@ const geistMono = Geist_Mono({
   display: "optional",
 });
 
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "optional",
+});
+
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  display: "optional",
+});
+
 const jetBrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
@@ -69,7 +82,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${jetBrainsMono.variable} h-full`}
+      className={`${geistSans.variable} ${geistMono.variable} ${jetBrainsMono.variable} ${inter.variable} ${newsreader.variable} h-full`}
       data-branding-pending="true"
       suppressHydrationWarning
     >

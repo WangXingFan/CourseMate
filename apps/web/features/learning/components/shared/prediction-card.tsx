@@ -62,16 +62,16 @@ export function PredictionCard({
   }
 
   return (
-    <section className={cn("rounded-xl border border-border/60 bg-card p-4 text-card-foreground shadow-sm", className)}>
+    <section className={cn("rounded-lg border border-border bg-card p-5 text-card-foreground md:p-6", className)}>
       <div className="flex flex-wrap items-center gap-2">
-        <h2 className="text-[13px] font-medium text-foreground">{t("title")}</h2>
-        <Badge variant="outline" className="rounded-md px-1.5 text-[10px] font-normal">
+        <h2 className="text-base font-medium text-foreground">{t("title")}</h2>
+        <Badge variant="outline" className="border-seal/40 text-seal">
           {t("predictFirst")}
         </Badge>
       </div>
-      <p className="mt-2 text-xs leading-5 text-muted-foreground">{t("description")}</p>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">{t("description")}</p>
 
-      <p className="mt-4 text-sm font-medium leading-6 text-foreground">{question}</p>
+      <p className="mt-5 font-display text-xl leading-snug text-foreground">{question}</p>
       <div role="group" aria-label={t("optionsLabel")} className="mt-3 grid gap-2 sm:grid-cols-2">
         {options.map((option) => {
           const active = selected === option.id;
@@ -82,20 +82,20 @@ export function PredictionCard({
               aria-pressed={active}
               onClick={() => onSelect(option.id)}
               className={cn(
-                "flex min-h-10 items-center gap-2 rounded-lg border px-3 py-2 text-left text-xs leading-5 transition-colors",
+                "flex min-h-12 items-center gap-3 rounded-md border px-4 py-2.5 text-left text-sm leading-6 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35",
                 active
-                  ? "border-primary/50 bg-primary/8 text-foreground"
-                  : "border-border/60 bg-muted/15 text-muted-foreground hover:border-border hover:bg-muted/30",
+                  ? "border-primary bg-accent text-foreground"
+                  : "border-border bg-transparent text-foreground/80 hover:border-foreground/30 hover:bg-muted",
               )}
             >
               <span
                 aria-hidden
                 className={cn(
-                  "flex size-4 shrink-0 items-center justify-center rounded-full border",
+                  "flex size-5 shrink-0 items-center justify-center rounded-full border",
                   active ? "border-primary bg-primary text-primary-foreground" : "border-border",
                 )}
               >
-                {active ? <Check className="size-2.5" strokeWidth={2.4} /> : null}
+                {active ? <Check className="size-3" strokeWidth={2.4} /> : null}
               </span>
               {option.label}
             </button>
@@ -105,10 +105,10 @@ export function PredictionCard({
 
       <div className="mt-4 space-y-1.5">
         <div className="flex items-baseline justify-between gap-3">
-          <label htmlFor="prediction-reason" className="text-xs text-muted-foreground">
+          <label htmlFor="prediction-reason" className="text-sm text-foreground/85">
             {t("reasonLabel")}
           </label>
-          <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
+          <span className="font-mono text-xs tabular-nums text-muted-foreground">
             {reasonLength}/{minReasonLength}
           </span>
         </div>
@@ -118,30 +118,30 @@ export function PredictionCard({
           maxLength={400}
           onChange={(event) => onReason(event.target.value)}
           placeholder={t("reasonPlaceholder")}
-          className="min-h-20"
+          className="min-h-24"
         />
-        <p className="text-[11px] leading-5 text-muted-foreground">{t("reasonHint", { count: minReasonLength })}</p>
+        <p className="text-xs leading-5 text-muted-foreground">{t("reasonHint", { count: minReasonLength })}</p>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <Button type="button" size="sm" disabled={!ready} onClick={onSubmit}>
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <Button type="button" disabled={!ready} onClick={onSubmit}>
           <ClipboardCheck className="size-3.5" strokeWidth={1.8} />
           {t("submit")}
         </Button>
         {result ? (
-          <Button type="button" size="sm" variant="outline" onClick={onRetry}>
+          <Button type="button" variant="outline" onClick={onRetry}>
             <RotateCcw className="size-3.5" strokeWidth={1.8} />
             {t("retry")}
           </Button>
         ) : null}
-        <span className="text-[10px] text-muted-foreground">{t("noPenalty")}</span>
+        <span className="text-xs text-muted-foreground">{t("noPenalty")}</span>
       </div>
 
       {result ? (
         <div
           className={cn(
-            "mt-4 rounded-lg border px-3 py-3",
-            result.correct ? "border-emerald-500/30 bg-emerald-500/8" : "border-destructive/30 bg-destructive/5",
+            "mt-5 rounded-md border-l-2 px-4 py-3",
+            result.correct ? "border-emerald-600 bg-emerald-500/8" : "border-destructive bg-destructive/5",
           )}
         >
           <div className="flex items-start gap-2">
@@ -151,16 +151,16 @@ export function PredictionCard({
               <XCircle className="mt-0.5 size-4 shrink-0 text-destructive" strokeWidth={1.8} />
             )}
             <div className="min-w-0 flex-1">
-              <p className={cn("text-xs font-medium", result.correct ? "text-emerald-700 dark:text-emerald-400" : "text-destructive")}>
+              <p className={cn("text-sm font-medium", result.correct ? "text-emerald-700 dark:text-emerald-400" : "text-destructive")}>
                 {result.correct ? t("correct") : t("incorrect")}
               </p>
-              <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">
                 {result.correct ? t("correctHint") : t("incorrectHint")}
               </p>
               {result.correct ? (
                 <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <span className="text-[10px] text-muted-foreground">{t("codeLabel")}</span>
-                  <code className="rounded bg-background px-1.5 py-0.5 font-mono text-[11px] text-foreground">
+                  <span className="text-xs text-muted-foreground">{t("codeLabel")}</span>
+                  <code className="rounded bg-background px-1.5 py-0.5 font-mono text-xs text-foreground">
                     {result.code}
                   </code>
                   <Button type="button" size="xs" variant="outline" onClick={() => { void copyRecord(); }}>

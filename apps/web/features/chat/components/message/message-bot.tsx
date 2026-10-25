@@ -1,7 +1,6 @@
 "use client";
 
 import { ChevronDown, CircleAlert } from "lucide-react";
-import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import * as React from "react";
 import {
@@ -42,10 +41,6 @@ import { StreamdownRender } from "@/shared/components/markdown/streamdown-render
 import { useBranding } from "@/shared/config/branding-provider";
 
 const EMPTY_TRACE_EVENTS: NonNullable<NonNullable<ChatAreaMessage["processTrace"]>["events"]> = [];
-const GrainientBackground = dynamic(
-  () => import("@/components/reactbits/backgrounds/grainient").then((mod) => mod.GrainientBackground),
-  { ssr: false, loading: () => null },
-);
 
 function isVideoAttachment(attachment: MessageAttachment): boolean {
   const mimeType = attachment.mimeType.toLowerCase();
@@ -245,14 +240,14 @@ export function ChatMessageBot({
           <div className="mt-3 flex items-center justify-end gap-2">
             <Button
               variant="ghost"
-              className="rounded-lg text-xs font-medium"
+              className="rounded-lg text-sm font-medium"
               onClick={() => setIsEditing(false)}
             >
               {tCommon("cancel")}
             </Button>
             <Button
               variant="default"
-              className="rounded-lg text-xs font-medium shadow-none hover:bg-primary/60"
+              className="rounded-lg text-sm font-medium shadow-none hover:bg-primary/60"
               disabled={busy || nextContent.length === 0 || unchanged}
               onClick={() => void onEditSave()}
             >
@@ -285,7 +280,7 @@ export function ChatMessageBot({
 
       <div
         data-chat-assistant-content=""
-        className="w-full min-w-0 max-w-none overflow-hidden text-[15px] leading-8 text-foreground [overflow-wrap:anywhere]"
+        className="w-full min-w-0 max-w-none overflow-hidden text-base leading-7 text-foreground [overflow-wrap:anywhere]"
         style={{ fontFamily: "var(--font-chat)", fontWeight: "var(--font-chat-weight)" }}
       >
         {item.isStreaming && !hasStreamdownContent && !item.inlineAlert ? (
@@ -475,7 +470,7 @@ function rawResponseBody(details?: ChatInlineAlert["details"]): string {
 
 function DebugCodeBlock({ value }: { value: string }) {
   return (
-    <pre className="block max-h-96 min-w-0 w-full max-w-full justify-self-stretch overflow-y-auto overflow-x-hidden rounded-md bg-muted/45 px-4 py-3 text-[12px] leading-6 whitespace-pre-wrap break-words text-foreground [overflow-wrap:anywhere]">
+    <pre className="block max-h-96 min-w-0 w-full max-w-full justify-self-stretch overflow-y-auto overflow-x-hidden rounded-md bg-muted/45 px-4 py-3 text-xs leading-6 whitespace-pre-wrap break-words text-foreground [overflow-wrap:anywhere]">
       <code>{formatDebugValue(value)}</code>
     </pre>
   );
@@ -521,7 +516,7 @@ export function AssistantMessageSkeleton({ fileProc, label }: { fileProc?: boole
   const t = useTranslations("chat.messages");
   if (fileProc) {
     return (
-      <div className="flex items-center gap-2 pt-1 text-[13px] text-muted-foreground">
+      <div className="flex items-center gap-2 pt-1 text-sm text-muted-foreground">
         <span className="inline-block size-3.5 animate-spin rounded-full border-2 border-muted border-t-foreground/50" />
         {label?.trim() || t("processing")}
       </div>
@@ -542,26 +537,15 @@ function AssistantImageLoadingPlaceholder({ label }: { label?: string }) {
   const branding = useBranding();
   return (
     <div className="my-4 w-full max-w-[32rem] space-y-2.5">
-      <div className="flex items-center gap-2 pt-1 text-[13px] text-muted-foreground">
+      <div className="flex items-center gap-2 pt-1 text-sm text-muted-foreground">
         <span className="inline-block size-3.5 animate-spin rounded-full border-2 border-muted border-t-foreground/50" />
         {label?.trim() || t("processing")}
       </div>
       <div
-        className="relative aspect-video w-full overflow-hidden rounded-xl bg-[linear-gradient(135deg,#BAE6FD_0%,#60A5FA_52%,#A78BFA_100%)] text-primary"
+        className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-muted/30 text-primary"
       >
-        <GrainientBackground
-          className="absolute inset-0 text-primary/75"
-          color1="#BAE6FD"
-          color2="#60A5FA"
-          color3="#A78BFA"
-          contrast={1.48}
-          saturation={1.0}
-          timeSpeed={2.6}
-          warpAmplitude={72}
-          warpSpeed={2.1}
-        />
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <span className="select-none text-[clamp(1.75rem,7vw,4rem)] font-semibold tracking-[0.18em] text-white/30 mix-blend-overlay drop-shadow-sm">
+          <span className="select-none font-display text-3xl font-normal text-muted-foreground">
             {branding.shortName}
           </span>
         </div>
@@ -572,7 +556,7 @@ function AssistantImageLoadingPlaceholder({ label }: { label?: string }) {
 
 function InlineVideoLoadingPlaceholder() {
   return (
-    <div className="my-4 flex aspect-video w-full max-w-[40rem] items-center justify-center overflow-hidden rounded-xl bg-muted/20">
+    <div className="my-4 flex aspect-video w-full max-w-[40rem] items-center justify-center overflow-hidden rounded-lg bg-muted/20">
       <span className="size-4 animate-spin rounded-full border-2 border-muted-foreground/20 border-t-muted-foreground/55" />
     </div>
   );

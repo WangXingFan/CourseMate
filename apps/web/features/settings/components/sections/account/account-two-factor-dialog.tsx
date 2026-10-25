@@ -198,7 +198,7 @@ export function TwoFactorDialog({
                     <div className="space-y-1 text-center text-xs text-muted-foreground">
                       <p>{setupExpired ? t("setupExpired") : t("scanThenVerify")}</p>
                       {setupExpired ? (
-                        <Button type="button" variant="ghost" className="h-7 px-2 text-xs" onClick={() => void onStartSetup()}>
+                        <Button type="button" variant="ghost" className="h-8 px-2 text-xs" onClick={() => void onStartSetup()}>
                           {t("regenerate")}
                         </Button>
                       ) : (

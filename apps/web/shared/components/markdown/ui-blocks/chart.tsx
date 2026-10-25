@@ -128,8 +128,8 @@ function Chart({ id, props }: UIBlockRenderProps<ChartProps>) {
         ) : props.type === "radar" ? (
           <RadarChart data={rows} outerRadius="75%">
             <PolarGrid />
-            <PolarAngleAxis dataKey="x" fontSize={11} />
-            <PolarRadiusAxis fontSize={10} tickFormatter={formatValue} />
+            <PolarAngleAxis dataKey="x" fontSize={14} />
+            <PolarRadiusAxis fontSize={14} tickFormatter={formatValue} />
             <ChartTooltip content={<ChartTooltipContent />} />
             {props.series.map((_, index) =>
               hidden.has(seriesKey(index)) ? null : (
@@ -140,8 +140,8 @@ function Chart({ id, props }: UIBlockRenderProps<ChartProps>) {
         ) : props.type === "scatter" ? (
           <ScatterChart accessibilityLayer margin={CARTESIAN_MARGIN}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="x" type="number" tickLine={false} axisLine={false} fontSize={11} tickMargin={6} domain={["auto", "auto"]} />
-            <YAxis dataKey="y" type="number" tickLine={false} axisLine={false} fontSize={11} width="auto" tickMargin={6} tickFormatter={formatValue} domain={["auto", "auto"]} />
+            <XAxis dataKey="x" type="number" tickLine={false} axisLine={false} fontSize={14} tickMargin={6} domain={["auto", "auto"]} />
+            <YAxis dataKey="y" type="number" tickLine={false} axisLine={false} fontSize={14} width="auto" tickMargin={6} tickFormatter={formatValue} domain={["auto", "auto"]} />
             <ChartTooltip content={<ChartTooltipContent />} cursor={{ strokeDasharray: "3 3" }} />
             {props.series.map((series, index) =>
               hidden.has(seriesKey(index)) ? null : (
@@ -190,21 +190,21 @@ function CartesianBody({
   const baseType: SeriesType = type === "line" || type === "area" ? type : "bar";
   const hasRightAxis = series.some((entry) => entry.axis === "right");
   const categoryAxis = horizontal ? (
-    <YAxis dataKey="x" type="category" tickLine={false} axisLine={false} fontSize={11} width="auto" tickMargin={6} interval={0} />
+    <YAxis dataKey="x" type="category" tickLine={false} axisLine={false} fontSize={14} width="auto" tickMargin={6} interval={0} />
   ) : (
-    <XAxis dataKey="x" tickLine={false} axisLine={false} fontSize={11} tickMargin={6} interval="preserveStartEnd" minTickGap={16} />
+    <XAxis dataKey="x" tickLine={false} axisLine={false} fontSize={14} tickMargin={6} interval="preserveStartEnd" minTickGap={16} />
   );
   const valueAxis = horizontal ? (
-    <XAxis type="number" tickLine={false} axisLine={false} fontSize={11} tickMargin={6} tickFormatter={formatAxis} />
+    <XAxis type="number" tickLine={false} axisLine={false} fontSize={14} tickMargin={6} tickFormatter={formatAxis} />
   ) : (
-    <YAxis yAxisId="left" tickLine={false} axisLine={false} fontSize={11} width="auto" tickMargin={6} tickFormatter={formatAxis} />
+    <YAxis yAxisId="left" tickLine={false} axisLine={false} fontSize={14} width="auto" tickMargin={6} tickFormatter={formatAxis} />
   );
   return (
     <ComposedChart data={rows} layout={horizontal ? "vertical" : "horizontal"} accessibilityLayer margin={CARTESIAN_MARGIN} stackOffset={percent ? "expand" : "none"}>
       <CartesianGrid vertical={horizontal} horizontal={!horizontal} strokeDasharray="3 3" />
       {categoryAxis}
       {valueAxis}
-      {hasRightAxis && !horizontal ? <YAxis yAxisId="right" orientation="right" tickLine={false} axisLine={false} fontSize={11} width="auto" tickMargin={6} tickFormatter={NUMBER_FORMAT.format} /> : null}
+      {hasRightAxis && !horizontal ? <YAxis yAxisId="right" orientation="right" tickLine={false} axisLine={false} fontSize={14} width="auto" tickMargin={6} tickFormatter={NUMBER_FORMAT.format} /> : null}
       <ChartTooltip content={<ChartTooltipContent />} />
       {series.map((entry, index) => {
         const key = seriesKey(index);
@@ -257,8 +257,8 @@ function FunnelChartBody({ rows, series, hidden, formatValue }: BodyProps & { fo
     <FunnelChart>
       <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
       <Funnel data={slices} dataKey="value" nameKey="name" isAnimationActive={false}>
-        <LabelList dataKey="name" position="right" fill="var(--foreground)" fontSize={11} stroke="none" />
-        <LabelList dataKey="value" position="left" fill="var(--muted-foreground)" fontSize={11} stroke="none" formatter={(value) => (typeof value === "number" ? formatValue(value) : String(value ?? ""))} />
+        <LabelList dataKey="name" position="right" fill="var(--foreground)" fontSize={14} stroke="none" />
+        <LabelList dataKey="value" position="left" fill="var(--muted-foreground)" fontSize={14} stroke="none" formatter={(value) => (typeof value === "number" ? formatValue(value) : String(value ?? ""))} />
         {slices.map((slice) => (
           <Cell key={slice.key} fill={slice.fill} />
         ))}
@@ -277,7 +277,7 @@ function RadialChartBody({ rows, series, hidden, formatValue }: BodyProps & { fo
       <PolarAngleAxis type="number" domain={[0, max]} tick={false} />
       <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
       <RadialBar dataKey="value" background={{ fill: "var(--muted)" }} cornerRadius={4} isAnimationActive={false}>
-        <LabelList dataKey="value" position="insideStart" fill="var(--background)" fontSize={10} formatter={(value) => (typeof value === "number" ? formatValue(value) : String(value ?? ""))} />
+        <LabelList dataKey="value" position="insideStart" fill="var(--background)" fontSize={14} formatter={(value) => (typeof value === "number" ? formatValue(value) : String(value ?? ""))} />
       </RadialBar>
     </RadialBarChart>
   );

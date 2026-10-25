@@ -176,7 +176,7 @@ export function ImportClassroomStudentsDialog({
               </table>
             </div>
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[11px] leading-5 text-muted-foreground">{t("passwordNote")}</p>
+              <p className="text-xs leading-5 text-muted-foreground">{t("passwordNote")}</p>
               {result.credentials.length > 0 && (
                 <Button type="button" size="sm" className="shrink-0" onClick={exportCredentials}>
                   <Download className="size-3.5" />{t("downloadCredentials", { count: result.credentials.length })}
@@ -207,10 +207,10 @@ export function ImportClassroomStudentsDialog({
             {!rosterFile && <div className="space-y-1">
               <Label htmlFor="student-roster-csv">{t("csvLabel")}</Label>
               <Textarea id="student-roster-csv" required disabled={pending} value={csv} maxLength={2_000_000}
-                className="min-h-40 resize-y font-mono text-[11px]" placeholder={t("csvPlaceholder")}
+                className="min-h-40 resize-y font-mono text-xs" placeholder={t("csvPlaceholder")}
                 onChange={(event) => { setCSV(event.target.value); setReadError(""); }} />
             </div>}
-            <p className="text-[11px] leading-5 text-muted-foreground">{t("passwordNote")}</p>
+            <p className="text-xs leading-5 text-muted-foreground">{t("passwordNote")}</p>
             <DialogFooter>
               <Button type="button" variant="ghost" disabled={pending} onClick={onClose}>{t("cancel")}</Button>
               <Button type="submit" disabled={(!rosterFile && !csv.trim()) || pending || !!readError}>

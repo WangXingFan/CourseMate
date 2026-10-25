@@ -538,7 +538,7 @@ export function UpstreamSheet({
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-2">
             <div className="min-w-0 space-y-1">
-              <Label className="text-xs font-normal text-muted-foreground" htmlFor="upstream-name">{t("sheet.name")} *</Label>
+              <Label className="text-sm font-normal text-muted-foreground" htmlFor="upstream-name">{t("sheet.name")} *</Label>
               <Input
                 id="upstream-name"
                 required
@@ -549,7 +549,7 @@ export function UpstreamSheet({
             </div>
 
             <div className="min-w-0 space-y-1">
-              <Label className="text-xs font-normal text-muted-foreground" htmlFor="upstream-url">{t("sheet.baseUrl")} *</Label>
+              <Label className="text-sm font-normal text-muted-foreground" htmlFor="upstream-url">{t("sheet.baseUrl")} *</Label>
               <Input
                 id="upstream-url"
                 required
@@ -560,7 +560,7 @@ export function UpstreamSheet({
             </div>
 
             <div className="min-w-0 space-y-1">
-              <Label className="text-xs font-normal text-muted-foreground" htmlFor="upstream-keys">
+              <Label className="text-sm font-normal text-muted-foreground" htmlFor="upstream-keys">
                 {mode === "create" ? `${t("sheet.apiKeys")} *` : t("sheet.apiKeysAdd")}
               </Label>
               <Textarea
@@ -575,7 +575,7 @@ export function UpstreamSheet({
               />
               {mode === "edit" && existingAPIKeyItems.length > 0 ? (
                 <div className="mt-2 space-y-1.5">
-                  <div className="flex items-center justify-between gap-3 text-[11px] leading-4 text-muted-foreground">
+                  <div className="flex items-center justify-between gap-3 text-xs leading-4 text-muted-foreground">
                     <span className="truncate">{t("sheet.existingKeys", { count: existingAPIKeyItems.length })}</span>
                     {pendingDeleteCount > 0 ? (
                       <span className="shrink-0 text-destructive">
@@ -597,7 +597,7 @@ export function UpstreamSheet({
                                 {item.keyMasked}
                               </span>
                               {markedForDeletion ? (
-                                <span className="shrink-0 text-[11px] text-destructive">
+                                <span className="shrink-0 text-xs text-destructive">
                                   {t("sheet.apiKeyDeleteAfterSave")}
                                 </span>
                               ) : null}
@@ -614,8 +614,8 @@ export function UpstreamSheet({
                                   variant="ghost"
                                   size="icon-sm"
                                   className={markedForDeletion
-                                    ? "size-6 text-muted-foreground hover:text-foreground"
-                                    : "size-6 text-muted-foreground opacity-70 hover:text-destructive group-hover/key:opacity-100"}
+                                    ? "size-8 text-muted-foreground hover:text-foreground"
+                                    : "size-8 text-muted-foreground opacity-70 hover:text-destructive group-hover/key:opacity-100"}
                                   aria-label={markedForDeletion ? t("sheet.apiKeyRestore") : t("sheet.apiKeyDelete")}
                                   onClick={() => {
                                     if (markedForDeletion) {
@@ -643,14 +643,14 @@ export function UpstreamSheet({
                   </div>
                 </div>
               ) : mode === "edit" && target?.apiKeysMasked ? (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {t("sheet.existingKeys", { count: countMaskedApiKeys(target.apiKeysMasked) })}
                 </p>
               ) : null}
             </div>
 
             <div className="min-w-0 space-y-1">
-              <Label className="text-xs font-normal text-muted-foreground">{t("fields.compatibility")} *</Label>
+              <Label className="text-sm font-normal text-muted-foreground">{t("fields.compatibility")} *</Label>
               <Select
                 value={form.compatible}
                 onValueChange={(v) => {
@@ -671,7 +671,7 @@ export function UpstreamSheet({
             </div>
 
             <div className="min-w-0 space-y-1">
-              <Label className="text-xs font-normal text-muted-foreground">{t("fields.status")} *</Label>
+              <Label className="text-sm font-normal text-muted-foreground">{t("fields.status")} *</Label>
               <Select
                 value={form.status}
                 onValueChange={(v) => {
@@ -690,7 +690,7 @@ export function UpstreamSheet({
 
             {mode === "edit" && target && onManageModels && (
               <div className="min-w-0 space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground">{t("sheet.models")}</Label>
+                <Label className="text-sm font-normal text-muted-foreground">{t("sheet.models")}</Label>
                 <div className="flex h-8 items-center justify-between rounded-md bg-muted/35 px-2.5 text-xs">
                   <span className="text-muted-foreground">
                     {t("table.modelCountSummary", {
@@ -727,7 +727,7 @@ export function UpstreamSheet({
                   <div className="space-y-3">
                     {PROTOCOL_DEFAULT_KINDS.map((kind) => (
                       <div key={kind} className="min-w-0 space-y-1">
-                        <Label className="text-xs font-normal text-muted-foreground">{t(`kinds.${kind}`)}</Label>
+                        <Label className="text-sm font-normal text-muted-foreground">{t(`kinds.${kind}`)}</Label>
                         <Select
                           value={protocolDefaultValue(form.protocolDefaultsJson, kind)}
                           onValueChange={(value) => setProtocolDefault(kind, value)}
@@ -746,7 +746,7 @@ export function UpstreamSheet({
                         </Select>
                       </div>
                     ))}
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                       {t("sheet.protocolDefaultsDescription")}
                     </p>
                   </div>
@@ -758,9 +758,9 @@ export function UpstreamSheet({
                   <span>{t("sheet.timeouts")}</span>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pb-4 pt-0">
-                  <p className="text-xs leading-5 text-muted-foreground">{t("sheet.circuitBreakDescription")}</p>
+                  <p className="text-sm leading-6 text-muted-foreground">{t("sheet.circuitBreakDescription")}</p>
                   <div className="min-w-0 space-y-1">
-                    <Label className="text-xs font-normal text-muted-foreground" htmlFor="connect-timeout">{t("sheet.connectTimeout")}</Label>
+                    <Label className="text-sm font-normal text-muted-foreground" htmlFor="connect-timeout">{t("sheet.connectTimeout")}</Label>
                     <Input
                       id="connect-timeout"
                       type="number"
@@ -770,7 +770,7 @@ export function UpstreamSheet({
                     />
                   </div>
                   <div className="min-w-0 space-y-1">
-                    <Label className="text-xs font-normal text-muted-foreground" htmlFor="read-timeout">{t("sheet.readTimeout")}</Label>
+                    <Label className="text-sm font-normal text-muted-foreground" htmlFor="read-timeout">{t("sheet.readTimeout")}</Label>
                     <Input
                       id="read-timeout"
                       type="number"
@@ -780,7 +780,7 @@ export function UpstreamSheet({
                     />
                   </div>
                   <div className="min-w-0 space-y-1">
-                    <Label className="text-xs font-normal text-muted-foreground" htmlFor="stream-timeout">{t("sheet.streamTimeout")}</Label>
+                    <Label className="text-sm font-normal text-muted-foreground" htmlFor="stream-timeout">{t("sheet.streamTimeout")}</Label>
                     <Input
                       id="stream-timeout"
                       type="number"
@@ -798,7 +798,7 @@ export function UpstreamSheet({
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pb-4 pt-0">
                   <div className="min-w-0 space-y-1">
-                    <Label className="text-xs font-normal text-muted-foreground" htmlFor="cb-failure-threshold">{t("sheet.failureThreshold")}</Label>
+                    <Label className="text-sm font-normal text-muted-foreground" htmlFor="cb-failure-threshold">{t("sheet.failureThreshold")}</Label>
                     <Input
                       id="cb-failure-threshold"
                       type="number"
@@ -806,12 +806,12 @@ export function UpstreamSheet({
                       value={form.cbFailureThreshold}
                       onChange={(e) => setField("cbFailureThreshold", e.target.value)}
                     />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                       {t("sheet.failureThresholdDescription")}
                     </p>
                   </div>
                   <div className="min-w-0 space-y-1">
-                    <Label className="text-xs font-normal text-muted-foreground" htmlFor="cb-model-threshold">{t("sheet.modelThreshold")}</Label>
+                    <Label className="text-sm font-normal text-muted-foreground" htmlFor="cb-model-threshold">{t("sheet.modelThreshold")}</Label>
                     <Input
                       id="cb-model-threshold"
                       type="number"
@@ -819,12 +819,12 @@ export function UpstreamSheet({
                       value={form.cbModelThreshold}
                       onChange={(e) => setField("cbModelThreshold", e.target.value)}
                     />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                       {t("sheet.modelThresholdDescription")}
                     </p>
                   </div>
                   <div className="min-w-0 space-y-1">
-                    <Label className="text-xs font-normal text-muted-foreground">{t("sheet.thresholdLogic")}</Label>
+                    <Label className="text-sm font-normal text-muted-foreground">{t("sheet.thresholdLogic")}</Label>
                     <Select
                       value={form.cbThresholdLogic}
                       onValueChange={(v) => {
@@ -841,7 +841,7 @@ export function UpstreamSheet({
                     </Select>
                   </div>
                   <div className="min-w-0 space-y-1">
-                    <Label className="text-xs font-normal text-muted-foreground" htmlFor="cb-duration">{t("sheet.circuitDuration")}</Label>
+                    <Label className="text-sm font-normal text-muted-foreground" htmlFor="cb-duration">{t("sheet.circuitDuration")}</Label>
                     <Input
                       id="cb-duration"
                       type="number"
@@ -850,7 +850,7 @@ export function UpstreamSheet({
                     />
                   </div>
                   <div className="min-w-0 space-y-1">
-                    <Label className="text-xs font-normal text-muted-foreground" htmlFor="cb-window">{t("sheet.circuitWindow")}</Label>
+                    <Label className="text-sm font-normal text-muted-foreground" htmlFor="cb-window">{t("sheet.circuitWindow")}</Label>
                     <Input
                       id="cb-window"
                       type="number"
@@ -878,16 +878,16 @@ export function UpstreamSheet({
                             type="button"
                             variant="ghost"
                             size="sm"
-                            className="h-6 gap-1 px-2 text-[11px]"
+                            className="h-9 gap-1 px-2 text-sm"
                             disabled={pending}
                           >
-                            <ListPlus className="size-3" />
+                            <ListPlus className="size-4" />
                             {t("sheet.quickFillHeaders")}
-                            <ChevronDown className="size-3" />
+                            <ChevronDown className="size-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="min-w-64">
-                          <DropdownMenuLabel className="text-[10px] text-muted-foreground">
+                          <DropdownMenuLabel className="text-xs text-muted-foreground">
                             {t("sheet.commonHeaderPresets")}
                           </DropdownMenuLabel>
                           <DropdownMenuItem
@@ -909,7 +909,7 @@ export function UpstreamSheet({
                             {t("sheet.requestIDHeader")}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuLabel className="text-[10px] text-muted-foreground">
+                          <DropdownMenuLabel className="text-xs text-muted-foreground">
                             {t("sheet.providerHeaderPresets")}
                           </DropdownMenuLabel>
                           <DropdownMenuItem

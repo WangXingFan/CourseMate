@@ -129,7 +129,7 @@ export function AdminPlatformFilesDialog({
                   <div className="flex justify-center py-14"><Spinner className="size-4" /></div>
                 ) : files.length > 0 ? (
                   <>
-                    <div className="flex h-8 shrink-0 items-center px-3 text-[11px] text-muted-foreground">
+                    <div className="flex h-8 shrink-0 items-center px-3 text-xs text-muted-foreground">
                       <label className="flex cursor-pointer items-center gap-2">
                         <Checkbox
                           checked={allLoadedSelected ? true : someLoadedSelected ? "indeterminate" : false}
@@ -147,12 +147,12 @@ export function AdminPlatformFilesDialog({
                               type="button"
                               variant="ghost"
                               size="icon-sm"
-                              className="size-5 text-destructive shadow-none hover:bg-destructive/10 hover:text-destructive"
+                              className="size-8 text-destructive shadow-none hover:bg-destructive/10 hover:text-destructive"
                               aria-label={t("bulkDeletePlatformFiles")}
                               disabled={busy}
                               onClick={requestBulkDelete}
                             >
-                              <Trash2 className="size-3" strokeWidth={1.6} />
+                              <Trash2 className="size-4" strokeWidth={1.6} />
                             </Button>
                           </span>
                         </>
@@ -193,10 +193,10 @@ export function AdminPlatformFilesDialog({
                             <span className="min-w-0 flex-1 truncate text-xs text-foreground" title={file.fileName}>
                               {file.fileName}
                             </span>
-                            <span className="flex h-5 w-16 shrink-0 items-center justify-end text-right text-[10px] leading-none text-muted-foreground">
+                            <span className="flex h-5 w-16 shrink-0 items-center justify-end text-right text-xs leading-none text-muted-foreground">
                               {formatBytes(file.sizeBytes)}
                             </span>
-                            <span className="ml-3 flex h-5 w-16 shrink-0 items-center justify-end truncate text-right text-[10px] leading-none text-muted-foreground" title={statusLabel}>
+                            <span className="ml-3 flex h-5 w-16 shrink-0 items-center justify-end truncate text-right text-xs leading-none text-muted-foreground" title={statusLabel}>
                               {statusLabel}
                             </span>
                             <span className="ml-2 flex h-5 w-10 shrink-0 items-center justify-center">
@@ -204,7 +204,7 @@ export function AdminPlatformFilesDialog({
                                 type="button"
                                 variant="ghost"
                                 size="icon-sm"
-                                className="size-5 shrink-0 text-muted-foreground hover:text-destructive"
+                                className="size-8 shrink-0 text-muted-foreground hover:text-destructive"
                                 aria-label={t("deletePlatformFile")}
                                 disabled={busy}
                                 onClick={(event) => {
@@ -214,8 +214,8 @@ export function AdminPlatformFilesDialog({
                                 }}
                               >
                                 {deletingFileID === file.fileID
-                                  ? <Spinner className="size-3" />
-                                  : <Trash2 className="size-3" strokeWidth={1.6} />}
+                                  ? <Spinner className="size-4" />
+                                  : <Trash2 className="size-4" strokeWidth={1.6} />}
                               </Button>
                             </span>
                           </div>

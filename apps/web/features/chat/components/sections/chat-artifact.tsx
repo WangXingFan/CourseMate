@@ -92,7 +92,7 @@ function ArtifactActionButton({
           type="button"
           variant="ghost"
           size="icon"
-          className="size-7 rounded-md text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground"
+          className="size-8 rounded-md text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground"
           aria-label={label}
           disabled={disabled}
           onClick={onClick}
@@ -198,7 +198,7 @@ function ChatArtifactPanel({
           <div className="flex min-w-0 max-w-[calc(50%-72px)] items-center gap-2">
             <h2 className="shrink-0 text-sm font-semibold tracking-tight">{t("title")}</h2>
             <Select value={artifact.id} onValueChange={onArtifactChange} disabled={artifacts.length <= 1}>
-              <SelectTrigger className="h-6 w-[92px] min-w-0 rounded-md px-2 text-[11px]">
+              <SelectTrigger className="h-9 w-[92px] min-w-0 rounded-md px-2 text-sm">
                 <SelectValue aria-label={t("selectArtifact")} />
               </SelectTrigger>
               <SelectContent align="start">
@@ -228,7 +228,7 @@ function ChatArtifactPanel({
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="size-7 rounded-md text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground"
+                  className="size-8 rounded-md text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground"
                   value={artifact.code}
                   messages={{ copied: t("sourceCopied"), failed: t("copyFailed") }}
                   iconClassName="size-3"

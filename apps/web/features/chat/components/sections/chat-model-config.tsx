@@ -713,7 +713,7 @@ function ModelOptionFilterBadge({
       data-filtered={status === "filtered"}
       data-inactive={status === "inactive"}
       data-route-dependent={status === "route-dependent"}
-      className="shrink-0 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] leading-none text-emerald-700 data-[filtered=true]:bg-muted data-[filtered=true]:text-muted-foreground data-[inactive=true]:bg-muted data-[inactive=true]:text-muted-foreground data-[route-dependent=true]:bg-amber-500/10 data-[route-dependent=true]:text-amber-700"
+      className="shrink-0 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-2xs leading-none text-emerald-700 data-[filtered=true]:bg-muted data-[filtered=true]:text-muted-foreground data-[inactive=true]:bg-muted data-[inactive=true]:text-muted-foreground data-[route-dependent=true]:bg-amber-500/10 data-[route-dependent=true]:text-amber-700"
     >
       {status === "inactive"
         ? inactiveLabel
@@ -908,7 +908,7 @@ export function ChatModelConfig({
       }}
       className="w-fit gap-0"
     >
-      <TabsList className="h-7">
+      <TabsList className="h-9">
         <TabsTrigger value="visual">{tComposer("visual")}</TabsTrigger>
         <TabsTrigger value="json">JSON</TabsTrigger>
       </TabsList>
@@ -923,7 +923,7 @@ export function ChatModelConfig({
         </div>
         {modelProtocolLabels ? (
           <span
-            className="max-w-[70%] shrink-0 truncate rounded-md bg-muted px-1.5 py-0.5 font-mono text-[11px] leading-none text-muted-foreground"
+            className="max-w-[70%] shrink-0 truncate rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs leading-none text-muted-foreground"
             title={selectedProtocols.join(", ")}
           >
             {modelProtocolLabels}
@@ -944,7 +944,7 @@ export function ChatModelConfig({
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="h-6 px-2 text-[11px]"
+                className="px-2"
                 onClick={() => replaceOptionsDraft({})}
               >
                 {tComposer("clear")}
@@ -953,7 +953,7 @@ export function ChatModelConfig({
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="h-6 px-2 text-[11px]"
+                className="px-2"
                 disabled={defaultRestorePending}
                 onClick={() => void handleRestoreDefaultOptions()}
               >
@@ -983,14 +983,14 @@ export function ChatModelConfig({
           <TooltipTrigger asChild>
             <button
               type="button"
-              className="inline-flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
               aria-label={tComposer("ignoredHelp")}
             >
               <CircleHelp className="size-3.5" />
             </button>
           </TooltipTrigger>
           <TooltipContent side="left" align="end" className="max-w-64">
-            <div className="space-y-1.5 text-xs">
+            <div className="space-y-1.5 text-sm">
               <p>{tComposer("notEnabledHelp")}</p>
               <p>{tComposer("ignoredHelp")}</p>
               <p>{tComposer("routeDependentHelp")}</p>
@@ -1045,7 +1045,7 @@ export function ChatModelConfig({
                     </div>
                     {detailText ? (
                       <p
-                        className={cn("truncate text-[11px] leading-4 text-muted-foreground", ignored && "line-through")}
+                        className={cn("truncate text-xs leading-4 text-muted-foreground", ignored && "line-through")}
                         title={detailText}
                       >
                         {detailText}
@@ -1055,7 +1055,7 @@ export function ChatModelConfig({
                   {!editableInput ? (
                     <code
                       className={cn(
-                        "block max-w-full truncate justify-self-start rounded-md bg-muted/60 px-2 py-1 font-mono text-[11px] leading-none text-muted-foreground sm:justify-self-end",
+                        "block max-w-full truncate justify-self-start rounded-md bg-muted/60 px-2 py-1 font-mono text-xs leading-none text-muted-foreground sm:justify-self-end",
                         ignored && "line-through",
                       )}
                       title={valueText}
@@ -1133,7 +1133,7 @@ export function ChatModelConfig({
             type="button"
             variant="ghost"
             size="icon-sm"
-            className="size-7 rounded-md text-muted-foreground hover:text-foreground sm:size-8"
+            className="size-8 rounded-md text-muted-foreground hover:text-foreground"
             disabled={disabled}
             onClick={openOptionsDialog}
             aria-label={tComposer("modelOptions")}

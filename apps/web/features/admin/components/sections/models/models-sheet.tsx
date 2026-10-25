@@ -540,7 +540,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
 
             <div className="space-y-4">
               <div className="min-w-0 space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground" htmlFor="model-platform-name">{t("platformModel")}</Label>
+                <Label className="text-sm font-normal text-muted-foreground" htmlFor="model-platform-name">{t("platformModel")}</Label>
                 <Input
                   id="model-platform-name"
                   value={form.platformModelName}
@@ -551,7 +551,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
               </div>
 
               <div className="min-w-0 space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground" htmlFor="model-vendor">{t("sheet.vendor")}</Label>
+                <Label className="text-sm font-normal text-muted-foreground" htmlFor="model-vendor">{t("sheet.vendor")}</Label>
                 <Combobox
                   id="model-vendor"
                   items={vendorOptions}
@@ -606,7 +606,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
               </div>
 
               <div className="min-w-0 space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground" htmlFor="model-display-group">
+                <Label className="text-sm font-normal text-muted-foreground" htmlFor="model-display-group">
                   {t("sheet.displayGroup")}
                 </Label>
                 <Select
@@ -628,11 +628,11 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-xs leading-5 text-muted-foreground">{t("sheet.displayGroupDescription")}</p>
+                <p className="text-sm leading-6 text-muted-foreground">{t("sheet.displayGroupDescription")}</p>
               </div>
 
               <div className="min-w-0 space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground">{t("fields.status")}</Label>
+                <Label className="text-sm font-normal text-muted-foreground">{t("fields.status")}</Label>
                 <Select
                   value={form.status}
                   onValueChange={(v) => {
@@ -654,7 +654,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
               </div>
 
               <div className="min-w-0 space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground">{t("sheet.kind")}</Label>
+                <Label className="text-sm font-normal text-muted-foreground">{t("sheet.kind")}</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -667,7 +667,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                       <span className={`min-w-0 flex-1 truncate text-left ${selectedKindLabel ? "" : "text-muted-foreground"}`}>
                         {selectedKindLabel || t("sheet.selectKind")}
                       </span>
-                      <ChevronDownIcon className="size-3 shrink-0 text-muted-foreground opacity-50" />
+                      <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent align="start" className="w-48 p-1">
@@ -691,7 +691,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
               </div>
 
               <div className="min-w-0 space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground" htmlFor="model-icon">{t("sheet.icon")}</Label>
+                <Label className="text-sm font-normal text-muted-foreground" htmlFor="model-icon">{t("sheet.icon")}</Label>
                 <ModelIconField
                   id="model-icon"
                   value={form.icon}
@@ -702,7 +702,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                   onUploadingChange={setIconUploading}
                 />
                 {form.icon.trim() === "" ? (
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-sm text-muted-foreground">
                     {t("sheet.iconAutoDescription", { vendor: resolvedIdentity.vendorLabel })}
                   </p>
                 ) : null}
@@ -720,7 +720,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                   {t("sheet.capabilities")}
                 </AccordionTrigger>
                 <AccordionContent className="space-y-3 pb-4 pt-0">
-                  <p className="text-xs leading-5 text-muted-foreground">
+                  <p className="text-sm leading-6 text-muted-foreground">
                     {t("sheet.capabilitiesDescription")}
                   </p>
                   <ModelContextWindowField
@@ -747,13 +747,13 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                       type="button"
                       variant="secondary"
                       size="sm"
-                      className="h-8 justify-between px-2 text-xs font-normal shadow-none"
+                      className="h-9 justify-between px-2 text-sm font-normal shadow-none"
                       onClick={() => setShowCapabilitiesJSONAdvanced((prev) => !prev)}
                     >
                       {t("sheet.capabilitiesAdvancedJSON")}
                       <ChevronDownIcon
                         className={cn(
-                          "size-3 transition-transform",
+                          "size-4 transition-transform",
                           showCapabilitiesJSONAdvanced && "rotate-180",
                         )}
                       />
@@ -762,7 +762,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                   {showCapabilitiesJSONAdvanced ? (
                     <div className="space-y-1.5 pt-1">
                       <div className="flex min-w-0 items-center justify-between gap-2">
-                        <p className="truncate text-[11px] text-muted-foreground">
+                        <p className="truncate text-sm text-muted-foreground">
                           {t("sheet.capabilitiesJSON")}
                         </p>
                         <ModelCapabilitiesGuideButton t={t} />
@@ -785,12 +785,12 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                   {t("sheet.circuitBreak")}
                 </AccordionTrigger>
                 <AccordionContent className="space-y-3 pb-4 pt-0">
-                  <p className="text-xs leading-5 text-muted-foreground">
+                  <p className="text-sm leading-6 text-muted-foreground">
                     {t("sheet.circuitBreakDescription")}
                   </p>
                   <div className="grid min-w-0 grid-cols-1 gap-3">
                     <div className="space-y-1">
-                      <Label className="text-xs font-normal text-muted-foreground" htmlFor="model-cb-policy-mode">
+                      <Label className="text-sm font-normal text-muted-foreground" htmlFor="model-cb-policy-mode">
                         {t("sheet.circuitPolicyMode")}
                       </Label>
                       <Select
@@ -810,7 +810,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                       </Select>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs font-normal text-muted-foreground" htmlFor="model-cb-failure-threshold">
+                      <Label className="text-sm font-normal text-muted-foreground" htmlFor="model-cb-failure-threshold">
                         {t("sheet.failureThreshold")}
                       </Label>
                       <Input
@@ -824,7 +824,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs font-normal text-muted-foreground" htmlFor="model-cb-duration-min">
+                      <Label className="text-sm font-normal text-muted-foreground" htmlFor="model-cb-duration-min">
                         {t("sheet.circuitDuration")}
                       </Label>
                       <Input
@@ -838,7 +838,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs font-normal text-muted-foreground" htmlFor="model-cb-window-min">
+                      <Label className="text-sm font-normal text-muted-foreground" htmlFor="model-cb-window-min">
                         {t("sheet.circuitWindow")}
                       </Label>
                       <Input
@@ -861,7 +861,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pb-4 pt-0">
                   <div className="space-y-1">
-                    <Label className="text-xs font-normal text-muted-foreground">{t("sheet.accessScope")}</Label>
+                    <Label className="text-sm font-normal text-muted-foreground">{t("sheet.accessScope")}</Label>
                     <Select
                       value={form.accessScope}
                       onValueChange={(v) => {
@@ -881,7 +881,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
 
                   <FeatureGate feature="multiUser">
                     <div className="space-y-1.5">
-                      <Label className="text-xs font-normal text-muted-foreground">
+                      <Label className="text-sm font-normal text-muted-foreground">
                         {t("sheet.permissionGroups")}
                       </Label>
                       <PermissionGroupSelector
@@ -895,7 +895,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                         autoBadgeLabel={t("sheet.permissionGroupsAutoBadge")}
                         onSelectedIDsChange={setManualPermissionGroupIDs}
                       />
-                      <p className={cn("text-[11px] leading-4", showPermissionGroupUnassigned ? "text-destructive" : "text-muted-foreground")}>
+                      <p className={cn("text-xs leading-4", showPermissionGroupUnassigned ? "text-destructive" : "text-muted-foreground")}>
                         {showPermissionGroupUnassigned
                           ? t("sheet.permissionGroupsUnassigned")
                           : t("sheet.permissionGroupsDescription")}
@@ -904,7 +904,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                   </FeatureGate>
 
                   <div className="space-y-1">
-                    <Label className="text-xs font-normal text-muted-foreground" htmlFor="model-desc">{t("sheet.description")}</Label>
+                    <Label className="text-sm font-normal text-muted-foreground" htmlFor="model-desc">{t("sheet.description")}</Label>
                     <Textarea
                       id="model-desc"
                       value={form.description}
@@ -916,7 +916,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                   </div>
 
                   <div className="space-y-1">
-                    <Label className="text-xs font-normal text-muted-foreground" htmlFor="model-system-prompt">{t("sheet.systemPrompt")}</Label>
+                    <Label className="text-sm font-normal text-muted-foreground" htmlFor="model-system-prompt">{t("sheet.systemPrompt")}</Label>
                     <Textarea
                       id="model-system-prompt"
                       value={form.systemPrompt}
@@ -926,7 +926,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                       disabled={pending}
                       maxLength={20000}
                     />
-                    <p className="mt-1 text-[11px] text-muted-foreground">
+                    <p className="mt-1 text-sm text-muted-foreground">
                       {t("sheet.systemPromptDescription")}
                     </p>
                   </div>
@@ -943,14 +943,14 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                   {mode === "create" ? (
                     <div className="space-y-2">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="min-w-0 text-xs text-muted-foreground">
+                        <p className="min-w-0 text-sm text-muted-foreground">
                           {t("sources.initialSourcesHelp")}
                         </p>
                         <Button
                           type="button"
                           size="sm"
                           variant="secondary"
-                          className="h-8 shrink-0 px-2 text-xs font-normal shadow-none"
+                          className="h-9 shrink-0 px-2 text-sm font-normal shadow-none"
                           disabled={pending}
                           onClick={addBindRow}
                         >
@@ -973,14 +973,14 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                               className="space-y-2.5 rounded-md border border-border/60 bg-muted/15 p-3"
                             >
                               <div className="flex h-6 items-center justify-between gap-2">
-                                <span className="text-[11px] font-medium text-muted-foreground">
+                                <span className="text-xs font-medium text-muted-foreground">
                                   {t("sources.sourceDraft", { index: index + 1 })}
                                 </span>
                                 <Button
                                   type="button"
                                   size="icon-sm"
                                   variant="ghost"
-                                  className="size-6 text-muted-foreground shadow-none"
+                                  className="size-8 text-muted-foreground shadow-none"
                                   disabled={pending}
                                   onClick={() => removeBindRow(row.id)}
                                   aria-label={t("sources.removeSource")}
@@ -991,13 +991,13 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
 
                               <div className="grid grid-cols-2 gap-2">
                                 <div className="min-w-0 space-y-1">
-                                  <Label className="text-xs font-normal text-muted-foreground">{t("sources.upstream")}</Label>
+                                  <Label className="text-sm font-normal text-muted-foreground">{t("sources.upstream")}</Label>
                                   <Select
                                     value={draft.upstreamID}
                                     onValueChange={(value) => handleBindRowUpstreamChange(row.id, value)}
                                     disabled={pending || upstreamsLoading}
                                   >
-                                    <SelectTrigger className="h-8 bg-background text-xs">
+                                    <SelectTrigger className="h-9 bg-background text-sm">
                                       <SelectValue placeholder={upstreamsLoading ? t("sources.loadingUpstreams") : t("sources.selectUpstream")} />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -1011,13 +1011,13 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                                 </div>
 
                                 <div className="min-w-0 space-y-1">
-                                  <Label className="text-xs font-normal text-muted-foreground">{t("sources.upstreamModel")}</Label>
+                                  <Label className="text-sm font-normal text-muted-foreground">{t("sources.upstreamModel")}</Label>
                                   <Select
                                     value={draft.upstreamModelID}
                                     onValueChange={(value) => handleBindRowModelChange(row.id, value)}
                                     disabled={pending || !draft.upstreamID || rowModelsLoading}
                                   >
-                                    <SelectTrigger className="h-8 bg-background font-mono text-xs">
+                                    <SelectTrigger className="h-9 bg-background font-mono text-sm">
                                       <SelectValue placeholder={rowModelsLoading ? t("sources.loadingUpstreamModels") : t("sources.selectUpstreamModel")} />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -1033,7 +1033,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
 
                               <div className="grid grid-cols-2 gap-2">
                                 <div className="min-w-0 space-y-1">
-                                  <Label className="text-xs font-normal text-muted-foreground">{t("sources.protocol")}</Label>
+                                  <Label className="text-sm font-normal text-muted-foreground">{t("sources.protocol")}</Label>
                                   <Select
                                     value={draft.protocol}
                                     onValueChange={(value) => {
@@ -1041,7 +1041,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                                     }}
                                     disabled={pending || !draft.upstreamModelID}
                                   >
-                                    <SelectTrigger className="h-8 bg-background text-xs">
+                                    <SelectTrigger className="h-9 bg-background text-sm">
                                       <SelectValue placeholder={t("sources.selectProtocol")} />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -1055,7 +1055,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                                 </div>
 
                                 <div className="min-w-0 space-y-1">
-                                  <Label className="text-xs font-normal text-muted-foreground">{t("sources.status")}</Label>
+                                  <Label className="text-sm font-normal text-muted-foreground">{t("sources.status")}</Label>
                                   <Select
                                     value={draft.status}
                                     onValueChange={(value) => {
@@ -1063,7 +1063,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                                     }}
                                     disabled={pending || !rowHasSelection}
                                   >
-                                    <SelectTrigger className="h-8 bg-background text-xs">
+                                    <SelectTrigger className="h-9 bg-background text-sm">
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -1077,7 +1077,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                               <div className="grid grid-cols-2 gap-2">
                                 <div className="min-w-0 space-y-1">
                                   <div className="inline-flex items-center gap-1">
-                                    <Label className="text-xs font-normal leading-4 text-muted-foreground" htmlFor={`model-source-priority-${row.id}`}>
+                                    <Label className="text-sm font-normal leading-4 text-muted-foreground" htmlFor={`model-source-priority-${row.id}`}>
                                       {t("sources.priority")}
                                     </Label>
                                     <Popover>
@@ -1087,11 +1087,11 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                                             <Button
                                               type="button"
                                               variant="ghost"
-                                              size="icon-xs"
+                                              size="icon-sm"
                                               className="-translate-y-0.5 text-muted-foreground hover:bg-transparent hover:text-foreground"
                                               aria-label={t("sources.priorityDesc")}
                                             >
-                                              <CircleHelp className="size-3" />
+                                              <CircleHelp className="size-4" />
                                             </Button>
                                           </PopoverTrigger>
                                         </TooltipTrigger>
@@ -1115,7 +1115,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                                 </div>
                                 <div className="min-w-0 space-y-1">
                                   <div className="inline-flex items-center gap-1">
-                                    <Label className="text-xs font-normal leading-4 text-muted-foreground" htmlFor={`model-source-weight-${row.id}`}>
+                                    <Label className="text-sm font-normal leading-4 text-muted-foreground" htmlFor={`model-source-weight-${row.id}`}>
                                       {t("sources.weight")}
                                     </Label>
                                     <Popover>
@@ -1125,11 +1125,11 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                                             <Button
                                               type="button"
                                               variant="ghost"
-                                              size="icon-xs"
+                                              size="icon-sm"
                                               className="-translate-y-0.5 text-muted-foreground hover:bg-transparent hover:text-foreground"
                                               aria-label={t("sources.weightDesc")}
                                             >
-                                              <CircleHelp className="size-3" />
+                                              <CircleHelp className="size-4" />
                                             </Button>
                                           </PopoverTrigger>
                                         </TooltipTrigger>
@@ -1160,7 +1160,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                   ) : sourcesLoading ? (
                     <div className="h-3 w-24 animate-pulse rounded-sm bg-muted/70" aria-hidden="true" />
                   ) : sources.length === 0 ? (
-                    <p className="text-xs text-muted-foreground">{t("sources.empty")}</p>
+                    <p className="text-sm text-muted-foreground">{t("sources.empty")}</p>
                   ) : (
                     <div className="space-y-1.5">
                       {sources.map((src) => (
@@ -1195,11 +1195,11 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                                   </TooltipContent>
                                 </Tooltip>
                               ) : src.status === "inactive" || src.upstreamStatus === "inactive" || src.upstreamModelStatus === "inactive" ? (
-                                <Badge variant="ghost" className="h-5 rounded-md px-1.5 text-[10px] font-normal text-muted-foreground">
+                                <Badge variant="ghost" className="h-5 rounded-md px-1.5 text-xs font-normal text-muted-foreground">
                                   {t("status.inactive")}
                                 </Badge>
                               ) : (
-                                <Badge variant="ghost" className="h-5 rounded-md px-1.5 text-[10px] font-normal text-foreground/75">
+                                <Badge variant="ghost" className="h-5 rounded-md px-1.5 text-xs font-normal text-foreground/75">
                                   {t("status.active")}
                                 </Badge>
                               )}

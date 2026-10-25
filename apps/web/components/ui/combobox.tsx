@@ -155,7 +155,7 @@ function ComboboxItem({
     <ComboboxPrimitive.Item
       data-slot="combobox-item"
       className={cn(
-        "relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-xs outline-hidden select-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex w-full cursor-default items-center gap-2 rounded-sm py-2 pr-8 pl-2 text-sm outline-hidden select-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}
@@ -240,7 +240,7 @@ function ComboboxChips({
     <ComboboxPrimitive.Chips
       data-slot="combobox-chips"
       className={cn(
-        "flex min-h-8 flex-wrap items-center gap-1.5 rounded-md border border-input/40 bg-transparent bg-clip-padding px-2.5 py-1 text-xs shadow-none transition-[color,box-shadow] focus-within:border-ring/60 focus-within:ring-[1px] focus-within:ring-ring/40 has-aria-invalid:border-destructive has-aria-invalid:ring-[1px] has-aria-invalid:ring-destructive/20 has-data-[slot=combobox-chip]:px-1.5 dark:bg-input/30 dark:has-aria-invalid:border-destructive/50 dark:has-aria-invalid:ring-destructive/40",
+        "flex min-h-9 flex-wrap items-center gap-1.5 rounded-md border border-input/70 bg-pure/60 bg-clip-padding px-2.5 py-1 text-sm shadow-none transition-[color,box-shadow] focus-within:border-ring/60 focus-within:ring-[1px] focus-within:ring-ring/40 has-aria-invalid:border-destructive has-aria-invalid:ring-[1px] has-aria-invalid:ring-destructive/20 has-data-[slot=combobox-chip]:px-1.5 dark:bg-input/30 dark:has-aria-invalid:border-destructive/50 dark:has-aria-invalid:ring-destructive/40",
         className
       )}
       {...props}

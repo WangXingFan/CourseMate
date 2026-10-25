@@ -52,7 +52,7 @@ export function AdminSidebar({
     <aside className="w-full shrink-0 xl:max-w-64">
       <div className="space-y-3 xl:sticky xl:top-6 xl:space-y-5">
         <div className="flex h-9 items-center px-1 xl:h-10">
-          <h1 className="text-xl font-semibold tracking-normal xl:text-2xl">{t("adminTitle")}</h1>
+          <h1 className="font-display text-2xl font-normal tracking-[-0.01em] xl:text-[2rem]">{t("adminTitle")}</h1>
         </div>
 
         <nav
@@ -70,9 +70,9 @@ export function AdminSidebar({
                 prefetch={false}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative flex h-8 shrink-0 scroll-mx-3 items-center justify-between gap-2 whitespace-nowrap rounded-md px-3 text-sm font-medium transition-colors outline-none focus-visible:ring-0 xl:h-9 xl:w-full xl:px-3.5",
+                  "relative flex h-9 shrink-0 scroll-mx-3 items-center justify-between gap-2 whitespace-nowrap rounded-md px-3 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/35 xl:h-10 xl:w-full xl:px-3.5",
                   active
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground xl:shadow-[inset_2px_0_0_var(--primary)]"
                     : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:bg-sidebar-accent focus-visible:text-sidebar-accent-foreground",
                 )}
               >

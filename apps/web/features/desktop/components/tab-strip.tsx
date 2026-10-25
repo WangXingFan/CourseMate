@@ -76,7 +76,7 @@ export function TabStrip() {
     <div
       data-tauri-drag-region
       className={cn(
-        "relative flex h-[38px] w-screen select-none items-end overflow-hidden bg-muted px-2 pt-1 text-foreground",
+        "relative flex h-[38px] w-screen select-none items-end overflow-hidden border-b border-border bg-sidebar px-2 pt-1 text-foreground",
         // Room for the traffic lights under the overlay title bar.
         state.platform === "macos" && "pl-[84px]",
       )}
@@ -84,6 +84,7 @@ export function TabStrip() {
     >
       {/* Next.js dev badge: one per webview; the strip is shell chrome, not a page. */}
       <style>{"nextjs-portal{display:none}"}</style>
+      <div role="tablist" aria-label={t("tabs")} className="flex min-w-0 flex-1 items-end overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <DndContext sensors={sensors} collisionDetection={closestCenter} modifiers={[horizontalOnly]} onDragEnd={onDragEnd}>
         <SortableContext items={ids} strategy={horizontalListSortingStrategy}>
           {tabs.map((tab, index) => (
@@ -100,11 +101,12 @@ export function TabStrip() {
           ))}
         </SortableContext>
       </DndContext>
+      </div>
       <button
         type="button"
         aria-label={t("newTab")}
         title={t("newTab")}
-        className="mb-[3px] ml-1 flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background/70 hover:text-foreground"
+        className="mb-px ml-1 flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
         onClick={() => void openTab()}
       >
         <Plus className="size-4" />
@@ -153,13 +155,13 @@ function WindowControls() {
         style={{ width: CONTROL_WIDTH }}
         onClick={() => void toggleMaximizeWindow()}
       >
-        {maximized ? <Copy className="size-3" strokeWidth={1.5} /> : <Square className="size-3" strokeWidth={1.5} />}
+        {maximized ? <Copy className="size-3.5" strokeWidth={1.5} /> : <Square className="size-3.5" strokeWidth={1.5} />}
       </button>
       <button
         type="button"
         aria-label={t("close")}
         title={t("close")}
-        className={cn(buttonClass, "hover:bg-[#e81123] hover:text-white")}
+        className={cn(buttonClass, "hover:bg-destructive hover:text-destructive-foreground")}
         style={{ width: CONTROL_WIDTH }}
         onClick={() => void closeWindow()}
       >
@@ -198,14 +200,9 @@ function TabItem({
       title={tab.title ? `${tab.title} — ${label}` : label}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
-        // Only the active tab is painted in the content colour, with rounded "feet".
-        "group relative flex h-[34px] min-w-0 max-w-[200px] flex-1 animate-in items-center gap-2 rounded-t-lg px-3 text-xs transition-colors fade-in-0 duration-200",
+        "group relative flex h-[34px] min-w-26 max-w-[200px] flex-1 items-center gap-2 rounded-t-md pl-3 pr-1 text-sm transition-colors duration-200 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
         active
-          ? cn(
-              "z-[1] bg-background text-foreground",
-              "before:absolute before:-left-2 before:bottom-0 before:size-2 before:bg-[radial-gradient(circle_at_top_left,transparent_8px,var(--background)_8px)]",
-              "after:absolute after:-right-2 after:bottom-0 after:size-2 after:bg-[radial-gradient(circle_at_top_right,transparent_8px,var(--background)_8px)]",
-            )
+          ? "z-[1] bg-background text-foreground shadow-[inset_2px_0_0_var(--primary)]"
           : "text-muted-foreground hover:bg-background/50 hover:text-foreground",
         divider && "before:absolute before:left-0 before:top-2 before:bottom-2 before:w-px before:bg-border",
         isDragging && "z-10 shadow-md",
@@ -232,8 +229,8 @@ function TabItem({
           type="button"
           aria-label={t("closeTab")}
           className={cn(
-            "flex size-5 shrink-0 items-center justify-center rounded-sm text-muted-foreground hover:bg-muted hover:text-foreground",
-            active ? "opacity-70 hover:opacity-100" : "opacity-0 group-hover:opacity-70",
+            "flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+            active ? "opacity-70 hover:opacity-100" : "opacity-50 group-hover:opacity-100",
           )}
           onPointerDown={(event) => event.stopPropagation()}
           onClick={(event) => {

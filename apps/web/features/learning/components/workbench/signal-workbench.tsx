@@ -37,7 +37,7 @@ export function SignalWorkbench() {
 
   return <LessonShell title={t("title")} formula={String.raw`y(t)=x\!\left(\frac{r(t-s)}{a}\right),\quad r\in\{-1,1\},\;a>0`}>
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-xs leading-6 text-muted-foreground">{t("rule")}</p><Button size="sm" variant="outline" onClick={reset}><RotateCcw className="size-3.5" />{t("reset")}</Button></div>
+      <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-sm leading-6 text-muted-foreground">{t("rule")}</p><Button size="sm" variant="outline" onClick={reset}><RotateCcw className="size-3.5" />{t("reset")}</Button></div>
       <div className="grid gap-4 lg:grid-cols-2"><SourceControls id="A" source={a} onChange={setA} /><SourceControls id="B" source={b} onChange={setB} /></div>
       <LessonPanel title={t("combine")}>
         <div role="group" aria-label={t("combine")} className="flex flex-wrap gap-2">{SIGNAL_OPERATIONS.map((item) => <Button key={item} size="sm" variant={operation === item ? "default" : "outline"} aria-pressed={operation === item} onClick={() => { if (isOperation(item)) setOperation(item); }}>{t(`operations.${item}`)}</Button>)}</div>
@@ -47,8 +47,8 @@ export function SignalWorkbench() {
           { id: "output", label: t("output"), points: output, color: "var(--chart-3)", width: 2.5 },
         ]} /></div>
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3"><Readout label={t("range")} value={`[${xDomain[0]}, ${xDomain[1]}] s`} /><Readout label={t("sampling")} value={`Δt = ${SAMPLE_DT} s`} /><Readout label={t("samples")} value={output.length} /></div>
-        <p className="mt-3 text-xs leading-6 text-muted-foreground">{t("approximation")}</p>
-        {underResolved ? <p role="status" className="mt-2 text-xs leading-6 text-amber-700 dark:text-amber-400">{t("resolutionWarning")}</p> : null}
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">{t("approximation")}</p>
+        {underResolved ? <p role="status" className="mt-2 text-sm leading-6 text-primary dark:text-primary">{t("resolutionWarning")}</p> : null}
       </LessonPanel>
     </div>
   </LessonShell>;
@@ -57,12 +57,12 @@ export function SignalWorkbench() {
 function SourceControls({ id, source, onChange }: { id: string; source: SignalSource; onChange: (source: SignalSource) => void }) {
   const t = useTranslations("learningLabs.workbench");
   return <LessonPanel title={t("source", { id })}>
-    <label className="flex items-center justify-between gap-3 text-xs" htmlFor={`signal-${id}-kind`}>{t("kind")}<select id={`signal-${id}-kind`} className="max-w-48 rounded-md border border-border bg-background px-2 py-1.5" value={source.kind} onChange={(event) => { if (isKind(event.target.value)) onChange({ ...source, kind: event.target.value }); }}>{SIGNAL_KINDS.map((kind) => <option key={kind} value={kind}>{t(`kinds.${kind}`)}</option>)}</select></label>
+    <label className="flex items-center justify-between gap-3 text-sm" htmlFor={`signal-${id}-kind`}>{t("kind")}<select id={`signal-${id}-kind`} className="max-w-48 rounded-md border border-border bg-background px-2 py-1.5" value={source.kind} onChange={(event) => { if (isKind(event.target.value)) onChange({ ...source, kind: event.target.value }); }}>{SIGNAL_KINDS.map((kind) => <option key={kind} value={kind}>{t(`kinds.${kind}`)}</option>)}</select></label>
     <div className="mt-4 space-y-4">{controls.filter(({ key }) => key !== "width" || source.kind === "rectangle" || source.kind === "impulse").filter(({ key }) => key !== "decay" || source.kind === "exponential").filter(({ key }) => key !== "frequency" || source.kind === "sine").map(({ key, min, max, step }) => <div key={key}>
-      <label htmlFor={`signal-${id}-${key}`} className="flex justify-between gap-2 text-xs"><span>{t(`parameters.${key}`)}</span><span className="font-mono tabular-nums">{source[key].toFixed(2)}</span></label>
+      <label htmlFor={`signal-${id}-${key}`} className="flex justify-between gap-2 text-sm"><span>{t(`parameters.${key}`)}</span><span className="font-mono tabular-nums">{source[key].toFixed(2)}</span></label>
       <input id={`signal-${id}-${key}`} type="range" className="mt-2 w-full accent-primary" min={min} max={max} step={step} value={source[key]} onChange={(event) => onChange({ ...source, [key]: Number(event.target.value) })} />
     </div>)}</div>
-    <label className="mt-4 flex items-center gap-2 text-xs"><input type="checkbox" className="accent-primary" checked={source.reversed} onChange={(event) => onChange({ ...source, reversed: event.target.checked })} />{t("reversed")}</label>
-    {source.kind === "impulse" ? <p className="mt-3 text-xs leading-5 text-muted-foreground">{t("impulseNote")}</p> : null}
+    <label className="mt-4 flex items-center gap-2 text-sm"><input type="checkbox" className="accent-primary" checked={source.reversed} onChange={(event) => onChange({ ...source, reversed: event.target.checked })} />{t("reversed")}</label>
+    {source.kind === "impulse" ? <p className="mt-3 text-sm leading-6 text-muted-foreground">{t("impulseNote")}</p> : null}
   </LessonPanel>;
 }

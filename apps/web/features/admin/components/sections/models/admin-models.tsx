@@ -82,11 +82,11 @@ function BulkActionControlRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-7 w-full items-center gap-1.5">
+    <div className="flex h-9 w-full items-center gap-1.5">
       <Button
         type="button"
         variant="ghost"
-        className="h-7 w-16 shrink-0 justify-start gap-2 px-2 text-[11px] text-foreground/70 shadow-none hover:bg-muted hover:text-foreground"
+        className="h-9 w-16 shrink-0 justify-start gap-2 px-2 text-sm text-foreground/70 shadow-none hover:bg-muted hover:text-foreground"
         onClick={onApply}
         disabled={disabled}
       >
@@ -139,12 +139,12 @@ function KindsDropdown({
           size="sm"
           role="combobox"
           disabled={disabled}
-          className="h-7 w-full justify-between gap-2 border-input/40 bg-transparent px-2 py-0 text-[11px] font-normal text-muted-foreground shadow-none hover:bg-transparent focus-visible:border-ring/60 focus-visible:ring-[1px] focus-visible:ring-ring/40 has-[>svg]:px-2"
+          className="h-9 w-full justify-between gap-2 border-input/40 bg-transparent px-2 py-0 text-sm font-normal text-muted-foreground shadow-none hover:bg-transparent focus-visible:border-ring/60 focus-visible:ring-[1px] focus-visible:ring-ring/40 has-[>svg]:px-2"
         >
           <span className={cn("min-w-0 flex-1 truncate text-left", selectedKindLabel ? "text-foreground/75" : "")}>
             {selectedKindLabel || t("fields.kind")}
           </span>
-          <ChevronDownIcon className="size-3 shrink-0 text-muted-foreground opacity-50" />
+          <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-48 p-1">
@@ -184,7 +184,7 @@ function ContextWindowBulkInput({
   const invalid = value !== "" && !isValidModelContextWindow(parsedValue);
 
   return (
-    <div className="flex h-7 min-w-0 overflow-hidden rounded-md border border-input/40 bg-transparent focus-within:border-ring/60 focus-within:ring-[1px] focus-within:ring-ring/40">
+    <div className="flex h-9 min-w-0 overflow-hidden rounded-md border border-input/40 bg-transparent focus-within:border-ring/60 focus-within:ring-[1px] focus-within:ring-ring/40">
       <Input
         inputMode="numeric"
         value={value}
@@ -192,7 +192,7 @@ function ContextWindowBulkInput({
         disabled={disabled}
         aria-invalid={invalid}
         aria-label={t("fields.contextWindow")}
-        className="h-full min-w-0 flex-1 rounded-none border-0 px-2 text-[11px] tabular-nums shadow-none focus-visible:ring-0"
+        className="h-full min-w-0 flex-1 rounded-none border-0 px-2 text-sm tabular-nums shadow-none focus-visible:ring-0"
         onChange={(event) => onChange(event.target.value.replace(/\D/g, "").slice(0, 8))}
         onBlur={() => {
           if (invalid) {
@@ -291,7 +291,7 @@ export function AdminModelsPage() {
     <div className="space-y-3 pb-10">
       <div className="space-y-3">
         <div className="flex h-10 items-center justify-between gap-3 px-1">
-          <h3 className="text-sm font-semibold">{t("pageTitle")}</h3>
+          <h3 className="font-display text-2xl font-normal">{t("pageTitle")}</h3>
           <AdminCircuitBreakerControl
             available={circuitBreaker.available}
             enabled={circuitBreaker.enabled}
@@ -357,7 +357,7 @@ export function AdminModelsPage() {
           bulkContent={
             <div className="space-y-1">
               <BulkActionControlRow
-                icon={<Tags className="size-3 stroke-1" />}
+                icon={<Tags className="size-4 stroke-1" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("kinds")}
                 disabled={models.loading || models.batchApplying || models.selectedModels.length === 0 || !models.batchKindsDisplay}
@@ -370,7 +370,7 @@ export function AdminModelsPage() {
               </BulkActionControlRow>
 
               <BulkActionControlRow
-                icon={<Layers3 className="size-3 stroke-1" />}
+                icon={<Layers3 className="size-4 stroke-1" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("displayGroup")}
                 disabled={models.loading || models.batchApplying || models.selectedModels.length === 0 || !models.batchDisplayGroupID}
@@ -380,15 +380,15 @@ export function AdminModelsPage() {
                   onValueChange={models.setBatchDisplayGroupID}
                   disabled={models.loading || models.batchApplying || models.selectedModels.length === 0}
                 >
-                  <SelectTrigger size="xs" className="h-7 px-2 text-[11px] text-muted-foreground">
+                  <SelectTrigger size="xs" className="h-9 px-2 text-sm text-muted-foreground">
                     <SelectValue placeholder={t("fields.displayGroup")} />
                   </SelectTrigger>
                   <SelectContent position="popper" align="start" className="z-[100]" viewportClassName="max-h-[220px]">
-                    <SelectItem value="0" className="text-[11px]">
+                    <SelectItem value="0" className="text-xs">
                       {t("presentation.followVendor")}
                     </SelectItem>
                     {presentation.displayGroups.map((item) => (
-                      <SelectItem key={item.id} value={String(item.id)} className="text-[11px]">
+                      <SelectItem key={item.id} value={String(item.id)} className="text-xs">
                         {item.name}
                       </SelectItem>
                     ))}
@@ -397,7 +397,7 @@ export function AdminModelsPage() {
               </BulkActionControlRow>
 
               <BulkActionControlRow
-                icon={<Cable className="size-3 stroke-1" />}
+                icon={<Cable className="size-4 stroke-1" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("protocol")}
                 disabled={models.loading || models.batchApplying || models.selectedModels.length === 0 || !models.batchProtocol}
@@ -409,12 +409,12 @@ export function AdminModelsPage() {
                   }}
                   disabled={models.loading || models.batchApplying || models.selectedModels.length === 0}
                 >
-                  <SelectTrigger size="xs" className="h-7 px-2 text-[11px] text-muted-foreground">
+                  <SelectTrigger size="xs" className="h-9 px-2 text-sm text-muted-foreground">
                     <SelectValue placeholder={t("fields.protocol")} />
                   </SelectTrigger>
                   <SelectContent position="popper" align="start" className="z-[100]" viewportClassName="max-h-[220px]">
                     {Object.entries(ADAPTER_LABELS).map(([value, label]) => (
-                      <SelectItem key={value} value={value} className="text-[11px]">
+                      <SelectItem key={value} value={value} className="text-xs">
                         {label}
                       </SelectItem>
                     ))}
@@ -423,7 +423,7 @@ export function AdminModelsPage() {
               </BulkActionControlRow>
 
               <BulkActionControlRow
-                icon={<Maximize2 className="size-3 stroke-1" />}
+                icon={<Maximize2 className="size-4 stroke-1" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("contextWindow")}
                 disabled={
@@ -441,7 +441,7 @@ export function AdminModelsPage() {
               </BulkActionControlRow>
 
               <BulkActionControlRow
-                icon={<Building2 className="size-3 stroke-1" />}
+                icon={<Building2 className="size-4 stroke-1" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("vendor")}
                 disabled={models.loading || models.batchApplying || models.selectedModels.length === 0 || !models.batchVendor}
@@ -451,12 +451,12 @@ export function AdminModelsPage() {
                   onValueChange={models.setBatchVendor}
                   disabled={models.loading || models.batchApplying || models.selectedModels.length === 0}
                 >
-                  <SelectTrigger size="xs" className="h-7 px-2 text-[11px] text-muted-foreground">
+                  <SelectTrigger size="xs" className="h-9 px-2 text-sm text-muted-foreground">
                     <SelectValue placeholder={t("fields.vendor")} />
                   </SelectTrigger>
                   <SelectContent position="popper" align="start" className="z-[100]" viewportClassName="max-h-[220px]">
                     {presentation.vendors.map((item) => (
-                      <SelectItem key={item.key} value={item.key} className="text-[11px]">
+                      <SelectItem key={item.key} value={item.key} className="text-xs">
                         {item.name}
                       </SelectItem>
                     ))}
@@ -465,7 +465,7 @@ export function AdminModelsPage() {
               </BulkActionControlRow>
 
               <BulkActionControlRow
-                icon={<ToggleLeft className="size-3 stroke-1" />}
+                icon={<ToggleLeft className="size-4 stroke-1" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("status")}
                 disabled={models.loading || models.batchApplying || models.selectedModels.length === 0 || !models.batchStatus}
@@ -477,12 +477,12 @@ export function AdminModelsPage() {
                   }}
                   disabled={models.loading || models.batchApplying || models.selectedModels.length === 0}
                 >
-                  <SelectTrigger size="xs" className="h-7 px-2 text-[11px] text-muted-foreground">
+                  <SelectTrigger size="xs" className="h-9 px-2 text-sm text-muted-foreground">
                     <SelectValue placeholder={t("fields.status")} />
                   </SelectTrigger>
                   <SelectContent position="popper" align="start" className="z-[100]">
                     {(["active", "inactive"] as const).map((status) => (
-                      <SelectItem key={status} value={status} className="text-[11px]">
+                      <SelectItem key={status} value={status} className="text-xs">
                         {t(`status.${status}`)}
                       </SelectItem>
                     ))}
@@ -506,7 +506,7 @@ export function AdminModelsPage() {
             type="button"
             size="sm"
             variant="outline"
-            className="h-7 gap-1 text-xs"
+            className="h-9 gap-1 text-sm"
             onClick={() => setPresentationOpen(true)}
             disabled={presentation.loading || presentation.vendors.length === 0}
           >
@@ -517,7 +517,7 @@ export function AdminModelsPage() {
             type="button"
             size="sm"
             variant="outline"
-            className="h-7 gap-1 text-xs"
+            className="h-9 gap-1 text-sm"
             onClick={() => setOrderOpen(true)}
             disabled={models.loading}
           >
@@ -527,7 +527,7 @@ export function AdminModelsPage() {
           <Button
             type="button"
             size="sm"
-            className="h-7 gap-1 text-xs"
+            className="h-9 gap-1 text-sm"
             onClick={() => setCreateOpen(true)}
             disabled={models.loading || presentation.loading || presentation.vendors.length === 0}
           >

@@ -152,11 +152,11 @@ export function KnowledgeBaseSidebar({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-7 w-full text-[11px] text-muted-foreground"
+                  className="h-9 w-full text-sm text-muted-foreground"
                   disabled={loadingMore}
                   onClick={onLoadMore}
                 >
-                  {loadingMore ? <Spinner className="size-3" /> : t("loadMore")}
+                  {loadingMore ? <Spinner className="size-4" /> : t("loadMore")}
                 </Button>
               ) : null}
             </div>
@@ -202,7 +202,7 @@ function KnowledgeBaseSidebarItem({
       <Checkbox
         checked={editable && checked}
         disabled={!editable}
-        className="absolute left-1.5 top-1/2 z-20 size-3 -translate-y-1/2"
+        className="absolute left-1.5 top-1/2 z-20 size-4 -translate-y-1/2"
         aria-label={t("selectKnowledgeBase")}
         onClick={(event) => event.stopPropagation()}
         onCheckedChange={(nextChecked) => {
@@ -227,20 +227,20 @@ function KnowledgeBaseSidebarItem({
           <span className="flex min-w-0 items-center gap-1.5">
             <span className="truncate text-xs font-medium">{item.name}</span>
             {item.scope === "builtin" ? (
-              <Badge variant="secondary" className="h-4 rounded-md px-1 text-[9px] font-normal">
+              <Badge variant="secondary" className="h-5 rounded-md px-1 text-xs font-normal">
                 {t("builtin")}
               </Badge>
             ) : null}
             {mode === "admin" && !item.enabled ? (
               <Badge
                 variant="outline"
-                className="h-4 rounded-md px-1 text-[9px] font-normal text-muted-foreground"
+                className="h-5 rounded-md px-1 text-xs font-normal text-muted-foreground"
               >
                 {t("disabled")}
               </Badge>
             ) : null}
           </span>
-          <span className="mt-0.5 block truncate text-[10px] leading-3.5 text-muted-foreground">
+          <span className="mt-0.5 block truncate text-xs leading-3.5 text-muted-foreground">
             {item.fileCount === 0
               ? t("healthEmpty")
               : item.readyFileCount === item.fileCount
@@ -267,7 +267,7 @@ function KnowledgeBaseSidebarItem({
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="size-5 rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
+                className="size-8 rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
                 aria-label={t("moreActions")}
                 title={t("moreActions")}
                 onClick={(event) => {
@@ -275,7 +275,7 @@ function KnowledgeBaseSidebarItem({
                   event.stopPropagation();
                 }}
               >
-                <Ellipsis className="size-3" strokeWidth={1} />
+                <Ellipsis className="size-4" strokeWidth={1} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-32">
@@ -304,7 +304,7 @@ function KnowledgeBaseSidebarItem({
             type="button"
             variant="ghost"
             size="icon"
-            className="size-5 rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
+            className="size-8 rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
             aria-label={t("delete")}
             title={t("delete")}
             onClick={(event) => {
@@ -313,7 +313,7 @@ function KnowledgeBaseSidebarItem({
               onDelete(item);
             }}
           >
-            <Trash2 className="size-3" strokeWidth={1} />
+            <Trash2 className="size-4" strokeWidth={1} />
           </Button>
         </div>
       ) : null}

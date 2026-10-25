@@ -69,7 +69,7 @@ export function ChatUIComponents({
               variant="ghost"
               size="icon-sm"
               className={cn(
-                "size-7 rounded-md text-muted-foreground hover:text-foreground sm:size-8",
+                "size-8 rounded-md text-muted-foreground hover:text-foreground sm:size-8",
                 customised && "bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary",
               )}
               disabled={disabled}
@@ -109,12 +109,12 @@ export function ChatUIComponents({
 
         {hasCatalog ? (
           <>
-            <div className={cn("flex h-7 shrink-0 items-center justify-between gap-3 px-2 text-[11px] font-medium text-foreground/70", htmlVisual && "mt-1.5 border-t-[0.5px] border-border pt-1.5")}>
+            <div className={cn("flex h-7 shrink-0 items-center justify-between gap-3 px-2 text-xs font-medium text-foreground/70", htmlVisual && "mt-1.5 border-t-[0.5px] border-border pt-1.5")}>
               <span>{t("uiComponents")}</span>
               {!isDefault ? (
                 <button
                   type="button"
-                  className="text-[11px] leading-none text-foreground/55 outline-none transition-colors hover:text-foreground focus-visible:text-foreground"
+                  className="text-xs leading-none text-foreground/55 outline-none transition-colors hover:text-foreground focus-visible:text-foreground"
                   onClick={() => onChange(defaultIDs)}
                 >
                   {t("uiComponentsRestoreDefault")}
@@ -122,7 +122,7 @@ export function ChatUIComponents({
               ) : (
                 <button
                   type="button"
-                  className="text-[11px] leading-none text-foreground/55 outline-none transition-colors hover:text-foreground focus-visible:text-foreground"
+                  className="text-xs leading-none text-foreground/55 outline-none transition-colors hover:text-foreground focus-visible:text-foreground"
                   onClick={() => onChange([])}
                 >
                   {t("clear")}
@@ -151,7 +151,7 @@ export function ChatUIComponents({
                     >
                       <Icon className={cn("size-3.5 shrink-0", selected ? "text-primary" : "text-muted-foreground")} strokeWidth={1.6} />
                       <span className="min-w-0 flex-1 truncate text-xs font-medium text-current">{label.title}</span>
-                      {component.scope !== "builtin" ? <span className="shrink-0 text-[10px] leading-none text-muted-foreground">{t(`uiComponentScope.${component.scope}`)}</span> : null}
+                      {component.scope !== "builtin" ? <span className="shrink-0 text-2xs leading-none text-muted-foreground">{t(`uiComponentScope.${component.scope}`)}</span> : null}
                       <Check className={cn("size-3.5 shrink-0 text-primary transition-opacity", selected ? "opacity-100" : "opacity-0")} strokeWidth={2} />
                     </button>
                   );

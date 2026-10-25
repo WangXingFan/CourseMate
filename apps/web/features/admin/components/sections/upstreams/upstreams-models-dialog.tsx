@@ -146,14 +146,14 @@ function KindsDropdown({
           role="combobox"
           disabled={disabled}
           className={cn(
-            "h-8 min-w-0 w-full justify-between gap-2 border-input/40 bg-transparent px-3 py-1 text-xs font-normal text-muted-foreground shadow-none hover:bg-transparent focus-visible:border-ring/60 focus-visible:ring-[1px] focus-visible:ring-ring/40 has-[>svg]:px-3",
+            "h-9 min-w-0 w-full justify-between gap-2 border-input/40 bg-transparent px-3 py-1 text-sm font-normal text-muted-foreground shadow-none hover:bg-transparent focus-visible:border-ring/60 focus-visible:ring-[1px] focus-visible:ring-ring/40 has-[>svg]:px-3",
             className,
           )}
         >
           <span className={cn("min-w-0 flex-1 truncate text-left", selectedKindLabel ? "text-foreground/75" : "")}>
             {selectedKindLabel || t("modelsDialog.selectKind")}
           </span>
-          <ChevronDownIcon className="size-3 shrink-0 text-muted-foreground opacity-50" />
+          <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-48 p-1">
@@ -214,14 +214,14 @@ function ProtocolsDropdown({
           role="combobox"
           disabled={disabled}
           className={cn(
-            "h-8 min-w-0 w-full justify-between gap-2 border-input/40 bg-transparent px-3 py-1 text-xs font-normal text-muted-foreground shadow-none hover:bg-transparent focus-visible:border-ring/60 focus-visible:ring-[1px] focus-visible:ring-ring/40 has-[>svg]:px-3",
+            "h-9 min-w-0 w-full justify-between gap-2 border-input/40 bg-transparent px-3 py-1 text-sm font-normal text-muted-foreground shadow-none hover:bg-transparent focus-visible:border-ring/60 focus-visible:ring-[1px] focus-visible:ring-ring/40 has-[>svg]:px-3",
             className,
           )}
         >
           <span className={cn("min-w-0 flex-1 truncate text-left", selectedLabel ? "text-foreground/75" : "")}>
             {selectedLabel || t("modelsDialog.autoProtocol")}
           </span>
-          <ChevronDownIcon className="size-3 shrink-0 text-muted-foreground opacity-50" />
+          <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-72 p-1">
@@ -268,11 +268,11 @@ function BulkActionControlRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-7 w-full items-center gap-1.5">
+    <div className="flex h-9 w-full items-center gap-1.5">
       <Button
         type="button"
         variant="ghost"
-        className="h-7 w-16 shrink-0 justify-start gap-2 px-2 text-[11px] text-foreground/70 shadow-none hover:bg-muted hover:text-foreground"
+        className="h-9 w-16 shrink-0 justify-start gap-2 px-2 text-sm text-foreground/70 shadow-none hover:bg-muted hover:text-foreground"
         onClick={onApply}
         disabled={disabled}
       >
@@ -321,8 +321,8 @@ const ModelRow = React.memo(function ModelRow({ row, isSelected, upstreamInactiv
       selected={isSelected}
       tone={row.isDirty ? "warning" : undefined}
     >
-      <TableCell className="w-[44px] py-1.5 text-center whitespace-nowrap">
-        <div className="flex h-7 items-center justify-center">
+      <TableCell className="w-[44px] py-3 text-center whitespace-nowrap">
+        <div className="flex h-9 items-center justify-center">
           <Checkbox
             checked={isSelected}
             disabled={persistedRouteCount === 0}
@@ -331,8 +331,8 @@ const ModelRow = React.memo(function ModelRow({ row, isSelected, upstreamInactiv
           />
         </div>
       </TableCell>
-      <TableCell className="w-[56px] py-1.5 whitespace-nowrap">
-        <div className="flex h-7 items-center">
+      <TableCell className="w-[56px] py-3 whitespace-nowrap">
+        <div className="flex h-9 items-center">
           <Tooltip>
             <TooltipTrigger asChild>
               <span className="inline-flex">
@@ -353,8 +353,8 @@ const ModelRow = React.memo(function ModelRow({ row, isSelected, upstreamInactiv
           </Tooltip>
         </div>
       </TableCell>
-      <TableCell className="max-w-[220px] py-1.5 font-mono text-xs text-muted-foreground">
-        <div className="flex h-7 min-w-0 items-center gap-1">
+      <TableCell className="max-w-[220px] py-3 font-mono text-sm text-muted-foreground">
+        <div className="flex h-9 min-w-0 items-center gap-1">
           {upstreamModelInactive ? (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -363,7 +363,7 @@ const ModelRow = React.memo(function ModelRow({ row, isSelected, upstreamInactiv
                   role="img"
                   aria-label={t("modelsDialog.upstreamModelInactive")}
                 >
-                  <CircleOff className="size-3 stroke-[1.5]" />
+                  <CircleOff className="size-4 stroke-[1.5]" />
                 </span>
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-[280px] text-xs">
@@ -379,17 +379,17 @@ const ModelRow = React.memo(function ModelRow({ row, isSelected, upstreamInactiv
           </span>
         </div>
       </TableCell>
-      <TableCell className="min-w-[220px] py-1.5">
+      <TableCell className="min-w-[220px] py-3">
         <Input
-          className="h-7 min-w-[220px] font-mono text-xs"
+          className="h-9 min-w-[220px] font-mono text-sm"
           value={row.platformModelNameDraft}
           aria-label={t("modelsDialog.platformModelName")}
           onChange={(e) => handlePlatformModelChange(e.target.value)}
         />
       </TableCell>
-      <TableCell className="w-[220px] py-1.5 whitespace-nowrap">
+      <TableCell className="w-[220px] py-3 whitespace-nowrap">
         {!hasBindingDraft ? (
-          <span className="flex h-7 items-center text-xs text-muted-foreground">
+          <span className="flex h-9 items-center text-xs text-muted-foreground">
             {t("modelsDialog.deleteAfterSave")}
           </span>
         ) : (
@@ -402,19 +402,19 @@ const ModelRow = React.memo(function ModelRow({ row, isSelected, upstreamInactiv
                 kindsDisplay: resolveKindsDisplayForProtocols(protocols, row.kindsDisplay),
               })
             }
-            className="h-7 px-2 py-0 text-[11px] has-[>svg]:px-2"
+            className="h-9 px-2 py-0 text-sm has-[>svg]:px-2"
           />
         )}
       </TableCell>
-      <TableCell className="w-[140px] py-1.5">
+      <TableCell className="w-[140px] py-3">
         <KindsDropdown
           value={row.kindsDisplay}
           onChange={(value) => onUpdate(row.draftKey, { kindsDisplay: value })}
-          className="h-7 px-2 py-0 text-[11px] has-[>svg]:px-2"
+          className="h-9 px-2 py-0 text-sm has-[>svg]:px-2"
         />
       </TableCell>
-      <TableCell className="w-[48px] py-1.5 text-right" stickyEnd>
-        <div className="flex h-7 items-center justify-end">
+      <TableCell className="w-[48px] py-3 text-right" stickyEnd>
+        <div className="flex h-9 items-center justify-end">
           <Tooltip>
             <TooltipTrigger asChild>
               <span className="inline-flex">
@@ -455,7 +455,7 @@ type CatalogRow =
   | { kind: "inactivated"; name: string };
 
 const syncPlanChipClassName =
-  "inline-flex h-6 shrink-0 items-center gap-1 rounded-md px-2 text-xs text-muted-foreground outline-none transition-colors hover:bg-muted/60 focus-visible:bg-muted/60";
+  "inline-flex h-8 shrink-0 items-center gap-1 rounded-md px-2 text-sm text-muted-foreground outline-none transition-colors hover:bg-muted/60 focus-visible:bg-muted/60";
 const syncPlanChipActiveClassName = "bg-muted font-medium text-foreground hover:bg-muted";
 
 function remoteModelStatusKey(item: AdminLLMRemoteModelItem): "bound" | "unbound" | "unsynced" {
@@ -760,7 +760,7 @@ function RemoteModelsDialog({
             <div className="flex h-8 items-center gap-3">
               <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   {loading && !syncPlan ? (
-                    <span className="shrink-0 text-[11px] text-muted-foreground">
+                    <span className="shrink-0 text-xs text-muted-foreground">
                       {t("modelsDialog.syncPlanLoading")}
                     </span>
                   ) : (
@@ -805,7 +805,7 @@ function RemoteModelsDialog({
                                 </p>
                                 <div className="max-h-48 space-y-0.5 overflow-y-auto overscroll-contain pr-1">
                                   {status.models.map((modelName) => (
-                                    <div key={modelName} className="break-all font-mono text-[11px] leading-5 text-background/80">
+                                    <div key={modelName} className="break-all font-mono text-xs leading-5 text-background/80">
                                       {modelName}
                                     </div>
                                   ))}
@@ -821,7 +821,7 @@ function RemoteModelsDialog({
                   type="button"
                   size="icon-sm"
                   variant="ghost"
-                  className="size-7 shrink-0 text-muted-foreground shadow-none"
+                  className="size-8 shrink-0 text-muted-foreground shadow-none"
                   onClick={() => void loadRemoteModels()}
                   disabled={loading || importing}
                   aria-label={t("modelsDialog.reloadRemote")}
@@ -856,7 +856,7 @@ function RemoteModelsDialog({
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
                       <TableHead className="w-12 px-2 py-1.5 text-center">
-                        <div className="flex h-7 items-center justify-center">
+                        <div className="flex h-9 items-center justify-center">
                           <Checkbox
                             checked={allSelected ? true : someSelected ? "indeterminate" : false}
                             onCheckedChange={(v) => toggleAll(v === true)}
@@ -885,8 +885,8 @@ function RemoteModelsDialog({
                         key={row.name}
                         selected={row.kind === "remote" && selected.has(row.name)}
                       >
-                        <TableCell className="w-14 px-2 py-1.5 text-center">
-                          <div className="flex h-7 items-center justify-center">
+                        <TableCell className="w-14 px-2 py-3 text-center">
+                          <div className="flex h-9 items-center justify-center">
                             {row.kind === "remote" && !row.item.alreadyBound ? (
                               <Checkbox
                                 checked={selected.has(row.name)}
@@ -896,13 +896,13 @@ function RemoteModelsDialog({
                             ) : null}
                           </div>
                         </TableCell>
-                        <TableCell className="py-1.5 font-mono text-xs text-muted-foreground">
-                          <span className="flex h-7 items-center truncate" title={row.name}>
+                        <TableCell className="py-3 font-mono text-sm text-muted-foreground">
+                          <span className="flex h-9 items-center truncate" title={row.name}>
                             {row.name}
                           </span>
                         </TableCell>
-                        <TableCell className="min-w-0 py-1.5">
-                          <div className="flex h-7 items-center">
+                        <TableCell className="min-w-0 py-3">
+                          <div className="flex h-9 items-center">
                             {row.kind === "inactivated" ? (
                               <span className="text-xs text-muted-foreground">—</span>
                             ) : row.item.alreadyBound ? (
@@ -914,15 +914,15 @@ function RemoteModelsDialog({
                               </span>
                             ) : (
                               <Input
-                                className="w-full min-w-0 font-mono text-xs"
+                                className="w-full min-w-0 font-mono text-sm"
                                 value={draftPlatformModelNames.get(row.name) ?? ""}
                                 onChange={(e) => setDraftPlatformModelName(row.name, e.target.value)}
                               />
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="w-20 py-1.5 text-center">
-                          <div className="flex h-7 items-center justify-center">
+                        <TableCell className="w-20 py-3 text-center">
+                          <div className="flex h-9 items-center justify-center">
                             {row.kind === "inactivated" ? (
                               <Badge variant="secondary" className="text-destructive">
                                 {t("modelsDialog.syncPlanInactivatedLabel")}
@@ -1384,7 +1384,7 @@ export function UpstreamModelsDialog({
                 bulkContent={
                   <div className="space-y-1">
                     <BulkActionControlRow
-                      icon={<ToggleLeft className="size-3 stroke-1" />}
+                      icon={<ToggleLeft className="size-4 stroke-1" />}
                       label={t("actions.apply")}
                       onApply={() => setBulkPatchConfirm({ patch: { routeStatus: bulkRouteStatus } })}
                       disabled={selectedCount === 0}
@@ -1396,18 +1396,18 @@ export function UpstreamModelsDialog({
                         }}
                         disabled={selectedCount === 0}
                       >
-                        <SelectTrigger size="xs" className="h-7 px-2 text-[11px] text-muted-foreground">
+                        <SelectTrigger size="xs" className="h-9 px-2 text-sm text-muted-foreground">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent position="popper" align="start" className="z-[100]">
-                          <SelectItem value="active" className="text-[11px]">{t("status.active")}</SelectItem>
-                          <SelectItem value="inactive" className="text-[11px]">{t("status.inactive")}</SelectItem>
+                          <SelectItem value="active" className="text-xs">{t("status.active")}</SelectItem>
+                          <SelectItem value="inactive" className="text-xs">{t("status.inactive")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </BulkActionControlRow>
   
                     <BulkActionControlRow
-                      icon={<Cable className="size-3 stroke-1" />}
+                      icon={<Cable className="size-4 stroke-1" />}
                       label={t("actions.apply")}
                       onApply={() =>
                         setBulkPatchConfirm({
@@ -1424,12 +1424,12 @@ export function UpstreamModelsDialog({
                         value={bulkProtocols}
                         onChange={setBulkProtocols}
                         disabled={selectedCount === 0}
-                        className="h-7 w-full px-2 text-[11px]"
+                        className="h-9 w-full px-2 text-sm"
                       />
                     </BulkActionControlRow>
   
                     <BulkActionControlRow
-                      icon={<Tags className="size-3 stroke-1" />}
+                      icon={<Tags className="size-4 stroke-1" />}
                       label={t("actions.apply")}
                       onApply={() => setBulkPatchConfirm({ patch: { kindsDisplay: bulkKindsDisplay } })}
                       disabled={selectedCount === 0 || !bulkKindsDisplay}
@@ -1438,7 +1438,7 @@ export function UpstreamModelsDialog({
                         value={bulkKindsDisplay}
                         onChange={setBulkKindsDisplay}
                         disabled={selectedCount === 0}
-                        className="h-7 w-full px-2 text-[11px]"
+                        className="h-9 w-full px-2 text-sm"
                       />
                     </BulkActionControlRow>
                   </div>
@@ -1454,10 +1454,10 @@ export function UpstreamModelsDialog({
                 ]}
               >
                 <Button size="sm" onClick={() => setRemoteModelsOpen(true)} disabled={!stableUpstream}>
-                  <CloudDownload className="size-3" />{t("sync")}
+                  <CloudDownload className="size-4" />{t("sync")}
                 </Button>
                 <Button size="sm" onClick={() => setNewBindingOpen(true)} disabled={!stableUpstream}>
-                  <Plus className="size-3" />{commonT("actions.create")}
+                  <Plus className="size-4" />{commonT("actions.create")}
                 </Button>
               </TableToolbar>
             </div>
@@ -1476,7 +1476,7 @@ export function UpstreamModelsDialog({
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
                       <TableHead className="w-[44px] py-1.5 text-center">
-                        <div className="flex h-7 items-center justify-center">
+                        <div className="flex h-9 items-center justify-center">
                           <Checkbox
                             checked={allSelected ? true : someSelected ? "indeterminate" : false}
                             onCheckedChange={(checked) => handleSelectAll(checked === true)}

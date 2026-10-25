@@ -27,17 +27,17 @@ function ShortcutGlyph({
   modifierLabel: "Command" | "Ctrl";
 }) {
   if (value === "shift") {
-    return <ArrowBigUp size={6} strokeWidth={1.6} className="size-3 shrink-0" />;
+    return <ArrowBigUp strokeWidth={1.6} className="size-3.5 shrink-0" />;
   }
 
   if (value === "command") {
     if (modifierLabel === "Command") {
-      return <CommandIcon size={6} strokeWidth={1.6} className="size-3 shrink-0" />;
+      return <CommandIcon strokeWidth={1.6} className="size-3.5 shrink-0" />;
     }
-    return <span className="text-[11px] leading-none font-medium text-sidebar-foreground/60">Ctrl</span>;
+    return <span className="text-xs leading-none font-medium text-sidebar-foreground/60">Ctrl</span>;
   }
 
-  return <span className="text-[12px] leading-none font-medium text-sidebar-foreground/60">{value}</span>;
+  return <span className="text-xs leading-none font-medium text-sidebar-foreground/60">{value}</span>;
 }
 
 export function NavMainItem({
@@ -87,15 +87,15 @@ export function NavMainItem({
               aria-hidden
               strokeWidth={1.6}
               className={cn("size-4 text-current", isHovered && "scale-105")}
-              animate={isHovered ? "default" : false}
+              animate={isHovered ? "default" : undefined}
             />
           </span>
         ) : isCollapsed ? (
           <span className="flex size-8 items-center justify-center rounded-md transition-colors hover:bg-accent">
-            <Icon aria-hidden strokeWidth={1.6} className="size-4 text-current" animate={isHovered ? "default" : false} />
+            <Icon aria-hidden strokeWidth={1.6} className="size-4 text-current" animate={isHovered ? "default" : undefined} />
           </span>
         ) : (
-          <Icon aria-hidden strokeWidth={1.6} className="size-4 text-current" animate={isHovered ? "default" : false} />
+          <Icon aria-hidden strokeWidth={1.6} className="size-4 text-current" animate={isHovered ? "default" : undefined} />
         )}
       </span>
 

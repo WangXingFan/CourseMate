@@ -11,7 +11,7 @@ export function PoweredByCourseMate({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center gap-1.5 text-[11px] font-medium leading-none text-muted-foreground/70",
+        "inline-flex shrink-0 items-center gap-1.5 text-xs font-medium leading-none text-muted-foreground/70",
         className,
       )}
     >

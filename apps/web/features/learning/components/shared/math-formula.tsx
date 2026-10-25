@@ -34,7 +34,7 @@ export function MathFormula({
     <span
       ref={ref}
       className={cn(
-        display ? "block overflow-x-auto py-1 text-center text-[15px]" : "inline-block align-middle",
+        display ? "block overflow-x-auto py-1 text-center text-base" : "inline-block align-middle",
         className,
       )}
     />

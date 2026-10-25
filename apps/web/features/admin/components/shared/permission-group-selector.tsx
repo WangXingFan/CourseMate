@@ -72,10 +72,10 @@ export function PermissionGroupSelector({
             role="combobox"
             disabled={disabled || loading}
             className={cn(
-              "justify-between gap-2 text-xs font-normal focus-visible:ring-[1px] focus-visible:ring-ring/40",
+              "justify-between gap-2 text-sm font-normal focus-visible:ring-[1px] focus-visible:ring-ring/40",
               variant === "inline"
-                ? "h-6 w-auto max-w-full rounded-md px-1.5 py-0 hover:bg-muted/60 has-[>svg]:px-1.5"
-                : "h-8 w-full border-input/40 bg-transparent px-3 py-1 hover:bg-transparent focus-visible:border-ring/60 has-[>svg]:px-3",
+                ? "h-8 w-auto max-w-full rounded-md px-2 py-0 hover:bg-muted/60 has-[>svg]:px-2"
+                : "w-full border-input/70 bg-transparent px-3 py-1 hover:bg-transparent focus-visible:border-ring/60 has-[>svg]:px-3",
             )}
           >
             {triggerPrefix ? (
@@ -86,13 +86,13 @@ export function PermissionGroupSelector({
             <span className={cn("min-w-0 flex-1 truncate text-left", selectedLabel ? "text-foreground/75" : "text-muted-foreground")}>
               {triggerLabel}
             </span>
-            <ChevronDownIcon className="size-3 shrink-0 text-muted-foreground opacity-50" />
+            <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-[320px] p-1">
           <div className="max-h-64 overflow-y-auto py-1">
             {groups.length === 0 ? (
-              <div className="px-2 py-6 text-center text-xs text-muted-foreground">
+              <div className="px-2 py-6 text-center text-sm text-muted-foreground">
                 {emptyLabel}
               </div>
             ) : (
@@ -104,12 +104,12 @@ export function PermissionGroupSelector({
                     key={group.id}
                     type="button"
                     aria-pressed={selected}
-                    className="relative flex w-full min-w-0 items-center rounded-sm py-1.5 pr-8 pl-2 text-left text-xs hover:bg-accent"
+                    className="relative flex min-h-9 w-full min-w-0 items-center rounded-md py-2 pr-8 pl-2 text-left text-sm hover:bg-accent"
                     onClick={() => toggleGroup(group.id)}
                   >
                     <span className="min-w-0 flex-1 truncate">{group.name}</span>
                     {autoMatched ? (
-                      <span className="ml-2 shrink-0 rounded border border-border px-1.5 text-[10px] leading-5 text-muted-foreground">
+                      <span className="ml-2 shrink-0 rounded border border-border px-1.5 text-2xs leading-5 text-muted-foreground">
                         {autoBadgeLabel}
                       </span>
                     ) : null}

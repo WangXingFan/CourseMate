@@ -67,7 +67,7 @@ function CompactDivider({ summaryPreview }: { summaryPreview: string }) {
         <div className="h-px flex-1 bg-border/50" />
         <button
           type="button"
-          className="shrink-0 cursor-pointer text-[11px] text-muted-foreground/60 hover:text-muted-foreground"
+          className="shrink-0 cursor-pointer text-xs text-muted-foreground/60 hover:text-muted-foreground"
           onClick={() => setExpanded((v) => !v)}
         >
           {t("contextCompressed")}
@@ -75,7 +75,7 @@ function CompactDivider({ summaryPreview }: { summaryPreview: string }) {
         <div className="h-px flex-1 bg-border/50" />
       </div>
       {expanded && summaryPreview ? (
-        <p className="max-w-lg text-center text-[11px] leading-relaxed text-muted-foreground/70">
+        <p className="max-w-lg text-center text-xs leading-relaxed text-muted-foreground/70">
           {summaryPreview}
         </p>
       ) : null}
@@ -190,7 +190,7 @@ function ChatScreenshotMessageMeta({
   return (
     <div
       className={cn(
-        "chat-screenshot-meta mt-1.5 hidden min-w-0 flex-wrap items-center gap-1 text-[10px] leading-3.5 text-muted-foreground/70",
+        "chat-screenshot-meta mt-1.5 hidden min-w-0 flex-wrap items-center gap-1 text-2xs leading-3.5 text-muted-foreground/70",
         align === "end" ? "justify-end" : "justify-start",
       )}
       data-screenshot-only="true"
@@ -225,7 +225,7 @@ function ChatScreenshotBrandMark({ placement }: { placement: "top" | "bottom" })
       {placement === "top" ? (
         <>
           <AppLogo width={65} height={20} className="h-5 w-auto opacity-75" />
-          {branding.logoURL ? <PoweredByCourseMate className="text-[10px]" /> : null}
+          {branding.logoURL ? <PoweredByCourseMate className="text-2xs" /> : null}
         </>
       ) : branding.logoURL ? (
         <>

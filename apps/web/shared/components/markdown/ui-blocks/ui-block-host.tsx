@@ -145,7 +145,7 @@ function UIBlockFallback({ reason, component, version, issues, raw }: UIBlockFal
       </button>
       <CollapsibleMotionContent id={contentID} open={open}>
         {issues && issues.length > 0 ? (
-          <ul className="border-t-[0.5px] border-border px-4 py-2 font-mono text-[11px] leading-5 text-muted-foreground">
+          <ul className="border-t-[0.5px] border-border px-4 py-2 font-mono text-xs leading-5 text-muted-foreground">
             {issues.slice(0, 8).map((issue) => (
               <li key={`${issue.path}:${issue.message}`}>
                 {issue.path}: {issue.message}
@@ -155,7 +155,7 @@ function UIBlockFallback({ reason, component, version, issues, raw }: UIBlockFal
         ) : null}
         {/* The markdown container resets <pre> (no padding, overflow visible), so the wrapper owns padding and scrolling. */}
         <div className="max-h-64 overflow-auto border-t-[0.5px] border-border px-4 py-3">
-          <pre className="w-max min-w-full whitespace-pre font-mono text-[11px] leading-5 text-foreground/92">{raw.trim()}</pre>
+          <pre className="w-max min-w-full whitespace-pre font-mono text-xs leading-5 text-foreground/92">{raw.trim()}</pre>
         </div>
       </CollapsibleMotionContent>
     </UIBlockFrame>

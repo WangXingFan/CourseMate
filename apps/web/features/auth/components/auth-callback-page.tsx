@@ -41,7 +41,7 @@ export function AuthCallbackPage() {
         {error ? (
           <div className="mt-7 space-y-5 text-center">
             <div className="space-y-2">
-              <h1 className="text-xl font-semibold leading-7">{t("errorTitle")}</h1>
+              <h1 className="font-display text-3xl font-normal leading-7">{t("errorTitle")}</h1>
               <p className="break-words text-sm leading-6 text-muted-foreground">{error}</p>
             </div>
             <Button type="button" className="h-9 w-full rounded-md bg-foreground text-sm font-semibold text-background shadow-none hover:bg-foreground/90" onClick={redirectToLogin}>
@@ -52,7 +52,7 @@ export function AuthCallbackPage() {
           <div className="mt-7 space-y-5">
             <div className="space-y-2 text-center">
               <div className="space-y-2">
-                <h1 className="text-xl font-semibold leading-7">{t("emailConflict.title")}</h1>
+                <h1 className="font-display text-3xl font-normal leading-7">{t("emailConflict.title")}</h1>
                 <p className="text-sm leading-6 text-muted-foreground">{t("emailConflict.description")}</p>
               </div>
             </div>

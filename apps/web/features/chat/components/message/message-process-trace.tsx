@@ -97,7 +97,7 @@ export function MessageProcessTrace({
                 <Marker
                   render={<span />}
                   className={cn(
-                    "inline-flex min-h-0 w-auto text-[13px] font-medium transition-colors",
+                    "inline-flex min-h-0 w-auto text-sm font-medium transition-colors",
                     !processStreaming && "text-muted-foreground group-hover/trace:text-foreground",
                   )}
                 >
@@ -107,7 +107,7 @@ export function MessageProcessTrace({
                 </Marker>
               </div>
               {summary ? (
-                <div className="mt-0.5 truncate text-[11px] font-normal leading-4 text-muted-foreground/62">{summary}</div>
+                <div className="mt-0.5 truncate text-xs font-normal leading-4 text-muted-foreground/62">{summary}</div>
               ) : null}
             </div>
             <ChevronDown

@@ -1,4 +1,4 @@
-import { Geist } from "next/font/google";
+import { Inter } from "next/font/google";
 
 import { ShellProviders } from "@/features/desktop";
 import { ThemeBootstrapScript } from "@/shared/components/theme-bootstrap-script";
@@ -9,15 +9,15 @@ import "../globals.css";
 // not the app layout: no branding fetch, no i18n bundles, no guards — these
 // pages have no server and must stay cheap, one per window.
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   display: "optional",
 });
 
 export default function ShellLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} h-full`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} h-full`} suppressHydrationWarning>
       <head>
         <ThemeBootstrapScript />
       </head>

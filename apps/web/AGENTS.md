@@ -9,3 +9,5 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 <!-- END:nextjs-agent-rules -->
 
 Project conventions for this app: see [README.md](./README.md) (layering, API, auth, i18n) and [BIOME.md](./BIOME.md) (lint rules and exceptions). Run `pnpm --filter @deeix/web check` before finishing.
+
+UI work must follow [DESIGN.md](./DESIGN.md) (design tokens, type scale, forbidden patterns such as tiny explanatory text, and the remaining redesign backlog).

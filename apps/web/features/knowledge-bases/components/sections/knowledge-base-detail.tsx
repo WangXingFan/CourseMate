@@ -149,7 +149,7 @@ function KnowledgeBaseDetailHeader({
   const t = useTranslations("knowledgeBases");
 
   return (
-    <header className="flex h-15 min-w-0 shrink-0 items-center justify-between gap-3 border-b border-border/40 px-3 md:px-5">
+    <header className="flex min-w-0 shrink-0 flex-wrap items-center justify-between gap-4 border-b border-border px-4 py-6 md:px-8 md:pb-8">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <Button
           type="button"
@@ -166,12 +166,12 @@ function KnowledgeBaseDetailHeader({
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-center gap-1.5">
-            <h2 className="truncate text-[13px] font-medium text-foreground">{selected.name}</h2>
-            <Badge variant="secondary" className="h-4 rounded-md px-1.5 text-[9px] font-normal">
+            <h2 className="truncate font-display text-2xl font-normal text-foreground md:text-3xl">{selected.name}</h2>
+            <Badge variant="secondary" className="h-5 rounded-md px-1.5 text-xs font-normal">
               {selected.scope === "builtin" ? t("builtin") : t("personal")}
             </Badge>
           </div>
-          <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+          <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
             {selected.description || t("files", { count: selected.fileCount })}
           </p>
         </div>
@@ -179,7 +179,7 @@ function KnowledgeBaseDetailHeader({
       {mode === "admin" || selected.scope === "user" ? (
         <div className="flex shrink-0 items-center gap-1">
           {mode === "admin" ? (
-            <label className="mr-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <label className="mr-1 flex items-center gap-1.5 text-sm text-muted-foreground">
               <span className="hidden lg:inline">
                 {selected.enabled ? t("enabled") : t("disabled")}
               </span>
@@ -195,7 +195,7 @@ function KnowledgeBaseDetailHeader({
           <Button
             type="button"
             size="sm"
-            className="ml-0 h-7 px-2 sm:ml-1"
+            className="ml-0 h-9 px-2 sm:ml-1"
             onClick={onAddFiles}
             aria-label={t("addFiles")}
           >
@@ -263,7 +263,7 @@ function KnowledgeBaseFileList({
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       {editable && selectedFileIDs.length > 0 ? (
-        <div className="flex h-10 shrink-0 items-center gap-2 border-b border-border/35 px-3 text-[11px] text-muted-foreground md:px-5">
+        <div className="flex h-10 shrink-0 items-center gap-2 border-b border-border/35 px-3 text-xs text-muted-foreground md:px-5">
           <Checkbox
             checked={allVectorizableSelected ? true : selectedFileIDs.length > 0 ? "indeterminate" : false}
             onCheckedChange={(checked) => checked ? onSelectVectorizableFiles() : onClearFileSelection()}
@@ -274,7 +274,7 @@ function KnowledgeBaseFileList({
             type="button"
             variant="ghost"
             size="sm"
-            className="h-7 px-2 text-xs"
+            className="h-9 px-2 text-sm"
             disabled={vectorizingFiles}
             onClick={onClearFileSelection}
           >
@@ -284,7 +284,7 @@ function KnowledgeBaseFileList({
             type="button"
             variant="ghost"
             size="sm"
-            className="h-7 gap-1 px-2 text-xs"
+            className="h-9 gap-1 px-2 text-sm"
             disabled={selectedFileIDs.length === 0 || vectorizingFiles}
             onClick={() => void onVectorizeSelectedFiles()}
           >
@@ -300,7 +300,7 @@ function KnowledgeBaseFileList({
         </div>
       ) : (
         <div className="w-full">
-          <div className="space-y-0.5">
+          <div className="space-y-0">
             {files.map((file) => {
               const FileIcon = resolveFileIcon(file);
               const statusLabel = resolveFileRetrievalBadge(
@@ -311,7 +311,7 @@ function KnowledgeBaseFileList({
               const outdatedIndex = isVectorIndexOutdated(file);
               const checked = selectedFileIDSet.has(file.fileID);
               return (
-                <div key={file.fileID} className={cn("group relative -mx-2 min-h-10 rounded-md", checked && "bg-muted/35")}>
+                <div key={file.fileID} className={cn("group relative min-h-16 border-b border-border/60 last:border-b-0", checked && "bg-accent shadow-[inset_2px_0_0_var(--primary)]")}>
                   {editable && vectorizable ? (
                     <Checkbox
                       checked={checked}
@@ -327,7 +327,7 @@ function KnowledgeBaseFileList({
                   <button
                     type="button"
                     className={cn(
-                      "flex min-h-10 w-full items-center gap-2 rounded-md px-2 py-1 text-left transition-colors hover:bg-muted/45 focus-visible:bg-muted/45 focus-visible:outline-none",
+                      "flex min-h-16 w-full items-center gap-3 rounded-md px-2 py-3 text-left transition-colors hover:bg-muted/45 focus-visible:bg-muted/45 focus-visible:outline-none",
                       editable && "pr-18",
                     )}
                     onClick={() => onPreviewFile(file)}
@@ -340,20 +340,20 @@ function KnowledgeBaseFileList({
                     </span>
                     <span className="min-w-0 flex-1">
                       <span
-                        className="block truncate text-xs font-normal text-foreground"
+                        className="block truncate text-sm font-normal text-foreground"
                         title={file.fileName}
                       >
                         {file.fileName}
                       </span>
-                      <span className="mt-0.5 block truncate text-[10px] text-muted-foreground sm:hidden">
+                      <span className="mt-0.5 block truncate text-xs text-muted-foreground sm:hidden">
                         {formatBytes(file.sizeBytes)} · {statusLabel}
                       </span>
                     </span>
-                    <span className="hidden w-20 shrink-0 text-right text-[11px] text-muted-foreground sm:block">
+                    <span className="hidden w-20 shrink-0 text-right text-xs text-muted-foreground sm:block">
                       {formatBytes(file.sizeBytes)}
                     </span>
                     <span
-                      className="hidden w-20 shrink-0 truncate text-right text-[11px] text-muted-foreground sm:block"
+                      className="hidden w-20 shrink-0 truncate text-right text-xs text-muted-foreground sm:block"
                       title={statusLabel}
                     >
                       {statusLabel}

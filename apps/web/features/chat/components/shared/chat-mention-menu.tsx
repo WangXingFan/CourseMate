@@ -44,7 +44,7 @@ function ChatMentionMenuItemButton({
       role="option"
       aria-selected={active}
       data-active={active}
-      className="flex h-8 w-full min-w-0 scroll-mt-7 items-center gap-2 rounded-md px-2 text-left text-[11px] font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+      className="flex h-8 w-full min-w-0 scroll-mt-7 items-center gap-2 rounded-md px-2 text-left text-xs font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
       onMouseDown={(event) => {
         event.preventDefault();
         onSelect();
@@ -112,7 +112,7 @@ const ChatMentionMenuContent = React.memo(function ChatMentionMenuContent({
       {sections.map((section) => (
         <div key={section.key} className="space-y-0.5">
           {section.header ? (
-            <div className="sticky top-0 z-[1] bg-pure px-2 pb-1 pt-1.5 text-[11px] font-semibold text-muted-foreground">
+            <div className="sticky top-0 z-[1] bg-pure px-2 pb-1 pt-1.5 text-xs font-semibold text-muted-foreground">
               {section.header.labelKey ? t(section.header.labelKey) : section.header.label}
             </div>
           ) : null}
@@ -135,7 +135,7 @@ const ChatMentionMenuContent = React.memo(function ChatMentionMenuContent({
                   role="option"
                   aria-selected={row.key === activeRowKey}
                   data-active={row.key === activeRowKey}
-                  className="flex h-7 w-full scroll-mt-7 items-center gap-2 rounded-md px-2 text-left text-[11px] font-medium text-muted-foreground/85 outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+                  className="flex h-7 w-full scroll-mt-7 items-center gap-2 rounded-md px-2 text-left text-xs font-medium text-muted-foreground/85 outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
                   onMouseDown={(event) => {
                     event.preventDefault();
                     onSelect(row);
@@ -185,7 +185,7 @@ function ChatMentionMenuTabBar({
             role="tab"
             aria-selected={active}
             className={cn(
-              "flex h-6 shrink-0 items-center gap-1 rounded-md px-2 text-[11px] font-medium outline-none transition-colors",
+              "flex h-6 shrink-0 items-center gap-1 rounded-md px-2 text-xs font-medium outline-none transition-colors",
               active
                 ? "bg-accent text-accent-foreground"
                 : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
@@ -199,7 +199,7 @@ function ChatMentionMenuTabBar({
             {tab.count !== null ? (
               <span
                 className={cn(
-                  "text-[10px] leading-none tabular-nums",
+                  "text-2xs leading-none tabular-nums",
                   active ? "text-accent-foreground/70" : "text-muted-foreground/70",
                 )}
               >

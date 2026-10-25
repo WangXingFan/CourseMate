@@ -80,7 +80,7 @@ export function KnowledgeBaseSidebarHeader({
             type="button"
             variant="ghost"
             size="icon"
-            className="size-6"
+            className="size-8"
             onClick={onToggleCollapsed}
             aria-label={t("expandSidebar")}
             title={t("expandSidebar")}
@@ -93,7 +93,7 @@ export function KnowledgeBaseSidebarHeader({
             type="button"
             variant="ghost"
             size="icon"
-            className="size-6"
+            className="size-8"
             onClick={onToggleSearch}
             aria-label={t("search")}
             title={t("search")}
@@ -106,7 +106,7 @@ export function KnowledgeBaseSidebarHeader({
             type="button"
             variant="ghost"
             size="icon"
-            className="size-6"
+            className="size-8"
             onClick={onCreate}
             aria-label={t("create")}
             title={t("create")}
@@ -120,8 +120,8 @@ export function KnowledgeBaseSidebarHeader({
 
   return (
     <div className="min-w-0 overflow-hidden pt-2">
-      <div className="flex h-8 min-w-0 items-center gap-2 px-2">
-        <h1 className="min-w-0 flex-1 truncate text-[15px] font-medium text-foreground">
+      <div className="flex h-12 min-w-0 items-center gap-2 px-2">
+        <h1 className="min-w-0 flex-1 truncate font-display text-2xl font-normal text-foreground">
           {t(mode === "admin" ? "adminTitle" : "title")}
         </h1>
         <div className="flex shrink-0 items-center gap-1">
@@ -130,7 +130,7 @@ export function KnowledgeBaseSidebarHeader({
               type="button"
               variant="ghost"
               size="icon"
-              className="size-6"
+              className="size-8"
               onClick={onToggleCollapsed}
               aria-label={t("collapseSidebar")}
               title={t("collapseSidebar")}
@@ -142,7 +142,7 @@ export function KnowledgeBaseSidebarHeader({
             type="button"
             variant="ghost"
             size="icon"
-            className="size-6"
+            className="size-8"
             onClick={onToggleSearch}
             aria-label={t("search")}
             title={t("search")}
@@ -153,7 +153,7 @@ export function KnowledgeBaseSidebarHeader({
             type="button"
             variant="ghost"
             size="icon"
-            className="size-6"
+            className="size-8"
             onClick={onCreate}
             aria-label={t("create")}
             title={t("create")}
@@ -180,14 +180,14 @@ export function KnowledgeBaseSidebarHeader({
           type="button"
           variant="ghost"
           size="sm"
-          className="h-7 shrink-0 gap-0.5 px-1 text-xs text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
+          className="h-9 shrink-0 gap-0.5 px-1 text-sm text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
           disabled={loading || bulkDeleting || selectableCount === 0}
           onClick={selectedCount > 0 ? onClearSelection : onSelectAll}
         >
           {selectedCount > 0 ? (
-            <SquareDashed className="size-3 stroke-1" />
+            <SquareDashed className="size-4 stroke-1" />
           ) : (
-            <SquareDashedMousePointer className="size-3 stroke-1" />
+            <SquareDashedMousePointer className="size-4 stroke-1" />
           )}
           {selectedCount > 0 ? tCommon("cancel") : t("selectAll")}
         </Button>
@@ -198,9 +198,9 @@ export function KnowledgeBaseSidebarHeader({
               type="button"
               variant="ghost"
               size="sm"
-              className="h-7 gap-0.5 px-1 text-xs text-muted-foreground shadow-none hover:bg-muted hover:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground"
+              className="h-9 gap-0.5 px-1 text-sm text-muted-foreground shadow-none hover:bg-muted hover:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground"
             >
-              <ArrowDownUp className="size-3 stroke-1" />
+              <ArrowDownUp className="size-4 stroke-1" />
               {t("sort.action")}
             </Button>
           </DropdownMenuTrigger>
@@ -212,16 +212,16 @@ export function KnowledgeBaseSidebarHeader({
                   <DropdownMenuItem
                     key={option}
                     className={cn(
-                      "h-6 gap-2 px-2 py-0 text-[10px]",
+                      "min-h-9 gap-2 px-2 py-1.5 text-sm",
                       active
                         ? "bg-muted/55 text-foreground"
                         : "text-foreground/70 hover:bg-muted hover:text-foreground",
                     )}
                     onSelect={() => onSortChange(option)}
                   >
-                    <ArrowDownUp className="size-3 stroke-1 text-muted-foreground" />
+                    <ArrowDownUp className="size-4 stroke-1 text-muted-foreground" />
                     <span className="flex-1 truncate">{t(`sort.${option}`)}</span>
-                    {active ? <Check className="size-3 stroke-1 text-muted-foreground" /> : null}
+                    {active ? <Check className="size-4 stroke-1 text-muted-foreground" /> : null}
                   </DropdownMenuItem>
                 );
               })}
@@ -234,11 +234,11 @@ export function KnowledgeBaseSidebarHeader({
             type="button"
             variant="ghost"
             size="sm"
-            className="h-7 shrink-0 gap-0.5 px-1 text-xs text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
+            className="h-9 shrink-0 gap-0.5 px-1 text-sm text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
             disabled={bulkDeleting}
             onClick={onBulkDelete}
           >
-            <Trash2 className="size-3 stroke-1" />
+            <Trash2 className="size-4 stroke-1" />
             {tCommon("delete")}
           </Button>
         ) : null}

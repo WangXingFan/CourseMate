@@ -98,7 +98,7 @@ function PopoverField({
 }) {
   return (
     <div className={cn("space-y-1.5", className)}>
-      <p className="text-[11px] text-muted-foreground">{label}</p>
+      <p className="text-sm text-muted-foreground">{label}</p>
       {children}
     </div>
   );
@@ -119,7 +119,7 @@ function MenuOption({
     <DropdownMenuItem
       onSelect={onSelect}
       className={cn(
-        "h-6 gap-2 px-2 py-0 text-[10px]",
+        "h-8 gap-2 px-2 py-0 text-sm",
         active
           ? "bg-muted/55 text-foreground focus:bg-muted/55"
           : "text-foreground/70 focus:bg-muted focus:text-foreground",
@@ -214,7 +214,7 @@ function SelectFilterControl({
       disabled={disabled}
       onValueChange={(value) => filter.onValueChange(value === ALL_FILTER_VALUE ? "" : value)}
     >
-      <SelectTrigger size="xs" className="h-7 px-2 text-[11px] text-muted-foreground">
+      <SelectTrigger size="xs" className="h-9 px-2 text-sm text-muted-foreground">
         <SelectValue />
       </SelectTrigger>
       <SelectContent
@@ -227,7 +227,7 @@ function SelectFilterControl({
           <SelectItem
             key={`${filter.key}:${option.value || ALL_FILTER_VALUE}`}
             value={option.value || ALL_FILTER_VALUE}
-            className="text-[11px]"
+            className="text-xs"
           >
             {option.label}
           </SelectItem>
@@ -297,7 +297,7 @@ export function TableToolbar({
               <ToolbarButton aria-label={t("search")}>
                 <Search className="size-3.5 stroke-1" />
                 <span className="hidden sm:inline">{t("search")}</span>
-                {hasQuery ? <span className="text-[10px] tabular-nums">1</span> : null}
+                {hasQuery ? <span className="text-2xs tabular-nums">1</span> : null}
               </ToolbarButton>
             </PopoverTrigger>
             <PopoverContent align="start" className="w-[min(320px,calc(100vw-32px))] p-3">
@@ -319,7 +319,7 @@ export function TableToolbar({
                       type="button"
                       size="sm"
                       variant="ghost"
-                      className="h-7 px-2 text-xs shadow-none hover:bg-muted"
+                      className="h-8 px-2 text-xs shadow-none hover:bg-muted"
                       onClick={queryDraft.clear}
                     >
                       {t("clearSearch")}
@@ -347,14 +347,14 @@ export function TableToolbar({
               <ToolbarButton disabled={loading} aria-label={t("filter")}>
                 <Funnel className="size-3.5 stroke-1" />
                 <span className="hidden sm:inline">{t("filter")}</span>
-                {activeFilterCount ? <span className="text-[10px] tabular-nums">{activeFilterCount}</span> : null}
+                {activeFilterCount ? <span className="text-2xs tabular-nums">{activeFilterCount}</span> : null}
               </ToolbarButton>
             </PopoverTrigger>
             <PopoverContent align="start" className="max-h-[min(420px,calc(100vh-96px))] w-[240px] overflow-y-auto p-2">
               <div className="space-y-2">
                 {filters.map((filter) => (
                   <div key={filter.key} className="space-y-1">
-                    <p className="px-1 text-[10px] text-muted-foreground">{filter.label}</p>
+                    <p className="px-1 text-sm text-muted-foreground">{filter.label}</p>
 
                     {isCustomFilter(filter) ? (
                       filter.content
@@ -405,7 +405,7 @@ export function TableToolbar({
             </PopoverTrigger>
             <PopoverContent align="start" className="w-[240px] p-2">
               <div className="space-y-1">
-                <p className="flex h-7 items-center px-2 text-[11px] text-muted-foreground">{t("selectedItems", { count: selectedCount })}</p>
+                <p className="flex h-8 items-center px-2 text-sm text-muted-foreground">{t("selectedItems", { count: selectedCount })}</p>
 
                 {bulkContent}
 
@@ -417,7 +417,7 @@ export function TableToolbar({
                         type="button"
                         onClick={action.onClick}
                         disabled={loading || !hasSelection || action.disabled}
-                        className="group flex h-7 w-full items-center gap-2 rounded-md px-2 text-left text-[11px] text-destructive transition-colors hover:bg-destructive/10 disabled:pointer-events-none disabled:opacity-50"
+                        className="group flex h-8 w-full items-center gap-2 rounded-md px-2 text-left text-xs text-destructive transition-colors hover:bg-destructive/10 disabled:pointer-events-none disabled:opacity-50"
                       >
                         {action.icon ? (
                           <span className="flex w-4 shrink-0 justify-center text-muted-foreground group-hover:text-current [&_svg]:size-3 [&_svg]:stroke-1">
@@ -491,7 +491,7 @@ export function TablePagination({
           type="button"
           size="icon-sm"
           variant="ghost"
-          className="h-5 w-5 text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
+          className="text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
           onClick={() => onPageChange(Math.max(1, page - 1))}
           disabled={loading || page <= 1}
           aria-label={t("previousPage")}
@@ -507,7 +507,7 @@ export function TablePagination({
                 type="button"
                 size="sm"
                 variant="ghost"
-                className="h-5 px-1.5 text-xs font-normal text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
+                className="h-8 px-1.5 text-xs font-normal text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
                 disabled={loading}
               >
                 <span>{t("pageSize", { size: pageSize })}</span>
@@ -519,7 +519,7 @@ export function TablePagination({
                   key={value}
                   disabled={loading}
                   onSelect={() => onPageSizeChange(value)}
-                  className={cn("h-6 justify-end px-2 py-0 text-xs font-normal text-muted-foreground focus:bg-muted focus:text-foreground", value === pageSize && "bg-muted/60 text-foreground")}
+                  className={cn("h-8 justify-end px-2 py-0 text-xs font-normal text-muted-foreground focus:bg-muted focus:text-foreground", value === pageSize && "bg-muted/60 text-foreground")}
                 >
                   <span className="inline-flex w-full items-center justify-end tabular-nums">
                     <span>{t("pageSize", { size: value })}</span>
@@ -534,7 +534,7 @@ export function TablePagination({
           type="button"
           size="icon-sm"
           variant="ghost"
-          className="h-5 w-5 text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
+          className="text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
           onClick={() => onPageChange(Math.min(normalizedPageCount, page + 1))}
           disabled={loading || page >= normalizedPageCount}
           aria-label={t("nextPage")}

@@ -73,15 +73,15 @@ const SheetContent = React.forwardRef<
         ref={ref}
         data-slot="sheet-content"
         className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 overflow-hidden border shadow-2xl transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 overflow-hidden border shadow-sm transition ease-[cubic-bezier(0.16,1,0.3,1)] data-[state=closed]:duration-200 data-[state=open]:duration-300 motion-reduce:animate-none motion-reduce:transition-none",
           side === "right" &&
-            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-3 right-3 h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] rounded-3xl sm:max-w-sm",
+            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-3 right-3 h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] rounded-lg sm:max-w-sm",
           side === "left" &&
-            "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-3 left-3 h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] rounded-3xl sm:max-w-sm",
+            "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-3 left-3 h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] rounded-lg sm:max-w-sm",
           side === "top" &&
-            "data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-3 top-3 h-auto rounded-3xl",
+            "data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-3 top-3 h-auto rounded-lg",
           side === "bottom" &&
-            "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-3 bottom-3 h-auto rounded-3xl",
+            "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-3 bottom-3 h-auto rounded-lg",
           className
         )}
         onInteractOutside={(event) => {
@@ -104,7 +104,7 @@ const SheetContent = React.forwardRef<
       >
         {children}
         {showCloseButton ? (
-          <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-6 right-6 rounded-md opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
+          <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 flex size-8 items-center justify-center rounded-md opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
             <XIcon className="size-4" />
             <span className="sr-only">{t("close")}</span>
           </SheetPrimitive.Close>
@@ -128,7 +128,7 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sheet-footer"
-      className={cn("mt-auto flex flex-col gap-2 rounded-b-3xl border-t bg-background px-6 py-4", className)}
+      className={cn("mt-auto flex flex-col gap-2 rounded-b-lg border-t bg-background px-6 py-4", className)}
       {...props}
     />
   )
@@ -141,7 +141,7 @@ function SheetTitle({
   return (
     <SheetPrimitive.Title
       data-slot="sheet-title"
-      className={cn("text-foreground font-semibold", className)}
+      className={cn("font-display text-xl font-normal text-foreground", className)}
       {...props}
     />
   )

@@ -28,12 +28,12 @@ export function LabSlider({
   const id = React.useId();
 
   return (
-    <div className={cn("space-y-1.5", className)}>
+    <div className={cn("space-y-2", className)}>
       <div className="flex items-baseline justify-between gap-3">
-        <label htmlFor={id} className="text-xs text-muted-foreground">
+        <label htmlFor={id} className="text-sm text-foreground/85">
           {label}
         </label>
-        <output htmlFor={id} className="font-mono text-xs font-medium tabular-nums text-foreground">
+        <output htmlFor={id} className="font-mono text-sm font-medium tabular-nums text-primary">
           {format(value)}
         </output>
       </div>
@@ -45,9 +45,9 @@ export function LabSlider({
         step={step}
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-muted accent-primary"
+        className="h-1 w-full cursor-pointer appearance-none rounded-full bg-border accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35 focus-visible:ring-offset-4 focus-visible:ring-offset-card"
       />
-      {hint ? <p className="text-[11px] leading-5 text-muted-foreground">{hint}</p> : null}
+      {hint ? <p className="text-sm leading-6 text-muted-foreground">{hint}</p> : null}
     </div>
   );
 }

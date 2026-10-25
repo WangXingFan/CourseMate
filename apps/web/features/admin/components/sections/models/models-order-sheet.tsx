@@ -137,7 +137,7 @@ export function ModelOrderSheet({
               <section className="flex min-h-0 flex-col overflow-hidden rounded-lg border bg-background">
                 <div className="flex h-9 shrink-0 items-center justify-between gap-3 border-b px-3">
                   <span className="text-xs font-medium text-foreground">{t("groupHeader")}</span>
-                  <span className="text-[11px] text-muted-foreground">{t("itemCount", { count: groups.length })}</span>
+                  <span className="text-xs text-muted-foreground">{t("itemCount", { count: groups.length })}</span>
                 </div>
                 <div className="min-h-0 flex-1 overflow-y-auto p-1">
                   <AdminSortableList
@@ -179,7 +179,7 @@ export function ModelOrderSheet({
                                 >
                                   {iconURL ? <ModelIcon iconUrl={iconURL} label={group.label} size={14} /> : null}
                                   <span className="min-w-0 flex-1 truncate text-xs font-medium">{group.label}</span>
-                                  <span className="shrink-0 text-[11px] text-muted-foreground">{group.items.length}</span>
+                                  <span className="shrink-0 text-xs text-muted-foreground">{group.items.length}</span>
                                 </button>
                               </div>
                             )}
@@ -198,13 +198,13 @@ export function ModelOrderSheet({
                       {t("modelHeader")}
                     </span>
                     {selectedGroup ? (
-                      <span className="truncate text-[11px] text-muted-foreground">
+                      <span className="truncate text-xs text-muted-foreground">
                         {selectedGroup.label}
                       </span>
                     ) : null}
                   </div>
                   {selectedGroup ? (
-                    <span className="shrink-0 text-[11px] text-muted-foreground">
+                    <span className="shrink-0 text-xs text-muted-foreground">
                       {t("itemCount", { count: selectedGroup.items.length })}
                     </span>
                   ) : null}

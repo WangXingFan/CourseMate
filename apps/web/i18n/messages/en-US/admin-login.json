@@ -1,0 +1,8 @@
+{
+  "bridgeNotice": {
+    "title": "Provider sign-in needs configuration",
+    "description": "Identity providers are configured, but PUBLIC_API_BASE_URL is missing on the server. Provider sign-in is unavailable. Review the login settings to finish setup.",
+    "dismiss": "Later",
+    "openSettings": "Review login settings"
+  }
+}

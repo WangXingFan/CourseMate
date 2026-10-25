@@ -1,4 +1,6 @@
 import type { AppLocale } from "@/i18n/config";
+import enFiles from "@/i18n/messages/en-US/files.json";
+import enAdminLogin from "@/i18n/messages/en-US/admin-login.json";
 import enAdminFiles from "@/i18n/messages/en-US/admin-files.json";
 import enAdminModels from "@/i18n/messages/en-US/admin-models.json";
 import enAdminUpstreams from "@/i18n/messages/en-US/admin-upstreams.json";
@@ -22,6 +24,8 @@ import enSettings from "@/i18n/messages/en-US/settings.json";
 import { replaceDefaultBrandTitle } from "@/shared/config/branding";
 
 const ENGLISH_MESSAGES = {
+  files: enFiles,
+  adminLogin: enAdminLogin,
   common: enCommon,
   conversation: enConversation,
   errors: enErrors,
@@ -95,6 +99,8 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
   }
 
   const [
+    files,
+    adminLogin,
     desktopSetup,
     desktopTabs,
     desktopUpdate,
@@ -116,6 +122,8 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
     adminUpstreams,
     adminUsers,
   ] = await Promise.all([
+    import("@/i18n/messages/zh-CN/files.json"),
+    import("@/i18n/messages/zh-CN/admin-login.json"),
     import("@/i18n/messages/zh-CN/desktop-setup.json"),
     import("@/i18n/messages/zh-CN/desktop-tabs.json"),
     import("@/i18n/messages/zh-CN/desktop-update.json"),
@@ -139,6 +147,8 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
   ]);
 
   return {
+    files: files.default,
+    adminLogin: adminLogin.default,
     desktopSetup: desktopSetup.default,
     desktopTabs: desktopTabs.default,
     desktopUpdate: desktopUpdate.default,

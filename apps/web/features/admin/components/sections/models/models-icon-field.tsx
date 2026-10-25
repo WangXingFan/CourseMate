@@ -158,7 +158,7 @@ export function ModelIconField({
           >
             <PopoverTrigger asChild>
               <InputGroupButton
-                size="icon-xs"
+                size="icon-sm"
                 disabled={disabled || uploading}
                 aria-label={t("choose")}
                 title={t("choose")}
@@ -173,7 +173,7 @@ export function ModelIconField({
                   <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     value={iconQuery}
-                    className="h-8 pl-8 text-xs"
+                    className="h-9 pl-8 text-sm"
                     placeholder={t("searchIcons")}
                     onChange={(event) => setIconQuery(event.target.value)}
                   />
@@ -182,7 +182,7 @@ export function ModelIconField({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-8 shrink-0 bg-muted/60 px-2.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
+                  className="h-9 shrink-0 bg-muted/60 px-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
                   disabled={uploading}
                   onClick={() => fileInputRef.current?.click()}
                 >
@@ -212,7 +212,7 @@ export function ModelIconField({
                   </div>
                 ) : matchedUploadedIcons.length > 0 ? (
                   <section className="pb-2">
-                    <p className="px-1 pb-1.5 text-[11px] font-medium text-muted-foreground">{t("uploadedIcons")}</p>
+                    <p className="px-1 pb-1.5 text-sm font-medium text-muted-foreground">{t("uploadedIcons")}</p>
                     <div className="grid grid-cols-6 gap-1">
                       {matchedUploadedIcons.map((item) => {
                         const iconURL = resolveModelIconURL(item.ref);
@@ -236,7 +236,7 @@ export function ModelIconField({
                             </button>
                             <button
                               type="button"
-                              className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-destructive/90 text-destructive-foreground opacity-70 transition-[opacity,transform] hover:scale-105 hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-hover:opacity-100 sm:opacity-0"
+                              className="absolute top-1 right-1 flex size-8 items-center justify-center rounded-md bg-destructive/90 text-destructive-foreground opacity-70 transition-[opacity,transform] hover:scale-105 hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-hover:opacity-100 sm:opacity-0"
                               title={t("remove")}
                               aria-label={t("remove")}
                               onClick={() => {
@@ -244,7 +244,7 @@ export function ModelIconField({
                                 setDeleteTarget(item);
                               }}
                             >
-                              <Trash2 className="size-2.5 stroke-2" />
+                              <Trash2 className="size-4 stroke-[1.5]" />
                             </button>
                           </div>
                         );
@@ -274,7 +274,7 @@ export function ModelIconField({
                   </div>
                 ) : matchedIcons.length > 0 ? (
                   <section>
-                    <p className="px-1 pb-1.5 text-[11px] font-medium text-muted-foreground">{t("builtInIcons")}</p>
+                    <p className="px-1 pb-1.5 text-sm font-medium text-muted-foreground">{t("builtInIcons")}</p>
                     <div className="grid grid-cols-6 gap-1">
                       {matchedIcons.map((item) => (
                         <button
@@ -299,10 +299,10 @@ export function ModelIconField({
                   <div className="flex h-20 items-center justify-center text-xs text-muted-foreground">{t("noIconResults")}</div>
                 ) : null}
                 {matchedIcons.length === 120 ? (
-                  <p className="pt-2 text-center text-[11px] text-muted-foreground">{t("refineIconSearch")}</p>
+                  <p className="pt-2 text-center text-sm text-muted-foreground">{t("refineIconSearch")}</p>
                 ) : null}
               </div>
-              {help ? <p className="mt-2 border-t border-border/60 px-1 pt-2 text-[11px] leading-4 text-muted-foreground">{help}</p> : null}
+              {help ? <p className="mt-2 border-t border-border/60 px-1 pt-2 text-sm leading-4 text-muted-foreground">{help}</p> : null}
             </PopoverContent>
           </Popover>
         </InputGroupAddon>

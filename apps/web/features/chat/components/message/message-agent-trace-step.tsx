@@ -45,16 +45,16 @@ export function AgentTraceStep({
       className="w-full"
     >
       <AccordionItem value={AGENT_TRACE_STEP_VALUE} className="border-b-0">
-        <div className="grid grid-cols-[0.875rem_minmax(0,1fr)] items-start gap-x-3 text-[12px] leading-5 max-sm:gap-x-2">
+        <div className="grid grid-cols-[0.875rem_minmax(0,1fr)] items-start gap-x-3 text-xs leading-5 max-sm:gap-x-2">
           <div className="relative flex h-5 items-center justify-center">
-            <span className="relative z-10 inline-flex size-3 items-center justify-center bg-background">
+            <span className="relative z-10 inline-flex size-4 items-center justify-center bg-background">
               {icon}
             </span>
           </div>
           <AccordionTrigger
             iconPosition="none"
             disabled={!expandable}
-            className="min-h-0 min-w-0 items-center justify-start gap-1.5 rounded-none pb-1.5 pt-0 text-left text-[12px] leading-5 no-underline hover:no-underline"
+            className="min-h-0 min-w-0 items-center justify-start gap-1.5 rounded-none pb-1.5 pt-0 text-left text-xs leading-5 no-underline hover:no-underline"
           >
             <span
               className={cn(
@@ -72,7 +72,7 @@ export function AgentTraceStep({
             {expandable ? (
               <ChevronDown
                 className={cn(
-                  "size-3 shrink-0 text-muted-foreground/58 transition-transform duration-200",
+                  "size-4 shrink-0 text-muted-foreground/58 transition-transform duration-200",
                   !open && "-rotate-90",
                 )}
               />

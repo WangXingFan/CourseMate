@@ -464,7 +464,7 @@ export function ModelCapabilitiesGuideButton({ t }: { t: (key: string) => string
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button type="button" variant="link" size="sm" className="h-auto gap-1 px-0 py-0 text-[11px] font-normal text-muted-foreground">
+        <Button type="button" variant="link" size="sm" className="h-auto gap-1 px-0 py-0 text-sm font-normal text-muted-foreground">
           <CircleHelp className="size-3.5" />
           {t("sheet.capabilitiesGuide.button")}
         </Button>
@@ -484,7 +484,7 @@ export function ModelCapabilitiesGuideButton({ t }: { t: (key: string) => string
             </TabsList>
 
             <TabsContent value="defaults" className="min-h-0 flex-1 space-y-3 overflow-y-auto text-sm text-muted-foreground">
-              <p className="text-xs">{t("sheet.capabilitiesGuide.defaultsDescription")}</p>
+              <p className="text-sm">{t("sheet.capabilitiesGuide.defaultsDescription")}</p>
               <pre className="max-h-72 overflow-auto rounded-md bg-muted/50 p-3 text-xs text-foreground">
   {`{
     "defaultOptions": {
@@ -501,7 +501,7 @@ export function ModelCapabilitiesGuideButton({ t }: { t: (key: string) => string
             </TabsContent>
 
             <TabsContent value="controls" className="min-h-0 flex-1 space-y-3 overflow-y-auto text-sm text-muted-foreground">
-              <p className="text-xs">{t("sheet.capabilitiesGuide.controlsDescription")}</p>
+              <p className="text-sm">{t("sheet.capabilitiesGuide.controlsDescription")}</p>
               <pre className="max-h-72 overflow-auto rounded-md bg-muted/50 p-3 text-xs text-foreground">
   {`{
     "defaultOptions": {},
@@ -522,11 +522,11 @@ export function ModelCapabilitiesGuideButton({ t }: { t: (key: string) => string
     ]
   }`}
               </pre>
-              <p className="text-xs">{t("sheet.capabilitiesGuide.controlTypes")}</p>
+              <p className="text-sm">{t("sheet.capabilitiesGuide.controlTypes")}</p>
             </TabsContent>
 
             <TabsContent value="policy" className="min-h-0 flex-1 space-y-3 overflow-y-auto text-sm text-muted-foreground">
-              <p className="text-xs">{t("sheet.capabilitiesGuide.policyDescription")}</p>
+              <p className="text-sm">{t("sheet.capabilitiesGuide.policyDescription")}</p>
               <pre className="max-h-72 overflow-auto rounded-md bg-muted/50 p-3 text-xs text-foreground">
   {`{
     "openai_chat_completions": [
@@ -678,7 +678,7 @@ export function ModelCapabilitiesQuickConfig({
         type="button"
         variant={triggerVariant}
         size="sm"
-        className={cn("h-6 px-2 text-[11px]", triggerClassName)}
+        className={cn("px-2", triggerClassName)}
         disabled={disabled}
         onClick={openDialog}
       >
@@ -696,7 +696,7 @@ export function ModelCapabilitiesQuickConfig({
                 type="button"
                 variant="secondary"
                 size="sm"
-                className="h-7 shrink-0 gap-1 px-2 text-xs font-normal shadow-none"
+                className="h-9 shrink-0 gap-1 px-2 text-sm font-normal shadow-none"
                 onClick={() => setPresetOpen(true)}
               >
                 <CopyPlus className="size-3.5" />
@@ -720,14 +720,14 @@ export function ModelCapabilitiesQuickConfig({
             <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-hidden">
               <div className="min-h-0 flex flex-1 flex-col gap-3 overflow-hidden pr-1">
                 <div className="flex min-w-0 shrink-0 items-start justify-between gap-3">
-                  <p className="min-w-0 flex-1 text-xs leading-5 text-muted-foreground">
+                  <p className="min-w-0 flex-1 text-sm leading-6 text-muted-foreground">
                     {t("sheet.capabilitiesQuick.parametersIntro")}
                   </p>
                   <Button
                     type="button"
                     variant="default"
                     size="sm"
-                    className="h-7 shrink-0 whitespace-nowrap px-2 text-xs"
+                    className="h-9 shrink-0 whitespace-nowrap px-2 text-sm"
                     onClick={addParameterRow}
                   >
                     <Plus className="size-3.5" />
@@ -737,10 +737,10 @@ export function ModelCapabilitiesQuickConfig({
                 {promptCacheSupported ? (
                   <div className="shrink-0 space-y-3 rounded-md border bg-muted/20 px-3 py-3">
                     <div className="min-w-0 space-y-0.5">
-                      <p className="text-xs font-medium text-foreground/85">
+                      <p className="text-sm font-medium text-foreground/85">
                         {t("sheet.capabilitiesQuick.promptCacheTitle")}
                       </p>
-                      <p className="text-[11px] leading-4 text-muted-foreground">
+                      <p className="text-sm leading-4 text-muted-foreground">
                         {t("sheet.capabilitiesQuick.promptCacheDescription")}
                       </p>
                     </div>
@@ -749,7 +749,7 @@ export function ModelCapabilitiesQuickConfig({
                       promptCacheConfig.mode === "explicit" ? "sm:grid-cols-3" : "sm:grid-cols-2",
                     )}>
                       <label className="min-w-0 space-y-1">
-                        <span className="block truncate px-1 text-[11px] text-muted-foreground">
+                        <span className="block truncate px-1 text-xs text-muted-foreground">
                           {t("sheet.capabilitiesQuick.promptCacheAvailability")}
                         </span>
                         <Select
@@ -759,7 +759,7 @@ export function ModelCapabilitiesQuickConfig({
                             setPromptCacheConfig((current) => ({ ...current, availability }));
                           }}
                         >
-                          <SelectTrigger className="h-8 w-full">
+                          <SelectTrigger className="h-9 w-full">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -770,7 +770,7 @@ export function ModelCapabilitiesQuickConfig({
                         </Select>
                       </label>
                       <label className="min-w-0 space-y-1">
-                        <span className="block truncate px-1 text-[11px] text-muted-foreground">
+                        <span className="block truncate px-1 text-xs text-muted-foreground">
                           {t("sheet.capabilitiesQuick.promptCacheMode")}
                         </span>
                         <Select
@@ -781,7 +781,7 @@ export function ModelCapabilitiesQuickConfig({
                             setPromptCacheConfig((current) => ({ ...current, mode }));
                           }}
                         >
-                          <SelectTrigger className="h-8 w-full">
+                          <SelectTrigger className="h-9 w-full">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -792,11 +792,11 @@ export function ModelCapabilitiesQuickConfig({
                       </label>
                       {promptCacheConfig.mode === "explicit" ? (
                         <label className="min-w-0 space-y-1">
-                          <span className="block truncate px-1 text-[11px] text-muted-foreground">
+                          <span className="block truncate px-1 text-xs text-muted-foreground">
                             {t("sheet.capabilitiesQuick.promptCacheTTL")}
                           </span>
                           <Select value="30m" disabled>
-                            <SelectTrigger className="h-8 w-full">
+                            <SelectTrigger className="h-9 w-full">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -810,7 +810,7 @@ export function ModelCapabilitiesQuickConfig({
                 ) : null}
                 {parameterRows.length === 0 ? (
                   <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-md border border-dashed px-3 py-8 text-center">
-                    <p className="text-xs text-muted-foreground">{t("sheet.capabilitiesQuick.emptyParameters")}</p>
+                    <p className="text-sm text-muted-foreground">{t("sheet.capabilitiesQuick.emptyParameters")}</p>
                   </div>
                 ) : (
                   <div className="min-h-0 flex-1 overflow-y-auto rounded-md border border-dashed p-3">
@@ -821,7 +821,7 @@ export function ModelCapabilitiesQuickConfig({
                           <div key={row.id} className="grid min-w-0 grid-cols-[minmax(0,1fr)_32px] items-start gap-2 rounded-md bg-muted/40 px-2 py-2">
                             <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-3">
                               <label className="min-w-0 space-y-1">
-                                <span className="block truncate px-1 text-[11px] text-muted-foreground">
+                                <span className="block truncate px-1 text-xs text-muted-foreground">
                                   {t("sheet.capabilitiesQuick.pathColumn")} *
                                 </span>
                                 <Input
@@ -831,32 +831,32 @@ export function ModelCapabilitiesQuickConfig({
                                   placeholder="path.to.option"
                                   onChange={(event) => updateParameterRow(row.id, { path: event.target.value })}
                                 />
-                                {rowErrors.path ? <p className="truncate px-1 text-[10px] text-destructive">{rowErrors.path}</p> : null}
+                                {rowErrors.path ? <p className="truncate px-1 text-sm text-destructive">{rowErrors.path}</p> : null}
                               </label>
                               <label className="min-w-0 space-y-1">
-                                <span className="block truncate px-1 text-[11px] text-muted-foreground">
+                                <span className="block truncate px-1 text-xs text-muted-foreground">
                                   {t("sheet.capabilitiesQuick.labelColumn")}
                                 </span>
                                 <Input
-                                  className="h-8"
+                                  className="h-9"
                                   value={row.label}
                                   placeholder={t("sheet.capabilitiesQuick.labelPlaceholder")}
                                   onChange={(event) => updateParameterRow(row.id, { label: event.target.value })}
                                 />
                               </label>
                               <label className="min-w-0 space-y-1">
-                                <span className="block truncate px-1 text-[11px] text-muted-foreground">
+                                <span className="block truncate px-1 text-xs text-muted-foreground">
                                   {t("sheet.capabilitiesQuick.descriptionColumn")}
                                 </span>
                                 <Input
-                                  className="h-8"
+                                  className="h-9"
                                   value={row.description}
                                   placeholder={t("sheet.capabilitiesQuick.descriptionPlaceholder")}
                                   onChange={(event) => updateParameterRow(row.id, { description: event.target.value })}
                                 />
                               </label>
                               <label className="min-w-0 space-y-1">
-                                <span className="block truncate px-1 text-[11px] text-muted-foreground">
+                                <span className="block truncate px-1 text-xs text-muted-foreground">
                                   {t("sheet.capabilitiesQuick.typeColumn")} *
                                 </span>
                                 <Select
@@ -879,10 +879,10 @@ export function ModelCapabilitiesQuickConfig({
                                     ))}
                                   </SelectContent>
                                 </Select>
-                                {rowErrors.type ? <p className="truncate px-1 text-[10px] text-destructive">{rowErrors.type}</p> : null}
+                                {rowErrors.type ? <p className="truncate px-1 text-sm text-destructive">{rowErrors.type}</p> : null}
                               </label>
                               <label className="min-w-0 space-y-1">
-                                <span className="block truncate px-1 text-[11px] text-muted-foreground">
+                                <span className="block truncate px-1 text-xs text-muted-foreground">
                                   {t("sheet.capabilitiesQuick.optionsColumn")}{row.type === "select" ? " *" : ""}
                                 </span>
                                 <Input
@@ -893,14 +893,14 @@ export function ModelCapabilitiesQuickConfig({
                                   placeholder={t("sheet.capabilitiesQuick.optionsPlaceholder")}
                                   onChange={(event) => updateParameterRow(row.id, { options: event.target.value })}
                                 />
-                                {rowErrors.options ? <p className="truncate px-1 text-[10px] text-destructive">{rowErrors.options}</p> : null}
+                                {rowErrors.options ? <p className="truncate px-1 text-sm text-destructive">{rowErrors.options}</p> : null}
                               </label>
                               <div className="min-w-0 space-y-1">
                                 <div className="flex min-w-0 items-center justify-between gap-2 px-1">
-                                  <span className="min-w-0 truncate text-[11px] text-muted-foreground">
+                                  <span className="min-w-0 truncate text-xs text-muted-foreground">
                                     {t("sheet.capabilitiesQuick.defaultValueColumn")}
                                   </span>
-                                  <label className="flex shrink-0 items-center gap-1.5 text-[11px] text-muted-foreground">
+                                  <label className="flex shrink-0 items-center gap-1.5 text-sm text-muted-foreground">
                                     <Checkbox
                                       className="size-3.5"
                                       checked={row.locked}
@@ -916,7 +916,7 @@ export function ModelCapabilitiesQuickConfig({
                                   placeholder={'"high", 0.7, true, null, {"key":"value"}'}
                                   onChange={(event) => updateParameterRow(row.id, { defaultValue: event.target.value })}
                                 />
-                                {rowErrors.defaultValue ? <p className="truncate px-1 text-[10px] text-destructive">{rowErrors.defaultValue}</p> : null}
+                                {rowErrors.defaultValue ? <p className="truncate px-1 text-sm text-destructive">{rowErrors.defaultValue}</p> : null}
                               </div>
                             </div>
                             <Button

@@ -18,7 +18,7 @@ export function RecentHeader({ query, onQueryChange, onCreateConversation }: Rec
   return (
     <div className="ml-0 md:ml-13 md:w-[calc(100%-3.25rem)]">
       <div className="flex items-start justify-between gap-4">
-        <h1 className="text-xl font-semibold tracking-[-0.03em] text-foreground md:text-2xl">{t("allConversations")}</h1>
+        <h1 className="font-display text-3xl font-normal tracking-[-0.015em] text-foreground md:text-4xl">{t("allConversations")}</h1>
         <Button size="sm" variant="default" className="shrink-0" onClick={() => void onCreateConversation()}>
           <Plus className="size-4" />
           {t("newChat")}

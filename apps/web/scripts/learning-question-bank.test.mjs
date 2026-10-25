@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import katex from "katex";
+import { createTranslator } from "next-intl";
 
 const content = new URL("../../../backend/internal/domain/learning/content/", import.meta.url);
 const bank = JSON.parse(readFileSync(new URL("quick-questions.json", content), "utf8"));
@@ -98,10 +99,11 @@ test("80 chapter questions, 160 matched variants, bilingual text and grading use
   assert.ok(checked > 350, `${checked} bilingual numerical checks`);
   for (const [language, locale] of [["zh", "zh-CN"], ["en", "en-US"]]) {
     const messages = JSON.parse(readFileSync(new URL(`../i18n/messages/${locale}/learning-labs.json`, import.meta.url), "utf8"));
+    const t = createTranslator({ locale, messages, onError(error) { throw error; } });
     for (const q of bank.questions) {
-      assert.equal(messages.quiz.questions[q.id].prompt, q[language].prompt);
-      assert.equal(messages.quiz.questions[q.id].explain, q[language].explanation);
-      for (let i=0; i<4; i++) assert.equal(messages.quiz.questions[q.id][`option${i+1}`], q[language].options[i]);
+      assert.equal(t(`quiz.questions.${q.id}.prompt`), q[language].prompt);
+      assert.equal(t(`quiz.questions.${q.id}.explain`), q[language].explanation);
+      for (let i=0; i<4; i++) assert.equal(t(`quiz.questions.${q.id}.option${i+1}`), q[language].options[i]);
       assert.ok(messages.progress.topics[q.topic], q.topic);
       for (const code of Object.values(q.misconceptions)) assert.ok(messages.progress.diagnoses[code]?.correction, code);
     }

@@ -42,11 +42,11 @@ export function MessageKnowledgeSources({
           type="button"
           variant="ghost"
           size="sm"
-          className="mt-2 h-7 gap-1.5 rounded-full px-2 text-[11px] font-normal text-muted-foreground shadow-none hover:bg-muted/55 hover:text-foreground"
+          className="mt-2 h-9 gap-1.5 rounded-full px-2 text-sm font-normal text-muted-foreground shadow-none hover:bg-muted/55 hover:text-foreground"
         >
           <BookOpenText className="size-3.5" strokeWidth={1.6} />
           {t("knowledgeSources", { count: sourceCount })}
-          <ChevronDown className="size-3 text-muted-foreground/70" strokeWidth={1.6} />
+          <ChevronDown className="size-4 text-muted-foreground/70" strokeWidth={1.6} />
         </Button>
       </PopoverTrigger>
       <PopoverContent

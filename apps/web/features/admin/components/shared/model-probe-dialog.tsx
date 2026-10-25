@@ -108,8 +108,8 @@ function DetailPair({ left, right }: { left: React.ReactNode; right: React.React
 function DebugBlock({ title, children }: { title: string; children: string }) {
   return (
     <div className="space-y-1.5">
-      <div className="text-[11px] font-medium text-muted-foreground">{title}</div>
-      <pre className="max-h-52 overflow-auto rounded-md border border-border/60 bg-background p-3 text-[11px] leading-5 text-foreground/75">
+      <div className="text-xs font-medium text-muted-foreground">{title}</div>
+      <pre className="max-h-52 overflow-auto rounded-md border border-border/60 bg-background p-3 text-xs leading-5 text-foreground/75">
         {children || "-"}
       </pre>
     </div>
@@ -138,7 +138,7 @@ function ResultDebugContent({
         </div>
         {hasError ? (
           <div className="text-xs leading-5">
-            <div className="font-mono text-[11px] text-foreground/80">{errorCode || t("unknownError")}</div>
+            <div className="font-mono text-xs text-foreground/80">{errorCode || t("unknownError")}</div>
             <div className="mt-1 text-muted-foreground">{errorMessage || t("unknownError")}</div>
           </div>
         ) : null}
@@ -157,7 +157,7 @@ function ResultDebugContent({
       </div>
       {hasError ? (
         <div className="text-xs leading-5">
-          <div className="font-mono text-[11px] text-foreground/80">{errorCode || t("unknownError")}</div>
+          <div className="font-mono text-xs text-foreground/80">{errorCode || t("unknownError")}</div>
           <div className="mt-1 text-muted-foreground">{errorMessage || t("unknownError")}</div>
         </div>
       ) : null}
@@ -261,7 +261,7 @@ export function ModelProbeDialog({
                     >
                       <ChevronLeft className="size-3.5 stroke-1" />
                     </Button>
-                    <span className="min-w-10 text-center text-[11px] text-muted-foreground">
+                    <span className="min-w-10 text-center text-xs text-muted-foreground">
                       {t("resultCount", { current: activeIndex + 1, total: normalizedResults.length })}
                     </span>
                     <Button

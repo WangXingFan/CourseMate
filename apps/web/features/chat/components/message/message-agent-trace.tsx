@@ -291,7 +291,7 @@ function TraceThinkRow({
         icon={
           <Sparkles
             className={cn(
-              "size-3 text-muted-foreground/68",
+              "size-4 text-muted-foreground/68",
               streaming && "text-foreground/78",
             )}
           />
@@ -456,7 +456,7 @@ export function MessageAgentTrace({
                 <Marker
                   render={<span />}
                   className={cn(
-                    "inline-flex min-h-0 w-auto text-[13px] font-medium transition-colors",
+                    "inline-flex min-h-0 w-auto text-sm font-medium transition-colors",
                     !traceRunActive && "text-muted-foreground group-hover/trace:text-foreground",
                   )}
                 >
@@ -464,7 +464,7 @@ export function MessageAgentTrace({
                 </Marker>
               </div>
               {subtitle ? (
-                <div className="mt-0.5 truncate text-[11px] font-normal leading-4 text-muted-foreground/62">{subtitle}</div>
+                <div className="mt-0.5 truncate text-xs font-normal leading-4 text-muted-foreground/62">{subtitle}</div>
               ) : null}
             </div>
             <ChevronDown

@@ -354,7 +354,7 @@ function ChartInteractiveLegend({
             size="sm"
             aria-pressed={visible}
             title={item.title ?? item.label}
-            className="h-6 min-w-0 gap-1.5 px-1.5 text-[11px] font-normal text-muted-foreground shadow-none hover:bg-muted/60 hover:text-foreground aria-pressed:text-foreground aria-pressed:opacity-100 [&:not([aria-pressed=true])]:opacity-40"
+            className="h-6 min-w-0 gap-1.5 px-1.5 text-xs font-normal text-muted-foreground shadow-none hover:bg-muted/60 hover:text-foreground aria-pressed:text-foreground aria-pressed:opacity-100 [&:not([aria-pressed=true])]:opacity-40"
             onClick={() => onToggle(item.id)}
           >
             <span

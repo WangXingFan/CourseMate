@@ -100,7 +100,7 @@ export function TypographyCodeBlock({
         </div>
       ) : null}
       <pre
-        className={cn("overflow-x-auto px-4 py-4 font-mono text-[13px] leading-6 text-foreground", className)}
+        className={cn("overflow-x-auto px-4 py-4 font-mono text-sm leading-6 text-foreground", className)}
         {...props}
       >
         {children}

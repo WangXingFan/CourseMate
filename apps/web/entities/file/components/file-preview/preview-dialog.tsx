@@ -210,7 +210,7 @@ export function FilePreviewDialog({
               </DialogTitle>
               <DialogDescription className="sr-only">{t("description")}</DialogDescription>
               {activeFile ? (
-                <p className="mt-0.5 text-[11px] text-muted-foreground">
+                <p className="mt-0.5 text-xs text-muted-foreground">
                   {resolveFileExt(activeFile.fileName)} · {formatBytes(activeFile.sizeBytes)}
                 </p>
               ) : null}

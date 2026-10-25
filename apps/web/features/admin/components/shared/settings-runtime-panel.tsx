@@ -305,7 +305,7 @@ function MultiCheckField({ field, value, disabled, onChange }: MultiCheckFieldPr
           <label
             key={option.value}
             className={cn(
-              "flex min-h-6 min-w-0 items-center justify-between gap-2 text-[12px] text-muted-foreground",
+              "flex min-h-6 min-w-0 items-center justify-between gap-2 text-xs text-muted-foreground",
               checked && "text-foreground",
               optionDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
             )}
@@ -313,7 +313,7 @@ function MultiCheckField({ field, value, disabled, onChange }: MultiCheckFieldPr
             <span className="flex min-w-0 flex-1 items-baseline gap-1.5">
               <span className="truncate">{option.label}</span>
               {option.meta ? (
-                <span className="shrink-0 whitespace-nowrap text-[10px] leading-none text-muted-foreground">{option.meta}</span>
+                <span className="shrink-0 whitespace-nowrap text-2xs leading-none text-muted-foreground">{option.meta}</span>
               ) : null}
             </span>
             <Checkbox
@@ -408,7 +408,7 @@ export function SettingsFieldEditor({
     }),
     [t],
   );
-  const dirtyBadge = dirty ? <Badge variant="ghost" className="relative -mt-1.5 text-[8px] font-medium text-amber-800">{t("states.unsaved")}</Badge> : null;
+  const dirtyBadge = dirty ? <Badge variant="ghost" className="relative -mt-1.5 text-2xs font-medium text-amber-800">{t("states.unsaved")}</Badge> : null;
   const inlineRuntimeStatusBadge =
     field.statusBadge ??
     (field.serviceRuntime
@@ -479,7 +479,7 @@ export function SettingsFieldEditor({
                 </div>
                 {labelAction ? <div className="shrink-0">{labelAction}</div> : null}
               </div>
-              {field.description ? <FieldDescription className="text-[11px]">{field.description}</FieldDescription> : null}
+              {field.description ? <FieldDescription className="text-xs">{field.description}</FieldDescription> : null}
             </div>
 
             {field.type === "json" ? (
@@ -519,7 +519,7 @@ export function SettingsFieldEditor({
                 {labelMetaNode}
                 {dirtyBadge}
               </div>
-              {field.description ? <FieldDescription className="text-[11px]">{field.description}</FieldDescription> : null}
+              {field.description ? <FieldDescription className="text-xs">{field.description}</FieldDescription> : null}
             </div>
 
             <div className="w-full min-w-0 md:w-44 md:shrink-0 xl:w-52">
@@ -549,7 +549,7 @@ export function SettingsFieldEditor({
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="h-7 rounded-md border-border/50 px-2.5 text-[12px] font-normal shadow-none hover:bg-accent/40"
+                        className="h-8 rounded-md border-border/50 px-2.5 text-xs font-normal shadow-none hover:bg-accent/40"
                         disabled={disabled || action.disabled}
                         onClick={action.onClick}
                       >
@@ -675,7 +675,7 @@ export function ServiceRuntimePanel({
     <Badge
       variant="ghost"
       className={cn(
-        "relative rounded-full text-[8px] font-medium shadow-none",
+        "relative rounded-full text-2xs font-medium shadow-none",
         resolveServiceRuntimeBadgeClassName(statusBadge.tone),
       )}
     >
@@ -702,7 +702,7 @@ export function ServiceRuntimePanel({
               )}
               {loading ? <Spinner className="relative -top-px size-3.5 text-muted-foreground" /> : null}
             </div>
-            {message ? <p className={cn("break-words text-[11px]", messageToneClassName)}>{message}</p> : null}
+            {message ? <p className={cn("break-words text-xs", messageToneClassName)}>{message}</p> : null}
           </div>
 
           <div className="w-full min-w-0 md:w-44 md:shrink-0 xl:w-52">

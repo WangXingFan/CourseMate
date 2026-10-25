@@ -122,8 +122,8 @@ function CardGridCard({ item }: { item: CardGridItem }) {
   const body = (
     <>
       <div className="flex items-center justify-between gap-2">
-        {item.tag ? <span className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground">{item.tag}</span> : <span />}
-        {item.source ? <span className="min-w-0 truncate text-[11px] text-muted-foreground">{item.source}</span> : null}
+        {item.tag ? <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">{item.tag}</span> : <span />}
+        {item.source ? <span className="min-w-0 truncate text-xs text-muted-foreground">{item.source}</span> : null}
       </div>
       <p className="mt-2 text-sm font-medium leading-5">{item.title}</p>
       {item.summary ? <p className="mt-1 text-xs leading-5 text-muted-foreground">{item.summary}</p> : null}
@@ -134,7 +134,7 @@ function CardGridCard({ item }: { item: CardGridItem }) {
     return (
       <a href={link.href} target="_blank" rel="noopener noreferrer" className={cn(className, "group transition-colors hover:bg-accent/40")}>
         {body}
-        <span className="mt-auto inline-flex items-center gap-1 pt-2.5 text-[11px] text-muted-foreground group-hover:text-foreground">
+        <span className="mt-auto inline-flex items-center gap-1 pt-2.5 text-xs text-muted-foreground group-hover:text-foreground">
           <ExternalLink className="size-3 shrink-0" strokeWidth={1.8} />
           <span className="truncate">{link.host}</span>
         </span>

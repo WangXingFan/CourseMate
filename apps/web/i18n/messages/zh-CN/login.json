@@ -73,5 +73,34 @@
       "signInExistingAccount": "登录已有账号"
     }
   },
-  "registerInBrowser": "在浏览器中注册"
+  "registerInBrowser": "在浏览器中注册",
+  "hero": {
+    "eyebrow": "信号与系统 · 课程伴学平台",
+    "headline": "把每一个概念，",
+    "headlineAccent": "推导到看得见。",
+    "lede": "面向高校师生的课程学习与课堂协作工作台：交互实验、知识问答与课堂活动，在同一处完成。",
+    "welcome": "欢迎回来",
+    "welcomeHint": "使用学校账号登录，继续你的课程。",
+    "registerTitle": "创建账号",
+    "registerHint": "使用常用邮箱注册，开始学习。",
+    "resetTitle": "重置密码",
+    "resetHint": "我们会向你的邮箱发送验证码。",
+    "twoFactorTitle": "两步验证",
+    "twoFactorHint": "为保护账号安全，请完成二次验证。",
+    "or": "或",
+    "pillars": {
+      "courses": {
+        "label": "课程",
+        "value": "十余个交互式实验与知识点"
+      },
+      "classrooms": {
+        "label": "课堂",
+        "value": "点名、活动与学习进度"
+      },
+      "assistant": {
+        "label": "助教",
+        "value": "基于课程知识库的问答"
+      }
+    }
+  }
 }

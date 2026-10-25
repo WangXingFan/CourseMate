@@ -122,7 +122,7 @@ export function ChatLabel({
             variant="ghost"
             size="sm"
             aria-label={t("actions")}
-            className="group h-7 max-w-full gap-0.5 rounded-lg px-0 font-normal"
+            className="group h-8 max-w-full gap-0.5 rounded-lg px-0 font-normal"
           >
             <span className="inline-flex min-w-0 items-center px-2">
               <AnimatedText
@@ -232,7 +232,7 @@ export function ChatLabel({
               {onAutoRename ? (
                 <button
                   type="button"
-                  className="absolute right-1 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-60"
+                  className="absolute right-1 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-60"
                   aria-label={t("autoRename")}
                   title={t("autoRename")}
                   disabled={autoRenaming || renaming}

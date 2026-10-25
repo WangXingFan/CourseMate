@@ -378,10 +378,10 @@ export function JsonCodeEditor({
       style={{ height }}
     >
       <div className="flex h-8 items-center justify-between border-b border-input/40 bg-muted/25 px-2">
-        <span className="font-mono text-[11px] text-muted-foreground">JSON</span>
+        <span className="font-mono text-xs text-muted-foreground">JSON</span>
         <div className="flex items-center gap-2">
           {!loading && markerCount > 0 ? (
-            <span className="text-[11px] text-destructive">{t("errors", { count: markerCount })}</span>
+            <span className="text-xs text-destructive">{t("errors", { count: markerCount })}</span>
           ) : null}
           {actions}
           {showFormatAction ? (
@@ -389,7 +389,7 @@ export function JsonCodeEditor({
               type="button"
               variant="ghost"
               size="sm"
-              className="h-6 px-2 text-[11px]"
+              className="h-8 px-2 text-sm"
               disabled={disabled || readOnly || loading}
               onClick={formatDocument}
             >

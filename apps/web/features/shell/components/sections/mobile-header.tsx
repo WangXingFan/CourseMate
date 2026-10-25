@@ -23,7 +23,7 @@ export function MobileHeader({
           type="button"
           variant="ghost"
           size="icon"
-          className="size-6"
+          className="size-8"
           aria-label={t("openSidebar")}
           onClick={toggleSidebar}
         >
@@ -46,7 +46,7 @@ export function MobileHeader({
           type="button"
           variant="ghost"
           size="icon"
-          className="size-6"
+          className="size-8"
           aria-label={t("newChat")}
           onClick={onCreateConversation}
         >

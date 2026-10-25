@@ -124,7 +124,7 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "flex flex-row justify-end gap-2 [&_[data-slot=button][data-size=default]]:h-7",
+        "flex flex-row justify-end gap-2 [&_[data-slot=button][data-size=default]]:h-9",
         className
       )}
       {...props}
@@ -154,7 +154,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("text-xs leading-5 text-muted-foreground", className)}
+      className={cn("text-sm leading-6 text-muted-foreground", className)}
       {...props}
     />
   )

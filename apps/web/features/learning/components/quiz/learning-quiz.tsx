@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, CheckCircle2, Flame, RotateCcw, Timer, Trophy, XCircle } from "lucide-react";
+import { ArrowRight, CheckCircle2, ListChecks, RotateCcw, Timer, ClipboardCheck, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -123,7 +123,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
   }
 
   return (
-    <LessonShell title={targeted ? p("practiceTitle") : t("title")} formula={targeted ? undefined : t("formula")}>
+    <LessonShell title={targeted ? p("practiceTitle") : t("title")} formula={targeted ? undefined : t.raw("formula")}>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <ProgressStatus model={model} />
         <Button asChild size="sm" variant="ghost"><Link href="/learn/progress">{p("title")}<ArrowRight className="size-3.5" /></Link></Button>
@@ -136,10 +136,10 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
               <Stat label={t("intro.duration")} value={targeted ? p("untimed") : `${QUIZ_DURATION_SECONDS}s`} />
               <Stat label={targeted ? p("topicLabel") : t("intro.perQuestion")} value={targeted ? String(new Set(pool.map((item) => item.topic)).size) : `~${QUIZ_SECONDS_PER_QUESTION}s`} />
             </div>
-            <ul className="mt-3 space-y-2 text-xs leading-5 text-muted-foreground">
+            <ul className="mt-3 space-y-2 text-sm leading-6 text-muted-foreground">
               {targeted ? <li>{p("practiceRule")}</li> : <><li>{t("intro.ruleOne")}</li><li>{t("intro.ruleThree")}</li></>}
             </ul>
-            {model.data && !pool.length ? <p className="mt-3 text-xs leading-5 text-muted-foreground">{p("noPracticeQuestions")}</p> : null}
+            {model.data && !pool.length ? <p className="mt-3 text-sm leading-6 text-muted-foreground">{p("noPracticeQuestions")}</p> : null}
             <Button type="button" size="sm" className="mt-4" disabled={model.loading || !pool.length || model.pendingCount > 0} onClick={start}>
               {t("intro.start")}
               <ArrowRight className="size-3.5" strokeWidth={1.8} />
@@ -150,20 +150,20 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
 
       {phase === "playing" && question ? (
         <div className="space-y-3">
-          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border/60 bg-card px-3 py-2">
-            <Badge variant="secondary" className="gap-1 rounded-md font-mono text-[10px] font-normal tabular-nums">
-              <Timer className="size-3" strokeWidth={1.8} />
+          <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border/60 bg-card px-3 py-2">
+            <Badge variant="secondary" className="gap-1 rounded-md font-mono text-xs font-normal tabular-nums">
+              <Timer className="size-4" strokeWidth={1.8} />
               {targeted ? p("untimed") : formatTime(timeLeft)}
             </Badge>
-            <Badge variant="outline" className="gap-1 rounded-md text-[10px] font-normal">
+            <Badge variant="outline" className="gap-1 rounded-md text-xs font-normal">
               {t("hud.progress", { current: index + 1, total: order.length })}
             </Badge>
-            <Badge variant="outline" className="gap-1 rounded-md text-[10px] font-normal">
-              <Trophy className="size-3" strokeWidth={1.8} />
+            <Badge variant="outline" className="gap-1 rounded-md text-xs font-normal">
+              <ClipboardCheck className="size-4" strokeWidth={1.8} />
               {score}
             </Badge>
-            <Badge variant="outline" className="gap-1 rounded-md text-[10px] font-normal">
-              <Flame className="size-3" strokeWidth={1.8} />
+            <Badge variant="outline" className="gap-1 rounded-md text-xs font-normal">
+              <ListChecks className="size-4" strokeWidth={1.8} />
               x{streak}
             </Badge>
             {!targeted ? <div className="ml-auto h-1 w-24 overflow-hidden rounded-full bg-muted">
@@ -191,17 +191,17 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
                       "flex min-h-10 items-center gap-2 rounded-lg border px-3 py-2 text-left text-xs leading-5 transition-colors",
                       "disabled:cursor-default",
                       isCorrect
-                        ? "border-emerald-500/50 bg-emerald-500/8 text-foreground"
+                        ? "border-primary/50 bg-accent/8 text-foreground"
                         : isWrong
                           ? "border-destructive/50 bg-destructive/5 text-foreground"
                           : "border-border/60 bg-muted/15 text-muted-foreground enabled:hover:border-border enabled:hover:bg-muted/30",
                     )}
                   >
-                    <span className="flex size-4 shrink-0 items-center justify-center rounded-full border border-border font-mono text-[9px]">
+                    <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-border font-mono text-xs">
                       {String.fromCharCode(65 + optionIndex)}
                     </span>
                     <span className="flex-1">{t(`questions.${question.id}.option${optionIndex + 1}`)}</span>
-                    {isCorrect ? <CheckCircle2 className="size-3.5 text-emerald-600" strokeWidth={1.8} /> : null}
+                    {isCorrect ? <CheckCircle2 className="size-3.5 text-primary" strokeWidth={1.8} /> : null}
                     {isWrong ? <XCircle className="size-3.5 text-destructive" strokeWidth={1.8} /> : null}
                   </button>
                 );
@@ -209,7 +209,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
             </div>
             {selected !== null ? (
               <div className="mt-3 rounded-lg border border-border/60 bg-muted/20 px-3 py-2">
-                <p className="text-[11px] leading-5 text-muted-foreground">{t(`questions.${question.id}.explain`)}</p>
+                <p className="text-sm leading-6 text-muted-foreground">{t(`questions.${question.id}.explain`)}</p>
                 <Button type="button" size="sm" className="mt-2" disabled={model.pendingCount > 0} onClick={next}>
                   {index + 1 >= order.length ? t("question.finish") : t("question.next")}
                   <ArrowRight className="size-3.5" strokeWidth={1.8} />
@@ -242,20 +242,20 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
 
           <LessonPanel title={t("review.title")}>
             {answers.length === 0 ? (
-              <p className="text-xs text-muted-foreground">{t("review.empty")}</p>
+              <p className="text-sm text-muted-foreground">{t("review.empty")}</p>
             ) : (
               <ol className="space-y-2">
                 {answers.map((record) => (
                   <li key={record.id} className="rounded-lg border border-border/50 bg-muted/15 px-3 py-2">
                     <div className="flex items-start gap-2">
                       {record.correct ? (
-                        <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-emerald-600" strokeWidth={1.8} />
+                        <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-primary" strokeWidth={1.8} />
                       ) : (
                         <XCircle className="mt-0.5 size-3.5 shrink-0 text-destructive" strokeWidth={1.8} />
                       )}
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs leading-5 text-foreground">{t(`questions.${record.id}.prompt`)}</p>
-                        <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
+                        <p className="text-sm leading-6 text-foreground">{t(`questions.${record.id}.prompt`)}</p>
+                        <p className="mt-1 text-sm leading-6 text-muted-foreground">
                           {t("review.answer", {
                             answer: t(`questions.${record.id}.option${(questions.find((item) => item.id === record.id)?.answer ?? 0) + 1}`),
                           })}
@@ -275,9 +275,9 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-border/50 bg-muted/20 px-3 py-2">
-      <p className="text-[10px] text-muted-foreground">{label}</p>
-      <p className="mt-0.5 font-mono text-sm font-medium tabular-nums text-foreground">{value}</p>
+    <div className="border-l-2 border-border px-3 py-2">
+      <p className="text-sm text-muted-foreground">{label}</p>
+      <p className="mt-1 font-mono text-lg font-medium tabular-nums text-foreground">{value}</p>
     </div>
   );
 }

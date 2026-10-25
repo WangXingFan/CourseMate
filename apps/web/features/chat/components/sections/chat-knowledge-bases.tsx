@@ -91,7 +91,7 @@ export function ChatKnowledgeBases({
               variant="ghost"
               size="icon-sm"
               className={cn(
-                "relative size-7 rounded-md text-muted-foreground hover:text-foreground sm:size-8",
+                "relative size-8 rounded-md text-muted-foreground hover:text-foreground sm:size-8",
                 selectedIDs.length > 0 && "bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary",
               )}
               disabled={disabled}
@@ -99,7 +99,7 @@ export function ChatKnowledgeBases({
             >
               <BookOpen className="size-4" strokeWidth={1.6} />
               {selectedIDs.length > 0 ? (
-                <span className="absolute -right-0.5 -top-0.5 min-w-3 rounded-full bg-primary px-0.5 text-center text-[8px] font-semibold leading-3 text-primary-foreground">
+                <span className="absolute -right-0.5 -top-0.5 min-w-3 rounded-full bg-primary px-0.5 text-center text-2xs font-semibold leading-3 text-primary-foreground">
                   {selectedIDs.length}
                 </span>
               ) : null}
@@ -139,12 +139,12 @@ export function ChatKnowledgeBases({
           }
         }}
       >
-        <div className="flex h-7 shrink-0 items-center justify-between gap-3 px-2 text-[11px] font-medium text-foreground/70">
+        <div className="flex h-7 shrink-0 items-center justify-between gap-3 px-2 text-xs font-medium text-foreground/70">
           <span>{t("knowledgeBases")}</span>
           {selectedIDs.length > 0 ? (
             <button
               type="button"
-              className="text-[11px] leading-none text-foreground/55 outline-none transition-colors hover:text-foreground focus-visible:text-foreground"
+              className="text-xs leading-none text-foreground/55 outline-none transition-colors hover:text-foreground focus-visible:text-foreground"
               onClick={() => onChange([])}
             >
               {t("clear")}
@@ -152,13 +152,13 @@ export function ChatKnowledgeBases({
           ) : null}
         </div>
         {available === false ? (
-          <p className="mx-1 mb-1 shrink-0 rounded-md bg-muted/45 px-2.5 py-2 text-[11px] leading-4 text-muted-foreground dark:bg-muted/35">
+          <p className="mx-1 mb-1 shrink-0 rounded-md bg-muted/45 px-2.5 py-2 text-xs leading-4 text-muted-foreground dark:bg-muted/35">
             {unavailableDescription}
           </p>
         ) : null}
         {usingDefaultScope ? (
           <p
-            className="mx-1 mb-1 shrink-0 rounded-md bg-muted/45 px-2.5 py-1.5 text-[11px] leading-4 text-muted-foreground dark:bg-muted/35"
+            className="mx-1 mb-1 shrink-0 rounded-md bg-muted/45 px-2.5 py-1.5 text-xs leading-4 text-muted-foreground dark:bg-muted/35"
             data-default-knowledge-scope
           >
             {defaultScopeNames
@@ -170,7 +170,7 @@ export function ChatKnowledgeBases({
           <Input
             value={query}
             placeholder={t("searchKnowledgeBases")}
-            className="h-7 border-0 bg-muted/45 px-2.5 text-xs shadow-none dark:bg-muted/35"
+            className="h-8 border-0 bg-muted/45 px-2.5 text-xs shadow-none dark:bg-muted/35"
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={(event) => event.stopPropagation()}
           />
@@ -209,7 +209,7 @@ export function ChatKnowledgeBases({
                   )}
                   <span className="truncate text-xs font-medium text-current" title={item.name}>{item.name}</span>
                 </span>
-                <span className="shrink-0 text-[10px] leading-none tabular-nums text-muted-foreground">
+                <span className="shrink-0 text-2xs leading-none tabular-nums text-muted-foreground">
                   {ready
                     ? t("knowledgeBaseReadyFiles", { count: item.readyFileCount })
                     : t("knowledgeBaseNotReady")}
@@ -222,7 +222,7 @@ export function ChatKnowledgeBases({
           {hasMore ? (
             <button
               type="button"
-              className="flex h-7 w-full items-center justify-center rounded-md text-[11px] text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none"
+              className="flex h-7 w-full items-center justify-center rounded-md text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none"
               disabled={loadingMore}
               onClick={loadMore}
             >

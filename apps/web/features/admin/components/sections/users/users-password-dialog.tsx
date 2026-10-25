@@ -46,7 +46,7 @@ export function UserPasswordResetDialog({
 
         <div className="space-y-4">
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">{t("newPassword")}</p>
+            <p className="text-sm text-muted-foreground">{t("newPassword")}</p>
             <Input
               type="password"
               value={password}

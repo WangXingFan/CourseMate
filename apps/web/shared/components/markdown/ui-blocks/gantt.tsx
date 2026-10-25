@@ -284,7 +284,7 @@ function Gantt({ id, props }: UIBlockRenderProps<GanttProps>) {
     <div className="px-4 pb-4 pt-5">
       <div className="mb-3 flex items-baseline justify-between gap-3">
         {props.title ? <h3 className="text-lg font-semibold leading-7">{props.title}</h3> : <span />}
-        <div className="flex shrink-0 items-center gap-0.5 text-[11px] text-muted-foreground" role="group" aria-label={t("ganttScale")}>
+        <div className="flex shrink-0 items-center gap-0.5 text-xs text-muted-foreground" role="group" aria-label={t("ganttScale")}>
           {SCALE_UNITS.map((option) => (
             <button
               key={option}
@@ -311,7 +311,7 @@ function Gantt({ id, props }: UIBlockRenderProps<GanttProps>) {
                 type="button"
                 aria-expanded={!collapsed.has(entry.name)}
                 onClick={() => toggleGroup(entry.name)}
-                className="flex w-full items-center gap-1 px-3 text-left text-[11px] font-medium tracking-[0.04em] text-muted-foreground transition-colors hover:text-foreground"
+                className="flex w-full items-center gap-1 px-3 text-left text-xs font-medium tracking-[0.04em] text-muted-foreground transition-colors hover:text-foreground"
                 style={{ height: GROUP_HEIGHT }}
               >
                 <ChevronRight className={cn("size-3 shrink-0 transition-transform", !collapsed.has(entry.name) && "rotate-90")} strokeWidth={2} />
@@ -339,7 +339,7 @@ function Gantt({ id, props }: UIBlockRenderProps<GanttProps>) {
                 onMouseLeave={() => setHovered(null)}
               >
                 <span className="truncate">{entry.item.name}</span>
-                {tracksProgress && !entry.item.milestone ? <span className="ml-auto shrink-0 text-[10px] tabular-nums text-muted-foreground">{entry.item.progress}%</span> : null}
+                {tracksProgress && !entry.item.milestone ? <span className="ml-auto shrink-0 text-2xs tabular-nums text-muted-foreground">{entry.item.progress}%</span> : null}
               </motion.button>
             ),
           )}
@@ -349,7 +349,7 @@ function Gantt({ id, props }: UIBlockRenderProps<GanttProps>) {
         <div ref={timelineRef} className="min-w-0 flex-1 overflow-x-auto">
           <svg width={width} height={HEADER_HEIGHT + bodyHeight} className="block" role="img" aria-label={props.title ?? "gantt"}>
             <AnimatePresence initial={false}>
-            <motion.g key={`labels-${scale.unit}`} className="fill-muted-foreground" fontSize={10} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={MOTION}>
+            <motion.g key={`labels-${scale.unit}`} className="fill-muted-foreground" fontSize={14} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={MOTION}>
               {ticks
                 .filter((tick) => tick.label)
                 .map((tick) => (
@@ -455,7 +455,7 @@ function Gantt({ id, props }: UIBlockRenderProps<GanttProps>) {
               {todayVisible ? (
                 <motion.g animate={{ x: toX(today) + scale.pxPerDay / 2 }} transition={MOTION}>
                   <line x1={0} x2={0} y1={0} y2={bodyHeight} className="stroke-primary" strokeWidth={1} strokeDasharray="3 3" />
-                  <text x={4} y={10} fontSize={9} className="fill-primary">
+                  <text x={4} y={14} fontSize={14} className="fill-primary">
                     {t("ganttToday")}
                   </text>
                 </motion.g>

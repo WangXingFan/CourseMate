@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type * as React from "react";
 
-import { Button } from "@/components/ui/button";
 import { MathFormula } from "@/features/learning/components/shared/math-formula";
 import { cn } from "@/lib/utils";
 
@@ -26,25 +25,27 @@ export function LessonShell({
 
   return (
     <div className="h-full min-h-0 w-full overflow-y-auto bg-background [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      <div className={cn("mx-auto w-full max-w-5xl px-4 py-5 md:px-6 md:py-7", className)}>
-        <div className="mb-5 flex items-start gap-3">
-          <Button asChild variant="ghost" size="icon-sm" className="mt-0.5 shrink-0">
-            <Link href="/learn" aria-label={t("back")}>
-              <ArrowLeft className="size-4" strokeWidth={1.6} />
-            </Link>
-          </Button>
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-lg font-semibold tracking-tight text-foreground md:text-xl">{title}</h1>
-            </div>
-            {subtitle && <p className="mt-1 text-xs leading-5 text-muted-foreground">{subtitle}</p>}
-            {formula ? (
-              <div className="mt-3 rounded-lg border border-border/60 bg-muted/25 px-3 py-2">
-                <MathFormula display>{formula}</MathFormula>
-              </div>
-            ) : null}
+      <div className={cn("mx-auto w-full max-w-5xl px-5 pt-6 pb-16 md:px-10 md:pt-10", className)}>
+        <Link
+          href="/learn"
+          className="inline-flex items-center gap-1.5 rounded-md text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35"
+        >
+          <ArrowLeft className="size-4" strokeWidth={1.6} aria-hidden />
+          {t("back")}
+        </Link>
+        <header className="mt-6 mb-8 grid gap-6 border-b border-border pb-8 md:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] md:items-end">
+          <div className="min-w-0">
+            <h1 className="font-display text-3xl leading-[1.12] font-normal tracking-[-0.015em] text-foreground md:text-4xl">
+              {title}
+            </h1>
+            {subtitle ? <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{subtitle}</p> : null}
           </div>
-        </div>
+          {formula ? (
+            <div className="min-w-0 overflow-x-auto border-l-2 border-seal py-1 pl-4 text-foreground">
+              <MathFormula display>{formula}</MathFormula>
+            </div>
+          ) : null}
+        </header>
         {children}
       </div>
     </div>
@@ -63,10 +64,10 @@ export function LessonPanel({
   className?: string;
 }) {
   return (
-    <section className={cn("rounded-xl border border-border/60 bg-card p-4 text-card-foreground shadow-sm", className)}>
-      <div className="mb-3">
-        <h2 className="text-[13px] font-medium text-foreground">{title}</h2>
-        {description ? <p className="mt-0.5 text-[11px] leading-5 text-muted-foreground">{description}</p> : null}
+    <section className={cn("rounded-lg border border-border bg-card p-5 text-card-foreground md:p-6", className)}>
+      <div className="mb-4">
+        <h2 className="font-display text-xl font-normal text-foreground">{title}</h2>
+        {description ? <p className="mt-1 text-sm leading-6 text-muted-foreground">{description}</p> : null}
       </div>
       {children}
     </section>
@@ -75,10 +76,10 @@ export function LessonPanel({
 
 export function Readout({ label, value, hint }: { label: string; value: React.ReactNode; hint?: string }) {
   return (
-    <div className="rounded-lg border border-border/50 bg-muted/20 px-3 py-2">
-      <p className="text-[10px] text-muted-foreground">{label}</p>
-      <p className="mt-0.5 font-mono text-sm font-medium tabular-nums text-foreground">{value}</p>
-      {hint ? <p className="mt-0.5 text-[10px] leading-4 text-muted-foreground">{hint}</p> : null}
+    <div className="border-l-2 border-border py-1 pl-3">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="mt-1 font-mono text-lg font-medium tabular-nums text-foreground">{value}</p>
+      {hint ? <p className="mt-2 text-sm leading-6 text-muted-foreground">{hint}</p> : null}
     </div>
   );
 }

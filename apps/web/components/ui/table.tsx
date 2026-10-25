@@ -52,11 +52,7 @@ function Table({
             <table
               data-slot="table"
               className={cn(
-                "w-full min-w-max table-auto border-collapse text-[12px] leading-5",
-                "[&_[data-slot=input]]:h-6 [&_[data-slot=input]]:px-2 [&_[data-slot=input]]:text-xs [&_[data-slot=input]]:placeholder:text-xs",
-                "[&_[data-slot=select-trigger]]:h-6 [&_[data-slot=select-trigger]]:px-2 [&_[data-slot=select-trigger]]:text-xs",
-                "[&_[data-slot=input-group]]:h-6 [&_[data-slot=input-group-control]]:h-6 [&_[data-slot=input-group-control]]:px-2 [&_[data-slot=input-group-control]]:text-xs [&_[data-slot=input-group-control]]:placeholder:text-xs",
-                "[&_[role=combobox]]:h-6 [&_[role=combobox]]:text-xs",
+                "w-full min-w-max table-auto border-collapse text-sm leading-5",
                 className
               )}
               {...props}
@@ -157,7 +153,7 @@ function TableHead({ className, stickyEnd, ...props }: TableHeadProps) {
     <th
       data-slot="table-head"
       className={cn(
-        "h-8 px-3 py-1.5 text-left align-middle text-[11px] font-medium text-muted-foreground whitespace-nowrap",
+        "h-10 px-3 py-2 text-left align-middle text-xs font-medium text-muted-foreground whitespace-nowrap",
         stickyEnd && "data-table-sticky-end-head sticky right-0 z-10",
         className
       )}
@@ -175,7 +171,7 @@ function TableCell({ className, stickyEnd, ...props }: TableCellProps) {
     <td
       data-slot="table-cell"
       className={cn(
-        "px-3 py-2.5 align-middle text-xs leading-5 whitespace-nowrap",
+        "px-3 py-3 align-middle text-sm leading-5 whitespace-nowrap",
         stickyEnd && "data-table-sticky-end-cell sticky right-0 z-10",
         className
       )}

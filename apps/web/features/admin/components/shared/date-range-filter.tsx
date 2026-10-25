@@ -12,7 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 
 export const ADMIN_DATE_PICKER_TRIGGER_CLASSNAME =
-  "w-full justify-start border-input/40 bg-transparent px-3 py-1 text-left text-xs font-normal shadow-none transition-[color,box-shadow] hover:bg-transparent focus-visible:border-ring/60 focus-visible:ring-[1px] focus-visible:ring-ring/40 dark:bg-input/30 dark:hover:bg-input/30";
+  "h-9 w-full justify-start border-input/70 bg-transparent px-3 py-1 text-left text-sm font-normal shadow-none transition-[color,box-shadow] hover:bg-transparent focus-visible:border-ring/60 focus-visible:ring-[1px] focus-visible:ring-ring/40 dark:bg-input/30 dark:hover:bg-input/30";
 
 type AdminDateRangeFilterProps = {
   fromValue: string;
@@ -76,16 +76,15 @@ export function AdminDateRangeFilter({
             variant="outline"
             className={cn(
               ADMIN_DATE_PICKER_TRIGGER_CLASSNAME,
-              "h-7 px-2",
               triggerClassName,
               !selectedRange?.from && "text-muted-foreground",
             )}
             disabled={disabled}
           >
-            <span aria-hidden="true" className="flex size-3 shrink-0 items-center justify-center">
-              <CalendarIcon className="size-3 opacity-70" />
+            <span aria-hidden="true" className="flex size-4 shrink-0 items-center justify-center">
+              <CalendarIcon className="size-4 opacity-70" />
             </span>
-            <span className="min-w-0 truncate text-[11px]">{triggerLabel}</span>
+            <span className="min-w-0 truncate">{triggerLabel}</span>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
@@ -109,7 +108,7 @@ export function AdminDateRangeFilter({
                 type="button"
                 size="sm"
                 variant="secondary"
-                className="h-6 w-full text-xs"
+                className="w-full"
                 disabled={disabled}
                 onClick={() => {
                   onFromChange("");

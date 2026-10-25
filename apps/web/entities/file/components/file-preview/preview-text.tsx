@@ -15,10 +15,10 @@ function CodeBlock({ content }: { content: string }) {
 
   return (
     <div className="overflow-hidden rounded-md border border-border/40 bg-background/80">
-      <div className="min-w-full px-4 py-4 font-mono text-[12.5px] leading-6">
+      <div className="min-w-full px-4 py-4 font-mono text-xs leading-6">
         {lines.map((line, index) => (
           <div key={index} className="flex min-w-0 items-start">
-            <span className="w-10 shrink-0 select-none pr-4 text-right text-[11px] text-muted-foreground/75">
+            <span className="w-10 shrink-0 select-none pr-4 text-right text-xs text-muted-foreground/75">
               {index + 1}
             </span>
             <span className="min-w-0 flex-1 whitespace-pre-wrap break-words text-foreground">

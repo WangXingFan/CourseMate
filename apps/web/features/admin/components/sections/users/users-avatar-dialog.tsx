@@ -59,7 +59,7 @@ export function UserAvatarEditorDialog({
             <div className="flex justify-center">
               <button
                 type="button"
-                className="rounded-2xl transition-transform hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="rounded-lg transition-transform hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 onClick={onRandomize}
                 disabled={pending}
               >
@@ -73,7 +73,7 @@ export function UserAvatarEditorDialog({
             </div>
 
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">{t("urlLabel")}</p>
+              <p className="text-sm text-muted-foreground">{t("urlLabel")}</p>
               <Input
                 value={value}
                 onChange={(event) => onValueChange(event.target.value)}

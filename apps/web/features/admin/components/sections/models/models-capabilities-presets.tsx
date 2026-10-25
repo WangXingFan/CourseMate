@@ -488,7 +488,7 @@ export function ModelCapabilitiesPresetDialog({
                           <span className="min-w-0 flex-1 truncate text-xs font-medium leading-5 text-foreground">
                             {protocolLabel}
                           </span>
-                          <span className="hidden min-w-0 shrink-0 truncate text-[11px] leading-5 text-muted-foreground sm:block">
+                          <span className="hidden min-w-0 shrink-0 truncate text-xs leading-5 text-muted-foreground sm:block">
                             {t("sheet.capabilitiesPreset.presetSummary", {
                               defaults: summary.defaults,
                               controls: summary.controls,
@@ -502,7 +502,7 @@ export function ModelCapabilitiesPresetDialog({
                                 {protocolLabel}
                               </span>
                             ) : (
-                              <Badge variant="secondary" className="h-5 rounded-md px-1.5 text-[10px] font-normal text-muted-foreground shadow-none">
+                              <Badge variant="secondary" className="h-5 rounded-md px-1.5 text-xs font-normal text-muted-foreground shadow-none">
                                 {t("sheet.capabilitiesPreset.protocolNotMatched")}
                               </Badge>
                             )}
@@ -524,7 +524,7 @@ export function ModelCapabilitiesPresetDialog({
                 {reusableModels.length === 0 ? (
                   <div className="flex flex-col items-center justify-center rounded-md bg-muted/30 px-3 py-7 text-center">
                     <Copy className="mb-2 size-5 text-muted-foreground" strokeWidth={1.5} />
-                    <p className="text-xs text-muted-foreground">{t("sheet.capabilitiesPreset.emptyModels")}</p>
+                    <p className="text-sm text-muted-foreground">{t("sheet.capabilitiesPreset.emptyModels")}</p>
                   </div>
                 ) : (
                   <>
@@ -560,7 +560,7 @@ export function ModelCapabilitiesPresetDialog({
                                 <span className="min-w-0 flex-1 truncate text-xs font-medium leading-5 text-foreground">
                                   {model.platformModelName}
                                 </span>
-                                <span className="hidden min-w-0 shrink truncate text-[11px] leading-5 text-muted-foreground sm:block">
+                                <span className="hidden min-w-0 shrink truncate text-xs leading-5 text-muted-foreground sm:block">
                                   {protocolLabel || t("sheet.capabilitiesPreset.noProtocol")}
                                 </span>
                                 <Check className={cn("size-4 shrink-0 text-foreground transition-opacity", selected ? "opacity-100" : "opacity-0")} strokeWidth={1.8} />

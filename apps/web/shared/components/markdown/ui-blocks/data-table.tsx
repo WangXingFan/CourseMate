@@ -140,7 +140,7 @@ function DataTable({ id, props }: UIBlockRenderProps<DataTableProps>) {
       <div className="flex flex-wrap items-center justify-between gap-2 border-b-[0.5px] border-border px-4 pb-3 pt-5">
         <div className="flex min-w-0 items-center gap-3">
           {props.title ? <h3 className="truncate text-lg font-semibold leading-7">{props.title}</h3> : null}
-          <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">
+          <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
             {needle ? t("rowCountFiltered", { filtered: sorted.length, total: props.rows.length }) : t("rowCount", { count: sorted.length })}
           </span>
         </div>
@@ -154,7 +154,7 @@ function DataTable({ id, props }: UIBlockRenderProps<DataTableProps>) {
                 setPage(1);
               }}
               placeholder={t("search")}
-              className="h-7 w-40 border-0 bg-muted/45 pl-7 text-xs shadow-none"
+              className="h-9 w-40 border-0 bg-muted/45 pl-7 text-sm shadow-none"
             />
           </div>
           <Button type="button" variant="ghost" size="icon-sm" onClick={exportCSV} aria-label={t("exportCSV")} title={t("exportCSV")} className="text-muted-foreground">
@@ -224,13 +224,13 @@ function DataTable({ id, props }: UIBlockRenderProps<DataTableProps>) {
       </Table>
 
       {pageCount > 1 ? (
-        <div className="flex items-center justify-between border-t-[0.5px] border-border px-4 py-1.5 text-[11px] text-muted-foreground">
+        <div className="flex items-center justify-between border-t-[0.5px] border-border px-4 py-1.5 text-xs text-muted-foreground">
           <span className="tabular-nums">{t("pageOf", { page: currentPage, total: pageCount })}</span>
           <div className="flex gap-1">
-            <Button type="button" variant="ghost" size="xs" className="text-[11px]" disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)}>
+            <Button type="button" variant="ghost" size="xs" className="text-xs" disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)}>
               {t("prev")}
             </Button>
-            <Button type="button" variant="ghost" size="xs" className="text-[11px]" disabled={currentPage >= pageCount} onClick={() => setPage(currentPage + 1)}>
+            <Button type="button" variant="ghost" size="xs" className="text-xs" disabled={currentPage >= pageCount} onClick={() => setPage(currentPage + 1)}>
               {t("next")}
             </Button>
           </div>

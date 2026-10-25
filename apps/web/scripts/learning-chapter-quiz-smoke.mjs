@@ -81,7 +81,7 @@ try {
   await page.getByRole("cell", { name: "同分快同学", exact: true }).waitFor();
   assert.deepEqual(await page.locator("tbody tr").evaluateAll((rows) => rows.map((r) => r.children[1].textContent)), ["最佳得分", "同分快同学", "答题测试我"]);
   await page.screenshot({ path: resolve(artifacts, "chapter-leaderboard-desktop.png") });
-  await page.getByRole("button", { name: "开始挑战", exact: true }).click();
+  await page.getByRole("button", { name: "开始答题", exact: true }).click();
   assert.equal(await page.locator("#quiz-chapter").isDisabled(), true);
   const button = page.getByRole("button", { name: new RegExp(`^${String.fromCharCode(65 + correct.get(round.questionIds[0]))} `) });
   await button.click();
