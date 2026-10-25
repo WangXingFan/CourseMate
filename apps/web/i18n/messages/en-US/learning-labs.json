@@ -1513,7 +1513,7 @@
     },
     "questions": {
       "energy-signal": {
-        "prompt": "Which class does x(t) = e^'{'−2t'}'u(t) belong to?",
+        "prompt": "Which class does x(t) = e^'{−2t}'u(t) belong to?",
         "option1": "Energy signal",
         "option2": "Power signal",
         "option3": "Neither",

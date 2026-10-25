@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { readFileSync, readdirSync } from "node:fs";
 import { createRequire } from "node:module";
 import { test } from "node:test";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import katex from "katex";
 import { createTranslator } from "next-intl";
+import { learningBankMessage } from "../../../scripts/learning-bank-message.mjs";
 
 // Resolve the parser already used by next-intl, without adding a dependency.
 const require = createRequire(import.meta.url);
@@ -12,6 +14,18 @@ const intlRequire = createRequire(require.resolve("next-intl"));
 const formatRequire = createRequire(createRequire(intlRequire.resolve("use-intl")).resolve("intl-messageformat"));
 const { parse } = await import(pathToFileURL(formatRequire.resolve("@formatjs/icu-messageformat-parser")));
 const messagesRoot = new URL("../i18n/messages/", import.meta.url);
+
+test("generated question messages preserve literal braces and apostrophes", () => {
+  const samples = ["e^{−2t}", "\\frac{{a}}{{b}}", "{a}{b}", "}{", "Student's response {x}'s value", "f' and f''"];
+  for (const sample of samples) {
+    const t = createTranslator({ locale: "en-US", messages: { sample: learningBankMessage(sample) }, onError(error) { throw error; } });
+    assert.equal(t("sample"), sample);
+  }
+});
+
+test("question-bank synchronization keeps ICU-safe translations current", () => {
+  assert.doesNotThrow(() => execFileSync(process.execPath, [fileURLToPath(new URL("../../../scripts/sync-learning-bank.mjs", import.meta.url)), "--check"], { stdio: "pipe" }));
+});
 
 for (const locale of ["zh-CN", "en-US"]) {
   test(`${locale}: all formatted messages parse and raw lesson formulas render`, () => {
