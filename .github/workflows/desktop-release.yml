@@ -52,9 +52,17 @@ on:
     tags:
       - "v*.*.*"
       - "v*.*.*-*"
-  # Manual runs build every target and upload the installers as workflow
-  # artifacts; only tag pushes create a GitHub Release.
+  # Manual branch runs upload installers as workflow artifacts; tag refs
+  # create a draft GitHub Release. Tag builds always include every platform.
   workflow_dispatch:
+    inputs:
+      platform:
+        description: Platforms to build (branch runs only)
+        type: choice
+        default: all
+        options:
+          - all
+          - windows
 
 permissions:
   contents: write
@@ -75,23 +83,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - label: macOS arm64
-            platform: macOS
-            runner: macos-14
-            args: "--target aarch64-apple-darwin"
-          - label: macOS x64
-            platform: macOS
-            runner: macos-14
-            args: "--target x86_64-apple-darwin"
-          - label: Linux x64
-            platform: Linux
-            runner: ubuntu-24.04
-            args: ""
-          - label: Windows x64
-            platform: Windows
-            runner: windows-2022
-            args: ""
+        include: >-
+          ${{ fromJSON(
+            github.event_name == 'workflow_dispatch' && github.ref_type != 'tag' && inputs.platform == 'windows'
+            && '[{"label":"Windows x64","platform":"Windows","runner":"windows-2022","args":""}]'
+            || '[{"label":"macOS arm64","platform":"macOS","runner":"macos-14","args":"--target aarch64-apple-darwin"},{"label":"macOS x64","platform":"macOS","runner":"macos-14","args":"--target x86_64-apple-darwin"},{"label":"Linux x64","platform":"Linux","runner":"ubuntu-24.04","args":""},{"label":"Windows x64","platform":"Windows","runner":"windows-2022","args":""}]'
+          ) }}
 
     steps:
       - name: Checkout
