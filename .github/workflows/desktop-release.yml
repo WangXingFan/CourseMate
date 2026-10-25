@@ -242,7 +242,7 @@ jobs:
           projectPath: apps/desktop
           tauriScript: pnpm tauri
           # Beta endpoint, MSI version and signing thumbprint; see the channel step.
-          args: ${{ matrix.args }} ${{ steps.channel.outputs.tauri_args }}
+          args: --verbose ${{ matrix.args }} ${{ steps.channel.outputs.tauri_args }}
           tagName: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
           releaseName: "CourseMate v__VERSION__"
           # Asset suffixes as produced by the assets job below. Platform

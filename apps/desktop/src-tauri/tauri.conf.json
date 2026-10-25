@@ -58,7 +58,7 @@
       },
       "wix": {
         "upgradeCode": "d0121e08-6c81-4722-a5ef-8b90fbb6f3b6",
-        "language": "en-US"
+        "language": "zh-CN"
       }
     },
     "externalBin": [
