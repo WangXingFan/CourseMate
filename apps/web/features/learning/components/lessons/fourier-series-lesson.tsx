@@ -22,9 +22,9 @@ export function FourierSeriesLesson() {
   const overshoot = Math.max(0, (peak - 1) * 100);
 
   return (
-    <LessonShell title={t("title")} subtitle={t("subtitle")} formula={t.raw("formula")}>
+    <LessonShell title={t("title")} formula={t.raw("formula")}>
       <div className="space-y-3">
-        <LessonPanel title={t("controls.title")} description={t("controls.description")}>
+        <LessonPanel title={t("controls.title")}>
           <div className="grid gap-4 sm:grid-cols-2">
             <LabSlider
               label={t("controls.harmonics")}
@@ -34,17 +34,16 @@ export function FourierSeriesLesson() {
               step={2}
               onChange={setHarmonics}
               format={(value) => `${value}`}
-              hint={t("controls.harmonicsHint")}
             />
             <div className="grid grid-cols-3 gap-2">
               <Readout label={t("readouts.harmonics")} value={harmonics} />
-              <Readout label={t("readouts.peak")} value={peak.toFixed(3)} hint={t("readouts.peakHint")} />
-              <Readout label={t("readouts.overshoot")} value={`${overshoot.toFixed(1)}%`} hint={t("readouts.overshootHint")} />
+              <Readout label={t("readouts.peak")} value={peak.toFixed(3)} />
+              <Readout label={t("readouts.overshoot")} value={`${overshoot.toFixed(1)}%`} />
             </div>
           </div>
         </LessonPanel>
 
-        <LessonPanel title={t("plot.timeTitle")} description={t("plot.timeDescription")}>
+        <LessonPanel title={t("plot.timeTitle")}>
           <SignalPlot
             xDomain={[TIME_MIN, TIME_MAX]}
             yDomain={[-1.45, 1.45]}
@@ -59,7 +58,7 @@ export function FourierSeriesLesson() {
           />
         </LessonPanel>
 
-        <LessonPanel title={t("plot.spectrumTitle")} description={t("plot.spectrumDescription")}>
+        <LessonPanel title={t("plot.spectrumTitle")}>
           <SignalPlot
             xDomain={[0, 33]}
             yDomain={[0, 1.35]}

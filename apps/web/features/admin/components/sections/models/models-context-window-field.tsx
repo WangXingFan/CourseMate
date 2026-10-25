@@ -91,7 +91,6 @@ export function ModelContextWindowField({
           </TooltipTrigger>
           <TooltipContent className="max-w-64">
             <div className="space-y-1">
-              <p>{t("sheet.contextWindowDescription")}</p>
               <p className="text-background/70">
                 {t("sheet.contextWindowEffective", {
                   value: new Intl.NumberFormat(locale).format(effectiveValue),

@@ -50,7 +50,6 @@ export function AdminCircuitBreakerControl({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 space-y-1">
             <p className="text-sm font-medium text-foreground">{t("label")}</p>
-            <p className="text-sm leading-relaxed text-muted-foreground">{t("description")}</p>
           </div>
           <Switch
             size="sm"

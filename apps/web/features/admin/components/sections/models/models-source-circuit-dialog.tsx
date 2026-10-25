@@ -6,9 +6,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
+  DialogContent,  DialogFooter,
   DialogHeader,
   DialogHeightTransition,
   DialogTitle,
@@ -16,7 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SpinnerLabel } from "@/components/ui/spinner";
-import { useDialogSnapshot } from "@/shared/hooks/use-dialog-snapshot";
 import type {
   AdminLLMModelUpstreamSourceDTO,
   AdminLLMModelCbPolicyMode,
@@ -56,7 +53,6 @@ export function ModelSourceCircuitDialog({
     cbDurationMin: "0",
     cbWindowMin: "0",
   });
-  const stableSource = useDialogSnapshot(source);
 
   React.useEffect(() => {
     if (!source) return;
@@ -70,8 +66,6 @@ export function ModelSourceCircuitDialog({
   function setField(field: keyof CircuitDraft, value: string) {
     setDraft((current) => ({ ...current, [field]: value }));
   }
-
-  const sourceName = stableSource ? [stableSource.upstreamName, stableSource.upstreamModelName].filter(Boolean).join(" / ") : "";
 
   async function handleSave() {
     await onSave({
@@ -90,11 +84,10 @@ export function ModelSourceCircuitDialog({
         }
       }}
     >
-      <DialogContent className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[520px]">
+      <DialogContent aria-describedby={undefined} className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[520px]">
         <DialogHeightTransition contentClassName="max-h-[min(86vh,760px)]">
           <DialogHeader className="shrink-0 px-4 py-4">
             <DialogTitle>{t("circuitSettings")}</DialogTitle>
-            <DialogDescription>{t("circuitSettingsDescription", { name: sourceName })}</DialogDescription>
           </DialogHeader>
 
           <form
@@ -152,7 +145,6 @@ export function ModelSourceCircuitDialog({
                   onChange={(event) => setField("cbWindowMin", event.target.value)}
                 />
               </div>
-              <p className="text-sm leading-6 text-muted-foreground">{t("circuitInheritHint")}</p>
             </div>
 
             <DialogFooter className="shrink-0 px-4 py-3">

@@ -19,7 +19,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeightTransition,
   DialogHeader,
@@ -52,11 +51,10 @@ export function KnowledgeBaseEditorDialog({
 
   return (
     <Dialog open={Boolean(draft)} onOpenChange={(open) => !open && !saving && onClose()}>
-      <DialogContent className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[560px]">
+      <DialogContent aria-describedby={undefined} className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[560px]">
         <DialogHeightTransition contentClassName="max-h-[min(86vh,760px)]">
           <DialogHeader className="shrink-0 px-4 py-4">
             <DialogTitle>{stableDraft?.publicID ? t("editTitle") : t("createTitle")}</DialogTitle>
-            <DialogDescription>{t("editorDescription")}</DialogDescription>
           </DialogHeader>
           <form
             className="flex min-h-0 flex-1 flex-col"
@@ -112,7 +110,6 @@ export function KnowledgeBaseEditorDialog({
 export function AddKnowledgeBaseFilesDialog({
   open,
   platformFiles = false,
-  knowledgeBaseName,
   files,
   loading,
   loadingMore,
@@ -168,13 +165,10 @@ export function AddKnowledgeBaseFilesDialog({
       if (!nextOpen && busy) return;
       onOpenChange(nextOpen);
     }}>
-      <DialogContent className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[560px]">
+      <DialogContent aria-describedby={undefined} className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[560px]">
         <DialogHeightTransition>
           <DialogHeader className="shrink-0 px-5 pb-3 pt-5">
             <DialogTitle>{t("addFilesTitle")}</DialogTitle>
-            <DialogDescription>
-              {t(platformFiles ? "addPlatformFilesDescription" : "addFilesDescription", { name: knowledgeBaseName })}
-            </DialogDescription>
           </DialogHeader>
           <input
             ref={fileInputRef}

@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogHeightTransition,
@@ -442,11 +441,10 @@ export function ModelCapabilitiesPresetDialog({
         onOpenChange(nextOpen);
       }}
     >
-      <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-[520px]">
+      <DialogContent aria-describedby={undefined} className="gap-0 overflow-hidden p-0 sm:max-w-[520px]">
         <DialogHeightTransition contentClassName="max-h-[min(82vh,520px)]">
           <DialogHeader className="shrink-0 px-4 pt-4 pb-2">
             <DialogTitle>{t("sheet.capabilitiesPreset.title")}</DialogTitle>
-            <DialogDescription>{t("sheet.capabilitiesPreset.description")}</DialogDescription>
           </DialogHeader>
 
           <div className="min-h-0 min-w-0 overflow-hidden px-4 py-1">

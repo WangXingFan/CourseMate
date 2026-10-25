@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeightTransition,
   DialogHeader,
@@ -197,11 +196,10 @@ function QuizEditorDialog({ model }: { model: ClassroomActivitiesModel }) {
 
   return (
     <Dialog open={draft !== null} onOpenChange={(open) => !open && !saving && close()}>
-      <DialogContent className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[640px]">
+      <DialogContent aria-describedby={undefined} className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[640px]">
         <DialogHeightTransition contentClassName="max-h-[min(88vh,760px)]">
           <DialogHeader className="shrink-0 px-4 py-4">
             <DialogTitle>{t("createDialog.title")}</DialogTitle>
-            <DialogDescription>{t("createDialog.description")}</DialogDescription>
           </DialogHeader>
           <form className="flex min-h-0 flex-1 flex-col" onSubmit={(event) => { event.preventDefault(); void save(); }}>
             <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-2">
@@ -333,7 +331,6 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
                     {picked ? t("reportDialog.pickAgain") : t("reportDialog.random")}
                   </Button>
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">{t("reportDialog.randomHint")}</p>
                 {picked ? (
                   <p className="mt-2 text-sm font-medium text-foreground">
                     {t("reportDialog.picked", { name: studentName(picked, t("reportDialog.anonymous")) })}

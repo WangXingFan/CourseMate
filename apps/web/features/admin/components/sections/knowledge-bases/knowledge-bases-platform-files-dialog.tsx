@@ -19,7 +19,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeightTransition,
   DialogHeader,
@@ -84,11 +83,10 @@ export function AdminPlatformFilesDialog({
         if (!nextOpen && busy) return;
         onOpenChange(nextOpen);
       }}>
-        <DialogContent className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[620px]">
+        <DialogContent aria-describedby={undefined} className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[620px]">
           <DialogHeightTransition>
             <DialogHeader className="px-5 pb-3 pt-5">
               <DialogTitle>{t("localFilesTitle")}</DialogTitle>
-              <DialogDescription>{t("localFilesDescription")}</DialogDescription>
             </DialogHeader>
             <input
               ref={fileInputRef}

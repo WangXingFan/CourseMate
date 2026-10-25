@@ -109,7 +109,6 @@ export function LoginHero() {
           {t("headline")}
           <em className="block text-[oklch(0.78_0.13_40)] not-italic">{t("headlineAccent")}</em>
         </h1>
-        <p className="mt-6 max-w-md text-base leading-7 text-[oklch(0.96_0.01_85/0.72)]">{t("lede")}</p>
       </div>
 
       <div className="relative mt-10 h-44 xl:h-56">

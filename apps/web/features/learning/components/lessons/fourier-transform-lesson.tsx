@@ -24,9 +24,9 @@ export function FourierTransformLesson() {
   const dcValue = amplitude * width;
 
   return (
-    <LessonShell title={t("title")} subtitle={t("subtitle")} formula={t.raw("formula")}>
+    <LessonShell title={t("title")} formula={t.raw("formula")}>
       <div className="space-y-3">
-        <LessonPanel title={t("controls.title")} description={t("controls.description")}>
+        <LessonPanel title={t("controls.title")}>
           <div className="grid gap-4 sm:grid-cols-2">
             <LabSlider
               label={t("controls.width")}
@@ -36,7 +36,6 @@ export function FourierTransformLesson() {
               step={0.05}
               onChange={setWidth}
               format={(value) => `τ = ${value.toFixed(2)} s`}
-              hint={t("controls.widthHint")}
             />
             <LabSlider
               label={t("controls.amplitude")}
@@ -46,18 +45,17 @@ export function FourierTransformLesson() {
               step={0.1}
               onChange={setAmplitude}
               format={(value) => `A = ${value.toFixed(1)}`}
-              hint={t("controls.amplitudeHint")}
             />
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
             <Readout label={t("readouts.width")} value={`${width.toFixed(2)} s`} />
-            <Readout label={t("readouts.dc")} value={dcValue.toFixed(2)} hint={t("readouts.dcHint")} />
-            <Readout label={t("readouts.firstZero")} value={`${firstZero.toFixed(2)} Hz`} hint={t("readouts.firstZeroHint")} />
-            <Readout label={t("readouts.area")} value={`${dcValue.toFixed(2)}`} hint={t("readouts.areaHint")} />
+            <Readout label={t("readouts.dc")} value={dcValue.toFixed(2)} />
+            <Readout label={t("readouts.firstZero")} value={`${firstZero.toFixed(2)} Hz`} />
+            <Readout label={t("readouts.area")} value={`${dcValue.toFixed(2)}`} />
           </div>
         </LessonPanel>
 
-        <LessonPanel title={t("plot.timeTitle")} description={t("plot.timeDescription")}>
+        <LessonPanel title={t("plot.timeTitle")}>
           <SignalPlot
             xDomain={[TIME_MIN, TIME_MAX]}
             yDomain={[-0.2, amplitude * 1.3]}
@@ -69,7 +67,7 @@ export function FourierTransformLesson() {
           />
         </LessonPanel>
 
-        <LessonPanel title={t("plot.spectrumTitle")} description={t("plot.spectrumDescription")}>
+        <LessonPanel title={t("plot.spectrumTitle")}>
           <SignalPlot
             xDomain={[FREQ_MIN, FREQ_MAX]}
             yDomain={[0, Math.max(0.1, dcValue * 1.15)]}

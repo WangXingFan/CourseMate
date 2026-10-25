@@ -16,9 +16,7 @@ import {
 } from "@/components/ui/combobox";
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
+  DialogContent,  DialogFooter,
   DialogHeader,
   DialogHeightTransition,
   DialogTitle,
@@ -136,14 +134,13 @@ export function CreateUserDialog({
   const t = useTranslations("adminUsers");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
+      <DialogContent aria-describedby={undefined}
         ref={createDialogContentRef}
         className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[560px]"
       >
         <DialogHeightTransition contentClassName="max-h-[min(86vh,760px)]">
           <DialogHeader className="shrink-0 px-4 py-4">
             <DialogTitle>{t("editor.createTitle")}</DialogTitle>
-            <DialogDescription>{t("editor.createDescription")}</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={onCreateSubmit} className="flex min-h-0 flex-1 flex-col">

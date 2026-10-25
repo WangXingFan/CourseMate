@@ -4,7 +4,7 @@ import { CheckCircle2, LoaderCircle, XCircle } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useLearningReview } from "@/features/learning/hooks/use-learning-review";
 import { useLearningTimeZone } from "@/features/learning/hooks/use-learning-time-zone";
 
@@ -16,8 +16,8 @@ export function VariantReview({ variantId, onSaved, onClose }: { variantId: stri
   const attempt = model.result?.attempt;
 
   return <Dialog open onOpenChange={(open) => { if (!open && !model.saving) onClose(); }}>
-    <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg" onInteractOutside={(event) => { if (model.saving) event.preventDefault(); }}>
-      <DialogHeader><DialogTitle>{t("title")}</DialogTitle><DialogDescription>{t("description")}</DialogDescription></DialogHeader>
+    <DialogContent aria-describedby={undefined} className="max-h-[90dvh] overflow-y-auto sm:max-w-lg" onInteractOutside={(event) => { if (model.saving) event.preventDefault(); }}>
+      <DialogHeader><DialogTitle>{t("title")}</DialogTitle></DialogHeader>
       {model.loading ? <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground"><LoaderCircle className="size-4 animate-spin" />{t("loading")}</p> : null}
       {model.error ? <div role="alert" className="space-y-2"><p className="text-sm text-destructive">{model.error}</p>{!model.data ? <Button variant="outline" size="sm" onClick={model.reload}>{t("retry")}</Button> : null}</div> : null}
       {model.data ? <div className="space-y-4">

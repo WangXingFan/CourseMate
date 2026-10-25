@@ -11,7 +11,6 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogHeightTransition,
   DialogTitle,
@@ -84,7 +83,7 @@ export function AdminKnowledgeBasesPage() {
         <SettingsSection title={t("title")}>
           <SettingsFieldRow
             title={t("featureToggle.label")}
-            description={t("featureToggle.description")}
+
             controlClassName="items-end"
           >
             <Switch
@@ -262,11 +261,10 @@ export function AdminKnowledgeBasesPage() {
         <KnowledgeBasesProcessingSettings />
 
         <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-          <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-[920px]">
+          <DialogContent aria-describedby={undefined} className="gap-0 overflow-hidden p-0 sm:max-w-[920px]">
             <DialogHeightTransition contentClassName="h-[min(78dvh,720px)] max-h-[min(78dvh,720px)]">
               <DialogHeader className="sr-only">
                 <DialogTitle>{detail.selected?.name ?? t("adminTitle")}</DialogTitle>
-                <DialogDescription>{t("manageDescription")}</DialogDescription>
               </DialogHeader>
               <KnowledgeBaseDetail
                 mode="admin"

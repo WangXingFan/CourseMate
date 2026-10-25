@@ -46,7 +46,7 @@ function QuizChapter({ chapter, onChapterChange, onReset }: { chapter: string; o
     </div>
     {model.catalogError && <div role="alert" className="text-sm text-destructive"><p>{model.catalogError}</p><Button variant="outline" size="sm" className="mt-2" onClick={model.refreshRanking}>{t("refresh")}</Button></div>}
     {model.error && <div role="alert" className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm"><p>{model.error}</p><p className="mt-1 text-sm text-muted-foreground">{t("retryHint")}</p><Button className="mt-3" variant="outline" size="sm" disabled={model.busy} onClick={model.retry}>{model.busy ? t("saving") : t("retry")}</Button></div>}
-    {!round && <LessonPanel title={t("intro.title")} description={t("chapterDescription")}>
+    {!round && <LessonPanel title={t("intro.title")}>
       <div className="grid grid-cols-2 gap-3"><Metric label={t("intro.questions")} value={String(chapterInfo?.roundSize ?? Math.min(10, chapterInfo?.questionIds.length ?? 0))} /><Metric label={t("intro.duration")} value="90s" /></div>
       <ul className="mt-4 space-y-2 text-sm leading-6 text-muted-foreground"><li>{t("intro.ruleOne")}</li><li>{t("intro.ruleThree")}</li></ul>
       <Button className="mt-5" disabled={model.loading || model.busy || !!model.error || !chapterInfo} onClick={() => void start()}>{model.busy ? t("starting") : t("intro.start")}<ArrowRight className="size-4" /></Button>
@@ -57,14 +57,14 @@ function QuizChapter({ chapter, onChapterChange, onReset }: { chapter: string; o
         <span className="text-xs text-muted-foreground">{t("hud.progress", { current: index + 1, total: round.questionIds.length })}</span>
         <span className="ml-auto inline-flex items-center gap-1.5 font-mono text-sm"><ClipboardCheck className="size-4 text-primary" />{round.score}</span>
       </div>
-      <LessonPanel title={t("question.eyebrow")} description={t(`chapters.${chapter}`)}>
+      <LessonPanel title={t("question.eyebrow")}>
         <p className="font-display text-xl font-normal leading-8">{t(`questions.${currentID}.prompt`)}</p>
         <div className="mt-4 grid gap-2">{[0, 1, 2, 3].map((selected) => <button key={selected} type="button" disabled={!!answer || model.busy || !!model.error || model.timeLeft === 0} onClick={() => void model.answer(currentID, selected)} className={`flex min-h-12 items-center gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-colors disabled:cursor-default ${answer?.selected === selected ? answer.correct ? "border-primary/50 bg-accent/10" : "border-destructive/50 bg-destructive/5" : "border-border/60 enabled:hover:border-primary/40 enabled:hover:bg-primary/5"}`}><span className="font-mono text-xs text-muted-foreground">{String.fromCharCode(65 + selected)}</span><span className="flex-1">{t(`questions.${currentID}.option${selected + 1}`)}</span>{answer?.selected === selected && (answer.correct ? <CheckCircle2 className="size-4 text-primary" /> : <XCircle className="size-4 text-destructive" />)}</button>)}</div>
         {model.busy && <p role="status" className="mt-3 text-sm text-muted-foreground">{t("saving")}</p>}
         {answer && <div className="mt-4 rounded-lg bg-muted/40 p-4"><p className="text-sm leading-6 text-muted-foreground">{t(`questions.${currentID}.explain`)}</p><Button className="mt-3" size="sm" onClick={() => { if (round.finishedAt) setShowResult(true); else setIndex((i) => i + 1); }}>{round.finishedAt ? t("question.finish") : t("question.next")}<ArrowRight className="size-3.5" /></Button></div>}
       </LessonPanel>
     </>}
-    {done && <LessonPanel title={t("result.title")} description={t(`chapters.${chapter}`)}>
+    {done && <LessonPanel title={t("result.title")}>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4"><Metric label={t("result.score")} value={String(round.score)} /><Metric label={t("result.correct")} value={`${round.correctCount}/${round.questionIds.length}`} /><Metric label={t("elapsed")} value={elapsed(round.elapsedMs)} /><Metric label={t("result.streak")} value={`×${round.bestStreak}`} /></div>
       <p className="mt-4 text-sm text-muted-foreground">{t("resultRankingHint")}</p>
       <Button className="mt-4" variant="outline" onClick={onReset}>{t("result.back")}</Button>

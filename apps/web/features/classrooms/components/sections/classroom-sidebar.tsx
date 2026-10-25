@@ -138,13 +138,6 @@ export function ClassroomSidebar({
           <CenteredEmptyState
             className="pointer-events-none flex-1 px-4 pb-6"
             title={query.trim() ? t("searchEmpty") : t("empty")}
-            description={
-              query.trim()
-                ? t("searchEmptyDescription")
-                : canManage
-                  ? t("emptyDescription")
-                  : t("emptyDescriptionReadOnly")
-            }
           />
         )}
       </div>

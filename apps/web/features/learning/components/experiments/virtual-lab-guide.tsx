@@ -10,7 +10,7 @@ export function VirtualLabGuide() {
   const t = useTranslations("learning.virtualLab");
   const { allowed, state, retry } = useLearningVirtualLabGuide();
   return (
-    <LessonShell title={t("guide")} subtitle={t("guideSubtitle")} className="max-w-6xl">
+    <LessonShell title={t("guide")} className="max-w-6xl">
       {!allowed ? <p className="text-sm">{t("teacherOnly")}</p> : state?.failed ? (
         <div><p className="mb-3 text-sm">{t("loadFailed")}</p><Button onClick={retry}>{t("retry")}</Button></div>
       ) : state?.html ? (

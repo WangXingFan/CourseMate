@@ -12,10 +12,10 @@ export function ExperimentHub() {
   const { user } = useAuthSession();
   const teacher = !!user && ["teacher", "admin", "superadmin"].includes(user.role);
   return (
-    <LessonShell title={t("title")} subtitle={t("subtitle")}>
+    <LessonShell title={t("title")}>
       <VirtualLabCards />
-      <LessonPanel title={t("workflowTitle")} description={t("workflow")} className="mt-4">
-        <p className="text-sm leading-6 text-muted-foreground">{t("accountNote")}</p>
+      <LessonPanel title={t("workflowTitle")} className="mt-4">
+
         <div className="mt-4 flex flex-wrap gap-2">
           <Button asChild size="sm"><Link href="/learn/experiments/workspace#home">{t("open")}</Link></Button>
           {teacher && <Button asChild size="sm" variant="outline"><Link href="/learn/experiments/guide">{t("guide")}</Link></Button>}

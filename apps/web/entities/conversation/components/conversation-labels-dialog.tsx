@@ -10,9 +10,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogCollapsible,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
+  DialogContent,  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -103,10 +101,9 @@ export function ConversationLabelsDialog({
 
   return (
     <Dialog open={open} onOpenChange={(nextOpen) => !saving && onOpenChange(nextOpen)}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent aria-describedby={undefined} className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t("labels")}</DialogTitle>
-          <DialogDescription>{t("labelsDescription", { count: MAX_CONVERSATION_LABELS })}</DialogDescription>
         </DialogHeader>
         <form
           className="space-y-4"

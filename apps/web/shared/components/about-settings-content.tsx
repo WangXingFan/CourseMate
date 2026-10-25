@@ -28,7 +28,6 @@ type AboutLabels = {
 
 type AboutSettingsContentProps = {
   title: string;
-  description: string;
   consoleLabel: string;
   labels: AboutLabels;
   versionBadgeContent?: ReactNode;
@@ -107,7 +106,6 @@ function AboutLink({
 
 export function AboutSettingsContent({
   title,
-  description,
   consoleLabel,
   labels,
   versionBadgeContent,
@@ -180,9 +178,6 @@ export function AboutSettingsContent({
             {versionDetails}
           </div>
 
-          <p className="max-w-[760px] text-sm leading-6 text-muted-foreground">
-            {description}
-          </p>
         </div>
       </SettingsSection>
 

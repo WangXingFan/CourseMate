@@ -9,7 +9,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -226,9 +225,6 @@ export function ModelPresentationDialog({
     : stableEditor?.creating
       ? t("createGroupTitle")
       : t("editGroupTitle");
-  const editorDescription = stableEditor?.kind === "vendors"
-    ? t("vendorFormDescription")
-    : t("groupFormDescription");
   const deleteTitle = deleteTarget?.kind === "vendors" ? t("deleteVendorTitle") : t("deleteGroupTitle");
   const deleteDescription = deleteTarget?.kind === "vendors"
     ? t("deleteVendorDescription", { name: deleteTarget.name })
@@ -253,14 +249,13 @@ export function ModelPresentationDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={(nextOpen) => !nextOpen && closeDialog()}>
-        <DialogContent className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[560px]">
+        <DialogContent aria-describedby={undefined} className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[560px]">
           <DialogLayerTransition
             editorOpen={editorOpen}
             editorLayer={stableEditor ? (
               <>
                 <DialogHeader className="shrink-0 px-4 py-4">
                   <DialogTitle>{editorTitle}</DialogTitle>
-                  <DialogDescription>{editorDescription}</DialogDescription>
                 </DialogHeader>
 
                 <form
@@ -385,7 +380,6 @@ export function ModelPresentationDialog({
                             </div>
                           )}
                         </div>
-                        <p className="text-sm leading-4 text-muted-foreground">{t("membersHelp")}</p>
                       </div>
                     ) : null}
                   </div>
@@ -405,7 +399,6 @@ export function ModelPresentationDialog({
               <>
                 <DialogHeader className="shrink-0 px-4 py-4">
                   <DialogTitle>{t("title")}</DialogTitle>
-                  <DialogDescription>{t("description")}</DialogDescription>
                 </DialogHeader>
 
                 <Tabs

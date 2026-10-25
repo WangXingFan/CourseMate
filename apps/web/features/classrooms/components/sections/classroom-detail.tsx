@@ -182,13 +182,12 @@ export function ClassroomDetail({
             <div className="pointer-events-none absolute inset-x-0 top-28 bottom-0">
               <CenteredEmptyState
                 title={t("noStudents")}
-                description={canManage ? t("noStudentsDescription") : undefined}
               />
             </div>
           )}
         </>
       ) : (
-        <CenteredEmptyState title={t("selectHint")} description={t("selectHintDescription")} />
+        <CenteredEmptyState title={t("selectHint")} />
       )}
     </section>
   );

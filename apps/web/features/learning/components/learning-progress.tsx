@@ -66,8 +66,8 @@ export function LearningProgress() {
               <label htmlFor="review-filter" className="flex items-center gap-2 text-sm text-muted-foreground">{t("reviewFilter")}<select id="review-filter" value={reviewFilter} onChange={(event) => setReviewFilter(event.target.value)} className="rounded-md border border-border bg-background px-2 py-1.5">{["all", "due", "active", "done"].map((filter) => <option key={filter} value={filter}>{t(`filters.${filter}`)}</option>)}</select></label>
               {unresolved.some((item) => topic === "all" || item.topic === topic) ? <Button asChild size="sm"><Link href={practiceHref}><RotateCcw className="size-3.5" />{t("practiceMistakes")}</Link></Button> : null}
             </div>
-            {visible.length ? <div className="space-y-3">{visible.map((question) => <MistakeCard key={question.id} question={question} onReview={setReviewTarget} />)}</div> : <EmptyState title={t(mistakes.length ? "noPending" : "emptyTitle")} description={t(mistakes.length ? "noPendingHint" : "emptyHint")} />}
-          </> : <LessonPanel title={t("history")} description={t("historyHint")}>
+            {visible.length ? <div className="space-y-3">{visible.map((question) => <MistakeCard key={question.id} question={question} onReview={setReviewTarget} />)}</div> : <EmptyState title={t(mistakes.length ? "noPending" : "emptyTitle")} />}
+          </> : <LessonPanel title={t("history")}>
             {recent.length ? <ol className="divide-y divide-border/50">{recent.map((attempt) => <li key={attempt.id} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
               {attempt.correct ? <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" /> : <XCircle className="mt-0.5 size-4 shrink-0 text-destructive" />}
               <div className="min-w-0 flex-1">
@@ -127,6 +127,6 @@ function MistakeCard({ question, onReview }: { question: LearningQuestionDTO; on
   );
 }
 
-function EmptyState({ title, description }: { title: string; description: string }) {
-  return <div className="rounded-lg border border-dashed border-border px-6 py-12 text-center"><BookOpen className="mx-auto size-7 text-muted-foreground" strokeWidth={1.4} /><h2 className="mt-3 text-sm font-medium">{title}</h2><p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted-foreground">{description}</p></div>;
+function EmptyState({ title }: { title: string }) {
+  return <div className="rounded-lg border border-dashed border-border px-6 py-12 text-center"><BookOpen className="mx-auto size-7 text-muted-foreground" strokeWidth={1.4} /><h2 className="mt-3 text-sm font-medium">{title}</h2></div>;
 }

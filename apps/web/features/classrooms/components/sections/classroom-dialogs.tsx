@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeightTransition,
   DialogHeader,
@@ -45,11 +44,10 @@ export function ClassroomEditorDialog({
 
   return (
     <Dialog open={draft !== null} onOpenChange={(open) => !open && !saving && onClose()}>
-      <DialogContent className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[520px]">
+      <DialogContent aria-describedby={undefined} className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[520px]">
         <DialogHeightTransition contentClassName="max-h-[min(86vh,720px)]">
           <DialogHeader className="shrink-0 px-4 py-4">
             <DialogTitle>{draft?.id ? t("editor.editTitle") : t("editor.createTitle")}</DialogTitle>
-            <DialogDescription>{t("editor.description")}</DialogDescription>
           </DialogHeader>
           <form
             className="flex min-h-0 flex-1 flex-col"
@@ -123,11 +121,10 @@ export function AddClassroomStudentDialog({
 
   return (
     <Dialog open={open} onOpenChange={(nextOpen) => !nextOpen && !adding && onClose()}>
-      <DialogContent className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[460px]">
+      <DialogContent aria-describedby={undefined} className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[460px]">
         <DialogHeightTransition contentClassName="max-h-[min(86vh,560px)]">
           <DialogHeader className="shrink-0 px-4 py-4">
             <DialogTitle>{t("addStudentDialog.title")}</DialogTitle>
-            <DialogDescription>{t("addStudentDialog.description")}</DialogDescription>
           </DialogHeader>
           <form
             className="flex min-h-0 flex-1 flex-col"

@@ -9,11 +9,12 @@ import { useRef, useState } from "react";
 import { LEARNING_TOPICS, type LearningTopic } from "@/features/learning/model/learning-topics";
 import { cn } from "@/lib/utils";
 
-type LearningPath = "concepts" | "practice";
+type LearningPath = "concepts" | "practice" | "tools";
 
 const PATHS = [
   { id: "concepts", icon: Lightbulb },
   { id: "practice", icon: Calculator },
+  { id: "tools", icon: SlidersHorizontal },
 ] as const;
 
 const PRACTICE_LINKS = [
@@ -37,15 +38,14 @@ export function LearningHub() {
       className="h-full min-h-0 w-full overflow-y-auto bg-background [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       <div className="mx-auto w-full max-w-5xl px-5 pt-10 pb-16 md:px-10 md:pt-16">
-        <header className="grid gap-6 border-b border-border pb-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+        <header className="space-y-8 border-b border-border">
           <div className="max-w-2xl">
-            <p className="text-xs font-medium tracking-[0.08em] text-seal">{t("hub.eyebrow")}</p>
-            <h1 className="mt-3 font-display text-4xl leading-[1.1] font-normal tracking-[-0.015em] text-foreground md:text-5xl">
+            <h1 className="font-display text-3xl leading-tight font-normal tracking-[-0.015em] text-foreground md:text-4xl">
               {t("hub.title")}
             </h1>
           </div>
 
-          <div role="tablist" aria-label={t("hub.paths.label")} className="flex gap-6">
+          <div role="tablist" aria-label={t("hub.paths.label")} className="flex gap-5 sm:gap-8">
             {PATHS.map((path) => {
               const Icon = path.icon;
               const active = activePath === path.id;
@@ -62,8 +62,18 @@ export function LearningHub() {
                     setActivePath(path.id);
                     scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
                   }}
+                  onKeyDown={(event) => {
+                    const index = PATHS.findIndex((item) => item.id === path.id);
+                    const next = event.key === "ArrowRight" ? (index + 1) % PATHS.length
+                      : event.key === "ArrowLeft" ? (index + PATHS.length - 1) % PATHS.length
+                      : event.key === "Home" ? 0 : event.key === "End" ? PATHS.length - 1 : -1;
+                    if (next < 0) return;
+                    event.preventDefault();
+                    setActivePath(PATHS[next].id);
+                    event.currentTarget.parentElement?.querySelector<HTMLButtonElement>(`#learning-path-${PATHS[next].id}`)?.focus();
+                  }}
                   className={cn(
-                    "group relative -mb-[33px] flex flex-col items-start gap-1 pb-8 text-left transition-colors focus-visible:outline-none",
+                    "group relative -mb-px py-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35",
                     "after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:bg-foreground after:transition-transform after:duration-300",
                     active ? "text-foreground after:scale-x-100" : "text-muted-foreground after:scale-x-0 hover:text-foreground",
                   )}
@@ -72,7 +82,6 @@ export function LearningHub() {
                     <Icon className="size-4" strokeWidth={1.6} aria-hidden />
                     {t(`hub.paths.${path.id}.title`)}
                   </span>
-                  <span className="text-xs text-muted-foreground">{t(`hub.paths.${path.id}.meta`)}</span>
                 </button>
               );
             })}
@@ -86,7 +95,7 @@ export function LearningHub() {
           aria-labelledby={`learning-path-${activePath}`}
           className="animate-in fade-in-0 slide-in-from-bottom-1 duration-300"
         >
-          {activePath === "concepts" ? <ConceptPanel concepts={concepts} /> : <PracticePanel />}
+          {activePath === "concepts" ? <ConceptPanel concepts={concepts} /> : activePath === "practice" ? <PracticePanel /> : <ToolsPanel />}
         </div>
       </div>
     </div>
@@ -106,13 +115,21 @@ function ConceptPanel({ concepts }: { concepts: LearningTopic[] }) {
             index={index + 1}
             topic={topic}
             title={t(`topics.${topic.id}.title`)}
-            description={t(`topics.${topic.id}.description`)}
             tag={t(`topics.${topic.id}.tag`)}
           />
         ))}
       </ol>
 
-      <SectionHeader title={t("hub.sections.tools")} />
+    </>
+  );
+}
+
+function ToolsPanel() {
+  const t = useTranslations("learning");
+
+  return (
+    <>
+      <SectionHeader title={t("hub.sections.tools")} count={TOOL_LINKS.length} />
       <div className="grid gap-3 sm:grid-cols-2">
         {TOOL_LINKS.map((link) => (
           <EntryCard
@@ -120,7 +137,6 @@ function ConceptPanel({ concepts }: { concepts: LearningTopic[] }) {
             href={link.href}
             icon={link.icon}
             title={t(`hub.quick.${link.id}.title`)}
-            description={t(`hub.quick.${link.id}.description`)}
           />
         ))}
       </div>
@@ -141,7 +157,6 @@ function PracticePanel() {
             href={link.href}
             icon={link.icon}
             title={t(`hub.quick.${link.id}.title`)}
-            description={t(`hub.quick.${link.id}.description`)}
           />
         ))}
       </div>
@@ -163,13 +178,11 @@ function TopicRow({
   index,
   topic,
   title,
-  description,
   tag,
 }: {
   index: number;
   topic: LearningTopic;
   title: string;
-  description: string;
   tag: string;
 }) {
   const Icon = topic.icon;
@@ -178,16 +191,15 @@ function TopicRow({
       <Link
         href={topic.href}
         prefetch={false}
-        className="group grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-start gap-x-4 gap-y-1 py-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35 md:grid-cols-[3.5rem_minmax(0,1fr)_9rem_auto] md:items-center md:py-6"
+        className="group grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-x-4 py-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35 md:grid-cols-[3.5rem_minmax(0,1fr)_9rem_auto] md:py-6"
       >
-        <span className="pt-1 font-mono text-sm text-muted-foreground tabular-nums md:pt-0">
+        <span className="font-mono text-sm text-muted-foreground tabular-nums">
           {String(index).padStart(2, "0")}
         </span>
         <span className="min-w-0">
           <span className="block font-display text-xl leading-snug text-foreground transition-colors group-hover:text-primary md:text-[1.375rem]">
             {title}
           </span>
-          <span className="mt-1.5 block max-w-2xl text-sm leading-6 text-muted-foreground">{description}</span>
         </span>
         <span className="hidden items-center gap-2 text-xs text-muted-foreground md:flex">
           <Icon className="size-4 shrink-0" strokeWidth={1.5} aria-hidden />
@@ -195,7 +207,7 @@ function TopicRow({
         </span>
         <ArrowRight
           aria-hidden
-          className="mt-1.5 size-4 text-muted-foreground transition-transform duration-300 group-hover:translate-x-1 group-hover:text-primary md:mt-0"
+          className="size-4 text-muted-foreground transition-transform duration-300 group-hover:translate-x-1 group-hover:text-primary"
         />
       </Link>
     </li>
@@ -206,32 +218,25 @@ function EntryCard({
   href,
   icon: Icon,
   title,
-  description,
 }: {
   href: string;
   icon: LucideIcon;
   title: string;
-  description: string;
 }) {
   return (
     <Link
       href={href}
       prefetch={false}
-      className="group flex min-h-36 flex-col justify-between rounded-lg border border-border bg-card p-5 text-card-foreground transition-[border-color,box-shadow] hover:border-foreground/25 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35"
+      className="group flex items-center gap-4 rounded-lg border border-border bg-card p-5 text-card-foreground transition-[border-color,box-shadow] hover:border-foreground/25 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35"
     >
-      <div className="flex items-start justify-between gap-3">
-        <span className="flex size-9 items-center justify-center rounded-md bg-secondary text-primary">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-secondary text-primary">
           <Icon className="size-4.5" strokeWidth={1.6} aria-hidden />
         </span>
+        <h3 className="min-w-0 flex-1 text-base font-medium text-foreground">{title}</h3>
         <ArrowUpRight
           aria-hidden
-          className="size-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+          className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
         />
-      </div>
-      <div className="mt-5">
-        <h3 className="text-base font-medium text-foreground">{title}</h3>
-        <p className="mt-1 text-sm leading-6 text-muted-foreground">{description}</p>
-      </div>
     </Link>
   );
 }

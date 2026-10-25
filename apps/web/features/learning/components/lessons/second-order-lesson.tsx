@@ -28,9 +28,9 @@ export function SecondOrderLesson() {
   const settlingTime = dominantRate > 0 ? 4 / dominantRate : Number.POSITIVE_INFINITY;
 
   return (
-    <LessonShell title={t("title")} subtitle={t("subtitle")} formula={t.raw("formula")}>
+    <LessonShell title={t("title")} formula={t.raw("formula")}>
       <div className="space-y-3">
-        <LessonPanel title={t("controls.title")} description={t("controls.description")}>
+        <LessonPanel title={t("controls.title")}>
           <div className="grid gap-4 sm:grid-cols-2">
             <LabSlider
               label={t("controls.zeta")}
@@ -40,7 +40,6 @@ export function SecondOrderLesson() {
               step={0.05}
               onChange={setZeta}
               format={(value) => `ζ = ${value.toFixed(2)}`}
-              hint={t("controls.zetaHint")}
             />
             <LabSlider
               label={t("controls.naturalFrequency")}
@@ -50,16 +49,15 @@ export function SecondOrderLesson() {
               step={0.1}
               onChange={setNaturalFrequency}
               format={(value) => `ωn = ${value.toFixed(1)} rad/s`}
-              hint={t("controls.naturalFrequencyHint")}
             />
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Readout label={t("readouts.overshoot")} value={`${overshoot.toFixed(1)}%`} hint={t("readouts.overshootHint")} />
+            <Readout label={t("readouts.overshoot")} value={`${overshoot.toFixed(1)}%`} />
             <Readout
               label={t("readouts.peakTime")}
               value={Number.isFinite(peakTime) ? `${peakTime.toFixed(2)} s` : "—"}
             />
-            <Readout label={t("readouts.settling")} value={`${settlingTime.toFixed(2)} s`} hint={t("readouts.settlingHint")} />
+            <Readout label={t("readouts.settling")} value={`${settlingTime.toFixed(2)} s`} />
             <Readout
               label={t("readouts.dampedFrequency")}
               value={zeta < 1 ? `${dampedFrequency.toFixed(2)} rad/s` : "—"}
@@ -67,7 +65,7 @@ export function SecondOrderLesson() {
           </div>
         </LessonPanel>
 
-        <LessonPanel title={t("plot.title")} description={t("plot.description")}>
+        <LessonPanel title={t("plot.title")}>
           <SignalPlot
             xDomain={[0, timeMax]}
             yDomain={[0, Math.max(1.4, peak * 1.15)]}

@@ -10,7 +10,6 @@ export function GeneralNotificationsSection({
   notificationRuntimeReady,
   notificationSupported,
   responseCompletionNotificationsEnabled,
-  notificationHelpText,
   onResponseCompletionNotificationsChange,
 }: {
   notificationRuntimeReady: boolean;
@@ -25,13 +24,7 @@ export function GeneralNotificationsSection({
     <SettingsSection title={t("notifications")}>
       <SettingsFieldRow
         title={t("generalPage.notifications.responseCompletionTitle")}
-        description={
-          <>
-            {t("generalPage.notifications.responseCompletionDescription")}
-            <br />
-            {notificationHelpText}
-          </>
-        }
+
         controlClassName="sm:w-auto md:w-auto"
       >
         <Switch

@@ -12,7 +12,6 @@ export function LabSlider({
   step,
   onChange,
   format,
-  hint,
   className,
 }: {
   label: string;
@@ -22,7 +21,6 @@ export function LabSlider({
   step: number;
   onChange: (value: number) => void;
   format: (value: number) => string;
-  hint?: string;
   className?: string;
 }) {
   const id = React.useId();
@@ -47,7 +45,6 @@ export function LabSlider({
         onChange={(event) => onChange(Number(event.target.value))}
         className="h-1 w-full cursor-pointer appearance-none rounded-full bg-border accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35 focus-visible:ring-offset-4 focus-visible:ring-offset-card"
       />
-      {hint ? <p className="text-sm leading-6 text-muted-foreground">{hint}</p> : null}
     </div>
   );
 }

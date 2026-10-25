@@ -6,7 +6,7 @@ import { Sparkles, Upload } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { SpinnerLabel } from "@/components/ui/spinner";
@@ -161,10 +161,9 @@ export function GeneralProfileSection({
       </SettingsSection>
 
       <Dialog open={avatarDialogOpen} onOpenChange={onAvatarDialogOpenChange}>
-        <DialogContent>
+        <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t("generalPage.avatarDialog.title")}</DialogTitle>
-            <DialogDescription>{t("generalPage.avatarDialog.description")}</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">

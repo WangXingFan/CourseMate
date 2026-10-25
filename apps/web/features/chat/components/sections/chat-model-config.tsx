@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogHeightTransition,
@@ -749,7 +748,6 @@ export function ChatModelConfig({
   lockedOptionPaths,
   modelOptionPolicy,
   selectedProtocols,
-  selectedModelName,
   onOptionsChange,
   onOptionsReset,
   onDefaultOptionsRestore,
@@ -1153,7 +1151,7 @@ export function ChatModelConfig({
       </Tooltip>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent
+        <DialogContent aria-describedby={undefined}
           className="w-[calc(100vw-1rem)] overflow-hidden p-4 sm:w-full sm:max-w-[800px] sm:p-6 md:max-w-[900px]"
         >
           <DialogHeightTransition contentClassName="max-h-[calc(100dvh-3rem)] gap-4 sm:max-h-[calc(min(92vh,760px)-3rem)]">
@@ -1162,9 +1160,6 @@ export function ChatModelConfig({
                 <DialogTitle className="shrink-0">{tComposer("modelOptions")}</DialogTitle>
                 <div className="shrink-0 md:hidden">{renderOptionsViewToggle()}</div>
               </div>
-              <DialogDescription className="hidden md:block">
-                {tComposer("dialogDescription", { model: selectedModelName || tComposer("currentModel") })}
-              </DialogDescription>
             </DialogHeader>
 
             <form

@@ -172,7 +172,6 @@ export function RecentToolbar({
           <>
             <div className="flex w-full min-w-0 items-center justify-start gap-4 text-foreground/60 md:w-auto md:shrink-0">
               <span className="min-w-0 truncate md:hidden">{t("allConversations")}</span>
-              <span className="hidden md:inline">{t("allConversationsDescription")}</span>
               <ToolbarActionTooltip label={t("enterSelection")}>
                 <Button
                   type="button"

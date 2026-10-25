@@ -1,6 +1,6 @@
 import type * as React from "react";
 
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
@@ -69,13 +69,11 @@ function SettingsSectionHeader({
 
 type SettingsFieldRowProps = React.ComponentProps<typeof Field> & {
   title: React.ReactNode;
-  description?: React.ReactNode;
   controlClassName?: string;
 };
 
 function SettingsFieldRow({
   title,
-  description,
   children,
   className,
   controlClassName,
@@ -86,7 +84,6 @@ function SettingsFieldRow({
       <div className="flex flex-col gap-2 md:flex-row md:items-start md:gap-4 xl:gap-6">
         <div className="min-w-0 flex-1">
           <FieldLabel>{title}</FieldLabel>
-          {description ? <FieldDescription className="mt-1 text-sm leading-6">{description}</FieldDescription> : null}
         </div>
         <div className={cn("flex w-full min-w-0 justify-start md:w-52 md:shrink-0 md:justify-end xl:w-60", controlClassName)}>
           {children}
