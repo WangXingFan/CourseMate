@@ -48,11 +48,11 @@ function InputHelp({ help }: { help: string }) {
     <Tooltip>
       <TooltipTrigger asChild>
         <InputGroupButton
-          size="icon-xs"
-          className="size-5 text-muted-foreground hover:bg-transparent hover:text-foreground"
+          size="icon-sm"
+          className="size-8 text-muted-foreground hover:bg-transparent hover:text-foreground"
           aria-label={help}
         >
-          <CircleHelp className="size-3 stroke-1.5" />
+          <CircleHelp className="size-4 stroke-1.5" />
         </InputGroupButton>
       </TooltipTrigger>
       <TooltipContent className="max-w-64">{help}</TooltipContent>
@@ -277,7 +277,7 @@ export function ModelPresentationDialog({
                     <div className="grid gap-4 sm:grid-cols-2">
                       {stableEditor.kind === "vendors" ? (
                         <div className="space-y-1">
-                          <Label htmlFor={keyInputID} className="text-xs font-normal text-muted-foreground">
+                          <Label htmlFor={keyInputID} className="text-sm font-normal text-muted-foreground">
                             {t("key")}
                           </Label>
                           <InputGroup>
@@ -297,7 +297,7 @@ export function ModelPresentationDialog({
                       ) : null}
 
                       <div className="space-y-1">
-                        <Label htmlFor={nameInputID} className="text-xs font-normal text-muted-foreground">
+                        <Label htmlFor={nameInputID} className="text-sm font-normal text-muted-foreground">
                           {t("name")}
                         </Label>
                         <Input
@@ -312,7 +312,7 @@ export function ModelPresentationDialog({
                       </div>
 
                       <div className={stableEditor.kind === "vendors" ? "space-y-1 sm:col-span-2" : "space-y-1"}>
-                        <Label htmlFor={iconInputID} className="text-xs font-normal text-muted-foreground">
+                        <Label htmlFor={iconInputID} className="text-sm font-normal text-muted-foreground">
                           {t("icon")}
                         </Label>
                         <ModelIconField
@@ -330,10 +330,10 @@ export function ModelPresentationDialog({
                     {stableEditor.kind === "groups" ? (
                       <div className="mt-4 space-y-2">
                         <div className="flex items-center justify-between gap-3">
-                          <Label htmlFor={modelQueryInputID} className="text-xs font-normal text-muted-foreground">
+                          <Label htmlFor={modelQueryInputID} className="text-sm font-normal text-muted-foreground">
                             {t("members")}
                           </Label>
-                          <span className="text-[11px] text-muted-foreground">
+                          <span className="text-xs text-muted-foreground">
                             {t("membersSelected", { count: stableEditor.modelIDs.length })}
                           </span>
                         </div>
@@ -374,7 +374,7 @@ export function ModelPresentationDialog({
                                   />
                                   <span className="min-w-0 flex-1">
                                     <span className="block truncate text-xs font-medium">{model.platformModelName}</span>
-                                    <span className="block truncate text-[11px] text-muted-foreground">
+                                    <span className="block truncate text-xs text-muted-foreground">
                                       {model.displayGroupName
                                         ? t("memberCurrentGroup", { group: model.displayGroupName })
                                         : t("memberFollowVendor", { vendor: model.vendorName || model.vendor })}
@@ -385,7 +385,7 @@ export function ModelPresentationDialog({
                             </div>
                           )}
                         </div>
-                        <p className="text-[11px] leading-4 text-muted-foreground">{t("membersHelp")}</p>
+                        <p className="text-sm leading-4 text-muted-foreground">{t("membersHelp")}</p>
                       </div>
                     ) : null}
                   </div>
@@ -454,7 +454,7 @@ export function ModelPresentationDialog({
                                     <span className="truncate text-xs font-medium">{vendor.name}</span>
                                     {vendor.builtIn ? <Badge variant="secondary">{t("builtIn")}</Badge> : null}
                                   </div>
-                                  <p className="truncate text-[11px] text-muted-foreground">{vendor.key}</p>
+                                  <p className="truncate text-sm text-muted-foreground">{vendor.key}</p>
                                 </div>
                                 <div className="grid w-13 shrink-0 grid-cols-2 gap-0.5">
                                   <PresentationActionButton label={commonT("edit")} onClick={() => openVendorEdit(vendor)}>

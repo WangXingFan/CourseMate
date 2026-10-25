@@ -88,7 +88,7 @@
     "formula": "y(t)=\\int_{-\\infty}^{\\infty}x(\\tau)h(t-\\tau)\\,d\\tau",
     "controls": {
       "title": "Parameters",
-      "description": "x(t) is a unit rectangle on [-0.5, 0.5]; h(t) = e^{-t}u(t).",
+      "description": "x(t) is a unit rectangle on [-0.5, 0.5]; h(t) = e^'{'-t'}'u(t).",
       "time": "Shift t",
       "timeHint": "Move the reversed kernel across the input."
     },
@@ -125,7 +125,7 @@
     "observe": {
       "title": "What to notice",
       "noOverlap": "Before t = −0.5 the signals never overlap, so the output stays zero.",
-      "rising": "Between −0.5 and 0.5 the overlap grows: the output rises like 1 − e^{−(t+0.5)}.",
+      "rising": "Between −0.5 and 0.5 the overlap grows: the output rises like 1 − e^'{'−(t+0.5)'}'.",
       "falling": "After 0.5 the overlap shrinks and the output decays exponentially.",
       "area": "Convolution is not pointwise multiplication; it accumulates area over the whole overlap."
     }
@@ -246,7 +246,7 @@
     },
     "insight": {
       "title": "Why 63.2%?",
-      "definition": "τ is the time for the response to cover 1 − e^{−1} ≈ 63.2% of the remaining distance to the final value.",
+      "definition": "τ is the time for the response to cover 1 − e^'{'−1'}' ≈ 63.2% of the remaining distance to the final value.",
       "meaning": "At t = τ the slope has already fallen to 1/e of its initial value, so the response visibly slows down.",
       "bandwidth": "A slower time response means a narrower bandwidth: f_c = 1/(2πτ).",
       "gain": "K scales the whole response vertically; it does not change the settling time."

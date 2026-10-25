@@ -20,7 +20,7 @@ export const USER_SORT_OPTIONS = [
 ] as const;
 
 export const COMPACT_COMBOBOX_CLASSNAME =
-  "rounded-sm [&_[data-slot=input-group-control]]:px-2 [&_[data-slot=input-group-addon]]:pr-1.5 [&_[data-slot=input-group-button]]:size-4.5 [&_[data-slot=combobox-trigger-icon]]:size-3.5";
+  "rounded-md [&_[data-slot=input-group-control]]:px-2 [&_[data-slot=input-group-addon]]:pr-1.5 [&_[data-slot=input-group-button]]:size-8 [&_[data-slot=combobox-trigger-icon]]:size-4";
 
 export type UserSortValue = (typeof USER_SORT_OPTIONS)[number]["value"];
 export const isUserSortValue = isOneOf(USER_SORT_OPTIONS.map((option) => option.value));

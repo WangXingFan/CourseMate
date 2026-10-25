@@ -279,7 +279,7 @@ const FENCED_CODE_BLOCK_RE = /(?:^|\n)[ \t]*(?:```|~~~)(?!\s*(?:mermaid|mmd)\b)[
 const MERMAID_CODE_BLOCK_RE = /(?:^|\n)[ \t]*(?:```|~~~)\s*(?:mermaid|mmd)\b/i;
 
 const BASE_MARKDOWN_CLASSNAME = cn(
-  "chat-font-content min-w-0 max-w-full overflow-hidden leading-6 text-foreground [overflow-wrap:anywhere]",
+  "chat-font-content min-w-0 max-w-full overflow-hidden text-base leading-7 text-foreground [overflow-wrap:anywhere]",
   "[&>*:last-child]:after:text-muted-foreground/55",
   "[&_p]:min-w-0 [&_p]:max-w-full [&_p]:break-words [&_p]:[overflow-wrap:anywhere]",
   "[&_li]:min-w-0 [&_li]:max-w-full [&_li]:break-words [&_li]:[overflow-wrap:anywhere]",
@@ -294,27 +294,27 @@ const BASE_MARKDOWN_CLASSNAME = cn(
   "[&_[data-streamdown='mermaid-block-actions']>button]:border-0 [&_[data-streamdown='mermaid-block-actions']>button]:bg-transparent [&_[data-streamdown='mermaid-block-actions']>button]:shadow-none [&_[data-streamdown='mermaid-block-actions']>button:hover]:bg-foreground/[0.04] [&_[data-streamdown='mermaid-block-actions']>button:hover]:text-foreground",
   "[&_[data-streamdown='mermaid-block-actions']>div>button]:border-0 [&_[data-streamdown='mermaid-block-actions']>div>button]:bg-transparent [&_[data-streamdown='mermaid-block-actions']>div>button]:shadow-none [&_[data-streamdown='mermaid-block-actions']>div>button:hover]:bg-foreground/[0.04] [&_[data-streamdown='mermaid-block-actions']>div>button:hover]:text-foreground",
   "[&_[data-streamdown='mermaid-block-actions']_button:focus-visible]:outline-none [&_[data-streamdown='mermaid-block-actions']_button:focus-visible]:ring-0 [&_[data-streamdown='mermaid-block-actions']_button:focus-visible]:bg-foreground/[0.04] [&_[data-streamdown='mermaid-block-actions']_button:focus-visible]:text-foreground",
-  "[&_[data-streamdown='mermaid-block-actions']_svg]:size-3",
-  "[&_[data-streamdown='mermaid-block']_button>svg]:size-3",
+  "[&_[data-streamdown='mermaid-block-actions']_svg]:size-4",
+  "[&_[data-streamdown='mermaid-block']_button>svg]:size-4",
   "[&_code:not(pre_code)]:rounded-md [&_code:not(pre_code)]:bg-foreground/[0.05] [&_code:not(pre_code)]:px-1.5 [&_code:not(pre_code)]:py-0.5 [&_code:not(pre_code)]:font-mono [&_code:not(pre_code)]:text-[0.85em] [&_code:not(pre_code)]:text-primary [&_code:not(pre_code)]:whitespace-pre-wrap [&_code:not(pre_code)]:break-words [&_code:not(pre_code)]:[overflow-wrap:anywhere]",
   "[&_[data-streamdown='code-block']]:my-4 [&_[data-streamdown='code-block']]:!w-full [&_[data-streamdown='code-block']]:min-w-0 [&_[data-streamdown='code-block']]:gap-0 [&_[data-streamdown='code-block']]:border-0 [&_[data-streamdown='code-block']]:rounded-none [&_[data-streamdown='code-block']]:bg-transparent [&_[data-streamdown='code-block']]:p-0 [&_[data-streamdown='code-block']]:shadow-none [&_[data-streamdown='code-block']]:outline-none [&_[data-streamdown='code-block']]:ring-0",
   // Streamdown's fixed offscreen placeholder changes height when a code block
   // enters the viewport, which can move the surrounding conversation.
   "[&_[data-streamdown='code-block']]:![content-visibility:visible] [&_[data-streamdown='code-block']]:![contain-intrinsic-size:none]",
-  "[&_[data-streamdown='code-block']>div:first-child]:min-h-0 [&_[data-streamdown='code-block']>div:first-child]:justify-between [&_[data-streamdown='code-block']>div:first-child]:gap-2 [&_[data-streamdown='code-block']>div:first-child]:border-0 [&_[data-streamdown='code-block']>div:first-child]:bg-transparent [&_[data-streamdown='code-block']>div:first-child]:mt-2 [&_[data-streamdown='code-block']>div:first-child]:pb-6 [&_[data-streamdown='code-block']>div:first-child]:text-[11px] [&_[data-streamdown='code-block']>div:first-child]:font-medium [&_[data-streamdown='code-block']>div:first-child]:tracking-[0.06em] [&_[data-streamdown='code-block']>div:first-child]:text-muted-foreground/85 [&_[data-streamdown='code-block']>div:first-child]:shadow-none",
+  "[&_[data-streamdown='code-block']>div:first-child]:min-h-0 [&_[data-streamdown='code-block']>div:first-child]:justify-between [&_[data-streamdown='code-block']>div:first-child]:gap-2 [&_[data-streamdown='code-block']>div:first-child]:border-0 [&_[data-streamdown='code-block']>div:first-child]:bg-transparent [&_[data-streamdown='code-block']>div:first-child]:mt-2 [&_[data-streamdown='code-block']>div:first-child]:pb-6 [&_[data-streamdown='code-block']>div:first-child]:text-xs [&_[data-streamdown='code-block']>div:first-child]:font-medium [&_[data-streamdown='code-block']>div:first-child]:tracking-[0.06em] [&_[data-streamdown='code-block']>div:first-child]:text-muted-foreground/85 [&_[data-streamdown='code-block']>div:first-child]:shadow-none",
   "[&_[data-streamdown='code-block']>div:last-child]:!w-full [&_[data-streamdown='code-block']>div:last-child]:min-w-0 [&_[data-streamdown='code-block']>div:last-child]:border-0 [&_[data-streamdown='code-block']>div:last-child]:rounded-none [&_[data-streamdown='code-block']>div:last-child]:bg-transparent [&_[data-streamdown='code-block']>div:last-child]:p-0 [&_[data-streamdown='code-block']>div:last-child]:shadow-none",
   "[&_[data-streamdown='code-block-body']]:!rounded-xl [&_[data-streamdown='code-block-body']]:!border-[0.75rem] [&_[data-streamdown='code-block-body']]:!border-transparent [&_[data-streamdown='code-block-body']]:!bg-muted/40 [&_[data-streamdown='code-block-body']]:!p-0",
   "[&_pre]:group [&_pre]:my-0 [&_pre]:block [&_pre]:!w-full [&_pre]:!min-w-0 [&_pre]:max-w-full [&_pre]:overflow-visible [&_pre]:border-0 [&_pre]:bg-transparent [&_pre]:p-0 [&_pre]:shadow-none [&_pre]:outline-none [&_pre]:ring-0",
-  "[&_pre>code]:block [&_pre>code]:w-max [&_pre>code]:min-w-full [&_pre>code]:max-w-none [&_pre>code]:border-0 [&_pre>code]:bg-transparent [&_pre>code]:font-mono [&_pre>code]:text-[12px] [&_pre>code]:leading-5 [&_pre>code]:text-foreground/92 [&_pre>code]:shadow-none [&_pre>code]:outline-none [&_pre>code]:ring-0",
-  "[&_pre>code>span]:before:text-[11px]",
+  "[&_pre>code]:block [&_pre>code]:w-max [&_pre>code]:min-w-full [&_pre>code]:max-w-none [&_pre>code]:border-0 [&_pre>code]:bg-transparent [&_pre>code]:font-mono [&_pre>code]:text-xs [&_pre>code]:leading-5 [&_pre>code]:text-foreground/92 [&_pre>code]:shadow-none [&_pre>code]:outline-none [&_pre>code]:ring-0",
+  "[&_pre>code>span]:before:text-xs",
   "[&_[data-streamdown='code-block-actions']]:gap-2 [&_[data-streamdown='code-block-actions']]:!opacity-100 [&_[data-streamdown='code-block-actions']]:border-0 [&_[data-streamdown='code-block-actions']]:rounded-none [&_[data-streamdown='code-block-actions']]:bg-transparent [&_[data-streamdown='code-block-actions']]:p-0 [&_[data-streamdown='code-block-actions']]:shadow-none [&_[data-streamdown='code-block-actions']]:backdrop-blur-none",
   "[&_[data-streamdown='code-block-actions']_button]:inline-flex [&_[data-streamdown='code-block-actions']_button]:items-center [&_[data-streamdown='code-block-actions']_button]:justify-center [&_[data-streamdown='code-block-actions']_button]:rounded-none [&_[data-streamdown='code-block-actions']_button]:border-0 [&_[data-streamdown='code-block-actions']_button]:bg-transparent [&_[data-streamdown='code-block-actions']_button]:p-1 [&_[data-streamdown='code-block-actions']_button]:text-muted-foreground [&_[data-streamdown='code-block-actions']_button]:shadow-none [&_[data-streamdown='code-block-actions']_button:hover]:bg-foreground/[0.04] [&_[data-streamdown='code-block-actions']_button:hover]:text-foreground",
-  "[&_[data-streamdown='code-block-actions']_svg]:size-3",
-  "[&_[data-footnotes]]:mt-6 [&_[data-footnotes]]:border-t [&_[data-footnotes]]:border-foreground/15 [&_[data-footnotes]]:pt-3 [&_[data-footnotes]]:text-[11px] [&_[data-footnotes]]:leading-5 [&_[data-footnotes]]:text-muted-foreground/82",
+  "[&_[data-streamdown='code-block-actions']_svg]:size-4",
+  "[&_[data-footnotes]]:mt-6 [&_[data-footnotes]]:border-t [&_[data-footnotes]]:border-foreground/15 [&_[data-footnotes]]:pt-3 [&_[data-footnotes]]:text-xs [&_[data-footnotes]]:leading-5 [&_[data-footnotes]]:text-muted-foreground/82",
   "[&_[data-footnotes]_h2]:sr-only",
-  "[&_[data-footnotes]_ol]:my-0 [&_[data-footnotes]_ol]:pl-4 [&_[data-footnotes]_ol]:text-[11px] [&_[data-footnotes]_ol]:leading-5",
-  "[&_[data-footnotes]_li]:my-0.5 [&_[data-footnotes]_li]:!py-0.5 [&_[data-footnotes]_li]:pl-1 [&_[data-footnotes]_li]:text-[11px] [&_[data-footnotes]_li]:leading-5 [&_[data-footnotes]_li]:text-muted-foreground/82",
-  "[&_[data-footnotes]_p]:my-0 [&_[data-footnotes]_p]:text-[11px] [&_[data-footnotes]_p]:leading-5 [&_[data-footnotes]_p]:text-muted-foreground/82",
+  "[&_[data-footnotes]_ol]:my-0 [&_[data-footnotes]_ol]:pl-4 [&_[data-footnotes]_ol]:text-xs [&_[data-footnotes]_ol]:leading-5",
+  "[&_[data-footnotes]_li]:my-0.5 [&_[data-footnotes]_li]:!py-0.5 [&_[data-footnotes]_li]:pl-1 [&_[data-footnotes]_li]:text-xs [&_[data-footnotes]_li]:leading-5 [&_[data-footnotes]_li]:text-muted-foreground/82",
+  "[&_[data-footnotes]_p]:my-0 [&_[data-footnotes]_p]:text-xs [&_[data-footnotes]_p]:leading-5 [&_[data-footnotes]_p]:text-muted-foreground/82",
   "[&_.katex]:text-[1.04em]",
   "[&_.katex-display]:my-3.5 [&_.katex-display]:block [&_.katex-display]:max-w-full [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_.katex-display]:px-1 [&_.katex-display]:py-1.5 [&_.katex-display]:text-center",
   "[&_.katex-display>.katex]:inline-block [&_.katex-display>.katex]:min-w-fit [&_.katex-display>.katex]:max-w-none [&_.katex-display>.katex]:text-center",
@@ -323,44 +323,46 @@ const BASE_MARKDOWN_CLASSNAME = cn(
   "[&_[data-latex-copyable='true']:hover]:bg-foreground/[0.035] [&_[data-latex-copyable='true']:focus-visible]:bg-foreground/[0.045] [&_[data-latex-copyable='true']:focus-visible]:ring-2 [&_[data-latex-copyable='true']:focus-visible]:ring-ring/25",
   "[&_[data-inline-code-copyable='true']]:cursor-copy [&_[data-inline-code-copyable='true']]:outline-none [&_[data-inline-code-copyable='true']]:transition-colors",
   "[&_[data-inline-code-copyable='true']:hover]:bg-foreground/[0.08] [&_[data-inline-code-copyable='true']:focus-visible]:bg-foreground/[0.08] [&_[data-inline-code-copyable='true']:focus-visible]:ring-2 [&_[data-inline-code-copyable='true']:focus-visible]:ring-ring/25",
+  "[&_h1]:font-display [&_h1]:text-2xl [&_h1]:font-normal [&_h1]:leading-snug [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-normal [&_h2]:leading-snug [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-normal [&_h4]:font-display [&_h4]:text-base [&_h4]:font-normal",
+  "[&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:border-b [&_h2]:border-border [&_h2]:pb-3 [&_hr]:my-8 [&_hr]:border-border [&_em]:not-italic [&_blockquote]:not-italic",
   "[&_strong]:font-semibold",
 );
 
 const THINKING_MARKDOWN_CLASSNAME = cn(
   BASE_MARKDOWN_CLASSNAME,
   "leading-6 text-muted-foreground/84",
-  "[&_p]:my-0.25 [&_p]:text-[12px] [&_p]:leading-5 [&_p]:text-muted-foreground/84",
-  "[&_li]:text-[12px] [&_li]:leading-5 [&_li]:text-muted-foreground/84",
+  "[&_p]:my-0.25 [&_p]:text-xs [&_p]:leading-5 [&_p]:text-muted-foreground/84",
+  "[&_li]:text-xs [&_li]:leading-5 [&_li]:text-muted-foreground/84",
   "[&_ul]:my-0.5 [&_ul]:pl-4",
   "[&_ol]:my-0.5 [&_ol]:pl-4",
-  "[&_h1]:mt-0.5 [&_h1]:mb-0 [&_h1]:text-[12px] [&_h1]:font-medium [&_h1]:leading-5 [&_h1]:text-muted-foreground/88",
-  "[&_h2]:mt-0.5 [&_h2]:mb-0 [&_h2]:text-[12px] [&_h2]:font-medium [&_h2]:leading-5 [&_h2]:text-muted-foreground/88",
-  "[&_h3]:mt-0.5 [&_h3]:mb-0 [&_h3]:text-[12px] [&_h3]:font-medium [&_h3]:leading-5 [&_h3]:text-muted-foreground/88",
-  "[&_h4]:mt-0.5 [&_h4]:mb-0 [&_h4]:text-[12px] [&_h4]:font-medium [&_h4]:leading-5 [&_h4]:text-muted-foreground/88",
+  "[&_h1]:mt-0.5 [&_h1]:mb-0 [&_h1]:text-xs [&_h1]:font-medium [&_h1]:leading-5 [&_h1]:text-muted-foreground/88",
+  "[&_h2]:mt-0.5 [&_h2]:mb-0 [&_h2]:text-xs [&_h2]:font-medium [&_h2]:leading-5 [&_h2]:text-muted-foreground/88",
+  "[&_h3]:mt-0.5 [&_h3]:mb-0 [&_h3]:text-xs [&_h3]:font-medium [&_h3]:leading-5 [&_h3]:text-muted-foreground/88",
+  "[&_h4]:mt-0.5 [&_h4]:mb-0 [&_h4]:text-xs [&_h4]:font-medium [&_h4]:leading-5 [&_h4]:text-muted-foreground/88",
   "[&_strong]:font-semibold [&_strong]:text-foreground",
-  "[&_em]:italic [&_em]:text-foreground/92",
-  "[&_blockquote]:my-0.5 [&_blockquote]:border-l-0 [&_blockquote]:pl-0 [&_blockquote]:text-[12px] [&_blockquote]:text-muted-foreground/78",
-  "[&_code:not(pre_code)]:bg-foreground/[0.03] [&_code:not(pre_code)]:text-[11px] [&_code:not(pre_code)]:text-muted-foreground/88",
+  "[&_em]:not-italic [&_em]:text-foreground/92",
+  "[&_blockquote]:my-0.5 [&_blockquote]:border-l-0 [&_blockquote]:pl-0 [&_blockquote]:text-xs [&_blockquote]:text-muted-foreground/78",
+  "[&_code:not(pre_code)]:bg-foreground/[0.03] [&_code:not(pre_code)]:text-xs [&_code:not(pre_code)]:text-muted-foreground/88",
   "[&_[data-streamdown='code-block-body']]:!bg-muted/20",
   "[&_pre]:pb-0",
-  "[&_pre>code]:py-2 [&_pre>code]:text-[11px] [&_pre>code]:leading-5 [&_pre>code]:text-muted-foreground/82",
-  "[&_th]:py-0.5 [&_th]:text-[11px] [&_th]:text-muted-foreground/86",
-  "[&_td]:py-0.5 [&_td]:text-[11px] [&_td]:text-muted-foreground/78",
+  "[&_pre>code]:py-2 [&_pre>code]:text-xs [&_pre>code]:leading-5 [&_pre>code]:text-muted-foreground/82",
+  "[&_th]:py-0.5 [&_th]:text-xs [&_th]:text-muted-foreground/86",
+  "[&_td]:py-0.5 [&_td]:text-xs [&_td]:text-muted-foreground/78",
 );
 
 const USER_MARKDOWN_CLASSNAME = cn(
   BASE_MARKDOWN_CLASSNAME,
-  "leading-6",
-  "[&_p]:whitespace-pre-wrap [&_p]:leading-6",
-  "[&_li]:leading-6",
+  "text-base leading-7",
+  "[&_p]:whitespace-pre-wrap [&_p]:leading-7",
+  "[&_li]:leading-7",
   "[&_ul]:my-1 [&_ul]:pl-5",
   "[&_ol]:my-1 [&_ol]:pl-5",
-  "[&_h1]:my-1 [&_h1]:text-[17px] [&_h1]:font-semibold [&_h1]:leading-7",
+  "[&_h1]:my-1 [&_h1]:text-lg [&_h1]:font-semibold [&_h1]:leading-7",
   "[&_h2]:my-1 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:leading-7",
-  "[&_h3]:my-1 [&_h3]:text-[15px] [&_h3]:font-semibold [&_h3]:leading-7",
-  "[&_h4]:my-1 [&_h4]:text-[15px] [&_h4]:font-medium [&_h4]:leading-7",
-  "[&_h5]:my-1 [&_h5]:text-[15px] [&_h5]:font-medium [&_h5]:leading-7",
-  "[&_h6]:my-1 [&_h6]:text-[15px] [&_h6]:font-medium [&_h6]:leading-7",
+  "[&_h3]:my-1 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:leading-7",
+  "[&_h4]:my-1 [&_h4]:text-base [&_h4]:font-medium [&_h4]:leading-7",
+  "[&_h5]:my-1 [&_h5]:text-base [&_h5]:font-medium [&_h5]:leading-7",
+  "[&_h6]:my-1 [&_h6]:text-base [&_h6]:font-medium [&_h6]:leading-7",
   "[&_blockquote]:my-1 [&_blockquote]:border-l-2 [&_blockquote]:pl-3",
   "[&_[data-streamdown='code-block']]:my-2",
   "[&_[data-streamdown='table-wrapper']]:my-2",
@@ -597,7 +599,7 @@ function ThinkingSegmentBlock({
               <Marker
                 render={<span />}
                 className={cn(
-                  "inline-flex min-h-0 w-auto text-[13px] font-medium transition-colors",
+                  "inline-flex min-h-0 w-auto text-sm font-medium transition-colors",
                   !isActive && "text-muted-foreground group-hover:text-foreground",
                 )}
               >
@@ -616,12 +618,12 @@ function ThinkingSegmentBlock({
         </AccordionTrigger>
         <AccordionContent className="px-0 pb-0 pt-1.5 duration-[350ms] ease-in-out">
           <HTMLInlineMarkdownProvider
-            className={cn(THINKING_MARKDOWN_CLASSNAME, "text-[12px] leading-6 text-muted-foreground/84")}
+            className={cn(THINKING_MARKDOWN_CLASSNAME, "text-xs leading-6 text-muted-foreground/84")}
             components={THINKING_STREAMDOWN_COMPONENTS}
             plugins={plugins}
           >
             <Streamdown
-              className={cn(THINKING_MARKDOWN_CLASSNAME, "text-[12px] leading-6 text-muted-foreground/84")}
+              className={cn(THINKING_MARKDOWN_CLASSNAME, "text-xs leading-6 text-muted-foreground/84")}
               codeBlockMaxHeight={STREAMDOWN_CODE_BLOCK_MAX_HEIGHT}
               components={THINKING_STREAMDOWN_COMPONENTS}
               controls={STREAMDOWN_CONTROLS}
@@ -742,7 +744,7 @@ export const StreamdownRender = React.memo(function StreamdownRender({
     [thinkingSegments],
   );
   const contentSpacingClassName =
-    variant === "thinking" ? "space-y-1.5 leading-6" : variant === "user" ? "space-y-3 leading-6" : "space-y-3 leading-8";
+    variant === "thinking" ? "space-y-1.5 leading-6" : variant === "user" ? "space-y-3 text-base leading-7" : "space-y-3 text-base leading-7";
   const activeMarkdownClassName =
     variant === "thinking"
       ? THINKING_MARKDOWN_CLASSNAME

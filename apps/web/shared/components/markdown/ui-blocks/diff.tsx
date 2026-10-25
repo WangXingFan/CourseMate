@@ -226,7 +226,7 @@ function Diff({ id, props }: UIBlockRenderProps<DiffProps>) {
       kind === "removed" && "bg-red-500/10 text-red-900 dark:text-red-200",
       hunk !== undefined && hunk === activeHunk && "shadow-[inset_2px_0_0_var(--primary)]",
     );
-  const numberClass = "w-10 min-w-10 select-none whitespace-nowrap border-r-[0.5px] border-border px-2 text-right text-[11px] text-muted-foreground/70 tabular-nums";
+  const numberClass = "w-10 min-w-10 select-none whitespace-nowrap border-r-[0.5px] border-border px-2 text-right text-xs text-muted-foreground/70 tabular-nums";
   const iconButton = "inline-flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-40 disabled:hover:bg-transparent";
 
   return (
@@ -234,7 +234,7 @@ function Diff({ id, props }: UIBlockRenderProps<DiffProps>) {
       <div className="flex items-center justify-between gap-3 border-b-[0.5px] border-border px-4 pb-3 pt-5">
         <div className="min-w-0">
           {props.title ? <h3 className="truncate text-lg font-semibold leading-7">{props.title}</h3> : null}
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             {props.beforeLabel ?? t("diffBefore")} → {props.afterLabel ?? t("diffAfter")}
             <span className="ml-2 text-green-600 dark:text-green-400">+{stats.added}</span>
             <span className="ml-1 text-red-600 dark:text-red-400">−{stats.removed}</span>
@@ -242,7 +242,7 @@ function Diff({ id, props }: UIBlockRenderProps<DiffProps>) {
         </div>
         <div className="flex shrink-0 items-center gap-1">
           {hunks > 1 ? (
-            <span className="flex items-center text-[11px] text-muted-foreground">
+            <span className="flex items-center text-xs text-muted-foreground">
               <button type="button" aria-label={t("diffPrevChange")} onClick={() => jump(-1)} className={iconButton}>
                 <ChevronUp className="size-3.5" strokeWidth={1.8} />
               </button>
@@ -255,7 +255,7 @@ function Diff({ id, props }: UIBlockRenderProps<DiffProps>) {
             </span>
           ) : null}
           {hasGap || expanded ? (
-            <button type="button" onClick={() => setExpanded((value) => !value)} className="px-1.5 text-[11px] text-muted-foreground hover:text-foreground">
+            <button type="button" onClick={() => setExpanded((value) => !value)} className="px-1.5 text-xs text-muted-foreground hover:text-foreground">
               {expanded ? t("diffCollapse") : t("diffExpand")}
             </button>
           ) : null}
@@ -269,13 +269,13 @@ function Diff({ id, props }: UIBlockRenderProps<DiffProps>) {
       </div>
       <div ref={scrollRef} className="relative max-h-[32rem] overflow-auto">
         {/* Split view grows to the longest line and scrolls horizontally as one, so both sides stay aligned. */}
-        <table className={cn("border-collapse font-mono text-[12px] leading-5", split ? "w-max min-w-full" : "w-full")}>
+        <table className={cn("border-collapse font-mono text-xs leading-5", split ? "w-max min-w-full" : "w-full")}>
           <tbody>
             {split
               ? splitRows.map((row, index) =>
                   row.kind === "gap" ? (
                     <tr key={`${id}-gap-${index}`}>
-                      <td colSpan={4} className="bg-muted/40 px-4 py-1 text-center text-[11px] text-muted-foreground">
+                      <td colSpan={4} className="bg-muted/40 px-4 py-1 text-center text-xs text-muted-foreground">
                         {t("diffHidden", { count: row.count })}
                       </td>
                     </tr>
@@ -291,7 +291,7 @@ function Diff({ id, props }: UIBlockRenderProps<DiffProps>) {
               : rows.map((row, index) =>
                   row.kind === "gap" ? (
                     <tr key={`${id}-gap-${index}`}>
-                      <td colSpan={3} className="bg-muted/40 px-4 py-1 text-center text-[11px] text-muted-foreground">
+                      <td colSpan={3} className="bg-muted/40 px-4 py-1 text-center text-xs text-muted-foreground">
                         {t("diffHidden", { count: row.count })}
                       </td>
                     </tr>

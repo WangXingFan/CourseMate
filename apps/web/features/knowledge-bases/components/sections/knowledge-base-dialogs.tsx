@@ -67,7 +67,7 @@ export function KnowledgeBaseEditorDialog({
           >
             <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-2">
               <div className="space-y-1">
-                <label className="text-xs font-normal text-muted-foreground" htmlFor="knowledge-base-name">
+                <label className="text-sm font-normal text-muted-foreground" htmlFor="knowledge-base-name">
                   {t("name")}
                 </label>
                 <Input
@@ -82,7 +82,7 @@ export function KnowledgeBaseEditorDialog({
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-normal text-muted-foreground" htmlFor="knowledge-base-description">
+                <label className="text-sm font-normal text-muted-foreground" htmlFor="knowledge-base-description">
                   {t("descriptionLabel")}
                 </label>
                 <Textarea
@@ -258,15 +258,15 @@ export function AddKnowledgeBaseFilesDialog({
                             )}
                           />
                           <span className="flex size-4 shrink-0 items-center justify-center text-muted-foreground">
-                            <FileIcon className="size-3" strokeWidth={1.5} />
+                            <FileIcon className="size-4" strokeWidth={1.5} />
                           </span>
                           <span className="min-w-0 flex-1 truncate text-xs font-normal text-foreground" title={file.fileName}>
                             {file.fileName}
                           </span>
-                          <span className="w-14 shrink-0 text-right text-[10px] text-muted-foreground">
+                          <span className="w-14 shrink-0 text-right text-xs text-muted-foreground">
                             {formatBytes(file.sizeBytes)}
                           </span>
-                          <span className="w-16 shrink-0 truncate text-right text-[10px] text-muted-foreground" title={statusLabel}>
+                          <span className="w-16 shrink-0 truncate text-right text-xs text-muted-foreground" title={statusLabel}>
                             {statusLabel}
                           </span>
                         </div>
@@ -275,7 +275,7 @@ export function AddKnowledgeBaseFilesDialog({
                             type="button"
                             variant="ghost"
                             size="icon-sm"
-                            className="ml-1.5 size-5 shrink-0 text-muted-foreground hover:text-destructive"
+                            className="ml-1.5 size-8 shrink-0 text-muted-foreground hover:text-destructive"
                             aria-label={t("deletePlatformFile")}
                             disabled={busy}
                             onClick={(event) => {
@@ -285,8 +285,8 @@ export function AddKnowledgeBaseFilesDialog({
                             }}
                           >
                             {deletingPlatformFileID === file.fileID
-                              ? <Spinner className="size-3" />
-                              : <Trash2 className="size-3" strokeWidth={1.6} />}
+                              ? <Spinner className="size-4" />
+                              : <Trash2 className="size-4" strokeWidth={1.6} />}
                           </Button>
                         ) : null}
                       </div>

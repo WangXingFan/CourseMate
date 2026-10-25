@@ -129,13 +129,13 @@ export function AdminKnowledgeBasesPage() {
                 type="button"
                 size="sm"
                 variant="outline"
-                className="h-7 gap-1 px-2 text-xs shadow-none"
+                className="h-9 gap-1 px-2 text-sm shadow-none"
                 onClick={() => setPlatformFilesOpen(true)}
               >
                 <HardDrive className="size-3.5 stroke-1" />
                 {t("localFiles")}
               </Button>
-              <Button type="button" size="sm" className="h-7 gap-1 px-2 text-xs" onClick={list.create}>
+              <Button type="button" size="sm" className="h-9 gap-1 px-2 text-sm" onClick={list.create}>
                 <Plus className="size-3.5 stroke-1" />
                 {t("create")}
               </Button>
@@ -145,7 +145,7 @@ export function AdminKnowledgeBasesPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[44px] py-1.5 text-center">
-                    <div className="flex h-7 items-center justify-center">
+                    <div className="flex h-9 items-center justify-center">
                       <Checkbox
                         checked={
                           list.items.length > 0 && list.selectedIDs.length === list.items.length
@@ -179,8 +179,8 @@ export function AdminKnowledgeBasesPage() {
                     tone={!item.enabled ? "muted" : undefined}
                     onClick={() => openDetail(item.publicID)}
                   >
-                    <TableCell className="w-[44px] py-1.5 text-center" onClick={(event) => event.stopPropagation()}>
-                      <div className="flex h-7 items-center justify-center">
+                    <TableCell className="w-[44px] py-3 text-center" onClick={(event) => event.stopPropagation()}>
+                      <div className="flex h-9 items-center justify-center">
                         <Checkbox
                           checked={selectedIDs.has(item.publicID)}
                           onCheckedChange={(checked) => list.toggleSelection(item.publicID, checked === true)}
@@ -188,34 +188,34 @@ export function AdminKnowledgeBasesPage() {
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="max-w-[460px] py-1.5">
+                    <TableCell className="max-w-[460px] py-3">
                       <div className="flex min-w-0 items-center gap-2.5">
                         <BookOpen className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.4} />
                         <div className="min-w-0">
                           <p className="truncate font-medium text-foreground">{item.name}</p>
-                          <p className="truncate text-[11px] leading-4 text-muted-foreground">
+                          <p className="truncate text-sm leading-4 text-muted-foreground">
                             {item.description || t("adminDefaultDescription")}
                           </p>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="py-1.5 text-center">
+                    <TableCell className="py-3 text-center">
                       <span className="tabular-nums text-foreground">{item.readyFileCount}</span>
                       <span className="text-muted-foreground"> / {item.fileCount}</span>
                     </TableCell>
-                    <TableCell className="py-1.5 text-center">
+                    <TableCell className="py-3 text-center">
                       <Badge variant="secondary" className="border-0 font-normal shadow-none">
                         {item.enabled ? t("enabled") : t("disabled")}
                       </Badge>
                     </TableCell>
-                    <TableCell className="py-1.5 text-muted-foreground">
+                    <TableCell className="py-3 text-muted-foreground">
                       {dateFormatter.format(new Date(item.updatedAt))}
                     </TableCell>
-                    <TableCell stickyEnd className="w-[56px] py-1.5 text-right" onClick={(event) => event.stopPropagation()}>
-                      <div className="flex h-7 items-center justify-end">
+                    <TableCell stickyEnd className="w-[56px] py-3 text-right" onClick={(event) => event.stopPropagation()}>
+                      <div className="flex h-9 items-center justify-end">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button type="button" size="icon-xs" variant="ghost" className="text-muted-foreground shadow-none" aria-label={t("moreActions")}>
+                            <Button type="button" size="icon-sm" variant="ghost" className="text-muted-foreground shadow-none" aria-label={t("moreActions")}>
                               <MoreHorizontal className="size-3.5 stroke-1" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -247,11 +247,11 @@ export function AdminKnowledgeBasesPage() {
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-7 text-xs text-muted-foreground"
+                  className="h-9 text-sm text-muted-foreground"
                   disabled={list.loadingMore}
                   onClick={() => void list.loadMore()}
                 >
-                  {list.loadingMore ? <Spinner className="size-3" /> : t("loadMore")}
+                  {list.loadingMore ? <Spinner className="size-4" /> : t("loadMore")}
                 </Button>
               </div>
             ) : null}

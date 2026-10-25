@@ -11,20 +11,20 @@ import { labMeasurementText, labParameterText } from "@/features/learning/model/
 import type { VirtualLabEngine } from "@/public/vendor/signal-lab/core.mjs";
 import { NativeLabPlot } from "./native-lab-plot";
 
-const inputClass = "h-10 w-full rounded-lg border border-input bg-background px-3 text-sm disabled:opacity-70";
+const inputClass = "h-9 w-full rounded-md border border-input bg-background px-3 text-sm disabled:opacity-70";
 
 export function NativeLabTrials({ engine, taskID, onRestore, report = false }: {
   engine: VirtualLabEngine; taskID: string; onRestore?: (index: number) => void; report?: boolean;
 }) {
   const t = useTranslations("learning.virtualLab.native");
   const trials = engine.records.data.tasks[taskID].trials;
-  if (!trials.length) return <p className="py-4 text-xs text-muted-foreground">{t("noTrials")}</p>;
-  return <div className="max-w-full overflow-x-auto"><table className="w-full min-w-[500px] text-left text-xs">
-    <thead className="border-b border-border text-[10px] text-muted-foreground"><tr><th className="py-3 pr-3">{t("sequence")}</th><th className="p-3">{t("measurements")}</th>{!report && <th className="py-3 pl-3">{t("actions")}</th>}</tr></thead>
+  if (!trials.length) return <p className="py-4 text-sm text-muted-foreground">{t("noTrials")}</p>;
+  return <div className="max-w-full overflow-x-auto"><table className="w-full min-w-[500px] text-left text-sm">
+    <thead className="border-b border-border text-xs text-muted-foreground"><tr><th className="py-3 pr-3">{t("sequence")}</th><th className="p-3">{t("measurements")}</th>{!report && <th className="py-3 pl-3">{t("actions")}</th>}</tr></thead>
     <tbody>{trials.map((trial, index) => <tr key={`${trial.time}-${index}`} className="border-b border-border/50 align-top last:border-0">
-      <td className="w-28 py-3 pr-3 font-mono text-[10px] text-muted-foreground">{String(index + 1).padStart(2, "0")}<br />{new Date(trial.time).toLocaleString()}</td>
-      <td className="space-y-2 p-3 leading-6"><p>{labParameterText(engine, taskID, trial.params)}</p>{Object.keys(trial.answers).length > 0 && <p className="font-mono text-muted-foreground">{Object.entries(trial.answers).map(([key, value]) => `${key}=${value || "—"}`).join("；")}</p>}<p className="break-words font-mono text-[10px] text-muted-foreground">{Object.entries(trial.measurements).map(([key, value]) => `${key}: ${labMeasurementText(value)}`).join("；")}</p><p className="text-[10px] text-muted-foreground">{trial.window.map((item) => `${item.key}: [${item.range.join(", ")}]`).join("；")} · {Object.values(trial.units).join(" / ")}</p></td>
-      {!report && <td className="py-3 pl-3"><Button type="button" variant="ghost" size="sm" onClick={() => onRestore?.(index)}><RotateCcw aria-hidden className="size-3" />{t("restore")}</Button></td>}
+      <td className="w-28 py-3 pr-3 font-mono text-sm text-muted-foreground">{String(index + 1).padStart(2, "0")}<br />{new Date(trial.time).toLocaleString()}</td>
+      <td className="space-y-2 p-3 leading-6"><p>{labParameterText(engine, taskID, trial.params)}</p>{Object.keys(trial.answers).length > 0 && <p className="font-mono text-muted-foreground">{Object.entries(trial.answers).map(([key, value]) => `${key}=${value || "—"}`).join("；")}</p>}<p className="break-words font-mono text-sm text-muted-foreground">{Object.entries(trial.measurements).map(([key, value]) => `${key}: ${labMeasurementText(value)}`).join("；")}</p><p className="text-sm text-muted-foreground">{trial.window.map((item) => `${item.key}: [${item.range.join(", ")}]`).join("；")} · {Object.values(trial.units).join(" / ")}</p></td>
+      {!report && <td className="py-3 pl-3"><Button type="button" variant="ghost" size="sm" onClick={() => onRestore?.(index)}><RotateCcw aria-hidden className="size-4" />{t("restore")}</Button></td>}
     </tr>)}</tbody>
   </table></div>;
 }
@@ -34,18 +34,18 @@ export function NativeLabRecords({ engine, courseID, onPrint }: { engine: Virtua
   const data = engine.records.data;
   const [clearOpen, setClearOpen] = useState(false);
   return <div className="space-y-6">
-    <header className="flex flex-wrap items-start justify-between gap-4"><div><h1 className="text-2xl font-semibold tracking-tight">{t("records")}</h1><p className="mt-2 text-xs leading-6 text-muted-foreground">{t("recordsHint")}</p></div><div className="flex flex-wrap gap-2"><Button variant="outline" data-action="export" onClick={() => engine.records.export()}><Download aria-hidden className="size-3.5" />{t("export")}</Button><Button data-action="print" onClick={() => onPrint(courseID)}><Printer aria-hidden className="size-3.5" />{t("print")}</Button></div></header>
-    <div className="grid gap-4 rounded-xl border border-border/60 bg-card p-5 sm:grid-cols-3">
-      <label className="space-y-2 text-xs text-muted-foreground" htmlFor="student-name">{t("name")}<input id="student-name" readOnly value={data.student.name} className={inputClass} /></label>
-      <label className="space-y-2 text-xs text-muted-foreground" htmlFor="student-number">{t("studentNumber")}<input id="student-number" readOnly value={data.student.number} className={inputClass} /></label>
-      <label className="space-y-2 text-xs text-muted-foreground" htmlFor="student-classroom">{t("classroom")}<input id="student-classroom" maxLength={100} value={data.student.classroom} onChange={(event) => { data.student.classroom = event.target.value; engine.records.save(); }} className={inputClass} /></label>
+    <header className="flex flex-wrap items-start justify-between gap-4"><div><h1 className="font-display text-3xl md:text-4xl font-normal tracking-[-0.015em]">{t("records")}</h1><p className="mt-2 text-sm leading-6 text-muted-foreground">{t("recordsHint")}</p></div><div className="flex flex-wrap gap-2"><Button variant="outline" data-action="export" onClick={() => engine.records.export()}><Download aria-hidden className="size-3.5" />{t("export")}</Button><Button data-action="print" onClick={() => onPrint(courseID)}><Printer aria-hidden className="size-3.5" />{t("print")}</Button></div></header>
+    <div className="grid gap-4 rounded-lg border border-border/60 bg-card p-5 sm:grid-cols-3">
+      <label className="space-y-2 text-sm text-muted-foreground" htmlFor="student-name">{t("name")}<input id="student-name" readOnly value={data.student.name} className={inputClass} /></label>
+      <label className="space-y-2 text-sm text-muted-foreground" htmlFor="student-number">{t("studentNumber")}<input id="student-number" readOnly value={data.student.number} className={inputClass} /></label>
+      <label className="space-y-2 text-sm text-muted-foreground" htmlFor="student-classroom">{t("classroom")}<input id="student-classroom" maxLength={100} value={data.student.classroom} onChange={(event) => { data.student.classroom = event.target.value; engine.records.save(); }} className={inputClass} /></label>
     </div>
-    <nav aria-label={t("chooseRecords")} className="flex flex-wrap gap-2">{engine.courses.map((course) => <a key={course.id} href={`#records/${course.id}`} aria-current={courseID === course.id ? "page" : undefined} className={`rounded-lg border px-4 py-2 text-xs ${courseID === course.id ? "border-primary/25 bg-primary/5 text-primary" : "border-border text-muted-foreground"}`}>{t("course", { number: course.number })} · {course.short}</a>)}</nav>
+    <nav aria-label={t("chooseRecords")} className="flex flex-wrap gap-2">{engine.courses.map((course) => <a key={course.id} href={`#records/${course.id}`} aria-current={courseID === course.id ? "page" : undefined} className={`rounded-lg border px-4 py-2 text-sm ${courseID === course.id ? "border-primary/25 bg-primary/5 text-primary" : "border-border text-muted-foreground"}`}>{t("course", { number: course.number })} · {course.short}</a>)}</nav>
     <div className="flex justify-end"><Button variant="ghost" size="sm" className="text-destructive" onClick={() => setClearOpen(true)}>{t("clearRecords")}</Button></div>
     <AlertDialog open={clearOpen} onOpenChange={setClearOpen}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>{t("clearRecords")}</AlertDialogTitle><AlertDialogDescription>{t("clearWarning")}</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>{t("cancel")}</AlertDialogCancel><AlertDialogAction onClick={() => engine.records.clear()}>{t("confirm")}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
     {engine.courseIds(courseID).map((id) => {
       const task = data.tasks[id];
-      return <section key={id} className="rounded-xl border border-border/60 bg-card p-5"><div className="mb-4 flex flex-wrap items-center justify-between gap-3"><h2 className="text-sm font-medium"><span className="mr-3 font-mono text-xs text-primary">{id}</span>{engine.tasks[id].title}</h2><a href={`#task/${id}`} className="inline-flex items-center gap-1 text-xs text-muted-foreground">{t("openTask")}<ArrowUpRight aria-hidden className="size-3" /></a></div><p className="text-xs leading-6 text-muted-foreground">{task.completion.confirmed ? t("confirmed") : engine.records.missing(id).join("；") || t("notConfirmed")}</p><NativeLabTrials engine={engine} taskID={id} onRestore={(index) => { const trial = task.trials[index]; if (!trial || !engine.validParams(id, trial.params)) return; task.params = { ...trial.params }; task.answers = { ...engine.defaultAnswers(id), ...trial.answers }; task.completion = { confirmed: false, confirmedAt: null }; engine.records.save(); window.location.hash = `task/${id}`; }} /></section>;
+      return <section key={id} className="rounded-lg border border-border/60 bg-card p-5"><div className="mb-4 flex flex-wrap items-center justify-between gap-3"><h2 className="text-sm font-medium"><span className="mr-3 font-mono text-sm text-primary">{id}</span>{engine.tasks[id].title}</h2><a href={`#task/${id}`} className="inline-flex items-center gap-1 text-sm text-muted-foreground">{t("openTask")}<ArrowUpRight aria-hidden className="size-4" /></a></div><p className="text-sm leading-6 text-muted-foreground">{task.completion.confirmed ? t("confirmed") : engine.records.missing(id).join("；") || t("notConfirmed")}</p><NativeLabTrials engine={engine} taskID={id} onRestore={(index) => { const trial = task.trials[index]; if (!trial || !engine.validParams(id, trial.params)) return; task.params = { ...trial.params }; task.answers = { ...engine.defaultAnswers(id), ...trial.answers }; task.completion = { confirmed: false, confirmedAt: null }; engine.records.save(); window.location.hash = `task/${id}`; }} /></section>;
     })}
   </div>;
 }

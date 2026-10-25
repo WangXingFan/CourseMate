@@ -55,10 +55,10 @@ function AttachmentCard({
         {React.createElement(fileIcon, { className: "size-5", strokeWidth: 1.6 })}
       </AttachmentMedia>
       <AttachmentContent className="flex min-w-0 flex-1 flex-col justify-center px-0 py-0">
-        <AttachmentTitle className="text-[12px] leading-4 text-foreground/90" title={att.fileName}>
+        <AttachmentTitle className="text-xs leading-4 text-foreground/90" title={att.fileName}>
           {att.fileName}
         </AttachmentTitle>
-        <AttachmentDescription className="mt-1 text-[11px] leading-none">
+        <AttachmentDescription className="mt-1 text-xs leading-none">
           {meta}
         </AttachmentDescription>
       </AttachmentContent>

@@ -161,7 +161,7 @@ export function UpstreamsTable({
       <TableHeader>
         <TableRow className="hover:bg-transparent">
           <TableHead className="w-[44px] py-1.5 text-center">
-            <div className="flex h-7 items-center justify-center">
+            <div className="flex h-9 items-center justify-center">
               <Checkbox
                 checked={allSelected ? true : someSelected ? "indeterminate" : false}
                 onCheckedChange={(checked) => onSelectAll(checked === true)}
@@ -198,8 +198,8 @@ export function UpstreamsTable({
                   key={item.id}
                   selected={selected.has(item.id)}
                 >
-                <TableCell className="w-[44px] py-1.5 whitespace-nowrap text-center">
-                  <div className="flex h-7 items-center justify-center">
+                <TableCell className="w-[44px] py-3 whitespace-nowrap text-center">
+                  <div className="flex h-9 items-center justify-center">
                     <Checkbox
                       checked={selected.has(item.id)}
                       onCheckedChange={(checked) =>
@@ -210,8 +210,8 @@ export function UpstreamsTable({
                   </div>
                 </TableCell>
 
-                <TableCell className="py-1.5 whitespace-nowrap font-mono text-xs text-muted-foreground">
-                  <span className="flex h-7 items-center">{item.id}</span>
+                <TableCell className="py-3 whitespace-nowrap font-mono text-sm text-muted-foreground">
+                  <span className="flex h-9 items-center">{item.id}</span>
                 </TableCell>
 
                 <TableCell>
@@ -265,8 +265,8 @@ export function UpstreamsTable({
                   </div>
                 </TableCell>
 
-                <TableCell className="py-1.5 whitespace-nowrap">
-                  <div className="flex h-7 items-center justify-center gap-2">
+                <TableCell className="py-3 whitespace-nowrap">
+                  <div className="flex h-9 items-center justify-center gap-2">
                     <Switch
                       size="sm"
                       checked={item.status === "active"}
@@ -311,11 +311,11 @@ export function UpstreamsTable({
                   {formatDateTime(item.updatedAt, locale)}
                 </TableCell>
 
-                <TableCell className="w-[56px] py-1.5 whitespace-nowrap" stickyEnd>
-                  <div className="flex h-7 items-center justify-end gap-1">
+                <TableCell className="w-[56px] py-3 whitespace-nowrap" stickyEnd>
+                  <div className="flex h-9 items-center justify-end gap-1">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon-xs" className="text-muted-foreground shadow-none">
+                        <Button variant="ghost" size="icon-sm" className="text-muted-foreground shadow-none">
                           <MoreHorizontal className="size-3.5 stroke-1" />
                           <span className="sr-only">{t("table.actions")}</span>
                         </Button>

@@ -437,7 +437,7 @@ function ChatInputComponent({
       />
 
       {queuedMessages.length > 0 ? (
-        <div className="relative z-0 mx-4 mb-[-10px] overflow-hidden rounded-t-2xl rounded-b-xl border border-border/30 bg-sidebar-accent/55 px-4 pb-4 pt-2 shadow-none">
+        <div className="relative z-0 mx-4 mb-[-10px] overflow-hidden rounded-t-lg rounded-b-xl border border-border/30 bg-sidebar-accent/55 px-4 pb-4 pt-2 shadow-none">
           <div className="max-h-24 space-y-0.5 overflow-y-auto pr-1">
             {queuedMessages.map((message) => {
               const editing = editingQueuedMessageID === message.id;
@@ -449,14 +449,14 @@ function ChatInputComponent({
               return (
                 <div
                   key={message.id}
-                  className="group flex min-h-6 items-center gap-2 rounded-md px-0.5 text-[13px] text-muted-foreground"
+                  className="group flex min-h-6 items-center gap-2 rounded-md px-0.5 text-sm text-muted-foreground"
                 >
-                  <CornerDownRight className="size-3 shrink-0 text-muted-foreground/55" strokeWidth={1.8} />
+                  <CornerDownRight className="size-4 shrink-0 text-muted-foreground/55" strokeWidth={1.8} />
                   {editing ? (
                     <input
                       autoFocus
                       value={editingQueuedMessageContent}
-                      className="min-w-0 flex-1 bg-transparent text-[13px] font-medium text-foreground outline-none placeholder:text-muted-foreground"
+                      className="min-w-0 flex-1 bg-transparent text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground"
                       placeholder={tComposer("queuedEditPlaceholder")}
                       onBlur={finishQueuedMessageEdit}
                       onChange={(event) => setEditingQueuedMessageContent(event.target.value)}
@@ -485,7 +485,7 @@ function ChatInputComponent({
                     >
                       <span className="min-w-0 truncate">{label}</span>
                       {message.content && message.attachmentCount > 0 ? (
-                        <span className="ml-2 shrink-0 text-[11px] font-normal text-muted-foreground/60">
+                        <span className="ml-2 shrink-0 text-xs font-normal text-muted-foreground/60">
                           {tComposer("queuedAttachmentCount", { count: message.attachmentCount })}
                         </span>
                       ) : null}
@@ -496,7 +496,7 @@ function ChatInputComponent({
                       <TooltipTrigger asChild>
                         <button
                           type="button"
-                          className="inline-flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background/70 hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/35"
+                          className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background/70 hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/35"
                           aria-label={tComposer("guideQueuedMessageTitle")}
                           onMouseDown={(event) => event.preventDefault()}
                           onClick={() => {
@@ -517,7 +517,7 @@ function ChatInputComponent({
                       <TooltipTrigger asChild>
                         <button
                           type="button"
-                          className="inline-flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background/70 hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/35"
+                          className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background/70 hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/35"
                           aria-label={tComposer("editQueuedMessage")}
                           onMouseDown={(event) => event.preventDefault()}
                           onClick={() => {
@@ -536,7 +536,7 @@ function ChatInputComponent({
                       <TooltipTrigger asChild>
                         <button
                           type="button"
-                          className="inline-flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background/70 hover:text-destructive focus-visible:ring-[3px] focus-visible:ring-ring/35"
+                          className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background/70 hover:text-destructive focus-visible:ring-[3px] focus-visible:ring-ring/35"
                           aria-label={tComposer("deleteQueuedMessage")}
                           onMouseDown={(event) => event.preventDefault()}
                           onClick={() => onDeleteQueuedMessage(message.id)}
@@ -563,7 +563,7 @@ function ChatInputComponent({
             key="markdown-preview"
             role="region"
             aria-label={tComposer("markdownPreview")}
-            className="absolute inset-x-0 z-[60] max-h-[40dvh] min-h-16 overflow-y-auto rounded-xl border-[0.5px] border-border/70 bg-pure/85 px-5 py-4 text-[15px] text-foreground shadow-xs backdrop-blur-xl"
+            className="absolute inset-x-0 z-[60] max-h-[40dvh] min-h-16 overflow-y-auto rounded-lg border-[0.5px] border-border/70 bg-pure/85 px-5 py-4 text-sm text-foreground shadow-xs backdrop-blur-xl"
             style={{ bottom: inputGroupHeight + 8 }}
             initial={{ opacity: 0, scale: 0.99, y: 4 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -579,7 +579,7 @@ function ChatInputComponent({
       <InputGroup
         ref={inputGroupRef}
         className={cn(
-          "relative z-10 flex-col items-stretch overflow-hidden rounded-3xl border-[0.5px] border-border/70 bg-pure shadow-xs transition-[height,border-color,background-color,box-shadow] duration-150 ease-out motion-reduce:transition-none has-[[data-slot=input-group-control]:focus-visible]:border-border has-[[data-slot=input-group-control]:focus-visible]:ring-0",
+          "relative z-10 flex-col items-stretch overflow-hidden rounded-lg border-[0.5px] border-border/70 bg-pure shadow-xs transition-[height,border-color,background-color,box-shadow] duration-150 ease-out motion-reduce:transition-none has-[[data-slot=input-group-control]:focus-visible]:border-border has-[[data-slot=input-group-control]:focus-visible]:ring-0",
           inputGroupHeight === null && "h-auto",
           dropActive && "border-dashed border-foreground/30 bg-muted/20 shadow-none",
         )}
@@ -589,12 +589,12 @@ function ChatInputComponent({
           {hasComposerAttachments ? (
             <div className="w-full space-y-1 px-2.5 pt-1">
               {showRagWarn ? (
-                <div className="flex items-center gap-2 rounded-lg border border-amber-200/70 bg-amber-50/70 px-3 py-2 text-[11px] text-amber-700 dark:border-amber-700/40 dark:bg-amber-950/30 dark:text-amber-400">
+                <div className="flex items-center gap-2 rounded-lg border border-primary/70 bg-accent/70 px-3 py-2 text-xs text-primary dark:border-primary/40 dark:bg-accent/30 dark:text-primary">
                   <span className="shrink-0">⚠</span>
                   <span className="flex-1">{tComposer("ragAllDisabled")}</span>
                   <button
                     type="button"
-                    className="shrink-0 text-amber-500 hover:text-amber-700 dark:text-amber-500 dark:hover:text-amber-300"
+                    className="shrink-0 text-primary hover:text-primary dark:text-primary dark:hover:text-primary"
                     onClick={() => setRagWarnDismissed(true)}
                     aria-label={tComposer("closeHint")}
                   >
@@ -618,18 +618,18 @@ function ChatInputComponent({
                       state={failed ? "error" : "done"}
                       aria-busy={backgroundProcessing}
                       size="sm"
-                      className="h-12 w-full border-0 bg-muted/35 px-2 text-left hover:bg-muted/50 dark:bg-white/[0.06] dark:hover:bg-white/[0.09] sm:w-[228px] sm:px-2.5"
+                      className="h-12 w-full border-0 bg-muted/35 px-2 text-left hover:bg-muted/50 dark:bg-muted/35 dark:hover:bg-muted/50 sm:w-[228px] sm:px-2.5"
                     >
                       <AttachmentMedia className="size-6 bg-transparent text-muted-foreground">
                         <FileIcon className="size-5" strokeWidth={1.6} />
                       </AttachmentMedia>
                       <AttachmentContent className="flex min-w-0 flex-1 flex-col justify-center px-0 py-0">
-                        <AttachmentTitle className="text-[12px] leading-4 text-foreground/90" title={item.fileName}>
+                        <AttachmentTitle className="text-xs leading-4 text-foreground/90" title={item.fileName}>
                           {item.fileName}
                         </AttachmentTitle>
-                        <AttachmentDescription className="mt-1 flex min-w-0 items-center gap-1.5 text-[11px] leading-none">
+                        <AttachmentDescription className="mt-1 flex min-w-0 items-center gap-1.5 text-xs leading-none">
                           {backgroundProcessing ? (
-                            <LoaderCircle className="size-3 shrink-0 animate-spin" strokeWidth={1.8} />
+                            <LoaderCircle className="size-4 shrink-0 animate-spin" strokeWidth={1.8} />
                           ) : null}
                           <span
                             className="min-w-0 shrink truncate"
@@ -639,7 +639,7 @@ function ChatInputComponent({
                           </span>
                           {item.ragOptOut && item.fileCategory !== "image" ? (
                             <span
-                              className="shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-[10px] font-medium leading-none text-muted-foreground/65"
+                              className="shrink-0 rounded-md bg-muted/60 px-1.5 py-0.5 text-xs font-medium leading-none text-muted-foreground/65"
                               title={tComposer("ragDisabledTitle")}
                             >
                               {tComposer("ragOff")}
@@ -654,7 +654,7 @@ function ChatInputComponent({
                       <AttachmentActions>
                         <AttachmentAction
                           type="button"
-                          className="size-8 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground sm:size-7"
+                          className="size-8 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground sm:size-8"
                           onClick={() => onRemoveAttachment(item.fileID)}
                           aria-label={tComposer("removeAttachment", { name: item.fileName })}
                         >
@@ -676,10 +676,10 @@ function ChatInputComponent({
                       <LoaderCircle className="size-5 animate-spin" strokeWidth={1.8} />
                     </AttachmentMedia>
                     <AttachmentContent className="flex min-w-0 flex-1 flex-col justify-center px-0 py-0">
-                      <AttachmentTitle className="text-[12px] leading-4 text-foreground/90" title={item.fileName}>
+                      <AttachmentTitle className="text-xs leading-4 text-foreground/90" title={item.fileName}>
                         {item.fileName}
                       </AttachmentTitle>
-                      <AttachmentDescription className="mt-1 text-[11px] leading-none">
+                      <AttachmentDescription className="mt-1 text-xs leading-none">
                         {tComposer("uploading")} · {formatBytes(item.sizeBytes)}
                       </AttachmentDescription>
                     </AttachmentContent>
@@ -737,7 +737,7 @@ function ChatInputComponent({
             aria-expanded={showMentionMenu ? true : undefined}
             style={{ fontFamily: "var(--font-chat)", fontWeight: "var(--font-chat-weight)" }}
             className={cn(
-              "rounded-3xl min-h-12 overflow-y-auto px-5 text-[15px] leading-6 placeholder:text-muted-foreground placeholder:font-[inherit] placeholder:leading-[inherit]",
+              "rounded-lg min-h-12 overflow-y-auto px-5 text-base leading-7 placeholder:text-muted-foreground placeholder:font-[inherit] placeholder:leading-[inherit]",
               hasComposerAttachments ? "pt-2" : "pt-4",
               inputHeightClassName,
               speechInput.active ? "placeholder:font-normal placeholder:text-muted-foreground" : "",
@@ -819,7 +819,7 @@ function ChatInputComponent({
                           type="button"
                           variant="ghost"
                           size="icon-sm"
-                          className="size-7 rounded-md text-muted-foreground hover:text-foreground sm:size-8"
+                          className="size-8 rounded-md text-muted-foreground hover:text-foreground sm:size-8"
                           disabled={loading || uploading}
                           aria-label={tComposer("openTools")}
                           onMouseEnter={() => setToolsMenuHovered(true)}
@@ -907,7 +907,7 @@ function ChatInputComponent({
                       variant="ghost"
                       size="icon-sm"
                       className={cn(
-                        "size-7 rounded-md text-muted-foreground hover:text-foreground sm:size-8",
+                        "size-8 rounded-md text-muted-foreground hover:text-foreground sm:size-8",
                         showMarkdownPreview && "bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary",
                       )}
                       disabled={speechInput.active}
@@ -945,7 +945,7 @@ function ChatInputComponent({
                     type="button"
                     variant="ghost"
                     size="icon-sm"
-                    className="size-7 rounded-md text-muted-foreground hover:text-foreground sm:size-8"
+                    className="size-8 rounded-md text-muted-foreground hover:text-foreground sm:size-8"
                     disabled={loading || uploading || (!sending && !hasSubmitContent && !speechInput.supported)}
                     onClick={hasSubmitContent ? onSendMessage : sending ? onStopMessage : speechInput.toggle}
                     onMouseEnter={() => setIsVoiceHovered(true)}

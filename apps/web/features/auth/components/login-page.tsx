@@ -10,6 +10,7 @@ import { useAuthLoginPage } from "@/features/auth/hooks/use-auth-login-page";
 import { AppLogo } from "@/shared/components/app-logo";
 import { IdentityProviderIcon } from "@/entities/identity-provider";
 import { CustomBrandAttribution } from "@/shared/components/powered-by-coursemate";
+import { LoginHero } from "@/features/auth/components/shared/login-hero";
 import { TurnstileWidget } from "@/features/auth/components/shared/turnstile-widget";
 import { cn } from "@/lib/utils";
 
@@ -23,7 +24,7 @@ function LoginBrandMark() {
       width={32}
       height={32}
       priority
-      className="mx-auto h-9 w-auto"
+      className="h-8 w-auto"
     />
   );
 }
@@ -102,11 +103,24 @@ export function LoginPage({ nextPath }: LoginPageProps) {
       : t("username");
   const alternativeTwoFactorMethod = twoFactorVerificationMethods.find((method) => method !== twoFactorVerificationMethod && method !== "none");
   const twoFactorUsesEmail = twoFactorVerificationMethod === "email";
+  const heading = mode === "register"
+    ? { title: t("hero.registerTitle"), hint: t("hero.registerHint") }
+    : mode === "reset-password"
+      ? { title: t("hero.resetTitle"), hint: t("hero.resetHint") }
+      : twoFactorChallengeToken
+        ? { title: t("hero.twoFactorTitle"), hint: t("hero.twoFactorHint") }
+        : { title: t("hero.welcome"), hint: t("hero.welcomeHint") };
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4 py-8 text-foreground" aria-busy={!configReady}>
-      <div className="w-full max-w-[360px]">
-        <LoginBrandMark />
+    <main className="grid min-h-screen text-foreground lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]" aria-busy={!configReady}>
+      <LoginHero />
+      <div className="flex min-h-screen flex-col px-6 py-8 sm:px-10">
+      <LoginBrandMark />
+      <div className="mx-auto my-auto w-full max-w-[380px] py-10">
+        <header>
+          <h2 className="font-display text-[2.125rem] leading-tight font-normal tracking-[-0.01em]">{heading.title}</h2>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">{heading.hint}</p>
+        </header>
 
         <div
           aria-hidden={!configReady}
@@ -116,12 +130,12 @@ export function LoginPage({ nextPath }: LoginPageProps) {
           )}
         >
           {configReady ? (
-            <div className="min-h-0 overflow-hidden px-2">
+            <div className="min-h-0 overflow-hidden px-0.5 pb-1">
             {mode === "login" && twoFactorChallengeToken ? (
               <>
-                <form className="mt-7 space-y-4" onSubmit={onLoginSubmit}>
+                <form className="mt-9 space-y-5" onSubmit={onLoginSubmit}>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium leading-none text-foreground" htmlFor="otp">
+                    <label className="text-sm font-medium leading-none text-foreground/85" htmlFor="otp">
                       {twoFactorUsesEmail ? t("verificationCode") : t("twoFactorCode")}
                     </label>
                     <div className="flex gap-2">
@@ -132,7 +146,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                         inputMode={twoFactorUsesEmail ? "numeric" : "text"}
                         autoComplete="one-time-code"
                         pattern={twoFactorUsesEmail ? "[0-9]*" : undefined}
-                        className="h-9 min-w-0 border-input/50"
+                        className="h-11 min-w-0"
                         placeholder={twoFactorUsesEmail ? t("verificationCodePlaceholder") : t("twoFactorPlaceholder")}
                         value={twoFactorCode}
                         onChange={(event) => setTwoFactorCode(event.target.value)}
@@ -142,7 +156,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                         <Button
                           type="button"
                           variant="secondary"
-                          className="h-9 min-w-[4.5rem] shrink-0 rounded-md border-0 bg-muted px-3 text-sm font-semibold text-foreground shadow-none hover:bg-muted/80"
+                          className="h-11 min-w-[5.5rem] shrink-0 rounded-md border border-input/70 bg-transparent px-3 text-sm font-medium text-foreground shadow-none hover:bg-accent"
                           disabled={sendingCode || twoFactorEmailCodeCooldownSeconds > 0}
                           onClick={() => {
                             void requestTwoFactorEmailCode();
@@ -155,7 +169,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                     {twoFactorEmailDebugCode ? <p className="text-xs font-medium text-muted-foreground">{t("debugCode", { code: twoFactorEmailDebugCode })}</p> : null}
                   </div>
                   <Button
-                    className="mt-1 h-9 w-full rounded-md bg-foreground text-sm font-semibold text-background shadow-none hover:bg-foreground/90"
+                    className="mt-1 h-11 w-full rounded-md bg-primary text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/92"
                     type="submit"
                     disabled={submitting}
                   >
@@ -166,7 +180,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                   <Button
                     type="button"
                     variant="ghost"
-                    className="mt-2 h-9 w-full text-xs text-muted-foreground shadow-none"
+                    className="mt-2 h-10 w-full text-sm text-muted-foreground shadow-none"
                     onClick={() => switchTwoFactorVerificationMethod(alternativeTwoFactorMethod)}
                   >
                     {alternativeTwoFactorMethod === "email" ? t("useEmailVerification") : t("useTwoFactorVerification")}
@@ -175,7 +189,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                 <Button
                   type="button"
                   variant="ghost"
-                  className="mt-2 h-9 w-full text-xs text-muted-foreground shadow-none"
+                  className="mt-2 h-10 w-full text-sm text-muted-foreground shadow-none"
                   onClick={cancelTwoFactorChallenge}
                 >
                   {passwordLoginEnabled ? t("backToPasswordLogin") : t("backToLoginMethods")}
@@ -184,16 +198,16 @@ export function LoginPage({ nextPath }: LoginPageProps) {
             ) : null}
 
             {mode === "login" && !twoFactorChallengeToken && passwordLoginEnabled ? (
-              <form className="mt-7 space-y-4" onSubmit={onLoginSubmit}>
+              <form className="mt-9 space-y-5" onSubmit={onLoginSubmit}>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium leading-none text-foreground" htmlFor="username">
+                  <label className="text-sm font-medium leading-none text-foreground/85" htmlFor="username">
                     {accountLabel}
                   </label>
                   <Input
                     id="username"
                     name="username"
                     autoComplete="username"
-                    className="h-9 border-input/50"
+                    className="h-11"
                     placeholder={accountPlaceholder}
                     value={username}
                     onChange={(event) => setUsername(event.target.value)}
@@ -202,13 +216,13 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-3">
-                    <label className="text-sm font-medium leading-none text-foreground" htmlFor="password">
+                    <label className="text-sm font-medium leading-none text-foreground/85" htmlFor="password">
                       {t("password")}
                     </label>
                     {passwordResetEnabled ? (
                       <button
                         type="button"
-                        className="text-xs font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:text-foreground focus-visible:underline focus-visible:outline-none"
+                        className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:text-foreground focus-visible:underline focus-visible:outline-none"
                         onClick={() => {
                           updateResetEmail(username.includes("@") ? username : "");
                           loginPage.setMode("reset-password");
@@ -223,7 +237,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                     name="password"
                     type="password"
                     autoComplete="current-password"
-                    className="h-9 border-input/50"
+                    className="h-11"
                     placeholder={t("password")}
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
@@ -231,7 +245,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                   />
                 </div>
                 <Button
-                  className="mt-2 h-9 w-full rounded-md bg-foreground text-sm font-semibold text-background shadow-none hover:bg-foreground/90"
+                  className="mt-2 h-11 w-full rounded-md bg-primary text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/92"
                   type="submit"
                   disabled={submitting}
                 >
@@ -242,16 +256,16 @@ export function LoginPage({ nextPath }: LoginPageProps) {
 
             {mode === "reset-password" && passwordResetEnabled ? (
               <>
-                <form className="mt-7 space-y-4" onSubmit={onPasswordResetSubmit}>
+                <form className="mt-9 space-y-5" onSubmit={onPasswordResetSubmit}>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium leading-none text-foreground" htmlFor="reset-email">
+                    <label className="text-sm font-medium leading-none text-foreground/85" htmlFor="reset-email">
                       {t("email")}
                     </label>
                     <Input
                       id="reset-email"
                       type="email"
                       autoComplete="email"
-                      className="h-9 border-input/50"
+                      className="h-11"
                       placeholder={t("email")}
                       value={resetEmail}
                       onChange={(event) => updateResetEmail(event.target.value)}
@@ -259,14 +273,14 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium leading-none text-foreground" htmlFor="reset-password">
+                    <label className="text-sm font-medium leading-none text-foreground/85" htmlFor="reset-password">
                       {t("newPassword")}
                     </label>
                     <Input
                       id="reset-password"
                       type="password"
                       autoComplete="new-password"
-                      className="h-9 border-input/50"
+                      className="h-11"
                       placeholder={t("newPasswordPlaceholder")}
                       value={resetPassword}
                       onChange={(event) => setResetPassword(event.target.value)}
@@ -275,7 +289,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium leading-none text-foreground" htmlFor="reset-code">
+                    <label className="text-sm font-medium leading-none text-foreground/85" htmlFor="reset-code">
                       {t("verificationCode")}
                     </label>
                     <div className="flex gap-2">
@@ -283,7 +297,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                         id="reset-code"
                         inputMode="numeric"
                         autoComplete="one-time-code"
-                        className="h-9 border-input/50"
+                        className="h-11"
                         placeholder={t("verificationCodePlaceholder")}
                         value={resetCode}
                         onChange={(event) => setResetCode(event.target.value)}
@@ -292,7 +306,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                       <Button
                         type="button"
                         variant="secondary"
-                        className="h-9 min-w-[4.5rem] shrink-0 rounded-md border-0 bg-muted px-3 text-sm font-semibold text-foreground shadow-none hover:bg-muted/80"
+                        className="h-11 min-w-[5.5rem] shrink-0 rounded-md border border-input/70 bg-transparent px-3 text-sm font-medium text-foreground shadow-none hover:bg-accent"
                         disabled={sendingCode || resetCodeCooldownSeconds > 0 || !resetEmail.trim()}
                         onClick={() => {
                           void requestPasswordResetCode();
@@ -303,18 +317,18 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                     </div>
                   </div>
                   <Button
-                    className="mt-1 h-9 w-full rounded-md bg-foreground text-sm font-semibold text-background shadow-none hover:bg-foreground/90"
+                    className="mt-1 h-11 w-full rounded-md bg-primary text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/92"
                     type="submit"
                     disabled={submitting || resetCode.length !== 6}
                   >
                     {submitting ? <SpinnerLabel>{t("resettingPassword")}</SpinnerLabel> : t("resetPassword")}
                   </Button>
                 </form>
-                <div className="mt-6 text-center text-sm font-normal leading-5 text-muted-foreground">
+                <div className="mt-8 border-t border-border pt-6 text-sm leading-5 text-muted-foreground">
                   {t("rememberPassword")}{" "}
                   <button
                     type="button"
-                    className="font-semibold text-foreground underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-none"
+                    className="font-medium text-primary underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-none"
                     onClick={() => loginPage.setMode("login")}
                   >
                     {t("back")}
@@ -324,16 +338,16 @@ export function LoginPage({ nextPath }: LoginPageProps) {
             ) : null}
 
             {mode === "register" && emailRegistrationEnabled ? (
-              <form className="mt-7 space-y-4" onSubmit={onRegisterSubmit}>
+              <form className="mt-9 space-y-5" onSubmit={onRegisterSubmit}>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium leading-none text-foreground" htmlFor="register-email">
+                  <label className="text-sm font-medium leading-none text-foreground/85" htmlFor="register-email">
                     {t("email")}
                   </label>
                   <Input
                     id="register-email"
                     type="email"
                     autoComplete="email"
-                    className="h-9 border-input/50"
+                    className="h-11"
                     placeholder={t("email")}
                     value={registerEmail}
                     onChange={(event) => updateRegisterEmail(event.target.value)}
@@ -341,14 +355,14 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium leading-none text-foreground" htmlFor="register-password">
+                  <label className="text-sm font-medium leading-none text-foreground/85" htmlFor="register-password">
                     {t("password")}
                   </label>
                   <Input
                     id="register-password"
                     type="password"
                     autoComplete="new-password"
-                    className="h-9 border-input/50"
+                    className="h-11"
                     placeholder={t("newPasswordPlaceholder")}
                     value={registerPassword}
                     onChange={(event) => setRegisterPassword(event.target.value)}
@@ -365,7 +379,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                 ) : null}
                 {emailVerificationEnabled ? (
                   <div className="space-y-2">
-                    <label className="text-sm font-medium leading-none text-foreground" htmlFor="register-code">
+                    <label className="text-sm font-medium leading-none text-foreground/85" htmlFor="register-code">
                       {t("verificationCode")}
                     </label>
                     <div className="flex gap-2">
@@ -373,7 +387,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                         id="register-code"
                         inputMode="numeric"
                         autoComplete="one-time-code"
-                        className="h-9 border-input/50"
+                        className="h-11"
                         placeholder={t("verificationCodePlaceholder")}
                         value={registerCode}
                         onChange={(event) => setRegisterCode(event.target.value)}
@@ -382,7 +396,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                       <Button
                         type="button"
                         variant="secondary"
-                        className="h-9 min-w-[4.5rem] shrink-0 rounded-md border-0 bg-muted px-3 text-sm font-semibold text-foreground shadow-none hover:bg-muted/80"
+                        className="h-11 min-w-[5.5rem] shrink-0 rounded-md border border-input/70 bg-transparent px-3 text-sm font-medium text-foreground shadow-none hover:bg-accent"
                         disabled={sendingCode || registerCodeCooldownSeconds > 0 || !registerEmail.trim() || (registerTurnstileRequired && !registerTurnstileToken)}
                         onClick={() => {
                           void requestRegisterCode();
@@ -395,7 +409,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
                 ) : null}
                 {registerDebugCode ? <p className="text-xs font-medium text-muted-foreground">{t("debugCode", { code: registerDebugCode })}</p> : null}
                 <Button
-                  className="mt-1 h-9 w-full rounded-md bg-foreground text-sm font-semibold text-background shadow-none hover:bg-foreground/90"
+                  className="mt-1 h-11 w-full rounded-md bg-primary text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/92"
                   type="submit"
                   disabled={submitting || (emailVerificationEnabled && registerCode.length !== 6) || (registerTurnstileRequired && !registerTurnstileToken)}
                 >
@@ -405,13 +419,20 @@ export function LoginPage({ nextPath }: LoginPageProps) {
             ) : null}
 
             {mode === "login" && !twoFactorChallengeToken && loginProviders.length > 0 ? (
-              <div className={cn("space-y-2.5", passwordLoginEnabled ? "mt-5" : "mt-7")}>
+              <div className={cn("space-y-2.5", passwordLoginEnabled ? "mt-6" : "mt-9")}>
+                {passwordLoginEnabled ? (
+                  <div className="flex items-center gap-3 pb-2.5 text-xs text-muted-foreground" aria-hidden>
+                    <span className="h-px flex-1 bg-border" />
+                    {t("hero.or")}
+                    <span className="h-px flex-1 bg-border" />
+                  </div>
+                ) : null}
                 {loginProviders.map((provider) => (
                   <Button
                     key={provider.publicID}
                     type="button"
                     variant="secondary"
-                    className="h-9 w-full rounded-md border-0 bg-muted text-sm font-semibold text-foreground shadow-none hover:bg-muted/80"
+                    className="h-11 w-full rounded-md border border-input/70 bg-pure text-sm font-medium text-foreground shadow-none hover:bg-accent"
                     onClick={() => {
                       void handleProviderLogin(provider.slug);
                     }}
@@ -433,11 +454,11 @@ export function LoginPage({ nextPath }: LoginPageProps) {
             ) : null}
 
             {registerNeedsBrowser && mode === "login" ? (
-              <div className="mt-6 text-center text-sm font-normal leading-5 text-muted-foreground">
+              <div className="mt-8 border-t border-border pt-6 text-sm leading-5 text-muted-foreground">
                 {t("noAccount")}{" "}
                 <button
                   type="button"
-                  className="font-semibold text-foreground underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-none"
+                  className="font-medium text-primary underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-none"
                   onClick={openRegisterInBrowser}
                 >
                   {t("registerInBrowser")}
@@ -446,11 +467,11 @@ export function LoginPage({ nextPath }: LoginPageProps) {
             ) : null}
 
             {canShowRegisterSwitch && mode !== "reset-password" ? (
-              <div className="mt-6 text-center text-sm font-normal leading-5 text-muted-foreground">
+              <div className="mt-8 border-t border-border pt-6 text-sm leading-5 text-muted-foreground">
                 {mode === "register" ? t("alreadyHaveAccount") : t("noAccount")}{" "}
                 <button
                   type="button"
-                  className="font-semibold text-foreground underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-none"
+                  className="font-medium text-primary underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-none"
                   onClick={toggleLoginMode}
                 >
                   {mode === "register" ? t("signIn") : t("register")}
@@ -461,6 +482,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
           ) : null}
         </div>
 
+      </div>
       </div>
 
       <CustomBrandAttribution className="fixed bottom-4 right-4" />

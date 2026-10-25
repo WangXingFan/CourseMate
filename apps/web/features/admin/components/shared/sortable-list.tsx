@@ -144,7 +144,7 @@ export function AdminSortableHandle({
       aria-label={label}
       title={label}
       className={cn(
-        "flex size-5 shrink-0 cursor-grab items-center justify-center rounded-md text-muted-foreground/70 transition-colors hover:bg-accent hover:text-accent-foreground active:cursor-grabbing disabled:cursor-not-allowed disabled:text-muted-foreground/40",
+        "flex size-8 shrink-0 cursor-grab items-center justify-center rounded-md text-muted-foreground/70 transition-colors hover:bg-accent hover:text-accent-foreground active:cursor-grabbing disabled:cursor-not-allowed disabled:text-muted-foreground/40",
         className,
       )}
       onMouseEnter={() => iconRef.current?.startAnimation()}

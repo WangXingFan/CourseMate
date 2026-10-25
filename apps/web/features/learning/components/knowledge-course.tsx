@@ -36,7 +36,7 @@ export function KnowledgeCourse() {
         <Link href="/learn" prefetch={false} className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground"><ArrowLeft className="size-3.5" />{t("back")}</Link>
         <header className="mt-5 mb-7 flex flex-wrap items-end justify-between gap-4 border-b border-border/60 pb-6">
           <div>
-            <p className="text-[10px] font-medium tracking-[0.16em] text-primary">课知伴 / SIGNALS & SYSTEMS</p>
+            <p className="text-2xs font-medium tracking-[0.16em] text-primary">课知伴 / SIGNALS & SYSTEMS</p>
             <h1 className="mt-2 font-serif text-3xl tracking-tight md:text-4xl">{t("title")}</h1>
             <p className="mt-3 text-sm text-muted-foreground">{t("description", { count: practiceLessons.length })}</p>
           </div>
@@ -55,8 +55,8 @@ export function KnowledgeCourse() {
             </select>
             <nav aria-label={t("catalog")} className="mt-3 max-h-60 space-y-1 overflow-y-auto lg:max-h-[65vh]">
               {filtered.map((lesson) => <Link key={lesson.id} href={`/learn/knowledge?lesson=${lesson.id}`} prefetch={false} aria-current={selected === lesson.id ? "page" : undefined} className={`flex items-center gap-2 rounded-lg px-2 py-2.5 text-xs leading-5 transition-colors ${selected === lesson.id ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"}`}>
-                <span className="w-7 shrink-0 font-mono text-[10px]">{lesson.number}</span><span className="flex-1">{lesson.title}</span>
-                {catalog.data?.canPractice && <span className="shrink-0 font-mono text-[10px]"><span aria-hidden="true">{lesson.completedStages}/3</span><span className="sr-only">{t("stageProgress", { completed: lesson.completedStages })}</span></span>}
+                <span className="w-7 shrink-0 font-mono text-2xs">{lesson.number}</span><span className="flex-1">{lesson.title}</span>
+                {catalog.data?.canPractice && <span className="shrink-0 font-mono text-2xs"><span aria-hidden="true">{lesson.completedStages}/3</span><span className="sr-only">{t("stageProgress", { completed: lesson.completedStages })}</span></span>}
               </Link>)}
               {catalog.data && filtered.length === 0 && <p className="py-4 text-xs text-muted-foreground">{t("empty")}</p>}
             </nav>
@@ -106,7 +106,7 @@ function StageQuestion({ question, number, lessonId, version, initial, onSaved }
   const isChoice = question.options.length > 0;
   const ready = isChoice ? answer.answers.choice !== undefined : question.fields.every((field) => isNumericInput(answer.answers[field.id] ?? ""));
   return <section aria-label={t(`stages.${question.stage}`)} className="min-w-0 rounded-2xl border border-border/60 bg-card p-4 md:p-6">
-    <header className="mb-4 flex items-center gap-3"><span className="font-mono text-2xl text-primary/40">{number}</span><div><h3 className="text-sm font-semibold">{t(`stages.${question.stage}`)}</h3><p className="mt-0.5 text-[11px] text-muted-foreground">{t(`goals.${question.stage}`)}</p></div>{answer.result && <Check className="ml-auto size-4 text-primary" />}</header>
+    <header className="mb-4 flex items-center gap-3"><span className="font-mono text-2xl text-primary/40">{number}</span><div><h3 className="text-sm font-semibold">{t(`stages.${question.stage}`)}</h3><p className="mt-0.5 text-xs text-muted-foreground">{t(`goals.${question.stage}`)}</p></div>{answer.result && <Check className="ml-auto size-4 text-primary" />}</header>
     <div lang="zh-CN" className="text-sm"><StreamdownRender content={question.prompt} /></div>
     {question.formula && <div className="mt-4 min-w-0 overflow-x-auto rounded-xl bg-muted/40 px-3 py-3"><MathFormula display>{question.formula}</MathFormula></div>}
     {isChoice ? <fieldset disabled={answer.locked || !!answer.result} className="mt-4 space-y-2"><legend className="sr-only">{t("choose")}</legend>{question.options.map((option, index) => <label key={`${question.id}-${index}`} className={`flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-3 text-sm ${answer.answers.choice === String(index) ? "border-primary/40 bg-primary/5" : "border-border/60"}`}><input type="radio" name={question.id} value={index} aria-label={`${String.fromCharCode(65 + index)}. ${option}`} checked={answer.answers.choice === String(index)} onChange={() => answer.setAnswers({ choice: String(index) })} className="mt-1 accent-primary" /><span className="font-mono text-xs text-muted-foreground">{String.fromCharCode(65 + index)}</span><span className="min-w-0" lang="zh-CN"><StreamdownRender content={option} /></span></label>)}</fieldset> : <>
@@ -121,7 +121,7 @@ function StageQuestion({ question, number, lessonId, version, initial, onSaved }
       })}</div>
     </>}
     {answer.error && <p role="alert" className="mt-3 text-xs text-destructive">{answer.error}</p>}
-    {answer.result ? <div aria-live="polite" className="mt-5 rounded-xl border border-primary/20 bg-primary/5 p-4"><p className="text-sm font-medium">{t("score", { score: answer.result.score, total: answer.result.total })}</p>{isChoice && <div className="mt-2 text-xs"><StreamdownRender content={`${t("answer")} ${answer.result.results[0]?.expected ?? ""}`} /></div>}<div lang="zh-CN" className="mt-2 text-sm"><StreamdownRender content={answer.result.explanation} /></div><Button type="button" variant="outline" size="sm" onClick={answer.retryQuestion} className="mt-3">{t("practiceAgain")}</Button></div> : <div className="mt-5 flex flex-wrap items-center gap-3"><Button type="button" size="sm" onClick={() => void answer.submit()} disabled={answer.saving || !ready}>{answer.saving ? t("saving") : answer.locked ? t("retrySubmission") : t("submit")}</Button><p className="text-[11px] text-muted-foreground">{answer.locked ? t("retryHelp") : t("partialCredit")}</p></div>}
+    {answer.result ? <div aria-live="polite" className="mt-5 rounded-xl border border-primary/20 bg-primary/5 p-4"><p className="text-sm font-medium">{t("score", { score: answer.result.score, total: answer.result.total })}</p>{isChoice && <div className="mt-2 text-xs"><StreamdownRender content={`${t("answer")} ${answer.result.results[0]?.expected ?? ""}`} /></div>}<div lang="zh-CN" className="mt-2 text-sm"><StreamdownRender content={answer.result.explanation} /></div><Button type="button" variant="outline" size="sm" onClick={answer.retryQuestion} className="mt-3">{t("practiceAgain")}</Button></div> : <div className="mt-5 flex flex-wrap items-center gap-3"><Button type="button" size="sm" onClick={() => void answer.submit()} disabled={answer.saving || !ready}>{answer.saving ? t("saving") : answer.locked ? t("retrySubmission") : t("submit")}</Button><p className="text-xs text-muted-foreground">{answer.locked ? t("retryHelp") : t("partialCredit")}</p></div>}
   </section>;
 }
 

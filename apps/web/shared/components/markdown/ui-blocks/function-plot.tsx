@@ -540,7 +540,7 @@ function FunctionPlot({ id, props }: UIBlockRenderProps<FunctionPlotProps>) {
                         onClick={() => updateRow(row.key, { hidden: !row.hidden })}
                         aria-pressed={!row.hidden}
                         aria-label={t("toggleVisibility")}
-                        className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+                        className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
                       >
                         {row.hidden ? <EyeOff className="size-3.5" strokeWidth={1.8} /> : <Eye className="size-3.5" strokeWidth={1.8} />}
                       </button>
@@ -548,7 +548,7 @@ function FunctionPlot({ id, props }: UIBlockRenderProps<FunctionPlotProps>) {
                         type="button"
                         onClick={() => removeRow(row.key)}
                         aria-label={t("removeFunction")}
-                        className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+                        className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
                       >
                         <X className="size-3.5" strokeWidth={1.8} />
                       </button>
@@ -593,7 +593,7 @@ function FunctionPlot({ id, props }: UIBlockRenderProps<FunctionPlotProps>) {
                 <line x1={0} x2={width} y1={axisX} y2={axisX} />
                 <line x1={axisY} x2={axisY} y1={0} y2={height} />
               </g>
-              <g className="fill-muted-foreground" fontSize={10}>
+              <g className="fill-muted-foreground" fontSize={14}>
                 {xTicks
                   .filter((x) => x !== 0 && toPx(x) > EDGE_LABEL_GAP && toPx(x) < width - EDGE_LABEL_GAP)
                   .map((x) => (
@@ -620,13 +620,13 @@ function FunctionPlot({ id, props }: UIBlockRenderProps<FunctionPlotProps>) {
           ) : null}
 
           <div className="absolute right-2 bottom-2 flex overflow-hidden rounded-md border-[0.5px] border-border bg-card text-muted-foreground">
-            <button type="button" aria-label={t("zoomIn")} onClick={() => zoomBy(1 / ZOOM_STEP)} className="flex size-7 items-center justify-center hover:bg-accent hover:text-foreground">
+            <button type="button" aria-label={t("zoomIn")} onClick={() => zoomBy(1 / ZOOM_STEP)} className="flex size-8 items-center justify-center hover:bg-accent hover:text-foreground">
               <Plus className="size-3.5" strokeWidth={1.8} />
             </button>
-            <button type="button" aria-label={t("zoomOut")} onClick={() => zoomBy(ZOOM_STEP)} className="flex size-7 items-center justify-center border-l-[0.5px] border-border hover:bg-accent hover:text-foreground">
+            <button type="button" aria-label={t("zoomOut")} onClick={() => zoomBy(ZOOM_STEP)} className="flex size-8 items-center justify-center border-l-[0.5px] border-border hover:bg-accent hover:text-foreground">
               <Minus className="size-3.5" strokeWidth={1.8} />
             </button>
-            <button type="button" aria-label={t("resetView")} onClick={resetView} disabled={view === null} className="flex size-7 items-center justify-center border-l-[0.5px] border-border hover:bg-accent hover:text-foreground disabled:opacity-40 disabled:hover:bg-transparent">
+            <button type="button" aria-label={t("resetView")} onClick={resetView} disabled={view === null} className="flex size-8 items-center justify-center border-l-[0.5px] border-border hover:bg-accent hover:text-foreground disabled:opacity-40 disabled:hover:bg-transparent">
               <Home className="size-3.5" strokeWidth={1.8} />
             </button>
           </div>

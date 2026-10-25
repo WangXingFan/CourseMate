@@ -69,7 +69,7 @@ function DecisionTree({ id, props }: UIBlockRenderProps<DecisionTreeProps>) {
 
       <HeightTransition className="mt-3" contentClassName="flex flex-col gap-3">
       {path.length > 1 ? (
-        <ol className="flex flex-wrap items-center gap-1 text-[11px] text-muted-foreground">
+        <ol className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
           {path.slice(0, -1).map((step, index) => (
             <li key={`${id}-crumb-${index}`} className="inline-flex items-center gap-1">
               <span className="rounded-md bg-muted px-1.5 py-0.5">{step.choice}</span>

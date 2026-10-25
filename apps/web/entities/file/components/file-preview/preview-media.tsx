@@ -466,19 +466,19 @@ export function PreviewMedia({
         type="button"
         variant="ghost"
         size="icon"
-        className="size-7 rounded-full"
+        className="size-8 rounded-md"
         aria-label={tPreview("zoomOut")}
         onClick={zoomImageOut}
         disabled={!canZoomImageOut}
       >
         <Minus className="size-3.5" />
       </Button>
-      <span className="min-w-11 text-center text-[11px] text-muted-foreground">{Math.round(imageZoom * 100)}%</span>
+      <span className="min-w-11 text-center text-xs text-muted-foreground">{Math.round(imageZoom * 100)}%</span>
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        className="size-7 rounded-full"
+        className="size-8 rounded-md"
         aria-label={tPreview("zoomIn")}
         onClick={zoomImageIn}
         disabled={!canZoomImageIn}
@@ -489,7 +489,7 @@ export function PreviewMedia({
         type="button"
         variant="ghost"
         size="icon"
-        className="size-7 rounded-full"
+        className="size-8 rounded-md"
         aria-label={imageIsFullscreen ? tPreview("exitFullscreen") : tPreview("enterFullscreen")}
         onClick={() => void toggleImageFullscreen()}
       >
@@ -652,16 +652,13 @@ export function PreviewMedia({
                       !inline && "rounded-full bg-neutral-950/82 px-3 py-2 backdrop-blur-md",
                     )}
                   >
-                    <div className={cn("flex items-center text-[10px] text-neutral-300", inline ? "gap-2" : "gap-3")}>
+                    <div className={cn("flex items-center text-2xs text-neutral-300", inline ? "gap-2" : "gap-3")}>
                       <Button
                         type="button"
                         variant="ghost"
                         size="icon"
                         aria-label={playing ? tPreview("pauseVideo") : tPreview("playVideo")}
-                        className={cn(
-                          "shrink-0 rounded-full text-neutral-50 hover:bg-neutral-50/10 hover:text-neutral-50",
-                          inline ? "size-6" : "size-7",
-                        )}
+                        className="size-8 shrink-0 rounded-md text-neutral-50 hover:bg-neutral-50/10 hover:text-neutral-50"
                         onClick={() => void togglePlay()}
                       >
                         {playing ? <Pause className="size-3.5" strokeWidth={1.9} /> : <Play className="ml-0.5 size-3.5" strokeWidth={1.9} />}
@@ -697,10 +694,7 @@ export function PreviewMedia({
                         variant="ghost"
                         size="icon"
                         aria-label={videoIsFullscreen ? tPreview("exitFullscreen") : tPreview("enterFullscreen")}
-                        className={cn(
-                          "shrink-0 rounded-full text-neutral-300 hover:bg-neutral-50/10 hover:text-neutral-50",
-                          inline ? "size-6" : "size-7",
-                        )}
+                        className="size-8 shrink-0 rounded-md text-neutral-300 hover:bg-neutral-50/10 hover:text-neutral-50"
                         onClick={() => void toggleVideoFullscreen()}
                       >
                         {videoIsFullscreen ? <Minimize2 className="size-3.5" strokeWidth={1.7} /> : <Maximize2 className="size-3.5" strokeWidth={1.7} />}
@@ -768,7 +762,7 @@ export function PreviewMedia({
                     />
                   </div>
 
-                  <div className="mt-1.5 flex items-center justify-between gap-3 text-[10px] text-neutral-400">
+                  <div className="mt-1.5 flex items-center justify-between gap-3 text-2xs text-neutral-400">
                     <span>{formatTime(currentTime)}</span>
                     <span>{formatTime(duration)}</span>
                   </div>

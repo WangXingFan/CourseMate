@@ -34,7 +34,7 @@ export function ConversationLabelsMenuItem({
       <DropdownMenuItemIcon icon={Tags} className="text-current" />
       {t("labels")}
       {labels.length > 0 ? (
-        <span className="ml-auto flex size-3.5 items-center justify-center text-[11px] tabular-nums text-muted-foreground">
+        <span className="ml-auto flex size-3.5 items-center justify-center text-xs tabular-nums text-muted-foreground">
           {labels.length}
         </span>
       ) : null}

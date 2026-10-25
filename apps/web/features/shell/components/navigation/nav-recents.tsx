@@ -236,7 +236,7 @@ export function NavRecents() {
                     {timeGroups.map((group, groupIndex) => (
                       <React.Fragment key={group.key}>
                         {group.showLabel ? (
-                          <li className={cn("px-2 pb-0.5 text-[11px] font-medium text-sidebar-foreground/40", groupIndex === 0 ? "pt-0" : "pt-3")}>
+                          <li className={cn("px-2 pb-0.5 text-xs font-medium text-sidebar-foreground/40", groupIndex === 0 ? "pt-0" : "pt-3")}>
                             {group.label}
                           </li>
                         ) : null}

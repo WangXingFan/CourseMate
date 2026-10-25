@@ -159,7 +159,7 @@ export function CreateUserDialog({
                   />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs font-normal text-muted-foreground">{t("editor.username")}</p>
+                  <p className="text-sm font-normal text-muted-foreground">{t("editor.username")}</p>
                   <Input
                     value={createPayload.username}
                     placeholder={t("editor.usernamePlaceholder")}
@@ -169,7 +169,7 @@ export function CreateUserDialog({
                   />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs font-normal text-muted-foreground">{t("editor.displayName")}</p>
+                  <p className="text-sm font-normal text-muted-foreground">{t("editor.displayName")}</p>
                   <Input
                     value={createPayload.displayName}
                     placeholder={t("editor.displayNamePlaceholder")}
@@ -180,7 +180,7 @@ export function CreateUserDialog({
               </div>
 
               <div className="space-y-1">
-                <p className="text-xs font-normal text-muted-foreground">{t("editor.password")}</p>
+                <p className="text-sm font-normal text-muted-foreground">{t("editor.password")}</p>
                 <Input
                   value={createPayload.password}
                   placeholder={t("editor.passwordPlaceholder")}
@@ -192,7 +192,7 @@ export function CreateUserDialog({
               </div>
 
               <div className="space-y-1">
-                <p className="text-xs font-normal text-muted-foreground">{t("editor.email")}</p>
+                <p className="text-sm font-normal text-muted-foreground">{t("editor.email")}</p>
                 <Input
                   value={createPayload.email}
                   placeholder={t("editor.emailPlaceholder")}
@@ -268,7 +268,7 @@ function ReadOnlyField({
 }) {
   return (
     <div className="space-y-1">
-      <Label className="text-xs font-normal text-muted-foreground">{label}</Label>
+      <Label className="text-sm font-normal text-muted-foreground">{label}</Label>
       <div
         className={cn(
           "flex min-h-8 items-center rounded-md bg-muted/35 px-2.5 py-1.5 text-xs text-foreground",
@@ -366,7 +366,7 @@ export function EditUserSheet({
             <div className="grid gap-3 md:grid-cols-2">
               <ReadOnlyField label={t("editor.username")} value={resolveDetailValue(editDialogTarget?.username)} />
               <div className="space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground">{t("editor.displayName")}</Label>
+                <Label className="text-sm font-normal text-muted-foreground">{t("editor.displayName")}</Label>
                 <Input
                   value={editPayload.displayName}
                   placeholder={t("editor.userDisplayNamePlaceholder")}
@@ -376,7 +376,7 @@ export function EditUserSheet({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground">{t("editor.email")}</Label>
+                <Label className="text-sm font-normal text-muted-foreground">{t("editor.email")}</Label>
                 <Input
                   value={editPayload.email}
                   placeholder={t("editor.userEmailPlaceholder")}
@@ -385,7 +385,7 @@ export function EditUserSheet({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground">{t("editor.phone")}</Label>
+                <Label className="text-sm font-normal text-muted-foreground">{t("editor.phone")}</Label>
                 <Input
                   value={editPayload.phone}
                   placeholder={t("editor.phonePlaceholder")}
@@ -395,7 +395,7 @@ export function EditUserSheet({
               </div>
             </div>
             <div className="space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground">{t("editor.preferences")}</Label>
+                <Label className="text-sm font-normal text-muted-foreground">{t("editor.preferences")}</Label>
                 <Textarea
                   value={editPayload.profilePreferences}
                   onChange={(event) =>
@@ -411,7 +411,7 @@ export function EditUserSheet({
           <SheetSection title={t("editor.accessSection")}>
             <div className="grid gap-3 md:grid-cols-2">
               <div className="space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground">{t("fields.status")}</Label>
+                <Label className="text-sm font-normal text-muted-foreground">{t("fields.status")}</Label>
                 <Combobox
                   items={USER_STATUS_OPTIONS}
                   value={editPayload.status}
@@ -435,7 +435,7 @@ export function EditUserSheet({
                 </Combobox>
               </div>
               <div className="space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground">{t("fields.role")}</Label>
+                <Label className="text-sm font-normal text-muted-foreground">{t("fields.role")}</Label>
                 <Combobox
                   items={roleOptions}
                   value={editPayload.role}
@@ -458,7 +458,7 @@ export function EditUserSheet({
                 </Combobox>
               </div>
               <div className="space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground">{t("fields.timezone")}</Label>
+                <Label className="text-sm font-normal text-muted-foreground">{t("fields.timezone")}</Label>
                 <TimeZoneSelect
                   value={editPayload.timezone}
                   options={timeZoneOptions}
@@ -468,7 +468,7 @@ export function EditUserSheet({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground">{t("editor.language")}</Label>
+                <Label className="text-sm font-normal text-muted-foreground">{t("editor.language")}</Label>
                 <Input
                   value={editPayload.locale}
                   onChange={(event) => setEditPayload((current) => ({ ...current, locale: event.target.value }))}
@@ -477,7 +477,7 @@ export function EditUserSheet({
               </div>
               {statusChanged ? (
                 <div className="space-y-1 md:col-span-2">
-                  <Label className="text-xs font-normal text-muted-foreground">{t("editor.reason")}</Label>
+                  <Label className="text-sm font-normal text-muted-foreground">{t("editor.reason")}</Label>
                   <Input
                     value={editPayload.reason}
                     placeholder={t("editor.reasonPlaceholder")}

@@ -49,16 +49,16 @@ export function ClassroomSidebar({
     >
       <div className="flex min-h-0 min-w-0 flex-1 flex-col px-3 md:px-2">
         <header className="min-w-0 overflow-hidden pt-2">
-          <div className="flex h-8 min-w-0 items-center gap-2 px-2">
-            <h1 className="min-w-0 flex-1 truncate text-[15px] font-medium text-foreground">{t("title")}</h1>
-            <Badge variant="secondary" className="h-4 rounded-md px-1.5 text-[9px] font-normal">
+          <div className="flex h-12 min-w-0 items-center gap-2 px-2">
+            <h1 className="min-w-0 flex-1 truncate font-display text-2xl font-normal text-foreground">{t("title")}</h1>
+            <Badge variant="secondary" className="h-5 rounded-md px-1.5 text-2xs font-normal">
               {total}
             </Badge>
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              className="size-6"
+              className="size-8"
               onClick={onRefresh}
               aria-label={t("refresh")}
               title={t("refresh")}
@@ -70,7 +70,7 @@ export function ClassroomSidebar({
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="size-6"
+                className="size-8"
                 onClick={onCreate}
                 aria-label={t("create")}
                 title={t("create")}
@@ -82,12 +82,12 @@ export function ClassroomSidebar({
 
           <div className="px-2 py-2">
             <div className="relative">
-              <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={query}
                 onChange={(event) => onQueryChange(event.target.value)}
                 placeholder={t("searchPlaceholder")}
-                className="h-8 pl-8 text-xs"
+                className="h-9 pl-9 text-sm"
                 aria-label={t("searchPlaceholder")}
               />
             </div>
@@ -110,23 +110,23 @@ export function ClassroomSidebar({
                     onClick={() => onSelect(item.id)}
                     aria-current={selected ? "true" : undefined}
                     className={cn(
-                      "w-full rounded-md px-2.5 py-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40",
-                      selected ? "bg-muted/65" : "hover:bg-muted/40",
+                      "w-full rounded-md px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40",
+                      selected ? "bg-accent shadow-[inset_2px_0_0_var(--primary)]" : "hover:bg-muted",
                     )}
                   >
                     <div className="flex min-w-0 items-center gap-2">
-                      <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-muted/60 text-muted-foreground">
+                      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary text-primary">
                         <GraduationCap className="size-3.5" strokeWidth={1.6} />
                       </span>
-                      <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-foreground">
+                      <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
                         {item.name}
                       </span>
-                      <span className="flex shrink-0 items-center gap-1 text-[10px] text-muted-foreground">
+                      <span className="flex shrink-0 items-center gap-1 text-2xs text-muted-foreground">
                         <Users className="size-3" strokeWidth={1.6} />
                         {item.studentCount}
                       </span>
                     </div>
-                    <p className="mt-1 truncate pl-8 text-[11px] text-muted-foreground">
+                    <p className="mt-1 truncate pl-8 text-xs text-muted-foreground">
                       {item.description || t("studentCount", { count: item.studentCount })}
                     </p>
                   </button>

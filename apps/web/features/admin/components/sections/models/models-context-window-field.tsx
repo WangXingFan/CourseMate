@@ -76,17 +76,17 @@ export function ModelContextWindowField({
   return (
     <div className="grid h-8 min-w-0 grid-cols-2 overflow-hidden rounded-md bg-secondary text-secondary-foreground">
       <div className="flex min-w-0 items-center gap-1 px-2">
-        <Label className="mb-0 truncate text-xs font-normal leading-4 text-secondary-foreground" htmlFor="model-context-window">
+        <Label className="mb-0 truncate text-sm font-normal leading-4 text-secondary-foreground" htmlFor="model-context-window">
           {t("sheet.contextWindow")}
         </Label>
         <Tooltip>
           <TooltipTrigger asChild>
             <button
               type="button"
-              className="inline-flex size-4 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-secondary-foreground"
+              className="inline-flex size-8 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-secondary-foreground"
               aria-label={t("sheet.contextWindowDescription")}
             >
-              <CircleHelp className="size-3" aria-hidden="true" />
+              <CircleHelp className="size-4" aria-hidden="true" />
             </button>
           </TooltipTrigger>
           <TooltipContent className="max-w-64">
@@ -109,7 +109,7 @@ export function ModelContextWindowField({
           value={inputValue}
           placeholder={t("sheet.contextWindowAuto")}
           disabled={disabled}
-          className="h-full min-w-0 flex-1 rounded-none border-0 bg-transparent px-2 text-right text-xs text-secondary-foreground tabular-nums shadow-none focus-visible:ring-0"
+          className="h-full min-w-0 flex-1 rounded-none border-0 bg-transparent px-2 text-right text-sm text-secondary-foreground tabular-nums shadow-none focus-visible:ring-0"
           onChange={(event) => setInputValue(event.target.value.replace(/\D/g, ""))}
           onBlur={commitInput}
           onKeyDown={(event) => {

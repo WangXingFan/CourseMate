@@ -41,11 +41,11 @@ const ROSTER_TEMPLATE =
 
 const ROSTER_STATUS_TONE: Record<AdminRosterImportRowStatus, string> = {
   ready: "text-foreground",
-  imported: "text-emerald-600 dark:text-emerald-400",
-  skipped_existing: "text-amber-600 dark:text-amber-400",
-  duplicate_in_file: "text-amber-600 dark:text-amber-400",
+  imported: "text-primary dark:text-primary",
+  skipped_existing: "text-primary dark:text-primary",
+  duplicate_in_file: "text-primary dark:text-primary",
   invalid: "text-destructive",
-  conflict: "text-amber-600 dark:text-amber-400",
+  conflict: "text-primary dark:text-primary",
   failed: "text-destructive",
 };
 
@@ -156,7 +156,7 @@ export function UserRosterImportDialog({
                   type="button"
                   size="sm"
                   variant="outline"
-                  className="h-7 shrink-0 gap-1 px-2 text-xs"
+                  className="h-9 shrink-0 gap-1 px-2 text-sm"
                   onClick={() => downloadTextFile("student-roster-template.csv", ROSTER_TEMPLATE)}
                 >
                   <Download className="size-3.5 stroke-1" />
@@ -165,7 +165,7 @@ export function UserRosterImportDialog({
               </div>
 
               <div className="space-y-1">
-                <Label htmlFor="roster-file" className="text-xs font-normal text-muted-foreground">
+                <Label htmlFor="roster-file" className="text-sm font-normal text-muted-foreground">
                   {t("fileLabel")}
                 </Label>
                 <input
@@ -177,7 +177,7 @@ export function UserRosterImportDialog({
                   onChange={handleFileChange}
                   className="block w-full cursor-pointer rounded-md border border-input bg-transparent px-3 py-2 text-xs text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-2 file:py-1 file:text-xs file:text-foreground"
                 />
-                {file ? <p className="text-xs text-muted-foreground">{t("selectedFile", { name: file.name })}</p> : null}
+                {file ? <p className="text-sm text-muted-foreground">{t("selectedFile", { name: file.name })}</p> : null}
               </div>
 
               {result ? (
@@ -197,7 +197,7 @@ export function UserRosterImportDialog({
                   {issueRows.length > 0 ? (
                     <ul className="max-h-52 space-y-1 overflow-y-auto rounded-md border border-border/60 p-2">
                       {issueRows.map((row) => (
-                        <li key={`${row.line}-${row.username}`} className="flex items-start gap-2 text-xs">
+                        <li key={`${row.line}-${row.username}`} className="flex items-start gap-2 text-sm">
                           <span className="w-8 shrink-0 text-right tabular-nums text-muted-foreground">{row.line}</span>
                           <span className="min-w-0 flex-1 truncate text-foreground">{row.username || "-"}</span>
                           <span className={`shrink-0 ${ROSTER_STATUS_TONE[row.status]}`}>{t(`status.${row.status}`)}</span>
@@ -208,7 +208,7 @@ export function UserRosterImportDialog({
                   ) : null}
 
                   {result.truncated ? (
-                    <p className="text-xs text-amber-600 dark:text-amber-400">{t("truncated")}</p>
+                    <p className="text-sm text-primary dark:text-primary">{t("truncated")}</p>
                   ) : null}
 
                   {imported && credentials.length > 0 ? (
@@ -223,7 +223,7 @@ export function UserRosterImportDialog({
                         type="button"
                         size="sm"
                         variant="outline"
-                        className="h-7 shrink-0 gap-1 px-2 text-xs"
+                        className="h-9 shrink-0 gap-1 px-2 text-sm"
                         onClick={() =>
                           downloadTextFile("student-initial-passwords.csv", buildCredentialCsv(credentials))
                         }

@@ -1,0 +1,8 @@
+{
+  "bridgeNotice": {
+    "title": "第三方登录配置待完善",
+    "description": "已配置身份源，但服务器尚未设置 PUBLIC_API_BASE_URL，第三方登录暂不可用。请在登录设置中检查配置。",
+    "dismiss": "稍后处理",
+    "openSettings": "查看登录设置"
+  }
+}

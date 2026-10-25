@@ -13,7 +13,7 @@ export function MediaActionBar({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-0.5 rounded-full border border-white/15 bg-neutral-950/55 p-0.5 text-neutral-100 shadow-md shadow-black/15 backdrop-blur-md",
+        "inline-flex items-center gap-0.5 rounded-lg border border-white/15 bg-neutral-950/55 p-0.5 text-neutral-100 shadow-md shadow-black/15 backdrop-blur-md",
         className,
       )}
       {...props}
@@ -39,7 +39,7 @@ export function MediaActionButton({
         <button
           aria-label={label}
           className={cn(
-            "inline-flex size-7 items-center justify-center rounded-full transition-colors hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
+            "inline-flex size-8 items-center justify-center rounded-md transition-colors hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
             className,
           )}
           type={type}

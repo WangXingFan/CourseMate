@@ -237,19 +237,19 @@ export function PreviewSheet({ source, toolbarContainer, showLoading = true, onL
         type="button"
         variant="ghost"
         size="icon"
-        className="size-7 rounded-full"
+        className="size-8 rounded-md"
         aria-label={tPreview("zoomOut")}
         onClick={zoomOut}
         disabled={status !== "ready" || !canZoomOut}
       >
         <Minus className="size-3.5" />
       </Button>
-      <span className="min-w-11 text-center text-[11px] text-muted-foreground">{Math.round(zoom * 100)}%</span>
+      <span className="min-w-11 text-center text-xs text-muted-foreground">{Math.round(zoom * 100)}%</span>
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        className="size-7 rounded-full"
+        className="size-8 rounded-md"
         aria-label={tPreview("zoomIn")}
         onClick={zoomIn}
         disabled={status !== "ready" || !canZoomIn}
@@ -260,7 +260,7 @@ export function PreviewSheet({ source, toolbarContainer, showLoading = true, onL
         type="button"
         variant="ghost"
         size="icon"
-        className="size-7 rounded-full"
+        className="size-8 rounded-md"
         aria-label={isFullscreen ? tPreview("exitFullscreen") : tPreview("enterFullscreen")}
         onClick={() => void toggleFullscreen()}
         disabled={status !== "ready"}
@@ -302,7 +302,7 @@ export function PreviewSheet({ source, toolbarContainer, showLoading = true, onL
                       }}
                     >
                       <div ref={contentRef} className="w-max min-w-full">
-                        <table className="border-collapse text-[12.5px] leading-6">
+                        <table className="border-collapse text-xs leading-6">
                           <tbody>
                             {activeRows.map((row, rowIndex) => (
                               <tr key={rowIndex} className="border-b border-border/30 align-top">
@@ -341,7 +341,7 @@ export function PreviewSheet({ source, toolbarContainer, showLoading = true, onL
                       variant="ghost"
                       size="sm"
                       className={cn(
-                        "h-7 shrink-0 rounded-full px-3 text-xs shadow-none",
+                        "h-8 shrink-0 rounded-md px-3 text-sm shadow-none",
                         activeSheet === sheetName ? "bg-foreground text-background" : "text-muted-foreground hover:bg-accent",
                       )}
                       onClick={() => setActiveSheet(sheetName)}

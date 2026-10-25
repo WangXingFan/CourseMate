@@ -107,7 +107,7 @@ function Calculator({ id, props }: UIBlockRenderProps<CalculatorProps>) {
         <div className="grid content-start gap-2">
           {results.filter((entry) => entry.output.highlight).map((entry) => (
             <div key={`${id}-out-${entry.index}`} className="rounded-lg border-[0.5px] border-primary/40 bg-primary/5 px-3 py-2.5">
-              <p className="text-[11px] text-muted-foreground">{entry.output.label}</p>
+              <p className="text-xs text-muted-foreground">{entry.output.label}</p>
               <OutputValue entry={entry} className="mt-0.5 text-xl leading-7" />
             </div>
           ))}
@@ -129,7 +129,7 @@ function Calculator({ id, props }: UIBlockRenderProps<CalculatorProps>) {
 
 function OutputValue({ entry, as: Tag = "p", className }: { entry: OutputResult; as?: "p" | "dd"; className?: string }) {
   if (entry.error) {
-    return <Tag className={cn("font-mono text-[11px] text-destructive", className)}>{entry.error}</Tag>;
+    return <Tag className={cn("font-mono text-xs text-destructive", className)}>{entry.error}</Tag>;
   }
   return (
     <Tag className={cn("font-semibold tabular-nums", className)}>

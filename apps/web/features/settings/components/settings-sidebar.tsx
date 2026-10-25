@@ -23,7 +23,7 @@ export function SettingsSidebar({
     <aside className="w-full shrink-0 xl:max-w-64">
       <div className="space-y-3 xl:sticky xl:top-6 xl:space-y-5">
         <div className="flex h-9 items-center px-1 xl:h-10">
-          <h1 className="text-xl font-semibold tracking-normal xl:text-2xl">{t("title")}</h1>
+          <h1 className="font-display text-2xl font-normal tracking-[-0.01em] xl:text-[2rem]">{t("title")}</h1>
         </div>
 
         <nav
@@ -40,9 +40,9 @@ export function SettingsSidebar({
                 prefetch={false}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative flex h-8 shrink-0 items-center whitespace-nowrap rounded-md px-3 text-sm font-medium transition-colors outline-hidden focus-visible:ring-0 xl:h-9 xl:w-full xl:px-3.5 [--settings-sidebar-state-bg:color-mix(in_oklch,var(--sidebar-accent),var(--sidebar-foreground)_1%)]",
+                  "relative flex h-9 shrink-0 items-center whitespace-nowrap rounded-md px-3 text-sm font-medium transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-ring/35 xl:h-10 xl:w-full xl:px-3.5 [--settings-sidebar-state-bg:color-mix(in_oklch,var(--sidebar-accent),var(--sidebar-foreground)_1%)]",
                   active
-                    ? "bg-[var(--settings-sidebar-state-bg)] text-sidebar-accent-foreground"
+                    ? "bg-[var(--settings-sidebar-state-bg)] text-sidebar-accent-foreground xl:shadow-[inset_2px_0_0_var(--primary)]"
                     : "text-sidebar-foreground hover:bg-[var(--settings-sidebar-state-bg)] hover:text-sidebar-accent-foreground focus-visible:bg-[var(--settings-sidebar-state-bg)] focus-visible:text-sidebar-accent-foreground active:bg-[var(--settings-sidebar-state-bg)] active:text-sidebar-accent-foreground",
                 )}
               >

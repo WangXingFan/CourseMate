@@ -117,11 +117,11 @@ function BulkActionControlRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-7 w-full items-center gap-1.5">
+    <div className="flex h-9 w-full items-center gap-1.5">
       <Button
         type="button"
         variant="ghost"
-        className="h-7 w-16 shrink-0 justify-start gap-2 px-2 text-[11px] text-foreground/70 shadow-none hover:bg-muted hover:text-foreground"
+        className="h-9 w-16 shrink-0 justify-start gap-2 px-2 text-sm text-foreground/70 shadow-none hover:bg-muted hover:text-foreground"
         onClick={onApply}
         disabled={disabled}
       >
@@ -194,8 +194,8 @@ const UserTableRow = React.memo(function UserTableRow({
 
   return (
     <TableRow>
-      <TableCell className="w-[44px] py-1.5 whitespace-nowrap text-center">
-        <div className="flex h-7 items-center justify-center">
+      <TableCell className="w-[44px] py-3 whitespace-nowrap text-center">
+        <div className="flex h-9 items-center justify-center">
           <Checkbox
             checked={checked}
             onCheckedChange={(value) => onToggleSelectedUser(item.id, value === true)}
@@ -203,11 +203,11 @@ const UserTableRow = React.memo(function UserTableRow({
           />
         </div>
       </TableCell>
-      <TableCell className="py-1.5 whitespace-nowrap font-mono text-xs text-foreground">
-        <span className="flex h-7 items-center">{item.id}</span>
+      <TableCell className="py-3 whitespace-nowrap font-mono text-sm text-foreground">
+        <span className="flex h-9 items-center">{item.id}</span>
       </TableCell>
-      <TableCell className="py-1.5">
-        <div className="flex h-7 items-center gap-3">
+      <TableCell className="py-3">
+        <div className="flex h-9 items-center gap-3">
           <button
             type="button"
             className="rounded-full transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -229,8 +229,8 @@ const UserTableRow = React.memo(function UserTableRow({
           </div>
         </div>
       </TableCell>
-      <TableCell className="py-1.5 whitespace-nowrap">
-        <div className="flex h-7 items-center">
+      <TableCell className="py-3 whitespace-nowrap">
+        <div className="flex h-9 items-center">
           <Combobox
             items={rowRoleOptions}
             value={item.role}
@@ -258,8 +258,8 @@ const UserTableRow = React.memo(function UserTableRow({
           </Combobox>
         </div>
       </TableCell>
-      <TableCell className="py-1.5 whitespace-nowrap">
-        <div className="flex h-7 items-center">
+      <TableCell className="py-3 whitespace-nowrap">
+        <div className="flex h-9 items-center">
           <Combobox
             items={USER_STATUS_OPTIONS}
             value={item.status}
@@ -299,8 +299,8 @@ const UserTableRow = React.memo(function UserTableRow({
         </div>
       </TableCell>
       <TableCell className="whitespace-nowrap text-muted-foreground">{formatDateTime(item.lastActiveAt || item.lastLoginAt, locale)}</TableCell>
-      <TableCell className="w-[56px] py-1.5 whitespace-nowrap" stickyEnd>
-        <div className="flex h-7 items-center justify-end">
+      <TableCell className="w-[56px] py-3 whitespace-nowrap" stickyEnd>
+        <div className="flex h-9 items-center justify-end">
           <Button
             type="button"
             size="icon-sm"
@@ -468,7 +468,7 @@ export function UsersPanel({
     <>
       <div className="space-y-3">
         <div className="flex h-10 items-center px-1">
-          <h3 className="text-sm font-semibold">{t("pageTitle")}</h3>
+          <h3 className="font-display text-2xl font-normal">{t("pageTitle")}</h3>
         </div>
         
         <TableToolbar
@@ -508,7 +508,7 @@ export function UsersPanel({
           bulkContent={
             <div className="space-y-1">
               <BulkActionControlRow
-                icon={<ShieldCheck className="size-3 stroke-1" />}
+                icon={<ShieldCheck className="size-4 stroke-1" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("role")}
                 disabled={loading || Boolean(pendingAction) || selectedUserIDs.size === 0 || !batchRole}
@@ -520,12 +520,12 @@ export function UsersPanel({
                   }}
                   disabled={loading || Boolean(pendingAction) || selectedUserIDs.size === 0}
                 >
-                  <SelectTrigger size="xs" className="h-7 px-2 text-[11px] text-muted-foreground">
+                  <SelectTrigger size="xs" className="h-9 px-2 text-sm text-muted-foreground">
                     <SelectValue placeholder={t("fields.role")} />
                   </SelectTrigger>
                   <SelectContent position="popper" align="start" className="z-[100]">
                     {roleOptions.map((role) => (
-                      <SelectItem key={role} value={role} className="text-[11px]">
+                      <SelectItem key={role} value={role} className="text-xs">
                         {role}
                       </SelectItem>
                     ))}
@@ -534,7 +534,7 @@ export function UsersPanel({
               </BulkActionControlRow>
 
               <BulkActionControlRow
-                icon={<UserCheck className="size-3 stroke-1" />}
+                icon={<UserCheck className="size-4 stroke-1" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("status")}
                 disabled={loading || Boolean(pendingAction) || selectedUserIDs.size === 0 || !batchStatus}
@@ -546,12 +546,12 @@ export function UsersPanel({
                   }}
                   disabled={loading || Boolean(pendingAction) || selectedUserIDs.size === 0}
                 >
-                  <SelectTrigger size="xs" className="h-7 px-2 text-[11px] text-muted-foreground">
+                  <SelectTrigger size="xs" className="h-9 px-2 text-sm text-muted-foreground">
                     <SelectValue placeholder={t("fields.status")} />
                   </SelectTrigger>
                   <SelectContent position="popper" align="start" className="z-[100]">
                     {USER_STATUS_OPTIONS.map((status) => (
-                      <SelectItem key={status} value={status} className="text-[11px]">
+                      <SelectItem key={status} value={status} className="text-xs">
                         {resolveUserStatusLabel(status)}
                       </SelectItem>
                     ))}
@@ -560,7 +560,7 @@ export function UsersPanel({
               </BulkActionControlRow>
 
               <BulkActionControlRow
-                icon={<Globe className="size-3 stroke-1" />}
+                icon={<Globe className="size-4 stroke-1" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("timezone")}
                 disabled={loading || Boolean(pendingAction) || selectedUserIDs.size === 0 || !batchTimezone}
@@ -569,7 +569,7 @@ export function UsersPanel({
                   value={batchTimezone}
                   options={timeZoneOptions}
                   disabled={loading || Boolean(pendingAction) || selectedUserIDs.size === 0}
-                  triggerClassName="h-7 min-w-0 px-2 text-[11px]"
+                  triggerClassName="h-9 min-w-0 px-2 text-sm"
                   contentClassName="min-w-[260px]"
                   onChange={setBatchTimezone}
                 />
@@ -593,7 +593,7 @@ export function UsersPanel({
             type="button"
             size="sm"
             variant="outline"
-            className="h-7 gap-1 px-2 text-xs"
+            className="h-9 gap-1 px-2 text-sm"
             onClick={() => {
               setRosterImportResult(null);
               setRosterImportOpen(true);
@@ -606,7 +606,7 @@ export function UsersPanel({
           <Button
             type="button"
             size="sm"
-            className="h-7 gap-1 px-2 text-xs"
+            className="h-9 gap-1 px-2 text-sm"
             onClick={() => setCreateDialogOpen(true)}
             disabled={Boolean(pendingAction) || rosterImportPending}
           >
@@ -623,7 +623,7 @@ export function UsersPanel({
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-[44px] py-1.5 text-center">
-                  <div className="flex h-7 items-center justify-center">
+                  <div className="flex h-9 items-center justify-center">
                     <Checkbox
                       checked={selectAllState}
                       onCheckedChange={(checked) => handleSelectAllVisible(checked === true)}

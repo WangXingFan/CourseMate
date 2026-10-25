@@ -21,7 +21,7 @@ export function ProgressStatus({ model }: { model: ReturnType<typeof useLearning
     </div>
   );
   return (
-    <p role="status" className="flex items-center gap-1.5 text-[11px] leading-5 text-muted-foreground">
+    <p role="status" className="flex items-center gap-1.5 text-xs leading-5 text-muted-foreground">
       {model.loading || model.saving || model.pendingCount > 0
         ? <><LoaderCircle className="size-3 animate-spin" />{t(model.pendingCount > 0 ? "saving" : "loading")}</>
         : <><Check className="size-3" />{t("synced")}</>}

@@ -26,7 +26,7 @@ export function RevealGate({
       )}
     >
       <LockKeyhole className="size-4 text-muted-foreground" strokeWidth={1.6} />
-      <p className="max-w-sm text-[11px] leading-5 text-muted-foreground">{label}</p>
+      <p className="max-w-sm text-sm leading-6 text-muted-foreground">{label}</p>
     </div>
   );
 }

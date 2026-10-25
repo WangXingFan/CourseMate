@@ -267,7 +267,7 @@ function ThemePresetPreviewCard({
         style={{ backgroundColor: palette.background }}
       >
         <div
-          className="absolute left-2.5 top-2.5 rounded-full px-2 py-0.5 text-[10px] font-medium leading-none"
+          className="absolute left-2.5 top-2.5 rounded-full px-2 py-0.5 text-2xs font-medium leading-none"
           style={{
             backgroundColor: palette.surface,
             color: palette.textStrong,

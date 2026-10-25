@@ -37,7 +37,7 @@ export function ChatEmptyState({
             exit={{ opacity: 0, y: -6 }}
             transition={CHAT_EMPTY_TEXT_TRANSITION}
           >
-            <h1 className="min-w-0 text-balance text-[22px] font-medium leading-[1.12] tracking-[-0.005em] text-foreground [font-family:var(--font-economist)] md:text-[32px]">
+            <h1 className="min-w-0 text-balance font-display text-3xl font-normal leading-[1.1] tracking-[-0.015em] text-foreground md:text-[2.75rem]">
               {greetingTitle}
             </h1>
           </motion.div>

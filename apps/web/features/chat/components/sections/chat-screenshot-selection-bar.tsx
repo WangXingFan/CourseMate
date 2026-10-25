@@ -37,7 +37,7 @@ export function ChatScreenshotSelectionBar({
         <span className="min-w-0 truncate text-xs font-medium text-foreground">
           {t("captureSelect")}
         </span>
-        <span className="shrink-0 text-[11px] text-muted-foreground tabular-nums">
+        <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
           {selectedCount}/{selectableCount}
         </span>
       </div>
@@ -46,7 +46,7 @@ export function ChatScreenshotSelectionBar({
           type="button"
           variant="ghost"
           size="sm"
-          className="h-7 shrink-0 rounded-md px-2 text-xs text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
+          className="h-8 shrink-0 rounded-md px-2 text-xs text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
           onClick={selectionAtCapacity ? onClearSelection : onSelectAll}
         >
           {selectionAtCapacity ? t("clearSelection") : selectAllLabel}
@@ -54,7 +54,7 @@ export function ChatScreenshotSelectionBar({
         <Button
           type="button"
           size="sm"
-          className="h-7 shrink-0 rounded-md px-2.5 text-xs shadow-none"
+          className="h-8 shrink-0 rounded-md px-2.5 text-xs shadow-none"
           disabled={capturing || selectedCount === 0}
           onClick={onCapture}
         >
@@ -66,7 +66,7 @@ export function ChatScreenshotSelectionBar({
           type="button"
           variant="ghost"
           size="icon-sm"
-          className="size-7 shrink-0 rounded-md text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
+          className="size-8 shrink-0 rounded-md text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
           aria-label={t("exitSelection")}
           title={t("exitSelection")}
           onClick={onExit}

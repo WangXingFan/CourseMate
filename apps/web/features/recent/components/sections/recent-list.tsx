@@ -143,7 +143,7 @@ function RecentConversationRow({
               <Badge
                 key={label.toLowerCase()}
                 variant="secondary"
-                className="h-4 min-w-0 max-w-28 shrink gap-0.5 px-1 py-0 text-[9px] font-normal text-muted-foreground"
+                className="h-5 min-w-0 max-w-28 shrink gap-0.5 px-1 py-0 text-2xs font-normal text-muted-foreground"
                 title={label}
               >
                 <Tag aria-hidden className="!size-2 shrink-0" />
@@ -151,7 +151,7 @@ function RecentConversationRow({
               </Badge>
             ))}
             {hiddenLabelCount > 0 ? (
-              <Badge variant="secondary" className="h-4 px-1 py-0 text-[9px] font-normal text-muted-foreground">
+              <Badge variant="secondary" className="h-5 px-1 py-0 text-2xs font-normal text-muted-foreground">
                 +{hiddenLabelCount}
               </Badge>
             ) : null}
@@ -162,7 +162,7 @@ function RecentConversationRow({
           {item.isStarred ? <Star className="size-3.5 fill-current text-foreground/45" /> : null}
         </div>
       </div>
-      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
+      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
         <span>{updatedText}</span>
       </div>
     </>

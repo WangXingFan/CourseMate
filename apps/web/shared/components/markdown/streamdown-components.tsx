@@ -254,7 +254,7 @@ function FootnoteBackrefContent({
   return (
     <>
       <CornerUpLeft className="size-3" strokeWidth={2} />
-      {shouldShowIndex ? <span className="ml-0.5 text-[10px] leading-none">{backrefIndex}</span> : null}
+      {shouldShowIndex ? <span className="ml-0.5 text-2xs leading-none">{backrefIndex}</span> : null}
       <span className="sr-only">{t("back")}</span>
     </>
   );
@@ -275,7 +275,7 @@ export function MarkdownOrderedList({
       className={cn(
         "list-inside list-decimal whitespace-normal [li_&]:pl-6",
         footnoteList &&
-          "mt-6 border-foreground/15 border-t pt-3 pl-4 text-[11px] leading-5 text-muted-foreground/82 [&_li]:py-0.5 [&_p]:my-0 [&_p]:text-[11px] [&_p]:leading-5",
+          "mt-6 border-foreground/15 border-t pt-3 pl-4 text-xs leading-5 text-muted-foreground/82 [&_li]:py-0.5 [&_p]:my-0 [&_p]:text-xs [&_p]:leading-5",
         className,
       )}
       data-streamdown={footnoteList ? "footnote-list" : "ordered-list"}
@@ -650,7 +650,7 @@ export function MarkdownSup({ children, className, node: _node, style, ...props 
       {...props}
       className={cn(
         reference
-          ? "relative -top-[0.42em] ml-1 align-baseline text-[11px] font-normal leading-none [&_a]:!font-normal [&_a]:no-underline"
+          ? "relative -top-[0.42em] ml-1 align-baseline text-xs font-normal leading-none [&_a]:!font-normal [&_a]:no-underline"
           : "text-sm",
         className,
       )}

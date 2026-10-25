@@ -111,7 +111,7 @@ export function ModelSourceCircuitDialog({
                 </div>
               ) : null}
               <div className="space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground" htmlFor="source-cb-failure-threshold">
+                <Label className="text-sm font-normal text-muted-foreground" htmlFor="source-cb-failure-threshold">
                   {t("failureThreshold")}
                 </Label>
                 <Input
@@ -125,7 +125,7 @@ export function ModelSourceCircuitDialog({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground" htmlFor="source-cb-duration-min">
+                <Label className="text-sm font-normal text-muted-foreground" htmlFor="source-cb-duration-min">
                   {t("circuitDuration")}
                 </Label>
                 <Input
@@ -139,7 +139,7 @@ export function ModelSourceCircuitDialog({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs font-normal text-muted-foreground" htmlFor="source-cb-window-min">
+                <Label className="text-sm font-normal text-muted-foreground" htmlFor="source-cb-window-min">
                   {t("circuitWindow")}
                 </Label>
                 <Input
@@ -152,7 +152,7 @@ export function ModelSourceCircuitDialog({
                   onChange={(event) => setField("cbWindowMin", event.target.value)}
                 />
               </div>
-              <p className="text-xs leading-5 text-muted-foreground">{t("circuitInheritHint")}</p>
+              <p className="text-sm leading-6 text-muted-foreground">{t("circuitInheritHint")}</p>
             </div>
 
             <DialogFooter className="shrink-0 px-4 py-3">

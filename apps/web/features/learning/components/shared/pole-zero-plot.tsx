@@ -18,7 +18,7 @@ export type RocRegion = {
 
 const WIDTH = 640;
 const HEIGHT = 380;
-const PADDING = { left: 44, right: 16, top: 16, bottom: 34 };
+const PADDING = { left: 52, right: 18, top: 22, bottom: 40 };
 
 export function PoleZeroPlot({
   poles,
@@ -82,9 +82,9 @@ export function PoleZeroPlot({
       {roc.label ? (
         <text
           x={roc.kind === "right" ? WIDTH - PADDING.right - 6 : PADDING.left + 6}
-          y={PADDING.top + 13}
+          y={PADDING.top + 16}
           textAnchor={roc.kind === "right" ? "end" : "start"}
-          fontSize={10}
+          fontSize={14}
           fill="var(--chart-1)"
         >
           {roc.label}
@@ -144,7 +144,7 @@ export function PoleZeroPlot({
             strokeWidth={1.8}
           />
           {zero.label ? (
-            <text x={xScale(zero.re) + 8} y={yScale(zero.im) - 7} fontSize={10} fill="var(--chart-2)">
+            <text x={xScale(zero.re) + 8} y={yScale(zero.im) - 7} fontSize={14} fill="var(--chart-2)">
               {zero.label}
             </text>
           ) : null}
@@ -170,7 +170,7 @@ export function PoleZeroPlot({
             strokeWidth={2}
           />
           {pole.label ? (
-            <text x={xScale(pole.re) + 8} y={yScale(pole.im) - 7} fontSize={10} fill="var(--chart-4)">
+            <text x={xScale(pole.re) + 8} y={yScale(pole.im) - 7} fontSize={14} fill="var(--chart-4)">
               {pole.label}
             </text>
           ) : null}
@@ -181,9 +181,10 @@ export function PoleZeroPlot({
         <text
           key={`tx-${tick}`}
           x={xScale(tick)}
-          y={height - PADDING.bottom + 14}
+          y={height - PADDING.bottom + 20}
           textAnchor="middle"
-          fontSize={10}
+          fontSize={14}
+          fontFamily="var(--font-mono)"
           fill="var(--muted-foreground)"
         >
           {formatTick(tick)}
@@ -192,19 +193,20 @@ export function PoleZeroPlot({
       {yTicks.map((tick) => (
         <text
           key={`ty-${tick}`}
-          x={PADDING.left - 7}
-          y={yScale(tick) + 3}
+          x={PADDING.left - 9}
+          y={yScale(tick) + 5}
           textAnchor="end"
-          fontSize={10}
+          fontSize={14}
+          fontFamily="var(--font-mono)"
           fill="var(--muted-foreground)"
         >
           {formatTick(tick)}
         </text>
       ))}
-      <text x={WIDTH - PADDING.right} y={height - 4} textAnchor="end" fontSize={10} fill="var(--muted-foreground)">
+      <text x={WIDTH - PADDING.right} y={height - 4} textAnchor="end" fontSize={14} fontStyle="italic" fontFamily="var(--font-display)" fill="var(--muted-foreground)">
         Re(s)
       </text>
-      <text x={PADDING.left} y={12} fontSize={10} fill="var(--muted-foreground)">
+      <text x={PADDING.left} y={15} fontSize={14} fontStyle="italic" fontFamily="var(--font-display)" fill="var(--muted-foreground)">
         Im(jω)
       </text>
     </svg>

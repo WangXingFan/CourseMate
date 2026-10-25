@@ -97,7 +97,7 @@ export function AdminDateTimePicker({
 
   return (
     <div className="space-y-1">
-      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="text-sm text-muted-foreground">{label}</p>
       <div className={cn("grid gap-5", !dateOnly && "md:grid-cols-2")}>
         <Popover>
           <PopoverTrigger asChild>
@@ -106,7 +106,7 @@ export function AdminDateTimePicker({
               variant="outline"
               className={cn(
                 ADMIN_DATE_PICKER_TRIGGER_CLASSNAME,
-                "h-8 justify-between",
+                "justify-between",
                 !selectedDate && "text-muted-foreground",
               )}
               disabled={disabled}
@@ -114,7 +114,7 @@ export function AdminDateTimePicker({
               <span className="min-w-0 truncate">
                 {selectedDate ? format(selectedDate, "yyyy-MM-dd") : placeholder}
               </span>
-              <CalendarIcon className="size-3.5 opacity-70" />
+              <CalendarIcon className="size-4 opacity-70" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
@@ -132,7 +132,7 @@ export function AdminDateTimePicker({
                   type="button"
                   size="sm"
                   variant="secondary"
-                  className="h-6 w-full text-xs"
+                  className="w-full"
                   disabled={disabled}
                   onClick={() => onChange("")}
                 >
@@ -177,7 +177,7 @@ export function AdminDateTimePicker({
             <Button
               type="button"
               variant="outline"
-              className="h-8 w-full px-0 text-xs text-muted-foreground"
+              className="w-full px-0 text-sm text-muted-foreground"
               disabled={disabled || !selectedDate}
               onClick={() => onChange("")}
               aria-label={tDateRange("clear")}

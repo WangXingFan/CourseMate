@@ -285,7 +285,7 @@
         "both": "既是能量信号又是功率信号"
       },
       "scenario": {
-        "energy": "x(t) = {a}·e^{−{d}t}·u(t)",
+        "energy": "x(t) = {a}·e^'{'−{d}t'}'·u(t)",
         "power": "x(t) = {a}·cos(2π·{f}t)",
         "ramp": "x(t) = {a}·t·u(t)"
       },
@@ -1486,7 +1486,7 @@
       "perQuestion": "平均每题",
       "ruleOne": "答对 +10 分；连对每题额外 +2（最多 +10）；答错不扣分，连击清零。",
       "ruleThree": "时间到自动结束；保存答案时暂停计时。",
-      "start": "开始挑战"
+      "start": "开始答题"
     },
     "hud": {
       "progress": "第 {current}/{total} 题"
@@ -1513,7 +1513,7 @@
     },
     "questions": {
       "energy-signal": {
-        "prompt": "x(t) = e^{−2t}u(t) 属于哪类信号？",
+        "prompt": "x(t) = e^'{'−2t'}'u(t) 属于哪类信号？",
         "option1": "能量信号",
         "option2": "功率信号",
         "option3": "都不是",
@@ -2157,7 +2157,7 @@
     "chapterDescription": "从本章 20 题中随机抽取 10 题，每轮不重复。",
     "rankingRule": "本版题库 · 每人本章最佳成绩；分数高优先，同分用时短优先。",
     "resultRankingHint": "本轮成绩已保存。",
-    "leaderboard": "本章排行榜",
+    "leaderboard": "本章成绩单",
     "rank": "排名",
     "student": "同学",
     "elapsed": "用时",

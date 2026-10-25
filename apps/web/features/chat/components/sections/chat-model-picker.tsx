@@ -83,7 +83,7 @@ function ChatModelIdentity({
           <p
             className={cn(
               "truncate font-medium text-foreground",
-              compact ? "text-[12.5px] leading-4" : "text-[13px] leading-4.5",
+              compact ? "text-xs leading-4" : "text-sm leading-4.5",
             )}
           >
             {modelLabel}
@@ -206,12 +206,12 @@ function ChatModelMenuItem({
   return (
     <div
       data-selected={selected}
-      className="group flex h-7 items-center rounded-md text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-within:bg-accent focus-within:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
+      className="group flex h-7 items-center rounded-md text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-within:bg-accent focus-within:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
     >
       <button
         ref={buttonRef}
         type="button"
-        className="flex h-7 min-w-0 flex-1 items-center gap-2 rounded-md bg-transparent py-0 pl-2 pr-1 text-left text-[11px] font-medium leading-none text-inherit outline-none"
+        className="flex h-7 min-w-0 flex-1 items-center gap-2 rounded-md bg-transparent py-0 pl-2 pr-1 text-left text-xs font-medium leading-none text-inherit outline-none"
         onClick={onSelect}
       >
         <ModelIcon iconUrl={iconURL} label={modelLabel} />
@@ -452,11 +452,11 @@ export function ChatModelPicker({
               ) : selectedModel ? (
                 <ChatModelIdentity model={selectedModel} density="compact" />
               ) : selectedPlatformModelName.trim() ? (
-                <span className="truncate text-[12px] font-medium text-foreground">
+                <span className="truncate text-xs font-medium text-foreground">
                   {selectedPlatformModelName}
                 </span>
               ) : (
-                <span className="truncate text-[12px] font-medium text-muted-foreground">
+                <span className="truncate text-xs font-medium text-muted-foreground">
                   {t("selectModel")}
                 </span>
               )}
@@ -486,21 +486,21 @@ export function ChatModelPicker({
                   {mobileGroup ? (
                     <button
                       type="button"
-                      className="-ml-1.5 flex h-7 min-w-0 items-center gap-0.5 rounded-md px-0.5 text-[11px] font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:bg-accent focus-visible:text-foreground"
+                      className="-ml-1.5 flex h-7 min-w-0 items-center gap-0.5 rounded-md px-0.5 text-xs font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:bg-accent focus-visible:text-foreground"
                       onClick={() => setMobileGroupKey(null)}
                     >
                       <ChevronLeft className="size-3.5" strokeWidth={1.8} />
                       <span>{t("group")}</span>
                     </button>
                   ) : (
-                    <span className="text-[11px] font-medium text-foreground">{t("group")}</span>
+                    <span className="text-xs font-medium text-foreground">{t("group")}</span>
                   )}
-                  <span className="min-w-0 truncate text-right text-[10px] font-medium text-muted-foreground">
+                  <span className="min-w-0 truncate text-right text-2xs font-medium text-muted-foreground">
                     {mobileGroup ? mobileGroup.label : selectedGroupLabel}
                   </span>
                 </div>
                 {modelGroups.length === 0 ? (
-                  <div className="px-2 py-3 text-[11px] leading-4 text-muted-foreground">
+                  <div className="px-2 py-3 text-xs leading-4 text-muted-foreground">
                     {t("empty")}
                   </div>
                 ) : (
@@ -529,7 +529,7 @@ export function ChatModelPicker({
                               type="button"
                               key={group.key}
                               className={cn(
-                                "flex h-7 w-full items-center justify-between gap-2 rounded-md px-2 py-0 text-left text-[11px] font-medium outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground",
+                                "flex h-7 w-full items-center justify-between gap-2 rounded-md px-2 py-0 text-left text-xs font-medium outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground",
                                 selectedGroup ? "bg-accent text-accent-foreground" : "text-muted-foreground",
                               )}
                               onClick={() => {
@@ -538,7 +538,7 @@ export function ChatModelPicker({
                             >
                               <ModelIcon iconUrl={groupIconURL} label={group.label} />
                               <span className="min-w-0 flex-1 truncate font-medium">{group.label}</span>
-                              <span className="shrink-0 text-[10px] tabular-nums text-muted-foreground/80">
+                              <span className="shrink-0 text-2xs tabular-nums text-muted-foreground/80">
                                 {group.items.length}
                               </span>
                             </button>
@@ -587,13 +587,13 @@ export function ChatModelPicker({
                   className="flex min-w-0 max-h-[calc(100dvh-3rem)] flex-col overflow-hidden rounded-xl border-[0.5px] border-border bg-popover p-1.5 shadow-xs"
                 >
                   <div className="flex h-7 shrink-0 items-center justify-between gap-3 px-2">
-                    <span className="text-[11px] font-medium text-foreground">{t("group")}</span>
-                    <span className="truncate text-[10px] font-medium text-muted-foreground">
+                    <span className="text-xs font-medium text-foreground">{t("group")}</span>
+                    <span className="truncate text-2xs font-medium text-muted-foreground">
                       {selectedGroupLabel}
                     </span>
                   </div>
                   {modelGroups.length === 0 ? (
-                    <div className="px-2 py-3 text-[11px] leading-4 text-muted-foreground">
+                    <div className="px-2 py-3 text-xs leading-4 text-muted-foreground">
                       {t("empty")}
                     </div>
                   ) : (
@@ -616,7 +616,7 @@ export function ChatModelPicker({
                                   desktopGroupItemRefs.current.delete(group.key);
                                 }}
                                 className={cn(
-                                  "flex h-7 w-full items-center gap-2 rounded-md px-2 py-0 text-left text-[11px] font-medium outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground",
+                                  "flex h-7 w-full items-center gap-2 rounded-md px-2 py-0 text-left text-xs font-medium outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground",
                                   activeGroup ? "bg-accent text-accent-foreground" : "text-muted-foreground",
                                   selectedGroup && !activeGroup ? "text-foreground" : null,
                                 )}
@@ -626,7 +626,7 @@ export function ChatModelPicker({
                               >
                                 <ModelIcon iconUrl={groupIconURL} label={group.label} />
                                 <span className="min-w-0 flex-1 truncate font-medium">{group.label}</span>
-                                <span className="shrink-0 text-[10px] tabular-nums text-muted-foreground/80">
+                                <span className="shrink-0 text-2xs tabular-nums text-muted-foreground/80">
                                   {group.items.length}
                                 </span>
                                 <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/65" strokeWidth={1.8} />

@@ -54,13 +54,13 @@ function SettingsSectionHeader({
   return (
     <div
       className={cn(
-        hasActions ? "flex h-9 items-center justify-between gap-2 md:h-10 md:gap-3" : "flex h-9 items-center md:h-10",
+        hasActions ? "flex min-h-10 items-center justify-between gap-2 border-b border-border pb-3 md:gap-3" : "flex min-h-10 items-center border-b border-border pb-3",
         className,
       )}
       {...props}
     >
       <div className="min-w-0">
-        {title ? <h3 className="text-sm font-semibold">{title}</h3> : null}
+        {title ? <h3 className="font-display text-xl font-normal text-foreground">{title}</h3> : null}
       </div>
       {actions ? <div className="flex shrink-0 items-center justify-end gap-2">{actions}</div> : null}
     </div>
@@ -86,9 +86,9 @@ function SettingsFieldRow({
       <div className="flex flex-col gap-2 md:flex-row md:items-start md:gap-4 xl:gap-6">
         <div className="min-w-0 flex-1">
           <FieldLabel>{title}</FieldLabel>
-          {description ? <FieldDescription className="text-[11px]">{description}</FieldDescription> : null}
+          {description ? <FieldDescription className="mt-1 text-sm leading-6">{description}</FieldDescription> : null}
         </div>
-        <div className={cn("flex w-full min-w-0 justify-start md:w-44 md:shrink-0 md:justify-end xl:w-52", controlClassName)}>
+        <div className={cn("flex w-full min-w-0 justify-start md:w-52 md:shrink-0 md:justify-end xl:w-60", controlClassName)}>
           {children}
         </div>
       </div>
@@ -117,7 +117,7 @@ type SettingsFieldItemProps = React.ComponentProps<"div"> & {
 };
 
 function SettingsFieldItem({ index = 0, className, ...props }: SettingsFieldItemProps) {
-  return <div className={cn(index === 0 ? "" : "pt-3 md:pt-4", className)} {...props} />;
+  return <div className={cn(index === 0 ? "" : "pt-5 md:pt-6", className)} {...props} />;
 }
 
 function SettingsSectionSeparator({ className, ...props }: React.ComponentProps<typeof Separator>) {

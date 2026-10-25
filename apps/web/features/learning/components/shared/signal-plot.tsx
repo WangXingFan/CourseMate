@@ -31,7 +31,9 @@ export type PlotXMarker = {
 
 const WIDTH = 720;
 const HEIGHT = 280;
-const PADDING = { left: 48, right: 18, top: 16, bottom: 32 };
+const PADDING = { left: 56, right: 20, top: 24, bottom: 40 };
+const TICK_FONT = 14;
+const LABEL_FONT = 14;
 
 export function SignalPlot({
   xDomain,
@@ -95,7 +97,8 @@ export function SignalPlot({
             y1={yScale(tick)}
             y2={yScale(tick)}
             stroke="var(--border)"
-            strokeOpacity={0.55}
+            strokeOpacity={0.7}
+            strokeDasharray="2 4"
             strokeWidth={1}
           />
         ))}
@@ -107,10 +110,15 @@ export function SignalPlot({
             y1={PADDING.top}
             y2={height - PADDING.bottom}
             stroke="var(--border)"
-            strokeOpacity={0.55}
+            strokeOpacity={0.7}
+            strokeDasharray="2 4"
             strokeWidth={1}
           />
         ))}
+
+        {/* Plot frame: baseline and left spine, like a printed figure */}
+        <line x1={PADDING.left} x2={WIDTH - PADDING.right} y1={height - PADDING.bottom} y2={height - PADDING.bottom} stroke="var(--foreground)" strokeOpacity={0.35} strokeWidth={1} />
+        <line x1={PADDING.left} x2={PADDING.left} y1={PADDING.top} y2={height - PADDING.bottom} stroke="var(--foreground)" strokeOpacity={0.35} strokeWidth={1} />
 
         {zeroY !== null ? (
           <line
@@ -118,8 +126,9 @@ export function SignalPlot({
             x2={WIDTH - PADDING.right}
             y1={zeroY}
             y2={zeroY}
-            stroke="var(--border)"
-            strokeWidth={1.4}
+            stroke="var(--foreground)"
+            strokeOpacity={0.45}
+            strokeWidth={1.2}
           />
         ) : null}
         {zeroX !== null ? (
@@ -128,8 +137,9 @@ export function SignalPlot({
             x2={zeroX}
             y1={PADDING.top}
             y2={height - PADDING.bottom}
-            stroke="var(--border)"
-            strokeWidth={1.4}
+            stroke="var(--foreground)"
+            strokeOpacity={0.45}
+            strokeWidth={1.2}
           />
         ) : null}
 
@@ -148,8 +158,8 @@ export function SignalPlot({
             {marker.label ? (
               <text
                 x={xScale(marker.x) + 4}
-                y={PADDING.top + 11}
-                fontSize={10}
+                y={PADDING.top + 14}
+                fontSize={LABEL_FONT}
                 fill={marker.color ?? "var(--chart-2)"}
               >
                 {marker.label}
@@ -166,12 +176,12 @@ export function SignalPlot({
           const color = item.color ?? "var(--chart-1)";
           return (
             <g key={item.id}>
-              {item.fill && area ? <path d={area} fill={color} fillOpacity={0.16} stroke="none" /> : null}
+              {item.fill && area ? <path d={area} fill={color} fillOpacity={0.12} stroke="none" /> : null}
               <path
                 d={path}
                 fill="none"
                 stroke={color}
-                strokeWidth={item.width ?? 2}
+                strokeWidth={item.width ?? 2.25}
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeDasharray={item.dashed ? "6 5" : undefined}
@@ -185,7 +195,7 @@ export function SignalPlot({
             <circle
               cx={xScale(marker.x)}
               cy={yScale(marker.y)}
-              r={3.6}
+              r={4.5}
               fill={marker.color ?? "var(--chart-1)"}
               stroke="var(--background)"
               strokeWidth={1.5}
@@ -193,8 +203,8 @@ export function SignalPlot({
             {marker.label ? (
               <text
                 x={xScale(marker.x) + 7}
-                y={yScale(marker.y) - 7}
-                fontSize={10}
+                y={yScale(marker.y) - 8}
+                fontSize={LABEL_FONT}
                 fill={marker.color ?? "var(--chart-1)"}
               >
                 {marker.label}
@@ -207,9 +217,10 @@ export function SignalPlot({
           <text
             key={`tx-${tick}`}
             x={xScale(tick)}
-            y={height - PADDING.bottom + 16}
+            y={height - PADDING.bottom + 20}
             textAnchor="middle"
-            fontSize={10}
+            fontSize={TICK_FONT}
+            fontFamily="var(--font-mono)"
             fill="var(--muted-foreground)"
           >
             {formatTick(tick)}
@@ -218,10 +229,11 @@ export function SignalPlot({
         {resolvedYTicks.map((tick) => (
           <text
             key={`ty-${tick}`}
-            x={PADDING.left - 7}
-            y={yScale(tick) + 3}
+            x={PADDING.left - 9}
+            y={yScale(tick) + 5}
             textAnchor="end"
-            fontSize={10}
+            fontSize={TICK_FONT}
+            fontFamily="var(--font-mono)"
             fill="var(--muted-foreground)"
           >
             {formatTick(tick)}
@@ -232,27 +244,30 @@ export function SignalPlot({
             x={WIDTH - PADDING.right}
             y={height - 4}
             textAnchor="end"
-            fontSize={10}
-            fill="var(--muted-foreground)"
+            fontSize={LABEL_FONT}
+            fontStyle={/[\u3400-\u9fff]/u.test(xLabel) ? "normal" : "italic"}
+            fontFamily="var(--font-display)"
+            fill="var(--foreground)"
+            fillOpacity={0.75}
           >
             {xLabel}
           </text>
         ) : null}
         {yLabel ? (
-          <text x={PADDING.left} y={12} fontSize={10} fill="var(--muted-foreground)">
+          <text x={PADDING.left} y={14} fontSize={LABEL_FONT} fontStyle={/[\u3400-\u9fff]/u.test(yLabel) ? "normal" : "italic"} fontFamily="var(--font-display)" fill="var(--foreground)" fillOpacity={0.75}>
             {yLabel}
           </text>
         ) : null}
       </svg>
 
       {legend && series.some((item) => item.label) ? (
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pl-1 text-[11px] text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 pl-1 text-sm text-muted-foreground">
           {series.map((item) =>
             item.label ? (
               <span key={`legend-${item.id}`} className="flex items-center gap-1.5">
                 <span
                   aria-hidden
-                  className="inline-block h-0.5 w-4 rounded-full"
+                  className="inline-block h-0.5 w-5 rounded-full"
                   style={{
                     background: item.color ?? "var(--chart-1)",
                     opacity: item.dashed ? 0.75 : 1,

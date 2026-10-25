@@ -12,8 +12,8 @@ export function CenteredEmptyState({ title, description, className }: CenteredEm
   return (
     <div className={cn("flex h-full min-h-0 items-center justify-center px-6", className)}>
       <div className="text-center">
-        <p className="font-medium text-foreground">{title}</p>
-        {description ? <p className="mt-1.5 text-xs text-muted-foreground">{description}</p> : null}
+        <p className="font-display text-xl text-foreground">{title}</p>
+        {description ? <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">{description}</p> : null}
       </div>
     </div>
   );

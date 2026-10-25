@@ -15,7 +15,7 @@ export function ExperimentHub() {
     <LessonShell title={t("title")} subtitle={t("subtitle")}>
       <VirtualLabCards />
       <LessonPanel title={t("workflowTitle")} description={t("workflow")} className="mt-4">
-        <p className="text-xs leading-6 text-muted-foreground">{t("accountNote")}</p>
+        <p className="text-sm leading-6 text-muted-foreground">{t("accountNote")}</p>
         <div className="mt-4 flex flex-wrap gap-2">
           <Button asChild size="sm"><Link href="/learn/experiments/workspace#home">{t("open")}</Link></Button>
           {teacher && <Button asChild size="sm" variant="outline"><Link href="/learn/experiments/guide">{t("guide")}</Link></Button>}

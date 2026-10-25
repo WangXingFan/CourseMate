@@ -167,7 +167,7 @@ function ToolPre({ children, failed }: { children: string; failed?: boolean }) {
   return (
     <pre
       className={cn(
-        "max-h-[7.25rem] overflow-auto rounded-md bg-background/48 px-2.5 py-2 font-mono text-[11px] leading-5",
+        "max-h-[7.25rem] overflow-auto rounded-md bg-background/48 px-2.5 py-2 font-mono text-xs leading-5",
         "whitespace-pre-wrap break-words text-muted-foreground/88",
         failed && "bg-destructive/5 text-destructive/85",
       )}
@@ -216,14 +216,14 @@ function ToolSearchSources({ sources, labels }: { sources: ToolSearchSource[]; l
           title={source.url}
         >
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-[12px] font-medium leading-5 text-foreground/80 transition-colors group-hover/tool-source:text-foreground">
+            <span className="block truncate text-xs font-medium leading-5 text-foreground/80 transition-colors group-hover/tool-source:text-foreground">
               {source.title || safeURLHostname(source.url) || labels.tool.detail.sourceFallback(index + 1)}
             </span>
-            <span className="block min-w-0 truncate text-[11px] leading-4 text-muted-foreground/62">
+            <span className="block min-w-0 truncate text-xs leading-4 text-muted-foreground/62">
               {[safeURLHostname(source.url), source.snippet].filter(Boolean).join(" · ")}
             </span>
           </span>
-          <ArrowUpRight className="size-3 shrink-0 text-muted-foreground/38 transition-colors group-hover/tool-source:text-muted-foreground/72" />
+          <ArrowUpRight className="size-4 shrink-0 text-muted-foreground/38 transition-colors group-hover/tool-source:text-muted-foreground/72" />
         </a>
       ))}
     </div>
@@ -234,7 +234,7 @@ function ToolReadableText({ children }: { children: string }) {
   const markdown = children.trim();
   if (!markdown) return null;
   return (
-    <div className="max-h-40 overflow-auto pr-1 text-[12px] leading-5 text-muted-foreground/82">
+    <div className="max-h-40 overflow-auto pr-1 text-xs leading-5 text-muted-foreground/82">
       <StreamdownRender
         content={markdown}
         variant="thinking"
@@ -255,7 +255,7 @@ function ToolArtifactLinks({ urls, labels }: { urls: string[]; labels: ProcessTr
           href={url}
           target="_blank"
           rel="noreferrer"
-          className="max-w-[220px] truncate rounded-full bg-background/55 px-2 py-0.5 text-[11px] font-medium text-muted-foreground/78 transition-colors hover:text-foreground"
+          className="max-w-[220px] truncate rounded-full bg-background/55 px-2 py-0.5 text-xs font-medium text-muted-foreground/78 transition-colors hover:text-foreground"
           title={url}
         >
           {safeURLHostname(url) || labels.tool.detail.sourceFallback(index + 1)}
@@ -575,7 +575,7 @@ function ToolStepStatusIcon({ step }: { step: ToolChainStep }) {
   return (
     <Wrench
       className={cn(
-        "size-3 text-muted-foreground/68",
+        "size-4 text-muted-foreground/68",
         isToolChainStepActive(step) && "text-foreground/78",
         step.failed && "text-destructive",
       )}
@@ -618,7 +618,7 @@ function ToolArgumentCopyButton({ value, labels }: { value: string; labels: Proc
         void copy(value, { key: value });
       }}
     >
-      {done ? <Check className="size-3 text-emerald-600 dark:text-emerald-400" /> : <Copy className="size-3" />}
+      {done ? <Check className="size-4 text-primary dark:text-primary" /> : <Copy className="size-4" />}
     </button>
   );
 }
@@ -648,8 +648,8 @@ function ToolArgumentsCard({ call, labels }: { call: ToolTraceCall; labels: Proc
               key={key}
               className="group/tool-arg-row inline-flex min-w-0 max-w-full items-center gap-1 rounded bg-muted/30 px-1.5 py-0.5 leading-4"
             >
-              <code className="shrink-0 font-mono text-[10px] text-muted-foreground/58">{key}</code>
-              <span className="max-w-48 truncate text-[11px] text-foreground/72" title={text}>{text}</span>
+              <code className="shrink-0 font-mono text-xs text-muted-foreground/58">{key}</code>
+              <span className="max-w-48 truncate text-xs text-foreground/72" title={text}>{text}</span>
               <ToolArgumentCopyButton value={`${key}: ${text}`} labels={labels} />
             </div>
           ))}
@@ -660,7 +660,7 @@ function ToolArgumentsCard({ call, labels }: { call: ToolTraceCall; labels: Proc
           {expandedArguments.map(({ key, text }) => (
             <div key={key} className="group/tool-arg-row min-w-0">
               <div className="flex min-h-5 items-center gap-1">
-                <code className="min-w-0 truncate font-mono text-[11px] text-muted-foreground/58">{key}</code>
+                <code className="min-w-0 truncate font-mono text-xs text-muted-foreground/58">{key}</code>
                 <ToolArgumentCopyButton value={`${key}: ${text}`} labels={labels} />
               </div>
               <ToolPre>{text}</ToolPre>
@@ -739,7 +739,7 @@ function ToolResultCard({
         <>
           {stdout ? <ToolPre>{stdout}</ToolPre> : null}
           {stderr ? <ToolPre failed>{stderr}</ToolPre> : null}
-          {exitCode !== null ? <div className="text-[11px] text-muted-foreground/62">{labels.tool.detail.exitCode(exitCode)}</div> : null}
+          {exitCode !== null ? <div className="text-xs text-muted-foreground/62">{labels.tool.detail.exitCode(exitCode)}</div> : null}
         </>
       );
     } else {
@@ -760,7 +760,7 @@ function ToolResultCard({
   return (
     <div className={cn("pb-1 pt-1", divided && "mt-1.5 pt-1.5")}>
       {showHeading ? (
-        <div className="mb-1 flex items-center gap-1.5 text-[11px] leading-4 text-muted-foreground/58">
+        <div className="mb-1 flex items-center gap-1.5 text-xs leading-4 text-muted-foreground/58">
           <span className="font-medium">{labels.tool.detail.resultTitle}</span>
           {meta ? <span>· {meta}</span> : null}
         </div>
@@ -783,7 +783,7 @@ function ToolCallDetailCard({
   return (
     <div className="w-full max-w-[48rem]">
       <div className="flex min-h-6 min-w-0 items-center gap-2 px-0.5">
-        <span className="min-w-0 flex-1 truncate text-[12px] leading-5 text-muted-foreground/78" title={toolName}>
+        <span className="min-w-0 flex-1 truncate text-xs leading-5 text-muted-foreground/78" title={toolName}>
           {labels.tool.detail.nameLabel} · {toolName}
         </span>
       </div>
@@ -799,7 +799,7 @@ function ToolCallDetailCard({
             />
           </>
         ) : step.detail ? (
-          <div className="whitespace-pre-wrap break-words py-1 text-[12px] leading-5 text-muted-foreground/84">{step.detail}</div>
+          <div className="whitespace-pre-wrap break-words py-1 text-xs leading-5 text-muted-foreground/84">{step.detail}</div>
         ) : null}
       </div>
     </div>

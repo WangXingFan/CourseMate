@@ -227,20 +227,20 @@ export function ChatMessageUser({
           </div>
           <div className="flex items-center justify-between gap-4">
             <div className="flex gap-2 pt-2 text-xs text-muted-foreground">
-              <CircleAlert className="mt-0.5 size-3 shrink-0" />
+              <CircleAlert className="mt-0.5 size-4 shrink-0" />
               <span>{tMessages("editModes")}</span>
             </div>
             <div className="mt-3 flex items-center justify-center gap-2">
               <Button
                 variant="ghost"
-                className="rounded-lg text-xs font-medium"
+                className="rounded-lg text-sm font-medium"
                 onClick={() => setIsEditing(false)}
               >
                 {tCommon("cancel")}
               </Button>
               <Button
                 variant="outline"
-                className="rounded-lg text-xs font-medium shadow-none"
+                className="rounded-lg text-sm font-medium shadow-none"
                 disabled={nextContent.length === 0 || unchanged}
                 onClick={() => void onEditSave("save")}
                 title={tMessages("editSaveOnlyHint")}
@@ -249,7 +249,7 @@ export function ChatMessageUser({
               </Button>
               <Button
                 variant="default"
-                className="rounded-lg text-xs font-medium shadow-none hover:bg-primary/60"
+                className="rounded-lg text-sm font-medium shadow-none hover:bg-primary/60"
                 disabled={nextContent.length === 0 || unchanged}
                 onClick={() => void onEditSave("regenerate")}
                 title={tMessages("editRegenerateHint")}
@@ -273,7 +273,7 @@ export function ChatMessageUser({
         />
       ) : null}
       <div
-        className="chat-font-content min-w-0 max-w-[70%] overflow-hidden rounded-xl bg-muted/60 p-3 text-[15px] leading-6 text-foreground [overflow-wrap:anywhere] max-sm:max-w-[88%]"
+        className="chat-font-content min-w-0 max-w-[70%] overflow-hidden rounded-lg bg-muted/60 p-4 text-base leading-7 text-foreground [overflow-wrap:anywhere] max-sm:max-w-[88%]"
         style={{ fontFamily: "var(--font-chat)", fontWeight: "var(--font-chat-weight)" }}
       >
         {item.content.trim() ? (

@@ -53,7 +53,7 @@ function StatCard({ item, periods }: { item: StatItem; periods?: string[] }) {
 
   return (
     <div className="flex min-w-0 flex-col rounded-lg border-[0.5px] border-border bg-background p-3" onMouseLeave={() => setHoverIndex(null)}>
-      <p className="flex items-baseline justify-between gap-2 text-[11px] text-muted-foreground">
+      <p className="flex items-baseline justify-between gap-2 text-xs text-muted-foreground">
         <span className="truncate">{item.label}</span>
         {hoverIndex !== null ? <span className="shrink-0 tabular-nums">{periods?.[hoverIndex] ?? `#${hoverIndex + 1}`}</span> : null}
       </p>
@@ -72,7 +72,7 @@ function StatCard({ item, periods }: { item: StatItem; periods?: string[] }) {
           ) : (
             <span />
           )}
-          {item.note ? <span className="min-w-0 truncate text-[11px] text-muted-foreground">{item.note}</span> : null}
+          {item.note ? <span className="min-w-0 truncate text-xs text-muted-foreground">{item.note}</span> : null}
         </div>
       ) : null}
     </div>

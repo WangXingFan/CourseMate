@@ -454,7 +454,7 @@ export function InitialSecurityGuard() {
                           <img className="size-full" src={qrCodeDataURL} alt={t("aria.twoFactorQRCode")} />
                         </div>
                       ) : (
-                        <div className="flex size-[7.5rem] items-center justify-center rounded-lg border border-border/60 bg-muted/20 px-3 text-center text-[11px] leading-4 text-muted-foreground">
+                        <div className="flex size-[7.5rem] items-center justify-center rounded-lg border border-border/60 bg-muted/20 px-3 text-center text-xs leading-4 text-muted-foreground">
                           {qrCodeUnavailable ? t("states.qrUnavailable") : <SpinnerLabel>{t("generating")}</SpinnerLabel>}
                         </div>
                       )}
@@ -465,7 +465,7 @@ export function InitialSecurityGuard() {
                         <div className="space-y-1.5">
                           <span className="text-xs font-medium">{t("labels.manualSecret")}</span>
                           <div className="flex items-center gap-2">
-                            <span className="min-w-0 flex-1 break-all font-mono text-[11px] leading-5 text-muted-foreground">
+                            <span className="min-w-0 flex-1 break-all font-mono text-xs leading-5 text-muted-foreground">
                               {twoFactorSetup.secret}
                             </span>
                             <CopyActionButton
@@ -671,7 +671,7 @@ export function InitialSecurityGuard() {
                         aria-label={t("actions.copyRecoveryCodes")}
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-1 font-mono text-[11px] text-muted-foreground">
+                    <div className="grid grid-cols-2 gap-1 font-mono text-xs text-muted-foreground">
                       {recoveryCodes.map((code) => (
                         <span key={code}>{code}</span>
                       ))}

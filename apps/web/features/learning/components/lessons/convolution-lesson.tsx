@@ -32,7 +32,7 @@ export function ConvolutionLesson() {
         : t("phases.falling");
 
   return (
-    <LessonShell title={t("title")} subtitle={t("subtitle")} formula={t("formula")}>
+    <LessonShell title={t("title")} subtitle={t("subtitle")} formula={t.raw("formula")}>
       <div className="space-y-3">
         <LessonPanel title={t("controls.title")} description={t("controls.description")}>
           <div className="grid gap-4 sm:grid-cols-2">

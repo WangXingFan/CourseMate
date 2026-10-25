@@ -73,5 +73,34 @@
       "signInExistingAccount": "Sign in to existing account"
     }
   },
-  "registerInBrowser": "Register in browser"
+  "registerInBrowser": "Register in browser",
+  "hero": {
+    "eyebrow": "Signals & Systems · Course companion",
+    "headline": "Every concept,",
+    "headlineAccent": "derived until you can see it.",
+    "lede": "A course and classroom workspace for university students and faculty: interactive labs, knowledge-grounded Q&A, and classroom activities in one place.",
+    "welcome": "Welcome back",
+    "welcomeHint": "Sign in with your campus account to continue.",
+    "registerTitle": "Create an account",
+    "registerHint": "Register with your email to get started.",
+    "resetTitle": "Reset password",
+    "resetHint": "We'll email you a verification code.",
+    "twoFactorTitle": "Two-step verification",
+    "twoFactorHint": "Confirm it's you to keep your account secure.",
+    "or": "or",
+    "pillars": {
+      "courses": {
+        "label": "Courses",
+        "value": "Interactive labs and concept maps"
+      },
+      "classrooms": {
+        "label": "Classrooms",
+        "value": "Roll call, activities, progress"
+      },
+      "assistant": {
+        "label": "Assistant",
+        "value": "Q&A grounded in course material"
+      }
+    }
+  }
 }

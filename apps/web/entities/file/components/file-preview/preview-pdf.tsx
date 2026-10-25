@@ -318,19 +318,19 @@ export function PreviewPdf({ source, toolbarContainer, showLoading = true, onLoa
         type="button"
         variant="ghost"
         size="icon"
-        className="size-7 rounded-full"
+        className="size-8 rounded-md"
         aria-label={tPreview("zoomOut")}
         onClick={zoomOut}
         disabled={status !== "ready" || !canZoomOut}
       >
         <Minus className="size-3.5" />
       </Button>
-      <span className="min-w-11 text-center text-[11px] text-muted-foreground">{Math.round(zoom * 100)}%</span>
+      <span className="min-w-11 text-center text-xs text-muted-foreground">{Math.round(zoom * 100)}%</span>
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        className="size-7 rounded-full"
+        className="size-8 rounded-md"
         aria-label={tPreview("zoomIn")}
         onClick={zoomIn}
         disabled={status !== "ready" || !canZoomIn}
@@ -341,7 +341,7 @@ export function PreviewPdf({ source, toolbarContainer, showLoading = true, onLoa
         type="button"
         variant="ghost"
         size="icon"
-        className="size-7 rounded-full"
+        className="size-8 rounded-md"
         aria-label={isFullscreen ? tPreview("exitFullscreen") : tPreview("enterFullscreen")}
         onClick={() => void toggleFullscreen()}
         disabled={status !== "ready"}

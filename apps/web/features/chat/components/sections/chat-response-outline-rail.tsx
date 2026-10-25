@@ -649,7 +649,7 @@ function ChatResponseOutlineRailComponent({
           }
         }}
       >
-        <div className="shrink-0 px-2 pb-1 pt-1 text-[11px] font-medium text-muted-foreground">
+        <div className="shrink-0 px-2 pb-1 pt-1 text-xs font-medium text-muted-foreground">
           {t("responseOutline")}
         </div>
         <div

@@ -131,7 +131,7 @@ export function KnowledgeBasesProcessingSettings() {
     const labels = missing.map((item) => item.format).join(", ");
     const nextAllowlist = mergeAllowedMIMETypes(settingsMap["file.allowed_mime_types"] ?? "", missing);
     return (
-      <p className="min-w-0 text-[11px] leading-5 text-muted-foreground">
+      <p className="min-w-0 text-sm leading-6 text-muted-foreground">
         {t("mineruMimeHint.missing", { formats: labels })}
         <button
           type="button"
@@ -242,13 +242,13 @@ export function KnowledgeBasesProcessingSettings() {
                   <SettingsFieldInset className="min-w-0 space-y-3">
                     <div className="flex min-w-0 items-center justify-between gap-3">
                       <div className="min-w-0 space-y-0.5">
-                        <p className="text-xs font-medium">{t("embeddingStatus.title")}</p>
+                        <p className="text-sm font-medium">{t("embeddingStatus.title")}</p>
                         {embeddingStatus?.modelSignature ? (
-                          <p className="min-w-0 truncate font-mono text-[10px] text-muted-foreground" title={embeddingStatus.modelSignature}>
+                          <p className="min-w-0 truncate font-mono text-sm text-muted-foreground" title={embeddingStatus.modelSignature}>
                             {embeddingStatus.modelSignature}
                           </p>
                         ) : (
-                          <p className="text-[10px] text-muted-foreground">{t("embeddingStatus.noSignature")}</p>
+                          <p className="text-sm text-muted-foreground">{t("embeddingStatus.noSignature")}</p>
                         )}
                       </div>
                       <div className="flex shrink-0 items-center gap-1.5">
@@ -257,7 +257,7 @@ export function KnowledgeBasesProcessingSettings() {
                             type="button"
                             size="sm"
                             variant="ghost"
-                            className="h-7 px-2 text-xs shadow-none"
+                            className="h-9 px-2 text-sm shadow-none"
                             disabled={reindexing || embeddingStatusLoading || loading || saving}
                             onClick={() => void handleReindex(true)}
                           >
@@ -268,7 +268,7 @@ export function KnowledgeBasesProcessingSettings() {
                           type="button"
                           size="sm"
                           variant="outline"
-                          className="h-7 px-2 text-xs shadow-none"
+                          className="h-9 px-2 text-sm shadow-none"
                           disabled={reindexing || embeddingStatusLoading || loading || saving}
                           onClick={() => void handleReindex()}
                         >
@@ -279,15 +279,15 @@ export function KnowledgeBasesProcessingSettings() {
                     {embeddingStatus ? (
                       <div className="grid min-w-0 grid-cols-2 overflow-hidden rounded-md bg-muted/30 text-center sm:grid-cols-5">
                         {[
-                          { label: t("embeddingStatus.ready"), value: embeddingStatus.readyCount, color: "text-green-600 dark:text-green-400" },
-                          { label: t("embeddingStatus.stale"), value: embeddingStatus.staleCount, color: embeddingStatus.staleCount > 0 ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground" },
+                          { label: t("embeddingStatus.ready"), value: embeddingStatus.readyCount, color: "text-primary dark:text-primary" },
+                          { label: t("embeddingStatus.stale"), value: embeddingStatus.staleCount, color: embeddingStatus.staleCount > 0 ? "text-primary dark:text-primary" : "text-muted-foreground" },
                           { label: t("embeddingStatus.pending"), value: embeddingStatus.pendingCount, color: "text-muted-foreground" },
                           { label: t("embeddingStatus.noText"), value: embeddingStatus.emptyCount, color: "text-muted-foreground" },
                           { label: t("embeddingStatus.failed"), value: embeddingStatus.failedCount, color: embeddingStatus.failedCount > 0 ? "text-destructive" : "text-muted-foreground" },
                         ].map(({ label, value, color }) => (
                           <div key={label} className="px-3 py-2.5">
                             <p className={cn("text-sm font-semibold tabular-nums", color)}>{value}</p>
-                            <p className="mt-0.5 text-[10px] text-muted-foreground">{label}</p>
+                            <p className="mt-0.5 text-sm text-muted-foreground">{label}</p>
                           </div>
                         ))}
                       </div>
@@ -301,12 +301,12 @@ export function KnowledgeBasesProcessingSettings() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-[11px] text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         {t("embeddingStatus.empty")}
                       </p>
                     )}
                     {embeddingStatus?.needsReindex && (
-                      <p className="text-[11px] text-amber-600 dark:text-amber-400">
+                      <p className="text-sm text-primary dark:text-primary">
                         {t("embeddingStatus.needsReindex")}
                       </p>
                     )}

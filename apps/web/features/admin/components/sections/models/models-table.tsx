@@ -199,7 +199,7 @@ function ModelAvailabilityBadge({ availability }: { availability: ModelAvailabil
     <Badge
       variant="outline"
       className={cn(
-        "h-5 rounded-md px-1.5 py-0 text-[10px]",
+        "h-5 rounded-md px-1.5 py-0 text-xs",
         "shrink-0",
         availability === "noSource" && "border-border/70 text-muted-foreground",
         availability === "notEnabled" && "border-border/50 text-muted-foreground/80",
@@ -272,7 +272,7 @@ function SourceStatusText({
   }
   return (
     <CheckCircle2
-      className="size-4 text-emerald-600 dark:text-emerald-400"
+      className="size-4 text-primary dark:text-primary"
       aria-label={t("status.active")}
     />
   );
@@ -384,8 +384,8 @@ const ModelTableRow = React.memo(function ModelTableRow({
         aria-expanded={expanded && !collapsing}
         onClick={() => onToggleRow(item)}
       >
-        <TableCell className="w-[44px] py-1.5 whitespace-nowrap">
-          <div className="flex h-7 items-center justify-center">
+        <TableCell className="w-[44px] py-3 whitespace-nowrap">
+          <div className="flex h-9 items-center justify-center">
             <Checkbox
               checked={selected}
               disabled={updatePending}
@@ -396,25 +396,25 @@ const ModelTableRow = React.memo(function ModelTableRow({
           </div>
         </TableCell>
 
-        <TableCell className="py-1.5">
+        <TableCell className="py-3">
           <div className="flex min-w-0 items-center gap-2">
             <ModelAvailabilityBadge availability={availability} />
             <ModelIcon iconUrl={iconURL} label={titleText} />
-            <span className={cn("min-w-0 flex-1 truncate text-xs font-medium leading-5", muted ? "text-muted-foreground" : "text-foreground")}>
+            <span className={cn("min-w-0 flex-1 truncate text-sm font-medium leading-5", muted ? "text-muted-foreground" : "text-foreground")}>
               {titleText}
             </span>
           </div>
         </TableCell>
 
-        <TableCell className="py-1.5">
+        <TableCell className="py-3">
           <KindsBadges kindsJson={item.kindsJSON} />
         </TableCell>
 
-        <TableCell className="py-1.5">
+        <TableCell className="py-3">
           <ProtocolBadges protocols={protocols} />
         </TableCell>
 
-        <TableCell className="w-[120px] py-1.5">
+        <TableCell className="w-[120px] py-3">
           {showVendor ? (
             <div className="flex min-w-0 items-center gap-1.5">
               {vendorIconURL ? <ModelIcon iconUrl={vendorIconURL} label={vendorLabel} size={14} /> : null}
@@ -427,7 +427,7 @@ const ModelTableRow = React.memo(function ModelTableRow({
           )}
         </TableCell>
 
-        <TableCell className="whitespace-nowrap py-1.5 text-center">
+        <TableCell className="whitespace-nowrap py-3 text-center">
           <span className={cn(
             "text-xs",
             item.activeSourceCount > 0 ? "text-muted-foreground" : "text-muted-foreground/75",
@@ -436,8 +436,8 @@ const ModelTableRow = React.memo(function ModelTableRow({
           </span>
         </TableCell>
 
-        <TableCell className="w-[72px] whitespace-nowrap py-1.5" onClick={(event) => event.stopPropagation()}>
-          <div className="flex h-7 items-center justify-center">
+        <TableCell className="w-[72px] whitespace-nowrap py-3" onClick={(event) => event.stopPropagation()}>
+          <div className="flex h-9 items-center justify-center">
             <Switch
               size="sm"
               checked={item.status === "active"}
@@ -448,8 +448,8 @@ const ModelTableRow = React.memo(function ModelTableRow({
           </div>
         </TableCell>
 
-        <TableCell className="w-[112px] whitespace-nowrap py-1.5" onClick={(event) => event.stopPropagation()}>
-          <div className="flex h-7 items-center">
+        <TableCell className="w-[112px] whitespace-nowrap py-3" onClick={(event) => event.stopPropagation()}>
+          <div className="flex h-9 items-center">
             <Select
               value={item.accessScope === "internal" ? "internal" : "public"}
               disabled={updatePending}
@@ -459,7 +459,7 @@ const ModelTableRow = React.memo(function ModelTableRow({
             >
               <SelectTrigger
                 size="sm"
-                className="h-7 w-[96px] border-input/40 bg-transparent px-2 text-xs shadow-none"
+                className="h-9 w-[96px] border-input/40 bg-transparent px-2 text-sm shadow-none"
                 aria-label={t("table.modelAccessScopeAria", { name: item.platformModelName })}
               >
                 <SelectValue />
@@ -472,16 +472,16 @@ const ModelTableRow = React.memo(function ModelTableRow({
           </div>
         </TableCell>
 
-        <TableCell className="whitespace-nowrap py-1.5 text-muted-foreground">
+        <TableCell className="whitespace-nowrap py-3 text-muted-foreground">
           {formatDateTime(item.updatedAt, locale)}
         </TableCell>
 
         <TableCell
-          className="w-[56px] whitespace-nowrap py-1.5"
+          className="w-[56px] whitespace-nowrap py-3"
           stickyEnd
           onClick={(event) => event.stopPropagation()}
         >
-          <div className="flex h-7 items-center justify-end">
+          <div className="flex h-9 items-center justify-end">
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -564,15 +564,15 @@ const ModelTableRow = React.memo(function ModelTableRow({
                     closing={collapsing}
                     className="w-[44px] whitespace-nowrap py-1.5"
                   >
-                    <div className="flex h-7 items-center justify-center">
+                    <div className="flex h-9 items-center justify-center">
                       <span className="size-1.5 rounded-full bg-muted-foreground/40" />
                     </div>
                   </CollapsibleTableCell>
                   <CollapsibleTableCell opening={opening} closing={collapsing} className="py-1.5">
                     <div className="flex min-w-0 items-baseline gap-1.5">
-                      <span className="shrink-0 text-[11px] leading-4 text-muted-foreground">{t("upstreamModel")}</span>
+                      <span className="shrink-0 text-xs leading-4 text-muted-foreground">{t("upstreamModel")}</span>
                       <span
-                        className="truncate font-mono text-[11px] font-medium leading-4 text-foreground"
+                        className="truncate font-mono text-xs font-medium leading-4 text-foreground"
                         title={resolveValue(source.upstreamModelName)}
                       >
                         {resolveValue(source.upstreamModelName)}
@@ -589,18 +589,18 @@ const ModelTableRow = React.memo(function ModelTableRow({
                     {sourceIdentity.vendorKey !== "unknown" ? (
                       <div className="flex min-w-0 items-center gap-1.5">
                         {sourceVendorIconURL ? <ModelIcon iconUrl={sourceVendorIconURL} label={sourceIdentity.vendorLabel} size={14} /> : null}
-                        <span className="block max-w-[92px] truncate text-[11px] leading-4 text-muted-foreground">
+                        <span className="block max-w-[92px] truncate text-xs leading-4 text-muted-foreground">
                           {sourceIdentity.vendorLabel}
                         </span>
                       </div>
                     ) : (
-                      <span className="text-[11px] leading-4 text-muted-foreground">-</span>
+                      <span className="text-xs leading-4 text-muted-foreground">-</span>
                     )}
                   </CollapsibleTableCell>
                   <CollapsibleTableCell
                     opening={opening}
                     closing={collapsing}
-                    className="py-1.5 text-center text-[11px] leading-4 text-muted-foreground"
+                    className="py-1.5 text-center text-xs leading-4 text-muted-foreground"
                   >
                     <div className="max-w-[12rem] truncate" title={resolveValue(source.upstreamName)}>
                       {resolveValue(source.upstreamName)}
@@ -611,7 +611,7 @@ const ModelTableRow = React.memo(function ModelTableRow({
                     closing={collapsing}
                     className="w-[72px] whitespace-nowrap py-1.5"
                   >
-                    <div className="flex h-7 items-center justify-center">
+                    <div className="flex h-9 items-center justify-center">
                       <SourceStatusText
                         modelStatus={item.status}
                         status={source.status}
@@ -626,14 +626,14 @@ const ModelTableRow = React.memo(function ModelTableRow({
                   <CollapsibleTableCell
                     opening={opening}
                     closing={collapsing}
-                    className="w-[112px] whitespace-nowrap py-1.5 text-[11px] leading-4 text-muted-foreground"
+                    className="w-[112px] whitespace-nowrap py-3 text-sm leading-4 text-muted-foreground"
                   >
                     -
                   </CollapsibleTableCell>
                   <CollapsibleTableCell
                     opening={opening}
                     closing={collapsing}
-                    className="whitespace-nowrap py-1.5 text-[11px] leading-4 text-muted-foreground"
+                    className="whitespace-nowrap py-3 text-sm leading-4 text-muted-foreground"
                   >
                     {formatDateTime(source.updatedAt, locale)}
                   </CollapsibleTableCell>
@@ -643,7 +643,7 @@ const ModelTableRow = React.memo(function ModelTableRow({
                     className="w-[56px] whitespace-nowrap py-1.5"
                     stickyEnd
                   >
-                    <div className="flex h-7 items-center justify-end">
+                    <div className="flex h-9 items-center justify-end">
                       <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -922,7 +922,7 @@ export function ModelsTable({
       <TableHeader>
         <TableRow className="hover:bg-transparent">
           <TableHead className="w-[44px] py-1.5 text-center">
-            <div className="flex h-7 items-center justify-center">
+            <div className="flex h-9 items-center justify-center">
               <Checkbox
                 checked={allModelsSelected ? true : someModelsSelected ? "indeterminate" : false}
                 onCheckedChange={(checked) => handleSelectAllModels(checked === true)}

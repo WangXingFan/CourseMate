@@ -285,7 +285,7 @@
         "both": "Both an energy and a power signal"
       },
       "scenario": {
-        "energy": "x(t) = {a}·e^{−{d}t}·u(t)",
+        "energy": "x(t) = {a}·e^'{'−{d}t'}'·u(t)",
         "power": "x(t) = {a}·cos(2π·{f}t)",
         "ramp": "x(t) = {a}·t·u(t)"
       },
@@ -1486,7 +1486,7 @@
       "perQuestion": "Average per question",
       "ruleOne": "Correct: +10 points; a streak adds +2 per answer (up to +10). Wrong: no deduction; the streak resets.",
       "ruleThree": "The round ends at time-up. The timer pauses while saving answers.",
-      "start": "Start challenge"
+      "start": "Begin assessment"
     },
     "hud": {
       "progress": "Question {current}/{total}"
@@ -1513,7 +1513,7 @@
     },
     "questions": {
       "energy-signal": {
-        "prompt": "Which class does x(t) = e^{−2t}u(t) belong to?",
+        "prompt": "Which class does x(t) = e^'{'−2t'}'u(t) belong to?",
         "option1": "Energy signal",
         "option2": "Power signal",
         "option3": "Neither",
@@ -2157,7 +2157,7 @@
     "chapterDescription": "10 random questions from this chapter’s 20-question bank, with no repeats.",
     "rankingRule": "Current bank · Each student’s best chapter score; higher score first, then shorter time.",
     "resultRankingHint": "Round result saved.",
-    "leaderboard": "Chapter leaderboard",
+    "leaderboard": "Chapter results",
     "rank": "Rank",
     "student": "Student",
     "elapsed": "Time",

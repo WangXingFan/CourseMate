@@ -60,7 +60,7 @@ export function ClassroomDetail({
     >
       {selected ? (
         <>
-          <header className="flex min-w-0 shrink-0 items-center justify-between gap-3 border-b border-border/40 px-3 py-3 md:px-5">
+          <header className="flex min-w-0 shrink-0 items-center justify-between gap-3 border-b border-border px-4 py-5 md:px-8">
             <div className="flex min-w-0 flex-1 items-center gap-3">
               <Button
                 type="button"
@@ -72,19 +72,19 @@ export function ClassroomDetail({
               >
                 <ArrowLeft className="size-4" strokeWidth={1.6} />
               </Button>
-              <div className="hidden size-7 shrink-0 items-center justify-center md:flex">
-                <GraduationCap className="size-5 text-muted-foreground" strokeWidth={1.5} />
+              <div className="hidden size-11 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary md:flex">
+                <GraduationCap className="size-5" strokeWidth={1.5} />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex min-w-0 items-center gap-1.5">
-                  <h2 className="truncate text-[13px] font-medium text-foreground">{selected.name}</h2>
+                  <h2 className="truncate font-display text-2xl font-normal leading-tight text-foreground">{selected.name}</h2>
                   {!canManage ? (
-                    <Badge variant="outline" className="h-4 rounded-md px-1.5 text-[9px] font-normal">
+                    <Badge variant="outline" className="h-5 rounded-md px-1.5 text-2xs font-normal">
                       {t("readOnly")}
                     </Badge>
                   ) : null}
                 </div>
-                <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                <p className="mt-1 truncate text-sm text-muted-foreground">
                   {selected.description || t("studentCount", { count: selected.studentCount })}
                 </p>
               </div>
@@ -95,64 +95,64 @@ export function ClassroomDetail({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-7 px-2"
+                  className="h-8 px-3"
                   onClick={() => onEdit(selected)}
                 >
-                  <Pencil className="size-3.5" strokeWidth={1.6} />
+                  <Pencil className="size-4" strokeWidth={1.6} />
                   <span className="hidden sm:inline">{t("edit")}</span>
                 </Button>
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-7 px-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  className="h-8 px-3 text-destructive hover:bg-destructive/10 hover:text-destructive"
                   onClick={() => onDelete(selected)}
                 >
-                  <Trash2 className="size-3.5" strokeWidth={1.6} />
+                  <Trash2 className="size-4" strokeWidth={1.6} />
                   <span className="hidden sm:inline">{t("delete")}</span>
                 </Button>
               </div>
             ) : null}
           </header>
 
-          <div className="flex min-w-0 shrink-0 flex-wrap items-center gap-x-4 gap-y-1 px-3 py-2.5 text-[11px] text-muted-foreground md:px-5">
+          <div className="flex min-w-0 shrink-0 flex-wrap items-center gap-x-6 gap-y-1 px-4 py-3 text-sm text-muted-foreground md:px-8">
             <span>{t("teacher")}: {selected.teacherName || "-"}</span>
             <span>{t("studentCount", { count: selected.studentCount })}</span>
             <span>{t("createdAt", { date: formatDate(selected.createdAt, locale) })}</span>
           </div>
 
           {canManage ? (
-            <div className="flex h-10 shrink-0 items-center justify-between gap-2 border-b border-border/35 px-3 md:px-5">
+            <div className="flex h-12 shrink-0 items-center justify-between gap-2 border-b border-border px-4 md:px-8">
               <div className="flex items-center gap-0.5">
                 <TabButton active={tab === "students"} onClick={() => setTab("students")}>
-                  <Users className="size-3.5" strokeWidth={1.6} />
+                  <Users className="size-4" strokeWidth={1.6} />
                   {activitiesT("tabStudents")}
                 </TabButton>
                 <TabButton active={tab === "activities"} onClick={() => setTab("activities")}>
-                  <BarChart3 className="size-3.5" strokeWidth={1.6} />
+                  <BarChart3 className="size-4" strokeWidth={1.6} />
                   {activitiesT("tabActivities")}
                 </TabButton>
               </div>
               {tab === "students" ? (
                 <div className="flex items-center gap-1">
-                  <Button type="button" variant="outline" size="sm" className="h-7 px-2" onClick={onAddStudent}>
-                    <UserPlus className="size-3.5" strokeWidth={1.6} />
+                  <Button type="button" variant="outline" size="sm" className="h-8 px-3" onClick={onAddStudent}>
+                    <UserPlus className="size-4" strokeWidth={1.6} />
                     <span className="hidden sm:inline">{t("addStudent")}</span>
                   </Button>
-                  <Button type="button" size="sm" className="h-7 px-2" onClick={onCreateStudent}>
-                    <UserRoundPlus className="size-3.5" strokeWidth={1.6} />
+                  <Button type="button" size="sm" className="h-8 px-3" onClick={onCreateStudent}>
+                    <UserRoundPlus className="size-4" strokeWidth={1.6} />
                     <span className="hidden sm:inline">{t("createStudent")}</span>
                   </Button>
-                  <Button type="button" variant="ghost" size="icon-sm" className="size-7" onClick={onImportStudents} aria-label={t("importStudents")} title={t("importStudents")}>
-                    <FileUp className="size-3.5" strokeWidth={1.6} />
+                  <Button type="button" variant="ghost" size="icon-sm" className="size-8" onClick={onImportStudents} aria-label={t("importStudents")} title={t("importStudents")}>
+                    <FileUp className="size-4" strokeWidth={1.6} />
                   </Button>
                 </div>
               ) : null}
             </div>
           ) : (
-            <div className="flex h-10 shrink-0 items-center justify-between gap-2 border-b border-border/35 px-3 md:px-5">
-              <span className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
-                <Users className="size-3.5" strokeWidth={1.6} />
+            <div className="flex h-12 shrink-0 items-center justify-between gap-2 border-b border-border px-4 md:px-8">
+              <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                <Users className="size-4" strokeWidth={1.6} />
                 {t("students")}
               </span>
             </div>
@@ -165,7 +165,7 @@ export function ClassroomDetail({
               <Spinner className="size-4" />
             </div>
           ) : students.length > 0 ? (
-            <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3 md:px-5">
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 md:px-8">
               <div className="space-y-0.5">
                 {students.map((student) => (
                   <StudentRow
@@ -207,7 +207,7 @@ function TabButton({
     <button
       type="button"
       className={cn(
-        "flex h-7 items-center gap-1.5 rounded-md px-2 text-[11px] font-medium transition-colors",
+        "flex h-8 items-center gap-1.5 rounded-md px-2 text-sm font-medium transition-colors",
         active ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground",
       )}
       onClick={onClick}
@@ -233,25 +233,25 @@ function StudentRow({
 
   return (
     <div className="group flex min-h-10 items-center gap-2.5 rounded-md px-2 py-1 transition-colors hover:bg-muted/40">
-      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground text-[11px] font-medium text-background">
+      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground text-xs font-medium text-background">
         {name.charAt(0).toUpperCase()}
       </span>
       <div className="min-w-0 flex-1">
         <p className="truncate text-xs font-medium text-foreground">{name}</p>
-        <p className="truncate text-[11px] text-muted-foreground">@{student.username}</p>
+        <p className="truncate text-xs text-muted-foreground">@{student.username}</p>
       </div>
       {canManage ? (
         <Button
           type="button"
           variant="ghost"
           size="icon-sm"
-          className="size-6 shrink-0 text-muted-foreground opacity-100 hover:bg-destructive/10 hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
+          className="size-8 shrink-0 text-muted-foreground opacity-100 hover:bg-destructive/10 hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
           disabled={removing}
           onClick={() => void onRemove(student.id)}
           aria-label={t("removeStudentAria", { name })}
           title={t("removeStudent")}
         >
-          {removing ? <Spinner className="size-3" /> : <X className="size-3.5" strokeWidth={1.6} />}
+          {removing ? <Spinner className="size-3" /> : <X className="size-4" strokeWidth={1.6} />}
         </Button>
       ) : null}
     </div>

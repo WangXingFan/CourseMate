@@ -34,7 +34,7 @@ function FileContextBadgeList({ badges }: { badges: FileContextBadge[] }) {
     <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
       {badges.map((item, index) => {
         const className =
-          "inline-flex max-w-[180px] items-center gap-1 rounded-full border border-border/35 bg-background/45 px-1.5 py-0 text-[11px] leading-5 text-muted-foreground/76 transition-colors hover:border-border hover:text-foreground";
+          "inline-flex max-w-[180px] items-center gap-1 rounded-full border border-border/35 bg-background/45 px-1.5 py-0 text-xs leading-5 text-muted-foreground/76 transition-colors hover:border-border hover:text-foreground";
         const content = (
           <>
             <span className="truncate font-medium">{item.name}</span>
@@ -150,7 +150,7 @@ export function RAGCitationList({
         {grouped.map((item) => (
           <span
             key={item.fileID}
-            className="inline-flex max-w-[180px] items-center gap-1 rounded-full border border-border/35 bg-background/45 px-1.5 py-0 text-[11px] leading-5 text-muted-foreground/76"
+            className="inline-flex max-w-[180px] items-center gap-1 rounded-full border border-border/35 bg-background/45 px-1.5 py-0 text-xs leading-5 text-muted-foreground/76"
             title={item.previews.join("\n")}
           >
             {item.imageMatch ? <ImageIcon className="size-3 shrink-0 stroke-1" aria-label={labels.rag.imageMatch} /> : null}
@@ -166,8 +166,8 @@ export function RAGCitationList({
   return (
     <div className={cn("border-t border-border/25 pt-2", className)}>
       <div className="mb-2 flex items-center justify-between gap-3 px-0.5">
-        <span className="text-[11px] font-medium text-foreground/72">{labels.rag.retrievalSources}</span>
-        <span className="text-[10px] text-muted-foreground/50">{labels.rag.chunksTotal(citations.length)}</span>
+        <span className="text-xs font-medium text-foreground/72">{labels.rag.retrievalSources}</span>
+        <span className="text-2xs text-muted-foreground/50">{labels.rag.chunksTotal(citations.length)}</span>
       </div>
 
       <div className="space-y-3">
@@ -183,16 +183,16 @@ export function RAGCitationList({
                 <div className="flex min-w-0 items-center gap-2">
                   <span className="size-1 shrink-0 rounded-full bg-foreground/40" aria-hidden="true" />
                   {item.imageMatch ? <ImageIcon className="size-3 shrink-0 stroke-1 text-muted-foreground/70" aria-label={labels.rag.imageMatch} /> : null}
-                  <div className="truncate text-[11px] font-medium text-foreground/82" title={item.fileName}>{item.fileName}</div>
+                  <div className="truncate text-xs font-medium text-foreground/82" title={item.fileName}>{item.fileName}</div>
                 </div>
-                {itemMeta ? <span className="shrink-0 text-[10px] text-muted-foreground/50">{itemMeta}</span> : null}
+                {itemMeta ? <span className="shrink-0 text-2xs text-muted-foreground/50">{itemMeta}</span> : null}
               </div>
               {item.previews.length > 0 ? (
                 <div className="mt-1.5 divide-y divide-border/20 overflow-hidden rounded-md bg-muted/25">
                   {item.previews.slice(0, 3).map((preview, index) => (
                     <div key={`${item.fileID}-${index}`} className="px-2.5 py-2">
                       <p
-                        className="line-clamp-2 text-[10px] leading-4 text-muted-foreground/68"
+                        className="line-clamp-2 text-2xs leading-4 text-muted-foreground/68"
                         title={preview}
                       >
                         {preview}
@@ -201,7 +201,7 @@ export function RAGCitationList({
                   ))}
                 </div>
               ) : item.imageMatch ? (
-                <p className="mt-1.5 px-2.5 text-[10px] leading-4 text-muted-foreground/55">{labels.rag.imageMatch}</p>
+                <p className="mt-1.5 px-2.5 text-2xs leading-4 text-muted-foreground/55">{labels.rag.imageMatch}</p>
               ) : null}
             </div>
           );
@@ -274,7 +274,7 @@ function TraceStageRows({
           <li
             key={`${stage.label}-${index}`}
             className={cn(
-              "group/stage grid grid-cols-[0.875rem_8rem_minmax(0,1fr)] gap-x-5 gap-y-0.5 text-[12px] leading-5",
+              "group/stage grid grid-cols-[0.875rem_8rem_minmax(0,1fr)] gap-x-5 gap-y-0.5 text-xs leading-5",
               "max-sm:grid-cols-[0.875rem_minmax(0,1fr)] max-sm:gap-x-2",
             )}
           >
@@ -300,7 +300,7 @@ function TraceStageRows({
             </div>
             <div className="min-w-0 space-y-0.5 pb-2 max-sm:col-start-2">
               {stage.trigger ? (
-                <div className={cn("break-words text-[12px] leading-5 text-muted-foreground/58", isError && "text-destructive/65")}>
+                <div className={cn("break-words text-xs leading-5 text-muted-foreground/58", isError && "text-destructive/65")}>
                   {displayTraceTrigger(stage.trigger, labels)}
                 </div>
               ) : null}
@@ -372,7 +372,7 @@ export function TraceContent({
   }
 
   return (
-    <section className="text-[12px] leading-5 text-muted-foreground/84">
+    <section className="text-xs leading-5 text-muted-foreground/84">
       <StreamdownRender
         content={block.contentMarkdown}
         streaming={streaming}
