@@ -70,7 +70,7 @@ function StudentActivities({ accessToken }: { accessToken: string }) {
   if (model.notJoined || !model.data) {
     return (
       <main className="h-full min-h-0 w-full flex-1 bg-background">
-        <CenteredEmptyState title={t("noClassroom")} description={t("noClassroomDescription")} />
+        <CenteredEmptyState title={t("noClassroom")} />
       </main>
     );
   }

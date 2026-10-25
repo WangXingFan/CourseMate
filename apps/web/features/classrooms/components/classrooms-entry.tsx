@@ -25,7 +25,7 @@ export function ClassroomsEntry() {
   if (!isTeacher && !isAdmin) {
     return (
       <main className="h-full min-h-0 w-full flex-1 bg-background">
-        <CenteredEmptyState title={t("accessDeniedTitle")} description={t("accessDeniedDescription")} />
+        <CenteredEmptyState title={t("accessDeniedTitle")} />
       </main>
     );
   }

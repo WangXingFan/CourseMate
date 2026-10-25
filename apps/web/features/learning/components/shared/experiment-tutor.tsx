@@ -32,7 +32,6 @@ export function ExperimentTutor({ seed, selected, ...input }: ExperimentTutorPro
           {t(model.loading ? "loading" : model.error ? "retry" : input.action)}
         </Button>
       </div>
-      <p className="mt-2 text-xs leading-5 text-muted-foreground">{t(input.action === "hint" ? "hintDescription" : "explainDescription")}</p>
       <div aria-live="polite" aria-busy={model.loading}>
         {model.error ? <p role="alert" className="mt-3 text-xs text-destructive">{model.error}</p> : null}
         {model.data ? <div className="mt-4 space-y-3 text-xs leading-6">

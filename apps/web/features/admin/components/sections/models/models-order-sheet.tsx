@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
@@ -111,15 +110,12 @@ export function ModelOrderSheet({
         onClose();
       }
     }}>
-      <SheetContent className="gap-0 sm:max-w-[760px]">
+      <SheetContent aria-describedby={undefined} className="gap-0 sm:max-w-[760px]">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2 text-sm">
             <ListOrdered className="size-4 stroke-1.5" />
             {t("title")}
           </SheetTitle>
-          <SheetDescription className="max-w-2xl text-xs">
-            {t("description")}
-          </SheetDescription>
         </SheetHeader>
 
         <div className="min-h-0 flex-1 overflow-hidden px-6 pb-4">

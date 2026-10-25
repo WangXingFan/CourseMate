@@ -119,7 +119,6 @@ export function LoginPage({ nextPath }: LoginPageProps) {
       <div className="mx-auto my-auto w-full max-w-[380px] py-10">
         <header>
           <h2 className="font-display text-[2.125rem] leading-tight font-normal tracking-[-0.01em]">{heading.title}</h2>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">{heading.hint}</p>
         </header>
 
         <div

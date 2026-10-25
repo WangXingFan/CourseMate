@@ -32,9 +32,9 @@ export function ConvolutionLesson() {
         : t("phases.falling");
 
   return (
-    <LessonShell title={t("title")} subtitle={t("subtitle")} formula={t.raw("formula")}>
+    <LessonShell title={t("title")} formula={t.raw("formula")}>
       <div className="space-y-3">
-        <LessonPanel title={t("controls.title")} description={t("controls.description")}>
+        <LessonPanel title={t("controls.title")}>
           <div className="grid gap-4 sm:grid-cols-2">
             <LabSlider
               label={t("controls.time")}
@@ -44,18 +44,17 @@ export function ConvolutionLesson() {
               step={0.01}
               onChange={setTime}
               format={(value) => `t = ${value.toFixed(2)}`}
-              hint={t("controls.timeHint")}
             />
             <div className="grid grid-cols-2 gap-2">
-              <Readout label={t("readouts.integral")} value={integral.toFixed(3)} hint={t("readouts.integralHint")} />
-              <Readout label={t("readouts.exact")} value={exact.toFixed(3)} hint={t("readouts.exactHint")} />
-              <Readout label={t("readouts.overlap")} value={overlap} hint={t("readouts.overlapHint")} />
+              <Readout label={t("readouts.integral")} value={integral.toFixed(3)} />
+              <Readout label={t("readouts.exact")} value={exact.toFixed(3)} />
+              <Readout label={t("readouts.overlap")} value={overlap} />
               <Readout label={t("readouts.phase")} value={phase} />
             </div>
           </div>
         </LessonPanel>
 
-        <LessonPanel title={t("plot.overlapTitle")} description={t("plot.overlapDescription")}>
+        <LessonPanel title={t("plot.overlapTitle")}>
           <SignalPlot
             xDomain={[TAU_MIN, TAU_MAX]}
             yDomain={[-0.08, 1.18]}
@@ -70,7 +69,7 @@ export function ConvolutionLesson() {
           />
         </LessonPanel>
 
-        <LessonPanel title={t("plot.outputTitle")} description={t("plot.outputDescription")}>
+        <LessonPanel title={t("plot.outputTitle")}>
           <SignalPlot
             xDomain={[T_MIN, T_MAX]}
             yDomain={[-0.05, 0.8]}

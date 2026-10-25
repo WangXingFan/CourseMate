@@ -24,9 +24,9 @@ export function FirstOrderSystemLesson() {
   );
 
   return (
-    <LessonShell title={t("title")} subtitle={t("subtitle")} formula={t.raw("formula")}>
+    <LessonShell title={t("title")} formula={t.raw("formula")}>
       <div className="space-y-3">
-        <LessonPanel title={t("controls.title")} description={t("controls.description")}>
+        <LessonPanel title={t("controls.title")}>
           <div className="grid gap-4 sm:grid-cols-2">
             <LabSlider
               label={t("controls.gain")}
@@ -36,7 +36,6 @@ export function FirstOrderSystemLesson() {
               step={0.1}
               onChange={setGain}
               format={(value) => `K = ${value.toFixed(1)}`}
-              hint={t("controls.gainHint")}
             />
             <LabSlider
               label={t("controls.timeConstant")}
@@ -46,18 +45,17 @@ export function FirstOrderSystemLesson() {
               step={0.05}
               onChange={setTimeConstant}
               format={(value) => `τ = ${value.toFixed(2)} s`}
-              hint={t("controls.timeConstantHint")}
             />
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Readout label={t("readouts.atTau")} value={`${(0.632 * gain).toFixed(3)}`} hint={t("readouts.atTauHint")} />
+            <Readout label={t("readouts.atTau")} value={`${(0.632 * gain).toFixed(3)}`} />
             <Readout label={t("readouts.atTwoTau")} value={`${(0.865 * gain).toFixed(3)}`} />
-            <Readout label={t("readouts.settling")} value={`${(5 * timeConstant).toFixed(2)} s`} hint={t("readouts.settlingHint")} />
-            <Readout label={t("readouts.cutoff")} value={`${cutoff.toFixed(2)} Hz`} hint={t("readouts.cutoffHint")} />
+            <Readout label={t("readouts.settling")} value={`${(5 * timeConstant).toFixed(2)} s`} />
+            <Readout label={t("readouts.cutoff")} value={`${cutoff.toFixed(2)} Hz`} />
           </div>
         </LessonPanel>
 
-        <LessonPanel title={t("plot.title")} description={t("plot.description", { value: gain.toFixed(1) })}>
+        <LessonPanel title={t("plot.title")}>
           <SignalPlot
             xDomain={[0, timeMax]}
             yDomain={[0, Math.max(1.1, gain * 1.25)]}

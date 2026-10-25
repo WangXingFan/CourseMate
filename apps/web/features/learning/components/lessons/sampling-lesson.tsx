@@ -29,9 +29,9 @@ export function SamplingLesson() {
   );
 
   return (
-    <LessonShell title={t("title")} subtitle={t("subtitle")} formula={t.raw("formula")}>
+    <LessonShell title={t("title")} formula={t.raw("formula")}>
       <div className="space-y-3">
-        <LessonPanel title={t("controls.title")} description={t("controls.description")}>
+        <LessonPanel title={t("controls.title")}>
           <div className="grid gap-4 sm:grid-cols-2">
             <LabSlider
               label={t("controls.signalFrequency")}
@@ -41,7 +41,6 @@ export function SamplingLesson() {
               step={0.5}
               onChange={setSignalFrequency}
               format={(value) => `${value.toFixed(1)} Hz`}
-              hint={t("controls.signalHint")}
             />
             <LabSlider
               label={t("controls.samplingFrequency")}
@@ -51,7 +50,6 @@ export function SamplingLesson() {
               step={0.5}
               onChange={setSamplingFrequency}
               format={(value) => `${value.toFixed(1)} Hz`}
-              hint={t("controls.samplingHint")}
             />
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -60,17 +58,15 @@ export function SamplingLesson() {
             <Readout
               label={t("readouts.status")}
               value={aliased ? t("readouts.aliased") : t("readouts.safe")}
-              hint={aliased ? t("readouts.aliasedHint") : t("readouts.safeHint")}
             />
             <Readout
               label={t("readouts.alias")}
               value={aliased ? `${aliasFrequency.toFixed(2)} Hz` : "—"}
-              hint={aliased ? t("readouts.aliasHint") : undefined}
             />
           </div>
         </LessonPanel>
 
-        <LessonPanel title={t("plot.title")} description={t("plot.description")}>
+        <LessonPanel title={t("plot.title")}>
           <SignalPlot
             xDomain={[0, TIME_MAX]}
             yDomain={[-1.25, 1.25]}

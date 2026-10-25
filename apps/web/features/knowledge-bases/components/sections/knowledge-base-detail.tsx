@@ -115,17 +115,12 @@ export function KnowledgeBaseDetail({
             <div className="pointer-events-none absolute inset-0">
               <CenteredEmptyState
                 title={t("noFiles")}
-                description={
-                  mode === "admin" || selected.scope === "user"
-                    ? t("noFilesDescription")
-                    : undefined
-                }
               />
             </div>
           )}
         </>
       ) : (
-        <CenteredEmptyState title={t("selectHint")} description={t("selectHintDescription")} />
+        <CenteredEmptyState title={t("selectHint")} />
       )}
     </section>
   );

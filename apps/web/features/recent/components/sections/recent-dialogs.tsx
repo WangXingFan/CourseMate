@@ -24,9 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
+  DialogContent,  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -111,10 +109,9 @@ export function RecentDialogs({
   return (
     <>
       <Dialog open={Boolean(renameTarget)} onOpenChange={(open) => !open && onCloseRenameDialog()}>
-        <DialogContent>
+        <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t("renameTitle")}</DialogTitle>
-            <DialogDescription>{t("renameDescription")}</DialogDescription>
           </DialogHeader>
           <form
             className="space-y-4"

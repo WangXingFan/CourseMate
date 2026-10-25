@@ -5,9 +5,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
+  DialogContent,  DialogFooter,
   DialogHeader,
   DialogHeightTransition,
   DialogTitle,
@@ -34,11 +32,10 @@ export function ChatScreenshotPreviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[680px]">
+      <DialogContent aria-describedby={undefined} className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[680px]">
         <DialogHeightTransition contentClassName="max-h-[min(86vh,760px)]">
           <DialogHeader className="shrink-0 px-4 py-4">
             <DialogTitle>{t("previewTitle")}</DialogTitle>
-            <DialogDescription>{t("previewDescription")}</DialogDescription>
           </DialogHeader>
 
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-2">

@@ -31,9 +31,9 @@ export function ModulationLesson() {
   const overmodulated = modulationIndex > 1;
 
   return (
-    <LessonShell title={t("title")} subtitle={t("subtitle")} formula={t.raw("formula")}>
+    <LessonShell title={t("title")} formula={t.raw("formula")}>
       <div className="space-y-3">
-        <LessonPanel title={t("controls.title")} description={t("controls.description")}>
+        <LessonPanel title={t("controls.title")}>
           <div className="grid gap-4 sm:grid-cols-3">
             <LabSlider
               label={t("controls.message")}
@@ -43,7 +43,6 @@ export function ModulationLesson() {
               step={0.1}
               onChange={setMessageFrequency}
               format={(value) => `${value.toFixed(1)} Hz`}
-              hint={t("controls.messageHint")}
             />
             <LabSlider
               label={t("controls.carrier")}
@@ -53,7 +52,6 @@ export function ModulationLesson() {
               step={0.5}
               onChange={setCarrierFrequency}
               format={(value) => `${value.toFixed(1)} Hz`}
-              hint={t("controls.carrierHint")}
             />
             <LabSlider
               label={t("controls.index")}
@@ -63,22 +61,20 @@ export function ModulationLesson() {
               step={0.05}
               onChange={setModulationIndex}
               format={(value) => `m = ${value.toFixed(2)}`}
-              hint={t("controls.indexHint")}
             />
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Readout label={t("readouts.bandwidth")} value={`${(2 * messageFrequency).toFixed(1)} Hz`} hint={t("readouts.bandwidthHint")} />
+            <Readout label={t("readouts.bandwidth")} value={`${(2 * messageFrequency).toFixed(1)} Hz`} />
             <Readout label={t("readouts.sidebands")} value={`${(carrierFrequency - messageFrequency).toFixed(1)} / ${(carrierFrequency + messageFrequency).toFixed(1)} Hz`} />
             <Readout
               label={t("readouts.status")}
               value={overmodulated ? t("readouts.overmodulated") : t("readouts.normal")}
-              hint={overmodulated ? t("readouts.overmodulatedHint") : t("readouts.normalHint")}
             />
-            <Readout label={t("readouts.powerSplit")} value={`${(100 / (2 + modulationIndex * modulationIndex)).toFixed(0)}%`} hint={t("readouts.powerSplitHint")} />
+            <Readout label={t("readouts.powerSplit")} value={`${(100 / (2 + modulationIndex * modulationIndex)).toFixed(0)}%`} />
           </div>
         </LessonPanel>
 
-        <LessonPanel title={t("plot.timeTitle")} description={t("plot.timeDescription")}>
+        <LessonPanel title={t("plot.timeTitle")}>
           <SignalPlot
             xDomain={[0, timeMax]}
             yDomain={[-(1 + modulationIndex) * 1.1, (1 + modulationIndex) * 1.1]}
@@ -92,7 +88,7 @@ export function ModulationLesson() {
           />
         </LessonPanel>
 
-        <LessonPanel title={t("plot.spectrumTitle")} description={t("plot.spectrumDescription")}>
+        <LessonPanel title={t("plot.spectrumTitle")}>
           <SignalPlot
             xDomain={[0, carrierFrequency + messageFrequency + 2]}
             yDomain={[0, 1.2]}

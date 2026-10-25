@@ -746,9 +746,6 @@ export function UpstreamSheet({
                         </Select>
                       </div>
                     ))}
-                    <p className="text-sm text-muted-foreground">
-                      {t("sheet.protocolDefaultsDescription")}
-                    </p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -758,7 +755,6 @@ export function UpstreamSheet({
                   <span>{t("sheet.timeouts")}</span>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pb-4 pt-0">
-                  <p className="text-sm leading-6 text-muted-foreground">{t("sheet.circuitBreakDescription")}</p>
                   <div className="min-w-0 space-y-1">
                     <Label className="text-sm font-normal text-muted-foreground" htmlFor="connect-timeout">{t("sheet.connectTimeout")}</Label>
                     <Input
@@ -806,9 +802,6 @@ export function UpstreamSheet({
                       value={form.cbFailureThreshold}
                       onChange={(e) => setField("cbFailureThreshold", e.target.value)}
                     />
-                    <p className="text-sm text-muted-foreground">
-                      {t("sheet.failureThresholdDescription")}
-                    </p>
                   </div>
                   <div className="min-w-0 space-y-1">
                     <Label className="text-sm font-normal text-muted-foreground" htmlFor="cb-model-threshold">{t("sheet.modelThreshold")}</Label>
@@ -819,9 +812,6 @@ export function UpstreamSheet({
                       value={form.cbModelThreshold}
                       onChange={(e) => setField("cbModelThreshold", e.target.value)}
                     />
-                    <p className="text-sm text-muted-foreground">
-                      {t("sheet.modelThresholdDescription")}
-                    </p>
                   </div>
                   <div className="min-w-0 space-y-1">
                     <Label className="text-sm font-normal text-muted-foreground">{t("sheet.thresholdLogic")}</Label>

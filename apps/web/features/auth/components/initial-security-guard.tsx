@@ -524,9 +524,6 @@ export function InitialSecurityGuard() {
                 <Onboarding.Header className="text-left">
                   <div className="space-y-2">
                     <h2 className="text-2xl font-semibold tracking-normal">{t("labels.themePreset")}</h2>
-                    <p className="text-xs leading-5 text-muted-foreground">
-                      {t("themePresetDescription")}
-                    </p>
                   </div>
                 </Onboarding.Header>
 
@@ -567,9 +564,6 @@ export function InitialSecurityGuard() {
                 <Onboarding.Header className="text-left">
                   <div className="space-y-2">
                     <h2 className="text-2xl font-semibold tracking-normal">{t("personalizationTitle")}</h2>
-                    <p className="text-xs leading-5 text-muted-foreground">
-                      {t("personalizationDescription")}
-                    </p>
                   </div>
                 </Onboarding.Header>
 

@@ -21,7 +21,7 @@ export function ClassroomRollCallEntry() {
     return <main className="flex h-full flex-1 items-center justify-center text-muted-foreground"><SpinnerLabel>{t("loading")}</SpinnerLabel></main>;
   }
   if (user?.role !== "teacher") {
-    return <main className="h-full min-h-0 flex-1"><CenteredEmptyState title={t("teacherOnly")} description={t("teacherOnlyDescription")} /></main>;
+    return <main className="h-full min-h-0 flex-1"><CenteredEmptyState title={t("teacherOnly")} /></main>;
   }
   return <ClassroomRollCall key={user.id} accessToken={accessToken} />;
 }

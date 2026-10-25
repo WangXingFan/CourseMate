@@ -29,9 +29,9 @@ export function LaplaceLesson() {
   const poleRadius = Math.hypot(sigma, omega);
 
   return (
-    <LessonShell title={t("title")} subtitle={t("subtitle")} formula={t.raw("formula")}>
+    <LessonShell title={t("title")} formula={t.raw("formula")}>
       <div className="space-y-3">
-        <LessonPanel title={t("controls.title")} description={t("controls.description")}>
+        <LessonPanel title={t("controls.title")}>
           <div className="grid gap-4 sm:grid-cols-2">
             <LabSlider
               label={t("controls.sigma")}
@@ -41,7 +41,6 @@ export function LaplaceLesson() {
               step={0.1}
               onChange={setSigma}
               format={(value) => `σ = ${value.toFixed(1)}`}
-              hint={t("controls.sigmaHint")}
             />
             <LabSlider
               label={t("controls.omega")}
@@ -51,23 +50,21 @@ export function LaplaceLesson() {
               step={0.1}
               onChange={setOmega}
               format={(value) => `ω = ${value.toFixed(1)} rad/s`}
-              hint={t("controls.omegaHint")}
             />
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
             <Readout label={t("readouts.poles")} value={`${sigma.toFixed(1)} ± j${omega.toFixed(1)}`} />
-            <Readout label={t("readouts.stability")} value={stability} hint={t("readouts.stabilityHint")} />
-            <Readout label={t("readouts.roc")} value={`Re(s) > ${sigma.toFixed(1)}`} />
+            <Readout label={t("readouts.stability")} value={stability} />
+            <Readout label={t("readouts.roc")} value={`Re(s)> ${sigma.toFixed(1)}`} />
             <Readout
               label={t("readouts.oscillation")}
               value={`${(omega / (2 * Math.PI)).toFixed(2)} Hz`}
-              hint={t("readouts.oscillationHint")}
             />
           </div>
         </LessonPanel>
 
         <div className="grid gap-3 lg:grid-cols-2">
-          <LessonPanel title={t("plot.pzTitle")} description={t("plot.pzDescription")}>
+          <LessonPanel title={t("plot.pzTitle")}>
             <PoleZeroPlot
               poles={[
                 { re: sigma, im: omega, label: "×" },
@@ -81,8 +78,8 @@ export function LaplaceLesson() {
           </LessonPanel>
           <LessonPanel
             title={t("plot.impulseTitle")}
-            description={peak > limit ? t("plot.clipped", { peak: peak.toFixed(1) }) : t("plot.impulseDescription")}
           >
+            {peak > limit ? <p role="status" className="mb-3 text-sm leading-6">{t("plot.clipped", { peak: peak.toFixed(1) })}</p> : null}
             <SignalPlot
               xDomain={[0, timeMax]}
               yDomain={[-limit, limit]}
@@ -95,13 +92,12 @@ export function LaplaceLesson() {
           </LessonPanel>
         </div>
 
-        <LessonPanel title={t("readouts.decayTitle")} description={t("readouts.decayDescription")}>
+        <LessonPanel title={t("readouts.decayTitle")}>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             <Readout label={t("readouts.poleRadius")} value={poleRadius.toFixed(2)} />
             <Readout
               label={t("readouts.decayTime")}
               value={sigma < 0 ? `${(1 / Math.abs(sigma)).toFixed(2)} s` : "∞"}
-              hint={t("readouts.decayTimeHint")}
             />
             <Readout label={t("readouts.rocAxis")} value={sigma < 0 ? t("readouts.includesAxis") : t("readouts.excludesAxis")} />
             <Readout label={t("readouts.responseType")} value={responseShape} />

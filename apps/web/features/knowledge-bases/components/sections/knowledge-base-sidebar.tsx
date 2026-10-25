@@ -165,7 +165,6 @@ export function KnowledgeBaseSidebar({
           <CenteredEmptyState
             className="pointer-events-none absolute inset-0 min-w-0"
             title={query.trim() ? t("searchEmpty") : t("empty")}
-            description={query.trim() ? t("searchEmptyDescription") : t("emptyDescription")}
           />
         ) : null}
       </div>

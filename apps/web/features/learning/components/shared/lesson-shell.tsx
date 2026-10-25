@@ -10,13 +10,11 @@ import { cn } from "@/lib/utils";
 
 export function LessonShell({
   title,
-  subtitle,
   formula,
   children,
   className,
 }: {
   title: string;
-  subtitle?: string;
   formula?: string;
   children: React.ReactNode;
   className?: string;
@@ -38,7 +36,6 @@ export function LessonShell({
             <h1 className="font-display text-3xl leading-[1.12] font-normal tracking-[-0.015em] text-foreground md:text-4xl">
               {title}
             </h1>
-            {subtitle ? <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{subtitle}</p> : null}
           </div>
           {formula ? (
             <div className="min-w-0 overflow-x-auto border-l-2 border-seal py-1 pl-4 text-foreground">
@@ -54,12 +51,10 @@ export function LessonShell({
 
 export function LessonPanel({
   title,
-  description,
   children,
   className,
 }: {
   title: string;
-  description?: string;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -67,19 +62,17 @@ export function LessonPanel({
     <section className={cn("rounded-lg border border-border bg-card p-5 text-card-foreground md:p-6", className)}>
       <div className="mb-4">
         <h2 className="font-display text-xl font-normal text-foreground">{title}</h2>
-        {description ? <p className="mt-1 text-sm leading-6 text-muted-foreground">{description}</p> : null}
       </div>
       {children}
     </section>
   );
 }
 
-export function Readout({ label, value, hint }: { label: string; value: React.ReactNode; hint?: string }) {
+export function Readout({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="border-l-2 border-border py-1 pl-3">
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className="mt-1 font-mono text-lg font-medium tabular-nums text-foreground">{value}</p>
-      {hint ? <p className="mt-2 text-sm leading-6 text-muted-foreground">{hint}</p> : null}
     </div>
   );
 }

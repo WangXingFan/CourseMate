@@ -16,7 +16,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -209,10 +208,9 @@ export function ChatLabel({
       </DropdownMenu>
 
       <Dialog open={renameDialogOpen} onOpenChange={setRenameDialogOpen}>
-        <DialogContent>
+        <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t("rename")}</DialogTitle>
-            <DialogDescription>{t("renameDescription")}</DialogDescription>
           </DialogHeader>
           <form
             onSubmit={(event) => {

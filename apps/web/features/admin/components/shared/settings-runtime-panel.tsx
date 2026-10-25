@@ -8,7 +8,7 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
@@ -479,7 +479,6 @@ export function SettingsFieldEditor({
                 </div>
                 {labelAction ? <div className="shrink-0">{labelAction}</div> : null}
               </div>
-              {field.description ? <FieldDescription className="text-xs">{field.description}</FieldDescription> : null}
             </div>
 
             {field.type === "json" ? (
@@ -519,7 +518,6 @@ export function SettingsFieldEditor({
                 {labelMetaNode}
                 {dirtyBadge}
               </div>
-              {field.description ? <FieldDescription className="text-xs">{field.description}</FieldDescription> : null}
             </div>
 
             <div className="w-full min-w-0 md:w-44 md:shrink-0 xl:w-52">

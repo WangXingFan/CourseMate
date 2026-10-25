@@ -69,7 +69,6 @@ export function PredictionCard({
           {t("predictFirst")}
         </Badge>
       </div>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">{t("description")}</p>
 
       <p className="mt-5 font-display text-xl leading-snug text-foreground">{question}</p>
       <div role="group" aria-label={t("optionsLabel")} className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -120,7 +119,6 @@ export function PredictionCard({
           placeholder={t("reasonPlaceholder")}
           className="min-h-24"
         />
-        <p className="text-xs leading-5 text-muted-foreground">{t("reasonHint", { count: minReasonLength })}</p>
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">

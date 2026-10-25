@@ -38,7 +38,6 @@ export function KnowledgeCourse() {
           <div>
             <p className="text-2xs font-medium tracking-[0.16em] text-primary">课知伴 / SIGNALS & SYSTEMS</p>
             <h1 className="mt-2 font-serif text-3xl tracking-tight md:text-4xl">{t("title")}</h1>
-            <p className="mt-3 text-sm text-muted-foreground">{t("description", { count: practiceLessons.length })}</p>
           </div>
           {catalog.data?.canPractice && <div className="rounded-xl border border-border/60 bg-card px-4 py-3 text-xs text-muted-foreground"><p><span className="mr-2 font-mono text-xl text-primary">{completed}</span>/ {t("total", { count: practiceLessons.length * 3 })}</p><p className="mt-1">{t("mastered", { count: mastered })}</p></div>}
         </header>

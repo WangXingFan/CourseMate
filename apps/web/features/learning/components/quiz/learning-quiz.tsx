@@ -130,7 +130,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
       </div>
       {phase === "idle" ? (
         <div className="space-y-3">
-          <LessonPanel title={targeted ? p("practiceTitle") : t("intro.title")} description={targeted ? p("practiceDescription") : t("intro.description")}>
+          <LessonPanel title={targeted ? p("practiceTitle") : t("intro.title")}>
             <div className="grid grid-cols-3 gap-2">
               <Stat label={t("intro.questions")} value={String(pool.length)} />
               <Stat label={t("intro.duration")} value={targeted ? p("untimed") : `${QUIZ_DURATION_SECONDS}s`} />
@@ -174,7 +174,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
             </div> : null}
           </div>
 
-          <LessonPanel title={t("question.eyebrow")} description={t("question.description")}>
+          <LessonPanel title={t("question.eyebrow")}>
             <p className="text-sm font-medium leading-6 text-foreground">{t(`questions.${question.id}.prompt`)}</p>
             <div className="mt-3 grid gap-2">
               {[0, 1, 2, 3].map((optionIndex) => {

@@ -74,7 +74,6 @@ import {
   parseKindsJSON,
   parseProtocolsJSON,
   resolveModelIconURL,
-  resolveModelIdentity,
 } from "@/entities/model";
 import type {
   AdminLLMModelDisplayGroupDTO,
@@ -512,11 +511,6 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
   // Icon preview
   // -------------------------------------------------------------------------
 
-  const resolvedIdentity = resolveModelIdentity({
-    code: form.platformModelName,
-    vendor: form.vendor,
-    icon: form.icon,
-  });
   const selectedVendorOption =
     vendorOptions.find((item) => normalizeVendorValue(item.value) === normalizeVendorValue(form.vendor)) ??
     vendorOptions[0];
@@ -628,7 +622,6 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-sm leading-6 text-muted-foreground">{t("sheet.displayGroupDescription")}</p>
               </div>
 
               <div className="min-w-0 space-y-1">
@@ -701,11 +694,6 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                   onChange={(value) => setField("icon", value)}
                   onUploadingChange={setIconUploading}
                 />
-                {form.icon.trim() === "" ? (
-                  <p className="text-sm text-muted-foreground">
-                    {t("sheet.iconAutoDescription", { vendor: resolvedIdentity.vendorLabel })}
-                  </p>
-                ) : null}
               </div>
             </div>
 
@@ -720,9 +708,6 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                   {t("sheet.capabilities")}
                 </AccordionTrigger>
                 <AccordionContent className="space-y-3 pb-4 pt-0">
-                  <p className="text-sm leading-6 text-muted-foreground">
-                    {t("sheet.capabilitiesDescription")}
-                  </p>
                   <ModelContextWindowField
                     value={contextWindowOverride}
                     effectiveValue={effectiveContextWindow}
@@ -785,9 +770,6 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                   {t("sheet.circuitBreak")}
                 </AccordionTrigger>
                 <AccordionContent className="space-y-3 pb-4 pt-0">
-                  <p className="text-sm leading-6 text-muted-foreground">
-                    {t("sheet.circuitBreakDescription")}
-                  </p>
                   <div className="grid min-w-0 grid-cols-1 gap-3">
                     <div className="space-y-1">
                       <Label className="text-sm font-normal text-muted-foreground" htmlFor="model-cb-policy-mode">
@@ -926,9 +908,6 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                       disabled={pending}
                       maxLength={20000}
                     />
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {t("sheet.systemPromptDescription")}
-                    </p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -943,9 +922,6 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                   {mode === "create" ? (
                     <div className="space-y-2">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="min-w-0 text-sm text-muted-foreground">
-                          {t("sources.initialSourcesHelp")}
-                        </p>
                         <Button
                           type="button"
                           size="sm"

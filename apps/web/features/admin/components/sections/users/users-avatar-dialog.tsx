@@ -6,9 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
+  DialogContent,  DialogFooter,
   DialogHeader,
   DialogHeightTransition,
   DialogTitle,
@@ -20,7 +18,6 @@ export function UserAvatarEditorDialog({
   open,
   onOpenChange,
   title,
-  description,
   previewSrc,
   alt,
   fallback,
@@ -48,11 +45,10 @@ export function UserAvatarEditorDialog({
   const t = useTranslations("adminUsers.avatar");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[420px]">
+      <DialogContent aria-describedby={undefined} className="w-[calc(100vw-2rem)] gap-0 overflow-hidden p-0 sm:max-w-[420px]">
         <DialogHeightTransition contentClassName="max-h-[min(86vh,760px)]">
           <DialogHeader className="shrink-0 px-4 py-4">
             <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
 
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-2">

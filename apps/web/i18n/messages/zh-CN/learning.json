@@ -4,7 +4,7 @@
   },
   "hub": {
     "eyebrow": "信号与系统实验室",
-    "title": "概念看明白，算题练扎实",
+    "title": "信号与系统实验室",
     "sections": {
       "concepts": "概念实验",
       "tools": "学习工具",
@@ -37,6 +37,9 @@
       "practice": {
         "title": "算题训练",
         "meta": "2 种训练"
+      },
+      "tools": {
+        "title": "学习工具"
       }
     }
   },

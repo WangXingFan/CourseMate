@@ -101,8 +101,6 @@ export function SettingsChat() {
     setModifierShortcut(platformSendShortcut());
   }, []);
 
-  const sendShortcutLabel = settings.sendShortcut === "enter" ? "Enter" : `${modifierLabel}+Enter`;
-
   const handleChatFontChange = React.useCallback((value: ChatFontOption) => {
     writeChatFontPreference(value);
     persistAppearancePreferences({ chatFont: value });
@@ -123,7 +121,6 @@ export function SettingsChat() {
         <SettingsFieldList>
           <SettingsFieldRow
             title={t("defaultModel.title")}
-            description={t("defaultModel.description")}
           >
             {loading ? (
               <Skeleton className="h-8 w-full rounded-md" />
@@ -141,7 +138,6 @@ export function SettingsChat() {
           <div className="space-y-4 pt-4">
             <SettingsFieldRow
               title={t("defaultModel.autoTitle")}
-              description={t("defaultModel.autoTitleDescription")}
             >
               <Switch
                 checked={settings.autoGenerateTitle}
@@ -153,7 +149,6 @@ export function SettingsChat() {
             {settings.autoGenerateTitle ? (
               <SettingsFieldRow
                 title={t("defaultModel.titleModel")}
-                description={t("defaultModel.titleModelDescription")}
               >
                 <ModelSelect
                   value={settings.titleModel}
@@ -167,7 +162,6 @@ export function SettingsChat() {
             ) : null}
             <SettingsFieldRow
               title={t("defaultModel.autoLabels")}
-              description={t("defaultModel.autoLabelsDescription")}
             >
               <Switch
                 checked={settings.autoGenerateLabels}
@@ -186,7 +180,6 @@ export function SettingsChat() {
         <SettingsFieldList>
           <SettingsFieldRow
             title={t("input.shortcutTitle")}
-            description={t("input.shortcutDescription", { shortcut: sendShortcutLabel })}
           >
             <Select
               value={settings.sendShortcut === "enter" ? "enter" : modifierShortcut}
@@ -205,7 +198,6 @@ export function SettingsChat() {
           <div className="pt-4">
             <SettingsFieldRow
               title={t("input.heightTitle")}
-              description={t("input.heightDescription")}
             >
               <Select
                 value={settings.inputHeight}
@@ -226,7 +218,6 @@ export function SettingsChat() {
           <div className="pt-4">
             <SettingsFieldRow
               title={t("input.restoreDraftTitle")}
-              description={t("input.restoreDraftDescription")}
             >
               <Switch
                 checked={settings.restoreDraftOnFailure}
@@ -239,7 +230,6 @@ export function SettingsChat() {
           <div className="pt-4">
             <SettingsFieldRow
               title={t("input.preserveDraftTitle")}
-              description={t("input.preserveDraftDescription")}
             >
               <Switch
                 checked={settings.preserveConversationDrafts}
@@ -252,7 +242,6 @@ export function SettingsChat() {
           <div className="pt-4">
             <SettingsFieldRow
               title={t("input.reuseModelOptionsTitle")}
-              description={t("input.reuseModelOptionsDescription")}
             >
               <Switch
                 checked={settings.reuseModelOptions}
@@ -265,7 +254,6 @@ export function SettingsChat() {
           <div className="pt-4">
             <SettingsFieldRow
               title={t("input.deleteFilesDefaultTitle")}
-              description={t("input.deleteFilesDefaultDescription")}
             >
               <Switch
                 checked={settings.deleteFilesByDefault}
@@ -285,7 +273,6 @@ export function SettingsChat() {
           <div>
             <SettingsFieldRow
               title={t("display.markdownTitle")}
-              description={t("display.markdownDescription")}
             >
               <Switch
                 checked={settings.markdownRender}
@@ -299,7 +286,6 @@ export function SettingsChat() {
           <div className="pt-4">
             <SettingsFieldRow
               title={t("display.autoExpandThinkingTitle")}
-              description={t("display.autoExpandThinkingDescription")}
             >
               <Switch
                 checked={settings.autoExpandThinking}
@@ -313,7 +299,6 @@ export function SettingsChat() {
           <div className="pt-4">
             <SettingsFieldRow
               title={t("display.autoExpandToolCallsTitle")}
-              description={t("display.autoExpandToolCallsDescription")}
             >
               <Switch
                 checked={settings.autoExpandToolCalls}
@@ -328,7 +313,6 @@ export function SettingsChat() {
             <div className="pt-4">
               <SettingsFieldRow
                 title={t("display.processTraceTitle")}
-                description={t("display.processTraceDescription")}
               >
                 <Switch
                   checked={settings.showProcessTrace}
@@ -342,7 +326,6 @@ export function SettingsChat() {
           <div className="pt-4">
             <SettingsFieldRow
               title={t("display.modelTitle")}
-              description={t("display.modelDescription")}
             >
               <Switch
                 checked={settings.showModelInfo}
@@ -356,7 +339,6 @@ export function SettingsChat() {
           <div className="pt-4">
             <SettingsFieldRow
               title={t("display.tokenTitle")}
-              description={t("display.tokenDescription")}
             >
               <Switch
                 checked={settings.showTokenUsage}
@@ -370,7 +352,6 @@ export function SettingsChat() {
           <div className="pt-4">
             <SettingsFieldRow
               title={t("display.latencyTitle")}
-              description={t("display.latencyDescription")}
             >
               <Switch
                 checked={settings.showLatency}
@@ -403,7 +384,6 @@ export function SettingsChat() {
           {contextCompressionEnabled ? (
             <SettingsFieldRow
               title={t("context.autoCompactTitle")}
-              description={t("context.autoCompactDescription")}
             >
               <Switch
                 checked={settings.contextCompactAuto}
@@ -416,7 +396,6 @@ export function SettingsChat() {
           <div className={contextCompressionEnabled ? "pt-4" : undefined}>
             <SettingsFieldRow
               title={t("context.reasoningPassbackTitle")}
-              description={t("context.reasoningPassbackDescription")}
             >
               <Switch
                 checked={settings.reasoningContentPassback}
@@ -435,13 +414,6 @@ export function SettingsChat() {
         <SettingsFieldList>
           <SettingsFieldRow
             title={t("file.modeTitle")}
-            description={
-              settings.fileMode === "auto"
-                ? t("file.modeDescription.auto")
-                : settings.fileMode === "full_context"
-                  ? t("file.modeDescription.fullContext")
-                  : t("file.modeDescription.rag")
-            }
           >
             <Select
               value={settings.fileMode}

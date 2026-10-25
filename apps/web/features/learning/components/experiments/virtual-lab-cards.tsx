@@ -17,7 +17,6 @@ export function VirtualLabCards() {
             <span className="font-mono text-sm text-muted-foreground">0{index + 1}</span>
           </div>
           <h3 className="mt-5 text-base font-medium">{t(`courses.${id}.title`)}</h3>
-          <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">{t(`courses.${id}.description`)}</p>
           <div className="mt-5 flex items-center justify-between border-t border-border/50 pt-3 text-sm">
             <span className="text-muted-foreground">{t("duration")}</span>
             <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

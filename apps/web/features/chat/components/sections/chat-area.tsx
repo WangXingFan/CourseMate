@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+
 import { ArrowDownToLine, Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 import * as React from "react";
@@ -812,26 +814,11 @@ export function ChatAreaLoadError({
     <CenteredEmptyState
       className="flex-1 pb-20"
       title={t("title")}
-      description={
-        <>
-          {t("prefix")}{" "}
-          <button
-            type="button"
-            className="rounded-sm font-medium text-foreground underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            onClick={() => void onRefresh()}
           >
-            {t("refresh")}
-          </button>{" "}
-          {t("or")}{" "}
-          <button
-            type="button"
-            className="rounded-sm font-medium text-foreground underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            onClick={onNewConversation}
-          >
-            {t("newChat")}
-          </button>
-        </>
-      }
-    />
+      <div className="mt-4 flex flex-wrap justify-center gap-3">
+        <Button variant="outline" onClick={() => void onRefresh()}>{t("refresh")}</Button>
+        <Button onClick={onNewConversation}>{t("newChat")}</Button>
+      </div>
+    </CenteredEmptyState>
   );
 }

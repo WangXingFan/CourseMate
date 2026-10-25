@@ -15,7 +15,7 @@ export function SettingsAbout() {
       // Renders only inside the desktop shell; the platform check lives in the desktop feature.
       versionDetails={<DesktopDistributionDetails />}
       title={t("title")}
-      description={t("description")}
+
       consoleLabel={t("userConsole")}
       labels={{
         details: t("details"),

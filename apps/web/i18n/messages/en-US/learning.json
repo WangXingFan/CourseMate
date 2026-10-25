@@ -4,7 +4,7 @@
   },
   "hub": {
     "eyebrow": "Signals & Systems Lab",
-    "title": "Understand the concept, then practice the calculation",
+    "title": "Signals & Systems Laboratory",
     "sections": {
       "concepts": "Concept labs",
       "tools": "Learning tools",
@@ -37,6 +37,9 @@
       "practice": {
         "title": "Calculation practice",
         "meta": "2 practice modes"
+      },
+      "tools": {
+        "title": "Learning tools"
       }
     }
   },

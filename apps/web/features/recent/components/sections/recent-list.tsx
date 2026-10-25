@@ -374,7 +374,6 @@ export function RecentList({
         all: t("emptyState.allTitle"),
         filtered: (filters) => t("emptyState.filteredTitle", { filters }),
       })}
-      description={normalizedQuery ? t("emptyState.searchDescription") : t("emptyState.allDescription")}
     />
   );
 
