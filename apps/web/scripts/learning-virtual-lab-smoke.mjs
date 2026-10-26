@@ -82,6 +82,20 @@ try {
   await page.getByRole("heading", { name: "信号与系统 · 三次完整实验", exact: true }).waitFor();
   assert.equal(await page.locator('a[href*="workspace#course/"]').count(), 3);
   assert.equal(await page.getByText("教师开课指南", { exact: true }).count(), 0);
+  const pythonResources = page.locator("[data-python-resources]");
+  await pythonResources.getByRole("heading", { name: "Python 编程实验资源", exact: true }).waitFor();
+  const resourceLinks = await pythonResources.locator("a[download]").evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  assert.equal(resourceLinks.length, 8);
+  for (const href of resourceLinks) {
+    const response = await context.request.get(`${base}${href}`);
+    assert.equal(response.status(), 200, href);
+    assert.deepEqual(await response.body(), await readFile(join(root, href)), href);
+  }
+  const pythonDownload = page.waitForEvent("download");
+  await pythonResources.getByRole("link", { name: "下载全部代码与 Notebook", exact: true }).click();
+  const pythonFile = await pythonDownload;
+  assert.equal(pythonFile.suggestedFilename(), "coursemate-signal-python.zip");
+  assert.deepEqual(await readFile(await pythonFile.path()), await readFile(join(root, "learning/python/coursemate-signal-python.zip")));
   await page.getByRole("link", { name: /实验一 · 信号与时域系统/ }).click();
   await frame().getByRole("heading", { name: "信号变换与连续系统时域探究", exact: true }).waitFor();
   await page.goto(`${base}/learn/experiments/workspace#task/L1-1`);
@@ -113,7 +127,39 @@ try {
     await frame().locator("#prediction").waitFor();
     await assertEventually(async () => assert.equal(await childRoute(page), id));
     assert.ok(await frame().getByText("保存本次试验", { exact: true }).count());
+    const pythonTask = frame().locator(`[data-python-task="${id}"]`);
+    await pythonTask.locator("summary").click();
+    const code = await pythonTask.locator("pre code").textContent();
+    assert.ok(code.startsWith("from lab"), id);
+    const stem = ["lab1_time_domain", "lab2_frequency", "lab3_laplace"][course - 1];
+    for (const extension of ["py", "ipynb"]) assert.equal(await pythonTask.locator(`a[href="/learning/python/${stem}.${extension}"]`).count(), 1);
+    await pythonTask.getByRole("button", { name: "复制代码", exact: true }).click();
+    await pythonTask.getByRole("status").filter({ hasText: "代码已复制" }).waitFor();
+    await pythonTask.locator("summary").click();
   }
+  // Responsive resource and code surfaces, including long Python lines.
+  for (const width of [1440, 390]) for (const theme of ["light", "dark"]) {
+    await page.setViewportSize({ width, height: 950 });
+    await page.evaluate((value) => {
+      localStorage.setItem("theme", value);
+      document.documentElement.classList.toggle("dark", value === "dark");
+      document.documentElement.classList.toggle("light", value === "light");
+    }, theme);
+    await page.goto(`${base}/learn/experiments`);
+    const resources = page.locator("[data-python-resources]");
+    await resources.getByRole("heading", { name: "Python 编程实验资源", exact: true }).waitFor();
+    await resources.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: join(artifacts, `python-resources-${width}-${theme}.png`) });
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+    await page.goto(`${base}/learn/experiments/workspace#task/L1-1`);
+    const pythonTask = frame().locator('[data-python-task="L1-1"]');
+    await pythonTask.locator("summary").click();
+    await pythonTask.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: join(artifacts, `python-task-${width}-${theme}.png`) });
+    const overflow = await pythonTask.evaluate((element) => element.scrollWidth > element.clientWidth + 1);
+    assert.equal(overflow, false, `code panel overflow at ${width}/${theme}`);
+  }
+  await page.setViewportSize({ width: 1360, height: 950 });
   await page.evaluate(() => { window.location.hash = "task/L1-1"; });
   await assertEventually(async () => assert.equal(await childRoute(page), "L1-1"));
   failSave = true;
@@ -227,8 +273,9 @@ try {
   const popup = await popupEvent;
   await popup.waitForURL(/\/learn\/experiments\/workspace#task\/L1-1/);
   await popup.close();
+  await guideFrame.getByRole("heading", { name: "把代码生成信号纳入实验", exact: true }).first().waitFor();
   assert.deepEqual(errors, []);
-  console.log("PASS: three labs, 12 tasks, existing accounts, save/refresh/retry/conflict, backup/JSON/PDF, isolation, initial-load failure, mobile layout and protected teacher-guide links");
+  console.log("PASS: three labs, 12 tasks, Python resource downloads, code copy, responsive light/dark layouts, bilingual resource checks, existing account save/refresh/retry/conflict, backup/JSON/PDF, isolation and teacher-guide links");
 } catch (error) {
   if (page) await page.screenshot({ path: join(artifacts, "failure.png") }).catch(() => {});
   throw error;

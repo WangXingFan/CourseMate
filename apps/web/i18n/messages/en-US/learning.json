@@ -350,6 +350,44 @@
       }
     },
     "directory": "Lab directory and teaching guide →",
+    "python": {
+      "title": "Python programming resources",
+      "taskTitle": "Reproduce in Python · {task}",
+      "notebook": "Download notebook",
+      "script": "Download .py",
+      "bundle": "Download all code and notebooks",
+      "instructions": "Download setup guide",
+      "howToRun": "Run and submit",
+      "local": "Local: extract the bundle and follow the guide to install dependencies with Python 3.11 or later. Run notebook cells in VS Code or JupyterLab, or run a .py script. Close each script figure window to continue.",
+      "online": "Online: upload an .ipynb to your school JupyterHub or Google Colab, select a Python kernel and run cells in order. Each notebook contains all its code; edit its parameters and expressions.",
+      "submission": "Predict, edit the code, record plots and measurements, then compare with the interactive experiment using the same parameters. Keep your edited .py or .ipynb and submit it with your report through the school platform.",
+      "taskSetup": "Download this lab's script or notebook. Run the starter below from the folder containing the .py file. In a notebook, run and edit its existing cells in order; there is no need to paste the module imports below.",
+      "taskCompare": "Match the workspace parameters in your code, then edit at least one expression or calculation. Plot again, measure key values and check the time step, window and units.",
+      "taskEvidence": "Record Python parameters, code edits, measurements and comparisons in the analysis below. Save and submit code and plots separately; local Python files and execution results do not sync to your account.",
+      "starter": "Starter code",
+      "copy": "Copy code",
+      "copied": "Code copied",
+      "copyFailed": "Copy failed. Select the code and copy it manually.",
+      "labs": {
+        "L1": "Signal generation and time-domain systems",
+        "L2": "Spectra, filtering and sampling",
+        "L3": "Laplace transforms and response verification"
+      },
+      "tasks": {
+        "L1-1": "Build a time array and generate sine, step, exponential and triangular signals. Write your own cosine and rectangle expressions. Compare time transformations and check finite-pulse areas with midpoint sums.",
+        "L1-2": "Implement three systems and both operation paths. Change inputs and coefficients, compute differences and find counterexamples. Explain why finitely many zero differences do not prove a property.",
+        "L1-3": "Compute zero-input, zero-state and total responses. Change the initial state and input switch, read specified times and verify the sum of components.",
+        "L1-4": "Generate rectangle and exponential responses, apply np.convolve and multiply by the time step. Construct the output time axis, implement overlap-area calculations and compare errors after halving the step.",
+        "L2-1": "Sum odd sine harmonics in a loop. Compare term counts, highest frequencies and overshoot for K=1, 3, 7 and 15. Distinguish harmonic order from number of terms.",
+        "L2-2": "Generate a rectangular pulse and approximate its continuous Fourier integral with an FFT. Compare the analytic spectrum while changing width, amplitude and delay. Check scaling and avoid phase readings at spectral zeros.",
+        "L2-3": "Generate a 100 Hz plus 1000 Hz input, solve the continuous low-pass system with SciPy and fit amplitudes and phases over 0.1–0.2 s. Select a cutoff using both specifications.",
+        "L2-4": "Generate cosine samples at explicit sampling times and apply finite sinc interpolation. Change sampling rates and candidate frequencies, find matching samples and distinguish aliasing from edge truncation.",
+        "L3-1": "Generate exponential, delayed-step and rectangular signals. Numerically integrate at several s points within a convergence region and compare with your own derivations. Extend the window to assess truncation.",
+        "L3-2": "Derive the zero-state response first, solve the differential equation with solve_ivp, measure y(1) and the 90% rise time, then add your analytic curve and compare errors.",
+        "L3-3": "Solve the zero-input, zero-state and total responses for three initial states. Check starting values and decomposition errors and explain the initial-condition term in your derivation.",
+        "L3-4": "Generate pulses with different durations and solve each output in smooth segments. Add your own candidates near the threshold and record failures and successes. Justify the shortest duration using a derivation and parameter resolution."
+      }
+    },
     "native": {
       "overview": "Overview",
       "records": "My experiment records",
