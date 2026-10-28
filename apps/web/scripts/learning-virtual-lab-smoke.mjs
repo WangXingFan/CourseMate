@@ -77,7 +77,9 @@ try {
   page.setDefaultTimeout(20000);
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("requestfailed", (request) => {
-    if (request.url().includes("jsdelivr.net/pyodide")) errors.push(`Pyodide request failed: ${request.url()} ${request.failure()?.errorText ?? ""}`);
+    const failure = request.failure()?.errorText ?? "";
+    // Navigating away disposes the sandbox and cancels any pending runtime download.
+    if (request.url().includes("jsdelivr.net/pyodide") && failure !== "net::ERR_ABORTED") errors.push(`Pyodide request failed: ${request.url()} ${failure}`);
   });
   page.on("response", (response) => {
     if (response.url().includes("jsdelivr.net/pyodide") && response.status() >= 400) errors.push(`Pyodide response ${response.status()}: ${response.url()}`);
