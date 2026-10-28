@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { VirtualLabCards } from "@/features/learning/components/experiments/virtual-lab-cards";
-import { PythonLabResources } from "@/features/learning/components/experiments/python-lab-resources";
 import { LessonPanel, LessonShell } from "@/features/learning/components/shared/lesson-shell";
 import { useAuthSession } from "@/shared/auth/auth-session-context";
 
@@ -15,7 +14,6 @@ export function ExperimentHub() {
   return (
     <LessonShell title={t("title")}>
       <VirtualLabCards />
-      <PythonLabResources />
       <LessonPanel title={t("workflowTitle")} className="mt-4">
 
         <div className="mt-4 flex flex-wrap gap-2">

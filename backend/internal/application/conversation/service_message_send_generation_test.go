@@ -93,6 +93,24 @@ func TestPrepareRouteGenerationInitialContinuesMatchingStatefulResponse(t *testi
 	}
 }
 
+func TestPrepareRouteGenerationPolicyCanDisableStatefulContinuation(t *testing.T) {
+	service := &Service{}
+	route := &channel.ResolvedRoute{Protocol: llm.AdapterOpenAIResponses, BaseURL: "https://api.openai.com/v1", UpstreamModel: "gpt-test"}
+	conversation := &model.Conversation{PublicID: "conv_1", LastResponseID: "resp_123"}
+	gen := testRouteGenerationContext(conversation)
+	gen.disableStatefulContext = true
+
+	plan := service.prepareRouteGeneration(context.Background(), routeGenerationPreparationInput{
+		Generation: gen, Route: route, PromptPlan: testRoutePromptPlan(), Mode: routeGenerationInitial,
+	})
+	if plan.statefulContinuation || plan.generateInput.PreviousResponseID != "" {
+		t.Fatalf("isolated prompt policy must disable stateful continuation, got %#v", plan.generateInput)
+	}
+	if plan.statefulDecision.DisabledReason != "policy_requires_isolated_context" {
+		t.Fatalf("expected isolation reason, got %#v", plan.statefulDecision)
+	}
+}
+
 func TestMessageGenerationRunnerEmitVisibleDeltaTracksFirstTokenAndText(t *testing.T) {
 	var received []string
 	runner := &messageGenerationRunner{

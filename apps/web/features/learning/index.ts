@@ -15,3 +15,4 @@ export { KnowledgeCourse } from "./components/knowledge-course";
 
 export { VirtualLabWorkspace } from "./components/experiments/virtual-lab-workspace";
 export { VirtualLabGuide } from "./components/experiments/virtual-lab-guide";
+export { PythonLabResources } from "./components/experiments/python-lab-resources";

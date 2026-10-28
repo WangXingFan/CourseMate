@@ -126,6 +126,7 @@ Next.js 的 route group（`(app)`、`(auth)`、`(project)`、`(shell)`）只用�
 | `/learn/second-order` | 二阶系统阻尼与超调实验 |
 | `/learn/modulation` | AM 调制与边带实验 |
 | `/learn/experiments` | 三次完整实验目录，共 12 项任务 |
+| `/learn/python` | 学习工具中的 Python 编程资源；支持浏览器内运行、绘制波形和下载脚本 / Notebook |
 | `/learn/experiments/workspace` | 原生 React 实验工作台（无 iframe）；支持 #course/L1、#task/L2-4，兼容原有记录与导出 |
 | `/learn/experiments/guide` | 教师开课指南与参考结果，后端限制教师/管理员访问 |
 | `/learn/experiments/{signal-basics,time-domain,frequency-domain,s-domain}` | 兼容旧链接，挂载对应的完整实验 |

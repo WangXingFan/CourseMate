@@ -85,6 +85,16 @@
         "placeholder": "Comma separated knowledge base IDs"
       }
     },
+    "chat": {
+      "rag_answer_policy": {
+        "label": "Answer policy",
+        "description": "Choose whether answers may use general model knowledge or must rely on selected knowledge bases.",
+        "options": {
+          "balanced": "Balanced answer",
+          "knowledge_base": "Knowledge bases only"
+        }
+      }
+    },
     "storage": {
       "max_message_files": {
         "label": "Attachment limit",

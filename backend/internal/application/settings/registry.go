@@ -289,6 +289,8 @@ var settingSpecs = []settingSpec{
 		Apply: applyField(func(c *config.Config) *string { return &c.RAGModel }, rawText)},
 	{Namespace: "chat", Key: "rag_enabled", ValueType: "bool", Default: "false", Description: "全局开关：是否允许RAG功能（需 Embedding 服务就绪）",
 		Validate: boolValue(), Apply: applyField(func(c *config.Config) *bool { return &c.RAGEnabled }, toBool)},
+	{Namespace: "chat", Key: "rag_answer_policy", ValueType: "string", Default: config.RAGAnswerPolicyBalanced, Description: "知识库问答策略：balanced=允许通用知识补充，knowledge_base=仅依据所选知识库",
+		Validate: oneOf(config.RAGAnswerPolicyBalanced, config.RAGAnswerPolicyKnowledgeBase), Apply: applyField(func(c *config.Config) *string { return &c.RAGAnswerPolicy }, trimmedText)},
 	{Namespace: "chat", Key: "rag_min_similarity", ValueType: "string", Default: "0.45", Description: "RAG最低相似度阈值",
 		Validate: floatRange(0.000001, 1), Apply: applyField(func(c *config.Config) *float64 { return &c.RAGMinSimilarity }, toFloat)},
 	{Namespace: "chat", Key: "rag_token_budget", ValueType: "int", Default: "2000", Description: "RAG注入token预算",

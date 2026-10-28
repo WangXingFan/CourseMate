@@ -40,6 +40,10 @@ const (
 	DefaultDesktopDownloadURL = "https://github.com/WangXingFan/CourseMate/releases"
 	// DefaultFileFullContextMaxBytes 是全文注入的默认提取文本大小上限（2 MiB）。
 	DefaultFileFullContextMaxBytes int64 = 2 * 1024 * 1024
+	// RAGAnswerPolicyBalanced 允许模型在没有知识库证据时使用通用知识。
+	RAGAnswerPolicyBalanced = "balanced"
+	// RAGAnswerPolicyKnowledgeBase 要求回答以所选知识库证据为唯一依据。
+	RAGAnswerPolicyKnowledgeBase = "knowledge_base"
 
 	// DefaultContextWindowFallbackTokens 是无法从模型能力配置或内置目录识别窗口时的默认值。
 	DefaultContextWindowFallbackTokens = 128_000
@@ -486,6 +490,7 @@ type Config struct {
 	RAGModel                          string // embedding 使用的模型名
 	// chat（补充）
 	RAGEnabled                      bool    // 全局开关：是否允许 RAG 功能
+	RAGAnswerPolicy                 string  // balanced 或 knowledge_base
 	RAGMinSimilarity                float64 // RAG 最低相似度阈值
 	RAGTokenBudget                  int     // RAG 注入 token 预算
 	RAGFetchMultiplier              int     // 检索阶段额外抓取倍数，用于过滤后留足候选
@@ -712,6 +717,7 @@ func Load() Config {
 		RAGTopK:                           5,
 		RAGModel:                          "sentence-transformers/all-MiniLM-L6-v2",
 		RAGEnabled:                        false,
+		RAGAnswerPolicy:                   RAGAnswerPolicyBalanced,
 		RAGMinSimilarity:                  0.45,
 		RAGTokenBudget:                    2000,
 		RAGFetchMultiplier:                3,

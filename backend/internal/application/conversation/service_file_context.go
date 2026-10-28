@@ -287,6 +287,14 @@ func resolveKnowledgeBaseScope(selected []string, cfg config.Config) ([]string, 
 	return scope, nil
 }
 
+func resolveKnowledgeBaseScopeForPolicy(selected []string, cfg config.Config, strictKnowledgeBaseOnly bool) ([]string, error) {
+	scope, err := resolveKnowledgeBaseScope(selected, cfg)
+	if strictKnowledgeBaseOnly && errors.Is(err, ErrKnowledgeBaseScopeEmpty) {
+		return nil, nil
+	}
+	return scope, err
+}
+
 func (s *Service) resolveKnowledgeBaseRAGFiles(
 	ctx context.Context,
 	userID uint,

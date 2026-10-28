@@ -29,6 +29,7 @@ type routeGenerationContext struct {
 	input                  SendMessageInput
 	conversation           *model.Conversation
 	cfg                    config.Config
+	disableStatefulContext bool
 	promptCacheSessionKey  string
 	statefulContextConfig  string
 	statefulContextState   string
@@ -152,6 +153,11 @@ func (s *Service) prepareRouteGeneration(ctx context.Context, input routeGenerat
 
 	switch mode {
 	case routeGenerationInitial:
+		if gen.disableStatefulContext {
+			plan.statefulDecision = statefulResponseDecision{DisabledReason: "policy_requires_isolated_context"}
+			plan.promptMode = "full"
+			break
+		}
 		plan.statefulDecision = resolveStatefulPreviousResponseID(
 			route,
 			gen.normalizedBranchReason,

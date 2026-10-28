@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, ArrowUpRight, Calculator, Gamepad2, Lightbulb, SlidersHorizontal, Trophy } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Calculator, Code2, Gamepad2, Lightbulb, SlidersHorizontal, Trophy } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -24,6 +24,7 @@ const PRACTICE_LINKS = [
 
 const TOOL_LINKS = [
   { id: "workbench", href: "/learn/workbench", icon: SlidersHorizontal },
+  { id: "python", href: "/learn/python", icon: Code2 },
 ] as const;
 
 export function LearningHub() {

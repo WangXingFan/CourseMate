@@ -23,6 +23,9 @@
         "title": "信号工作台",
         "description": "自定义信号与变换，组合运算和卷积。"
       },
+      "python": {
+        "title": "Python 编程资源"
+      },
       "knowledge": {
         "title": "课程知识",
         "description": "按章节阅读课程讲义，梳理知识要点。"
@@ -351,8 +354,26 @@
     },
     "directory": "实验目录与开课说明 →",
     "python": {
-      "title": "Python 编程实验资源",
+      "title": "Python 编程资源",
       "taskTitle": "Python 编程复现 · {task}",
+      "task": "实验任务",
+      "editor": "Python 代码编辑器",
+      "run": "运行代码",
+      "running": "正在运行…",
+      "resetCode": "恢复示例代码",
+      "runtimeLoading": "正在准备 Python 运行环境…",
+      "runtimeFailed": "Python 运行环境加载失败。请检查网络连接后重试。",
+      "output": "Python 输出",
+      "plot": "波形 {number}",
+      "downloads": "下载资源",
+      "runtime": {
+        "loading": "首次启动正在下载浏览器内 Python 运行环境和科学计算组件…",
+        "loading_runtime_script": "正在下载 Python 运行环境…",
+        "loading_runtime_core": "正在启动 Python 运行环境…",
+        "loading_numpy": "正在加载数值计算组件…",
+        "loading_packages": "正在加载绘图与科学计算组件…",
+        "ready": "运行环境已就绪"
+      },
       "notebook": "下载 Notebook",
       "script": "下载 .py",
       "bundle": "下载全部代码与 Notebook",

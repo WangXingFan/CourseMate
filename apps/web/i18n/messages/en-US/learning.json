@@ -23,6 +23,9 @@
         "title": "Signal workbench",
         "description": "Customize signals, transformations and convolution."
       },
+      "python": {
+        "title": "Python programming resources"
+      },
       "knowledge": {
         "title": "Course knowledge",
         "description": "Read chapter notes and revisit key concepts."
@@ -353,6 +356,24 @@
     "python": {
       "title": "Python programming resources",
       "taskTitle": "Reproduce in Python · {task}",
+      "task": "Lab task",
+      "editor": "Python code editor",
+      "run": "Run code",
+      "running": "Running…",
+      "resetCode": "Restore starter code",
+      "runtimeLoading": "Preparing the Python runtime…",
+      "runtimeFailed": "Could not load the Python runtime. Check your connection and try again.",
+      "output": "Python output",
+      "plot": "Waveform {number}",
+      "downloads": "Downloads",
+      "runtime": {
+        "loading": "First run downloads the in-browser Python runtime and scientific packages…",
+        "loading_runtime_script": "Downloading the Python runtime…",
+        "loading_runtime_core": "Starting the Python runtime…",
+        "loading_numpy": "Loading numerical computing…",
+        "loading_packages": "Loading plotting and scientific packages…",
+        "ready": "Runtime ready"
+      },
       "notebook": "Download notebook",
       "script": "Download .py",
       "bundle": "Download all code and notebooks",

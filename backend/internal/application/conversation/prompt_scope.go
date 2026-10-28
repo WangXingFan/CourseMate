@@ -22,6 +22,10 @@ type promptScope struct {
 	CoveredUntilID     uint
 }
 
+func strictKnowledgeBaseMessages(current model.Message) []model.Message {
+	return []model.Message{current}
+}
+
 func buildPromptScope(messages []model.Message, snapshot *model.ContextSnapshot, policy contextCompactionPolicy) promptScope {
 	scope := promptScope{
 		FullBranchMessages: append([]model.Message(nil), messages...),
