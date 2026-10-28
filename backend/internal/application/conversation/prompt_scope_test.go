@@ -86,6 +86,14 @@ func TestPromptScopeHistoricalMessageScopeFailsClosedOnFirstTurn(t *testing.T) {
 	}
 }
 
+func TestStrictKnowledgeBaseMessagesDropsPriorConversationTurns(t *testing.T) {
+	current := model.Message{ID: 9, Role: "user", Content: "current question"}
+	got := strictKnowledgeBaseMessages(current)
+	if len(got) != 1 || got[0].ID != current.ID || got[0].Content != current.Content {
+		t.Fatalf("expected only the current question in strict mode, got %#v", got)
+	}
+}
+
 func TestHistoryMessagesFromDomainPassesBackAssistantReasoningWhenEnabled(t *testing.T) {
 	messages := []model.Message{
 		{Role: "user", Content: "question", ReasoningContent: "ignored"},

@@ -891,6 +891,7 @@ export const SETTINGS_GROUPS: SettingsGroup[] = [
     description: "Controls retrieval, similarity thresholds, injection budget, and readiness wait strategy.",
     fields: [
       { namespace: "chat", key: "rag_enabled", label: "RAG", description: "Allow files to enter the retrieval-augmented pipeline. Requires an available Embedding service.", type: "bool" },
+      { namespace: "chat", key: "rag_answer_policy", label: "Answer policy", description: "Choose whether answers may use general model knowledge or must rely on selected knowledge bases.", type: "select", options: [{ label: "Balanced", value: "balanced" }, { label: "Knowledge bases only", value: "knowledge_base" }], visibleWhen: { all: [EMBEDDING_READY_RULE, { field: "chat.rag_enabled", equals: "true" }] } },
       { namespace: "knowledgebase", key: "default_knowledge_base_ids", label: "Default knowledge bases", description: "Public IDs of the platform knowledge bases new conversations search by default. Comma separated, up to 8. Leave empty to start without a default scope.", type: "string", placeholder: "Comma separated knowledge base IDs", visibleWhen: { all: [EMBEDDING_READY_RULE, { field: "chat.rag_enabled", equals: "true" }] } },
       { namespace: "file", key: "rag_top_k", label: "Retrieved chunks", description: "Number of RAG chunks returned and injected.", type: "int", placeholder: "Chunk count", visibleWhen: { all: [EMBEDDING_READY_RULE, { field: "chat.rag_enabled", equals: "true" }] } },
       { namespace: "chat", key: "rag_min_similarity", label: "Similarity threshold", description: "Minimum similarity threshold for injecting retrieved chunks.", type: "string", placeholder: "Similarity threshold", visibleWhen: { all: [EMBEDDING_READY_RULE, { field: "chat.rag_enabled", equals: "true" }] } },
@@ -1147,6 +1148,9 @@ export function isEmbeddingServiceConfigured(settings: Record<string, string>): 
 
 export function applySettingsDefaults(next: Record<string, string>): Record<string, string> {
   const result = { ...next };
+  if (!["balanced", "knowledge_base"].includes(result["chat.rag_answer_policy"] ?? "")) {
+    result["chat.rag_answer_policy"] = "balanced";
+  }
   result["extract.tika_source"] = TIKA_SERVICE_SOURCES.EXTERNAL;
   result["extract.rapidocr_source"] = TIKA_SERVICE_SOURCES.EXTERNAL;
   result["extract.ocr_engine"] = resolveOCREngine(result["extract.ocr_engine"] ?? "");

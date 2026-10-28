@@ -91,6 +91,20 @@ func TestResolveMessageSystemPromptInjectionCompactsActiveLayerPriorities(t *tes
 	}
 }
 
+func TestResolveMessageSystemPromptInjectionMakesKnowledgeBasePolicyHighestPriority(t *testing.T) {
+	route := &channel.ResolvedRoute{Protocol: llm.AdapterOpenAIResponses, ModelSystemPrompt: "model rule"}
+
+	got := resolveMessageSystemPromptInjection(config.Config{
+		DefaultSystemPrompt: "global rule",
+		RAGAnswerPolicy:     config.RAGAnswerPolicyKnowledgeBase,
+	}, route, requestPromptOptions{})
+	for _, want := range []string{`<knowledge-base-policy p="100">`, `<platform p="80">`, `<model p="60">`, knowledgeBaseOnlySystemPrompt} {
+		if !strings.Contains(got.Content, want) {
+			t.Fatalf("expected strict knowledge-base layer %q, got %q", want, got.Content)
+		}
+	}
+}
+
 func TestResolveMessageSystemPromptInjectionPreservesXMLLikeContent(t *testing.T) {
 	route := &channel.ResolvedRoute{
 		Protocol: llm.AdapterOpenAIResponses,

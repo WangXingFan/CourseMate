@@ -177,6 +177,18 @@ func TestResolveKnowledgeBaseScope(t *testing.T) {
 	}
 }
 
+func TestResolveKnowledgeBaseScopeForStrictPolicyAllowsEmptyScopeToReachRefusal(t *testing.T) {
+	got, err := resolveKnowledgeBaseScopeForPolicy(nil, config.Config{KnowledgeBaseEnabled: true}, true)
+	if err != nil || len(got) != 0 {
+		t.Fatalf("strict policy without default scope = %#v, %v; want empty scope without request error", got, err)
+	}
+
+	_, err = resolveKnowledgeBaseScopeForPolicy(nil, config.Config{KnowledgeBaseEnabled: true}, false)
+	if !errors.Is(err, ErrKnowledgeBaseScopeEmpty) {
+		t.Fatalf("balanced policy without scope error = %v; want ErrKnowledgeBaseScopeEmpty", err)
+	}
+}
+
 func TestConversationImageRefsPreferRecentImagesWithinBudget(t *testing.T) {
 	messages := make([]model.Message, 0, maxConversationImageContextCount+1)
 	attachments := make([]AttachmentInput, 0, maxConversationImageContextCount+1)

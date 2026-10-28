@@ -3,7 +3,6 @@
 import { ArrowRight, Check, Clock3, FlaskConical } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { VirtualLabEngine } from "@/public/vendor/signal-lab/core.mjs";
-import { PythonLabResources } from "./python-lab-resources";
 
 export function NativeLabOverview({ engine, courseID }: { engine: VirtualLabEngine; courseID?: string }) {
   const t = useTranslations("learning.virtualLab.native");
@@ -17,7 +16,6 @@ export function NativeLabOverview({ engine, courseID }: { engine: VirtualLabEngi
         <ol className="flex-1 space-y-1 p-3">{ids.map((id, index) => <li key={id}><a href={`#task/${id}`} className="group flex min-w-0 items-center gap-3 rounded-lg px-3 py-3 transition-colors hover:bg-muted/40 focus-visible:outline-2 focus-visible:outline-ring"><span className="font-mono text-sm text-muted-foreground">0{index + 1}</span><div className="min-w-0 flex-1"><p className="font-display text-lg font-normal">{engine.tasks[id].title}</p></div>{engine.records.data.tasks[id].completion.confirmed ? <Check aria-hidden className="size-3.5 text-primary" /> : <ArrowRight aria-hidden className="size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" />}</a></li>)}</ol><a href={courseID ? `#task/${ids[0]}` : `#course/${course.id}`} className="flex items-center justify-between border-t border-border/50 px-6 py-4 text-sm font-medium text-primary">{t("startCourse")}<ArrowRight aria-hidden className="size-3.5" /></a>
       </section>;
     })}</div>
-    <PythonLabResources />
   </div>;
 }
 

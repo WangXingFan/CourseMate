@@ -11,6 +11,8 @@ import (
 	appcm "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/contentmoderation"
 	apprag "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/rag"
 	model "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/conversation"
+	domainuicomponent "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/uicomponent"
+	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
 	platformtracing "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/observability/tracing"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/pkg/textutil"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/pkg/traceid"
@@ -467,15 +469,28 @@ func (s *Service) sendMessageInternal(
 	}
 	promptScope := buildPromptScope(contextMessages, prefetch.snapshot, compactPolicy)
 	promptMessages := promptScope.activeMessages()
-	ragQuery := buildRAGQuery(promptMessages, input.Content, cfg.RAGQueryHistoryTurns)
+	strictKnowledgeBasePolicy := cfg.RAGAnswerPolicy == config.RAGAnswerPolicyKnowledgeBase
+	ragQuery := strings.TrimSpace(input.Content)
+	if !strictKnowledgeBasePolicy {
+		ragQuery = buildRAGQuery(promptMessages, input.Content, cfg.RAGQueryHistoryTurns)
+	}
 	historicalScope := promptScope.historicalMessageScope(input.ConversationID, input.UserID, userMessage.ID)
-	conversationFileIDs := collectConversationFileIDs(promptMessages, input.FileIDs)
+	var conversationFileIDs []string
+	if !strictKnowledgeBasePolicy {
+		conversationFileIDs = collectConversationFileIDs(promptMessages, input.FileIDs)
+	} else {
+		conversationFileIDs = append([]string(nil), input.FileIDs...)
+	}
 	conversationAttachments, err := s.resolveConversationFileContext(ctx, input.UserID, conversationFileIDs, input.FileIDs)
 	if err != nil {
 		retErr = err
 		return nil, err
 	}
-	conversationAttachments = bindAttachmentMessageRoles(conversationAttachments, promptMessages)
+	attachmentMessages := promptMessages
+	if strictKnowledgeBasePolicy {
+		attachmentMessages = []model.Message{*userMessage}
+	}
+	conversationAttachments = bindAttachmentMessageRoles(conversationAttachments, attachmentMessages)
 	conversationAttachments, err = s.hydrateAttachmentsForSend(ctx, input.UserID, conversationAttachments, input.OnEvent)
 	if err != nil {
 		retErr = err
@@ -485,27 +500,39 @@ func (s *Service) sendMessageInternal(
 	userMessage.Attachments = marshalAttachmentSnapshots(currentAttachments)
 
 	fileContextPlan := buildConversationFileContextPlan(conversationAttachments, fileMode, cfg, route.UpstreamModel, route.ModelCapabilitiesJSON, capability.RAGAvailable)
-	knowledgeBaseIDs, err := resolveKnowledgeBaseScope(input.KnowledgeBaseIDs, cfg)
+	if strictKnowledgeBasePolicy {
+		fileContextPlan = conversationFileContextPlan{}
+	}
+	knowledgeBaseIDs, err := resolveKnowledgeBaseScopeForPolicy(input.KnowledgeBaseIDs, cfg, strictKnowledgeBasePolicy)
 	if err != nil {
 		retErr = err
 		return nil, err
 	}
 	// 解析后的范围回写输入，供检索阶段判定本轮是否要求知识库证据。
 	input.KnowledgeBaseIDs = knowledgeBaseIDs
-	knowledgeBaseFiles, err := s.resolveKnowledgeBaseRAGFiles(
-		ctx,
-		input.UserID,
-		knowledgeBaseIDs,
-		cfg.RAGEnabled && cfg.EmbeddingEnabled && capability.RAGAvailable,
-	)
-	if err != nil {
-		retErr = err
-		return nil, err
+	var knowledgeBaseFiles []model.FileObject
+	strictRetrievalUnavailable := strictKnowledgeBasePolicy &&
+		(!cfg.RAGEnabled || !cfg.EmbeddingEnabled || !capability.RAGAvailable)
+	if !strictRetrievalUnavailable {
+		knowledgeBaseFiles, err = s.resolveKnowledgeBaseRAGFiles(
+			ctx,
+			input.UserID,
+			knowledgeBaseIDs,
+			cfg.RAGEnabled && cfg.EmbeddingEnabled && capability.RAGAvailable,
+		)
+		if err != nil {
+			if strictKnowledgeBasePolicy && (errors.Is(err, ErrKnowledgeBaseUnavailable) || errors.Is(err, ErrKnowledgeBaseNotReady)) {
+				knowledgeBaseFiles = nil
+			} else {
+				retErr = err
+				return nil, err
+			}
+		}
 	}
 
 	contextAssembler := NewContextAssembler(0)
 	userCtx := userContextInput{}
-	if promptScope.Snapshot != nil {
+	if promptScope.Snapshot != nil && !strictKnowledgeBasePolicy {
 		if snapshotSummary := strings.TrimSpace(promptScope.Snapshot.SummaryText); snapshotSummary != "" {
 			userCtx.Snapshot = &snapshotContext{
 				Summary:  snapshotSummary,
@@ -534,23 +561,29 @@ func (s *Service) sendMessageInternal(
 		retErr = err
 		return nil, err
 	}
+	strictRefusalText := rag.strictRefusalText
 	ragFallbacks := rag.fallbacks
 	ragContextChunks := rag.chunks
 	userCtx.RAGNotice = rag.notice
-	stableFullContextAttachments := append([]AttachmentInput{}, fileContextPlan.FullAttachments...)
-	stableFullContextAttachments = append(stableFullContextAttachments, ragFallbackEvidenceAttachments(rag.retrievalFallbacks)...)
+	var stableFullContextAttachments []AttachmentInput
+	if !strictKnowledgeBasePolicy {
+		stableFullContextAttachments = append(stableFullContextAttachments, fileContextPlan.FullAttachments...)
+		stableFullContextAttachments = append(stableFullContextAttachments, ragFallbackEvidenceAttachments(rag.retrievalFallbacks)...)
+	}
 	// 检索命中的图片随本轮消息发送，但不进入稳定上下文：它随查询变化，不能参与前缀缓存指纹。
 	turnImageAttachments := append(append([]AttachmentInput{}, stableFullContextAttachments...), rag.imageEvidence...)
 	userCtx.Attachments = imageAttachmentsForCurrentUser(turnImageAttachments)
 	userCtx.RAGChunks = ragContextChunks
 	assistantMessage.KnowledgeSources = messageKnowledgeSourcesFromRAGChunks(ragContextChunks)
-	userCtx.HistoricalArtifacts = s.recallHistoricalContextArtifacts(ctx, historicalContextRecallInput{
-		Scope:              historicalScope,
-		HasCurrentSnapshot: promptScope.Snapshot != nil,
-		Query:              input.Content,
-		CurrentRAGChunks:   ragContextChunks,
-		CurrentFallbacks:   ragFallbackEvidenceAttachments(ragFallbacks),
-	})
+	if !strictKnowledgeBasePolicy {
+		userCtx.HistoricalArtifacts = s.recallHistoricalContextArtifacts(ctx, historicalContextRecallInput{
+			Scope:              historicalScope,
+			HasCurrentSnapshot: promptScope.Snapshot != nil,
+			Query:              input.Content,
+			CurrentRAGChunks:   ragContextChunks,
+			CurrentFallbacks:   ragFallbackEvidenceAttachments(ragFallbacks),
+		})
+	}
 	userCtx.CurrentArtifacts = s.persistPromptContextArtifacts(ctx, promptContextArtifactInput{
 		ConversationID: input.ConversationID,
 		UserID:         input.UserID,
@@ -560,16 +593,23 @@ func (s *Service) sendMessageInternal(
 		RAGChunks:      ragContextChunks,
 		RAGFallbacks:   ragFallbacks,
 	})
-	uiComponents, err := s.resolveUIComponents(ctx, input.UserID, input.UIComponentIDs)
-	if err != nil {
-		retErr = err
-		return nil, err
+	var uiComponents []domainuicomponent.Component
+	if !strictKnowledgeBasePolicy {
+		uiComponents, err = s.resolveUIComponents(ctx, input.UserID, input.UIComponentIDs)
+		if err != nil {
+			retErr = err
+			return nil, err
+		}
+	}
+	domainMessages := promptScope.activeMessages()
+	if strictKnowledgeBasePolicy {
+		domainMessages = strictKnowledgeBaseMessages(*userMessage)
 	}
 	routePromptInput := messageRoutePromptInput{
 		UserContent:             input.Content,
-		HTMLVisualPromptEnabled: input.HTMLVisualPromptEnabled,
+		HTMLVisualPromptEnabled: input.HTMLVisualPromptEnabled && !strictKnowledgeBasePolicy,
 		UIComponents:            uiComponents,
-		DomainMessages:          promptScope.activeMessages(),
+		DomainMessages:          domainMessages,
 		StableAttachments:       stableFullContextAttachments,
 		DynamicContext:          userCtx,
 		Config:                  cfg,
@@ -589,6 +629,7 @@ func (s *Service) sendMessageInternal(
 		input:                  input,
 		conversation:           conversation,
 		cfg:                    cfg,
+		disableStatefulContext: strictKnowledgeBasePolicy,
 		promptCacheSessionKey:  promptCacheSessionKey,
 		statefulContextConfig:  buildPromptContextConfigSignature(cfg),
 		statefulContextState:   buildPromptContextStateSignature(stableFullContextAttachments),
@@ -618,7 +659,18 @@ func (s *Service) sendMessageInternal(
 		sendSpan.SetAttributes(attribute.String("conversation.stateful_disabled_reason", plan.statefulDecision.DisabledReason))
 	}
 	sendSpan.SetAttributes(promptShapeTraceAttributes("conversation.prompt", plan.promptShape)...)
-	upstreamOutput, err := runner.runRouteAttempt(ctx, &plan, sendSpan)
+	var upstreamOutput *llm.GenerateOutput
+	if strictRefusalText != "" {
+		if preferStream && onDelta != nil {
+			if err = runner.emitVisibleDelta(strictRefusalText); err != nil {
+				retErr = err
+				return nil, err
+			}
+		}
+		upstreamOutput = &llm.GenerateOutput{Text: strictRefusalText}
+	} else {
+		upstreamOutput, err = runner.runRouteAttempt(ctx, &plan, sendSpan)
+	}
 	if generationCanceled(ctx, err) {
 		retErr = ErrMessageGenerationCanceled
 		return nil, retErr
@@ -691,7 +743,9 @@ func (s *Service) sendMessageInternal(
 		retErr = wrapUpstreamRequestError(err)
 		return nil, retErr
 	}
-	s.routeResolver.MarkRouteSuccess(ctx, route)
+	if strictRefusalText == "" {
+		s.routeResolver.MarkRouteSuccess(ctx, route)
+	}
 
 	// 路由已最终确定，后续工具回灌沿用该路由的请求形状。
 	routeConfig := plan.routeConfig
@@ -708,6 +762,11 @@ func (s *Service) sendMessageInternal(
 	}
 	effectiveInputTokens := runner.usage.effectiveInputTokens(plan.estimatedPromptTokens)
 	effectiveOutputTokens, effectiveReasoningTokens := runner.usage.effectiveOutputTokens()
+	if strictRefusalText != "" {
+		effectiveInputTokens = 0
+		effectiveOutputTokens = 0
+		effectiveReasoningTokens = 0
+	}
 
 	if strings.TrimSpace(assistantText) == "" {
 		retErr = ErrUpstreamEmptyResponse
@@ -717,9 +776,11 @@ func (s *Service) sendMessageInternal(
 	finalUsageEvent.InputTokens = effectiveInputTokens
 	finalUsageEvent.OutputTokens = effectiveOutputTokens
 	finalUsageEvent.ReasoningTokens = effectiveReasoningTokens
-	if err := emitLLMUsageEvent(input.OnEvent, finalUsageEvent); err != nil {
-		retErr = err
-		return nil, err
+	if strictRefusalText == "" {
+		if err := emitLLMUsageEvent(input.OnEvent, finalUsageEvent); err != nil {
+			retErr = err
+			return nil, err
+		}
 	}
 	assistantReasoningContent := ""
 	if reasoningContentPassback {
