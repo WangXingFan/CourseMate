@@ -39,7 +39,7 @@ func TestRepositoryVisibilityResolutionAndDeletion(t *testing.T) {
 		t.Fatalf("disable knowledge base fixture: %v", err)
 	}
 	files := []models.FileObject{
-		{FileID: "builtin-file", UserID: 0, FileName: "policy.md", Status: "active", ProcessingReady: true, EmbedStatus: "ready", ChunkCount: 2},
+		{FileID: "builtin-file", UserID: 0, FileName: "policy.md", Status: "active", ProcessingReady: true, EmbedStatus: "ready", ChunkCount: 2, PreviewText: "章节：第4章 课程链接：/lesson"},
 		{FileID: "builtin-available", UserID: 0, FileName: "platform-guide.md", Status: "active"},
 		{FileID: "mine-file", UserID: 11, FileName: "notes.md", Status: "active", ProcessingReady: true, EmbedStatus: "ready", ChunkCount: 2},
 		{FileID: "other-file", UserID: 22, FileName: "private.md", Status: "active", ProcessingReady: true, EmbedStatus: "ready", ChunkCount: 2},
@@ -146,6 +146,9 @@ func TestRepositoryVisibilityResolutionAndDeletion(t *testing.T) {
 		t.Fatalf("resolved bases/files = %d/%d, want 2/2", len(resolvedBases), len(resolvedFiles))
 	}
 	for _, file := range resolvedFiles {
+		if file.FileID == "builtin-file" && file.PreviewText != files[0].PreviewText {
+			t.Fatalf("authorized preview metadata missing: %q", file.PreviewText)
+		}
 		if file.FileID == "mine-pending" {
 			t.Fatal("ResolveVisibleKnowledgeBaseFiles() returned a file that is not ready for retrieval")
 		}

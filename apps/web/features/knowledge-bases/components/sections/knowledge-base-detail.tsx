@@ -42,7 +42,8 @@ type KnowledgeBaseDetailProps = {
   onToggleEnabled: (enabled: boolean) => Promise<void>;
   onPreviewFile: (file: KnowledgeBaseFileDTO) => void;
   onToggleFileSelection: (fileID: string, checked: boolean) => void;
-  onSelectVectorizableFiles: () => void;
+  onSelectAllFiles: () => void;
+  onRemoveSelectedFiles: () => void;
   onClearFileSelection: () => void;
   onVectorizeFile: (fileID: string) => Promise<void>;
   onVectorizeSelectedFiles: () => Promise<void>;
@@ -67,7 +68,8 @@ export function KnowledgeBaseDetail({
   onToggleEnabled,
   onPreviewFile,
   onToggleFileSelection,
-  onSelectVectorizableFiles,
+  onSelectAllFiles,
+  onRemoveSelectedFiles,
   onClearFileSelection,
   onVectorizeFile,
   onVectorizeSelectedFiles,
@@ -106,7 +108,8 @@ export function KnowledgeBaseDetail({
               onRemoveFile={onRemoveFile}
               onPreviewFile={onPreviewFile}
               onToggleFileSelection={onToggleFileSelection}
-              onSelectVectorizableFiles={onSelectVectorizableFiles}
+              onSelectAllFiles={onSelectAllFiles}
+              onRemoveSelectedFiles={onRemoveSelectedFiles}
               onClearFileSelection={onClearFileSelection}
               onVectorizeFile={onVectorizeFile}
               onVectorizeSelectedFiles={onVectorizeSelectedFiles}
@@ -218,7 +221,8 @@ type KnowledgeBaseFileListProps = Pick<
   | "onRemoveFile"
   | "onPreviewFile"
   | "onToggleFileSelection"
-  | "onSelectVectorizableFiles"
+  | "onSelectAllFiles"
+  | "onRemoveSelectedFiles"
   | "onClearFileSelection"
   | "onVectorizeFile"
   | "onVectorizeSelectedFiles"
@@ -240,7 +244,8 @@ function KnowledgeBaseFileList({
   onRemoveFile,
   onPreviewFile,
   onToggleFileSelection,
-  onSelectVectorizableFiles,
+  onSelectAllFiles,
+  onRemoveSelectedFiles,
   onClearFileSelection,
   onVectorizeFile,
   onVectorizeSelectedFiles,
@@ -251,26 +256,31 @@ function KnowledgeBaseFileList({
   const selectedFileIDSet = new Set(selectedFileIDs);
   const vectorizingFileIDSet = new Set(vectorizingFileIDs);
   const vectorizingFiles = vectorizingFileIDs.length > 0;
-  const vectorizableFiles = files.filter(canManuallyVectorizeFile);
-  const allVectorizableSelected = vectorizableFiles.length > 0
-    && vectorizableFiles.every((file) => selectedFileIDSet.has(file.fileID));
+  const busy = vectorizingFiles || Boolean(removingFileID);
+  const selectedVectorizableCount = files.filter((file) => selectedFileIDSet.has(file.fileID) && canManuallyVectorizeFile(file)).length;
+  const allFilesSelected = files.length > 0 && files.every((file) => selectedFileIDSet.has(file.fileID));
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      {editable && selectedFileIDs.length > 0 ? (
-        <div className="flex h-10 shrink-0 items-center gap-2 border-b border-border/35 px-3 text-xs text-muted-foreground md:px-5">
-          <Checkbox
-            checked={allVectorizableSelected ? true : selectedFileIDs.length > 0 ? "indeterminate" : false}
-            onCheckedChange={(checked) => checked ? onSelectVectorizableFiles() : onClearFileSelection()}
-            aria-label={t("selectVectorizableFiles")}
-          />
-          <span className="min-w-0 flex-1 truncate">{t("selectedVectorizeFiles", { count: selectedFileIDs.length })}</span>
+      {editable && !loading && files.length > 0 ? (
+        <div className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-1 border-b border-border px-3 py-2 text-sm md:px-5">
+          <label className="flex shrink-0 items-center gap-2">
+            <Checkbox
+              checked={allFilesSelected ? true : selectedFileIDs.length > 0 ? "indeterminate" : false}
+              disabled={busy || loadingMore}
+              onCheckedChange={(checked) => checked ? onSelectAllFiles() : onClearFileSelection()}
+              aria-label={t(files.length < filesTotal ? "selectLoadedFiles" : "selectAllFiles")}
+            />
+            {t(files.length < filesTotal ? "selectLoadedFiles" : "selectAllFiles")}
+          </label>
+          <span className="ml-auto whitespace-nowrap text-muted-foreground sm:ml-0 sm:flex-1">{t("selected", { count: selectedFileIDs.length })}</span>
+          {selectedFileIDs.length > 0 ? <div className="flex w-full flex-wrap items-center justify-end gap-1 sm:ml-auto sm:w-auto">
           <Button
             type="button"
             variant="ghost"
             size="sm"
             className="h-9 px-2 text-sm"
-            disabled={vectorizingFiles}
+            disabled={busy}
             onClick={onClearFileSelection}
           >
             {t("cancel")}
@@ -280,12 +290,24 @@ function KnowledgeBaseFileList({
             variant="ghost"
             size="sm"
             className="h-9 gap-1 px-2 text-sm"
-            disabled={selectedFileIDs.length === 0 || vectorizingFiles}
+            disabled={selectedVectorizableCount === 0 || busy}
             onClick={() => void onVectorizeSelectedFiles()}
           >
             {vectorizingFiles ? <Spinner className="size-3.5" /> : <DatabaseZap className="size-3.5" strokeWidth={1.5} />}
             {t("vectorize")}
           </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-9 gap-1 px-2 text-sm text-destructive hover:text-destructive"
+            disabled={busy || loadingMore}
+            onClick={onRemoveSelectedFiles}
+          >
+            {removingFileID ? <Spinner className="size-4" /> : <Link2Off className="size-4" strokeWidth={1.5} />}
+            {t("removeSelectedFiles")}
+          </Button>
+          </div> : null}
         </div>
       ) : null}
       <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3 md:px-5">
@@ -307,13 +329,11 @@ function KnowledgeBaseFileList({
               const checked = selectedFileIDSet.has(file.fileID);
               return (
                 <div key={file.fileID} className={cn("group relative min-h-16 border-b border-border/60 last:border-b-0", checked && "bg-accent shadow-[inset_2px_0_0_var(--primary)]")}>
-                  {editable && vectorizable ? (
+                  {editable ? (
                     <Checkbox
                       checked={checked}
-                      className={cn(
-                        "absolute left-3 top-1/2 z-10 -translate-y-1/2 transition-opacity",
-                        checked ? "opacity-100" : "opacity-100 md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100",
-                      )}
+                      className="absolute left-3 top-1/2 z-10 -translate-y-1/2"
+                      disabled={busy}
                       onClick={(event) => event.stopPropagation()}
                       onCheckedChange={(value) => onToggleFileSelection(file.fileID, value === true)}
                       aria-label={t("selectFile", { name: file.fileName })}
@@ -323,14 +343,11 @@ function KnowledgeBaseFileList({
                     type="button"
                     className={cn(
                       "flex min-h-16 w-full items-center gap-3 rounded-md px-2 py-3 text-left transition-colors hover:bg-muted/45 focus-visible:bg-muted/45 focus-visible:outline-none",
-                      editable && "pr-18",
+                      editable && "pl-11 pr-18",
                     )}
                     onClick={() => onPreviewFile(file)}
                   >
-                    <span className={cn(
-                      "flex size-6 shrink-0 items-center justify-center text-muted-foreground",
-                      vectorizable && (checked ? "opacity-0" : "opacity-0 transition-opacity md:opacity-100 md:group-hover:opacity-0"),
-                    )}>
+                    <span className="flex size-6 shrink-0 items-center justify-center text-muted-foreground">
                       <FileIcon className="size-4" strokeWidth={1.5} />
                     </span>
                     <span className="min-w-0 flex-1">
@@ -362,7 +379,7 @@ function KnowledgeBaseFileList({
                           variant="ghost"
                           size="icon-sm"
                           className="text-muted-foreground/70 hover:bg-muted hover:text-foreground"
-                          disabled={vectorizingFiles}
+                          disabled={busy}
                           onClick={(event) => {
                             event.stopPropagation();
                             void onVectorizeFile(file.fileID);
@@ -378,7 +395,7 @@ function KnowledgeBaseFileList({
                         variant="ghost"
                         size="icon-sm"
                         className="text-muted-foreground/70 hover:bg-muted hover:text-foreground"
-                        disabled={Boolean(removingFileID)}
+                        disabled={busy || loadingMore}
                         onClick={(event) => {
                           event.stopPropagation();
                           void onRemoveFile(file.fileID);
@@ -403,7 +420,7 @@ function KnowledgeBaseFileList({
               <Button
                 variant="ghost"
                 size="sm"
-                disabled={loadingMore}
+                disabled={loadingMore || busy}
                 onClick={() => void onLoadMore()}
               >
                 {loadingMore ? <Spinner className="size-3.5" /> : null}

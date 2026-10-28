@@ -89,6 +89,7 @@ export function useKnowledgeBasePage(mode: KnowledgeBaseMode) {
   const [filesLoading, setFilesLoading] = React.useState(false);
   const [filesLoadingMore, setFilesLoadingMore] = React.useState(false);
   const [removingFileID, setRemovingFileID] = React.useState("");
+  const [removeFilesOpen, setRemoveFilesOpen] = React.useState(false);
   const [draft, setDraft] = React.useState<KnowledgeBaseDraft | null>(null);
   const [saving, setSaving] = React.useState(false);
   const [toggling, setToggling] = React.useState(false);
@@ -167,13 +168,12 @@ export function useKnowledgeBasePage(mode: KnowledgeBaseMode) {
 
   React.useEffect(() => {
     setSelectedDetailFileIDs([]);
+    setRemoveFilesOpen(false);
   }, [selectedID]);
 
   React.useEffect(() => {
-    const vectorizableIDs = new Set(
-      files.filter(canManuallyVectorizeFile).map((file) => file.fileID),
-    );
-    setSelectedDetailFileIDs((current) => current.filter((fileID) => vectorizableIDs.has(fileID)));
+    const fileIDs = new Set(files.map((file) => file.fileID));
+    setSelectedDetailFileIDs((current) => current.filter((fileID) => fileIDs.has(fileID)));
   }, [files]);
 
   const listFilePage = React.useCallback((
@@ -188,6 +188,7 @@ export function useKnowledgeBasePage(mode: KnowledgeBaseMode) {
   const replaceFileList = React.useCallback(async (
     accessToken: string,
     knowledgeBaseID: string,
+    pageCount = 1,
   ) => {
     const requestVersion = ++filesRequestVersionRef.current;
     filesRequestControllerRef.current?.abort();
@@ -196,13 +197,20 @@ export function useKnowledgeBasePage(mode: KnowledgeBaseMode) {
     setFilesLoadingMore(false);
     try {
       const page = await listFilePage(accessToken, knowledgeBaseID, 1, requestController.signal);
+      const results = [...page.results];
+      let loadedPage = 1;
+      while (loadedPage < pageCount && results.length < page.total) {
+        const next = await listFilePage(accessToken, knowledgeBaseID, loadedPage + 1, requestController.signal);
+        results.push(...next.results);
+        loadedPage += 1;
+      }
       if (
         selectedIDRef.current !== knowledgeBaseID ||
         filesRequestVersionRef.current !== requestVersion
       ) return;
-      setFiles(page.results);
+      setFiles(Array.from(new Map(results.map((file) => [file.fileID, file])).values()));
       setFilesTotal(page.total);
-      setFilesPage(1);
+      setFilesPage(loadedPage);
     } catch (error) {
       if (!requestController.signal.aborted) {
         throw error;
@@ -794,37 +802,56 @@ export function useKnowledgeBasePage(mode: KnowledgeBaseMode) {
     }
   }, [addingFiles, deletingPlatformFileID, mode, resolveErrorMessage, t, uploadingFiles]);
 
-  const removeFile = React.useCallback(async (fileID: string) => {
-    if (!selected || removingFileID || (mode === "user" && selected.scope !== "user")) return;
+  const removeFiles = React.useCallback(async (fileIDs: string[]) => {
+    if (!selected || removingFileID || vectorizingFileIDs.length > 0 || (mode === "user" && selected.scope !== "user")) return;
+    const targets = Array.from(new Set(fileIDs));
+    if (targets.length === 0) return;
     const knowledgeBaseID = selected.publicID;
     filesRequestVersionRef.current += 1;
+    filesRequestControllerRef.current?.abort();
     setFilesLoading(false);
     setFilesLoadingMore(false);
-    setRemovingFileID(fileID);
+    setRemovingFileID(targets.length === 1 ? targets[0] : "bulk");
     try {
       const token = await requireAccessToken();
-      if (mode === "admin") {
-        await removeAdminKnowledgeBaseFile(token, knowledgeBaseID, fileID);
-      } else {
-        await removeMyKnowledgeBaseFile(token, knowledgeBaseID, fileID);
-      }
+      const results = await runSettledBulkItems({
+        items: targets,
+        chunkSize: 5,
+        title: t("removingFiles"),
+        runItem: (fileID) => mode === "admin"
+          ? removeAdminKnowledgeBaseFile(token, knowledgeBaseID, fileID)
+          : removeMyKnowledgeBaseFile(token, knowledgeBaseID, fileID),
+      });
+      const removedIDs = new Set(results.flatMap((result) => result.status === "fulfilled" ? [result.item] : []));
+      const failed = targets.length - removedIDs.size;
       if (selectedIDRef.current === knowledgeBaseID) {
-        setFiles((current) => current.filter((file) => file.fileID !== fileID));
-        setFilesTotal((current) => Math.max(0, current - 1));
-        setSelectedDetailFileIDs((current) => current.filter((id) => id !== fileID));
+        setFiles((current) => current.filter((file) => !removedIDs.has(file.fileID)));
+        setFilesTotal((current) => Math.max(0, current - removedIDs.size));
+        setSelectedDetailFileIDs((current) => current.filter((id) => !removedIDs.has(id)));
+        setRemoveFilesOpen(false);
+        // Refill the loaded pages after relation deletion shifts pagination offsets.
+        try {
+          await replaceFileList(token, knowledgeBaseID, filesPage);
+        } catch {
+          toast.error(t("filesLoadFailed"));
+        }
       }
       await loadItems(undefined, true);
-      dispatchKnowledgeBaseInvalidated(knowledgeBaseID);
-      toast.success(t("removed"));
+      if (removedIDs.size > 0) dispatchKnowledgeBaseInvalidated(knowledgeBaseID);
+      if (failed > 0) {
+        toast.error(t("removeFilesPartial", { success: removedIDs.size, failed }));
+      } else {
+        toast.success(t("removedFiles", { count: removedIDs.size }));
+      }
     } catch {
       toast.error(t("removeFailed"));
     } finally {
       setRemovingFileID("");
     }
-  }, [loadItems, mode, removingFileID, selected, t]);
+  }, [filesPage, loadItems, mode, removingFileID, replaceFileList, selected, t, vectorizingFileIDs.length]);
 
   const submitVectorization = React.useCallback(async (fileIDs: string[], clearSelection: boolean) => {
-    if (!selected || vectorizingFileIDs.length > 0 || (mode === "user" && selected.scope !== "user")) return;
+    if (!selected || removingFileID || vectorizingFileIDs.length > 0 || (mode === "user" && selected.scope !== "user")) return;
     const normalizedFileIDs = Array.from(new Set(fileIDs.map((fileID) => fileID.trim()).filter(Boolean)));
     if (normalizedFileIDs.length === 0) return;
     if (normalizedFileIDs.length > FILE_ACTION_LIMIT) {
@@ -874,13 +901,12 @@ export function useKnowledgeBasePage(mode: KnowledgeBaseMode) {
     } finally {
       setVectorizingFileIDs([]);
     }
-  }, [mode, resolveErrorMessage, selected, t, vectorizingFileIDs.length]);
+  }, [mode, removingFileID, resolveErrorMessage, selected, t, vectorizingFileIDs.length]);
 
   const toggleDetailFileSelection = React.useCallback((fileID: string, checked: boolean) => {
     setSelectedDetailFileIDs((current) => {
       const next = new Set(current);
       if (checked) {
-        if (next.size >= FILE_ACTION_LIMIT) return current;
         next.add(fileID);
       } else {
         next.delete(fileID);
@@ -890,7 +916,7 @@ export function useKnowledgeBasePage(mode: KnowledgeBaseMode) {
   }, []);
 
   const loadMoreFiles = React.useCallback(async () => {
-    if (!selected || filesLoadingMore || files.length >= filesTotal) return;
+    if (!selected || removingFileID || filesLoadingMore || files.length >= filesTotal) return;
     const knowledgeBaseID = selected.publicID;
     const requestVersion = filesRequestVersionRef.current;
     filesRequestControllerRef.current?.abort();
@@ -924,7 +950,7 @@ export function useKnowledgeBasePage(mode: KnowledgeBaseMode) {
         filesRequestVersionRef.current === requestVersion
       ) setFilesLoadingMore(false);
     }
-  }, [files.length, filesLoadingMore, filesPage, filesTotal, listFilePage, selected, t]);
+  }, [files.length, filesLoadingMore, filesPage, filesTotal, listFilePage, removingFileID, selected, t]);
 
   const confirmDelete = React.useCallback(async () => {
     if (!deleteTarget || deleting) return;
@@ -1091,19 +1117,28 @@ export function useKnowledgeBasePage(mode: KnowledgeBaseMode) {
       back: () => setMobileView("list"),
       addFiles: () => setAddFilesOpen(true),
       loadMoreFiles,
-      removeFile,
+      removeFile: (fileID: string) => removeFiles([fileID]),
+      requestRemoveFiles: () => setRemoveFilesOpen(true),
       toggleFileSelection: toggleDetailFileSelection,
-      selectVectorizableFiles: () => setSelectedDetailFileIDs(
-        files.filter(canManuallyVectorizeFile).slice(0, FILE_ACTION_LIMIT).map((file) => file.fileID),
-      ),
+      selectAllFiles: () => setSelectedDetailFileIDs(files.map((file) => file.fileID)),
       clearFileSelection: () => setSelectedDetailFileIDs([]),
       vectorizeFile: (fileID: string) => submitVectorization([fileID], false),
-      vectorizeSelectedFiles: () => submitVectorization(selectedDetailFileIDs, true),
+      vectorizeSelectedFiles: () => submitVectorization(
+        files.filter((file) => selectedDetailFileIDs.includes(file.fileID) && canManuallyVectorizeFile(file)).map((file) => file.fileID),
+        true,
+      ),
       toggleBuiltinEnabled,
       previewFile: (file: KnowledgeBaseFileDTO) => {
         if (!selected) return;
         setPreviewTarget({ knowledgeBaseID: selected.publicID, admin: mode === "admin", file });
       },
+    },
+    removeFilesDialog: {
+      open: removeFilesOpen,
+      count: selectedDetailFileIDs.length,
+      removing: Boolean(removingFileID),
+      close: () => { if (!removingFileID) setRemoveFilesOpen(false); },
+      confirm: () => removeFiles(selectedDetailFileIDs),
     },
     editor: {
       draft, saving,

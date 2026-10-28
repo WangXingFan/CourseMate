@@ -66,7 +66,8 @@ export function AppKnowledgeBases() {
         onToggleEnabled={detail.toggleBuiltinEnabled}
         onPreviewFile={detail.previewFile}
         onToggleFileSelection={detail.toggleFileSelection}
-        onSelectVectorizableFiles={detail.selectVectorizableFiles}
+        onSelectAllFiles={detail.selectAllFiles}
+        onRemoveSelectedFiles={detail.requestRemoveFiles}
         onClearFileSelection={detail.clearFileSelection}
         onVectorizeFile={detail.vectorizeFile}
         onVectorizeSelectedFiles={detail.vectorizeSelectedFiles}

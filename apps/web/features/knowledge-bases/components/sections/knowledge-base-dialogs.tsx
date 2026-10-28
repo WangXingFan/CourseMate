@@ -412,6 +412,37 @@ export function DeleteKnowledgeBaseDialog({
   );
 }
 
+export function RemoveKnowledgeBaseFilesDialog({ open, count, removing, onClose, onConfirm }: {
+  open: boolean;
+  count: number;
+  removing: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  const t = useTranslations("knowledgeBases");
+  const stableCount = useDialogSnapshot(open ? count : null) ?? 0;
+  return (
+    <AlertDialog open={open} onOpenChange={(nextOpen) => !nextOpen && !removing && onClose()}>
+      <AlertDialogContent size="compact">
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t("removeSelectedFiles")}</AlertDialogTitle>
+          <AlertDialogDescription>{t("removeFilesDescription", { count: stableCount })}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={removing}>{t("cancel")}</AlertDialogCancel>
+          <AlertDialogAction variant="destructive" disabled={removing || count === 0} onClick={(event) => {
+            event.preventDefault();
+            onConfirm();
+          }}>
+            {removing ? <Spinner className="size-4" /> : null}
+            {t("removeSelectedFiles")}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
 export function BulkDeleteKnowledgeBasesDialog({
   open,
   count,
