@@ -10,7 +10,6 @@ import (
 	"strings"
 	"sync/atomic"
 
-	domainknowledgebase "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/knowledgebase"
 	sharedsecurity "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/security"
 	"gopkg.in/yaml.v3"
 )
@@ -1128,7 +1127,7 @@ func (c Config) TrustedProxyList() []string {
 func (c Config) DefaultKnowledgeBaseIDs() []string {
 	raw := splitCommaSeparated(c.KnowledgeBaseDefaultIDs)
 	if len(raw) == 0 {
-		return []string{domainknowledgebase.SignalsPublicID}
+		return []string{}
 	}
 	seen := make(map[string]struct{}, len(raw))
 	result := make([]string, 0, len(raw))

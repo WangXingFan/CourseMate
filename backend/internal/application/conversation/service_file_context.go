@@ -271,7 +271,7 @@ func fileContextPlanRAGObjects(items []AttachmentInput) []model.FileObject {
 
 // resolveKnowledgeBaseScope 解析本轮问答生效的知识库范围。
 // 知识库功能关闭时返回 nil，表示整轮不检索；开启时优先使用显式选择，
-// 其次套用后台配置的默认范围，未配置时回退到内置信号与系统知识库。
+// 其次套用后台配置的默认范围。
 // 保留空范围校验，防止请求降级为“无知识库”的通用聊天。
 func resolveKnowledgeBaseScope(selected []string, cfg config.Config) ([]string, error) {
 	if !cfg.KnowledgeBaseEnabled {

@@ -74,26 +74,18 @@ func TestContainsSettingPatchMatchesExactNamespaceAndKey(t *testing.T) {
 	}
 }
 
-func TestReconcileEmbeddingSettingsInvokesBuiltinBackfillBestEffort(t *testing.T) {
+func TestReconcileEmbeddingSettingsDoesNotDependOnBuiltinKnowledgeBase(t *testing.T) {
 	runtime := config.NewRuntime(config.Config{
 		EmbeddingEnabled: true,
 		RAGModel:         "text-embedding-test",
 		EmbeddingHost:    "https://embedding.example/v1",
 	})
-	backfillCalls := 0
 	handler := &Handler{
 		embeddingSvc: appembedding.NewServiceWithRuntime(runtime, testEmbeddingRepo{}, nil, nil, zap.NewNop()),
-		builtinEmbeddingBackfill: func(context.Context) error {
-			backfillCalls++
-			return errors.New("queue unavailable")
-		},
 	}
 
 	if err := handler.reconcileEmbeddingSettings(context.Background()); err != nil {
 		t.Fatalf("callback failure must not fail settings reconciliation: %v", err)
-	}
-	if backfillCalls != 1 {
-		t.Fatalf("builtin backfill calls = %d, want 1", backfillCalls)
 	}
 }
 func TestTriggerReindexReturnsBadRequestWhenEmbeddingNotConfigured(t *testing.T) {

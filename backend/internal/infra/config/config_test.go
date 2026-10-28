@@ -6,20 +6,18 @@ import (
 	"path/filepath"
 	"testing"
 
-	domainknowledgebase "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/knowledgebase"
 	sharedsecurity "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/security"
 )
 
 func TestDefaultKnowledgeBaseIDs(t *testing.T) {
-	signalsID := domainknowledgebase.SignalsPackage().PublicID
 	tests := []struct {
 		name  string
 		value string
 		want  []string
 	}{
-		{name: "built-in signals library by default", want: []string{signalsID}},
-		{name: "blank uses built-in signals library", value: " , ", want: []string{signalsID}},
-		{name: "configured IDs are trimmed and deduplicated", value: " kb_custom, " + signalsID + ", kb_custom ", want: []string{"kb_custom", signalsID}},
+		{name: "unset has no default knowledge bases"},
+		{name: "blank has no default knowledge bases", value: " , "},
+		{name: "configured IDs are trimmed and deduplicated", value: " kb_custom, kb_second, kb_custom ", want: []string{"kb_custom", "kb_second"}},
 	}
 
 	for _, test := range tests {

@@ -200,31 +200,10 @@ func (s *Service) ListFiles(ctx context.Context, input ListFilesInput) (*ListFil
 
 // UploadFile 上传文件并扣减用户配额。
 func (s *Service) UploadFile(ctx context.Context, input UploadFileInput) (*UploadFileResult, error) {
-	return s.uploadFile(ctx, input, false)
+	return s.uploadFile(ctx, input)
 }
 
-// ImportBuiltinMarkdown is reserved for trusted, bundled teaching notes. It
-// creates platform-owned files without borrowing an administrator's identity.
-// No HTTP handler exposes this entry point; ordinary uploads still require an
-// active account and obey the administrator's upload MIME allowlist.
-func (s *Service) ImportBuiltinMarkdown(ctx context.Context, fileName string, markdown string) (*UploadFileResult, error) {
-	result, err := s.uploadFile(ctx, UploadFileInput{
-		Ownership: FileOwnershipSystem, Purpose: "knowledge_base", FileName: fileName,
-		MimeType: "text/markdown", DeclaredSize: int64(len(markdown)), Reader: strings.NewReader(markdown),
-	}, true)
-	if err != nil {
-		return nil, err
-	}
-	// A previous startup may have persisted the file but failed to enqueue it.
-	if result.Reused && (result.File.ProcessingStatus == "uploaded" || result.File.ProcessingStatus == "failed") {
-		if err = s.initializeUploadedFile(ctx, &result.File); err != nil {
-			return nil, err
-		}
-	}
-	return result, nil
-}
-
-func (s *Service) uploadFile(ctx context.Context, input UploadFileInput, builtin bool) (*UploadFileResult, error) {
+func (s *Service) uploadFile(ctx context.Context, input UploadFileInput) (*UploadFileResult, error) {
 	if input.Reader == nil {
 		return nil, s.errInvalidFileReference()
 	}
@@ -238,16 +217,12 @@ func (s *Service) uploadFile(ctx context.Context, input UploadFileInput, builtin
 		normalizedMIME = "application/octet-stream"
 	}
 
-	var userItem *domainuser.User
-	if !builtin {
-		var err error
-		userItem, err = s.repo.GetUserByID(ctx, input.UserID)
-		if err != nil {
-			return nil, err
-		}
-		if userItem.Status != domainuser.StatusActive {
-			return nil, s.errInvalidFileReference()
-		}
+	userItem, err := s.repo.GetUserByID(ctx, input.UserID)
+	if err != nil {
+		return nil, err
+	}
+	if userItem.Status != domainuser.StatusActive {
+		return nil, s.errInvalidFileReference()
 	}
 
 	cfg := s.snapshot()
@@ -309,7 +284,7 @@ func (s *Service) uploadFile(ctx context.Context, input UploadFileInput, builtin
 		removeUploadedObject(relativePath)
 		return nil, s.errDangerousMIMEType()
 	}
-	if !builtin && !isAllowedMIME(detectedMIME, cfg) {
+	if !isAllowedMIME(detectedMIME, cfg) {
 		removeUploadedObject(relativePath)
 		return nil, s.errMIMEBlocked()
 	}

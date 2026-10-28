@@ -35,7 +35,6 @@ import (
 	appupload "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/upload"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/user"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/usersettings"
-	domainknowledgebase "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/knowledgebase"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/cache"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
 	moderationclient "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/contentmoderation"
@@ -383,27 +382,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	knowledgeBaseService.SetFileUploader(uploadService)
 	knowledgeBaseService.SetFileEmbeddingSubmitter(processingService)
 	knowledgeBaseService.SetLogger(log)
-	signalsPack := domainknowledgebase.SignalsPackage()
-	seedCtx, cancelSeed := context.WithTimeout(context.Background(), 2*time.Minute)
-	seedErr := appknowledgebase.NewBuiltinSeeder(knowledgeBaseRepo, uploadService).Seed(seedCtx, signalsPack)
-	cancelSeed()
-	if seedErr != nil {
-		return nil, fmt.Errorf("seed builtin course knowledge base: %w", seedErr)
-	}
-	builtinEmbeddingBackfiller := appknowledgebase.NewBuiltinEmbeddingBackfiller(
-		knowledgeBaseRepo,
-		processingService,
-		signalsPack.Key,
-	)
-	settingsHandler.SetBuiltinEmbeddingBackfiller(func(ctx context.Context) error {
-		if backfillErr := builtinEmbeddingBackfiller.Backfill(ctx); backfillErr != nil {
-			if !errors.Is(backfillErr, appembedding.ErrEmbeddingServiceNotConfigured) {
-				log.Warn("builtin knowledge base embedding backfill failed after settings update", zap.Error(backfillErr))
-			}
-			return backfillErr
-		}
-		return nil
-	})
 	conversationService.SetKnowledgeBaseResolver(knowledgeBaseService)
 	knowledgeBaseHandler := knowledgebasehttp.NewHandler(knowledgeBaseService, runtimeCfg)
 	knowledgeBaseModule := knowledgebasehttp.NewModule(knowledgeBaseHandler)
@@ -452,17 +430,6 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	}
 	embeddingService.StartBackgroundWorkers(backgroundCtx)
 	conversationService.StartBackgroundWorkers(backgroundCtx)
-	backfillCtx, cancelBackfill := context.WithTimeout(backgroundCtx, 30*time.Second)
-	backfillErr := builtinEmbeddingBackfiller.Backfill(backfillCtx)
-	cancelBackfill()
-	if backfillErr != nil && !errors.Is(backfillErr, appembedding.ErrEmbeddingServiceNotConfigured) {
-		log.Warn("builtin knowledge base embedding backfill failed", zap.Error(backfillErr))
-	}
-	background.Go(log, "builtin_embedding_backfill", func() {
-		builtinEmbeddingBackfiller.Run(backgroundCtx, func(err error) {
-			log.Warn("builtin knowledge base embedding backfill failed", zap.Error(err))
-		})
-	})
 	contentModerationService.StartBackgroundWorkers(backgroundCtx)
 	channelService.StartModelIconAssetCleanup(backgroundCtx)
 

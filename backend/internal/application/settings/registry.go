@@ -129,7 +129,7 @@ var settingSpecs = []settingSpec{
 	// 知识库配置
 	{Namespace: "knowledgebase", Key: "enabled", ValueType: "bool", Default: "true", Description: "是否启用知识库功能；关闭后隐藏用户侧入口并拒绝知识库请求",
 		Validate: boolValue(), Apply: applyField(func(c *config.Config) *bool { return &c.KnowledgeBaseEnabled }, toBool)},
-	{Namespace: "knowledgebase", Key: "default_knowledge_base_ids", ValueType: "string", Default: "", Description: "学生新会话默认检索的平台知识库 public_id 列表（逗号分隔，最多 8 个）；留空使用内置信号与系统知识库",
+	{Namespace: "knowledgebase", Key: "default_knowledge_base_ids", ValueType: "string", Default: "", Description: "学生新会话默认检索的平台知识库 public_id 列表（逗号分隔，最多 8 个）；留空表示不预置默认检索范围",
 		Validate: validateKnowledgeBaseIDList, Apply: applyField(func(c *config.Config) *string { return &c.KnowledgeBaseDefaultIDs }, rawText)},
 
 	// 桌面端下载入口配置：仅影响网页端用户菜单入口，桌面端内始终不展示。
