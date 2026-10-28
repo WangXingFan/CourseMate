@@ -85,16 +85,6 @@
         "placeholder": "逗号分隔的知识库 ID"
       }
     },
-    "chat": {
-      "rag_answer_policy": {
-        "label": "回答策略",
-        "description": "选择是否允许模型使用通用知识，或只依据所选知识库回答。",
-        "options": {
-          "balanced": "平衡回答",
-          "knowledge_base": "仅依据知识库"
-        }
-      }
-    },
     "storage": {
       "max_message_files": {
         "label": "附件数量上限",
@@ -460,6 +450,14 @@
       }
     },
     "chat": {
+      "rag_answer_policy": {
+        "label": "回答策略",
+        "description": "选择是否允许模型使用通用知识，或只依据所选知识库回答。",
+        "options": {
+          "balanced": "平衡回答",
+          "knowledge_base": "仅依据知识库"
+        }
+      },
       "rag_enabled": {
         "label": "RAG 开关",
         "description": "开启后允许文件进入检索增强链路，依赖可用的 Embedding 服务。"
