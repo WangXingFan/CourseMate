@@ -22,11 +22,11 @@ const runtimeActionTimeout = 5 * time.Minute
 
 // Handler 封装 settings HTTP 处理。
 type Handler struct {
-	service                  *appsettings.Service
-	runtimeSettings          *appsettings.RuntimeSettings
-	runtimeSvc               *appruntime.Service
-	runtime                  *config.Runtime
-	embeddingSvc             *appembedding.Service       // 可选，用于模型变更后触发向量失效
+	service         *appsettings.Service
+	runtimeSettings *appsettings.RuntimeSettings
+	runtimeSvc      *appruntime.Service
+	runtime         *config.Runtime
+	embeddingSvc    *appembedding.Service // 可选，用于模型变更后触发向量失效
 }
 
 // NewHandler 创建处理器。
