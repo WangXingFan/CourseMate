@@ -353,9 +353,6 @@ func (s *Service) uploadFile(ctx context.Context, input UploadFileInput) (*Uploa
 	initErr := s.initializeUploadedFile(initializeCtx, fileItem)
 	cancelInitialize()
 	if initErr != nil {
-		if builtin {
-			return nil, initErr
-		}
 		if s.logger != nil {
 			s.logger.Warn("initialize_uploaded_file_failed",
 				zap.String("file_id", fileItem.FileID),
