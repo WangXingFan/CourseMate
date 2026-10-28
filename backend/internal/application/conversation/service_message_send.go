@@ -565,6 +565,7 @@ func (s *Service) sendMessageInternal(
 	ragFallbacks := rag.fallbacks
 	ragContextChunks := rag.chunks
 	userCtx.RAGNotice = rag.notice
+	userCtx.KnowledgeCatalog = rag.catalog
 	var stableFullContextAttachments []AttachmentInput
 	if !strictKnowledgeBasePolicy {
 		stableFullContextAttachments = append(stableFullContextAttachments, fileContextPlan.FullAttachments...)

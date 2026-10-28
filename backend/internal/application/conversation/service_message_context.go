@@ -432,6 +432,7 @@ type userContextInput struct {
 	Attachments         []AttachmentInput
 	RAGChunks           []domainconversation.RAGChunk
 	RAGNotice           string
+	KnowledgeCatalog    string
 	HistoricalArtifacts []domainconversation.ContextArtifact
 	CurrentArtifacts    []domainconversation.ContextArtifact
 	Snapshot            *snapshotContext
@@ -686,6 +687,7 @@ func injectUserContext(
 	if len(input.Attachments) == 0 &&
 		len(input.RAGChunks) == 0 &&
 		strings.TrimSpace(input.RAGNotice) == "" &&
+		strings.TrimSpace(input.KnowledgeCatalog) == "" &&
 		len(input.HistoricalArtifacts) == 0 &&
 		input.Snapshot == nil {
 		return messages
@@ -813,6 +815,7 @@ type userContextXML struct {
 	evidence  []string
 	rag       []string
 	ragNotice string
+	catalog   string
 }
 
 func (x userContextXML) empty() bool {
@@ -820,7 +823,7 @@ func (x userContextXML) empty() bool {
 		len(x.files) == 0 &&
 		len(x.evidence) == 0 &&
 		len(x.rag) == 0 &&
-		strings.TrimSpace(x.ragNotice) == ""
+		strings.TrimSpace(x.ragNotice) == "" && strings.TrimSpace(x.catalog) == ""
 }
 
 func buildUserContextXML(input userContextInput) userContextXML {
@@ -829,6 +832,7 @@ func buildUserContextXML(input userContextInput) userContextXML {
 		evidence:  formatHistoricalEvidenceContext(input.HistoricalArtifacts),
 		rag:       formatRAGFileContext(input.RAGChunks),
 		ragNotice: strings.TrimSpace(input.RAGNotice),
+		catalog:   strings.TrimSpace(input.KnowledgeCatalog),
 	}
 }
 
@@ -926,6 +930,11 @@ func buildUserContextPrompt(userRequest string, contextXML userContextXML) strin
 		builder.WriteString("\n<rag_status>")
 		builder.WriteString(xmlEscapeText(contextXML.ragNotice))
 		builder.WriteString("</rag_status>")
+	}
+	if strings.TrimSpace(contextXML.catalog) != "" {
+		builder.WriteString("\n<knowledge_catalog>")
+		builder.WriteString(xmlEscapeText(contextXML.catalog))
+		builder.WriteString("</knowledge_catalog>")
 	}
 	builder.WriteString("\n</ctx>")
 

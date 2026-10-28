@@ -199,6 +199,10 @@ jobs:
         env:
           PLAYWRIGHT_PACKAGE_JSON: ${{ runner.temp }}/learning-browser/node_modules/playwright/package.json
         run: node apps/web/scripts/chat-output-smoke.mjs
+      - name: Knowledge base file selection and bulk removal UI smoke
+        env:
+          PLAYWRIGHT_PACKAGE_JSON: ${{ runner.temp }}/learning-browser/node_modules/playwright/package.json
+        run: node apps/web/scripts/knowledge-bases-smoke.mjs
       - name: Upload learning UI screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -217,6 +221,7 @@ jobs:
           path: |
             .cache/virtual-lab-smoke
             .cache/chat-output-smoke
+            .cache/knowledge-bases-smoke
           if-no-files-found: ignore
 
   desktop:

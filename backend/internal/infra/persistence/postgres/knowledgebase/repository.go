@@ -476,7 +476,7 @@ func (r *Repo) ResolveVisibleKnowledgeBaseFiles(ctx context.Context, userID uint
 		baseIDs = append(baseIDs, base.ID)
 	}
 	files := make([]models.FileObject, 0)
-	if err := r.db.WithContext(ctx).Table("file_objects AS fo").Distinct(knowledgeBaseFileSelectColumns).
+	if err := r.db.WithContext(ctx).Table("file_objects AS fo").Distinct(knowledgeBaseFileSelectColumns+", fo.preview_text").
 		Joins("JOIN knowledge_base_files AS kbf ON kbf.file_object_id = fo.id").
 		Where("kbf.knowledge_base_id IN ? AND fo.status = ? AND fo.deleted_at IS NULL", baseIDs, "active").
 		Where("fo.processing_ready = ? AND fo.embed_status = ? AND fo.rag_opt_out = ? AND fo.chunk_count > 0", true, "ready", false).
@@ -626,6 +626,7 @@ func toFileDomain(item models.FileObject) domainconversation.FileObject {
 		ProcessingErrorCode: item.ProcessingErrorCode, ProcessingErrorMessage: item.ProcessingErrorMessage,
 		ExtractStatus: item.ExtractStatus, EmbedStatus: item.EmbedStatus, EmbedSignature: item.EmbedSignature,
 		EmbedError: item.EmbedError, RAGOptOut: item.RAGOptOut,
-		ChunkCount: item.ChunkCount, PageCount: item.PageCount, CreatedAt: item.CreatedAt, UpdatedAt: item.UpdatedAt,
+		PreviewText: item.PreviewText,
+		ChunkCount:  item.ChunkCount, PageCount: item.PageCount, CreatedAt: item.CreatedAt, UpdatedAt: item.UpdatedAt,
 	}
 }
