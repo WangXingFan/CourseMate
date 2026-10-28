@@ -43,6 +43,9 @@ class SignalLabsTest(unittest.TestCase):
         t, zi, zs, total = LAB1["response_parts"](y0=2)
         np.testing.assert_allclose(total, 1 + np.exp(-t), atol=1e-14)
         np.testing.assert_allclose(total, zi + zs, atol=1e-14)
+        for enabled in [True, False]:
+            t, zi, zs, total = LAB1["response_parts"](y0=0.5, input_on=enabled, A=2.5)
+            np.testing.assert_allclose(total, 0.5 * np.exp(-t) + 2.5 * enabled * (1 - np.exp(-t)), atol=1e-14)
 
     def test_continuous_convolution_scaling_and_time_axis(self):
         for dt in [0.002, 0.001]:
@@ -136,6 +139,41 @@ class SignalLabsTest(unittest.TestCase):
         try:
             for task, source in starters.items():
                 exec(compile(source, f"starter:{task}", "exec"), {"__name__": "__main__"})
+                plt.close("all")
+        finally:
+            sys.path.remove(str(RESOURCES))
+
+    def test_parameterized_experiment_code_executes(self):
+        script = """
+import { readFileSync } from 'node:fs';
+import { stripTypeScriptTypes } from 'node:module';
+import { createVirtualLabEngine } from './apps/web/public/vendor/signal-lab/core.mjs';
+const source = readFileSync('./apps/web/features/learning/model/python-labs.ts', 'utf8');
+const { buildPythonLabStarter } = await import('data:text/javascript;base64,' + Buffer.from(stripTypeScriptTypes(source)).toString('base64'));
+const engine = createVirtualLabEngine();
+const cases = engine.taskIds.map(id => ({ id, params: engine.defaults(id) }));
+for (const [id, changes] of [
+  ['L1-1', {mode:'impulse',delta:0.1}], ['L1-1', {a:-2,shift:1,A:2}],
+  ['L1-2', {kind:'varying',test:'invariance',x1:'cos',delay:0.5}],
+  ['L1-3', {A:2.5,initial:0.5,enabled:'on'}], ['L1-3', {A:2.5,initial:0.5,enabled:'off'}],
+  ['L1-4', {kind:'rh',time:1.5}], ['L2-1', {K:'15'}], ['L2-2', {A:2,T:0.5,center:-1}],
+  ['L2-4', {fs:'15',candidate:5}], ['L3-1', {mode:'delayed',A:3,T:2,start:1}],
+  ['L3-3', {initial:'0.5',measureTime:2.2}], ['L3-4', {T:1.61}]
+]) cases.push({id, params:{...engine.defaults(id),...changes}});
+process.stdout.write(JSON.stringify(cases.map(c => ({...c, code:buildPythonLabStarter(c.id,c.params)}))));
+"""
+        generated = subprocess.run(["node", "--input-type=module", "-e", script], cwd=ROOT, capture_output=True, text=True, check=True)
+        cases = json.loads(generated.stdout)
+        sys.path.insert(0, str(RESOURCES))
+        try:
+            for case in cases:
+                namespace = {"__name__": "__main__"}
+                exec(compile(case["code"], f"experiment:{case['id']}", "exec"), namespace)
+                self.assertGreater(len(plt.get_fignums()), 0, case["id"])
+                if case["id"] == "L1-3":
+                    p = case["params"]
+                    expected = p["initial"] * np.exp(-namespace["t"]) + p["A"] * (p["enabled"] == "on") * (1 - np.exp(-namespace["t"]))
+                    np.testing.assert_allclose(namespace["total"], expected, atol=1e-14)
                 plt.close("all")
         finally:
             sys.path.remove(str(RESOURCES))

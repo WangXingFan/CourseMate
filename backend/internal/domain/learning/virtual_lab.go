@@ -1,10 +1,13 @@
 package learning
 
 import (
+	"bytes"
 	_ "embed"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"image/png"
 	"math"
 	"strconv"
 	"strings"
@@ -96,6 +99,9 @@ func ValidateVirtualLab(document string) error {
 			if !validLabInputs(id, item) {
 				return errors.New("invalid experiment parameters or answers")
 			}
+			if python, exists := item["python"]; exists && !validLabPython(id, python) {
+				return errors.New("invalid Python evidence")
+			}
 			for _, key := range []string{"prediction", "predictionDraft", "derivation", "analysis"} {
 				if _, ok := item[key].(string); !ok {
 					return errors.New("missing task text")
@@ -166,6 +172,63 @@ func ValidateVirtualLab(document string) error {
 		}
 	}
 	return nil
+}
+
+func validLabPython(id string, value any) bool {
+	python, ok := value.(map[string]any)
+	if !ok || !validLabText(python["code"]) {
+		return false
+	}
+	if python["result"] == nil {
+		_, exists := python["result"]
+		return exists
+	}
+	run, ok := python["result"].(map[string]any)
+	if !ok || !validLabText(run["code"]) || !validLabText(run["stdout"]) || !validLabText(run["stderr"]) || !validLabDate(run["time"]) {
+		return false
+	}
+	answers := map[string]any{}
+	for _, key := range virtualLabTaskSpecs[id].Answers {
+		answers[key] = ""
+	}
+	if !validLabInputs(id, map[string]any{"params": run["params"], "answers": answers}) {
+		return false
+	}
+	plots, ok := run["plots"].([]any)
+	if !ok || len(plots) > 4 {
+		return false
+	}
+	for _, plot := range plots {
+		chunks, ok := plot.([]any)
+		if !ok || len(chunks) == 0 || len(chunks) > 22 {
+			return false
+		}
+		var encoded strings.Builder
+		for _, chunk := range chunks {
+			text, ok := chunk.(string)
+			if !ok || len(text) == 0 || len(text) > 12000 {
+				return false
+			}
+			encoded.WriteString(text)
+		}
+		if encoded.Len() > 262144 {
+			return false
+		}
+		data, err := base64.StdEncoding.Strict().DecodeString(encoded.String())
+		if err != nil {
+			return false
+		}
+		config, err := png.DecodeConfig(bytes.NewReader(data))
+		if err != nil || config.Width > 8192 || config.Height > 8192 {
+			return false
+		}
+	}
+	return true
+}
+
+func validLabText(value any) bool {
+	text, ok := value.(string)
+	return ok && len([]rune(text)) <= 12000
 }
 
 func validLabDate(value any) bool {

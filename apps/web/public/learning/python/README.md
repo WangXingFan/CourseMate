@@ -4,6 +4,14 @@
 
 ## 选择运行方式 / Choose a runtime
 
+### 实验内运行 / Run inside an experiment
+
+在任一实验任务展开“04 / Python 编程验证”，首次打开会按当前工作台参数生成代码。修改表达式或参数后点击“运行代码”，读取输出和波形，再把对照结论写入“05 / 推导与分析”。运行环境首次加载需要联网。
+
+实验内代码草稿与最近一次运行的代码、运行时工作台参数、时间、文本输出和图形随当前账号保存，也包含在 JSON 备份与打印报告中。修改右侧参数会保留已编辑代码；点击“载入当前参数代码”并确认后才能替换，旧结果仍标注原参数。每项保存最近一次运行，更多版本可下载自己的代码或 JSON 另存。
+
+The expandable Python verification section starts with the current workspace parameters. Draft code and the latest run are saved with your account and included in JSON backups and printed reports. Parameter changes preserve your edits; explicitly load fresh starter code when needed. The separate Python resource page remains a scratchpad and does not save its editor to experiment records.
+
 ### 本地 Python / Local Python
 
 解压整个资源包，在该文件夹打开终端：
@@ -69,7 +77,7 @@ The three notebooks are self-contained. Upload one to your school's JupyterHub o
 
 ## 提交与课堂安排 / Evidence
 
-每次提交自己修改的 `.ipynb` 或 `.py`、关键图或 CSV，以及交互实验 PDF/JSON。源代码、Python 图形与运行结果需自行保存并按教师要求交至学校教学平台；CourseMate 不执行 Python，也不会自动上传本地代码或自动批改。
+每次提交自己修改的 `.ipynb` 或 `.py`、关键图或 CSV，以及交互实验 PDF/JSON。实验内运行会保存当前代码草稿和最近一次结果；独立 Python 资源页、本地代码、Notebook 与 CSV 需自行保存并按教师要求交至学校教学平台。Python 在学生浏览器或自选本地环境中执行；服务器不执行学生代码，也不自动批改。
 
 建议课前先完成环境配置；每项 45 分钟可安排为预测 5、交互测量 10、编程修改与比较 15、推导分析 10、核对保存 5 分钟。初次接触 Python 的班级可将部分编程作为课后任务；由教师明确必做任务与提交要求。
 

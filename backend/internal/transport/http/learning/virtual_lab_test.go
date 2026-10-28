@@ -120,6 +120,42 @@ func TestVirtualLabAuthenticationIsolationConflictAndRetry(t *testing.T) {
 	}
 }
 
+func TestVirtualLabPythonSaveRestoreAndIsolation(t *testing.T) {
+	router := testRouter(t)
+	var snapshot map[string]any
+	if err := json.Unmarshal([]byte(labDocument(t, "Python comparison")), &snapshot); err != nil {
+		t.Fatal(err)
+	}
+	task := snapshot["tasks"].(map[string]any)["L1-1"].(map[string]any)
+	task["python"] = map[string]any{"code": "print(2)", "result": map[string]any{
+		"code": "print(1)", "params": task["params"], "time": snapshot["updatedAt"], "stdout": "1\n", "stderr": "",
+		"plots": []any{[]any{"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII="}},
+	}}
+	encoded, err := json.Marshal(snapshot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	const path = "/learning/virtual-lab"
+	if response := request(t, router, 1, http.MethodPut, path, labBody(string(encoded), 0)); response.Code != 200 {
+		t.Fatalf("save: %d %s", response.Code, response.Body)
+	}
+	var envelope struct{ Data LearningVirtualLabResponse }
+	response := request(t, router, 1, http.MethodGet, path, "")
+	if err := json.Unmarshal(response.Body.Bytes(), &envelope); err != nil {
+		t.Fatal(err)
+	}
+	if envelope.Data.Document != string(encoded) {
+		t.Fatal("Python draft, source, outputs or PNG snapshot changed after storage")
+	}
+	response = request(t, router, 2, http.MethodGet, path, "")
+	if err := json.Unmarshal(response.Body.Bytes(), &envelope); err != nil {
+		t.Fatal(err)
+	}
+	if envelope.Data.Document != "" {
+		t.Fatal("Python evidence crossed account boundary")
+	}
+}
+
 func TestVirtualLabGuideRoles(t *testing.T) {
 	router := testRouter(t)
 	for role, want := range map[string]int{"student": 403, "user": 403, "teacher": 200, "admin": 200, "superadmin": 200} {

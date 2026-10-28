@@ -98,10 +98,10 @@ if __name__ == "__main__":
 # TODO：从微分方程解释起点、长期值，以及两分量相加的意义。
 
 # %%
-def response_parts(y0=2.0, input_on=True):
+def response_parts(y0=2.0, input_on=True, A=1.0):
     t = np.linspace(0, 5, 5001)
     zero_input = y0 * np.exp(-t)
-    zero_state = float(input_on) * (-np.expm1(-t))
+    zero_state = A * float(input_on) * (-np.expm1(-t))
     return t, zero_input, zero_state, zero_input + zero_state
 
 

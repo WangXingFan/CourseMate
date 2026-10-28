@@ -5,7 +5,7 @@ import { test } from "node:test";
 import { createVirtualLabEngine } from "../public/vendor/signal-lab/core.mjs";
 
 const modelSource = readFileSync(new URL("../features/learning/model/python-labs.ts", import.meta.url), "utf8");
-const { PYTHON_LAB_ROOT, PYTHON_LABS, PYTHON_LAB_STARTERS } = await import(
+const { PYTHON_LAB_ROOT, PYTHON_LABS, PYTHON_LAB_STARTERS, buildPythonLabStarter } = await import(
   `data:text/javascript;base64,${Buffer.from(stripTypeScriptTypes(modelSource)).toString("base64")}`
 );
 const root = new URL(`../public${PYTHON_LAB_ROOT}/`, import.meta.url);
@@ -48,4 +48,48 @@ test("all twelve interactive tasks have matching Python resources and translated
   assert.ok(teacherGuide.includes('href="#python">Python 编程</a>'));
   assert.ok(teacherGuide.includes("10 分钟交互测量，15 分钟生成信号、改代码并作同参数对照"));
   assert.ok(teacherGuide.includes("源代码、Notebook、图形和 CSV"));
+});
+
+test("Python verification follows all task models and current numerical parameters", () => {
+  const engine = createVirtualLabEngine();
+  for (const id of engine.taskIds) {
+    const source = buildPythonLabStarter(id, engine.defaults(id));
+    assert.ok(source.includes("plt.show()"), id);
+    assert.ok(!/NaN|undefined/.test(source), id);
+  }
+  assert.match(buildPythonLabStarter("L1-1", { ...engine.defaults("L1-1"), mode: "impulse", delta: 0.1 }), /plt.step\(pulse_t, pulse/);
+  assert.match(buildPythonLabStarter("L1-2", { ...engine.defaults("L1-2"), kind: "varying", x1: "cos", test: "invariance" }), /x1=lambda t: np.cos\(2\*t\)/);
+  assert.match(buildPythonLabStarter("L1-3", { initial: 0.5, enabled: "off", A: 2.5 }), /y0=0.5, input_on=False, A=2.5/);
+  assert.match(buildPythonLabStarter("L2-2", { A: 2, T: 0.5, center: -1 }), /A=2, T=0.5, shift=-1/);
+  assert.match(buildPythonLabStarter("L3-3", { initial: "0.5", measureTime: 2.2 }), /y0=0.5/);
+  assert.throws(() => buildPythonLabStarter("unknown", {}));
+});
+
+test("Python drafts, run snapshots and bounded PNGs survive round-trip and old imports", () => {
+  const engine = createVirtualLabEngine();
+  const task = engine.records.data.tasks["L1-1"];
+  const png = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=";
+  task.python = { code: "print(2)", result: { code: "print(1)", params: { ...task.params }, time: new Date().toISOString(), stdout: "1\n", stderr: "", plots: [[png]] } };
+  const snapshot = JSON.parse(JSON.stringify(engine.records.data));
+  engine.records.import(snapshot);
+  assert.deepEqual(engine.records.data.tasks["L1-1"].python, task.python);
+  assert.notEqual(engine.records.data.tasks["L1-1"].python, task.python);
+  const before = JSON.stringify(engine.records.data);
+  for (const corrupt of [
+    (python) => { python.code = "x".repeat(12001); },
+    (python) => { python.result.params.a = 0; },
+    (python) => { python.result.time = "invalid"; },
+    (python) => { python.result.plots = [["<svg onload=alert(1)>"]]; },
+    (python) => { python.result.plots = Array.from({ length: 5 }, () => [png]); },
+    (python) => { python.result.plots = [[`iVBORw0KGgo${"A".repeat(262144)}`]]; },
+  ]) {
+    const invalid = JSON.parse(before);
+    corrupt(invalid.tasks["L1-1"].python);
+    assert.throws(() => engine.records.import(invalid));
+    assert.equal(JSON.stringify(engine.records.data), before);
+  }
+  for (const task of Object.values(snapshot.tasks)) delete task.python;
+  engine.records.import(snapshot);
+  assert.deepEqual(engine.records.data.tasks["L1-1"].python, { code: "", result: null });
+  assert.equal(createVirtualLabEngine().records.data.tasks["L1-1"].python.code, "");
 });

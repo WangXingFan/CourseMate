@@ -106,10 +106,52 @@ try {
   assert.equal(pythonFile.suggestedFilename(), "coursemate-signal-python.zip");
   assert.deepEqual(await readFile(await pythonFile.path()), await readFile(join(root, "learning/python/coursemate-signal-python.zip")));
   if (process.env.PYTHON_RUNTIME_SMOKE === "1") {
+    const runButton = pythonResources.getByRole("button", { name: "运行代码", exact: true });
+    const editor = pythonResources.locator("[data-python-editor]");
+    const starter = await editor.inputValue();
     try {
-      await pythonResources.getByRole("status").filter({ hasText: /Python 运行环境|数值计算组件|就绪/ }).waitFor({ timeout: 10000 });
-      await pythonResources.getByRole("button", { name: "运行代码", exact: true }).click();
+      // A failure on the very first run must return a result and allow correction.
+      await editor.fill('raise ValueError("CourseMate Python recovery check")');
+      await runButton.click({ timeout: 120000 });
+      await pythonResources.getByRole("alert").filter({ hasText: "ValueError: CourseMate Python recovery check" }).waitFor({ timeout: 120000 });
+      await assertEventually(async () => assert.ok(await runButton.isEnabled(), "Python errors must not leave Run disabled"));
+      await editor.fill(starter);
+      await runButton.click();
       await pythonResources.locator("figure img").first().waitFor({ timeout: 120000 });
+      await assertEventually(async () => assert.ok(await runButton.isEnabled(), "Run must be available again after a plot is returned"));
+      const originalPlot = await pythonResources.locator("figure img").first().getAttribute("src");
+      await editor.fill(starter.replace("A=1", "A=2"));
+      await runButton.click();
+      await pythonResources.locator("figure img").first().waitFor();
+      await assertEventually(async () => assert.ok(await runButton.isEnabled(), "Repeated runs must return to ready"));
+      assert.notEqual(await pythonResources.locator("figure img").first().getAttribute("src"), originalPlot, "Edited L1-1 parameters must update the plot");
+      assert.equal(await pythonResources.getByRole("alert").count(), 0);
+
+      for (const width of [1440, 390]) for (const theme of ["light", "dark"]) {
+        await page.setViewportSize({ width, height: 844 });
+        await page.evaluate((theme) => {
+          document.documentElement.classList.toggle("dark", theme === "dark");
+        }, theme);
+        const dimensions = await pythonResources.evaluate((element) => {
+          element.scrollTop = 0;
+          return { height: element.clientHeight, content: element.scrollHeight, width: element.clientWidth, contentWidth: element.scrollWidth };
+        });
+        assert.ok(dimensions.content > dimensions.height, "Plot results should have scrollable content");
+        assert.ok(dimensions.contentWidth <= dimensions.width, "Python results must fit the viewport width");
+        const bounds = await pythonResources.boundingBox();
+        await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+        await page.mouse.wheel(0, 10000);
+        await assertEventually(async () => assert.ok(await pythonResources.evaluate((element) => element.scrollTop > 0), "Mouse wheel must scroll the Python page after plotting"));
+        await pythonResources.getByRole("link", { name: "下载运行指南", exact: true }).waitFor();
+        const footer = await pythonResources.getByRole("link", { name: "下载运行指南", exact: true }).boundingBox();
+        assert.ok(footer.y >= 0 && footer.y + footer.height <= 844, "Downloads below the plots must remain reachable");
+        assert.ok((await pythonResources.locator("figure img").first().boundingBox()).height <= 844 * 0.6 + 1, "Plots must respect the viewport height limit");
+        await page.screenshot({ path: join(artifacts, `python-result-${width}-${theme}.png`) });
+        await page.mouse.wheel(0, -10000);
+        await assertEventually(async () => assert.equal(await pythonResources.evaluate((element) => element.scrollTop), 0, "Mouse wheel must return to the code and Run button"));
+      }
+      await page.setViewportSize({ width: 1360, height: 950 });
+      await page.evaluate(() => document.documentElement.classList.remove("dark"));
     } catch (error) {
       console.error("Pyodide status:", await pythonResources.getByRole("status").allTextContents().catch(() => []));
       console.error("Pyodide alerts:", await pythonResources.locator('[role="alert"]').allTextContents().catch(() => []));
@@ -140,10 +182,42 @@ try {
   assert.equal(pngBytes.subarray(1, 4).toString(), "PNG");
   assert.equal(await page.locator("iframe").count(), 0, "workspace must be native React");
   assert.equal(await page.evaluate(() => Object.hasOwn(window, "SignalLab")), false, "engine leaked a global");
+  // The runtime is created only when a task's Python verification is expanded.
+  const embedded = frame().locator('[data-python-task="L1-1"]');
+  await embedded.locator("summary").click();
+  await embedded.locator("[data-python-editor]").waitFor();
+  assert.match(await embedded.locator("[data-python-editor]").inputValue(), /shift=1/);
+  if (process.env.PYTHON_RUNTIME_SMOKE === "1") {
+    await embedded.locator("[data-python-editor]").fill(`${await embedded.locator("[data-python-editor]").inputValue()}\n# integration evidence`);
+    await embedded.getByRole("button", { name: "运行代码", exact: true }).click({ timeout: 120000 });
+    await embedded.locator("figure img").waitFor({ timeout: 120000 });
+    await assertEventually(async () => assert.ok(JSON.parse(records.get(101).document).tasks["L1-1"].python.result));
+    const evidence = JSON.parse(records.get(101).document).tasks["L1-1"].python;
+    assert.equal(evidence.result.params.shift, 1);
+    assert.ok(evidence.result.code.includes("integration evidence"));
+    assert.ok(evidence.result.stdout.includes("sampled peak"));
+    assert.equal(await embedded.locator("figure img").getAttribute("src"), `data:image/png;base64,${evidence.result.plots[0].join("")}`);
+    await frame().locator("#param-shift").fill("2");
+    assert.equal(await embedded.locator("[data-python-editor]").inputValue(), evidence.code, "Parameter edits must preserve student code");
+    await embedded.getByRole("status").filter({ hasText: "代码或实验参数已变化" }).waitFor();
+    await embedded.getByRole("button", { name: "载入当前参数代码", exact: true }).click();
+    await page.getByRole("button", { name: "取消", exact: true }).click();
+    assert.equal(await embedded.locator("[data-python-editor]").inputValue(), evidence.code);
+    await embedded.getByRole("button", { name: "载入当前参数代码", exact: true }).click();
+    await page.getByRole("button", { name: "替换代码", exact: true }).click();
+    assert.match(await embedded.locator("[data-python-editor]").inputValue(), /shift=2/);
+    await saved();
+  }
   await page.screenshot({ path: join(artifacts, "workspace-desktop.png") });
   await page.reload();
   await frame().locator("#analysis").waitFor();
   assert.equal(await frame().locator("#analysis").inputValue(), document.tasks["L1-1"].analysis);
+  await frame().locator('[data-python-task="L1-1"] summary').click();
+  if (process.env.PYTHON_RUNTIME_SMOKE === "1") {
+    const restored = frame().locator('[data-python-task="L1-1"]');
+    await restored.locator("figure img").waitFor();
+    assert.match(await restored.locator("[data-python-editor]").inputValue(), /shift=2/);
+  }
   // Verify all twelve teaching steps are reachable after integration.
   for (const course of [1, 2, 3]) for (const task of [1, 2, 3, 4]) {
     const id = `L${course}-${task}`;
@@ -151,7 +225,10 @@ try {
     await frame().locator("#prediction").waitFor();
     await assertEventually(async () => assert.equal(await childRoute(page), id));
     assert.ok(await frame().getByText("保存本次试验", { exact: true }).count());
-    assert.equal(await frame().locator("[data-python-task]").count(), 0, "Python code must not be embedded in experiment tasks");
+    assert.equal(await frame().locator(`[data-python-task="${id}"]`).count(), 1, "Every experiment task includes Python verification");
+    if (!await frame().locator(`[data-python-task="${id}"]`).evaluate((element) => element.open)) await frame().locator(`[data-python-task="${id}"] summary`).click();
+    await frame().locator("[data-python-editor]").waitFor();
+    assert.ok((await frame().locator("[data-python-editor]").inputValue()).includes("plt.show()"));
   }
   // Responsive Python editor and experiment task surfaces in both themes.
   for (const width of [1440, 390]) for (const theme of ["light", "dark"]) {
@@ -168,7 +245,11 @@ try {
     await page.screenshot({ path: join(artifacts, `python-resources-${width}-${theme}.png`) });
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
     await page.goto(`${base}/learn/experiments/workspace#task/L1-1`);
-    assert.equal(await frame().locator("[data-python-task]").count(), 0);
+    await frame().locator("[data-python-task]").waitFor();
+    assert.equal(await frame().locator("[data-python-task]").count(), 1);
+    await frame().locator("[data-python-task] summary").click();
+    await frame().locator("[data-python-editor]").scrollIntoViewIfNeeded();
+    await page.screenshot({ path: join(artifacts, `experiment-python-${width}-${theme}.png`) });
     await frame().locator("#prediction").scrollIntoViewIfNeeded();
     await page.screenshot({ path: join(artifacts, `experiment-task-${width}-${theme}.png`) });
   }
@@ -230,7 +311,12 @@ try {
   await page.locator("#print-report").waitFor({ state: "attached" });
   const report = await page.locator("#print-report").textContent();
   for (const id of ["L1-1", "L1-2", "L1-3", "L1-4"]) assert.ok(report.includes(id));
+  if (process.env.PYTHON_RUNTIME_SMOKE === "1") {
+    assert.ok(report.includes("integration evidence"), "Printed report includes executed Python code");
+    assert.equal(await page.locator('[data-python-report="L1-1"] img').count(), 1);
+  }
   await page.emulateMedia({ media: "print" });
+  assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor), "rgb(255, 255, 255)", "Reports must print on white paper in either theme");
   await page.pdf({ path: join(artifacts, "account-report.pdf"), format: "A4", printBackground: true, preferCSSPageSize: true });
   await page.emulateMedia({ media: "screen" });
   await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
@@ -257,6 +343,7 @@ try {
   await frame().locator("#analysis").fill("账号102独立内容");
   await saved();
   assert.equal(JSON.parse(records.get(102).document).student.number, "student102");
+  assert.deepEqual(JSON.parse(records.get(102).document).tasks["L1-1"].python, { code: "", result: null }, "Python evidence must be account scoped");
   actor = 101;
   await page.reload();
   await assertEventually(async () => assert.equal(await frame().locator("#analysis").inputValue(), "账号101的待上传草稿"));
