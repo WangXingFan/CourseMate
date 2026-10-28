@@ -35,16 +35,3 @@ type KnowledgeBaseFile struct {
 func (KnowledgeBaseFile) TableName() string {
 	return "knowledge_base_files"
 }
-
-// BuiltinKnowledgeBaseSeed records completed bundled imports independently of
-// knowledge base deletion. FileIDs contains only the package-managed links.
-type BuiltinKnowledgeBaseSeed struct {
-	Key      string `gorm:"primaryKey;size:64"`
-	Version  string `gorm:"size:128;not null"`
-	PublicID string `gorm:"size:32;not null"`
-	FileIDs  string `gorm:"type:text;not null"`
-}
-
-func (BuiltinKnowledgeBaseSeed) TableName() string {
-	return "knowledge_base_builtin_seeds"
-}

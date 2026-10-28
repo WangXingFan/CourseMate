@@ -50,7 +50,6 @@ func Models() []any {
 		&models.UIComponent{},
 		&models.KnowledgeBase{},
 		&models.KnowledgeBaseFile{},
-		&models.BuiltinKnowledgeBaseSeed{},
 		&models.SystemSetting{},
 		&models.UserSetting{},
 		&models.FileChunk{},

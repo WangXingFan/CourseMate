@@ -27,7 +27,6 @@ type Handler struct {
 	runtimeSvc               *appruntime.Service
 	runtime                  *config.Runtime
 	embeddingSvc             *appembedding.Service       // 可选，用于模型变更后触发向量失效
-	builtinEmbeddingBackfill func(context.Context) error // 可选，用于补偿平台内置资料
 }
 
 // NewHandler 创建处理器。
@@ -43,12 +42,6 @@ func NewHandler(service *appsettings.Service, runtimeSettings *appsettings.Runti
 // SetEmbeddingService 注入 Embedding 服务（可选），用于在模型配置变更时自动标记向量失效。
 func (h *Handler) SetEmbeddingService(svc *appembedding.Service) {
 	h.embeddingSvc = svc
-}
-
-// SetBuiltinEmbeddingBackfiller 注入平台内置知识库的定向向量补偿。
-// 回调由组合根记录错误；补偿失败不得回滚已成功保存的设置。
-func (h *Handler) SetBuiltinEmbeddingBackfiller(backfill func(context.Context) error) {
-	h.builtinEmbeddingBackfill = backfill
 }
 
 // ListAll godoc
@@ -361,16 +354,7 @@ func (h *Handler) reconcileEmbeddingSettings(ctx context.Context) error {
 			return err
 		}
 	}
-	h.backfillBuiltinEmbeddings(ctx)
 	return nil
-}
-
-func (h *Handler) backfillBuiltinEmbeddings(ctx context.Context) {
-	if h.builtinEmbeddingBackfill == nil {
-		return
-	}
-	// Best effort: settings persistence and cache invalidation already succeeded.
-	_ = h.builtinEmbeddingBackfill(ctx)
 }
 
 func writeSettingValidationError(c *gin.Context, err error) {

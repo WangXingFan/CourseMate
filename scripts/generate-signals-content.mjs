@@ -143,13 +143,4 @@ for (const file of readdirSync(resolve(root, "content/signals/knowledge-base")))
   const id = file.slice(0, -3);
   if (/^ss-[0-7ab]-\d+$/.test(id) && !generatedIDs.has(id)) unlinkSync(resolve(root, "content/signals/knowledge-base", file));
 }
-write("backend/internal/domain/knowledgebase/content/signals.json", `${JSON.stringify({
-  key: catalog.id,
-  publicID: "kb_signals_systems",
-  version: catalog.version,
-  digest: createHash("sha256").update(JSON.stringify(documents)).digest("hex"),
-  name: catalog.title,
-  description: `CourseMate 内置课程讲义，含 ${lessons.length} 个知识点。配置向量化后可在对话中检索引用。`,
-  documents,
-}, null, 2)}\n`);
 console.log(`Generated ${lessons.length} lessons, ${lessons.reduce((sum, lesson) => sum + lesson.questions.length, 0)} staged questions (${lessons.flatMap((lesson) => lesson.questions).filter((q) => q.fields.length).length} numeric/coefficient questions) and ${corrections.length} correction records.`);

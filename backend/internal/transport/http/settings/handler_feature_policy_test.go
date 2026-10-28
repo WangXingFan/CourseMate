@@ -57,10 +57,10 @@ func TestGetFeaturePolicyReturnsDefaultKnowledgeBaseIDs(t *testing.T) {
 	}
 }
 
-func TestGetFeaturePolicyDefaultsToBuiltinSignalsKnowledgeBase(t *testing.T) {
+func TestGetFeaturePolicyDefaultsToNoKnowledgeBase(t *testing.T) {
 	data := getFeaturePolicyForTest(t, config.Config{KnowledgeBaseEnabled: true})
 	ids, ok := data["defaultKnowledgeBaseIDs"].([]any)
-	if !ok || len(ids) != 1 || ids[0] != "kb_signals_systems" {
+	if !ok || len(ids) != 0 {
 		t.Fatalf("unexpected default knowledge base ids: %+v", data["defaultKnowledgeBaseIDs"])
 	}
 }
