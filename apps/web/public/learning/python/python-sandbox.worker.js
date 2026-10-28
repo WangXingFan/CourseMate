@@ -61,6 +61,7 @@ import matplotlib.pyplot as plt
 plt.close("all")
 _cm_stdout = io.StringIO()
 _cm_stderr = ""
+_cm_plots = []
 _cm_namespace = {"__name__": "__main__"}
 try:
     with contextlib.redirect_stdout(_cm_stdout):
@@ -85,16 +86,26 @@ try:
                 if _cm_plotted:
                     plt.xlabel("t (s)")
                     plt.legend()
-    _cm_plots = []
     for _cm_number in plt.get_fignums():
-        _cm_buffer = io.BytesIO()
-        plt.figure(_cm_number).savefig(_cm_buffer, format="svg", bbox_inches="tight")
-        _cm_plots.append(base64.b64encode(_cm_buffer.getvalue()).decode("ascii"))
+        if len(_cm_plots) == 4:
+            break
+        _cm_figure = plt.figure(_cm_number)
+        _cm_dpi = min(100, 1200 / max(_cm_figure.get_size_inches()))
+        for _cm_attempt in range(8):
+            _cm_buffer = io.BytesIO()
+            _cm_figure.savefig(_cm_buffer, format="png", dpi=_cm_dpi, bbox_inches="tight")
+            _cm_image = base64.b64encode(_cm_buffer.getvalue()).decode("ascii")
+            if len(_cm_image) <= 262144:
+                break
+            _cm_dpi *= 0.7
+        if len(_cm_image) > 262144:
+            raise ValueError("Plot is too large. Reduce the figure size or plotted data.")
+        _cm_plots.append(_cm_image)
 except Exception:
     _cm_stderr = traceback.format_exc()
 finally:
     plt.close("all")
-json.dumps({"stdout": _cm_stdout.getvalue(), "stderr": _cm_stderr, "plots": _cm_plots})
+json.dumps({"stdout": _cm_stdout.getvalue()[:12000], "stderr": _cm_stderr[:12000], "plots": _cm_plots})
 `);
     self.postMessage({ type: "result", result: JSON.parse(encoded) });
   } catch (error) {

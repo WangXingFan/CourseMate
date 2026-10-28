@@ -1,6 +1,7 @@
 .native-lab-print { display: none; }
 @media print {
   @page { size: A4; margin: 16mm 14mm; }
+  html:has(body[data-lab-report="true"]) { background: white !important; color-scheme: light !important; }
   body[data-lab-report="true"] { height: auto !important; overflow: visible !important; background: white !important; color: #222 !important; }
   body[data-lab-report="true"] > :not(.native-lab-print) { display: none !important; }
   body[data-lab-report="true"] > .native-lab-print { display: block !important; position: static; width: 100%; padding: 0; font: 11px/1.7 "Microsoft YaHei", sans-serif; --card: white; --foreground: #222; --muted-foreground: #555; --border: #ddd; }
@@ -12,6 +13,9 @@
   .native-lab-print th, .native-lab-print td { border: 1px solid #ddd; padding: 6px; overflow-wrap: anywhere; }
   .native-lab-print tr, .native-lab-report-figure { break-inside: avoid; }
   .native-lab-print svg { max-width: 100%; height: auto; }
+  .native-lab-print img { max-width: 100%; max-height: 190mm; width: auto; height: auto; object-fit: contain; }
+  .native-lab-print pre { max-height: none; overflow: visible; white-space: pre-wrap; overflow-wrap: anywhere; font: 10px/1.6 Consolas, monospace; }
+  .native-lab-print [data-python-result] pre { background: white !important; color: #222 !important; }
   .native-lab-print .overflow-x-auto { overflow: visible; }
   .native-lab-report-task { break-before: page; }
   .native-lab-report-task:first-of-type { break-before: auto; }

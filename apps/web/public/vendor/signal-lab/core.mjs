@@ -475,7 +475,7 @@ L.plot.svg=svg;L.plot.read=read;
 // records: preserved numerical / schema implementation.
 (function(root){
 'use strict';const L=root.SignalLab,KEY='signals-lab-v1-records',ids=L.taskIds,now=()=>new Date().toISOString();
-const freshTask=id=>({experimentId:id.slice(0,2),taskId:id,params:L.defaults(id),answers:L.defaultAnswers(id),prediction:'',predictionDraft:'',revisions:[],trials:[],derivation:'',analysis:'',figures:[],completion:{confirmed:false,confirmedAt:null}});
+const freshTask=id=>({experimentId:id.slice(0,2),taskId:id,params:L.defaults(id),answers:L.defaultAnswers(id),prediction:'',predictionDraft:'',revisions:[],trials:[],derivation:'',analysis:'',python:{code:'',result:null},figures:[],completion:{confirmed:false,confirmedAt:null}});
 const fresh=()=>({schemaVersion:2,appVersion:L.version,createdAt:now(),updatedAt:now(),student:{name:'',number:'',classroom:''},tasks:Object.fromEntries(ids.map(id=>[id,freshTask(id)]))});
 let data=fresh(),storageAvailable=true,recoveryWarning='';
 const textField=(s,n=12000)=>typeof s==='string'&&s.length<=n,dateField=s=>typeof s==='string'&&s.length<40&&Number.isFinite(Date.parse(s));
@@ -496,6 +496,12 @@ let keys=(L.tasks[id].answers||[]).map(a=>a.key);if(id==='L3-1'&&['exp','step'].
 if(!Array.isArray(m.answerStatus)||m.answerStatus.length!==keys.length||!keys.every(k=>m.answerStatus.filter(a=>a&&a.key===k&&['missing','correct','review'].includes(a.status)&&textField(a.label,100)&&textField(a.message,200)).length===1))return false;
 }return true;
 }
+function validPython(id,value){
+if(!value||typeof value!=='object'||Array.isArray(value)||!textField(value.code))return false;
+const r=value.result;if(r===null)return true;
+if(!r||!textField(r.code)||!textField(r.stdout)||!textField(r.stderr)||!dateField(r.time)||!L.validParams(id,r.params))return false;
+return Array.isArray(r.plots)&&r.plots.length<=4&&r.plots.every(chunks=>Array.isArray(chunks)&&chunks.length>0&&chunks.length<=22&&chunks.every(c=>textField(c)&&c.length>0&&/^[A-Za-z0-9+/=]+$/.test(c))&&chunks.join('').length<=262144&&chunks.join('').length%4===0&&chunks.join('').startsWith('iVBORw0KGgo'));
+}
 function validate(raw){
 const fail=message=>{throw Error('记录文件无效：'+message+'。当前记录未被修改。');};
 const legacy=raw&&raw.schemaVersion===1&&raw.appVersion==='0.1.0';
@@ -506,6 +512,7 @@ const required=legacy?L.courseIds('L1'):ids;if(!raw.tasks||Array.isArray(raw.tas
 const clean=fresh();clean.createdAt=raw.createdAt;clean.updatedAt=raw.updatedAt;clean.student=Object.fromEntries(['name','number','classroom'].map(k=>[k,raw.student[k]]));
 for(const id of required){const t=raw.tasks[id];if(!t||t.taskId!==id||t.experimentId!==id.slice(0,2)||!L.validParams(id,t.params))fail(id+' 参数或编号错误');
 if(!['prediction','predictionDraft','derivation','analysis'].every(k=>textField(t[k])))fail(id+' 文字字段缺失或过长');
+if(t.python!==undefined&&!validPython(id,t.python))fail(id+' Python 记录错误');
 const answers=legacy?{}:t.answers;if(!L.validAnswers(id,answers))fail(id+' 模板输入错误');
 if(!Array.isArray(t.revisions)||t.revisions.length>100||!t.revisions.every(r=>r&&textField(r.text)&&dateField(r.time)))fail(id+' 预测修订错误');
 if(!Array.isArray(t.trials)||t.trials.length>200)fail(id+' 试验数量错误');
@@ -519,7 +526,7 @@ if(v.cursor!==null&&!(typeof v.cursor==='number'&&Number.isFinite(v.cursor)&&Mat
 if(!Array.isArray(t.figures)||t.figures.length>200||!t.figures.every(v=>v&&L.validParams(id,v.params)&&dateField(v.time)&&L.validAnswers(id,legacy?{}:v.answers)))fail(id+' 图形快照错误');
 if(!t.completion||typeof t.completion.confirmed!=='boolean'||t.completion.confirmedAt!==null&&!dateField(t.completion.confirmedAt))fail(id+' 完成状态错误');
 if(t.completion.confirmed&&(!t.prediction.trim()||!t.trials.length||!t.analysis.trim()))fail(id+' 完成证据缺失');
-const clone=v=>JSON.parse(JSON.stringify(v));clean.tasks[id]={experimentId:id.slice(0,2),taskId:id,params:Object.fromEntries(L.tasks[id].params.map(p=>[p.key,t.params[p.key]])),answers:{...L.defaultAnswers(id),...answers},prediction:t.prediction,predictionDraft:t.predictionDraft,revisions:t.revisions.map(v=>({text:v.text,time:v.time})),trials:t.trials.map(v=>({...clone(v),answers:legacy?{}:{...v.answers}})),derivation:t.derivation,analysis:t.analysis,figures:t.figures.map(v=>({params:{...v.params},answers:legacy?{}:{...v.answers},time:v.time})),completion:{...t.completion}};
+const clone=v=>JSON.parse(JSON.stringify(v));clean.tasks[id]={experimentId:id.slice(0,2),taskId:id,params:Object.fromEntries(L.tasks[id].params.map(p=>[p.key,t.params[p.key]])),answers:{...L.defaultAnswers(id),...answers},prediction:t.prediction,predictionDraft:t.predictionDraft,revisions:t.revisions.map(v=>({text:v.text,time:v.time})),trials:t.trials.map(v=>({...clone(v),answers:legacy?{}:{...v.answers}})),derivation:t.derivation,analysis:t.analysis,python:t.python?{code:t.python.code,result:t.python.result?clone(t.python.result):null}:{code:'',result:null},figures:t.figures.map(v=>({params:{...v.params},answers:legacy?{}:{...v.answers},time:v.time})),completion:{...t.completion}};
 }return clean;
 }
 function save(){data.updatedAt=now();onChange(JSON.stringify(data));}
