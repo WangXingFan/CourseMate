@@ -506,7 +506,7 @@
         },
         "operate": {
           "title": "改参数、测量、保存试验",
-          "body": "使用精确值、滑块或快速设置改变参数；点击图形读数，再保存本次试验。历史试验可以恢复参数，也可以导出 PNG。"
+          "body": "使用精确值、滑块或快速设置改变参数；点击图形读数，再点击“核对并继续”记录本组。历史试验可以恢复参数，也可以导出 PNG。"
         },
         "explain": {
           "title": "结合证据完成解释",
@@ -519,6 +519,259 @@
       },
       "clearRecords": "清空实验记录",
       "clearWarning": "将清空当前账号三次实验的全部记录，并同步到服务器。建议先下载 JSON 备份。"
+    },
+    "flow": {
+      "steps": "实验步骤",
+      "predict": "先判断",
+      "observe": "做对照",
+      "conclude": "写结论",
+      "predictionPlaceholder": "写下你的判断，一句话即可。",
+      "conclusionPlaceholder": "用刚才的读数回答。",
+      "start": "开始操作",
+      "comparison": "当前对照",
+      "resetStep": "载入本组参数",
+      "recorded": "已记录 {count}/{total} 组",
+      "recordNext": "核对并继续",
+      "enterPrediction": "先写一句判断。",
+      "fillAnswers": "补齐本组系数后继续。",
+      "restoreStep": "请载入本组参数，再记录。",
+      "results": "查看对照结果（{count} 组）",
+      "notRecorded": "待记录",
+      "extraDerivation": "补充推导",
+      "checklist": "完成情况",
+      "conclusionDone": "结论已填写",
+      "conclusionMissing": "待写结论",
+      "derivationDone": "推导已填写",
+      "derivationMissing": "待补推导",
+      "continueComparisons": "继续未完成的对照",
+      "finish": "完成自查",
+      "help": "需要提示",
+      "history": "全部记录（{count}）",
+      "tools": "自由调参 · 更多图形",
+      "back": "返回实验目录",
+      "python": "选做：用 Python 复现本实验",
+      "waveform": "原信号与当前结果",
+      "tasks": {
+        "L1-1": {
+          "question": "将上图右移 1 秒，峰值时刻和高度会怎样变化？",
+          "conclusion": "用上表说明：平移、反转、压缩各改变了什么？三组窄脉冲的“宽度×高度”是否相同？",
+          "steps": {
+            "original": "原信号：读峰值时刻与高度",
+            "shift": "将平移调到 1 s，比较峰值位置",
+            "reverse": "将尺度 a 调到 −1，观察反转",
+            "compress": "将尺度 a 调到 2，观察压缩",
+            "combine": "调出 2p(2(t−1))：幅度 2、尺度 2、平移 1 s",
+            "pulse0": "将脉宽调到 0.5 s，读取高度",
+            "pulse1": "将脉宽调到 0.2 s，读取高度",
+            "pulse2": "将脉宽调到 0.1 s，读取高度"
+          },
+          "given": "原信号 p(t)：0–3 s 内为三角脉冲，峰值 (1 s, 1)。",
+          "objective": "用峰值、位置和宽度，验证平移、反转、缩放；核对窄脉冲面积。",
+          "pythonExercise": "把代码中的 shift 增加 1，运行后核对峰值时刻是否也增加 1 s。",
+          "pythonExercisePulse": "把代码中的 delta 改为 0.05，运行后核对脉冲面积是否仍为 1。"
+        },
+        "L1-2": {
+          "question": "2x、x²、t·x，哪些系统是线性的？哪些是时不变的？",
+          "conclusion": "写出三个系统的判定，并各举一个否定线性、时不变性的反例。",
+          "steps": {
+            "linear0": "2x：比较叠加的两条路径",
+            "shift0": "2x：比较时移的两条路径",
+            "linear1": "x²：比较叠加的两条路径",
+            "shift1": "x²：比较时移的两条路径",
+            "linear2": "t·x：比较叠加的两条路径",
+            "shift2": "t·x：比较时移的两条路径"
+          },
+          "given": "比较以下三个输入—输出关系。",
+          "objective": "用两条计算路径的差异，检验线性与时不变性。",
+          "pythonExercise": "把 x1 改为 lambda t: np.sin(t)，运行后比较两条路径的最大差。"
+        },
+        "L1-3": {
+          "question": "初值为 2，接通单位阶跃后，输出会上升还是下降？",
+          "conclusion": "初值为 2 和 0.5 时，输出方向为何不同？全响应由哪两部分组成？",
+          "steps": {
+            "zeroInput": "关闭输入：看初始状态产生的响应",
+            "zeroState": "初值设为 0：看输入产生的响应",
+            "total": "初值设为 2：比较全响应与分量之和",
+            "lower": "初值改为 0.5：比较变化方向"
+          },
+          "given": "输入：在 t=0 接通单位阶跃。",
+          "objective": "分清初始状态和外部输入各自贡献的响应。",
+          "pythonExercise": "把 y0 改为 0.5，运行后将 t=1 s 的输出与实验读数对照。"
+        },
+        "L1-4": {
+          "question": "两个单位矩形的卷积是什么形状？",
+          "conclusion": "重叠面积如何决定输出？换成指数响应后，输入结束时输出为何不立即归零？",
+          "steps": {
+            "overlap0": "t=-0.5 s：看矩形重叠区间与面积",
+            "overlap1": "t=0.5 s：看矩形重叠区间与面积",
+            "overlap2": "t=1 s：看矩形重叠区间与面积",
+            "overlap3": "t=1.5 s：看矩形重叠区间与面积",
+            "overlap4": "t=2.5 s：看矩形重叠区间与面积",
+            "response0": "t=0.5 s：比较矩形与指数的卷积输出",
+            "response1": "t=1 s：比较矩形与指数的卷积输出",
+            "response2": "t=1.5 s：比较矩形与指数的卷积输出",
+            "response3": "t=2 s：比较矩形与指数的卷积输出"
+          },
+          "given": "输入：两个相同的单位矩形，宽度均为 1 s。",
+          "objective": "把信号的重叠面积与卷积输出对应起来。",
+          "pythonExercise": "把 dt 从 0.002 减半，运行后比较卷积读数的变化。"
+        },
+        "L2-1": {
+          "question": "增加谐波后，方波跳变处的过冲会消失吗？",
+          "conclusion": "比较 K=1 和 K=15：哪些地方更接近方波？过冲怎样变化？",
+          "steps": {
+            "harmonic0": "K=1：看平坦区和跳变附近",
+            "harmonic1": "K=3：看平坦区和跳变附近",
+            "harmonic2": "K=7：看平坦区和跳变附近",
+            "harmonic3": "K=15：看平坦区和跳变附近"
+          },
+          "given": "目标方波：幅度 ±1，基频 10 Hz；K 为最大奇次谐波序号。",
+          "objective": "比较增加谐波对方波逼近和过冲的影响。",
+          "pythonExercise": "把 K 改为 31，运行后比较最大值，检查过冲是否消失。"
+        },
+        "L2-2": {
+          "question": "矩形脉冲越窄，频谱会越宽还是越窄？",
+          "conclusion": "脉宽、时移、幅度分别改变了频谱的什么？用读数说明。",
+          "steps": {
+            "width0": "脉宽 0.5 s：读零频值与第一零点",
+            "width1": "脉宽 1 s：读零频值与第一零点",
+            "width2": "脉宽 2 s：读零频值与第一零点",
+            "shift": "右移 1 s：在 f=0.25 Hz 比较相位",
+            "amplitude": "幅度加倍：比较零频值"
+          },
+          "given": "原矩形脉冲：幅度 1，宽度 1 s，中心 t=0。",
+          "objective": "验证脉宽、时移和幅度分别怎样改变频谱。",
+          "pythonExercise": "把 T 改为 0.5，运行后核对第一正零点与实验读数。"
+        },
+        "L2-3": {
+          "question": "截止频率越低，滤波效果一定越好吗？",
+          "conclusion": "选择一个截止频率，使 R(100)≥0.85、R(1000)≤0.25，写出两个幅度比。",
+          "steps": {
+            "cutoff0": "fc=100 Hz：比较两个频率的幅度比",
+            "cutoff1": "fc=200 Hz：比较两个频率的幅度比",
+            "cutoff2": "fc=500 Hz：比较两个频率的幅度比"
+          },
+          "given": "输入：100 Hz 为有用信号，1000 Hz 为干扰；使用一阶低通。",
+          "objective": "选出既保留有用信号、又抑制干扰的截止频率。",
+          "pythonExercise": "把 fc 改为 200，运行后核对两个幅度比是否同时达标。"
+        },
+        "L2-4": {
+          "question": "采样率为 100、25、15 Hz 时，哪些能重建 10 Hz 余弦？",
+          "conclusion": "15 Hz 采样时，哪个低频余弦通过相同采样点？为什么无法唯一判断原信号？",
+          "steps": {
+            "sample0": "fs=100 Hz：比较原信号与重建曲线",
+            "sample1": "fs=25 Hz：比较原信号与重建曲线",
+            "sample2": "fs=15 Hz：比较原信号与重建曲线",
+            "candidate": "调候选频率，让低频余弦通过全部采样点"
+          },
+          "given": "原信号：幅度 1、频率 10 Hz 的余弦。",
+          "objective": "用重建曲线和相同采样点，解释混叠为什么发生。",
+          "pythonExercise": "保持 fs=15，把 candidate 改为 5，运行后检查采样点最大差。",
+          "target": "继续调节候选频率：它需低于 7.5 Hz，且通过全部采样点。"
+        },
+        "L3-1": {
+          "question": "信号延迟开始，在拉氏变换中会出现什么因子？",
+          "conclusion": "矩形从 1 s 开始、持续 2 s：两个阶跃分别在哪个时刻发生？",
+          "steps": {
+            "exponential0": "a=0.5：填写指数信号的变换系数",
+            "exponential1": "a=1：填写指数信号的变换系数",
+            "exponential2": "a=2：填写指数信号的变换系数",
+            "step": "延迟 1 s 的阶跃：填写变换系数",
+            "pulse": "宽度 1 s 的矩形：填写两次时移",
+            "delayed": "幅度 3、开始 1 s、持续 2 s：独立填系数"
+          },
+          "derivation": "写出延迟矩形的时域表达式与拉氏变换。",
+          "given": "输入：单位阶跃延迟 1 s。",
+          "objective": "把信号的幅度、衰减和起止时刻写进拉氏变换。",
+          "pythonExercise": "把数值积分结果与自己推导的 X(s) 在相同 s 处比较。"
+        },
+        "L3-2": {
+          "question": "y′+y=u(t)，零初值时，输出最终趋于多少？",
+          "conclusion": "记录 y(1) 和达到最终值 90% 的时间，与你的解析结果比较。",
+          "steps": {
+            "initial": "填 H、X 与部分分式系数，核对 y(0)",
+            "one": "t=1 s：比较解析与数值响应",
+            "ninety": "移动测量时刻，找到 y≈0.9 的位置"
+          },
+          "derivation": "写出 H(s)、Y(s)、部分分式和 y(t)。",
+          "given": "输入：单位阶跃；系统初值为 0。",
+          "objective": "从方程求响应，再用数值曲线核验解析结果。",
+          "pythonExercise": "把 dt 减半，运行后比较 y(1) 与 t90 的变化。",
+          "target": "继续移动测量时刻，让 y(t) 接近 0.900（误差不超过 0.002）。"
+        },
+        "L3-3": {
+          "question": "初值改变后，响应的起点和最终值都会改变吗？",
+          "conclusion": "三种初值下，什么发生了变化？为什么不能只用 Y=HX 求全响应？",
+          "steps": {
+            "initial0": "y₀=0：更新系数，比较起点与 y(1)",
+            "initial1": "y₀=0.5：更新系数，比较起点与 y(1)",
+            "initial2": "y₀=2：更新系数，比较起点与 y(1)"
+          },
+          "derivation": "保留初始条件项，写出全响应的推导。",
+          "given": "输入保持单位阶跃，只改变系统初值。",
+          "objective": "保留初始条件，解释响应起点与最终值的变化。",
+          "pythonExercise": "把 y0 改为 2，运行后核对全响应是否等于两个分量之和。"
+        },
+        "L3-4": {
+          "question": "单位矩形脉冲持续越久，输出峰值会怎样变化？",
+          "conclusion": "让峰值达到 0.8 的最短脉宽是多少？用一组失败和一组成功的结果说明。",
+          "steps": {
+            "width0": "T=0.5 s：读取峰值与峰值时刻",
+            "width1": "T=1 s：读取峰值与峰值时刻",
+            "width2": "T=2 s：读取峰值与峰值时刻",
+            "width3": "T=3 s：读取峰值与峰值时刻",
+            "refine": "细调脉宽，让峰值刚好达标（0.800–0.802）"
+          },
+          "derivation": "由峰值条件推导最短脉宽。",
+          "given": "输入：幅度 1、持续 T 秒的矩形脉冲；图中 T=1 s。",
+          "objective": "找到输出峰值达到 0.8 的最短脉宽，并给出依据。",
+          "pythonExercise": "分别令 width=1.60 和 1.61，运行后比较峰值与达标状态。",
+          "target": "继续细调脉宽，让峰值达到 0.800–0.802。"
+        }
+      },
+      "recordExtra": "记录当前试验",
+      "samplingPlot": "原信号、采样点与重建曲线",
+      "reviewCoefficients": "系数尚未核对通过，请对照公式和曲线修改。",
+      "adjustParameter": "这一组请先调整参数，补一组新的读数。",
+      "objective": "本项目标",
+      "reachSetup": "先调节上方参数，完成当前步骤的变换。",
+      "checkReading": "读数与当前图形不符，请再读一次；可点击图形查看游标。",
+      "chooseObservation": "选择你的观察结果",
+      "yes": "是",
+      "no": "否",
+      "readingPlaceholder": "填写你读到的数值",
+      "comparisonSignal": "变换对照",
+      "comparisonPulse": "窄脉冲对照",
+      "resultSetup": "操作",
+      "resultPeakTime": "峰时 / s",
+      "resultPeak": "峰高",
+      "resultEnd": "终点 / s",
+      "resultWidth": "宽度 / s",
+      "resultHeight": "高度",
+      "resultArea": "面积",
+      "readings": {
+        "peakTime": "当前波形的峰值在几秒？",
+        "supportStart": "反转后，信号从几秒开始？",
+        "supportEnd": "压缩后，信号在几秒结束？",
+        "height": "这个窄脉冲的高度是多少？",
+        "maxDifference": "两条路径的最大绝对差是多少？",
+        "atTimes_1_total": "从图上读出 t=1 s 时的全响应。",
+        "integral": "当前时刻，乘积面积（输出）是多少？",
+        "maximum": "合成波形的最大值是多少？",
+        "firstZero": "第一正零点在多少 Hz？",
+        "phaseAtQuarter": "f=0.25 Hz 时的相位是多少 rad？",
+        "zeroFrequency": "零频值 X(0) 是多少？",
+        "passed": "两个幅度比是否同时满足指标？",
+        "aliasing": "当前采样率是否发生混叠？",
+        "peak": "输出的峰值是多少？"
+      },
+      "transformNames": {
+        "original": "原信号",
+        "shift": "平移",
+        "reverse": "反转",
+        "compress": "压缩",
+        "combine": "组合"
+      }
     }
   }
 }

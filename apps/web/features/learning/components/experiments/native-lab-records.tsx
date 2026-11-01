@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { labMissingWork, labTaskComplete } from "@/features/learning/model/virtual-lab-flow";
 import { labMeasurementText, labParameterText } from "@/features/learning/model/virtual-lab-native";
 import type { VirtualLabEngine } from "@/public/vendor/signal-lab/core.mjs";
 import { PythonLabResult } from "./python-lab-runner";
@@ -32,6 +33,7 @@ export function NativeLabTrials({ engine, taskID, onRestore, report = false }: {
 
 export function NativeLabRecords({ engine, courseID, onPrint }: { engine: VirtualLabEngine; courseID: string; onPrint: (id: string) => void }) {
   const t = useTranslations("learning.virtualLab.native");
+  const f = useTranslations("learning.virtualLab.flow");
   const data = engine.records.data;
   const [clearOpen, setClearOpen] = useState(false);
   return <div className="space-y-6">
@@ -46,12 +48,13 @@ export function NativeLabRecords({ engine, courseID, onPrint }: { engine: Virtua
     <AlertDialog open={clearOpen} onOpenChange={setClearOpen}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>{t("clearRecords")}</AlertDialogTitle><AlertDialogDescription>{t("clearWarning")}</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>{t("cancel")}</AlertDialogCancel><AlertDialogAction onClick={() => engine.records.clear()}>{t("confirm")}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
     {engine.courseIds(courseID).map((id) => {
       const task = data.tasks[id];
-      return <section key={id} className="rounded-lg border border-border/60 bg-card p-5"><div className="mb-4 flex flex-wrap items-center justify-between gap-3"><h2 className="text-sm font-medium"><span className="mr-3 font-mono text-sm text-primary">{id}</span>{engine.tasks[id].title}</h2><a href={`#task/${id}`} className="inline-flex items-center gap-1 text-sm text-muted-foreground">{t("openTask")}<ArrowUpRight aria-hidden className="size-4" /></a></div><p className="text-sm leading-6 text-muted-foreground">{task.completion.confirmed ? t("confirmed") : engine.records.missing(id).join("；") || t("notConfirmed")}</p><NativeLabTrials engine={engine} taskID={id} onRestore={(index) => { const trial = task.trials[index]; if (!trial || !engine.validParams(id, trial.params)) return; task.params = { ...trial.params }; task.answers = { ...engine.defaultAnswers(id), ...trial.answers }; task.completion = { confirmed: false, confirmedAt: null }; engine.records.save(); window.location.hash = `task/${id}`; }} /></section>;
+      return <section key={id} className="rounded-lg border border-border/60 bg-card p-5"><div className="mb-4 flex flex-wrap items-center justify-between gap-3"><h2 className="text-sm font-medium"><span className="mr-3 font-mono text-sm text-primary">{id}</span>{engine.tasks[id].title}</h2><a href={`#task/${id}`} className="inline-flex items-center gap-1 text-sm text-muted-foreground">{t("openTask")}<ArrowUpRight aria-hidden className="size-4" /></a></div><p className="text-sm leading-6 text-muted-foreground">{labTaskComplete(id, task) ? t("confirmed") : labMissingWork(id, task).map((key) => f(key)).join("；") || t("notConfirmed")}</p><NativeLabTrials engine={engine} taskID={id} onRestore={(index) => { const trial = task.trials[index]; if (!trial || !engine.validParams(id, trial.params)) return; task.params = { ...trial.params }; task.answers = { ...engine.defaultAnswers(id), ...trial.answers }; task.completion = { confirmed: false, confirmedAt: null }; engine.records.save(); window.location.hash = `task/${id}`; }} /></section>;
     })}
   </div>;
 }
 
 export function NativeLabReport({ engine, courseID, onClose }: { engine: VirtualLabEngine; courseID: string; onClose: (value: null) => void }) {
+  const f = useTranslations("learning.virtualLab.flow");
   const python = useTranslations("learning.virtualLab.python");
   const t = useTranslations("learning.virtualLab.native");
   const course = engine.courses.find((item) => item.id === courseID);
@@ -73,7 +76,7 @@ export function NativeLabReport({ engine, courseID, onClose }: { engine: Virtual
     <h1>{t("reportTitle", { number: course.number })}</h1><p>{course.name}</p><p>{t("name")}：{data.student.name}　{t("studentNumber")}：{data.student.number}　{t("classroom")}：{data.student.classroom || "—"}</p><p>CS3017 / v{data.appVersion} / schema {data.schemaVersion} / {new Date().toLocaleString()}</p>
     {engine.courseIds(courseID).map((id) => {
       const record = data.tasks[id];
-      return <section key={id} className="native-lab-report-task"><h2>{id} {engine.tasks[id].title}</h2><h3>{t("prediction")}</h3><p>{record.prediction || "—"}</p>{record.predictionDraft.trim() !== (record.revisions.at(-1)?.text ?? record.prediction) && <><h3>{t("draft")}</h3><p>{record.predictionDraft || "—"}</p></>}{record.revisions.map((item, index) => <div key={`${item.time}-${index}`}><h3>{t("revision", { number: index + 1 })} · {new Date(item.time).toLocaleString()}</h3><p>{item.text}</p></div>)}<h3>{t("derivation")}</h3><p>{record.derivation || "—"}</p><h3>{t("measurements")}</h3><NativeLabTrials engine={engine} taskID={id} report /><h3>{t("analysis")}</h3><p>{record.analysis || "—"}</p><h3>{t("selfCheck")}</h3><p>{record.completion.confirmed ? t("confirmed") : engine.records.missing(id).join("；") || t("notConfirmed")}</p>
+      return <section key={id} className="native-lab-report-task"><h2>{id} {engine.tasks[id].title}</h2><h3>{t("prediction")}</h3><p>{record.prediction || "—"}</p>{record.predictionDraft.trim() !== (record.revisions.at(-1)?.text ?? record.prediction) && <><h3>{t("draft")}</h3><p>{record.predictionDraft || "—"}</p></>}{record.revisions.map((item, index) => <div key={`${item.time}-${index}`}><h3>{t("revision", { number: index + 1 })} · {new Date(item.time).toLocaleString()}</h3><p>{item.text}</p></div>)}<h3>{t("derivation")}</h3><p>{record.derivation || "—"}</p><h3>{t("measurements")}</h3><NativeLabTrials engine={engine} taskID={id} report /><h3>{t("analysis")}</h3><p>{record.analysis || "—"}</p><h3>{t("selfCheck")}</h3><p>{labTaskComplete(id, record) ? t("confirmed") : labMissingWork(id, record).map((key) => f(key)).join("；") || t("notConfirmed")}</p>
         {(record.python.code || record.python.result) && <section data-python-report={id}><h3>{python("verification")}</h3>{record.python.result && <><h4>{python("savedCode")}</h4><pre>{record.python.result.code}</pre><PythonLabResult taskID={id} result={record.python.result} engine={engine} /></>}{record.python.code !== record.python.result?.code && <><h4>{python("draftCode")}</h4><pre>{record.python.code}</pre></>}</section>}
         {record.figures.map((figure, index) => {
           const scene = engine.scene(id, figure.params, figure.answers);

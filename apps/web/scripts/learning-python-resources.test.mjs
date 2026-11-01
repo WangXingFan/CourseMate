@@ -46,7 +46,8 @@ test("all twelve interactive tasks have matching Python resources and translated
   const teacherGuide = readFileSync(new URL("../../../backend/internal/application/learning/assets/teacher-guide.html", import.meta.url), "utf8");
   assert.equal((teacherGuide.match(/<section id="python">/g) ?? []).length, 1);
   assert.ok(teacherGuide.includes('href="#python">Python 编程</a>'));
-  assert.ok(teacherGuide.includes("10 分钟交互测量，15 分钟生成信号、改代码并作同参数对照"));
+  assert.ok(teacherGuide.includes("选做：用 Python 复现本实验"));
+  assert.ok(teacherGuide.includes("主实验不要求安装 Python"));
   assert.ok(teacherGuide.includes("源代码、Notebook、图形和 CSV"));
 });
 

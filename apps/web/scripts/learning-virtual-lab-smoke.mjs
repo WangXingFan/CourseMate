@@ -2,6 +2,9 @@
 // UI fixtures exercise the bridge and retry behavior; Go tests cover real auth/DB.
 // Set VIRTUAL_LAB_BASE_URL to also verify a running Go server's static responses.
 import assert from "node:assert/strict";
+import { LAB_FLOWS, labReading } from "../features/learning/model/virtual-lab-flow.ts";
+import { createVirtualLabEngine } from "../public/vendor/signal-lab/core.mjs";
+import { labAnswers } from "./virtual-lab-fixtures.mjs";
 import { createServer } from "node:http";
 import { createRequire } from "node:module";
 import { mkdir, readFile, stat } from "node:fs/promises";
@@ -85,6 +88,14 @@ try {
     if (response.url().includes("jsdelivr.net/pyodide") && response.status() >= 400) errors.push(`Pyodide response ${response.status()}: ${response.url()}`);
   });
   const frame = () => page.locator("[data-native-lab]");
+  const engine = createVirtualLabEngine();
+  const fillObservation = async (id, step, params) => {
+    if (!step.observation) return;
+    const value = String(labReading(engine.scene(id, params, labAnswers(id, params)).readings, step.observation.reading));
+    const field = frame().locator("#observation");
+    if (await field.evaluate((element) => element.tagName === "SELECT")) await field.selectOption(value);
+    else await field.fill(value);
+  };
   const saved = () => page.getByText("已保存到当前账号", { exact: true }).waitFor();
   await page.goto(`${base}/learn/experiments`);
   await page.getByRole("heading", { name: "信号与系统 · 三次完整实验", exact: true }).waitFor();
@@ -163,101 +174,164 @@ try {
     const plot = pythonResources.locator("figure img").first();
     assert.ok(await plot.evaluate((image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0), "Python waveform should decode as an image");
   }
-  await page.goto(`${base}/learn/experiments`);
-  await page.getByRole("link", { name: /实验一 · 信号与时域系统/ }).click();
-  await frame().getByRole("heading", { name: "信号变换与连续系统时域探究", exact: true }).waitFor();
   await page.goto(`${base}/learn/experiments/workspace#task/L1-1`);
-  await frame().locator("#prediction").fill("右移一秒，峰值位置加一秒，高度不变。");
+  await frame().locator("#prediction").waitFor();
+  assert.equal(await frame().locator('[data-lab-givens] svg[data-chart="given"]').count(), 1, "Prediction needs the original signal");
+  assert.equal(await frame().locator('[data-lab-givens] [data-series]').count(), 1, "Only the original signal is shown");
+  assert.equal(await frame().locator('[data-lab-givens] [data-series="p(t)"]').count(), 1);
+  assert.equal(await frame().locator('svg[data-chart="main"]').count(), 0, "The transformed result is still hidden");
+  assert.equal(await frame().locator('[data-phase="observe"]').isDisabled(), true);
+  assert.equal(await frame().locator('[data-python-task]').count(), 0, "Programming does not distract from the first step");
+  await frame().locator("#prediction").fill("右移一秒，峰值时刻加一秒，高度不变。");
   await frame().locator('[data-action="prediction"]').click();
-  await frame().getByRole("button", { name: "平移", exact: true }).click();
-  await frame().locator('[data-action="trial"]').click();
-  await frame().locator("#analysis").fill("测量支撑为 [1,4]，峰时为 2 s，峰高为 1。");
+  for (let index = 0; index < LAB_FLOWS["L1-1"].steps.length; index++) {
+    const step = LAB_FLOWS["L1-1"].steps[index];
+    assert.equal(await frame().getByLabel("当前对照", { exact: true }).inputValue(), String(index));
+    assert.equal(await frame().locator('[data-action="trial"]').isDisabled(), true, "Saving without an observation is blocked");
+    assert.equal(await frame().locator('[data-python-task]').count(), 0, "Python is only offered after the main experiment");
+    if (index === 1) {
+      await saved();
+      await page.reload();
+      await frame().locator("#param-shift").waitFor();
+      assert.equal(await frame().getByLabel("当前对照", { exact: true }).inputValue(), "1", "Reload resumes a manual step before the target has been reached");
+      assert.equal(await frame().locator("#param-shift").inputValue(), "0", "The shift is not done for the student");
+      await frame().locator("#observation").fill("1");
+      await frame().locator('[data-action="trial"]').click();
+      await frame().getByRole("alert").filter({ hasText: "先调节上方参数" }).waitFor();
+    }
+    for (const key of step.controls ?? []) await frame().locator(`#param-${key}`).fill(String(step.params[key]));
+    if (index === 1) {
+      assert.equal(await frame().locator("#observation").inputValue(), "", "Changing parameters clears the old reading");
+      await frame().locator("#observation").fill("99");
+      await frame().locator('[data-action="trial"]').click();
+      await frame().getByRole("alert").filter({ hasText: "读数与当前图形不符" }).waitFor();
+    }
+    await fillObservation("L1-1", step, { ...engine.defaults("L1-1"), ...step.params });
+    await frame().locator('[data-action="trial"]').click();
+  }
+  await frame().locator("#analysis").fill("右移改变峰时，反转改变方向，压缩缩短信号；窄脉冲面积保持为 1。");
+  await frame().locator('[data-action="complete"]').click();
   await saved();
   let document = JSON.parse(records.get(101).document);
   assert.equal(document.student.number, "student101");
-  assert.equal(document.tasks["L1-1"].trials[0].params.shift, 1);
-  assert.equal(document.tasks["L1-1"].trials[0].measurements.peakTime, 2);
+  assert.equal(document.tasks["L1-1"].trials.length, 8);
+  assert.equal(document.tasks["L1-1"].trials[1].params.shift, 1);
+  assert.equal(document.tasks["L1-1"].trials[1].measurements.peakTime, 2);
+  assert.equal(document.tasks["L1-1"].trials[1].measurements.observation.value, 2);
+  assert.equal(document.tasks["L1-1"].completion.confirmed, true);
+  assert.equal(await page.locator("iframe").count(), 0, "workspace must be native React");
+  assert.equal(await page.evaluate(() => Object.hasOwn(window, "SignalLab")), false);
+  await page.reload();
+  await frame().locator("#analysis").waitFor();
+  assert.equal(await frame().locator("#analysis").inputValue(), document.tasks["L1-1"].analysis);
+  await frame().locator('[data-phase="observe"]').click();
+  await frame().getByLabel("当前对照", { exact: true }).selectOption("1");
+  await frame().locator("#param-shift").fill("1");
+  await frame().locator('[data-lab-tools] > summary').click();
   const pngEvent = page.waitForEvent("download");
   await frame().locator('[data-action="png"]').click();
   const png = await pngEvent;
-  const pngBytes = await readFile(await png.path());
-  assert.equal(pngBytes.subarray(1, 4).toString(), "PNG");
-  assert.equal(await page.locator("iframe").count(), 0, "workspace must be native React");
-  assert.equal(await page.evaluate(() => Object.hasOwn(window, "SignalLab")), false, "engine leaked a global");
-  // The runtime is created only when a task's Python verification is expanded.
+  assert.equal((await readFile(await png.path())).subarray(1, 4).toString(), "PNG");
+  await frame().locator('[data-lab-tools] > summary').click();
+  await frame().locator('[data-phase="conclude"]').click();
   const embedded = frame().locator('[data-python-task="L1-1"]');
   await embedded.locator("summary").click();
-  await embedded.locator("[data-python-editor]").waitFor();
-  assert.match(await embedded.locator("[data-python-editor]").inputValue(), /shift=1/);
+  const editor = embedded.locator("[data-python-editor]");
+  await editor.waitFor();
+  assert.match(await editor.inputValue(), /shift=1/);
+  await editor.fill(`${await editor.inputValue()}\n# integration evidence`);
+  await saved();
+  assert.equal(JSON.parse(records.get(101).document).tasks["L1-1"].python.code.endsWith("# integration evidence"), true);
   if (process.env.PYTHON_RUNTIME_SMOKE === "1") {
-    await embedded.locator("[data-python-editor]").fill(`${await embedded.locator("[data-python-editor]").inputValue()}\n# integration evidence`);
     await embedded.getByRole("button", { name: "运行代码", exact: true }).click({ timeout: 120000 });
     await embedded.locator("figure img").waitFor({ timeout: 120000 });
     await assertEventually(async () => assert.ok(JSON.parse(records.get(101).document).tasks["L1-1"].python.result));
     const evidence = JSON.parse(records.get(101).document).tasks["L1-1"].python;
     assert.equal(evidence.result.params.shift, 1);
-    assert.ok(evidence.result.code.includes("integration evidence"));
     assert.ok(evidence.result.stdout.includes("sampled peak"));
-    assert.equal(await embedded.locator("figure img").getAttribute("src"), `data:image/png;base64,${evidence.result.plots[0].join("")}`);
-    await frame().locator("#param-shift").fill("2");
-    assert.equal(await embedded.locator("[data-python-editor]").inputValue(), evidence.code, "Parameter edits must preserve student code");
-    await embedded.getByRole("status").filter({ hasText: "代码或实验参数已变化" }).waitFor();
-    await embedded.getByRole("button", { name: "载入当前参数代码", exact: true }).click();
-    await page.getByRole("button", { name: "取消", exact: true }).click();
-    assert.equal(await embedded.locator("[data-python-editor]").inputValue(), evidence.code);
-    await embedded.getByRole("button", { name: "载入当前参数代码", exact: true }).click();
-    await page.getByRole("button", { name: "替换代码", exact: true }).click();
-    assert.match(await embedded.locator("[data-python-editor]").inputValue(), /shift=2/);
-    await saved();
   }
-  await page.screenshot({ path: join(artifacts, "workspace-desktop.png") });
-  await page.reload();
-  await frame().locator("#analysis").waitFor();
-  assert.equal(await frame().locator("#analysis").inputValue(), document.tasks["L1-1"].analysis);
-  await frame().locator('[data-python-task="L1-1"] summary').click();
-  if (process.env.PYTHON_RUNTIME_SMOKE === "1") {
-    const restored = frame().locator('[data-python-task="L1-1"]');
-    await restored.locator("figure img").waitFor();
-    assert.match(await restored.locator("[data-python-editor]").inputValue(), /shift=2/);
-  }
-  // Verify all twelve teaching steps are reachable after integration.
-  for (const course of [1, 2, 3]) for (const task of [1, 2, 3, 4]) {
-    const id = `L${course}-${task}`;
-    await page.evaluate((route) => { window.location.hash = route; }, `task/${id}`);
-    await frame().locator("#prediction").waitFor();
-    await assertEventually(async () => assert.equal(await childRoute(page), id));
-    assert.ok(await frame().getByText("保存本次试验", { exact: true }).count());
-    assert.equal(await frame().locator(`[data-python-task="${id}"]`).count(), 1, "Every experiment task includes Python verification");
-    if (!await frame().locator(`[data-python-task="${id}"]`).evaluate((element) => element.open)) await frame().locator(`[data-python-task="${id}"] summary`).click();
-    await frame().locator("[data-python-editor]").waitFor();
-    assert.ok((await frame().locator("[data-python-editor]").inputValue()).includes("plt.show()"));
-  }
-  // Responsive Python editor and experiment task surfaces in both themes.
+  await embedded.locator("summary").click();
+  // Screenshots check each phase, including a clean initial view, in both themes.
   for (const width of [1440, 390]) for (const theme of ["light", "dark"]) {
     await page.setViewportSize({ width, height: 950 });
     await page.evaluate((value) => {
-      localStorage.setItem("theme", value);
       document.documentElement.classList.toggle("dark", value === "dark");
       document.documentElement.classList.toggle("light", value === "light");
     }, theme);
-    await page.goto(`${base}/learn/python`);
-    const resources = page.locator("[data-python-resources]");
-    await resources.getByRole("heading", { name: "Python 编程资源", exact: true }).waitFor();
-    await resources.locator("[data-python-editor]").scrollIntoViewIfNeeded();
-    await page.screenshot({ path: join(artifacts, `python-resources-${width}-${theme}.png`) });
-    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
-    await page.goto(`${base}/learn/experiments/workspace#task/L1-1`);
-    await frame().locator("[data-python-task]").waitFor();
-    assert.equal(await frame().locator("[data-python-task]").count(), 1);
-    await frame().locator("[data-python-task] summary").click();
-    await frame().locator("[data-python-editor]").scrollIntoViewIfNeeded();
-    await page.screenshot({ path: join(artifacts, `experiment-python-${width}-${theme}.png`) });
-    await frame().locator("#prediction").scrollIntoViewIfNeeded();
-    await page.screenshot({ path: join(artifacts, `experiment-task-${width}-${theme}.png`) });
+    for (const phase of ["predict", "observe", "conclude"]) {
+      await frame().locator(`[data-phase="${phase}"]`).click();
+      await frame().evaluate((element) => { element.scrollTop = 0; });
+      await page.screenshot({ path: join(artifacts, `guided-${phase}-${width}-${theme}.png`), animations: "disabled" });
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+      assert.ok(await frame().locator('[data-native-task]').evaluate((element) => element.scrollWidth <= element.clientWidth + 1));
+      if (phase === "observe") {
+        await frame().locator("#observation").scrollIntoViewIfNeeded();
+        await page.screenshot({ path: join(artifacts, `guided-reading-${width}-${theme}.png`), animations: "disabled" });
+      }
+      if (phase === "conclude") {
+        const optional = frame().locator('[data-python-task="L1-1"]');
+        await optional.locator("summary").click();
+        await optional.locator("summary").scrollIntoViewIfNeeded();
+        await page.screenshot({ path: join(artifacts, `guided-python-${width}-${theme}.png`), animations: "disabled" });
+      }
+    }
   }
-  await page.setViewportSize({ width: 1360, height: 950 });
-  await page.evaluate(() => { window.location.hash = "task/L1-1"; });
-  await assertEventually(async () => assert.equal(await childRoute(page), "L1-1"));
+  await page.setViewportSize({ width: 1440, height: 950 });
+  await page.evaluate(() => { document.documentElement.classList.remove("dark"); document.documentElement.classList.add("light"); });
+  // Walk every comparison, including templates and independently adjustable steps.
+  for (const [id, flow] of Object.entries(LAB_FLOWS)) {
+    await page.goto(`${base}/learn/experiments/workspace#task/${id}`);
+    await frame().locator(`[data-native-task="${id}"]`).waitFor();
+    if (id === "L1-1") continue;
+    await frame().locator('[data-lab-givens]').waitFor();
+    assert.ok(await frame().locator('[data-given-formula] .katex').count(), `${id}: known conditions`);
+    await frame().locator("#prediction").fill("先判断参数变化，再用数据核验。");
+    await frame().locator('[data-action="prediction"]').click();
+    for (let index = 0; index < flow.steps.length; index++) {
+      assert.equal(await frame().getByLabel("当前对照", { exact: true }).inputValue(), String(index), `${id}/${index}`);
+      const inputs = frame().locator("[data-answer]");
+      if (await inputs.count()) assert.ok(await frame().locator('[data-answer-formula] .katex').count(), `${id}: complete answer template`);
+      const step = flow.steps[index], params = { ...engine.defaults(id), ...step.params };
+      if (step.key === "candidate") params.candidate = 5;
+      if (step.key === "ninety") params.measureTime = 2.3;
+      if (step.key === "refine") params.T = 1.61;
+      const answers = labAnswers(id, params);
+      for (let j = 0; j < await inputs.count(); j++) await inputs.nth(j).fill(answers[await inputs.nth(j).getAttribute("data-answer")]);
+      if (step.key === "ninety" || step.key === "refine") {
+        await frame().locator('[data-action="trial"]').click();
+        await frame().getByRole("alert").waitFor();
+      }
+      for (const key of step.controls ?? []) await frame().locator(`#param-${key}`).fill(String(params[key]));
+      await fillObservation(id, step, params);
+      if (id === "L1-4" && flow.steps[index].key.startsWith("response")) assert.equal(await frame().locator('svg[data-chart="output"]').first().isVisible(), true);
+      if (id === "L2-4" && flow.steps[index].key !== "candidate") assert.equal(await frame().locator('[data-series^="候选"]').count(), 0);
+      if ((id === "L1-2" && index === 0) || (id === "L1-4" && flow.steps[index].key === "response0") || (id === "L2-3" && index === 0) || (id === "L3-1" && flow.steps[index].key === "delayed")) {
+        for (const width of [1440, 390]) {
+          await page.setViewportSize({ width, height: 950 });
+          await frame().evaluate((element) => { element.scrollTop = 0; });
+          await page.screenshot({ path: join(artifacts, `conditions-${id}-${width}.png`), animations: "disabled" });
+          assert.ok(await frame().locator('[data-native-task]').evaluate((element) => element.scrollWidth <= element.clientWidth + 1), `${id}: no horizontal page overflow`);
+        }
+        await page.setViewportSize({ width: 1440, height: 950 });
+      }
+      await frame().locator('[data-action="trial"]').click();
+    }
+    await frame().locator("#analysis").fill("已记录各组参数与读数，并比较变化。");
+    if (flow.derivation) {
+      assert.equal(await frame().locator('[data-action="complete"]').isDisabled(), true);
+      await frame().locator("#derivation").fill("推导过程与数值核验记录。");
+    }
+    await frame().locator('[data-action="complete"]').click();
+    const python = frame().locator(`[data-python-task="${id}"]`);
+    assert.equal(await python.evaluate((element) => element.open), false);
+    await python.locator("summary").click();
+    await python.locator("[data-python-editor]").waitFor();
+    assert.ok((await python.locator("[data-python-editor]").inputValue()).includes("plt.show()"));
+    await saved();
+    assert.equal(JSON.parse(records.get(101).document).tasks[id].completion.confirmed, true, "Opening optional Python must not undo the completed experiment");
+  }
+  await page.goto(`${base}/learn/experiments/workspace#task/L1-1`);
+  await frame().locator("#analysis").waitFor();
   failSave = true;
   await frame().locator("#analysis").fill("断网时保留的草稿");
   await page.getByText("同步失败，请重试或下载备份", { exact: true }).waitFor();
@@ -276,7 +350,9 @@ try {
   await frame().locator("#analysis").fill("冲突后继续保留的草稿");
   await assertEventually(async () => assert.equal(writes.length, count));
   const backup = page.waitForEvent("download");
+  await page.locator("[data-record-tools] > summary").click();
   await page.getByRole("button", { name: "下载当前记录 JSON", exact: true }).click();
+  await page.locator("[data-record-tools] > summary").click();
   const downloaded = await backup;
   document = JSON.parse(await readFile(await downloaded.path(), "utf8"));
   assert.equal(document.tasks["L1-1"].analysis, "冲突后继续保留的草稿");
@@ -290,8 +366,9 @@ try {
   // Restoring from the records page must apply the selected trial, not merely
   // navigate to the task. Importing also retains the current account identity.
   await frame().getByRole("button", { name: "恢复参数", exact: true }).first().click();
-  await frame().locator("#prediction").waitFor();
-  assert.equal(await frame().locator("#param-shift").inputValue(), "1");
+  await frame().locator('[data-phase="observe"]').click();
+  await frame().locator('[data-lab-tools] > summary').click();
+  assert.equal(await frame().locator("#param-shift").inputValue(), "0");
   document = JSON.parse(records.get(101).document);
   document.student.name = "Other account"; document.student.number = "other-student";
   document.tasks["L1-1"].analysis = "导入的备份记录";
@@ -340,6 +417,9 @@ try {
   await page.getByText("同步失败，请重试或下载备份", { exact: true }).waitFor();
   actor = 102;
   await page.reload();
+  await frame().locator("#prediction").fill("账号102的独立判断");
+  await frame().locator('[data-action="prediction"]').click();
+  await frame().locator('[data-phase="conclude"]').click();
   await frame().locator("#analysis").waitFor();
   assert.equal(await frame().locator("#analysis").inputValue(), "");
   await frame().locator("#analysis").fill("账号102独立内容");
@@ -377,7 +457,7 @@ try {
   await popup.close();
   await guideFrame.getByRole("heading", { name: "把代码生成信号纳入实验", exact: true }).first().waitFor();
   assert.deepEqual(errors, []);
-  console.log("PASS: three labs, 12 tasks, in-page Python execution and waveform rendering, Python resource downloads, responsive light/dark layouts, bilingual resource checks, existing account save/refresh/retry/conflict, backup/JSON/PDF, isolation and teacher-guide links");
+  console.log("PASS: 12 guided tasks, all comparisons, prediction gate, completion checks, Python resources and drafts, responsive light/dark layouts, account save/refresh/retry/conflict, backup/JSON/PDF, isolation and teacher guide");
 } catch (error) {
   if (page) console.error("Browser page alert:", await page.locator('[role="alert"]').allTextContents().catch(() => []));
   if (page) await page.screenshot({ path: join(artifacts, "failure.png") }).catch(() => {});
@@ -387,9 +467,6 @@ try {
   if (server.listening) await new Promise((done) => server.close(done));
 }
 
-async function childRoute(activePage) {
-  return activePage.locator("[data-native-task]").getAttribute("data-native-task");
-}
 async function assertEventually(check) {
   const deadline = Date.now() + 20000;
   let last;

@@ -506,7 +506,7 @@
         },
         "operate": {
           "title": "Adjust, measure and save",
-          "body": "Use precise values, sliders or presets. Click plots for readings, then save. Restore saved parameters or export PNG figures."
+          "body": "Use precise values, sliders or presets. Click plots for readings, then choose “Check and continue” to record the step. Restore saved parameters or export PNG figures."
         },
         "explain": {
           "title": "Explain using evidence",
@@ -519,6 +519,259 @@
       },
       "clearRecords": "Clear experiment records",
       "clearWarning": "Clear all three experiments for this account and sync the change. Download a JSON backup first."
+    },
+    "flow": {
+      "steps": "Experiment steps",
+      "predict": "Predict",
+      "observe": "Compare",
+      "conclude": "Conclude",
+      "predictionPlaceholder": "Your prediction in one sentence.",
+      "conclusionPlaceholder": "Answer using your readings.",
+      "start": "Start experiment",
+      "comparison": "Current comparison",
+      "resetStep": "Load this setup",
+      "recorded": "Recorded {count}/{total}",
+      "recordNext": "Check and continue",
+      "enterPrediction": "Write a prediction first.",
+      "fillAnswers": "Fill the coefficients for this comparison.",
+      "restoreStep": "Load this setup before recording.",
+      "results": "View comparisons ({count})",
+      "notRecorded": "Not recorded",
+      "extraDerivation": "Additional working",
+      "checklist": "Completion checklist",
+      "conclusionDone": "Conclusion written",
+      "conclusionMissing": "Conclusion needed",
+      "derivationDone": "Working recorded",
+      "derivationMissing": "Working needed",
+      "continueComparisons": "Continue comparisons",
+      "finish": "Mark self-check complete",
+      "help": "Hints",
+      "history": "All records ({count})",
+      "tools": "Explore parameters · More plots",
+      "back": "Back to experiment",
+      "python": "Optional: reproduce this experiment in Python",
+      "waveform": "Original and current signal",
+      "tasks": {
+        "L1-1": {
+          "question": "Shift the signal right by 1 s. What happens to its peak time and height?",
+          "conclusion": "Use the table: what changed under shifting, reversal and compression? Is width × height equal for all three pulses?",
+          "steps": {
+            "original": "Original: read peak time and height",
+            "shift": "Set the shift to 1 s and compare the peak position",
+            "reverse": "Set scale a to −1 and observe reversal",
+            "compress": "Set scale a to 2 and observe compression",
+            "combine": "Create 2p(2(t−1)): amplitude 2, scale 2, shift 1 s",
+            "pulse0": "Set the pulse width to 0.5 s and read its height",
+            "pulse1": "Set the pulse width to 0.2 s and read its height",
+            "pulse2": "Set the pulse width to 0.1 s and read its height"
+          },
+          "given": "Original p(t): a triangular pulse from 0 to 3 s, with its peak at (1 s, 1).",
+          "objective": "Use peak, position and width to verify shifts, reversal and scaling; check pulse area.",
+          "pythonExercise": "Increase shift by 1 in the code. Run it and check whether the peak time also increases by 1 s.",
+          "pythonExercisePulse": "Set delta to 0.05 in the code. Run it and check that the pulse area remains 1."
+        },
+        "L1-2": {
+          "question": "Which systems, 2x, x² and t·x, are linear? Which are time invariant?",
+          "conclusion": "Classify all three systems. Give a counterexample for nonlinearity and one for time variance.",
+          "steps": {
+            "linear0": "2x: compare the two superposition paths",
+            "shift0": "2x: compare the two time-shift paths",
+            "linear1": "x²: compare the two superposition paths",
+            "shift1": "x²: compare the two time-shift paths",
+            "linear2": "t·x: compare the two superposition paths",
+            "shift2": "t·x: compare the two time-shift paths"
+          },
+          "given": "Compare these three input–output relations.",
+          "objective": "Test linearity and time invariance by comparing two calculation paths.",
+          "pythonExercise": "Change x1 to lambda t: np.sin(t), run the code and compare the maximum path difference."
+        },
+        "L1-3": {
+          "question": "Starting at 2, will the output rise or fall when a unit step is applied?",
+          "conclusion": "Why do initial values 2 and 0.5 give different directions? Which two parts form the total response?",
+          "steps": {
+            "zeroInput": "Input off: observe the initial-state response",
+            "zeroState": "Zero initial state: observe the input response",
+            "total": "Initial value 2: compare total with the sum of parts",
+            "lower": "Initial value 0.5: compare the direction"
+          },
+          "given": "Input: a unit step switched on at t=0.",
+          "objective": "Separate the response caused by the initial state from the response caused by the input.",
+          "pythonExercise": "Set y0 to 0.5, run the code and compare its output at t=1 s with the experiment."
+        },
+        "L1-4": {
+          "question": "What shape results from convolving two unit rectangles?",
+          "conclusion": "How does overlap area determine output? With an exponential response, why does output persist after the input ends?",
+          "steps": {
+            "overlap0": "t=-0.5 s: inspect rectangle overlap and area",
+            "overlap1": "t=0.5 s: inspect rectangle overlap and area",
+            "overlap2": "t=1 s: inspect rectangle overlap and area",
+            "overlap3": "t=1.5 s: inspect rectangle overlap and area",
+            "overlap4": "t=2.5 s: inspect rectangle overlap and area",
+            "response0": "t=0.5 s: inspect rectangle–exponential convolution",
+            "response1": "t=1 s: inspect rectangle–exponential convolution",
+            "response2": "t=1.5 s: inspect rectangle–exponential convolution",
+            "response3": "t=2 s: inspect rectangle–exponential convolution"
+          },
+          "given": "Inputs: two identical unit rectangles, each 1 s wide.",
+          "objective": "Connect the overlap area of signals to the convolution output.",
+          "pythonExercise": "Halve dt from 0.002, run the code and compare the convolution readings."
+        },
+        "L2-1": {
+          "question": "Will adding harmonics remove overshoot at a square-wave jump?",
+          "conclusion": "Compare K=1 and K=15. Where is the approximation better, and how does overshoot change?",
+          "steps": {
+            "harmonic0": "K=1: inspect flat regions and jumps",
+            "harmonic1": "K=3: inspect flat regions and jumps",
+            "harmonic2": "K=7: inspect flat regions and jumps",
+            "harmonic3": "K=15: inspect flat regions and jumps"
+          },
+          "given": "Target square wave: amplitude ±1, fundamental 10 Hz; K is the highest odd harmonic index.",
+          "objective": "Compare how added harmonics change the square-wave approximation and overshoot.",
+          "pythonExercise": "Set K to 31, run the code and compare the maximum to check whether overshoot disappears."
+        },
+        "L2-2": {
+          "question": "Does a narrower rectangular pulse have a wider or narrower spectrum?",
+          "conclusion": "What does width, time shift and amplitude each change in the spectrum? Use your readings.",
+          "steps": {
+            "width0": "Width 0.5 s: read DC value and first zero",
+            "width1": "Width 1 s: read DC value and first zero",
+            "width2": "Width 2 s: read DC value and first zero",
+            "shift": "Shift right 1 s: compare phase at f=0.25 Hz",
+            "amplitude": "Double amplitude: compare the DC value"
+          },
+          "given": "Original rectangle: amplitude 1, width 1 s, centered at t=0.",
+          "objective": "Verify how pulse width, delay and amplitude change the spectrum.",
+          "pythonExercise": "Set T to 0.5, run the code and compare the first positive zero with the experiment."
+        },
+        "L2-3": {
+          "question": "Does lowering the cutoff frequency always improve filtering?",
+          "conclusion": "Choose a cutoff meeting R(100)≥0.85 and R(1000)≤0.25. Give both amplitude ratios.",
+          "steps": {
+            "cutoff0": "fc=100 Hz: compare both amplitude ratios",
+            "cutoff1": "fc=200 Hz: compare both amplitude ratios",
+            "cutoff2": "fc=500 Hz: compare both amplitude ratios"
+          },
+          "given": "Input: useful signal at 100 Hz, interference at 1000 Hz; a first-order low-pass filter.",
+          "objective": "Choose a cutoff that preserves the desired signal and suppresses interference.",
+          "pythonExercise": "Set fc to 200, run the code and check both amplitude-ratio requirements."
+        },
+        "L2-4": {
+          "question": "Which sampling rates, 100, 25 and 15 Hz, can reconstruct a 10 Hz cosine?",
+          "conclusion": "At 15 Hz sampling, which lower-frequency cosine shares the samples? Why is the original signal ambiguous?",
+          "steps": {
+            "sample0": "fs=100 Hz: compare original and reconstruction",
+            "sample1": "fs=25 Hz: compare original and reconstruction",
+            "sample2": "fs=15 Hz: compare original and reconstruction",
+            "candidate": "Find a lower-frequency cosine matching all samples"
+          },
+          "given": "Original signal: a cosine of amplitude 1 and frequency 10 Hz.",
+          "objective": "Explain aliasing using reconstruction curves and identical samples.",
+          "pythonExercise": "Keep fs=15, set candidate to 5, run the code and check the maximum sample difference.",
+          "target": "Keep adjusting: the candidate must be below 7.5 Hz and pass through all samples."
+        },
+        "L3-1": {
+          "question": "What factor appears in the Laplace transform when a signal is delayed?",
+          "conclusion": "A rectangle starts at 1 s and lasts 2 s. When do its two steps occur?",
+          "steps": {
+            "exponential0": "a=0.5: fill the exponential transform coefficients",
+            "exponential1": "a=1: fill the exponential transform coefficients",
+            "exponential2": "a=2: fill the exponential transform coefficients",
+            "step": "Step delayed by 1 s: fill the transform coefficients",
+            "pulse": "Rectangle of width 1 s: fill both time shifts",
+            "delayed": "Amplitude 3, start 1 s, duration 2 s: fill the coefficients"
+          },
+          "derivation": "Write the delayed rectangle and its Laplace transform.",
+          "given": "Input: a unit step delayed by 1 s.",
+          "objective": "Express amplitude, decay and signal timing in the Laplace transform.",
+          "pythonExercise": "Compare the numerical integral with your derived X(s) at the same values of s."
+        },
+        "L3-2": {
+          "question": "For y′+y=u(t) with zero initial state, what value does the output approach?",
+          "conclusion": "Give y(1) and the time to reach 90% of the final value. Compare with your analytical result.",
+          "steps": {
+            "initial": "Fill H, X and partial fractions; check y(0)",
+            "one": "t=1 s: compare analytical and numerical responses",
+            "ninety": "Adjust measurement time to find y≈0.9"
+          },
+          "derivation": "Show H(s), Y(s), partial fractions and y(t).",
+          "given": "Input: a unit step; zero initial state.",
+          "objective": "Derive the response from the equation and check it against the numerical curve.",
+          "pythonExercise": "Halve dt, run the code and compare y(1) and t90.",
+          "target": "Adjust the measurement time until y(t) is within 0.002 of 0.900."
+        },
+        "L3-3": {
+          "question": "Does changing the initial value change both the starting and final values?",
+          "conclusion": "What changes across the three initial values? Why is Y=HX insufficient for the total response?",
+          "steps": {
+            "initial0": "y₀=0: update coefficients; compare the start and y(1)",
+            "initial1": "y₀=0.5: update coefficients; compare the start and y(1)",
+            "initial2": "y₀=2: update coefficients; compare the start and y(1)"
+          },
+          "derivation": "Derive the total response, retaining the initial-condition term.",
+          "given": "Keep the unit-step input and change only the initial state.",
+          "objective": "Retain initial conditions and explain the response start and final value.",
+          "pythonExercise": "Set y0 to 2, run the code and check that the full response equals the sum of its components."
+        },
+        "L3-4": {
+          "question": "How does the duration of a unit rectangular pulse affect the output peak?",
+          "conclusion": "What is the shortest pulse width reaching 0.8? Support it with a failing and a passing trial.",
+          "steps": {
+            "width0": "T=0.5 s: read peak value and time",
+            "width1": "T=1 s: read peak value and time",
+            "width2": "T=2 s: read peak value and time",
+            "width3": "T=3 s: read peak value and time",
+            "refine": "Refine the width to just meet the target (peak 0.800–0.802)"
+          },
+          "derivation": "Derive the minimum width from the peak requirement.",
+          "given": "Input: a rectangular pulse of amplitude 1 and duration T; T=1 s in the plot.",
+          "objective": "Find and justify the shortest pulse width that produces a peak of at least 0.8.",
+          "pythonExercise": "Run with width=1.60 and 1.61 and compare the peaks and whether they meet the target.",
+          "target": "Refine the pulse width until the peak is between 0.800 and 0.802."
+        }
+      },
+      "recordExtra": "Record current trial",
+      "samplingPlot": "Original signal, samples and reconstruction",
+      "reviewCoefficients": "The coefficients do not yet match. Check the formula and curves.",
+      "adjustParameter": "Adjust the parameter to record a new comparison.",
+      "objective": "Objective",
+      "reachSetup": "Adjust the parameters above to complete the current setup.",
+      "checkReading": "This reading does not match the current plot. Check again; click the plot to use its cursor.",
+      "chooseObservation": "Choose your observation",
+      "yes": "Yes",
+      "no": "No",
+      "readingPlaceholder": "Enter your reading",
+      "comparisonSignal": "Signal comparisons",
+      "comparisonPulse": "Pulse comparisons",
+      "resultSetup": "Setup",
+      "resultPeakTime": "Peak time / s",
+      "resultPeak": "Peak",
+      "resultEnd": "End / s",
+      "resultWidth": "Width / s",
+      "resultHeight": "Height",
+      "resultArea": "Area",
+      "readings": {
+        "peakTime": "At what time does the current signal peak (s)?",
+        "supportStart": "After reversal, when does the signal start (s)?",
+        "supportEnd": "After compression, when does the signal end (s)?",
+        "height": "What is the height of this narrow pulse?",
+        "maxDifference": "What is the maximum absolute difference between the two paths?",
+        "atTimes_1_total": "Read the full response at t=1 s from the plot.",
+        "integral": "What is the product area (output) at the current time?",
+        "maximum": "What is the maximum of the synthesized waveform?",
+        "firstZero": "Where is the first positive zero (Hz)?",
+        "phaseAtQuarter": "What is the phase at f=0.25 Hz (rad)?",
+        "zeroFrequency": "What is the zero-frequency value X(0)?",
+        "passed": "Do both amplitude ratios meet their requirements?",
+        "aliasing": "Does aliasing occur at the current sample rate?",
+        "peak": "What is the peak output?"
+      },
+      "transformNames": {
+        "original": "Original",
+        "shift": "Shift",
+        "reverse": "Reverse",
+        "compress": "Compress",
+        "combine": "Combined"
+      }
     }
   }
 }
