@@ -14,9 +14,9 @@ export function QuizComparisonPanel({ comparison }: { comparison: QuizComparison
   return <section className="space-y-4 rounded-xl border border-primary/25 bg-primary/[0.025] p-3 sm:p-4" aria-label={t("title")}>
     <div className="space-y-1.5">
       <h3 className="flex items-center gap-2 text-sm font-semibold"><GitCompareArrows className="size-4 text-primary" />{t("title")}</h3>
-      <p className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><span className="break-words">{comparison.beforeTitle}</span><ArrowRight className="size-3 shrink-0" /><span className="break-words">{comparison.afterTitle}</span></p>
+      <p className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><span className="break-words">{comparison.beforeTitle}</span><ArrowRight className="size-3.5 shrink-0" /><span className="break-words">{comparison.afterTitle}</span></p>
       <p className="text-xs leading-5 text-muted-foreground">{t("denominator")}</p>
-      {comparison.afterStatus !== "closed" && <p role="status" className="text-xs text-amber-700 dark:text-amber-400">{t(comparison.afterStatus === "draft" ? "draft" : "provisional")}</p>}
+      {comparison.afterStatus !== "closed" && <p role="status" className="text-xs text-primary">{t(comparison.afterStatus === "draft" ? "draft" : "provisional")}</p>}
     </div>
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{counts.map(([label, count]) => <div key={label} className="rounded-lg border border-border/50 bg-background/70 px-3 py-2"><p className="text-2xs text-muted-foreground">{t(label)}</p><p className="mt-1 font-mono text-lg tabular-nums">{count}</p></div>)}</div>
     {comparison.questions.map((q) => <div key={q.conceptId} className="space-y-3 rounded-lg border border-border/50 bg-background/70 p-3">
@@ -31,7 +31,6 @@ export function QuizComparisonPanel({ comparison }: { comparison: QuizComparison
         {(["improved", "retained", "regressed", "unresolved"] as const).map((key) => <div key={key} className="flex items-center justify-between gap-2 rounded-md bg-muted/40 px-2 py-1.5"><span className="text-muted-foreground">{t(`outcomes.${key}`)}</span><span className="font-mono tabular-nums">{q[key]}</span></div>)}
       </div>
     </div>)}
-    <p className="text-xs leading-5 text-muted-foreground">{t("interpretation")}</p>
     <details className="rounded-lg border border-border/50 bg-background/70 p-3">
       <summary className="cursor-pointer text-xs font-medium">{t("students")}</summary>
       <div className="mt-3 overflow-x-auto">

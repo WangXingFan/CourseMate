@@ -251,7 +251,7 @@
     "accuracy": "本次正确 {correct}/{total}",
     "comparison": {
       "title": "同知识点前后测",
-      "denominator": "仅比较同一学生两次有效作答；缺交另列，不计作答错。",
+      "denominator": "仅比较同一学生的两次有效作答，缺交另计。",
       "draft": "复测仍为草稿，请确认题目后发布。",
       "provisional": "复测进行中，当前为临时统计，请截止后再判断结果。",
       "paired": "两次均提交",

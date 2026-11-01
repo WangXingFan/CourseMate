@@ -74,11 +74,6 @@ export function TwoFactorDialog({
   const setupRemaining = setupExpiresAtTime ? setupExpiresAtTime - now : 0;
   const setupExpired = Boolean(displaySetupSecret && setupExpiresAtTime && setupRemaining <= 0);
   const dialogTitle = displayMode === "setup" ? t("title.setup") : displayMode === "manage" ? t("title.manage") : t("title.recovery");
-  const dialogDescription = displayMode === "setup"
-    ? t("description.setup")
-    : displayMode === "manage"
-      ? t("description.manage")
-      : t("description.recovery");
   const copyMessages = React.useMemo(() => ({
     copied: common("copiedLabel", { label: "" }).trim(),
     failed: common("copyFailed"),
@@ -165,10 +160,10 @@ export function TwoFactorDialog({
         onOpenChange(nextOpen);
       }}
     >
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent {...(displayMode === "recovery" ? {} : { "aria-describedby": undefined })} className="sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>
-          <DialogDescription>{dialogDescription}</DialogDescription>
+          {displayMode === "recovery" ? <DialogDescription>{t("description.recovery")}</DialogDescription> : null}
         </DialogHeader>
         <div className="space-y-4">
           {displayMode === "setup" && displaySetupSecret ? (

@@ -98,7 +98,7 @@ function AboutLink({
       </span>
       <span className="flex min-w-0 items-center gap-1.5 text-right font-medium text-foreground">
         <span className="truncate">{item.value}</span>
-        <ExternalLink className="size-3 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
+        <ExternalLink className="size-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
       </span>
     </a>
   );
@@ -196,7 +196,7 @@ export function AboutSettingsContent({
             className="inline-flex items-center gap-1 font-medium text-foreground/80 transition-colors outline-none hover:text-foreground focus-visible:text-foreground focus-visible:ring-0"
           >
             <span>{labels.license}</span>
-            <ExternalLink className="size-3 shrink-0 text-muted-foreground" />
+            <ExternalLink className="size-3.5 shrink-0 text-muted-foreground" />
           </a>
         </div>
       </SettingsSection>

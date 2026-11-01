@@ -41,10 +41,9 @@ export function NewClassroomStudentDialog({
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && !pending && onClose()}>
-      <DialogContent className="gap-0 p-0 sm:max-w-[440px]">
+      <DialogContent aria-describedby={undefined} className="gap-0 p-0 sm:max-w-[440px]">
         <DialogHeader className="px-4 py-4">
           <DialogTitle>{t("createTitle")}</DialogTitle>
-          <DialogDescription>{t("createDescription")}</DialogDescription>
         </DialogHeader>
         <form
           className="space-y-3 px-4 pb-2"
@@ -210,7 +209,6 @@ export function ImportClassroomStudentsDialog({
                 className="min-h-40 resize-y font-mono text-xs" placeholder={t("csvPlaceholder")}
                 onChange={(event) => { setCSV(event.target.value); setReadError(""); }} />
             </div>}
-            <p className="text-xs leading-5 text-muted-foreground">{t("passwordNote")}</p>
             <DialogFooter>
               <Button type="button" variant="ghost" disabled={pending} onClick={onClose}>{t("cancel")}</Button>
               <Button type="submit" disabled={(!rosterFile && !csv.trim()) || pending || !!readError}>

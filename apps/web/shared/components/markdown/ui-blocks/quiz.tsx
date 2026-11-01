@@ -196,7 +196,7 @@ function Quiz({ id, props }: UIBlockRenderProps<QuizProps>) {
           {scoreLabel ? <span className={cn(finished && "font-medium text-foreground")}>{scoreLabel}</span> : null}
           {answered > 0 || path.length > 1 ? (
             <button type="button" onClick={reset} className="inline-flex items-center gap-1 hover:text-foreground">
-              <RotateCcw className="size-3" strokeWidth={1.8} />
+              <RotateCcw className="size-3.5" strokeWidth={1.8} />
               {t("reset")}
             </button>
           ) : null}
@@ -216,7 +216,7 @@ function Quiz({ id, props }: UIBlockRenderProps<QuizProps>) {
             )}
             <div className="mt-3 flex items-center justify-between text-xs">
               <button type="button" onClick={back} disabled={path.length <= 1 && !ended} className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground disabled:invisible">
-                <ArrowLeft className="size-3" strokeWidth={1.8} />
+                <ArrowLeft className="size-3.5" strokeWidth={1.8} />
                 {t("back")}
               </button>
               {!ended ? (
@@ -227,7 +227,7 @@ function Quiz({ id, props }: UIBlockRenderProps<QuizProps>) {
                   className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 font-medium text-primary-foreground transition-opacity disabled:opacity-40"
                 >
                   {t("quizNext")}
-                  <ArrowRight className="size-3" strokeWidth={2} />
+                  <ArrowRight className="size-3.5" strokeWidth={2} />
                 </button>
               ) : null}
             </div>

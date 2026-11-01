@@ -685,11 +685,11 @@ export function ChatArea({
                       >
                         <span
                           className={cn(
-                            "pointer-events-none inline-flex size-4 items-center justify-center rounded-[5px] border border-border/70 bg-background/80 text-background transition-colors",
+                            "pointer-events-none inline-flex size-[1.125rem] items-center justify-center rounded-[5px] border border-border/70 bg-background/80 text-background transition-colors",
                             isSelected && "border-foreground bg-foreground",
                           )}
                         >
-                          {isSelected ? <Check className="size-3" strokeWidth={2} /> : null}
+                          {isSelected ? <Check className="size-3.5" strokeWidth={2} /> : null}
                         </span>
                       </div>
                       <div className="chat-screenshot-selectable-content pointer-events-none relative z-[1] pl-8 pr-2" inert>

@@ -251,7 +251,7 @@
     "accuracy": "Correct this time: {correct}/{total}",
     "comparison": {
       "title": "Matched concept comparison",
-      "denominator": "Compares valid answers from the same students on both forms. Missing submissions are listed separately, not counted as wrong.",
+      "denominator": "Valid answers from the same students on both forms; missing submissions listed separately.",
       "draft": "The retest is a draft. Review its questions before publishing.",
       "provisional": "Retest in progress. These results are provisional until it is closed.",
       "paired": "Both submitted",

@@ -84,9 +84,9 @@ export function ClassroomDetail({
                     </Badge>
                   ) : null}
                 </div>
-                <p className="mt-1 truncate text-sm text-muted-foreground">
-                  {selected.description || t("studentCount", { count: selected.studentCount })}
-                </p>
+                {selected.description ? (
+                  <p className="mt-1 truncate text-sm text-muted-foreground">{selected.description}</p>
+                ) : null}
               </div>
             </div>
             {canManage ? (
@@ -250,7 +250,7 @@ function StudentRow({
           aria-label={t("removeStudentAria", { name })}
           title={t("removeStudent")}
         >
-          {removing ? <Spinner className="size-3" /> : <X className="size-4" strokeWidth={1.6} />}
+          {removing ? <Spinner className="size-3.5" /> : <X className="size-4" strokeWidth={1.6} />}
         </Button>
       ) : null}
     </div>

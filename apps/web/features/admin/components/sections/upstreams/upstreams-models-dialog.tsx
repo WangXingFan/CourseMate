@@ -18,7 +18,6 @@ import {
   Dialog,
   DialogCollapsible,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogHeightTransition,
@@ -746,14 +745,12 @@ function RemoteModelsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         ref={setTooltipPortalContainer}
+        aria-describedby={undefined}
         className="w-[calc(100vw-2rem)] gap-0 overflow-visible p-0 sm:max-w-[680px]"
       >
         <DialogHeightTransition contentClassName="max-h-[min(92svh,840px)]">
           <DialogHeader className="shrink-0 px-5 pt-5 pb-3">
             <DialogTitle>{t("modelsDialog.syncTitle", { name: upstream?.name ?? "" })}</DialogTitle>
-            <DialogDescription>
-              {t("modelsDialog.syncDescription")}
-            </DialogDescription>
           </DialogHeader>
 
           <div className="shrink-0 px-5 pb-2">
@@ -1065,11 +1062,10 @@ function NewBindingDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-[520px]">
+      <DialogContent aria-describedby={undefined} className="gap-0 overflow-hidden p-0 sm:max-w-[520px]">
         <DialogHeightTransition contentClassName="max-h-[min(86vh,760px)]">
           <DialogHeader className="shrink-0 px-4 py-4">
             <DialogTitle>{t("modelsDialog.createBindingTitle")}</DialogTitle>
-            <DialogDescription>{t("modelsDialog.createBindingDescription")}</DialogDescription>
           </DialogHeader>
   
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-2">
@@ -1312,9 +1308,6 @@ export function UpstreamModelsDialog({
         <UpstreamModelsDialogContent>
             <DialogHeader className="shrink-0 px-4 py-4">
               <DialogTitle>{t("modelsDialog.manageTitle")}</DialogTitle>
-              <DialogDescription>
-                {t("modelsDialog.manageDescription")}
-              </DialogDescription>
             </DialogHeader>
             <div className="shrink-0 px-4 pb-3">
               <TableToolbar

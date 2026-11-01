@@ -187,7 +187,7 @@ function DataTable({ id, props }: UIBlockRenderProps<DataTableProps>) {
                 >
                   <button type="button" onClick={() => toggleSort(column.key)} className="inline-flex items-center gap-1 hover:text-foreground">
                     {column.label}
-                    <Icon className={cn("size-3", active ? "opacity-100" : "opacity-40")} strokeWidth={1.8} />
+                    <Icon className={cn("size-3.5", active ? "opacity-100" : "opacity-40")} strokeWidth={1.8} />
                   </button>
                 </TableHead>
               );

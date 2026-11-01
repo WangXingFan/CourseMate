@@ -877,11 +877,9 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                         autoBadgeLabel={t("sheet.permissionGroupsAutoBadge")}
                         onSelectedIDsChange={setManualPermissionGroupIDs}
                       />
-                      <p className={cn("text-xs leading-4", showPermissionGroupUnassigned ? "text-destructive" : "text-muted-foreground")}>
-                        {showPermissionGroupUnassigned
-                          ? t("sheet.permissionGroupsUnassigned")
-                          : t("sheet.permissionGroupsDescription")}
-                      </p>
+                      {showPermissionGroupUnassigned ? (
+                        <p className="text-xs leading-4 text-destructive">{t("sheet.permissionGroupsUnassigned")}</p>
+                      ) : null}
                     </div>
                   </FeatureGate>
 

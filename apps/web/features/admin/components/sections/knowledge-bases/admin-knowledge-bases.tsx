@@ -192,9 +192,9 @@ export function AdminKnowledgeBasesPage() {
                         <BookOpen className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.4} />
                         <div className="min-w-0">
                           <p className="truncate font-medium text-foreground">{item.name}</p>
-                          <p className="truncate text-sm leading-4 text-muted-foreground">
-                            {item.description || t("adminDefaultDescription")}
-                          </p>
+                          {item.description ? (
+                            <p className="truncate text-sm leading-4 text-muted-foreground">{item.description}</p>
+                          ) : null}
                         </div>
                       </div>
                     </TableCell>

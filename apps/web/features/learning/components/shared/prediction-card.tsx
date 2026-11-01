@@ -94,7 +94,7 @@ export function PredictionCard({
                   active ? "border-primary bg-primary text-primary-foreground" : "border-border",
                 )}
               >
-                {active ? <Check className="size-3" strokeWidth={2.4} /> : null}
+                {active ? <Check className="size-3.5" strokeWidth={2.4} /> : null}
               </span>
               {option.label}
             </button>
@@ -162,7 +162,7 @@ export function PredictionCard({
                     {result.code}
                   </code>
                   <Button type="button" size="xs" variant="outline" onClick={() => { void copyRecord(); }}>
-                    {copied ? <Check className="size-3" strokeWidth={2} /> : <Copy className="size-3" strokeWidth={1.8} />}
+                    {copied ? <Check className="size-3.5" strokeWidth={2} /> : <Copy className="size-3.5" strokeWidth={1.8} />}
                     {copied ? t("copied") : t("copyRecord")}
                   </Button>
                 </div>

@@ -103,13 +103,13 @@ export function LoginPage({ nextPath }: LoginPageProps) {
       : t("username");
   const alternativeTwoFactorMethod = twoFactorVerificationMethods.find((method) => method !== twoFactorVerificationMethod && method !== "none");
   const twoFactorUsesEmail = twoFactorVerificationMethod === "email";
-  const heading = mode === "register"
-    ? { title: t("hero.registerTitle"), hint: t("hero.registerHint") }
+  const headingTitle = mode === "register"
+    ? t("hero.registerTitle")
     : mode === "reset-password"
-      ? { title: t("hero.resetTitle"), hint: t("hero.resetHint") }
+      ? t("hero.resetTitle")
       : twoFactorChallengeToken
-        ? { title: t("hero.twoFactorTitle"), hint: t("hero.twoFactorHint") }
-        : { title: t("hero.welcome"), hint: t("hero.welcomeHint") };
+        ? t("hero.twoFactorTitle")
+        : t("hero.welcome");
 
   return (
     <main className="grid min-h-screen text-foreground lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]" aria-busy={!configReady}>
@@ -118,7 +118,7 @@ export function LoginPage({ nextPath }: LoginPageProps) {
       <LoginBrandMark />
       <div className="mx-auto my-auto w-full max-w-[380px] py-10">
         <header>
-          <h2 className="font-display text-[2.125rem] leading-tight font-normal tracking-[-0.01em]">{heading.title}</h2>
+          <h2 className="font-display text-[2.125rem] leading-tight font-normal tracking-[-0.01em]">{headingTitle}</h2>
         </header>
 
         <div

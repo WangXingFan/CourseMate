@@ -54,13 +54,13 @@ function DecisionTree({ id, props }: UIBlockRenderProps<DecisionTreeProps>) {
         <div className="flex shrink-0 items-center gap-3 text-xs text-muted-foreground">
           {path.length > 1 ? (
             <button type="button" onClick={() => { setDirection(-1); setPath((currentPath) => currentPath.slice(0, -1).map((step, index, all) => (index === all.length - 1 ? { nodeID: step.nodeID } : step))); }} className="inline-flex items-center gap-1 hover:text-foreground">
-              <ArrowLeft className="size-3" strokeWidth={1.8} />
+              <ArrowLeft className="size-3.5" strokeWidth={1.8} />
               {t("back")}
             </button>
           ) : null}
           {path.length > 1 ? (
             <button type="button" onClick={() => { setDirection(-1); setPath([{ nodeID: startID }]); }} className="inline-flex items-center gap-1 hover:text-foreground">
-              <RotateCcw className="size-3" strokeWidth={1.8} />
+              <RotateCcw className="size-3.5" strokeWidth={1.8} />
               {t("reset")}
             </button>
           ) : null}

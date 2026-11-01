@@ -69,7 +69,6 @@ export function ClassroomRollCallStage({ model }: { model: RollCallModel }) {
           <div className="relative max-w-xs">
             <span className="mx-auto mb-5 flex size-16 items-center justify-center rounded-full border border-primary/20 bg-background/80 text-primary shadow-sm"><Users aria-hidden className="size-7" strokeWidth={1.25} /></span>
             <h2 className="font-display text-2xl font-normal text-foreground">{!model.classrooms.length ? t("noClasses") : !model.students.length ? t("noStudents") : t("ready")}</h2>
-            {(!model.classrooms.length || !model.students.length) && <p className="mt-3 text-sm leading-6 text-muted-foreground">{t("emptyHint")}</p>}
           </div>
         )}
       </div>

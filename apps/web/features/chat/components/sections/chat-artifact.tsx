@@ -242,10 +242,10 @@ function ChatArtifactPanel({
               disabled={!canPreview}
               onClick={handleDownload}
             >
-              <Download className="size-3" />
+              <Download className="size-3.5" />
             </ArtifactActionButton>
             <ArtifactActionButton label={t("close")} onClick={onClose}>
-              <X className="size-3" />
+              <X className="size-3.5" />
             </ArtifactActionButton>
           </div>
         </div>

@@ -69,9 +69,6 @@ export function ClassroomActivities({ model }: { model: ClassroomActivitiesModel
         </div>
       </div>
 
-      <div className="shrink-0 border-b border-border/40 bg-muted/20 px-3 py-3 md:px-5">
-        <p className="text-sm font-medium">{t("workflow.title")}</p>
-      </div>
       {list.loading && list.quizzes.length === 0 ? (
         <div className="flex min-h-0 flex-1 items-center justify-center text-muted-foreground">
           <Spinner className="size-4" />
@@ -100,7 +97,6 @@ export function ClassroomActivities({ model }: { model: ClassroomActivitiesModel
             <BarChart3 className="size-5 text-muted-foreground" strokeWidth={1.5} />
           </div>
           <p className="text-sm font-medium text-foreground">{t("empty")}</p>
-          <p className="max-w-sm text-sm leading-6 text-muted-foreground">{t("emptyDescription")}</p>
           <Button type="button" size="sm" className="mt-1" onClick={createDialog.open}>
             <Plus className="size-3.5" strokeWidth={1.8} />
             {t("create")}

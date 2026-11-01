@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { MapPinned, Monitor, Moon, ShieldCheck, Sun } from "lucide-react";
-import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -27,23 +26,6 @@ import type { ThemePreset } from "@/shared/model/theme";
 import { createQRCodeDataURL } from "@/shared/lib/qr-code";
 import { isOneOf } from "@/shared/lib/type-guards";
 import { cn } from "@/lib/utils";
-
-const ADMIN_ONBOARDING_TIPS = [
-  "adminTips.upstreams",
-  "adminTips.files",
-  "adminTips.context",
-  "adminTips.trace",
-  "adminTips.admin",
-  "adminTips.ops",
-];
-
-const USER_ONBOARDING_TIPS = [
-  "userTips.profile",
-  "userTips.models",
-  "userTips.files",
-  "userTips.conversation",
-  "userTips.twoFactor",
-];
 
 const isAppLocale = isOneOf(APP_LOCALES);
 
@@ -108,58 +90,16 @@ const ONBOARDING_THEME_PRESETS: ThemePreset[] = [
   "sepia",
 ];
 
-function OnboardingFeatureCarousel({
-  activeIndex,
-  logos,
-  tips,
-}: {
-  activeIndex: number;
-  logos: LogoCarouselLogo[];
-  tips: string[];
-}) {
-  const t = useTranslations("guide");
-  const activeTip = tips[activeIndex] ?? tips[0];
-
+function OnboardingFeatureCarousel({ logos }: { logos: LogoCarouselLogo[] }) {
   return (
-    <div className="flex h-full flex-col overflow-hidden">
-      <div className="flex min-h-[238px] flex-1 items-center justify-center px-5">
-        <LogoCarousel
-          logos={logos}
-          columnCount={3}
-          className="w-full justify-center space-x-4"
-          columnClassName="h-24 w-24 md:h-24 md:w-24"
-          logoClassName="h-12 w-12 md:h-14 md:w-14"
-        />
-      </div>
-      <div className="space-y-3 p-3">
-        <div className="flex w-full gap-1.5 overflow-hidden">
-          {tips.map((_, index) => (
-            <div className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-border/80" key={index}>
-              {index === activeIndex ? (
-                <motion.span
-                  key={`onboarding-progress-${activeIndex}`}
-                  className="block h-full origin-left rounded-full bg-foreground/75"
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 4.2, ease: "linear" }}
-                />
-              ) : null}
-            </div>
-          ))}
-        </div>
-        <div className="flex h-[3.75rem] items-start overflow-hidden">
-          <motion.p
-            key={activeTip}
-            className="text-xs font-medium leading-5 tracking-normal text-foreground"
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
-          >
-            {t(activeTip)}
-          </motion.p>
-        </div>
-      </div>
+    <div className="flex h-full items-center justify-center overflow-hidden px-5">
+      <LogoCarousel
+        logos={logos}
+        columnCount={3}
+        className="w-full justify-center space-x-4"
+        columnClassName="h-24 w-24 md:h-24 md:w-24"
+        logoClassName="h-12 w-12 md:h-14 md:w-14"
+      />
     </div>
   );
 }
@@ -200,43 +140,17 @@ export function InitialSecurityGuard() {
     savePersonalizationStep,
     finishInitialSecurity,
   } = useAuthInitialSecurity();
-  const [activeTipIndex, setActiveTipIndex] = React.useState(0);
   const qrCodeDataURL = React.useMemo(
     () => (twoFactorSetup?.otpauthURL ? createQRCodeDataURL(twoFactorSetup.otpauthURL, 3, t("aria.twoFactorQRCode")) : ""),
     [t, twoFactorSetup?.otpauthURL],
   );
   const qrCodeUnavailable = Boolean(twoFactorSetup?.otpauthURL && !qrCodeDataURL);
   const isAdminGuide = viewer?.role === "admin" || viewer?.role === "superadmin";
-  const activeOnboardingTips = isAdminGuide ? ADMIN_ONBOARDING_TIPS : USER_ONBOARDING_TIPS;
-
-  React.useEffect(() => {
-    if (!guideActive) {
-      return;
-    }
-
-    const timer = window.setInterval(() => {
-      setActiveTipIndex((current) => (current + 1) % activeOnboardingTips.length);
-    }, 4200);
-
-    return () => window.clearInterval(timer);
-  }, [activeOnboardingTips.length, guideActive]);
-
-  React.useEffect(() => {
-    setActiveTipIndex(0);
-  }, [isAdminGuide]);
 
   const isBootstrapAdminSetup = Boolean(viewer?.mustResetPassword);
   const welcomeTitle = isAdminGuide ? t("adminWelcomeTitle") : t("userWelcomeTitle");
-  const welcomeDescription = isAdminGuide
-    ? t("adminWelcomeDescription")
-    : t("userWelcomeDescription");
   const accountTitle = isBootstrapAdminSetup ? t("bootstrapTitle") : isAdminGuide ? t("adminAccountTitle") : t("userAccountTitle");
   const twoFactorTitle = isAdminGuide ? t("adminTwoFactorTitle") : t("userTwoFactorTitle");
-  const readyDescription = isBootstrapAdminSetup
-    ? t("bootstrapReadyDescription")
-    : isAdminGuide
-      ? t("adminReadyDescription")
-      : t("userReadyDescription");
 
   const copyMessages = React.useMemo(() => ({
     copied: t("toasts.copied", { label: "" }).trim(),
@@ -268,15 +182,11 @@ export function InitialSecurityGuard() {
         className="grid w-full max-w-[820px] animate-in gap-0 overflow-hidden rounded-2xl border border-border/60 bg-background p-0 shadow-xl fade-in-0 zoom-in-95 duration-200 md:h-[430px] md:grid-cols-[0.95fr_1.05fr]"
       >
         <div className="hidden h-full flex-col bg-muted/15 p-4 md:flex">
-          <OnboardingFeatureCarousel
-            activeIndex={activeTipIndex}
-            logos={ONBOARDING_LOGO_ITEMS}
-            tips={activeOnboardingTips}
-          />
+          <OnboardingFeatureCarousel logos={ONBOARDING_LOGO_ITEMS} />
         </div>
 
         <div className="flex h-full flex-col p-5">
-          <div className="flex items-center justify-between gap-4">
+          <div className="mb-6 flex items-center justify-between gap-4 md:mb-0">
             <AppLogo width={86} height={24} priority className="h-6 w-auto" />
             <Onboarding.StepIndicator variant="dots" dotClassName="bg-muted-foreground/25" />
           </div>
@@ -286,12 +196,7 @@ export function InitialSecurityGuard() {
             <div className="flex flex-1 items-center">
               <div className="w-full space-y-6">
                 <Onboarding.Header className="text-left">
-                  <div className="space-y-3">
-                    <h2 className="text-2xl font-semibold tracking-normal">{welcomeTitle}</h2>
-                    <p className="text-sm leading-6 text-muted-foreground">
-                      {welcomeDescription}
-                    </p>
-                  </div>
+                  <h2 className="font-display text-2xl font-normal tracking-[-0.01em]">{welcomeTitle}</h2>
                 </Onboarding.Header>
 
                 <div className="w-full space-y-2">
@@ -341,7 +246,7 @@ export function InitialSecurityGuard() {
                 <div className="w-full space-y-6">
                   <Onboarding.Header className="text-left">
                     <div className="space-y-2">
-                      <h2 className="text-2xl font-semibold tracking-normal">
+                      <h2 className="font-display text-2xl font-normal tracking-[-0.01em]">
                         {accountTitle}
                       </h2>
                     </div>
@@ -421,7 +326,7 @@ export function InitialSecurityGuard() {
               <div className="w-full space-y-5">
                 <Onboarding.Header className="text-left">
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-semibold tracking-normal">{twoFactorTitle}</h2>
+                    <h2 className="font-display text-2xl font-normal tracking-[-0.01em]">{twoFactorTitle}</h2>
                   </div>
                 </Onboarding.Header>
 
@@ -523,7 +428,7 @@ export function InitialSecurityGuard() {
               <div className="w-full space-y-5">
                 <Onboarding.Header className="text-left">
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-semibold tracking-normal">{t("labels.themePreset")}</h2>
+                    <h2 className="font-display text-2xl font-normal tracking-[-0.01em]">{t("labels.themePreset")}</h2>
                   </div>
                 </Onboarding.Header>
 
@@ -563,7 +468,7 @@ export function InitialSecurityGuard() {
               <div className="w-full space-y-5">
                 <Onboarding.Header className="text-left">
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-semibold tracking-normal">{t("personalizationTitle")}</h2>
+                    <h2 className="font-display text-2xl font-normal tracking-[-0.01em]">{t("personalizationTitle")}</h2>
                   </div>
                 </Onboarding.Header>
 
@@ -643,10 +548,10 @@ export function InitialSecurityGuard() {
               <div className="w-full space-y-5">
                 <Onboarding.Header className="text-left">
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-semibold tracking-normal">{t("ready")}</h2>
-                    <p className="text-xs text-muted-foreground">
-                      {readyDescription}
-                    </p>
+                    <h2 className="font-display text-2xl font-normal tracking-[-0.01em]">{t("ready")}</h2>
+                    {isBootstrapAdminSetup ? (
+                      <p className="text-sm leading-6 text-muted-foreground">{t("bootstrapReadyDescription")}</p>
+                    ) : null}
                   </div>
                 </Onboarding.Header>
 

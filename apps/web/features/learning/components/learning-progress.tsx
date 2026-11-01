@@ -47,7 +47,6 @@ export function LearningProgress() {
             <Readout label={t("unresolved")} value={unresolved.length} />
             <Readout label={t("corrected")} value={mistakes.length - unresolved.length} />
           </div>
-          <p className="text-sm leading-6 text-muted-foreground">{t("scope")}</p>
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-3">
             <div role="group" aria-label={t("viewLabel")} className="flex gap-1">
               <Button size="sm" variant={tab === "mistakes" ? "secondary" : "ghost"} aria-pressed={tab === "mistakes"} onClick={() => setTab("mistakes")}><BookOpen className="size-3.5" />{t("mistakes")}</Button>

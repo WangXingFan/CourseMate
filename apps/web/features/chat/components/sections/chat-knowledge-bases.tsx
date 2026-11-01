@@ -226,7 +226,7 @@ export function ChatKnowledgeBases({
               disabled={loadingMore}
               onClick={loadMore}
             >
-              {loadingMore ? <Spinner className="size-3" /> : t("knowledgeBaseLoadMore")}
+              {loadingMore ? <Spinner className="size-3.5" /> : t("knowledgeBaseLoadMore")}
             </button>
           ) : null}
         </div>

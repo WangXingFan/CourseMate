@@ -253,7 +253,7 @@ function FootnoteBackrefContent({
 
   return (
     <>
-      <CornerUpLeft className="size-3" strokeWidth={2} />
+      <CornerUpLeft className="size-3.5" strokeWidth={2} />
       {shouldShowIndex ? <span className="ml-0.5 text-2xs leading-none">{backrefIndex}</span> : null}
       <span className="sr-only">{t("back")}</span>
     </>
@@ -385,7 +385,7 @@ function CodeBlockActions({
       >
         {canOpenArtifact ? (
           <CodeBlockActionButton label={artifactCopy("openPreview")} onClick={handleOpenArtifact}>
-            <Eye className="size-3" strokeWidth={2.25} />
+            <Eye className="size-3.5" strokeWidth={2.25} />
           </CodeBlockActionButton>
         ) : null}
         <Tooltip>
@@ -398,8 +398,8 @@ function CodeBlockActions({
               className={CODE_BLOCK_ACTION_BUTTON_CLASSNAME}
               value={copyCode}
               messages={{ copied: commonActions("copied"), failed: commonErrors("copyFailed") }}
-              copyIcon={<StreamdownCopyIcon className="size-3" />}
-              copiedIcon={<StreamdownCheckIcon className="size-3" />}
+              copyIcon={<StreamdownCopyIcon className="size-3.5" />}
+              copiedIcon={<StreamdownCheckIcon className="size-3.5" />}
               aria-label={commonActions("copy")}
             />
           </TooltipTrigger>

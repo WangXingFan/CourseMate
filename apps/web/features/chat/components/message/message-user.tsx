@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { CircleAlert } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
@@ -225,11 +224,7 @@ export function ChatMessageUser({
               }}
             />
           </div>
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex gap-2 pt-2 text-xs text-muted-foreground">
-              <CircleAlert className="mt-0.5 size-4 shrink-0" />
-              <span>{tMessages("editModes")}</span>
-            </div>
+          <div className="flex items-center justify-end gap-4">
             <div className="mt-3 flex items-center justify-center gap-2">
               <Button
                 variant="ghost"

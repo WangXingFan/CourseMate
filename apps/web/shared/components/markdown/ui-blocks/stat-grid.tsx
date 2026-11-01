@@ -66,7 +66,7 @@ function StatCard({ item, periods }: { item: StatItem; periods?: string[] }) {
         <div className="mt-auto flex items-center justify-between gap-2 pt-1.5">
           {item.delta ? (
             <span className={cn("inline-flex min-w-0 items-center gap-1 truncate text-xs tabular-nums", trendClass)}>
-              <Trend className="size-3 shrink-0" strokeWidth={2} />
+              <Trend className="size-3.5 shrink-0" strokeWidth={2} />
               {item.delta}
             </span>
           ) : (

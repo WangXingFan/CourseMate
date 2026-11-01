@@ -61,7 +61,7 @@ export function createStreamdownTooltipIcon(
       <Tooltip open={open} onOpenChange={setOpen}>
         <TooltipTrigger asChild>
           <span ref={triggerRef} className="-m-1 inline-flex size-5 items-center justify-center">
-            <Icon {...props} className={cn("size-3", className)} />
+            <Icon {...props} className={cn("size-3.5", className)} />
           </span>
         </TooltipTrigger>
         <TooltipContent className="z-[60]" side="top" sideOffset={6}>

@@ -292,7 +292,7 @@
       "after_class": "Transfer your learning and examine common errors"
     },
     "choose": "Choose one answer",
-    "inputHelp": "Enter decimals, scientific notation or fractions such as 9/4, using the indicated unit. Fill numeric coefficients instead of typing LaTeX or full derivations. Tolerance: 10⁻⁶ × max(1, |reference value|).",
+    "inputHelp": "Numbers in the given unit: decimals, scientific notation or fractions like 9/4, no LaTeX. Tolerance ≤ 10⁻⁶ × max(1, |reference|).",
     "preview": "Formula preview: ",
     "correct": "Correct",
     "expected": "Reference: {value}",
@@ -454,7 +454,7 @@
       "saveTrial": "Save this trial",
       "trialSaved": "Parameters, measurements and figure snapshot saved.",
       "trialRecords": "Trial records",
-      "noTrials": "No saved trials. Adjust parameters, inspect the plot, then save a trial.",
+      "noTrials": "No trials yet",
       "sequence": "No. / time",
       "measurements": "Parameters, answers and measurements",
       "actions": "Actions",

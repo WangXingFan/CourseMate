@@ -72,7 +72,7 @@ function NavigationSearchResultItem({
           <span className="min-w-0 truncate font-medium text-foreground">{item.title}</span>
           {item.status === "archived" ? (
             <span className="inline-flex shrink-0 items-center gap-1 text-xs text-foreground/45">
-              <Archive aria-hidden className="!size-3" strokeWidth={1.4} />
+              <Archive aria-hidden className="!size-3.5" strokeWidth={1.4} />
               <span className="sr-only">{navigationT("archived")}</span>
             </span>
           ) : null}
@@ -439,11 +439,11 @@ export function NavigationSearch({
           <div className="flex items-center gap-4">
             <span className="inline-flex items-center gap-1.5">
               <KbdGroup>
-                <Kbd className="h-4 min-w-4 px-0.5">
-                  <ArrowUp aria-hidden className="size-2.5" strokeWidth={1.5} />
+                <Kbd className="h-5 min-w-5 px-0.5">
+                  <ArrowUp aria-hidden className="size-3.5" strokeWidth={1.5} />
                 </Kbd>
-                <Kbd className="h-4 min-w-4 px-0.5">
-                  <ArrowDown aria-hidden className="size-2.5" strokeWidth={1.5} />
+                <Kbd className="h-5 min-w-5 px-0.5">
+                  <ArrowDown aria-hidden className="size-3.5" strokeWidth={1.5} />
                 </Kbd>
               </KbdGroup>
               {navigationT("searchShortcutNavigate")}

@@ -69,7 +69,7 @@ function Calculator({ id, props }: UIBlockRenderProps<CalculatorProps>) {
         </div>
         {dirty ? (
           <button type="button" onClick={() => setValues(defaults)} className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-            <RotateCcw className="size-3" strokeWidth={1.8} />
+            <RotateCcw className="size-3.5" strokeWidth={1.8} />
             {t("reset")}
           </button>
         ) : null}

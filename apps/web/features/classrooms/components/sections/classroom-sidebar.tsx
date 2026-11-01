@@ -122,7 +122,7 @@ export function ClassroomSidebar({
                         {item.name}
                       </span>
                       <span className="flex shrink-0 items-center gap-1 text-2xs text-muted-foreground">
-                        <Users className="size-3" strokeWidth={1.6} />
+                        <Users className="size-3.5" strokeWidth={1.6} />
                         {item.studentCount}
                       </span>
                     </div>

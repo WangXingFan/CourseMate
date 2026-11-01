@@ -292,7 +292,7 @@
       "after_class": "迁移应用，辨析易错之处"
     },
     "choose": "选择一个答案",
-    "inputHelp": "支持小数、科学计数法和分数（如 9/4）。按给定单位填写数值；字母、LaTeX 和完整推导无需输入。允许误差为 10⁻⁶ × max(1, |参考值|)。",
+    "inputHelp": "按给定单位填数值，可用小数、科学计数法或分数（如 9/4），无需 LaTeX；误差 ≤ 10⁻⁶ × max(1, |参考值|)。",
     "preview": "公式预览：",
     "correct": "正确",
     "expected": "参考值：{value}",
@@ -454,7 +454,7 @@
       "saveTrial": "保存本次试验",
       "trialSaved": "已保存参数、测量结果与图形快照。",
       "trialRecords": "参数与测量记录",
-      "noTrials": "还没有保存试验。调整参数、观察图形后，点击“保存本次试验”。",
+      "noTrials": "暂无试验记录",
       "sequence": "序号 / 时间",
       "measurements": "参数、模板与测量",
       "actions": "操作",

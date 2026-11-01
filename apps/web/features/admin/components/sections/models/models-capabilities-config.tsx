@@ -9,7 +9,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogHeightTransition,
@@ -469,11 +468,10 @@ export function ModelCapabilitiesGuideButton({ t }: { t: (key: string) => string
           {t("sheet.capabilitiesGuide.button")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-[760px]">
+      <DialogContent aria-describedby={undefined} className="gap-0 overflow-hidden p-0 sm:max-w-[760px]">
         <DialogHeightTransition contentClassName="max-h-[min(86vh,760px)]">
           <DialogHeader className="shrink-0 px-4 py-4">
             <DialogTitle>{t("sheet.capabilitiesGuide.title")}</DialogTitle>
-            <DialogDescription>{t("sheet.capabilitiesGuide.description")}</DialogDescription>
           </DialogHeader>
 
           <Tabs defaultValue="defaults" className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-4 py-2">
@@ -684,13 +682,12 @@ export function ModelCapabilitiesQuickConfig({
       >
         {triggerLabel ?? t("sheet.capabilitiesQuick.button")}
       </Button>
-      <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-[760px]">
+      <DialogContent aria-describedby={undefined} className="gap-0 overflow-hidden p-0 sm:max-w-[760px]">
         <DialogHeightTransition contentClassName="h-[min(86vh,760px)] max-h-[min(86vh,760px)]">
           <DialogHeader className="shrink-0 px-4 py-4">
             <div className="flex min-w-0 items-start justify-between gap-3">
               <div className="min-w-0 space-y-1.5">
                 <DialogTitle>{t("sheet.capabilitiesQuick.title")}</DialogTitle>
-                <DialogDescription>{t("sheet.capabilitiesQuick.description")}</DialogDescription>
               </div>
               <Button
                 type="button"

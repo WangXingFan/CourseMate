@@ -463,7 +463,7 @@ function FunctionPlot({ id, props }: UIBlockRenderProps<FunctionPlotProps>) {
         {props.title ? <h3 className="text-lg font-semibold leading-7">{props.title}</h3> : <span />}
         {dirty ? (
           <button type="button" onClick={reset} className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-            <RotateCcw className="size-3" strokeWidth={1.8} />
+            <RotateCcw className="size-3.5" strokeWidth={1.8} />
             {t("reset")}
           </button>
         ) : null}

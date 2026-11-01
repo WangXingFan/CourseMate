@@ -287,13 +287,6 @@ export function EmailSecurityDialog({
   const disabled = pending || sendingCode;
   const currentVerificationMethod = bootstrap ? "none" : (currentVerificationMethods[0] ?? "none");
   const needsStagedVerification = emailVerificationEnabled || currentVerificationMethod !== "none";
-  const description = bootstrap
-    ? emailVerificationEnabled
-      ? t("description.bootstrapVerified")
-      : t("description.saveOnly")
-    : emailVerificationEnabled
-      ? t("description.change")
-      : t("description.saveOnly");
 
   const handleSave = React.useCallback(() => {
     void (bootstrap
@@ -330,10 +323,9 @@ export function EmailSecurityDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent aria-describedby={undefined} className="sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle>{bootstrap ? t("title.set") : t("title.change")}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-1">

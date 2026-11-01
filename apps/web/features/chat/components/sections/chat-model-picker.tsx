@@ -167,12 +167,12 @@ function ModelMenuScrollContainer({
       </div>
       {hasMoreAbove ? (
         <div className="pointer-events-none absolute inset-x-0 top-0 flex h-4 items-start justify-center rounded-t-lg bg-gradient-to-b from-popover via-popover/80 to-transparent pt-px">
-          <ChevronDown className="size-3 rotate-180 text-muted-foreground/75" strokeWidth={1.8} />
+          <ChevronDown className="size-3.5 rotate-180 text-muted-foreground/75" strokeWidth={1.8} />
         </div>
       ) : null}
       {hasMoreBelow ? (
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex h-4 items-end justify-center rounded-b-lg bg-gradient-to-t from-popover via-popover/80 to-transparent pb-px">
-          <ChevronDown className="size-3 text-muted-foreground/75" strokeWidth={1.8} />
+          <ChevronDown className="size-3.5 text-muted-foreground/75" strokeWidth={1.8} />
         </div>
       ) : null}
     </div>
@@ -218,8 +218,8 @@ function ChatModelMenuItem({
         <span className="min-w-0 flex-1 truncate leading-4">
           {modelLabel}
         </span>
-        <span className="flex size-3 shrink-0 items-center justify-center">
-          {selected ? <Check className="size-3 text-current" strokeWidth={1.7} /> : null}
+        <span className="flex size-3.5 shrink-0 items-center justify-center">
+          {selected ? <Check className="size-3.5 text-current" strokeWidth={1.7} /> : null}
         </span>
       </button>
     </div>

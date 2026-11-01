@@ -38,7 +38,7 @@ export function ExperimentTutor({ seed, selected, ...input }: ExperimentTutorPro
           <Badge variant="secondary">{t(model.data.source === "model" ? "model" : "curated")}</Badge>
           <p className="whitespace-pre-wrap">{model.data.summary}</p>
           <ol className="list-decimal space-y-1 pl-5">{model.data.steps.map((step, index) => <li key={`${index}:${step}`}>{step}</li>)}</ol>
-          <div className="flex flex-wrap gap-3">{model.data.citations.map((citation) => <Link key={citation.id} href={citation.href} className="inline-flex items-center gap-1 text-primary underline underline-offset-4"><BookOpen className="size-3" />{citation.chapter} · {citation.section}</Link>)}</div>
+          <div className="flex flex-wrap gap-3">{model.data.citations.map((citation) => <Link key={citation.id} href={citation.href} className="inline-flex items-center gap-1 text-primary underline underline-offset-4"><BookOpen className="size-3.5" />{citation.chapter} · {citation.section}</Link>)}</div>
         </div> : null}
       </div>
     </section>
