@@ -921,7 +921,7 @@
     "independent": "Independent",
     "concepts": "Concepts",
     "operationTitle": "Operation checkpoints · 5 points",
-    "operationHint": "Set the prescribed parameters in the workspace and enter your readings. All conditions must pass to earn a checkpoint. Unlimited retries; no duplicate credit. You can start the formal assessment before completing practice.",
+    "operationHint": "Adjust the parameters in the workspace on this page, click the plot to read both coordinates, then complete O1 and O2. All conditions must pass to earn a checkpoint. Unlimited retries; no duplicate credit. You can start the formal assessment before completing practice.",
     "passed": "Passed",
     "notPassed": "Not passed",
     "formalTitle": "Formal assessment · 20 points",
@@ -983,6 +983,10 @@
       "awaiting": "Awaiting assessment",
       "missing": "Formal assessment missing (zero points)",
       "graded": "Assessment graded"
-    }
+    },
+    "workbench": "Lab workspace",
+    "resetWorkbench": "Reset parameters",
+    "plotView": "Plot views",
+    "poleZeroView": "Poles and zeros"
   }
 }

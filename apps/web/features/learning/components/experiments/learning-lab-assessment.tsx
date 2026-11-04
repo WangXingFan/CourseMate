@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,8 @@ import { LessonShell } from "@/features/learning/components/shared/lesson-shell"
 import { LabAssessmentForm, LabAssessmentResult } from "@/features/learning/components/experiments/lab-assessment-paper";
 import { useLearningLabAssessment } from "@/features/learning/hooks/use-learning-lab-assessment";
 import { useAuthSession } from "@/shared/auth/auth-session-context";
+
+const LabAssessmentWorkbench = dynamic(() => import("./lab-assessment-workbench").then((module) => module.LabAssessmentWorkbench), { ssr: false, loading: () => <Spinner /> });
 
 export function LearningLabAssessment() {
   const { accessToken, user } = useAuthSession();
@@ -45,9 +48,10 @@ function AssessmentWorkspace({ accessToken, accountID }: { accessToken: string; 
       </div>
       <nav className="mb-7 grid gap-2 sm:grid-cols-2" aria-label={t("task")}>{model.data.tasks.map((item) => <a key={item.id} href={`#${item.id}`} aria-current={taskID === item.id ? "page" : undefined} className={`flex items-center justify-between gap-3 border-b border-border px-3 py-4 text-sm ${taskID === item.id ? "bg-accent shadow-[inset_2px_0_0_var(--primary)]" : "hover:bg-accent/50"}`}><span>{item.id} · {item.title}</span><span className="shrink-0 font-mono">{item.total}/25</span></a>)}</nav>
       {task && <section key={`${model.data.assignment.id}:${taskID}`} className="space-y-7">
-        <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="font-display text-2xl font-normal">{task.title}</h2><span className="text-sm text-muted-foreground">{t(`status.${task.status}`)}</span><Button asChild variant="outline"><Link href={`/learn/experiments/workspace#task/${task.id}`}>{t("practice")}</Link></Button></div>
+        <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="font-display text-2xl font-normal">{task.title}</h2><span className="text-sm text-muted-foreground">{t(`status.${task.status}`)}</span></div>
         <dl className="grid grid-cols-3 gap-3">{[["operations", task.operations, 5], ["independent", task.independent, 15], ["concepts", task.concepts, 5]].map(([key, value, max]) => <div key={key} className="border-l-2 border-border pl-3"><dt className="text-sm text-muted-foreground">{t(String(key))}</dt><dd className="mt-2 font-mono text-lg">{value}/{max}</dd></div>)}</dl>
         <div className="space-y-3"><h3 className="font-display text-xl font-normal">{t("operationTitle")}</h3><p className="text-sm leading-7 text-muted-foreground">{t("operationHint")}</p>
+          {active && <LabAssessmentWorkbench taskID={taskID} />}
           {task.checkpoints.map((point) => <details key={point.id} className="rounded-lg border border-border p-4 sm:p-5"><summary className="cursor-pointer text-sm">{point.id} · {t("points", { value: point.maximum })} · {t(point.passed ? "passed" : "notPassed")}</summary><div className="mt-5 space-y-5">
             <LabAssessmentForm key={`${point.id}:${point.passed}`} paper={point.paper} initial={point.answers} draftKey={`lab:${accountID}:${model.data?.assignment.id}:${taskID}:${point.id}`} checkpoint pending={model.pending} disabled={!active || point.passed} onSubmit={(answers) => model.checkpoint(taskID, point.id, answers)} />
             {point.result && <LabAssessmentResult paper={point.paper} result={point.result} conditionsOnly />}

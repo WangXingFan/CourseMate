@@ -9,7 +9,7 @@ import { MathFormula } from "@/features/learning/components/shared/math-formula"
 import { PoleZeroPlot } from "@/features/learning/components/shared/pole-zero-plot";
 import type { NativeLabModel } from "@/features/learning/hooks/use-learning-native-lab";
 import { exportLabPNG } from "@/features/learning/model/virtual-lab-native";
-import type { LabParameter, LabValue, VirtualLabEngine } from "@/public/vendor/signal-lab/core.mjs";
+import type { VirtualLabEngine } from "@/public/vendor/signal-lab/core.mjs";
 import { LAB_FLOWS, firstMissingLabStep, hasLabStepEvidence, labMeasurementAt, labPredictionDiffers, labStepTrials, labTrialPrediction, matchesLabStep, resumeLabStep, validLabObservation } from "@/features/learning/model/virtual-lab-flow";
 import { labAnswerFormulas, labObservationFormulas, labObservationPlotKey } from "@/features/learning/model/virtual-lab-presentation";
 import { NativeLabComparison } from "./native-lab-comparison";
@@ -19,27 +19,11 @@ import { labReadingUnit, parseLabReading } from "@/features/learning/model/virtu
 import { NativeLabPredictionSummary } from "./native-lab-prediction-summary";
 import { NativeLabPython } from "./native-lab-python";
 import { NativeLabPlot } from "./native-lab-plot";
+import { NativeLabParameter } from "./native-lab-parameter";
 import { NativeLabTrials } from "./native-lab-records";
 
 const inputClass = "w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50 aria-invalid:border-destructive";
 
-function ParameterControl({ spec, value, onChange, taskID }: { spec: LabParameter; value: LabValue; onChange: (value: LabValue) => boolean; taskID: string }) {
-  const t = useTranslations("learning.virtualLab.native");
-  const [text, setText] = useState(String(value));
-  const [invalid, setInvalid] = useState(false);
-  useEffect(() => { setText(String(value)); setInvalid(false); }, [value]);
-  const id = `param-${spec.key}`;
-  return <div className="space-y-2">
-    <label htmlFor={id} className="flex items-center justify-between gap-2 text-sm"><span>{spec.label}</span><span className="font-mono text-sm text-muted-foreground">{spec.unit}</span></label>
-    {spec.type === "select" ? <select id={id} value={value} className={inputClass} onChange={(event) => onChange(event.target.value)}>{spec.options?.map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select> : <>
-      <input id={id} type="number" min={spec.min} max={spec.max} step={spec.step} value={text} aria-invalid={invalid} aria-label={t("parameterExact", { label: spec.label })} className={inputClass}
-        onChange={(event) => { const next = event.target.value; setText(next); setInvalid(!next.trim() || !onChange(Number(next))); }} />
-      <input type="range" min={spec.min} max={spec.max} step={spec.step} value={value} aria-label={t("parameterSlider", { label: spec.label })} className="h-1.5 w-full cursor-pointer accent-primary"
-        onChange={(event) => { let next = Number(event.target.value); if (taskID === "L1-1" && spec.key === "a" && Math.abs(next) < 0.25) next = Number(value) > 0 ? -0.25 : 0.25; if (onChange(next)) { setText(String(next)); setInvalid(false); } }} />
-      {invalid && <p role="alert" className="text-sm leading-6 text-destructive">{t("invalidParameter")}</p>}
-    </>}
-  </div>;
-}
 
 function AnswerControl({ label, fieldKey, placeholder, value, onChange, isText = false }: { label: string; fieldKey: string; placeholder: string; value: string; onChange: (value: string) => boolean; isText?: boolean }) {
   const t = useTranslations("learning.virtualLab.native");
@@ -186,7 +170,7 @@ export function NativeLabTask({ model, engine, taskID }: { model: NativeLabModel
         <h2 className="min-w-0 flex-1 text-base leading-7">{f(`tasks.${taskID}.steps.${step.key}`)}</h2>
         {setupChanged && !step.initial && <Button variant="ghost" size="sm" onClick={() => attempt(() => applyStep(stepIndex))}><RotateCcw aria-hidden className="size-4" />{f("resetStep")}</Button>}
       </div>
-      {!!step.controls?.length && <div className="grid max-w-xl gap-4 sm:grid-cols-2">{task.params.filter((spec) => step.controls?.includes(spec.key)).map((spec) => <ParameterControl key={spec.key} taskID={taskID} spec={spec} value={record.params[spec.key]} onChange={(value) => model.updateParams(taskID, { [spec.key]: value })} />)}</div>}
+      {!!step.controls?.length && <div className="grid max-w-xl gap-4 sm:grid-cols-2">{task.params.filter((spec) => step.controls?.includes(spec.key)).map((spec) => <NativeLabParameter key={spec.key} taskID={taskID} spec={spec} value={record.params[spec.key]} onChange={(value) => model.updateParams(taskID, { [spec.key]: value })} />)}</div>}
       {step.predictedReadingKey && !readingEstimateRevealed && <div className="max-w-3xl" data-estimate-givens><NativeLabGivens engine={engine} taskID={taskID} params={record.params} /></div>}
       {step.predictedReadingKey && !readingEstimateRevealed && <fieldset className="max-w-xl min-w-0 space-y-3 border-t border-border pt-4" data-reading-prediction>
         <legend className="text-base font-medium">{f("estimateReading")}</legend>
@@ -234,7 +218,7 @@ export function NativeLabTask({ model, engine, taskID }: { model: NativeLabModel
         <Button data-action="trial" disabled={!!step.observation && !observationText.trim() || !!scene.answerFeedback?.some((item) => item.status === "missing")} onClick={() => attempt(saveTrial)}>{f("recordNext")}<ArrowRight aria-hidden className="size-4" /></Button>
       </div>
       <details className="border-t border-border pt-4 text-sm" data-lab-tools><summary className="cursor-pointer">{f("tools")}</summary><div className="mt-5 space-y-5">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{task.params.filter((spec) => !step.controls?.includes(spec.key)).map((spec) => <ParameterControl key={spec.key} taskID={taskID} spec={spec} value={record.params[spec.key]} onChange={(value) => model.updateParams(taskID, { [spec.key]: value })} />)}</div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{task.params.filter((spec) => !step.controls?.includes(spec.key)).map((spec) => <NativeLabParameter key={spec.key} taskID={taskID} spec={spec} value={record.params[spec.key]} onChange={(value) => model.updateParams(taskID, { [spec.key]: value })} />)}</div>
         {scene.plots.filter((plot) => plot.key !== plotted.key).map(plotFigure)}
         <p className="overflow-x-auto border-l-2 border-seal pl-4 font-mono leading-7">{scene.formula}</p><p className="leading-7">{scene.note}</p>
         {scene.answerFeedback?.map((item) => <p key={item.key} className="leading-6">{item.label}：{item.message}</p>)}
