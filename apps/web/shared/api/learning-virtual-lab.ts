@@ -1,5 +1,9 @@
-import type { LearningVirtualLabGuideResponse, LearningVirtualLabRequest, LearningVirtualLabResponse } from "@deeix/api-contract";
+import type { LearningVirtualLabAccessResponse, LearningVirtualLabGuideResponse, LearningVirtualLabRequest, LearningVirtualLabResponse } from "@deeix/api-contract";
 import { authedRequest } from "@/shared/api/authed-client";
+
+export function getLearningVirtualLabAccess(accessToken: string, signal?: AbortSignal) {
+  return authedRequest<LearningVirtualLabAccessResponse>("/api/v1/learning/virtual-lab/access", { accessToken, signal });
+}
 
 export function getLearningVirtualLab(accessToken: string, signal?: AbortSignal) {
   return authedRequest<LearningVirtualLabResponse>("/api/v1/learning/virtual-lab", { accessToken, signal });

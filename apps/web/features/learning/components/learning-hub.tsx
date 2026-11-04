@@ -18,6 +18,7 @@ const PATHS = [
 ] as const;
 
 const PRACTICE_LINKS = [
+  { id: "mastery", href: "/learn/mastery", icon: Lightbulb },
   { id: "quiz", href: "/learn/quiz", icon: Gamepad2 },
   { id: "progress", href: "/learn/progress", icon: Trophy },
 ] as const;

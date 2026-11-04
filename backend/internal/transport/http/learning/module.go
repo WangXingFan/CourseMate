@@ -26,12 +26,14 @@ func (m *Module) RegisterRoutes(group *gin.RouterGroup) {
 	group.POST("/learning/quiz/rounds/:id/answers", m.AnswerQuiz)
 	group.POST("/learning/quiz/rounds/:id/finish", m.FinishQuiz)
 	group.GET("/learning/virtual-lab", m.VirtualLab)
+	group.GET("/learning/virtual-lab/access", m.VirtualLabAccess)
 	group.PUT("/learning/virtual-lab", m.SaveVirtualLab)
 	group.GET("/learning/virtual-lab/guide", m.VirtualLabGuide)
 	group.GET("/learning/course", m.Course)
 	group.GET("/learning/lessons/:id", m.CourseLesson)
 	group.POST("/learning/lesson-attempts", m.SubmitLesson)
 	group.GET("/learning/progress", m.Progress)
+	group.GET("/learning/mastery", m.Mastery)
 	group.POST("/learning/attempts", m.Submit)
 	group.POST("/learning/reviews", m.SubmitReview)
 	group.GET("/learning/variants/:id", m.Variant)
@@ -275,7 +277,7 @@ func reviewDue(stage int, next *time.Time) bool {
 
 func writeError(c *gin.Context, err error) {
 	switch {
-	case errors.Is(err, app.ErrCourseAssigned):
+	case errors.Is(err, app.ErrCourseAssigned), errors.Is(err, app.ErrVirtualLabClosed):
 		response.ErrorFrom(c, http.StatusForbidden, err)
 	case errors.Is(err, app.ErrInvalid):
 		response.ErrorFrom(c, http.StatusBadRequest, err)

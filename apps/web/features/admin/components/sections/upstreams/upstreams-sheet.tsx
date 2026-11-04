@@ -626,9 +626,9 @@ export function UpstreamSheet({
                                   }}
                                 >
                                   {markedForDeletion ? (
-                                    <RotateCcw className="size-3.5 stroke-1" />
+                                    <RotateCcw className="size-3.5 stroke-[1.6]" />
                                   ) : (
-                                    <Trash2 className="size-3.5 stroke-1" />
+                                    <Trash2 className="size-3.5 stroke-[1.6]" />
                                   )}
                                 </Button>
                               </TooltipTrigger>

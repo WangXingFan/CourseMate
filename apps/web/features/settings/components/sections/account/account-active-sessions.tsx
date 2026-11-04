@@ -106,7 +106,7 @@ export function AccountActiveSessionsSection({
                           disabled={revokingSessionID === session.sessionID}
                           aria-label={t("session.actions")}
                         >
-                          <MoreHorizontal className="size-3.5 stroke-1" />
+                          <MoreHorizontal className="size-3.5 stroke-[1.6]" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">

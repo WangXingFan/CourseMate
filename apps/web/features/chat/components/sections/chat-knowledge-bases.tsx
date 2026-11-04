@@ -203,7 +203,7 @@ export function ChatKnowledgeBases({
               >
                 <span className="flex min-w-0 flex-1 items-center gap-1.5">
                   {selected ? (
-                    <Check className="size-3.5 shrink-0 text-primary" strokeWidth={1.8} />
+                    <Check className="size-3.5 shrink-0 text-primary" strokeWidth={1.6} />
                   ) : (
                     <BookOpen className="size-3.5 shrink-0 text-muted-foreground" strokeWidth={1.6} />
                   )}

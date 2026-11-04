@@ -928,7 +928,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                           disabled={pending}
                           onClick={addBindRow}
                         >
-                          <Plus className="size-3.5 stroke-1" />
+                          <Plus className="size-3.5 stroke-[1.6]" />
                           {t("sources.addSource")}
                         </Button>
                       </div>
@@ -959,7 +959,7 @@ export function ModelSheet({ open, mode, target, models, vendors, displayGroups,
                                   onClick={() => removeBindRow(row.id)}
                                   aria-label={t("sources.removeSource")}
                                 >
-                                  <Trash2 className="size-3.5 stroke-1" />
+                                  <Trash2 className="size-3.5 stroke-[1.6]" />
                                 </Button>
                               </div>
 

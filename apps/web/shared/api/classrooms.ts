@@ -1,3 +1,4 @@
+import type { ClassroomExperimentRequest } from "@deeix/api-contract";
 import { authedRequest } from "@/shared/api/authed-client";
 import { pathParam } from "@/shared/api/http-client";
 import type {
@@ -208,4 +209,8 @@ export async function submitClassroomQuiz(
 
 export async function createClassroomQuizFollowup(accessToken: string, quizID: string) {
   return authedRequest<ClassroomQuizData>(`/api/v1/quizzes/${encodeURIComponent(quizID)}/followup`, { method: "POST", accessToken });
+}
+
+export function setClassroomExperiment(accessToken: string, classroomID: string, courseID: string, body: ClassroomExperimentRequest) {
+  return authedRequest<ClassroomMutationData>(`${CLASSROOMS_PATH}/${pathParam(classroomID)}/experiments/${pathParam(courseID)}`, { method: "PUT", accessToken, body }, true);
 }

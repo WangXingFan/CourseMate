@@ -38,7 +38,7 @@ function QuizEntry() {
   const practice = params.get("practice") === "mistakes";
   const questionID = params.get("question") ?? "";
   const topic = params.get("topic") ?? "";
-  if (!practice && !questionID) return <LearningQuizChallenge key={`${user?.publicID}`} />;
+  if (!practice && !questionID && !topic) return <LearningQuizChallenge key={`${user?.publicID}`} />;
   return <Quiz key={`${user?.publicID}:${practice}:${questionID}:${topic}`} practice={practice} questionID={questionID} topic={topic} />;
 }
 
@@ -51,7 +51,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
     if (questionID) return item.id === questionID;
     return (!topic || item.topic === topic) && (!practice || (item.latestWrong !== null && item.reviewStage < 5));
   });
-  const targeted = practice || Boolean(questionID);
+  const targeted = practice || Boolean(questionID) || Boolean(topic);
   const [phase, setPhase] = React.useState<Phase>("idle");
   const [order, setOrder] = React.useState<readonly string[]>([]);
   const [index, setIndex] = React.useState(0);
@@ -142,7 +142,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
             {model.data && !pool.length ? <p className="mt-3 text-sm leading-6 text-muted-foreground">{p("noPracticeQuestions")}</p> : null}
             <Button type="button" size="sm" className="mt-4" disabled={model.loading || !pool.length || model.pendingCount > 0} onClick={start}>
               {t("intro.start")}
-              <ArrowRight className="size-3.5" strokeWidth={1.8} />
+              <ArrowRight className="size-3.5" strokeWidth={1.6} />
             </Button>
           </LessonPanel>
         </div>
@@ -152,18 +152,18 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border/60 bg-card px-3 py-2">
             <Badge variant="secondary" className="gap-1 rounded-md font-mono text-xs font-normal tabular-nums">
-              <Timer className="size-4" strokeWidth={1.8} />
+              <Timer className="size-4" strokeWidth={1.6} />
               {targeted ? p("untimed") : formatTime(timeLeft)}
             </Badge>
             <Badge variant="outline" className="gap-1 rounded-md text-xs font-normal">
               {t("hud.progress", { current: index + 1, total: order.length })}
             </Badge>
             <Badge variant="outline" className="gap-1 rounded-md text-xs font-normal">
-              <ClipboardCheck className="size-4" strokeWidth={1.8} />
+              <ClipboardCheck className="size-4" strokeWidth={1.6} />
               {score}
             </Badge>
             <Badge variant="outline" className="gap-1 rounded-md text-xs font-normal">
-              <ListChecks className="size-4" strokeWidth={1.8} />
+              <ListChecks className="size-4" strokeWidth={1.6} />
               x{streak}
             </Badge>
             {!targeted ? <div className="ml-auto h-1 w-24 overflow-hidden rounded-full bg-muted">
@@ -201,8 +201,8 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
                       {String.fromCharCode(65 + optionIndex)}
                     </span>
                     <span className="flex-1">{t(`questions.${question.id}.option${optionIndex + 1}`)}</span>
-                    {isCorrect ? <CheckCircle2 className="size-3.5 text-primary" strokeWidth={1.8} /> : null}
-                    {isWrong ? <XCircle className="size-3.5 text-destructive" strokeWidth={1.8} /> : null}
+                    {isCorrect ? <CheckCircle2 className="size-3.5 text-primary" strokeWidth={1.6} /> : null}
+                    {isWrong ? <XCircle className="size-3.5 text-destructive" strokeWidth={1.6} /> : null}
                   </button>
                 );
               })}
@@ -212,7 +212,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
                 <p className="text-sm leading-6 text-muted-foreground">{t(`questions.${question.id}.explain`)}</p>
                 <Button type="button" size="sm" className="mt-2" disabled={model.pendingCount > 0} onClick={next}>
                   {index + 1 >= order.length ? t("question.finish") : t("question.next")}
-                  <ArrowRight className="size-3.5" strokeWidth={1.8} />
+                  <ArrowRight className="size-3.5" strokeWidth={1.6} />
                 </Button>
               </div>
             ) : null}
@@ -231,7 +231,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
               <Button type="button" size="sm" disabled={!pool.length || model.pendingCount > 0} onClick={start}>
-                <RotateCcw className="size-3.5" strokeWidth={1.8} />
+                <RotateCcw className="size-3.5" strokeWidth={1.6} />
                 {t("result.restart")}
               </Button>
               <Button type="button" size="sm" variant="outline" onClick={() => setPhase("idle")}>
@@ -249,9 +249,9 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
                   <li key={record.id} className="rounded-lg border border-border/50 bg-muted/15 px-3 py-2">
                     <div className="flex items-start gap-2">
                       {record.correct ? (
-                        <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-primary" strokeWidth={1.8} />
+                        <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-primary" strokeWidth={1.6} />
                       ) : (
-                        <XCircle className="mt-0.5 size-3.5 shrink-0 text-destructive" strokeWidth={1.8} />
+                        <XCircle className="mt-0.5 size-3.5 shrink-0 text-destructive" strokeWidth={1.6} />
                       )}
                       <div className="min-w-0 flex-1">
                         <p className="text-sm leading-6 text-foreground">{t(`questions.${record.id}.prompt`)}</p>

@@ -16,6 +16,7 @@ import {
   importClassroomStudentAccounts,
   removeClassroomStudent,
   updateClassroom,
+  setClassroomExperiment,
 } from "@/shared/api/classrooms";
 import type { ClassroomDTO, ClassroomStudentDTO, StudentCredentialDTO, StudentImportResultDTO } from "@/shared/api/classroom-types";
 
@@ -25,6 +26,7 @@ const CLASSROOM_DESCRIPTION_MAX_LENGTH = 255;
 export function useClassroomPage(accessToken: string, canManage: boolean) {
   const t = useTranslations("classrooms");
   const resolveErrorMessage = useLocalizedErrorMessage();
+  const [experimentPending, setExperimentPending] = React.useState("");
   const [items, setItems] = React.useState<ClassroomDTO[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [selectedID, setSelectedID] = React.useState("");
@@ -272,6 +274,19 @@ export function useClassroomPage(accessToken: string, canManage: boolean) {
     [accessToken, refresh, removingStudentID, resolveErrorMessage, selected, t],
   );
 
+  const setExperiment = async (courseID: string, open: boolean) => {
+    if (!canManage || !selected || experimentPending) return;
+    const classroomID = selected.id;
+    setExperimentPending(`${classroomID}:${courseID}`);
+    try {
+      await setClassroomExperiment(accessToken, classroomID, courseID, { open });
+      setItems((current) => current.map((item) => item.id === classroomID ? { ...item, experiments: { ...item.experiments, [courseID]: open } } : item));
+      toast.success(t(open ? "experiments.opened" : "experiments.closed"));
+    } catch (error) {
+      toast.error(t("experiments.failed"), { description: resolveErrorMessage(error) });
+    } finally { setExperimentPending(""); }
+  };
+
   const selectClassroom = React.useCallback((id: string) => {
     setSelectedID(id);
     setMobileView("detail");
@@ -292,6 +307,8 @@ export function useClassroomPage(accessToken: string, canManage: boolean) {
     },
     detail: {
       selected,
+      experimentPending,
+      setExperiment,
       students,
       studentsLoading,
       mobileView,

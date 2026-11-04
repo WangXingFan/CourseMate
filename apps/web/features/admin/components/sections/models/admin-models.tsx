@@ -357,7 +357,7 @@ export function AdminModelsPage() {
           bulkContent={
             <div className="space-y-1">
               <BulkActionControlRow
-                icon={<Tags className="size-4 stroke-1" />}
+                icon={<Tags className="size-4 stroke-[1.6]" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("kinds")}
                 disabled={models.loading || models.batchApplying || models.selectedModels.length === 0 || !models.batchKindsDisplay}
@@ -370,7 +370,7 @@ export function AdminModelsPage() {
               </BulkActionControlRow>
 
               <BulkActionControlRow
-                icon={<Layers3 className="size-4 stroke-1" />}
+                icon={<Layers3 className="size-4 stroke-[1.6]" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("displayGroup")}
                 disabled={models.loading || models.batchApplying || models.selectedModels.length === 0 || !models.batchDisplayGroupID}
@@ -397,7 +397,7 @@ export function AdminModelsPage() {
               </BulkActionControlRow>
 
               <BulkActionControlRow
-                icon={<Cable className="size-4 stroke-1" />}
+                icon={<Cable className="size-4 stroke-[1.6]" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("protocol")}
                 disabled={models.loading || models.batchApplying || models.selectedModels.length === 0 || !models.batchProtocol}
@@ -423,7 +423,7 @@ export function AdminModelsPage() {
               </BulkActionControlRow>
 
               <BulkActionControlRow
-                icon={<Maximize2 className="size-4 stroke-1" />}
+                icon={<Maximize2 className="size-4 stroke-[1.6]" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("contextWindow")}
                 disabled={
@@ -441,7 +441,7 @@ export function AdminModelsPage() {
               </BulkActionControlRow>
 
               <BulkActionControlRow
-                icon={<Building2 className="size-4 stroke-1" />}
+                icon={<Building2 className="size-4 stroke-[1.6]" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("vendor")}
                 disabled={models.loading || models.batchApplying || models.selectedModels.length === 0 || !models.batchVendor}
@@ -465,7 +465,7 @@ export function AdminModelsPage() {
               </BulkActionControlRow>
 
               <BulkActionControlRow
-                icon={<ToggleLeft className="size-4 stroke-1" />}
+                icon={<ToggleLeft className="size-4 stroke-[1.6]" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("status")}
                 disabled={models.loading || models.batchApplying || models.selectedModels.length === 0 || !models.batchStatus}
@@ -495,7 +495,7 @@ export function AdminModelsPage() {
             {
               key: "delete-models",
               label: t("actions.bulkDelete"),
-              icon: <Trash2 className="size-3.5 stroke-1" />,
+              icon: <Trash2 className="size-3.5 stroke-[1.6]" />,
               onClick: models.handleRequestBulkDelete,
             },
           ]}
@@ -509,9 +509,10 @@ export function AdminModelsPage() {
             className="h-9 gap-1 text-sm"
             onClick={() => setPresentationOpen(true)}
             disabled={presentation.loading || presentation.vendors.length === 0}
+            aria-label={t("actions.managePresentation")}
           >
-            <Layers3 className="size-3.5 stroke-1" />
-            {t("actions.managePresentation")}
+            <Layers3 className="size-4" strokeWidth={1.6} aria-hidden />
+            <span className="hidden sm:inline">{t("actions.managePresentation")}</span>
           </Button>
           <Button
             type="button"
@@ -520,9 +521,10 @@ export function AdminModelsPage() {
             className="h-9 gap-1 text-sm"
             onClick={() => setOrderOpen(true)}
             disabled={models.loading}
+            aria-label={t("actions.displayOrder")}
           >
-            <ListOrdered className="size-3.5 stroke-1" />
-            {t("actions.displayOrder")}
+            <ListOrdered className="size-4" strokeWidth={1.6} aria-hidden />
+            <span className="hidden sm:inline">{t("actions.displayOrder")}</span>
           </Button>
           <Button
             type="button"
@@ -530,9 +532,10 @@ export function AdminModelsPage() {
             className="h-9 gap-1 text-sm"
             onClick={() => setCreateOpen(true)}
             disabled={models.loading || presentation.loading || presentation.vendors.length === 0}
+            aria-label={t("actions.create")}
           >
-            <Plus className="size-3.5 stroke-1" />
-            {t("actions.create")}
+            <Plus className="size-4" strokeWidth={1.6} aria-hidden />
+            <span className="hidden sm:inline">{t("actions.create")}</span>
           </Button>
         </TableToolbar>
 

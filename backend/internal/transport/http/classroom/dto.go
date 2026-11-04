@@ -4,12 +4,13 @@ import "time"
 
 // ClassroomResponse 是班级列表和详情共用的公开视图。
 type ClassroomResponse struct {
-	ID           string    `json:"id"`
-	Name         string    `json:"name"`
-	Description  string    `json:"description"`
-	TeacherName  string    `json:"teacherName"`
-	StudentCount int64     `json:"studentCount"`
-	CreatedAt    time.Time `json:"createdAt"`
+	ID           string          `json:"id"`
+	Name         string          `json:"name"`
+	Description  string          `json:"description"`
+	TeacherName  string          `json:"teacherName"`
+	StudentCount int64           `json:"studentCount"`
+	Experiments  map[string]bool `json:"experiments"`
+	CreatedAt    time.Time       `json:"createdAt"`
 }
 
 // ClassroomListResponse 是班级列表响应。

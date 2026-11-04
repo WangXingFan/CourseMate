@@ -152,7 +152,7 @@ export function ChatUIComponents({
                       <Icon className={cn("size-3.5 shrink-0", selected ? "text-primary" : "text-muted-foreground")} strokeWidth={1.6} />
                       <span className="min-w-0 flex-1 truncate text-xs font-medium text-current">{label.title}</span>
                       {component.scope !== "builtin" ? <span className="shrink-0 text-2xs leading-none text-muted-foreground">{t(`uiComponentScope.${component.scope}`)}</span> : null}
-                      <Check className={cn("size-3.5 shrink-0 text-primary transition-opacity", selected ? "opacity-100" : "opacity-0")} strokeWidth={2} />
+                      <Check className={cn("size-3.5 shrink-0 text-primary transition-opacity", selected ? "opacity-100" : "opacity-0")} strokeWidth={1.6} />
                     </button>
                   );
                 })

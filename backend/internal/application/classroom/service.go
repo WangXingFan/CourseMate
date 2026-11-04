@@ -18,8 +18,9 @@ type userReader interface {
 }
 
 type Service struct {
-	repo  repository.ClassroomRepository
-	users userReader
+	repo    repository.ClassroomRepository
+	users   userReader
+	mastery masteryReader
 }
 
 func NewService(repo repository.ClassroomRepository, users userReader) *Service {

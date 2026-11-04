@@ -6,6 +6,7 @@
 # %%
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy import signal
 from scipy.integrate import quad, solve_ivp
 
 # %% [markdown]
@@ -51,7 +52,7 @@ if __name__ == "__main__":
     plt.show()
 
 # %% [markdown]
-# ## L3-2 · 通过微分方程独立计算零状态响应
+# ## L3-2 · 一阶系统响应
 # 方程 y' + y = input(t)。先推 H(s)、X(s)、Y(s)，再将自己的解与数值曲线比较。
 # TODO：测量 y(1) 与首次达到 0.9 的时间；解释步长对测量的影响。
 
@@ -85,7 +86,7 @@ if __name__ == "__main__":
     plt.show()
 
 # %% [markdown]
-# ## L3-3 · 改变初值，数值验证响应分解
+# ### 非零初值与响应分解
 # 练习：对 y0=0、0.5、2 分别运行，检查起点、方向及长期值。
 # TODO：独立推导时保留 sY-y0；用 np.interp 读 t=1，并计算分量相加的误差。
 
@@ -106,6 +107,81 @@ if __name__ == "__main__":
     plt.ylabel("y(t)")
     plt.legend()
     plt.show()
+
+# %% [markdown]
+# ## L3-3 · 心电陷波零极点
+# H(s)=(s²+ω₀²)/((s+α)²+ω₀²)，ω₀=2πf₀；沿用实验二的设计参数。
+# TODO：推导零点、极点、因果 ROC 与 h(t) 的非冲激部分，比较 α=5/60/-10。
+# α=0 时 H=1、零极点完全约消；α<0 时 H(jω) 只是代数截面，不是稳定频响。
+
+# %%
+def second_order_response(zeta=0.3, omega_n=3.0, dt=0.002):
+    if omega_n <= 0 or dt <= 0:
+        raise ValueError("omega_n and dt must be positive")
+    stable = zeta > 0
+    decay = omega_n*(zeta if zeta <= 1 else 1/(zeta+np.sqrt(zeta*zeta-1)))
+    end = min(120, max(10, 12/decay)) if stable else min(10, 7/max(1e-12, -decay))
+    t = np.linspace(0, end, int(np.ceil(end/dt))+1)
+    solution = solve_ivp(lambda _t, y: [y[1], omega_n**2*(1-y[0])-2*zeta*omega_n*y[1]],
+                         (0, end), [0, 0], t_eval=t, rtol=1e-9, atol=1e-11,
+                         max_step=min(dt, 0.02/omega_n))
+    if not solution.success:
+        raise RuntimeError(solution.message)
+    y = solution.y[0]
+    poles = np.roots([1, 2*zeta*omega_n, omega_n**2])
+    overshoot = max(0, float(np.max(y)-1)*100)
+    outside = np.flatnonzero(np.abs(y-1) > 0.02)
+    settling = None
+    if stable and outside.size and outside[-1] < len(t)-1:
+        i = outside[-1]
+        settling = float(t[i]+(t[i+1]-t[i])*(abs(y[i]-1)-0.02)/(abs(y[i]-1)-abs(y[i+1]-1)))
+    return t, y, poles, overshoot, settling
+
+
+def ecg_signal(t, interference=True):
+    """Local, normalized P/Q/R/S/T Gaussian teaching waveform; one beat/s."""
+    t = np.asarray(t)
+    value = 0.02 * np.sin(2*np.pi*5*t)
+    for offset in [-1, 0, 1]:
+        beat = np.floor(t) + offset
+        for amplitude, center, width in [(0.12, .2, .04), (-.15, .37, .012),
+                                         (1, .4, .012), (-.25, .43, .012), (.3, .65, .07)]:
+            value = value + amplitude*np.exp(-.5*((t-beat-center)/width)**2)
+    if interference:
+        value = value + .2*np.sin(2*np.pi*50*t)
+    return np.where(t >= 0, value, 0.0)
+
+
+def notch_poles(center=50.0, alpha=10.0, dt=.0001):
+    w0 = 2*np.pi*center
+    end = 2 if alpha > 0 else .5
+    t = np.linspace(0, end, int(np.ceil(end/dt))+1)
+    x = ecg_signal(t)
+    numerator, denominator = [1, 0, w0*w0], [1, 2*alpha, alpha*alpha+w0*w0]
+    _, y, _ = signal.lsim((numerator, denominator), U=x, T=t)
+    f = np.linspace(0, 100, 1001)
+    if alpha == 0:
+        zeros, poles, response = np.array([], dtype=complex), np.array([], dtype=complex), np.ones_like(f, dtype=complex)
+    else:
+        zeros, poles = np.roots(numerator), np.roots(denominator)
+        _, response = signal.freqs(numerator, denominator, worN=2*np.pi*f)
+    return t, x, y, zeros, poles, f, response
+
+
+if __name__ == "__main__":
+    for alpha in [5, 60, -10]:
+        t, x, y, zeros, poles, f, response = notch_poles(center=50, alpha=alpha)
+        fig, axes = plt.subplots(1, 3, figsize=(14, 4), layout="constrained")
+        axes[0].plot(t, y)
+        axes[0].set(xlabel="t (s)", ylabel="ECG output")
+        axes[1].scatter(zeros.real, zeros.imag, marker="o", facecolors="none", edgecolors="C0", label="Zeros")
+        axes[1].scatter(poles.real, poles.imag, marker="x", label="Poles")
+        axes[1].set(xlabel="Re(s)", ylabel="Im(s), rad/s")
+        axes[1].legend()
+        axes[2].plot(f, abs(response))
+        axes[2].set(xlabel="f (Hz)", ylabel="|H(j omega)|", title="Stable response" if alpha > 0 else "Algebraic slice only")
+        print("L3-3 alpha:", alpha, "zeros:", zeros, "poles:", poles)
+        plt.show()
 
 # %% [markdown]
 # ## L3-4 · 自己生成有限脉冲，寻找最短达标持续时间

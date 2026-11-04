@@ -61,10 +61,10 @@ function resolveProbeState(result: AdminLLMModelProbeResult): ModelProbeState {
 
 function statusTextClass(state: ModelProbeState) {
   return cn(
-    state === "success" && "text-emerald-700 dark:text-emerald-300",
+    state === "success" && "text-success",
     state === "error" && "text-destructive",
-    state === "timeout" && "text-amber-700 dark:text-amber-300",
-    state === "unsupported" && "text-amber-700 dark:text-amber-300",
+    state === "timeout" && "text-warning",
+    state === "unsupported" && "text-warning",
   );
 }
 
@@ -75,10 +75,10 @@ function StatusLine({ state }: { state: ModelProbeState }) {
       <span
         className={cn(
           "size-1.5 rounded-full",
-          state === "success" && "bg-emerald-500",
+          state === "success" && "bg-success",
           state === "error" && "bg-destructive",
-          state === "timeout" && "bg-amber-500",
-          state === "unsupported" && "bg-amber-500",
+          state === "timeout" && "bg-warning",
+          state === "unsupported" && "bg-warning",
         )}
         aria-hidden="true"
       />
@@ -259,7 +259,7 @@ export function ModelProbeDialog({
                       onClick={() => setActiveIndex((current) => Math.max(current - 1, 0))}
                       disabled={activeIndex === 0 || loading}
                     >
-                      <ChevronLeft className="size-3.5 stroke-1" />
+                      <ChevronLeft className="size-3.5 stroke-[1.6]" />
                     </Button>
                     <span className="min-w-10 text-center text-xs text-muted-foreground">
                       {t("resultCount", { current: activeIndex + 1, total: normalizedResults.length })}
@@ -273,7 +273,7 @@ export function ModelProbeDialog({
                       onClick={() => setActiveIndex((current) => Math.min(current + 1, normalizedResults.length - 1))}
                       disabled={activeIndex >= normalizedResults.length - 1 || loading}
                     >
-                      <ChevronRight className="size-3.5 stroke-1" />
+                      <ChevronRight className="size-3.5 stroke-[1.6]" />
                     </Button>
                   </div>
                 ) : null}

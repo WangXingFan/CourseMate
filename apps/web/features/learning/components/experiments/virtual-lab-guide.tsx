@@ -12,7 +12,7 @@ export function VirtualLabGuide() {
   return (
     <LessonShell title={t("guide")} className="max-w-6xl">
       {!allowed ? <p className="text-sm">{t("teacherOnly")}</p> : state?.failed ? (
-        <div><p className="mb-3 text-sm">{t("loadFailed")}</p><Button onClick={retry}>{t("retry")}</Button></div>
+        <div><p role="alert" className="mb-3 text-sm">{t("guideLoadFailed")}</p><Button onClick={retry}>{t("retry")}</Button></div>
       ) : state?.html ? (
         <NativeLabGuideDocument key={state.token} html={state.html} />
       ) : <p className="text-sm">{t("status.loading")}</p>}

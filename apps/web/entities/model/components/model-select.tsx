@@ -23,7 +23,7 @@ function ModelSelectIcon({
   if (!option.iconUrl && option.value === fallbackValue) {
     return (
       <span className="inline-flex size-3.5 shrink-0 items-center justify-center self-center text-muted-foreground">
-        <Sparkles className="size-3.5 stroke-1" />
+        <Sparkles className="size-3.5 stroke-[1.6]" />
         <span className="sr-only">{option.label}</span>
       </span>
     );

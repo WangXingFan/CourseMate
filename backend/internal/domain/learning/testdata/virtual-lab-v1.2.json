@@ -1,0 +1,1396 @@
+{
+  "schemaVersion": 2,
+  "appVersion": "1.2.0",
+  "createdAt": "2026-11-04T10:53:36.433Z",
+  "updatedAt": "2026-11-04T10:53:36.727Z",
+  "student": {
+    "name": "",
+    "number": "",
+    "classroom": ""
+  },
+  "tasks": {
+    "L1-1": {
+      "experimentId": "L1",
+      "taskId": "L1-1",
+      "params": {
+        "mode": "transform",
+        "A": 1,
+        "a": 1,
+        "shift": 0,
+        "delta": 0.2
+      },
+      "answers": {},
+      "prediction": "",
+      "predictionDraft": "",
+      "revisions": [],
+      "trials": [
+        {
+          "params": {
+            "mode": "transform",
+            "A": 1,
+            "a": 1,
+            "shift": 0,
+            "delta": 0.2
+          },
+          "answers": {},
+          "measurements": {
+            "supportStart": 0,
+            "supportEnd": 3,
+            "peakTime": 1,
+            "peak": 1
+          },
+          "time": "2026-11-04T10:53:36.436Z",
+          "units": {
+            "time": "s",
+            "amplitude": "归一化",
+            "area": "幅度·s",
+            "frequency": "Hz",
+            "phase": "场景标注的 rad 或 °"
+          },
+          "window": [
+            {
+              "key": "main",
+              "range": [
+                -0.5,
+                3.5
+              ]
+            }
+          ],
+          "cursor": null
+        }
+      ],
+      "derivation": "",
+      "analysis": "",
+      "python": {
+        "code": "",
+        "result": null
+      },
+      "figures": [
+        {
+          "params": {
+            "mode": "transform",
+            "A": 1,
+            "a": 1,
+            "shift": 0,
+            "delta": 0.2
+          },
+          "answers": {},
+          "time": "2026-11-04T10:53:36.436Z"
+        }
+      ],
+      "completion": {
+        "confirmed": false,
+        "confirmedAt": null
+      }
+    },
+    "L1-2": {
+      "experimentId": "L1",
+      "taskId": "L1-2",
+      "params": {
+        "kind": "affine",
+        "test": "linearity",
+        "x1": "step",
+        "x2": "step",
+        "alpha": 1,
+        "beta": 1,
+        "delay": 1
+      },
+      "answers": {
+        "evidence": "x1=step; x2=step; alpha=1; beta=1"
+      },
+      "prediction": "",
+      "predictionDraft": "",
+      "revisions": [],
+      "trials": [
+        {
+          "params": {
+            "kind": "affine",
+            "test": "linearity",
+            "x1": "step",
+            "x2": "step",
+            "alpha": 1,
+            "beta": 1,
+            "delay": 1
+          },
+          "answers": {
+            "evidence": "x1=step; x2=step; alpha=1; beta=1"
+          },
+          "measurements": {
+            "maxDifference": 1,
+            "comparison": "counterexample",
+            "window": [
+              -2,
+              5
+            ],
+            "answerStatus": [
+              {
+                "key": "evidence",
+                "label": "参数记录",
+                "status": "correct",
+                "message": "已复算"
+              }
+            ]
+          },
+          "time": "2026-11-04T10:53:36.439Z",
+          "units": {
+            "time": "s",
+            "amplitude": "归一化",
+            "area": "幅度·s",
+            "frequency": "Hz",
+            "phase": "场景标注的 rad 或 °"
+          },
+          "window": [
+            {
+              "key": "main",
+              "range": [
+                -2,
+                5
+              ]
+            },
+            {
+              "key": "difference",
+              "range": [
+                -2,
+                5
+              ]
+            }
+          ],
+          "cursor": null
+        }
+      ],
+      "derivation": "",
+      "analysis": "",
+      "python": {
+        "code": "",
+        "result": null
+      },
+      "figures": [
+        {
+          "params": {
+            "kind": "affine",
+            "test": "linearity",
+            "x1": "step",
+            "x2": "step",
+            "alpha": 1,
+            "beta": 1,
+            "delay": 1
+          },
+          "answers": {
+            "evidence": "x1=step; x2=step; alpha=1; beta=1"
+          },
+          "time": "2026-11-04T10:53:36.440Z"
+        }
+      ],
+      "completion": {
+        "confirmed": false,
+        "confirmedAt": null
+      }
+    },
+    "L1-3": {
+      "experimentId": "L1",
+      "taskId": "L1-3",
+      "params": {
+        "enabled": "on",
+        "A": 1,
+        "initial": 2
+      },
+      "answers": {},
+      "prediction": "",
+      "predictionDraft": "",
+      "revisions": [],
+      "trials": [
+        {
+          "params": {
+            "enabled": "on",
+            "A": 1,
+            "initial": 2
+          },
+          "answers": {},
+          "measurements": {
+            "initial": 2,
+            "limit": 1,
+            "decompositionError": 2.886579864025407e-15,
+            "atTimes": [
+              {
+                "t": 0,
+                "zeroInput": 2,
+                "zeroState": 0,
+                "total": 2
+              },
+              {
+                "t": 1,
+                "zeroInput": 0.7357588823428847,
+                "zeroState": 0.6321205588285577,
+                "total": 1.367879441171444
+              },
+              {
+                "t": 3,
+                "zeroInput": 0.09957413673572789,
+                "zeroState": 0.950212931632136,
+                "total": 1.0497870683678627
+              },
+              {
+                "t": 5,
+                "zeroInput": 0.013475893998170934,
+                "zeroState": 0.9932620530009145,
+                "total": 1.0067379469990883
+              }
+            ]
+          },
+          "time": "2026-11-04T10:53:36.443Z",
+          "units": {
+            "time": "s",
+            "amplitude": "归一化",
+            "area": "幅度·s",
+            "frequency": "Hz",
+            "phase": "场景标注的 rad 或 °"
+          },
+          "window": [
+            {
+              "key": "main",
+              "range": [
+                0,
+                5
+              ]
+            }
+          ],
+          "cursor": null
+        }
+      ],
+      "derivation": "",
+      "analysis": "",
+      "python": {
+        "code": "",
+        "result": null
+      },
+      "figures": [
+        {
+          "params": {
+            "enabled": "on",
+            "A": 1,
+            "initial": 2
+          },
+          "answers": {},
+          "time": "2026-11-04T10:53:36.443Z"
+        }
+      ],
+      "completion": {
+        "confirmed": false,
+        "confirmedAt": null
+      }
+    },
+    "L1-4": {
+      "experimentId": "L1",
+      "taskId": "L1-4",
+      "params": {
+        "kind": "ecg",
+        "time": 0.44,
+        "width": 0.08
+      },
+      "answers": {},
+      "prediction": "",
+      "predictionDraft": "",
+      "revisions": [],
+      "trials": [
+        {
+          "params": {
+            "kind": "rr",
+            "time": 0.5,
+            "width": 0.02
+          },
+          "answers": {},
+          "measurements": {
+            "time": 0.5,
+            "overlap": [
+              0,
+              0.5
+            ],
+            "integral": 0.5,
+            "reference": 0.5,
+            "error": 0
+          },
+          "time": "2026-11-04T10:53:36.444Z",
+          "units": {
+            "time": "s",
+            "amplitude": "归一化",
+            "area": "幅度·s",
+            "frequency": "Hz",
+            "phase": "场景标注的 rad 或 °"
+          },
+          "window": [
+            {
+              "key": "overlap",
+              "range": [
+                -2,
+                5.2
+              ]
+            },
+            {
+              "key": "output",
+              "range": [
+                -1,
+                5
+              ]
+            }
+          ],
+          "cursor": null
+        },
+        {
+          "params": {
+            "kind": "ecg",
+            "time": 0.44,
+            "width": 0.08
+          },
+          "answers": {},
+          "measurements": {
+            "time": 0.44,
+            "integral": 0.2565830215230869,
+            "reference": 0.256585173413954,
+            "error": 0.000002151890867108097,
+            "delay": 0.04
+          },
+          "time": "2026-11-04T10:53:36.716Z",
+          "units": {
+            "time": "s",
+            "amplitude": "归一化",
+            "area": "幅度·s",
+            "frequency": "Hz",
+            "phase": "场景标注的 rad 或 °"
+          },
+          "window": [
+            {
+              "key": "overlap",
+              "range": [
+                0.32,
+                0.48
+              ]
+            },
+            {
+              "key": "product",
+              "range": [
+                0.32,
+                0.48
+              ]
+            },
+            {
+              "key": "output",
+              "range": [
+                0,
+                2
+              ]
+            }
+          ],
+          "cursor": null
+        }
+      ],
+      "derivation": "",
+      "analysis": "",
+      "python": {
+        "code": "",
+        "result": null
+      },
+      "figures": [
+        {
+          "params": {
+            "kind": "rr",
+            "time": 0.5,
+            "width": 0.02
+          },
+          "answers": {},
+          "time": "2026-11-04T10:53:36.444Z"
+        },
+        {
+          "params": {
+            "kind": "ecg",
+            "time": 0.44,
+            "width": 0.08
+          },
+          "answers": {},
+          "time": "2026-11-04T10:53:36.716Z"
+        }
+      ],
+      "completion": {
+        "confirmed": false,
+        "confirmedAt": null
+      }
+    },
+    "L2-1": {
+      "experimentId": "L2",
+      "taskId": "L2-1",
+      "params": {
+        "K": "1",
+        "showComponents": "on"
+      },
+      "answers": {},
+      "prediction": "",
+      "predictionDraft": "",
+      "revisions": [],
+      "trials": [
+        {
+          "params": {
+            "K": "1",
+            "showComponents": "on"
+          },
+          "answers": {},
+          "measurements": {
+            "K": 1,
+            "termCount": 1,
+            "highestFrequency": 10,
+            "amplitudes": [
+              {
+                "k": 1,
+                "frequency": 10,
+                "amplitude": 1.2732395447351628
+              }
+            ],
+            "maximum": 1.2732395447351628,
+            "overshootRelativeToJump": 0.13661977236758138
+          },
+          "time": "2026-11-04T10:53:36.447Z",
+          "units": {
+            "time": "s",
+            "amplitude": "归一化",
+            "area": "幅度·s",
+            "frequency": "Hz",
+            "phase": "场景标注的 rad 或 °"
+          },
+          "window": [
+            {
+              "key": "main",
+              "range": [
+                0,
+                0.4
+              ]
+            },
+            {
+              "key": "spectrum",
+              "range": [
+                0,
+                160
+              ]
+            },
+            {
+              "key": "harmonics",
+              "range": [
+                0,
+                0.1
+              ]
+            }
+          ],
+          "cursor": null
+        }
+      ],
+      "derivation": "",
+      "analysis": "",
+      "python": {
+        "code": "",
+        "result": null
+      },
+      "figures": [
+        {
+          "params": {
+            "K": "1",
+            "showComponents": "on"
+          },
+          "answers": {},
+          "time": "2026-11-04T10:53:36.447Z"
+        }
+      ],
+      "completion": {
+        "confirmed": false,
+        "confirmedAt": null
+      }
+    },
+    "L2-2": {
+      "experimentId": "L2",
+      "taskId": "L2-2",
+      "params": {
+        "A": 1,
+        "T": 1,
+        "center": 0
+      },
+      "answers": {},
+      "prediction": "",
+      "predictionDraft": "",
+      "revisions": [],
+      "trials": [
+        {
+          "params": {
+            "A": 1,
+            "T": 1,
+            "center": 0
+          },
+          "answers": {},
+          "measurements": {
+            "firstZero": 1,
+            "zeroFrequency": 1,
+            "mainLobeWidth": 2,
+            "phaseAtQuarter": 0
+          },
+          "time": "2026-11-04T10:53:36.448Z",
+          "units": {
+            "time": "s",
+            "amplitude": "归一化",
+            "area": "幅度·s",
+            "frequency": "Hz",
+            "phase": "场景标注的 rad 或 °"
+          },
+          "window": [
+            {
+              "key": "main",
+              "range": [
+                -3,
+                3
+              ]
+            },
+            {
+              "key": "magnitude",
+              "range": [
+                -8,
+                8
+              ]
+            },
+            {
+              "key": "phase",
+              "range": [
+                -8,
+                8
+              ]
+            }
+          ],
+          "cursor": null
+        }
+      ],
+      "derivation": "",
+      "analysis": "",
+      "python": {
+        "code": "",
+        "result": null
+      },
+      "figures": [
+        {
+          "params": {
+            "A": 1,
+            "T": 1,
+            "center": 0
+          },
+          "answers": {},
+          "time": "2026-11-04T10:53:36.448Z"
+        }
+      ],
+      "completion": {
+        "confirmed": false,
+        "confirmedAt": null
+      }
+    },
+    "L2-3": {
+      "experimentId": "L2",
+      "taskId": "L2-3",
+      "params": {
+        "filterType": "notch",
+        "fc": 20,
+        "center": 50,
+        "alpha": 10
+      },
+      "answers": {
+        "minOrder": "2"
+      },
+      "prediction": "",
+      "predictionDraft": "",
+      "revisions": [],
+      "trials": [
+        {
+          "params": {
+            "filterType": "lowpass",
+            "fc": 20,
+            "center": 50,
+            "alpha": 10
+          },
+          "answers": {
+            "minOrder": ""
+          },
+          "measurements": {
+            "cutoff": 20,
+            "center": 50,
+            "alpha": 10,
+            "components": [
+              {
+                "frequency": 10,
+                "ratio": 0.8944363860733076,
+                "phase": -26.567407342499777,
+                "theoryRatio": 0.8944271909999159
+              },
+              {
+                "frequency": 50,
+                "ratio": 0.37148614400167507,
+                "phase": -68.21037250358025,
+                "theoryRatio": 0.37139067635410367
+              }
+            ],
+            "passed": false,
+            "stable": true,
+            "measureTime": 0,
+            "yAtTime": 0,
+            "answerStatus": []
+          },
+          "time": "2026-11-04T10:53:36.464Z",
+          "units": {
+            "time": "s",
+            "amplitude": "归一化",
+            "area": "幅度·s",
+            "frequency": "Hz",
+            "phase": "场景标注的 rad 或 °"
+          },
+          "window": [
+            {
+              "key": "main",
+              "range": [
+                0,
+                2
+              ]
+            },
+            {
+              "key": "frequency",
+              "range": [
+                0,
+                100
+              ]
+            },
+            {
+              "key": "transient",
+              "range": [
+                0,
+                0.5
+              ]
+            }
+          ],
+          "cursor": null
+        },
+        {
+          "params": {
+            "filterType": "notch",
+            "fc": 20,
+            "center": 50,
+            "alpha": 10
+          },
+          "answers": {
+            "minOrder": "2"
+          },
+          "measurements": {
+            "cutoff": 20,
+            "center": 50,
+            "alpha": 10,
+            "components": [
+              {
+                "frequency": 10,
+                "ratio": 0.9988580207847533,
+                "phase": -0.7590633022280096,
+                "theoryRatio": 0.998858020779801
+              },
+              {
+                "frequency": 50,
+                "ratio": 0.000009995702438542163,
+                "phase": null,
+                "theoryRatio": 0
+              }
+            ],
+            "passed": true,
+            "stable": true,
+            "measureTime": 0,
+            "yAtTime": 0.0000015651943322731023,
+            "answerStatus": [
+              {
+                "key": "minOrder",
+                "label": "最低可行阶数",
+                "status": "correct",
+                "message": "一致"
+              }
+            ]
+          },
+          "time": "2026-11-04T10:53:36.720Z",
+          "units": {
+            "time": "s",
+            "amplitude": "归一化",
+            "area": "幅度·s",
+            "frequency": "Hz",
+            "phase": "场景标注的 rad 或 °"
+          },
+          "window": [
+            {
+              "key": "main",
+              "range": [
+                0,
+                2
+              ]
+            },
+            {
+              "key": "frequency",
+              "range": [
+                0,
+                100
+              ]
+            },
+            {
+              "key": "transient",
+              "range": [
+                0,
+                0.5
+              ]
+            }
+          ],
+          "cursor": null
+        }
+      ],
+      "derivation": "",
+      "analysis": "",
+      "python": {
+        "code": "",
+        "result": null
+      },
+      "figures": [
+        {
+          "params": {
+            "filterType": "lowpass",
+            "fc": 20,
+            "center": 50,
+            "alpha": 10
+          },
+          "answers": {
+            "minOrder": ""
+          },
+          "time": "2026-11-04T10:53:36.464Z"
+        },
+        {
+          "params": {
+            "filterType": "notch",
+            "fc": 20,
+            "center": 50,
+            "alpha": 10
+          },
+          "answers": {
+            "minOrder": "2"
+          },
+          "time": "2026-11-04T10:53:36.720Z"
+        }
+      ],
+      "completion": {
+        "confirmed": false,
+        "confirmedAt": null
+      }
+    },
+    "L2-4": {
+      "experimentId": "L2",
+      "taskId": "L2-4",
+      "params": {
+        "fs": "100",
+        "candidate": 5,
+        "mode": "base",
+        "antiAlias": "off",
+        "filterOrder": "2",
+        "filterCutoff": 200
+      },
+      "answers": {},
+      "prediction": "",
+      "predictionDraft": "",
+      "revisions": [],
+      "trials": [
+        {
+          "params": {
+            "fs": "100",
+            "candidate": 5,
+            "mode": "base",
+            "antiAlias": "off",
+            "filterOrder": "2",
+            "filterCutoff": 200
+          },
+          "answers": {},
+          "measurements": {
+            "sampleRate": 100,
+            "candidate": 5,
+            "sampleDifference": 2,
+            "reconstructionError": 0.000035170307353671326,
+            "sampleCount": 841,
+            "displayWindow": [
+              0,
+              0.4
+            ],
+            "aliasing": false
+          },
+          "time": "2026-11-04T10:53:36.506Z",
+          "units": {
+            "time": "s",
+            "amplitude": "归一化",
+            "area": "幅度·s",
+            "frequency": "Hz",
+            "phase": "场景标注的 rad 或 °"
+          },
+          "window": [
+            {
+              "key": "main",
+              "range": [
+                0,
+                0.4
+              ]
+            }
+          ],
+          "cursor": null
+        }
+      ],
+      "derivation": "",
+      "analysis": "",
+      "python": {
+        "code": "",
+        "result": null
+      },
+      "figures": [
+        {
+          "params": {
+            "fs": "100",
+            "candidate": 5,
+            "mode": "base",
+            "antiAlias": "off",
+            "filterOrder": "2",
+            "filterCutoff": 200
+          },
+          "answers": {},
+          "time": "2026-11-04T10:53:36.506Z"
+        }
+      ],
+      "completion": {
+        "confirmed": false,
+        "confirmedAt": null
+      }
+    },
+    "L3-1": {
+      "experimentId": "L3",
+      "taskId": "L3-1",
+      "params": {
+        "mode": "exp",
+        "A": 1,
+        "a": 1,
+        "T": 1,
+        "start": 1
+      },
+      "answers": {
+        "coefficient": "1",
+        "denShift": "1",
+        "delay1": "0",
+        "delay2": ""
+      },
+      "prediction": "",
+      "predictionDraft": "",
+      "revisions": [],
+      "trials": [
+        {
+          "params": {
+            "mode": "exp",
+            "A": 1,
+            "a": 1,
+            "T": 1,
+            "start": 1
+          },
+          "answers": {
+            "coefficient": "1",
+            "denShift": "1",
+            "delay1": "0",
+            "delay2": ""
+          },
+          "measurements": {
+            "model": "exp",
+            "support": [
+              0,
+              null
+            ],
+            "answerStatus": [
+              {
+                "key": "coefficient",
+                "label": "幅度系数",
+                "status": "correct",
+                "message": "此项与当前模型一致"
+              },
+              {
+                "key": "denShift",
+                "label": "分母常数",
+                "status": "correct",
+                "message": "此项与当前模型一致"
+              },
+              {
+                "key": "delay1",
+                "label": "第一时移",
+                "status": "correct",
+                "message": "此项与当前模型一致"
+              }
+            ],
+            "studentExpression": "学生模板：1·e^(−0s)/(s+1)"
+          },
+          "time": "2026-11-04T10:53:36.506Z",
+          "units": {
+            "time": "s",
+            "amplitude": "归一化",
+            "area": "幅度·s",
+            "frequency": "Hz",
+            "phase": "场景标注的 rad 或 °"
+          },
+          "window": [
+            {
+              "key": "main",
+              "range": [
+                -0.5,
+                6
+              ]
+            }
+          ],
+          "cursor": null
+        }
+      ],
+      "derivation": "",
+      "analysis": "",
+      "python": {
+        "code": "",
+        "result": null
+      },
+      "figures": [
+        {
+          "params": {
+            "mode": "exp",
+            "A": 1,
+            "a": 1,
+            "T": 1,
+            "start": 1
+          },
+          "answers": {
+            "coefficient": "1",
+            "denShift": "1",
+            "delay1": "0",
+            "delay2": ""
+          },
+          "time": "2026-11-04T10:53:36.506Z"
+        }
+      ],
+      "completion": {
+        "confirmed": false,
+        "confirmedAt": null
+      }
+    },
+    "L3-2": {
+      "experimentId": "L3",
+      "taskId": "L3-2",
+      "params": {
+        "initial": "0",
+        "measureTime": 1
+      },
+      "answers": {
+        "hShift": "1",
+        "xGain": "1",
+        "C": "1",
+        "D": "-1",
+        "b0": "0"
+      },
+      "prediction": "",
+      "predictionDraft": "",
+      "revisions": [],
+      "trials": [
+        {
+          "params": {
+            "initial": "0",
+            "measureTime": 1
+          },
+          "answers": {
+            "hShift": "1",
+            "xGain": "1",
+            "C": "1",
+            "D": "-1",
+            "b0": "0"
+          },
+          "measurements": {
+            "initial": 0,
+            "initialValue": 0,
+            "decompositionError": 3.774758283725532e-15,
+            "yAtTime": 0.632120558828554,
+            "measureTime": 1,
+            "t90": 2.30258521437021,
+            "answerStatus": [
+              {
+                "key": "hShift",
+                "label": "H 分母",
+                "status": "correct",
+                "message": "一致"
+              },
+              {
+                "key": "xGain",
+                "label": "X 分子",
+                "status": "correct",
+                "message": "一致"
+              },
+              {
+                "key": "C",
+                "label": "C",
+                "status": "correct",
+                "message": "一致"
+              },
+              {
+                "key": "D",
+                "label": "D",
+                "status": "correct",
+                "message": "一致"
+              },
+              {
+                "key": "b0",
+                "label": "初始项",
+                "status": "correct",
+                "message": "一致"
+              }
+            ],
+            "studentExpression": "y=1+(-1)e^(−t)"
+          },
+          "time": "2026-11-04T10:53:36.509Z",
+          "units": {
+            "time": "s",
+            "amplitude": "归一化",
+            "area": "幅度·s",
+            "frequency": "Hz",
+            "phase": "场景标注的 rad 或 °"
+          },
+          "window": [
+            {
+              "key": "main",
+              "range": [
+                0,
+                5
+              ]
+            },
+            {
+              "key": "decomposition",
+              "range": [
+                0,
+                5
+              ]
+            }
+          ],
+          "cursor": null
+        }
+      ],
+      "derivation": "",
+      "analysis": "",
+      "python": {
+        "code": "",
+        "result": null
+      },
+      "figures": [
+        {
+          "params": {
+            "initial": "0",
+            "measureTime": 1
+          },
+          "answers": {
+            "hShift": "1",
+            "xGain": "1",
+            "C": "1",
+            "D": "-1",
+            "b0": "0"
+          },
+          "time": "2026-11-04T10:53:36.509Z"
+        }
+      ],
+      "completion": {
+        "confirmed": false,
+        "confirmedAt": null
+      }
+    },
+    "L3-3": {
+      "experimentId": "L3",
+      "taskId": "L3-3",
+      "params": {
+        "center": 50,
+        "alpha": -10,
+        "measureTime": 0.2
+      },
+      "answers": {
+        "zeroFrequency": "50",
+        "poleReal": "10",
+        "poleFrequency": "50"
+      },
+      "prediction": "",
+      "predictionDraft": "",
+      "revisions": [],
+      "trials": [
+        {
+          "params": {
+            "center": 50,
+            "alpha": 10,
+            "measureTime": 0.2
+          },
+          "answers": {
+            "zeroFrequency": "50",
+            "poleReal": "-10",
+            "poleFrequency": "50"
+          },
+          "measurements": {
+            "cutoff": 0,
+            "center": 50,
+            "alpha": 10,
+            "components": [
+              {
+                "frequency": 10,
+                "ratio": 0.9988580207847533,
+                "phase": -0.7590633022280096,
+                "theoryRatio": 0.998858020779801
+              },
+              {
+                "frequency": 50,
+                "ratio": 0.000009995702438542163,
+                "phase": null,
+                "theoryRatio": 0
+              }
+            ],
+            "passed": true,
+            "stable": true,
+            "measureTime": 0.2,
+            "yAtTime": 0.11976477573293393,
+            "answerStatus": [
+              {
+                "key": "zeroFrequency",
+                "label": "零点频率 / Hz",
+                "status": "correct",
+                "message": "一致"
+              },
+              {
+                "key": "poleReal",
+                "label": "极点实部 / s⁻¹",
+                "status": "correct",
+                "message": "一致"
+              },
+              {
+                "key": "poleFrequency",
+                "label": "极点虚部 / 2π Hz",
+                "status": "correct",
+                "message": "一致"
+              }
+            ]
+          },
+          "time": "2026-11-04T10:53:36.548Z",
+          "units": {
+            "time": "s",
+            "amplitude": "归一化",
+            "area": "幅度·s",
+            "frequency": "Hz",
+            "phase": "场景标注的 rad 或 °"
+          },
+          "window": [
+            {
+              "key": "main",
+              "range": [
+                0,
+                2
+              ]
+            },
+            {
+              "key": "frequency",
+              "range": [
+                0,
+                100
+              ]
+            },
+            {
+              "key": "transient",
+              "range": [
+                0,
+                0.5
+              ]
+            }
+          ],
+          "cursor": null
+        },
+        {
+          "params": {
+            "center": 50,
+            "alpha": -10,
+            "measureTime": 0.2
+          },
+          "answers": {
+            "zeroFrequency": "50",
+            "poleReal": "10",
+            "poleFrequency": "50"
+          },
+          "measurements": {
+            "cutoff": 0,
+            "center": 50,
+            "alpha": -10,
+            "components": [
+              {
+                "frequency": 10,
+                "ratio": 0.998858020779801,
+                "theoryRatio": 0.998858020779801,
+                "phase": 0.7590632812933724
+              },
+              {
+                "frequency": 50,
+                "ratio": 0,
+                "theoryRatio": 0,
+                "phase": 0
+              }
+            ],
+            "passed": false,
+            "stable": false,
+            "measureTime": 0.2,
+            "yAtTime": 0.11903844760118845,
+            "answerStatus": [
+              {
+                "key": "zeroFrequency",
+                "label": "零点频率 / Hz",
+                "status": "correct",
+                "message": "一致"
+              },
+              {
+                "key": "poleReal",
+                "label": "极点实部 / s⁻¹",
+                "status": "correct",
+                "message": "一致"
+              },
+              {
+                "key": "poleFrequency",
+                "label": "极点虚部 / 2π Hz",
+                "status": "correct",
+                "message": "一致"
+              }
+            ]
+          },
+          "time": "2026-11-04T10:53:36.727Z",
+          "units": {
+            "time": "s",
+            "amplitude": "归一化",
+            "area": "幅度·s",
+            "frequency": "Hz",
+            "phase": "场景标注的 rad 或 °"
+          },
+          "window": [
+            {
+              "key": "main",
+              "range": [
+                0,
+                0.5
+              ]
+            },
+            {
+              "key": "frequency",
+              "range": [
+                0,
+                100
+              ]
+            },
+            {
+              "key": "transient",
+              "range": [
+                0,
+                0.5
+              ]
+            }
+          ],
+          "cursor": null
+        }
+      ],
+      "derivation": "",
+      "analysis": "",
+      "python": {
+        "code": "",
+        "result": null
+      },
+      "figures": [
+        {
+          "params": {
+            "center": 50,
+            "alpha": 10,
+            "measureTime": 0.2
+          },
+          "answers": {
+            "zeroFrequency": "50",
+            "poleReal": "-10",
+            "poleFrequency": "50"
+          },
+          "time": "2026-11-04T10:53:36.548Z"
+        },
+        {
+          "params": {
+            "center": 50,
+            "alpha": -10,
+            "measureTime": 0.2
+          },
+          "answers": {
+            "zeroFrequency": "50",
+            "poleReal": "10",
+            "poleFrequency": "50"
+          },
+          "time": "2026-11-04T10:53:36.727Z"
+        }
+      ],
+      "completion": {
+        "confirmed": false,
+        "confirmedAt": null
+      }
+    },
+    "L3-4": {
+      "experimentId": "L3",
+      "taskId": "L3-4",
+      "params": {
+        "T": 1
+      },
+      "answers": {},
+      "prediction": "",
+      "predictionDraft": "",
+      "revisions": [],
+      "trials": [
+        {
+          "params": {
+            "T": 1
+          },
+          "answers": {},
+          "measurements": {
+            "width": 1,
+            "peak": 0.632120558828554,
+            "peakTime": 1,
+            "theoreticalPeak": 0.6321205588285577,
+            "passed": false,
+            "numericalError": 3.885780586188048e-15
+          },
+          "time": "2026-11-04T10:53:36.552Z",
+          "units": {
+            "time": "s",
+            "amplitude": "归一化",
+            "area": "幅度·s",
+            "frequency": "Hz",
+            "phase": "场景标注的 rad 或 °"
+          },
+          "window": [
+            {
+              "key": "main",
+              "range": [
+                0,
+                5
+              ]
+            }
+          ],
+          "cursor": null
+        }
+      ],
+      "derivation": "",
+      "analysis": "",
+      "python": {
+        "code": "",
+        "result": null
+      },
+      "figures": [
+        {
+          "params": {
+            "T": 1
+          },
+          "answers": {},
+          "time": "2026-11-04T10:53:36.552Z"
+        }
+      ],
+      "completion": {
+        "confirmed": false,
+        "confirmedAt": null
+      }
+    }
+  }
+}

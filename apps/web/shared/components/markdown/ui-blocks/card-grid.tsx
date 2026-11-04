@@ -135,7 +135,7 @@ function CardGridCard({ item }: { item: CardGridItem }) {
       <a href={link.href} target="_blank" rel="noopener noreferrer" className={cn(className, "group transition-colors hover:bg-accent/40")}>
         {body}
         <span className="mt-auto inline-flex items-center gap-1 pt-2.5 text-xs text-muted-foreground group-hover:text-foreground">
-          <ExternalLink className="size-3.5 shrink-0" strokeWidth={1.8} />
+          <ExternalLink className="size-3.5 shrink-0" strokeWidth={1.6} />
           <span className="truncate">{link.host}</span>
         </span>
       </a>

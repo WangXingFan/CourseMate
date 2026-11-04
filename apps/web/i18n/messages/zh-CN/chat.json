@@ -167,7 +167,9 @@
       "diffPrevChange": "上一处修改",
       "diffNextChange": "下一处修改",
       "diffCopyAfter": "复制修改后内容",
-      "quizNext": "下一题"
+      "quizNext": "下一题",
+      "booleanTrue": "是",
+      "booleanFalse": "否"
     },
     "copyLatex": "复制公式源码",
     "latexCopied": "已复制公式源码",

@@ -167,12 +167,12 @@ function ModelMenuScrollContainer({
       </div>
       {hasMoreAbove ? (
         <div className="pointer-events-none absolute inset-x-0 top-0 flex h-4 items-start justify-center rounded-t-lg bg-gradient-to-b from-popover via-popover/80 to-transparent pt-px">
-          <ChevronDown className="size-3.5 rotate-180 text-muted-foreground/75" strokeWidth={1.8} />
+          <ChevronDown className="size-3.5 rotate-180 text-muted-foreground/75" strokeWidth={1.6} />
         </div>
       ) : null}
       {hasMoreBelow ? (
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex h-4 items-end justify-center rounded-b-lg bg-gradient-to-t from-popover via-popover/80 to-transparent pb-px">
-          <ChevronDown className="size-3.5 text-muted-foreground/75" strokeWidth={1.8} />
+          <ChevronDown className="size-3.5 text-muted-foreground/75" strokeWidth={1.6} />
         </div>
       ) : null}
     </div>
@@ -219,7 +219,7 @@ function ChatModelMenuItem({
           {modelLabel}
         </span>
         <span className="flex size-3.5 shrink-0 items-center justify-center">
-          {selected ? <Check className="size-3.5 text-current" strokeWidth={1.7} /> : null}
+          {selected ? <Check className="size-3.5 text-current" strokeWidth={1.6} /> : null}
         </span>
       </button>
     </div>
@@ -489,7 +489,7 @@ export function ChatModelPicker({
                       className="-ml-1.5 flex h-7 min-w-0 items-center gap-0.5 rounded-md px-0.5 text-xs font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:bg-accent focus-visible:text-foreground"
                       onClick={() => setMobileGroupKey(null)}
                     >
-                      <ChevronLeft className="size-3.5" strokeWidth={1.8} />
+                      <ChevronLeft className="size-3.5" strokeWidth={1.6} />
                       <span>{t("group")}</span>
                     </button>
                   ) : (
@@ -629,7 +629,7 @@ export function ChatModelPicker({
                                 <span className="shrink-0 text-2xs tabular-nums text-muted-foreground/80">
                                   {group.items.length}
                                 </span>
-                                <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/65" strokeWidth={1.8} />
+                                <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/65" strokeWidth={1.6} />
                               </button>
                             );
                           })}

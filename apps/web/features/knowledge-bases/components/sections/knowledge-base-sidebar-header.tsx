@@ -85,7 +85,7 @@ export function KnowledgeBaseSidebarHeader({
             aria-label={t("expandSidebar")}
             title={t("expandSidebar")}
           >
-            <PanelLeftOpen className="size-4 stroke-1" />
+            <PanelLeftOpen className="size-4 stroke-[1.6]" />
           </Button>
         </div>
         <div className="flex h-8 items-center justify-center">
@@ -98,7 +98,7 @@ export function KnowledgeBaseSidebarHeader({
             aria-label={t("search")}
             title={t("search")}
           >
-            <Search className="size-4 stroke-1" />
+            <Search className="size-4 stroke-[1.6]" />
           </Button>
         </div>
         <div className="flex h-8 items-center justify-center">
@@ -111,7 +111,7 @@ export function KnowledgeBaseSidebarHeader({
             aria-label={t("create")}
             title={t("create")}
           >
-            <Plus className="size-4 stroke-1" />
+            <Plus className="size-4 stroke-[1.6]" />
           </Button>
         </div>
       </div>
@@ -135,7 +135,7 @@ export function KnowledgeBaseSidebarHeader({
               aria-label={t("collapseSidebar")}
               title={t("collapseSidebar")}
             >
-              <PanelLeftClose className="size-4 stroke-1" />
+              <PanelLeftClose className="size-4 stroke-[1.6]" />
             </Button>
           ) : null}
           <Button
@@ -147,7 +147,7 @@ export function KnowledgeBaseSidebarHeader({
             aria-label={t("search")}
             title={t("search")}
           >
-            <Search className="size-4 stroke-1" />
+            <Search className="size-4 stroke-[1.6]" />
           </Button>
           <Button
             type="button"
@@ -158,7 +158,7 @@ export function KnowledgeBaseSidebarHeader({
             aria-label={t("create")}
             title={t("create")}
           >
-            <Plus className="size-4 stroke-1" />
+            <Plus className="size-4 stroke-[1.6]" />
           </Button>
         </div>
       </div>
@@ -185,9 +185,9 @@ export function KnowledgeBaseSidebarHeader({
           onClick={selectedCount > 0 ? onClearSelection : onSelectAll}
         >
           {selectedCount > 0 ? (
-            <SquareDashed className="size-4 stroke-1" />
+            <SquareDashed className="size-4 stroke-[1.6]" />
           ) : (
-            <SquareDashedMousePointer className="size-4 stroke-1" />
+            <SquareDashedMousePointer className="size-4 stroke-[1.6]" />
           )}
           {selectedCount > 0 ? tCommon("cancel") : t("selectAll")}
         </Button>
@@ -200,7 +200,7 @@ export function KnowledgeBaseSidebarHeader({
               size="sm"
               className="h-9 gap-0.5 px-1 text-sm text-muted-foreground shadow-none hover:bg-muted hover:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground"
             >
-              <ArrowDownUp className="size-4 stroke-1" />
+              <ArrowDownUp className="size-4 stroke-[1.6]" />
               {t("sort.action")}
             </Button>
           </DropdownMenuTrigger>
@@ -219,9 +219,9 @@ export function KnowledgeBaseSidebarHeader({
                     )}
                     onSelect={() => onSortChange(option)}
                   >
-                    <ArrowDownUp className="size-4 stroke-1 text-muted-foreground" />
+                    <ArrowDownUp className="size-4 stroke-[1.6] text-muted-foreground" />
                     <span className="flex-1 truncate">{t(`sort.${option}`)}</span>
-                    {active ? <Check className="size-4 stroke-1 text-muted-foreground" /> : null}
+                    {active ? <Check className="size-4 stroke-[1.6] text-muted-foreground" /> : null}
                   </DropdownMenuItem>
                 );
               })}
@@ -238,7 +238,7 @@ export function KnowledgeBaseSidebarHeader({
             disabled={bulkDeleting}
             onClick={onBulkDelete}
           >
-            <Trash2 className="size-4 stroke-1" />
+            <Trash2 className="size-4 stroke-[1.6]" />
             {tCommon("delete")}
           </Button>
         ) : null}

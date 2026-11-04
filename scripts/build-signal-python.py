@@ -39,10 +39,10 @@ def artifacts():
     for stem in STEMS:
         generated[f"{stem}.ipynb"] = notebook((ROOT / f"{stem}.py").read_text(encoding="utf-8"))
     buffer = io.BytesIO()
-    with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+    with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_STORED) as archive:
         for name in ["README.md", "requirements.txt", *[f"{stem}.py" for stem in STEMS], *generated]:
             entry = zipfile.ZipInfo(f"coursemate-python/{name}", date_time=(2026, 10, 26, 0, 0, 0))
-            entry.compress_type = zipfile.ZIP_DEFLATED
+            entry.compress_type = zipfile.ZIP_STORED
             data = generated[name] if name in generated else (ROOT / name).read_text(encoding="utf-8").encode()
             archive.writestr(entry, data)
     generated["coursemate-signal-python.zip"] = buffer.getvalue()

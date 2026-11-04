@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/shared/hooks/use-mobile";
 
 export type PlotPoint = readonly [number, number];
 
@@ -29,7 +30,9 @@ export type PlotXMarker = {
   label?: string;
 };
 
+// Mobile uses a narrower viewBox so 14-unit labels stay ~13px on screen (DESIGN.md §3.3).
 const WIDTH = 720;
+const MOBILE_WIDTH = 420;
 const HEIGHT = 280;
 const PADDING = { left: 56, right: 20, top: 24, bottom: 40 };
 const TICK_FONT = 14;
@@ -62,9 +65,11 @@ export function SignalPlot({
   className?: string;
   legend?: boolean;
 }) {
+  const mobile = useIsMobile();
+  const width = mobile ? MOBILE_WIDTH : WIDTH;
   const [xMin, xMax] = xDomain;
   const [yMin, yMax] = yDomain;
-  const innerWidth = WIDTH - PADDING.left - PADDING.right;
+  const innerWidth = width - PADDING.left - PADDING.right;
   const innerHeight = height - PADDING.top - PADDING.bottom;
 
   const xScale = React.useCallback(
@@ -76,7 +81,7 @@ export function SignalPlot({
     [innerHeight, yMax, yMin],
   );
 
-  const resolvedXTicks = React.useMemo(() => xTicks ?? buildTicks(xMin, xMax, 7), [xMin, xMax, xTicks]);
+  const resolvedXTicks = React.useMemo(() => (xTicks ? (mobile ? thinTicks(xTicks) : xTicks) : buildTicks(xMin, xMax, mobile ? 5 : 7)), [mobile, xMin, xMax, xTicks]);
   const resolvedYTicks = React.useMemo(() => yTicks ?? buildTicks(yMin, yMax, 5), [yMax, yMin, yTicks]);
   const zeroY = yMin <= 0 && yMax >= 0 ? yScale(0) : null;
   const zeroX = xMin <= 0 && xMax >= 0 ? xScale(0) : null;
@@ -84,7 +89,7 @@ export function SignalPlot({
   return (
     <div className={cn("space-y-2", className)}>
       <svg
-        viewBox={`0 0 ${WIDTH} ${height}`}
+        viewBox={`0 0 ${width} ${height}`}
         role="img"
         aria-label={xLabel && yLabel ? `${yLabel} / ${xLabel}` : undefined}
         className="h-auto w-full overflow-visible"
@@ -93,7 +98,7 @@ export function SignalPlot({
           <line
             key={`gy-${tick}`}
             x1={PADDING.left}
-            x2={WIDTH - PADDING.right}
+            x2={width - PADDING.right}
             y1={yScale(tick)}
             y2={yScale(tick)}
             stroke="var(--border)"
@@ -117,13 +122,13 @@ export function SignalPlot({
         ))}
 
         {/* Plot frame: baseline and left spine, like a printed figure */}
-        <line x1={PADDING.left} x2={WIDTH - PADDING.right} y1={height - PADDING.bottom} y2={height - PADDING.bottom} stroke="var(--foreground)" strokeOpacity={0.35} strokeWidth={1} />
+        <line x1={PADDING.left} x2={width - PADDING.right} y1={height - PADDING.bottom} y2={height - PADDING.bottom} stroke="var(--foreground)" strokeOpacity={0.35} strokeWidth={1} />
         <line x1={PADDING.left} x2={PADDING.left} y1={PADDING.top} y2={height - PADDING.bottom} stroke="var(--foreground)" strokeOpacity={0.35} strokeWidth={1} />
 
         {zeroY !== null ? (
           <line
             x1={PADDING.left}
-            x2={WIDTH - PADDING.right}
+            x2={width - PADDING.right}
             y1={zeroY}
             y2={zeroY}
             stroke="var(--foreground)"
@@ -241,7 +246,7 @@ export function SignalPlot({
         ))}
         {xLabel ? (
           <text
-            x={WIDTH - PADDING.right}
+            x={width - PADDING.right}
             y={height - 4}
             textAnchor="end"
             fontSize={LABEL_FONT}
@@ -309,14 +314,27 @@ function buildAreaPath(
   return `M${xScale(first[0]).toFixed(2)},${baseline.toFixed(2)} ${line} L${xScale(last[0]).toFixed(2)},${baseline.toFixed(2)} Z`;
 }
 
+// Hand-picked tick lists are tuned for desktop; on mobile keep every other one (zero included when present).
+function thinTicks(ticks: readonly number[]): readonly number[] {
+  if (ticks.length <= 5) return ticks;
+  const offset = Math.max(0, ticks.indexOf(0)) % 2;
+  return ticks.filter((_, index) => index % 2 === offset);
+}
+
+// Round-number ticks (1·2·5 × 10ⁿ steps) inside the domain, so axes read like a textbook figure.
 function buildTicks(min: number, max: number, count: number): number[] {
   if (!(max > min) || count < 2) return [min];
-  const step = (max - min) / (count - 1);
-  return Array.from({ length: count }, (_, index) => min + step * index);
+  const rough = (max - min) / (count - 1);
+  const magnitude = 10 ** Math.floor(Math.log10(rough));
+  const factor = [1, 2, 2.5, 5, 10].reduce((best, item) => (Math.abs(Math.log(item * magnitude / rough)) < Math.abs(Math.log(best * magnitude / rough)) ? item : best));
+  const step = factor * magnitude;
+  const first = Math.ceil(min / step - 1e-9);
+  const last = Math.floor(max / step + 1e-9);
+  // toPrecision strips float noise such as 0.30000000000000004.
+  return Array.from({ length: last - first + 1 }, (_, index) => Number(((first + index) * step).toPrecision(12)));
 }
 
 function formatTick(value: number): string {
   if (Math.abs(value) < 1e-9) return "0";
-  const rounded = Math.round(value * 1000) / 1000;
-  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2);
+  return String(Math.round(value * 1000) / 1000);
 }

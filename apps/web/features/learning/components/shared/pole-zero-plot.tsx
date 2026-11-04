@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/shared/hooks/use-mobile";
 
 export type ComplexPoint = {
   re: number;
@@ -16,7 +17,9 @@ export type RocRegion = {
   label?: string;
 };
 
+// Narrower viewBox on mobile keeps labels legible (DESIGN.md §3.3).
 const WIDTH = 640;
+const MOBILE_WIDTH = 420;
 const HEIGHT = 380;
 const PADDING = { left: 52, right: 18, top: 22, bottom: 40 };
 
@@ -28,6 +31,7 @@ export function PoleZeroPlot({
   yDomain = [-5, 5],
   height = HEIGHT,
   className,
+  onPoleMove,
 }: {
   poles: readonly ComplexPoint[];
   zeros?: readonly ComplexPoint[];
@@ -36,10 +40,13 @@ export function PoleZeroPlot({
   yDomain?: readonly [number, number];
   height?: number;
   className?: string;
+  onPoleMove?: (point: ComplexPoint) => void;
 }) {
+  const mobile = useIsMobile();
+  const width = mobile ? MOBILE_WIDTH : WIDTH;
   const [xMin, xMax] = xDomain;
   const [yMin, yMax] = yDomain;
-  const innerWidth = WIDTH - PADDING.left - PADDING.right;
+  const innerWidth = width - PADDING.left - PADDING.right;
   const innerHeight = height - PADDING.top - PADDING.bottom;
   const xScale = React.useCallback(
     (value: number) => PADDING.left + ((value - xMin) / (xMax - xMin)) * innerWidth,
@@ -50,17 +57,28 @@ export function PoleZeroPlot({
     [innerHeight, yMax, yMin],
   );
 
-  const xTicks = buildTicks(xMin, xMax);
-  const yTicks = buildTicks(yMin, yMax);
+  const xTicks = buildTicks(xMin, xMax, mobile ? 6 : 10);
+  const yTicks = buildTicks(yMin, yMax, 10);
   const rocLeft = roc.kind === "right" ? xScale(roc.boundary) : PADDING.left;
-  const rocRight = roc.kind === "right" ? WIDTH - PADDING.right : xScale(roc.boundary);
+  const rocRight = roc.kind === "right" ? width - PADDING.right : xScale(roc.boundary);
+  const movePole = (event: React.PointerEvent<SVGSVGElement>) => {
+    if (!onPoleMove) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - rect.left) * width / rect.width;
+    const y = (event.clientY - rect.top) * height / rect.height;
+    onPoleMove({ re: Math.max(xMin, Math.min(xMax, xMin + (x - PADDING.left) * (xMax - xMin) / innerWidth)), im: Math.max(yMin, Math.min(yMax, yMax - (y - PADDING.top) * (yMax - yMin) / innerHeight)) });
+  };
 
   return (
     <svg
-      viewBox={`0 0 ${WIDTH} ${height}`}
+      viewBox={`0 0 ${width} ${height}`}
       role="img"
       aria-label="s-plane pole-zero plot"
       className={cn("h-auto w-full overflow-visible", className)}
+      style={onPoleMove ? { touchAction: "none", cursor: "crosshair" } : undefined}
+      onPointerDown={onPoleMove ? (event) => { event.currentTarget.setPointerCapture(event.pointerId); movePole(event); } : undefined}
+      onPointerMove={onPoleMove ? (event) => { if (event.buttons === 1) movePole(event); } : undefined}
+      onPointerUp={onPoleMove ? (event) => { event.currentTarget.releasePointerCapture(event.pointerId); } : undefined}
     >
       <rect
         x={rocLeft}
@@ -81,7 +99,7 @@ export function PoleZeroPlot({
       />
       {roc.label ? (
         <text
-          x={roc.kind === "right" ? WIDTH - PADDING.right - 6 : PADDING.left + 6}
+          x={roc.kind === "right" ? width - PADDING.right - 6 : PADDING.left + 6}
           y={PADDING.top + 16}
           textAnchor={roc.kind === "right" ? "end" : "start"}
           fontSize={14}
@@ -95,7 +113,7 @@ export function PoleZeroPlot({
         <line
           key={`gy-${tick}`}
           x1={PADDING.left}
-          x2={WIDTH - PADDING.right}
+          x2={width - PADDING.right}
           y1={yScale(tick)}
           y2={yScale(tick)}
           stroke="var(--border)"
@@ -118,7 +136,7 @@ export function PoleZeroPlot({
 
       <line
         x1={PADDING.left}
-        x2={WIDTH - PADDING.right}
+        x2={width - PADDING.right}
         y1={yScale(0)}
         y2={yScale(0)}
         stroke="var(--border)"
@@ -203,21 +221,23 @@ export function PoleZeroPlot({
           {formatTick(tick)}
         </text>
       ))}
-      <text x={WIDTH - PADDING.right} y={height - 4} textAnchor="end" fontSize={14} fontStyle="italic" fontFamily="var(--font-display)" fill="var(--muted-foreground)">
+      <text x={width - PADDING.right} y={height - 4} textAnchor="end" fontSize={14} fontStyle="italic" fontFamily="var(--font-display)" fill="var(--muted-foreground)">
         Re(s)
       </text>
       <text x={PADDING.left} y={15} fontSize={14} fontStyle="italic" fontFamily="var(--font-display)" fill="var(--muted-foreground)">
-        Im(jω)
+        Im(s)
       </text>
     </svg>
   );
 }
 
-function buildTicks(min: number, max: number): number[] {
+function buildTicks(min: number, max: number, maxUnitSpan: number): number[] {
   const ticks: number[] = [];
-  const start = Math.ceil(min);
   const end = Math.floor(max);
-  const step = end - start > 10 ? 2 : 1;
+  const target = Math.max(1, (max - min) / maxUnitSpan);
+  const magnitude = 10 ** Math.floor(Math.log10(target));
+  const step = ([1, 2, 5, 10].find((value) => value * magnitude >= target) ?? 10) * magnitude;
+  const start = Math.ceil(min / step) * step;
   for (let value = start; value <= end; value += step) ticks.push(value);
   return ticks;
 }

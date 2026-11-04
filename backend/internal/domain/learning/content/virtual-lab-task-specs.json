@@ -34,18 +34,21 @@
         "default": 0.2
       }
     },
-    "answers": []
+    "answers": [],
+    "answerTypes": {}
   },
   "L1-2": {
     "params": {
       "kind": {
         "type": "select",
         "options": [
-          "gain",
-          "square",
-          "varying"
+          "affine",
+          "timescale",
+          "delay",
+          "integrator",
+          "square"
         ],
-        "default": "gain"
+        "default": "affine"
       },
       "test": {
         "type": "select",
@@ -58,20 +61,22 @@
       "x1": {
         "type": "select",
         "options": [
-          "constant",
-          "sin",
-          "cos"
+          "step",
+          "pulse",
+          "exp",
+          "sin"
         ],
-        "default": "constant"
+        "default": "step"
       },
       "x2": {
         "type": "select",
         "options": [
-          "constant",
-          "sin",
-          "cos"
+          "step",
+          "pulse",
+          "exp",
+          "sin"
         ],
-        "default": "constant"
+        "default": "step"
       },
       "alpha": {
         "type": "number",
@@ -92,7 +97,12 @@
         "default": 1
       }
     },
-    "answers": []
+    "answers": [
+      "evidence"
+    ],
+    "answerTypes": {
+      "evidence": "text"
+    }
   },
   "L1-3": {
     "params": {
@@ -117,7 +127,8 @@
         "default": 2
       }
     },
-    "answers": []
+    "answers": [],
+    "answerTypes": {}
   },
   "L1-4": {
     "params": {
@@ -125,24 +136,25 @@
         "type": "select",
         "options": [
           "rr",
-          "rh"
+          "ecg"
         ],
         "default": "rr"
       },
       "time": {
         "type": "number",
         "min": -1,
-        "max": 5,
+        "max": 4,
         "default": 0.5
       },
-      "speed": {
+      "width": {
         "type": "number",
-        "min": 0.25,
-        "max": 2,
-        "default": 0.5
+        "min": 0.01,
+        "max": 0.2,
+        "default": 0.02
       }
     },
-    "answers": []
+    "answers": [],
+    "answerTypes": {}
   },
   "L2-1": {
     "params": {
@@ -165,7 +177,8 @@
         "default": "on"
       }
     },
-    "answers": []
+    "answers": [],
+    "answerTypes": {}
   },
   "L2-2": {
     "params": {
@@ -188,26 +201,44 @@
         "default": 0
       }
     },
-    "answers": []
+    "answers": [],
+    "answerTypes": {}
   },
   "L2-3": {
     "params": {
-      "fc": {
-        "type": "number",
-        "min": 50,
-        "max": 1000,
-        "default": 200
-      },
-      "components": {
+      "filterType": {
         "type": "select",
         "options": [
-          "both",
-          "combined"
+          "lowpass",
+          "notch"
         ],
-        "default": "both"
+        "default": "lowpass"
+      },
+      "fc": {
+        "type": "number",
+        "min": 1,
+        "max": 100,
+        "default": 20
+      },
+      "center": {
+        "type": "number",
+        "min": 40,
+        "max": 60,
+        "default": 50
+      },
+      "alpha": {
+        "type": "number",
+        "min": 1,
+        "max": 80,
+        "default": 10
       }
     },
-    "answers": []
+    "answers": [
+      "minOrder"
+    ],
+    "answerTypes": {
+      "minOrder": "number"
+    }
   },
   "L2-4": {
     "params": {
@@ -216,18 +247,51 @@
         "options": [
           "100",
           "25",
-          "15"
+          "15",
+          "4000"
         ],
         "default": "100"
       },
       "candidate": {
         "type": "number",
         "min": 0,
-        "max": 30,
+        "max": 3500,
         "default": 5
+      },
+      "mode": {
+        "type": "select",
+        "options": [
+          "base",
+          "audio"
+        ],
+        "default": "base"
+      },
+      "antiAlias": {
+        "type": "select",
+        "options": [
+          "off",
+          "on"
+        ],
+        "default": "off"
+      },
+      "filterOrder": {
+        "type": "select",
+        "options": [
+          "1",
+          "2",
+          "3"
+        ],
+        "default": "2"
+      },
+      "filterCutoff": {
+        "type": "number",
+        "min": 50,
+        "max": 2000,
+        "default": 200
       }
     },
-    "answers": []
+    "answers": [],
+    "answerTypes": {}
   },
   "L3-1": {
     "params": {
@@ -271,25 +335,15 @@
       "denShift",
       "delay1",
       "delay2"
-    ]
+    ],
+    "answerTypes": {
+      "coefficient": "number",
+      "denShift": "number",
+      "delay1": "number",
+      "delay2": "number"
+    }
   },
   "L3-2": {
-    "params": {
-      "measureTime": {
-        "type": "number",
-        "min": 0,
-        "max": 5,
-        "default": 1
-      }
-    },
-    "answers": [
-      "hShift",
-      "xGain",
-      "C",
-      "D"
-    ]
-  },
-  "L3-3": {
     "params": {
       "initial": {
         "type": "select",
@@ -308,10 +362,51 @@
       }
     },
     "answers": [
-      "initialTerm",
+      "hShift",
+      "xGain",
       "C",
-      "D"
-    ]
+      "D",
+      "b0"
+    ],
+    "answerTypes": {
+      "hShift": "number",
+      "xGain": "number",
+      "C": "number",
+      "D": "number",
+      "b0": "number"
+    }
+  },
+  "L3-3": {
+    "params": {
+      "center": {
+        "type": "number",
+        "min": 40,
+        "max": 60,
+        "default": 50
+      },
+      "alpha": {
+        "type": "number",
+        "min": -20,
+        "max": 80,
+        "default": 10
+      },
+      "measureTime": {
+        "type": "number",
+        "min": 0,
+        "max": 0.5,
+        "default": 0.2
+      }
+    },
+    "answers": [
+      "zeroFrequency",
+      "poleReal",
+      "poleFrequency"
+    ],
+    "answerTypes": {
+      "zeroFrequency": "number",
+      "poleReal": "number",
+      "poleFrequency": "number"
+    }
   },
   "L3-4": {
     "params": {
@@ -322,6 +417,7 @@
         "default": 1
       }
     },
-    "answers": []
+    "answers": [],
+    "answerTypes": {}
   }
 }

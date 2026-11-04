@@ -141,7 +141,7 @@ export function AdminUpstreamsPage() {
         bulkContent={
           <div className="space-y-1">
             <BulkActionControlRow
-              icon={<ToggleLeft className="size-4 stroke-1" />}
+              icon={<ToggleLeft className="size-4 stroke-[1.6]" />}
               label={t("actions.apply")}
               onApply={() => setStatusConfirmOpen(true)}
               disabled={upstreams.loading || upstreams.batchApplying || upstreams.selected.size === 0 || !upstreams.batchStatus}
@@ -171,7 +171,7 @@ export function AdminUpstreamsPage() {
           {
             key: "delete-upstreams",
             label: t("actions.bulkDelete"),
-            icon: <Trash2 className="size-3.5 stroke-1" />,
+            icon: <Trash2 className="size-3.5 stroke-[1.6]" />,
             onClick: upstreams.handleRequestBulkDelete,
           },
         ]}
@@ -184,9 +184,10 @@ export function AdminUpstreamsPage() {
           className="h-9 gap-1 text-sm"
           onClick={upstreams.handleOpenCreate}
           disabled={upstreams.loading}
+          aria-label={t("actions.create")}
         >
-          <Plus className="size-3.5 stroke-1" />
-          {t("actions.create")}
+          <Plus className="size-4" strokeWidth={1.6} aria-hidden />
+          <span className="hidden sm:inline">{t("actions.create")}</span>
         </Button>
       </TableToolbar>
 

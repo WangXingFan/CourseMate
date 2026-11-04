@@ -94,7 +94,7 @@ export function PredictionCard({
                   active ? "border-primary bg-primary text-primary-foreground" : "border-border",
                 )}
               >
-                {active ? <Check className="size-3.5" strokeWidth={2.4} /> : null}
+                {active ? <Check className="size-3.5" strokeWidth={1.6} /> : null}
               </span>
               {option.label}
             </button>
@@ -123,12 +123,12 @@ export function PredictionCard({
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <Button type="button" disabled={!ready} onClick={onSubmit}>
-          <ClipboardCheck className="size-3.5" strokeWidth={1.8} />
+          <ClipboardCheck className="size-3.5" strokeWidth={1.6} />
           {t("submit")}
         </Button>
         {result ? (
           <Button type="button" variant="outline" onClick={onRetry}>
-            <RotateCcw className="size-3.5" strokeWidth={1.8} />
+            <RotateCcw className="size-3.5" strokeWidth={1.6} />
             {t("retry")}
           </Button>
         ) : null}
@@ -139,17 +139,17 @@ export function PredictionCard({
         <div
           className={cn(
             "mt-5 rounded-md border-l-2 px-4 py-3",
-            result.correct ? "border-emerald-600 bg-emerald-500/8" : "border-destructive bg-destructive/5",
+            result.correct ? "border-success bg-success/8" : "border-destructive bg-destructive/5",
           )}
         >
           <div className="flex items-start gap-2">
             {result.correct ? (
-              <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-600" strokeWidth={1.8} />
+              <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" strokeWidth={1.6} />
             ) : (
-              <XCircle className="mt-0.5 size-4 shrink-0 text-destructive" strokeWidth={1.8} />
+              <XCircle className="mt-0.5 size-4 shrink-0 text-destructive" strokeWidth={1.6} />
             )}
             <div className="min-w-0 flex-1">
-              <p className={cn("text-sm font-medium", result.correct ? "text-emerald-700 dark:text-emerald-400" : "text-destructive")}>
+              <p className={cn("text-sm font-medium", result.correct ? "text-success" : "text-destructive")}>
                 {result.correct ? t("correct") : t("incorrect")}
               </p>
               <p className="mt-1 text-sm leading-6 text-muted-foreground">
@@ -162,7 +162,7 @@ export function PredictionCard({
                     {result.code}
                   </code>
                   <Button type="button" size="xs" variant="outline" onClick={() => { void copyRecord(); }}>
-                    {copied ? <Check className="size-3.5" strokeWidth={2} /> : <Copy className="size-3.5" strokeWidth={1.8} />}
+                    {copied ? <Check className="size-3.5" strokeWidth={1.6} /> : <Copy className="size-3.5" strokeWidth={1.6} />}
                     {copied ? t("copied") : t("copyRecord")}
                   </Button>
                 </div>

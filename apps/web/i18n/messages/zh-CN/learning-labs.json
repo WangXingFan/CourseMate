@@ -11,7 +11,7 @@
     "description": "先根据公式和参数做出判断，并写下理由。提交后才会显示图形。",
     "optionsLabel": "选择一个答案",
     "reasonLabel": "你的理由",
-    "reasonPlaceholder": "例如：因为极点实部为负，包络按 e^{σt} 衰减，所以……",
+    "reasonPlaceholder": "例如：因为极点实部为负，包络按 e^'{'σt'}' 衰减，所以……",
     "reasonHint": "至少 {count} 字，说明判断理由。",
     "submit": "提交并解锁图形",
     "retry": "修改后重试",
@@ -109,14 +109,14 @@
       "pzTitle": "s 平面与 ROC",
       "pzDescription": "阴影是最右侧极点右边的区域；因果系统的 ROC 必须向右延伸。",
       "impulseTitle": "冲激响应 h(t)",
-      "impulseDescription": "包络为 e^{σt}，振荡由 ω 决定。",
+      "impulseDescription": "包络为 e^'{'σt'}'，振荡由 ω 决定。",
       "clipped": "峰值约 {peak}，纵轴已截断显示。",
       "timeAxis": "t (s)",
       "impulse": "h(t)"
     },
     "insight": {
       "title": "观察重点",
-      "left": "左半平面极点 → 包络 e^{σt} 衰减，系统稳定。",
+      "left": "左半平面极点 → 包络 e^'{'σt'}' 衰减，系统稳定。",
       "axis": "虚轴上的单极点 → 等幅振荡，属于临界稳定。",
       "right": "右半平面极点 → 包络增长，系统不稳定。",
       "roc": "ROC 包含虚轴 ⇔ 系统稳定；因果系统的 ROC 是最右极点右侧。"
@@ -415,7 +415,7 @@
         "left": "左半平面共轭极点 → 衰减振荡。",
         "axis": "虚轴上的共轭极点 → 等幅振荡，临界稳定。",
         "right": "右半平面共轭极点 → 增长振荡，不稳定。",
-        "repeat": "二重实极点 → t·e^{σt} 形态，仍然单调（可能先增后减）。"
+        "repeat": "二重实极点 → t·e^'{'σt'}' 形态，仍然单调（可能先增后减）。"
       }
     }
   },

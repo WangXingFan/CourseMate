@@ -28,6 +28,28 @@ type LearningVirtualLabGuideResponse struct {
 	HTML string `json:"html"`
 }
 
+type LearningVirtualLabAccessResponse struct {
+	Courses map[string]bool `json:"courses"`
+}
+
+// VirtualLabAccess godoc
+// @Summary Read the experiments currently open to this account
+// @Tags learning
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} LearningVirtualLabAccessResponse
+// @Failure 401 {object} response.Envelope
+// @Router /learning/virtual-lab/access [get]
+func (m *Module) VirtualLabAccess(c *gin.Context) {
+	c.Header("Cache-Control", "no-store")
+	courses, err := m.service.VirtualLabAccess(c.Request.Context(), middleware.MustUserID(c))
+	if err != nil {
+		writeError(c, err)
+		return
+	}
+	response.Success(c, LearningVirtualLabAccessResponse{Courses: courses})
+}
+
 // VirtualLab godoc
 // @Summary Read the current account's three-experiment evidence
 // @Tags learning
@@ -53,6 +75,7 @@ func (m *Module) VirtualLab(c *gin.Context) {
 // @Failure 400 {object} response.Envelope
 // @Failure 401 {object} response.Envelope
 // @Failure 409 {object} response.Envelope
+// @Failure 403 {object} response.Envelope
 // @Router /learning/virtual-lab [put]
 func (m *Module) SaveVirtualLab(c *gin.Context) {
 	c.Header("Cache-Control", "no-store")

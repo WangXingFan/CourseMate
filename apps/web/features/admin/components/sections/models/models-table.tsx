@@ -491,33 +491,33 @@ const ModelTableRow = React.memo(function ModelTableRow({
                   className="text-muted-foreground shadow-none"
                   aria-label={t("table.modelActions")}
                 >
-                  <MoreHorizontal className="size-3.5 stroke-1" />
+                  <MoreHorizontal className="size-3.5 stroke-[1.6]" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onSelect={() => onEdit(item)}>
-                  <Pencil className="size-3.5 stroke-1" />
+                  <Pencil className="size-3.5 stroke-[1.6]" />
                   {t("table.editModel")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => onViewSources(item)}>
-                  <List className="size-3.5 stroke-1" />
+                  <List className="size-3.5 stroke-[1.6]" />
                   {t("table.viewSources")}
                 </DropdownMenuItem>
                 {onTestModel ? (
                   <DropdownMenuItem onSelect={() => onTestModel(item)}>
-                    <Activity className="size-3.5 stroke-1" />
+                    <Activity className="size-3.5 stroke-[1.6]" />
                     {t("actions.testAll")}
                   </DropdownMenuItem>
                 ) : null}
                 <DropdownMenuSeparator />
                 {item.status === "active" ? (
                   <DropdownMenuItem disabled={updatePending} onSelect={() => onToggleStatus(item, "inactive")}>
-                    <CircleOff className="size-3.5 stroke-1" />
+                    <CircleOff className="size-3.5 stroke-[1.6]" />
                     {t("table.disableModel")}
                   </DropdownMenuItem>
                 ) : (
                   <DropdownMenuItem disabled={updatePending} onSelect={() => onToggleStatus(item, "active")}>
-                    <RotateCcw className="size-3.5 stroke-1" />
+                    <RotateCcw className="size-3.5 stroke-[1.6]" />
                     {t("table.enableModel")}
                   </DropdownMenuItem>
                 )}
@@ -527,7 +527,7 @@ const ModelTableRow = React.memo(function ModelTableRow({
                   onSelect={() => onDelete(item)}
                   className="text-destructive focus:text-destructive"
                 >
-                  <Trash2 className="size-3.5 stroke-1" />
+                  <Trash2 className="size-3.5 stroke-[1.6]" />
                   {t("table.deleteModel")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -653,13 +653,13 @@ const ModelTableRow = React.memo(function ModelTableRow({
                             className="text-muted-foreground shadow-none"
                             aria-label={t("sources.sourceActions")}
                           >
-                            <MoreHorizontal className="size-3.5 stroke-1" />
+                            <MoreHorizontal className="size-3.5 stroke-[1.6]" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           {onTestSource ? (
                             <DropdownMenuItem onSelect={() => onTestSource(source)}>
-                              <Activity className="size-3.5 stroke-1" />
+                              <Activity className="size-3.5 stroke-[1.6]" />
                               {t("actions.test")}
                             </DropdownMenuItem>
                           ) : null}
@@ -670,29 +670,29 @@ const ModelTableRow = React.memo(function ModelTableRow({
                               source,
                             })}
                           >
-                            <SlidersHorizontal className="size-3.5 stroke-1" />
+                            <SlidersHorizontal className="size-3.5 stroke-[1.6]" />
                             {t("sources.circuitSettings")}
                           </DropdownMenuItem>
                           {source.status === "active" ? (
                             <DropdownMenuItem onSelect={() => onInlineStatusToggle(source, item.id)}>
-                              <CircleOff className="size-3.5 stroke-1" />
+                              <CircleOff className="size-3.5 stroke-[1.6]" />
                               {t("sources.disableSource")}
                             </DropdownMenuItem>
                           ) : (
                             <DropdownMenuItem onSelect={() => onInlineStatusToggle(source, item.id)}>
-                              <RotateCcw className="size-3.5 stroke-1" />
+                              <RotateCcw className="size-3.5 stroke-[1.6]" />
                               {t("sources.enableSource")}
                             </DropdownMenuItem>
                           )}
                           {circuitBreakerEnabled ? (
                             source.circuitOpen ? (
                               <DropdownMenuItem onSelect={() => onInlineCircuit(source, item.id, "reset")}>
-                                <RotateCcw className="size-3.5 stroke-1" />
+                                <RotateCcw className="size-3.5 stroke-[1.6]" />
                                 {t("sources.resetCircuit")}
                               </DropdownMenuItem>
                             ) : (
                               <DropdownMenuItem onSelect={() => onInlineCircuit(source, item.id, "open")}>
-                                <CircleOff className="size-3.5 stroke-1" />
+                                <CircleOff className="size-3.5 stroke-[1.6]" />
                                 {t("sources.openCircuit")}
                               </DropdownMenuItem>
                             )
@@ -702,7 +702,7 @@ const ModelTableRow = React.memo(function ModelTableRow({
                             variant="destructive"
                             onSelect={() => onInlineSourceDeleteRequest({ modelId: item.id, source })}
                           >
-                            <Trash2 className="size-3.5 stroke-1" />
+                            <Trash2 className="size-3.5 stroke-[1.6]" />
                             {t("sources.deleteSource")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>

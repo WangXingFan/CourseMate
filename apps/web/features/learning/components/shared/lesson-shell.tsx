@@ -31,14 +31,15 @@ export function LessonShell({
           <ArrowLeft className="size-4" strokeWidth={1.6} aria-hidden />
           {t("back")}
         </Link>
-        <header className="mt-6 mb-8 grid gap-6 border-b border-border pb-8 md:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] md:items-end">
+        {/* Flex-wrap lets a long formula take the width it needs, or drop below the title, instead of scrolling in a fixed column. */}
+        <header className="mt-6 mb-8 flex flex-wrap items-end justify-between gap-x-10 gap-y-6 border-b border-border pb-8">
           <div className="min-w-0">
             <h1 className="font-display text-3xl leading-[1.12] font-normal tracking-[-0.015em] text-foreground md:text-4xl">
               {title}
             </h1>
           </div>
           {formula ? (
-            <div className="min-w-0 overflow-x-auto border-l-2 border-seal py-1 pl-4 text-foreground">
+            <div className="max-w-full min-w-0 overflow-x-auto border-l-2 border-seal py-1 pl-4 text-foreground">
               <MathFormula display>{formula}</MathFormula>
             </div>
           ) : null}

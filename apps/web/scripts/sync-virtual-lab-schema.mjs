@@ -7,6 +7,7 @@ const lab = createVirtualLabEngine();
 const specs = Object.fromEntries(lab.taskIds.map((id) => [id, {
   params: Object.fromEntries(lab.tasks[id].params.map((p) => [p.key, { type: p.type, min: p.min, max: p.max, options: p.options?.map(([value]) => value), default: p.value }])),
   answers: (lab.tasks[id].answers || []).map((a) => a.key),
+  answerTypes: Object.fromEntries((lab.tasks[id].answers || []).map((a) => [a.key, a.type || "number"])),
 }]));
 const output = `${JSON.stringify(specs, null, 2)}\n`;
 const target = new URL("../../../backend/internal/domain/learning/content/virtual-lab-task-specs.json", import.meta.url);

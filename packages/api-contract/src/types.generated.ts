@@ -381,8 +381,34 @@ export interface ClassroomDataResponse {
   classroom: ClassroomResponse;
 }
 
+export interface ClassroomExperimentRequest {
+  open: boolean;
+}
+
 export interface ClassroomListResponse {
   classrooms: ClassroomResponse[];
+}
+
+export interface ClassroomMasteryConceptResponse {
+  assessed: number;
+  concept: LearningMasteryConceptResponse;
+  developing: number;
+  secure: number;
+  weak: number;
+}
+
+export interface ClassroomMasteryResponse {
+  classroomId: string;
+  concepts: ClassroomMasteryConceptResponse[];
+  students: ClassroomMasteryStudentResponse[];
+}
+
+export interface ClassroomMasteryStudentResponse {
+  counts: LearningMasteryCountsResponse;
+  id: string;
+  name: string;
+  username: string;
+  weakConceptIds: string[];
 }
 
 export interface ClassroomMutationResponse {
@@ -392,6 +418,7 @@ export interface ClassroomMutationResponse {
 export interface ClassroomResponse {
   createdAt: string;
   description: string;
+  experiments: Record<string, boolean>;
   id: string;
   name: string;
   studentCount: number;
@@ -1573,6 +1600,153 @@ export interface KnowledgebaseErrorDoc {
   errorMsg: string;
 }
 
+export interface LabAnswersRequest {
+  answers: Record<string, string>;
+  confirmBlank: boolean;
+  requestId: string;
+}
+
+export interface LabAssessmentResponse {
+  assignment: LabAssignmentResponse;
+  tasks: LabTaskResponse[];
+  total: number;
+}
+
+export interface LabAssignmentResponse {
+  active: boolean;
+  classroomId: string;
+  courseId: string;
+  deadline?: string | null;
+  id: string;
+  open: boolean;
+  startsAt: string;
+  version: string;
+}
+
+export interface LabAssignmentsResponse {
+  items: LabAssignmentResponse[];
+}
+
+export interface LabAttemptResponse {
+  answers: Record<string, string>;
+  id: string;
+  paper: LabPaperResponse;
+  result?: LabResultResponse | null;
+  startedAt: string;
+  submittedAt?: string | null;
+}
+
+export interface LabCheckpointResponse {
+  answers: Record<string, string>;
+  id: string;
+  maximum: number;
+  paper: LabPaperResponse;
+  passed: boolean;
+  result?: LabResultResponse | null;
+}
+
+export interface LabCorrectionRequest {
+  reason: string;
+  score: number;
+}
+
+export interface LabCorrectionResponse {
+  at: string;
+  reason: string;
+  score: number;
+}
+
+export interface LabFieldResponse {
+  id: string;
+  kind: string;
+  label: string;
+  options: LabOptionResponse[];
+  points: number;
+  unit: string;
+}
+
+export interface LabFieldResultResponse {
+  correct: boolean;
+  expected?: string;
+  explanation?: string;
+  id: string;
+  maximum: number;
+  points: number;
+  submitted: string;
+}
+
+export interface LabOpenRequest {
+  open: boolean;
+}
+
+export interface LabOptionResponse {
+  id: string;
+  label: string;
+}
+
+export interface LabPaperResponse {
+  fields: LabFieldResponse[];
+  formula: string;
+  prompt: string;
+  reference: LabPointResponse[];
+  taskId: string;
+  title: string;
+}
+
+export interface LabPointResponse {
+  x: number;
+  y: number;
+}
+
+export interface LabPreviewResponse {
+  paper: LabPaperResponse;
+  result: LabResultResponse;
+}
+
+export interface LabPublishRequest {
+  courseId: string;
+  deadline: string;
+  startsAt: string;
+}
+
+export interface LabReportResponse {
+  assignment: LabAssignmentResponse;
+  students: LabStudentGradeResponse[];
+}
+
+export interface LabResultResponse {
+  concepts: number;
+  fields: LabFieldResultResponse[];
+  independent: number;
+  score: number;
+}
+
+export interface LabStudentGradeResponse {
+  grade: LabAssessmentResponse;
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface LabTaskResponse {
+  attempts: LabAttemptResponse[];
+  checkpoints: LabCheckpointResponse[];
+  concepts: number;
+  corrections: LabCorrectionResponse[];
+  explained: boolean;
+  id: string;
+  independent: number;
+  operations: number;
+  remaining: number;
+  status: string;
+  title: string;
+  total: number;
+}
+
+export interface LabUpdatedResponse {
+  updated: boolean;
+}
+
 export interface LearningAttemptData {
   attempt: LearningAttemptResponse;
   explanation: string;
@@ -1674,6 +1848,51 @@ export interface LearningLessonFieldResult {
   correct: boolean;
   expected: string;
   id: string;
+}
+
+export interface LearningMasteryConceptResponse {
+  chapter: string;
+  correct: number;
+  evidence: LearningMasteryEvidenceResponse[];
+  id: string;
+  kind: string;
+  lastAt?: string | null;
+  practiceHref: string;
+  questions: number;
+  reviewHref: string;
+  status: string;
+  title: string;
+  topic: string;
+}
+
+export interface LearningMasteryCountsResponse {
+  assessed: number;
+  developing: number;
+  secure: number;
+  total: number;
+  weak: number;
+}
+
+export interface LearningMasteryEvidenceResponse {
+  at: string;
+  correct: boolean;
+  prompt: string;
+  questionId: string;
+  source: string;
+}
+
+export interface LearningMasteryResponse {
+  concepts: LearningMasteryConceptResponse[];
+  counts: LearningMasteryCountsResponse;
+  updatedAt?: string | null;
+  weeks: LearningMasteryWeekResponse[];
+  windowDays: number;
+}
+
+export interface LearningMasteryWeekResponse {
+  answers: number;
+  correct: number;
+  start: string;
 }
 
 export interface LearningProgressResponse {
@@ -1778,6 +1997,10 @@ export interface LearningVariantResponse {
   lesson: string;
   options: string[];
   prompt: string;
+}
+
+export interface LearningVirtualLabAccessResponse {
+  courses: Record<string, boolean>;
 }
 
 export interface LearningVirtualLabGuideResponse {
@@ -6513,6 +6736,84 @@ export namespace Classrooms {
   }
 
   /**
+   * No description
+   * @tags classrooms
+   * @name ExperimentsUpdate
+   * @summary Open or close one experiment for the teacher's classroom
+   * @request PUT:/classrooms/{id}/experiments/{course_id}
+   * @secure
+   */
+  export namespace ExperimentsUpdate {
+    export type RequestParams = {
+      /** L1, L2 or L3 */
+      courseId: string;
+      /** Classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ClassroomExperimentRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomMutationResponse;
+  }
+
+  /**
+   * No description
+   * @tags lab-assessments
+   * @name LabAssessmentsList
+   * @summary List a classroom's lab assessments
+   * @request GET:/classrooms/{id}/lab-assessments
+   * @secure
+   */
+  export namespace LabAssessmentsList {
+    export type RequestParams = {
+      /** Classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LabAssignmentsResponse;
+  }
+
+  /**
+   * No description
+   * @tags lab-assessments
+   * @name LabAssessmentsCreate
+   * @summary Publish one lab course assessment
+   * @request POST:/classrooms/{id}/lab-assessments
+   * @secure
+   */
+  export namespace LabAssessmentsCreate {
+    export type RequestParams = {
+      /** Classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = LabPublishRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LabAssignmentResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name MasteryList
+   * @summary Read the classroom's knowledge gaps and student summaries
+   * @request GET:/classrooms/{id}/mastery
+   * @secure
+   */
+  export namespace MasteryList {
+    export type RequestParams = {
+      /** Classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ClassroomMasteryResponse;
+  }
+
+  /**
    * @description 教师从课程章节中选择预习题，无需手动录入题目。
    * @tags classrooms
    * @name QuizLessonsList
@@ -6686,6 +6987,27 @@ export namespace Classrooms {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = ClassroomMutationResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name StudentsMasteryList
+   * @summary Read mastery for a current student in an authorized classroom
+   * @request GET:/classrooms/{id}/students/{student_id}/mastery
+   * @secure
+   */
+  export namespace StudentsMasteryList {
+    export type RequestParams = {
+      /** Classroom ID */
+      id: string;
+      /** Student public ID */
+      studentId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningMasteryResponse;
   }
 }
 
@@ -7619,6 +7941,91 @@ export namespace KnowledgeBases {
   }
 }
 
+export namespace LabAssessments {
+  /**
+   * No description
+   * @tags lab-assessments
+   * @name LabAssessmentsPartialUpdate
+   * @summary Open or close a lab assessment
+   * @request PATCH:/lab-assessments/{id}
+   * @secure
+   */
+  export namespace LabAssessmentsPartialUpdate {
+    export type RequestParams = {
+      /** Assessment ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = LabOpenRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LabUpdatedResponse;
+  }
+
+  /**
+   * No description
+   * @tags lab-assessments
+   * @name PreviewList
+   * @summary Preview a teacher sample with answers; creates no grade
+   * @request GET:/lab-assessments/{id}/preview
+   * @secure
+   */
+  export namespace PreviewList {
+    export type RequestParams = {
+      /** Assessment ID */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** Task ID */
+      task: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LabPreviewResponse;
+  }
+
+  /**
+   * No description
+   * @tags lab-assessments
+   * @name ReportList
+   * @summary Read classroom lab grades and original submissions
+   * @request GET:/lab-assessments/{id}/report
+   * @secure
+   */
+  export namespace ReportList {
+    export type RequestParams = {
+      /** Assessment ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LabReportResponse;
+  }
+
+  /**
+   * No description
+   * @tags lab-assessments
+   * @name StudentsTasksCorrectionUpdate
+   * @summary Correct a task total, preserving the original score and audit history
+   * @request PUT:/lab-assessments/{id}/students/{student_id}/tasks/{task}/correction
+   * @secure
+   */
+  export namespace StudentsTasksCorrectionUpdate {
+    export type RequestParams = {
+      /** Assessment ID */
+      id: string;
+      /** Student public ID */
+      studentId: string;
+      /** Task ID */
+      task: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = LabCorrectionRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LabUpdatedResponse;
+  }
+}
+
 export namespace Learning {
   /**
    * No description
@@ -7654,6 +8061,129 @@ export namespace Learning {
 
   /**
    * No description
+   * @tags lab-assessments
+   * @name LabAssessmentsList
+   * @summary List my lab assessments
+   * @request GET:/learning/lab-assessments
+   * @secure
+   */
+  export namespace LabAssessmentsList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LabAssignmentsResponse;
+  }
+
+  /**
+   * No description
+   * @tags lab-assessments
+   * @name LabAssessmentsDetail
+   * @summary Read my lab assessment, without unreleased answers
+   * @request GET:/learning/lab-assessments/{id}
+   * @secure
+   */
+  export namespace LabAssessmentsDetail {
+    export type RequestParams = {
+      /** Assessment ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LabAssessmentResponse;
+  }
+
+  /**
+   * No description
+   * @tags lab-assessments
+   * @name LabAssessmentsTasksAttemptsCreate
+   * @summary Start or resume an immutable assessment attempt
+   * @request POST:/learning/lab-assessments/{id}/tasks/{task}/attempts
+   * @secure
+   */
+  export namespace LabAssessmentsTasksAttemptsCreate {
+    export type RequestParams = {
+      /** Assessment ID */
+      id: string;
+      /** Task ID */
+      task: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LabAssessmentResponse;
+  }
+
+  /**
+   * No description
+   * @tags lab-assessments
+   * @name LabAssessmentsTasksAttemptsSubmitCreate
+   * @summary Grade a formal attempt once, with idempotent retries
+   * @request POST:/learning/lab-assessments/{id}/tasks/{task}/attempts/{attempt}/submit
+   * @secure
+   */
+  export namespace LabAssessmentsTasksAttemptsSubmitCreate {
+    export type RequestParams = {
+      /** Attempt ID */
+      attempt: string;
+      /** Assessment ID */
+      id: string;
+      /** Task ID */
+      task: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = LabAnswersRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LabAssessmentResponse;
+  }
+
+  /**
+   * No description
+   * @tags lab-assessments
+   * @name LabAssessmentsTasksCheckpointsCreate
+   * @summary Verify an operation checkpoint, unlimited retries
+   * @request POST:/learning/lab-assessments/{id}/tasks/{task}/checkpoints/{key}
+   * @secure
+   */
+  export namespace LabAssessmentsTasksCheckpointsCreate {
+    export type RequestParams = {
+      /** Assessment ID */
+      id: string;
+      /** O1 or O2 */
+      key: string;
+      /** Task ID */
+      task: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = LabAnswersRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LabAssessmentResponse;
+  }
+
+  /**
+   * No description
+   * @tags lab-assessments
+   * @name LabAssessmentsTasksExplanationsCreate
+   * @summary Reveal explanations and forfeit remaining attempts
+   * @request POST:/learning/lab-assessments/{id}/tasks/{task}/explanations
+   * @secure
+   */
+  export namespace LabAssessmentsTasksExplanationsCreate {
+    export type RequestParams = {
+      /** Assessment ID */
+      id: string;
+      /** Task ID */
+      task: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LabAssessmentResponse;
+  }
+
+  /**
+   * No description
    * @tags learning
    * @name LessonAttemptsCreate
    * @summary Grade and save a staged answer with partial credit and idempotent retries
@@ -7685,6 +8215,22 @@ export namespace Learning {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = LearningCourseLessonResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name MasteryList
+   * @summary Read personal knowledge mastery from graded evidence
+   * @request GET:/learning/mastery
+   * @secure
+   */
+  export namespace MasteryList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningMasteryResponse;
   }
 
   /**
@@ -7876,6 +8422,22 @@ export namespace Learning {
     export type RequestBody = LearningVirtualLabRequest;
     export type RequestHeaders = {};
     export type ResponseBody = LearningVirtualLabResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name VirtualLabAccessList
+   * @summary Read the experiments currently open to this account
+   * @request GET:/learning/virtual-lab/access
+   * @secure
+   */
+  export namespace VirtualLabAccessList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningVirtualLabAccessResponse;
   }
 
   /**

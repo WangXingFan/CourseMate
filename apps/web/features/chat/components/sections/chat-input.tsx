@@ -1,6 +1,6 @@
 "use client";
 
-import { CornerDownRight, Eye, EyeOff, LoaderCircle, PencilLine, Trash2 } from "lucide-react";
+import { CornerDownRight, Eye, EyeOff, LoaderCircle, PencilLine, Trash2, TriangleAlert, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
 import * as React from "react";
@@ -451,7 +451,7 @@ function ChatInputComponent({
                   key={message.id}
                   className="group flex min-h-6 items-center gap-2 rounded-md px-0.5 text-sm text-muted-foreground"
                 >
-                  <CornerDownRight className="size-4 shrink-0 text-muted-foreground/55" strokeWidth={1.8} />
+                  <CornerDownRight className="size-4 shrink-0 text-muted-foreground/55" strokeWidth={1.6} />
                   {editing ? (
                     <input
                       autoFocus
@@ -506,7 +506,7 @@ function ChatInputComponent({
                             }
                           }}
                         >
-                          <CornerDownRight className="size-3.5" strokeWidth={1.7} />
+                          <CornerDownRight className="size-3.5" strokeWidth={1.6} />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent side="top" className="text-xs">
@@ -525,7 +525,7 @@ function ChatInputComponent({
                             setEditingQueuedMessageContent(message.content);
                           }}
                         >
-                          <PencilLine className="size-3.5" strokeWidth={1.7} />
+                          <PencilLine className="size-3.5" strokeWidth={1.6} />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent side="top" className="text-xs">
@@ -541,7 +541,7 @@ function ChatInputComponent({
                           onMouseDown={(event) => event.preventDefault()}
                           onClick={() => onDeleteQueuedMessage(message.id)}
                         >
-                          <Trash2 className="size-3.5" strokeWidth={1.7} />
+                          <Trash2 className="size-3.5" strokeWidth={1.6} />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent side="top" className="text-xs">
@@ -590,15 +590,15 @@ function ChatInputComponent({
             <div className="w-full space-y-1 px-2.5 pt-1">
               {showRagWarn ? (
                 <div className="flex items-center gap-2 rounded-lg border border-primary/70 bg-accent/70 px-3 py-2 text-xs text-primary dark:border-primary/40 dark:bg-accent/30 dark:text-primary">
-                  <span className="shrink-0">⚠</span>
+                  <TriangleAlert className="size-4 shrink-0" strokeWidth={1.6} aria-hidden />
                   <span className="flex-1">{tComposer("ragAllDisabled")}</span>
                   <button
                     type="button"
-                    className="shrink-0 text-primary hover:text-primary dark:text-primary dark:hover:text-primary"
+                    className="-m-1.5 flex size-8 shrink-0 items-center justify-center rounded-md text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35"
                     onClick={() => setRagWarnDismissed(true)}
                     aria-label={tComposer("closeHint")}
                   >
-                    ✕
+                    <X className="size-4" strokeWidth={1.6} aria-hidden />
                   </button>
                 </div>
               ) : null}
@@ -629,7 +629,7 @@ function ChatInputComponent({
                         </AttachmentTitle>
                         <AttachmentDescription className="mt-1 flex min-w-0 items-center gap-1.5 text-xs leading-none">
                           {backgroundProcessing ? (
-                            <LoaderCircle className="size-4 shrink-0 animate-spin" strokeWidth={1.8} />
+                            <LoaderCircle className="size-4 shrink-0 animate-spin" strokeWidth={1.6} />
                           ) : null}
                           <span
                             className="min-w-0 shrink truncate"
@@ -673,7 +673,7 @@ function ChatInputComponent({
                     aria-label={tComposer("uploadingAttachment", { name: item.fileName })}
                   >
                     <AttachmentMedia className="size-6 bg-transparent text-muted-foreground">
-                      <LoaderCircle className="size-5 animate-spin" strokeWidth={1.8} />
+                      <LoaderCircle className="size-5 animate-spin" strokeWidth={1.6} />
                     </AttachmentMedia>
                     <AttachmentContent className="flex min-w-0 flex-1 flex-col justify-center px-0 py-0">
                       <AttachmentTitle className="text-xs leading-4 text-foreground/90" title={item.fileName}>

@@ -689,7 +689,7 @@ export function ChatArea({
                             isSelected && "border-foreground bg-foreground",
                           )}
                         >
-                          {isSelected ? <Check className="size-3.5" strokeWidth={2} /> : null}
+                          {isSelected ? <Check className="size-3.5" strokeWidth={1.6} /> : null}
                         </span>
                       </div>
                       <div className="chat-screenshot-selectable-content pointer-events-none relative z-[1] pl-8 pr-2" inert>
@@ -729,7 +729,7 @@ export function ChatArea({
               title={t("messages.scrollToBottom")}
               className="z-20 size-8 text-muted-foreground shadow-md hover:text-foreground"
             >
-              <ArrowDownToLine className="size-4" strokeWidth={1.8} />
+              <ArrowDownToLine className="size-4" strokeWidth={1.6} />
             </MessageScrollerButton>
             <ChatMessagePositionRail messages={messages} boundaryRef={messageViewportBoundaryRef} />
             <ChatResponseOutlineRail

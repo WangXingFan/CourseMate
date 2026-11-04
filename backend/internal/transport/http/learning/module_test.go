@@ -187,7 +187,18 @@ func testRouter(t *testing.T) *gin.Engine {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = sqlDB.Close() })
-	if err := db.AutoMigrate(&models.LearningAttempt{}, &models.LearningLessonAttempt{}, &models.LearningVirtualLab{}, &models.LearningQuizRound{}); err != nil {
+	if err := db.AutoMigrate(&models.LearningAttempt{}, &models.LearningLessonAttempt{}, &models.LearningVirtualLab{}, &models.LearningQuizRound{}, &models.User{}, &models.Classroom{}, &models.ClassroomStudent{}); err != nil {
+		t.Fatal(err)
+	}
+	for _, id := range []uint{1, 2, 999} {
+		if err := db.Create(&models.User{BaseModel: models.BaseModel{ID: id}, PublicID: fmt.Sprint(id), Username: fmt.Sprint(id), Role: "student"}).Error; err != nil {
+			t.Fatal(err)
+		}
+		if err := db.Create(&models.ClassroomStudent{StudentID: id, ClassroomID: 1}).Error; err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := db.Create(&models.Classroom{ControlPlaneModel: models.ControlPlaneModel{ID: 1}, PublicID: "open-class", TeacherID: 9, Name: "Open class", Lab1Open: true, Lab2Open: true, Lab3Open: true}).Error; err != nil {
 		t.Fatal(err)
 	}
 	router := gin.New()

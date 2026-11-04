@@ -9,11 +9,15 @@ type Classroom struct {
 	TeacherName  string
 	Name         string
 	Description  string
+	Lab1Open     bool
+	Lab2Open     bool
+	Lab3Open     bool
 	StudentCount int64
 	CreatedAt    time.Time
 }
 
 type Student struct {
+	ID          uint
 	PublicID    string
 	Username    string
 	DisplayName string

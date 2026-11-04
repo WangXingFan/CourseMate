@@ -314,7 +314,7 @@ const UserTableRow = React.memo(function UserTableRow({
             {pendingAction === "edit" && actionUserID === item.id ? (
               <Spinner className="size-3.5" />
             ) : (
-              <Settings className="size-3.5 stroke-1" />
+              <Settings className="size-3.5 stroke-[1.6]" />
             )}
           </Button>
         </div>
@@ -508,7 +508,7 @@ export function UsersPanel({
           bulkContent={
             <div className="space-y-1">
               <BulkActionControlRow
-                icon={<ShieldCheck className="size-4 stroke-1" />}
+                icon={<ShieldCheck className="size-4 stroke-[1.6]" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("role")}
                 disabled={loading || Boolean(pendingAction) || selectedUserIDs.size === 0 || !batchRole}
@@ -534,7 +534,7 @@ export function UsersPanel({
               </BulkActionControlRow>
 
               <BulkActionControlRow
-                icon={<UserCheck className="size-4 stroke-1" />}
+                icon={<UserCheck className="size-4 stroke-[1.6]" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("status")}
                 disabled={loading || Boolean(pendingAction) || selectedUserIDs.size === 0 || !batchStatus}
@@ -560,7 +560,7 @@ export function UsersPanel({
               </BulkActionControlRow>
 
               <BulkActionControlRow
-                icon={<Globe className="size-4 stroke-1" />}
+                icon={<Globe className="size-4 stroke-[1.6]" />}
                 label={t("actions.apply")}
                 onApply={() => setBulkConfirmAction("timezone")}
                 disabled={loading || Boolean(pendingAction) || selectedUserIDs.size === 0 || !batchTimezone}
@@ -580,7 +580,7 @@ export function UsersPanel({
             {
               key: "delete",
               label: t("actions.delete"),
-              icon: <Trash2 className="size-3.5 stroke-1" />,
+              icon: <Trash2 className="size-3.5 stroke-[1.6]" />,
               onClick: () => setBulkConfirmAction("delete"),
             },
           ]}
@@ -599,9 +599,10 @@ export function UsersPanel({
               setRosterImportOpen(true);
             }}
             disabled={Boolean(pendingAction) || rosterImportPending}
+            aria-label={t("rosterImport.import")}
           >
-            <Upload className="size-3.5 stroke-1" />
-            {t("rosterImport.import")}
+            <Upload className="size-4" strokeWidth={1.6} aria-hidden />
+            <span className="hidden sm:inline">{t("rosterImport.import")}</span>
           </Button>
           <Button
             type="button"
@@ -609,9 +610,10 @@ export function UsersPanel({
             className="h-9 gap-1 px-2 text-sm"
             onClick={() => setCreateDialogOpen(true)}
             disabled={Boolean(pendingAction) || rosterImportPending}
+            aria-label={t("create")}
           >
-            <Plus className="size-3.5 stroke-1" />
-            {t("create")}
+            <Plus className="size-4" strokeWidth={1.6} aria-hidden />
+            <span className="hidden sm:inline">{t("create")}</span>
           </Button>
         </TableToolbar>
 

@@ -316,21 +316,21 @@ export function UpstreamsTable({
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon-sm" className="text-muted-foreground shadow-none">
-                          <MoreHorizontal className="size-3.5 stroke-1" />
+                          <MoreHorizontal className="size-3.5 stroke-[1.6]" />
                           <span className="sr-only">{t("table.actions")}</span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => onEdit(item)}>
-                          <Pencil className="size-3.5 stroke-1" />
+                          <Pencil className="size-3.5 stroke-[1.6]" />
                           {t("actions.edit")}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => onManageModels(item)}>
-                          <Settings2 className="size-3.5 stroke-1" />
+                          <Settings2 className="size-3.5 stroke-[1.6]" />
                           {t("actions.manageModels")}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => onSyncModels(item)}>
-                          <CloudDownload className="size-3.5 stroke-1" />
+                          <CloudDownload className="size-3.5 stroke-[1.6]" />
                           {t("actions.syncRemoteModels")}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -339,20 +339,20 @@ export function UpstreamsTable({
                             <DropdownMenuItem
                               onClick={() => onCircuitAction(item, "reset")}
                             >
-                              <RotateCcw className="size-3.5 stroke-1" />
+                              <RotateCcw className="size-3.5 stroke-[1.6]" />
                               {t("actions.resetCircuit")}
                             </DropdownMenuItem>
                           ) : (
                             <DropdownMenuItem
                               onClick={() => onCircuitAction(item, "open")}
                             >
-                              <CircleOff className="size-3.5 stroke-1" />
+                              <CircleOff className="size-3.5 stroke-[1.6]" />
                               {t("actions.openCircuit")}
                             </DropdownMenuItem>
                           )
                         ) : null}
                         <DropdownMenuItem onClick={() => onToggleStatus(item)}>
-                          <Zap className="size-3.5 stroke-1" />
+                          <Zap className="size-3.5 stroke-[1.6]" />
                           {item.status === "active" ? t("actions.disableUpstream") : t("actions.enableUpstream")}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -360,7 +360,7 @@ export function UpstreamsTable({
                           className="text-destructive"
                           onClick={() => onDelete(item)}
                         >
-                          <Trash2 className="size-3.5 stroke-1" />
+                          <Trash2 className="size-3.5 stroke-[1.6]" />
                           {t("actions.delete")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>

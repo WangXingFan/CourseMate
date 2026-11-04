@@ -15,6 +15,7 @@ import { useLearningTimeZone } from "@/features/learning/hooks/use-learning-time
 import type { LearningQuestionDTO } from "@/shared/api/learning-types";
 
 export function LearningProgress() {
+  const masteryT = useTranslations("learning.mastery");
   const t = useTranslations("learningLabs.progress");
   const q = useTranslations("learningLabs.quiz.questions");
   const format = useFormatter();
@@ -38,6 +39,7 @@ export function LearningProgress() {
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <ProgressStatus model={model} />
+          <Button asChild size="sm" variant="outline"><Link href="/learn/mastery">{masteryT("title")}</Link></Button>
           <Button asChild size="sm" variant="outline"><Link href="/learn/quiz">{t("newQuiz")}<ArrowRight className="size-3.5" /></Link></Button>
         </div>
         {model.data ? <>
@@ -127,5 +129,5 @@ function MistakeCard({ question, onReview }: { question: LearningQuestionDTO; on
 }
 
 function EmptyState({ title }: { title: string }) {
-  return <div className="rounded-lg border border-dashed border-border px-6 py-12 text-center"><BookOpen className="mx-auto size-7 text-muted-foreground" strokeWidth={1.4} /><h2 className="mt-3 text-sm font-medium">{title}</h2></div>;
+  return <div className="rounded-lg border border-dashed border-border px-6 py-12 text-center"><BookOpen className="mx-auto size-7 text-muted-foreground" strokeWidth={1.6} /><h2 className="mt-3 text-sm font-medium">{title}</h2></div>;
 }

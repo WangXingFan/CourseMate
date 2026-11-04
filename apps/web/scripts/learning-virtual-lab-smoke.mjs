@@ -4,6 +4,8 @@
 import assert from "node:assert/strict";
 import { LAB_FLOWS, labReading } from "../features/learning/model/virtual-lab-flow.ts";
 import { createVirtualLabEngine } from "../public/vendor/signal-lab/core.mjs";
+import { createVirtualLabEngine as createPhaseTwoEngine } from "../public/vendor/signal-lab/legacy-v1.1.mjs";
+import { createVirtualLabEngine as createLegacyEngine } from "../public/vendor/signal-lab/legacy-v1.mjs";
 import { labAnswers } from "./virtual-lab-fixtures.mjs";
 import { createServer } from "node:http";
 import { createRequire } from "node:module";
@@ -48,7 +50,8 @@ try {
     const req = route.request(), url = new URL(req.url());
     const accountId = Number(req.headers().authorization?.split("-").at(-1)) || actor;
     let data = {};
-    if (url.pathname.endsWith("/learning/virtual-lab/guide")) {
+    if (url.pathname.endsWith("/learning/virtual-lab/access")) data = { courses: { L1: true, L2: true, L3: true } };
+    else if (url.pathname.endsWith("/learning/virtual-lab/guide")) {
       if (!["teacher", "admin", "superadmin"].includes(role)) { await route.fulfill({ status: 403, json: { errorMsg: "forbidden", data: null } }); return; }
       data = { html: guide };
     } else if (url.pathname.endsWith("/learning/virtual-lab")) {
@@ -79,6 +82,9 @@ try {
   page = await context.newPage();
   page.setDefaultTimeout(20000);
   page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error" && /FORMATTING_ERROR|MISSING_MESSAGE|INVALID_MESSAGE|IntlError/.test(message.text())) errors.push(message.text());
+  });
   page.on("requestfailed", (request) => {
     const failure = request.failure()?.errorText ?? "";
     // Navigating away disposes the sandbox and cancels any pending runtime download.
@@ -89,9 +95,17 @@ try {
   });
   const frame = () => page.locator("[data-native-lab]");
   const engine = createVirtualLabEngine();
-  const fillObservation = async (id, step, params) => {
+  const fillObservation = async (id, step, params, estimateValue) => {
     if (!step.observation) return;
-    const value = String(labReading(engine.scene(id, params, labAnswers(id, params)).readings, step.observation.reading));
+    const readings = engine.scene(id, params, labAnswers(id, params)).readings;
+    const value = String(labReading(readings, step.observation.reading));
+    if (step.predictedReadingKey && await frame().locator("[data-reading-prediction]").count()) {
+      const estimate = estimateValue ?? String(labReading(readings, step.predictedReadingKey));
+      const estimateField = frame().locator("#reading-estimate");
+      if (await estimateField.evaluate((element) => element.tagName === "SELECT")) await estimateField.selectOption(estimate);
+      else await estimateField.fill(estimate);
+      await frame().locator('[data-action="reading-estimate"]').click();
+    }
     const field = frame().locator("#observation");
     if (await field.evaluate((element) => element.tagName === "SELECT")) await field.selectOption(value);
     else await field.fill(value);
@@ -178,46 +192,65 @@ try {
   await frame().locator("#prediction").waitFor();
   assert.equal(await frame().locator('[data-lab-givens] svg[data-chart="given"]').count(), 1, "Prediction needs the original signal");
   assert.equal(await frame().locator('[data-lab-givens] [data-series]').count(), 1, "Only the original signal is shown");
-  assert.equal(await frame().locator('[data-lab-givens] [data-series="p(t)"]').count(), 1);
+  assert.equal(await frame().locator('[data-lab-givens] [data-series="f(t)"]').count(), 1);
   assert.equal(await frame().locator('svg[data-chart="main"]').count(), 0, "The transformed result is still hidden");
   assert.equal(await frame().locator('[data-phase="observe"]').isDisabled(), true);
+  assert.equal(await frame().locator('[data-reading-prediction]').count(), 0, "A numeric estimate appears in the observation phase");
   assert.equal(await frame().locator('[data-python-task]').count(), 0, "Programming does not distract from the first step");
-  await frame().locator("#prediction").fill("右移一秒，峰值时刻加一秒，高度不变。");
+  await frame().locator("#prediction").fill("组合变换会改变峰值位置与高度，窄脉冲的面积保持不变。");
   await frame().locator('[data-action="prediction"]').click();
   for (let index = 0; index < LAB_FLOWS["L1-1"].steps.length; index++) {
     const step = LAB_FLOWS["L1-1"].steps[index];
     assert.equal(await frame().getByLabel("当前对照", { exact: true }).inputValue(), String(index));
-    assert.equal(await frame().locator('[data-action="trial"]').isDisabled(), true, "Saving without an observation is blocked");
+    assert.equal(await frame().locator('[data-action="trial"]').count(), 0, "Recording is unavailable before the estimate");
+    if (index === 0) {
+      assert.equal(await frame().locator('[data-reading-prediction]').count(), 1);
+      assert.equal(await frame().locator('svg[data-chart="main"]').count(), 0, "The result plot waits for an estimate");
+    }
     assert.equal(await frame().locator('[data-python-task]').count(), 0, "Python is only offered after the main experiment");
     if (index === 1) {
       await saved();
       await page.reload();
-      await frame().locator("#param-shift").waitFor();
+      await frame().locator("#param-a").waitFor();
       assert.equal(await frame().getByLabel("当前对照", { exact: true }).inputValue(), "1", "Reload resumes a manual step before the target has been reached");
-      assert.equal(await frame().locator("#param-shift").inputValue(), "0", "The shift is not done for the student");
-      await frame().locator("#observation").fill("1");
+      assert.equal(await frame().locator("#param-a").inputValue(), "1", "The scale is not done for the student");
+      await frame().locator("#reading-estimate").fill("3");
+      await frame().locator('[data-action="reading-estimate"]').click();
+      await frame().locator("#observation").fill("3");
       await frame().locator('[data-action="trial"]').click();
       await frame().getByRole("alert").filter({ hasText: "先调节上方参数" }).waitFor();
     }
     for (const key of step.controls ?? []) await frame().locator(`#param-${key}`).fill(String(step.params[key]));
     if (index === 1) {
+      await frame().locator("#reading-estimate").fill("1.5");
+      await frame().locator('[data-action="reading-estimate"]').click();
       assert.equal(await frame().locator("#observation").inputValue(), "", "Changing parameters clears the old reading");
       await frame().locator("#observation").fill("99");
       await frame().locator('[data-action="trial"]').click();
       await frame().getByRole("alert").filter({ hasText: "读数与当前图形不符" }).waitFor();
     }
-    await fillObservation("L1-1", step, { ...engine.defaults("L1-1"), ...step.params });
+    await fillObservation("L1-1", step, { ...engine.defaults("L1-1"), ...step.params }, index === 0 ? "0" : undefined);
+    if (step.predictedReadingKey) {
+      assert.equal(await frame().locator('[data-reading-prediction]').count(), 0);
+      assert.equal(await frame().locator('svg[data-chart="main"]').count(), 1);
+      for (const label of step.hiddenMetrics ?? []) assert.equal(await frame().locator("dl dt").filter({ hasText: label }).count(), 0);
+    }
     await frame().locator('[data-action="trial"]').click();
   }
-  await frame().locator("#analysis").fill("右移改变峰时，反转改变方向，压缩缩短信号；窄脉冲面积保持为 1。");
+  await frame().locator("#analysis").fill("组合变换改变了峰值位置和高度；窄脉冲面积保持为 1。");
   await frame().locator('[data-action="complete"]').click();
   await saved();
+  await frame().locator("[data-lab-prediction-summary]").waitFor();
+  assert.equal(await frame().locator("[data-lab-prediction-summary] tbody tr").count(), 4, "Conclusion compares every saved estimate with its reading");
+  assert.match(await frame().locator("[data-lab-prediction-summary]").innerText(), /预测值[\s\S]*实测值[\s\S]*1\.5/);
+  await frame().getByRole("status").filter({ hasText: "20%" }).waitFor();
   let document = JSON.parse(records.get(101).document);
   assert.equal(document.student.number, "student101");
-  assert.equal(document.tasks["L1-1"].trials.length, 8);
-  assert.equal(document.tasks["L1-1"].trials[1].params.shift, 1);
-  assert.equal(document.tasks["L1-1"].trials[1].measurements.peakTime, 2);
-  assert.equal(document.tasks["L1-1"].trials[1].measurements.observation.value, 2);
+  assert.equal(document.tasks["L1-1"].trials.length, 4);
+  assert.equal(document.tasks["L1-1"].trials[1].params.a, 2);
+  assert.equal(document.tasks["L1-1"].trials[1].measurements.supportEnd, 1.5);
+  assert.equal(document.tasks["L1-1"].trials[1].measurements.observation.value, 1.5);
+  assert.equal(document.tasks["L1-1"].trials[1].measurements.observation.predictedValue, 1.5);
   assert.equal(document.tasks["L1-1"].completion.confirmed, true);
   assert.equal(await page.locator("iframe").count(), 0, "workspace must be native React");
   assert.equal(await page.evaluate(() => Object.hasOwn(window, "SignalLab")), false);
@@ -226,7 +259,8 @@ try {
   assert.equal(await frame().locator("#analysis").inputValue(), document.tasks["L1-1"].analysis);
   await frame().locator('[data-phase="observe"]').click();
   await frame().getByLabel("当前对照", { exact: true }).selectOption("1");
-  await frame().locator("#param-shift").fill("1");
+  await frame().locator("#param-a").fill("2");
+  assert.equal(await frame().locator("[data-reading-prediction]").count(), 0, "Restoring a saved comparison retains its estimate");
   await frame().locator('[data-lab-tools] > summary').click();
   const pngEvent = page.waitForEvent("download");
   await frame().locator('[data-action="png"]').click();
@@ -238,7 +272,7 @@ try {
   await embedded.locator("summary").click();
   const editor = embedded.locator("[data-python-editor]");
   await editor.waitFor();
-  assert.match(await editor.inputValue(), /shift=1/);
+  assert.match(await editor.inputValue(), /a=2, shift=0/);
   await editor.fill(`${await editor.inputValue()}\n# integration evidence`);
   await saved();
   assert.equal(JSON.parse(records.get(101).document).tasks["L1-1"].python.code.endsWith("# integration evidence"), true);
@@ -247,7 +281,8 @@ try {
     await embedded.locator("figure img").waitFor({ timeout: 120000 });
     await assertEventually(async () => assert.ok(JSON.parse(records.get(101).document).tasks["L1-1"].python.result));
     const evidence = JSON.parse(records.get(101).document).tasks["L1-1"].python;
-    assert.equal(evidence.result.params.shift, 1);
+    assert.equal(evidence.result.params.a, 2);
+    assert.equal(evidence.result.params.shift, 0);
     assert.ok(evidence.result.stdout.includes("sampled peak"));
   }
   await embedded.locator("summary").click();
@@ -269,6 +304,17 @@ try {
         await page.screenshot({ path: join(artifacts, `guided-reading-${width}-${theme}.png`), animations: "disabled" });
       }
       if (phase === "conclude") {
+        const summary = frame().locator("[data-lab-prediction-summary]");
+        await summary.scrollIntoViewIfNeeded();
+        await page.screenshot({ path: join(artifacts, `guided-summary-${width}-${theme}.png`), animations: "disabled" });
+        assert.ok(await summary.evaluate((element) => element.scrollWidth <= element.clientWidth + 1), "The comparison table scrolls inside the section");
+        if (width === 390) {
+          const scroller = summary.getByRole("region");
+          await scroller.evaluate((element) => { element.scrollLeft = element.scrollWidth; });
+          assert.ok(await scroller.evaluate((element) => element.scrollLeft > 0), "Mobile readers can scroll to both value columns");
+          await page.screenshot({ path: join(artifacts, `guided-summary-values-${width}-${theme}.png`), animations: "disabled" });
+          await scroller.evaluate((element) => { element.scrollLeft = 0; });
+        }
         const optional = frame().locator('[data-python-task="L1-1"]');
         await optional.locator("summary").click();
         await optional.locator("summary").scrollIntoViewIfNeeded();
@@ -289,33 +335,67 @@ try {
     await frame().locator('[data-action="prediction"]').click();
     for (let index = 0; index < flow.steps.length; index++) {
       assert.equal(await frame().getByLabel("当前对照", { exact: true }).inputValue(), String(index), `${id}/${index}`);
-      const inputs = frame().locator("[data-answer]");
-      if (await inputs.count()) assert.ok(await frame().locator('[data-answer-formula] .katex').count(), `${id}: complete answer template`);
       const step = flow.steps[index], params = { ...engine.defaults(id), ...step.params };
       if (step.key === "candidate") params.candidate = 5;
       if (step.key === "ninety") params.measureTime = 2.3;
       if (step.key === "refine") params.T = 1.61;
-      const answers = labAnswers(id, params);
-      for (let j = 0; j < await inputs.count(); j++) await inputs.nth(j).fill(answers[await inputs.nth(j).getAttribute("data-answer")]);
-      if (step.key === "ninety" || step.key === "refine") {
-        await frame().locator('[data-action="trial"]').click();
-        await frame().getByRole("alert").waitFor();
+      if (id === "L2-3" && step.key === "design") Object.assign(params, {filterType:"notch",center:50,alpha:12});
+      if (id === "L3-3" && ["design","frequency"].includes(step.key)) Object.assign(params, {center:50,alpha:10});
+      if (id === "L3-3" && step.key === "design") {
+        assert.equal(await frame().locator('#param-alpha').inputValue(), "12", "Use the saved Lab 2 design, not the later wide-notch comparison");
+        assert.equal(await frame().locator('#param-center').inputValue(), "50");
       }
-      for (const key of step.controls ?? []) await frame().locator(`#param-${key}`).fill(String(params[key]));
-      await fillObservation(id, step, params);
+      for (const key of step.controls ?? []) {
+        const control = frame().locator(`#param-${key}`);
+        if (await control.evaluate(element=>element.tagName==='SELECT')) await control.selectOption(String(params[key]));
+        else await control.fill(String(params[key]));
+      }
+      if (step.predictedReadingKey) {
+        assert.equal(await frame().locator('[data-reading-prediction]').count(), 1, `${id}/${step.key}: estimate first`);
+        assert.equal(await frame().locator('svg[data-chart="main"]').count(), 0, `${id}/${step.key}: hide the result before an estimate`);
+        for (const label of step.hiddenMetrics ?? []) assert.equal(await frame().locator("dl dt").filter({ hasText: label }).count(), 0, `${id}/${step.key}: hide ${label}`);
+      }
+      await fillObservation(id, step, params, id === "L2-3" && index === 0 ? "1" : undefined);
+      const inputs = frame().locator("[data-answer]"), answers = labAnswers(id, params);
+      if (await inputs.count()) assert.ok(await frame().locator('[data-answer-formula] .katex').count());
+      for (let j=0; j<await inputs.count(); j++) await inputs.nth(j).fill(answers[await inputs.nth(j).getAttribute("data-answer")]);
+      if (id === "L3-3") {
+        const polePlot = frame().locator('[data-lab-poles] svg');
+        assert.equal(await polePlot.count(),1);
+        if (step.key === "design") {
+          const box = await polePlot.boundingBox();
+          // Drag across the plane, then restore the target through keyboard controls.
+          await page.mouse.move(box.x+box.width*0.6,box.y+box.height*0.3);
+          await page.mouse.down(); await page.mouse.move(box.x+box.width*0.65,box.y+box.height*0.4,{steps:3}); await page.mouse.up();
+          assert.notEqual(await frame().locator('#param-alpha').inputValue(),"10");
+          await frame().locator('#param-alpha').fill('80'); await frame().locator('#param-center').fill('60');
+          assert.ok(await frame().locator('[data-native-task]').evaluate(element=>element.scrollWidth<=element.clientWidth+1),"Extreme real poles stay in the plot");
+          await frame().locator('#param-alpha').fill('10'); await frame().locator('#param-center').fill('50');
+        }
+      }
+      if (id === "L2-4" && params.mode === "audio") {
+        const audio=frame().locator('[data-lab-audio]'); assert.equal(await audio.count(),1);
+        await audio.getByRole('button').nth(1).click(); await audio.getByRole('button').nth(2).click();
+        assert.equal(await audio.getByRole('alert').count(),0);
+      }
       if (id === "L1-4" && flow.steps[index].key.startsWith("response")) assert.equal(await frame().locator('svg[data-chart="output"]').first().isVisible(), true);
       if (id === "L2-4" && flow.steps[index].key !== "candidate") assert.equal(await frame().locator('[data-series^="候选"]').count(), 0);
-      if ((id === "L1-2" && index === 0) || (id === "L1-4" && flow.steps[index].key === "response0") || (id === "L2-3" && index === 0) || (id === "L3-1" && flow.steps[index].key === "delayed")) {
-        for (const width of [1440, 390]) {
-          await page.setViewportSize({ width, height: 950 });
-          await frame().evaluate((element) => { element.scrollTop = 0; });
-          await page.screenshot({ path: join(artifacts, `conditions-${id}-${width}.png`), animations: "disabled" });
-          assert.ok(await frame().locator('[data-native-task]').evaluate((element) => element.scrollWidth <= element.clientWidth + 1), `${id}: no horizontal page overflow`);
+      if ((id === "L1-2" && index === 0) || (id === "L1-4" && step.key === "response1") || (id === "L2-3" && step.key === "design") || (id === "L2-4" && step.key === "filtered") || (id === "L3-2" && step.key === "initial2") || (id === "L3-3" && step.key === "design")) {
+        for (const width of [1440,390]) for (const theme of ["light","dark"]) {
+          await page.setViewportSize({width,height:950});
+          await page.evaluate(theme=>document.documentElement.classList.toggle('dark',theme==='dark'),theme);
+          await frame().evaluate(element=>{element.scrollTop=0;});
+          await page.screenshot({path:join(artifacts,`conditions-${id}-${width}-${theme}.png`),animations:"disabled"});
+          assert.ok(await frame().locator('[data-native-task]').evaluate(element=>element.scrollWidth<=element.clientWidth+1),`${id}: no page overflow`);
+          if (id === "L3-3") await frame().locator('[data-lab-poles]').screenshot({path:join(artifacts,`poles-${width}-${theme}.png`)});
+          if (id === "L2-4") await frame().locator('svg[data-chart="main"]').screenshot({path:join(artifacts,`audio-alias-${width}-${theme}.png`)});
         }
-        await page.setViewportSize({ width: 1440, height: 950 });
+        await page.setViewportSize({width:1440,height:950}); await page.evaluate(()=>document.documentElement.classList.remove('dark'));
       }
       await frame().locator('[data-action="trial"]').click();
     }
+    assert.equal(await frame().locator("[data-lab-prediction-summary] tbody tr").count(), flow.steps.filter((step) => step.predictedReadingKey).length, `${id}: all saved estimates appear in the conclusion`);
+    if (id === "L2-3") await frame().getByRole("status").filter({ hasText: "你的判断与读数不一致" }).waitFor();
     await frame().locator("#analysis").fill("已记录各组参数与读数，并比较变化。");
     if (flow.derivation) {
       assert.equal(await frame().locator('[data-action="complete"]').isDisabled(), true);
@@ -436,6 +516,61 @@ try {
     await assertEventually(async () => assert.equal(await page.locator("#main").getAttribute("data-lab-route"), route));
   }
   const validRecord = records.get(101);
+  const legacyRecord = JSON.parse(validRecord.document);
+  for (const trial of legacyRecord.tasks["L1-1"].trials) {
+    if (trial.measurements.observation) delete trial.measurements.observation.predictedValue;
+  }
+  records.set(101, { ...validRecord, document: JSON.stringify(legacyRecord) });
+  await page.goto(`${base}/learn/experiments/workspace#task/L1-1`);
+  await frame().locator("#analysis").waitFor();
+  assert.equal(await frame().locator("[data-lab-prediction-summary]").count(), 0, "Legacy records without numeric estimates keep the original result table");
+  assert.equal(await frame().locator("[data-lab-comparison] tbody tr").count(), 4);
+  assert.match(await frame().locator("[data-lab-comparison]").innerText(), /1\.5/);
+  assert.equal(await frame().locator("#analysis").inputValue(), legacyRecord.tasks["L1-1"].analysis);
+  // Phase-two evidence has its own model and must remain visible after import.
+  const phaseTwo = createPhaseTwoEngine(), phaseTwoTask = phaseTwo.records.data.tasks["L3-3"];
+  phaseTwoTask.predictionDraft = "阶段二极点预测"; phaseTwo.records.prediction("L3-3");
+  phaseTwoTask.analysis = "阶段二超调分析";
+  phaseTwoTask.python.code = "print('phase two')";
+  phaseTwo.records.trial("L3-3", phaseTwo.scene("L3-3", phaseTwoTask.params, phaseTwoTask.answers), null);
+  await page.locator("#import-file").setInputFiles({name:"v1.1-record.json",mimeType:"application/json",buffer:Buffer.from(JSON.stringify(phaseTwo.records.data))});
+  await page.getByRole("alertdialog").getByRole("button",{name:"确认",exact:true}).click(); await saved();
+  assert.equal(JSON.parse(records.get(101).document).phaseTwoArchive.tasks["L3-3"].prediction,"阶段二极点预测");
+  await page.evaluate(()=>{window.location.hash="records/L3";});
+  await frame().locator('[data-legacy-lab] > summary').first().click();
+  await frame().getByText("阶段二极点预测",{exact:true}).waitFor();
+  await page.reload(); await frame().locator('[data-legacy-lab] > summary').first().click();
+  await frame().getByText("阶段二超调分析",{exact:true}).waitFor();
+  const phaseTwoDownloadEvent=page.waitForEvent("download"); await frame().locator('[data-action="export"]').click();
+  const phaseTwoDownload=await phaseTwoDownloadEvent;
+  assert.equal(JSON.parse(await readFile(await phaseTwoDownload.path(),"utf8")).phaseTwoArchive.tasks["L3-3"].python.code,"print('phase two')");
+  const previousEngine = createLegacyEngine(), oldTask = previousEngine.records.data.tasks["L3-3"];
+  oldTask.predictionDraft = "旧版初始条件预测"; previousEngine.records.prediction("L3-3");
+  oldTask.analysis = "旧版初值分析"; oldTask.python.code = "print('historical')";
+  previousEngine.records.trial("L3-3",previousEngine.scene("L3-3",oldTask.params,oldTask.answers),null);
+  await page.locator("#import-file").setInputFiles({name:"v1-record.json",mimeType:"application/json",buffer:Buffer.from(JSON.stringify(previousEngine.records.data))});
+  await page.getByRole("alertdialog").getByRole("button",{name:"确认",exact:true}).click(); await saved();
+  const upgraded = JSON.parse(records.get(101).document);
+  assert.equal(upgraded.appVersion,"1.2.0");
+  assert.equal(upgraded.legacyArchive.tasks["L3-3"].prediction,"旧版初始条件预测");
+  assert.equal(upgraded.tasks["L3-2"].trials.length,1); assert.equal(upgraded.tasks["L3-3"].trials.length,0);
+  await page.evaluate(()=>{window.location.hash="records/L3";});
+  await frame().locator('[data-legacy-lab] > summary').first().click();
+  await frame().getByText("旧版初始条件预测",{exact:true}).waitFor();
+  assert.equal(await frame().locator('[data-legacy-trial]').count(),1);
+  await page.reload(); await frame().locator('[data-legacy-lab] > summary').first().click();
+  await frame().getByText("旧版初值分析",{exact:true}).waitFor();
+  const legacyDownloadEvent=page.waitForEvent("download"); await frame().locator('[data-action="export"]').click();
+  const legacyDownload=await legacyDownloadEvent;
+  assert.equal(JSON.parse(await readFile(await legacyDownload.path(),"utf8")).legacyArchive.tasks["L3-3"].python.code,"print('historical')");
+  await page.evaluate(()=>{window.print=()=>{};}); await frame().locator('[data-action="print"]').click();
+  await page.locator('#print-report [data-legacy-lab]').first().waitFor({state:"attached"});
+  assert.match(await page.locator('#print-report [data-legacy-lab]').first().textContent(),/旧版初始条件预测/);
+  await page.emulateMedia({media:"print"});
+  await page.locator('#print-report [data-legacy-lab]').first().waitFor({state:"visible"});
+  await page.pdf({path:join(artifacts,"historical-report.pdf"),format:"A4",printBackground:true});
+  await page.screenshot({path:join(artifacts,"historical-report-preview.png")});
+  await page.emulateMedia({media:"screen"}); await page.evaluate(()=>window.dispatchEvent(new Event("afterprint")));
   const invalidRecord = JSON.parse(validRecord.document);
   invalidRecord.tasks["L1-1"].params.a = 0;
   records.set(101, { ...validRecord, document: JSON.stringify(invalidRecord) });
@@ -448,16 +583,17 @@ try {
   await page.goto(`${base}/learn/experiments/guide`);
   const guideFrame = page.locator("[data-native-guide]");
   assert.equal(await page.locator("iframe").count(), 0);
-  await guideFrame.getByRole("heading", { name: "第一次实验 信号与时域系统", exact: true }).waitFor();
+  await guideFrame.getByRole("heading", { name: "三、实验一：信号与时域系统", exact: true }).waitFor();
   assert.equal(await guideFrame.locator("details").count(), 12);
   const popupEvent = page.waitForEvent("popup");
-  await guideFrame.getByRole("link", { name: "直接打开 L1-1 ↗", exact: true }).click();
+  await guideFrame.locator("details").first().locator("summary").click();
+  await guideFrame.locator("details").first().getByRole("link", { name: "打开本任务工作台", exact: true }).click();
   const popup = await popupEvent;
   await popup.waitForURL(/\/learn\/experiments\/workspace#task\/L1-1/);
   await popup.close();
-  await guideFrame.getByRole("heading", { name: "把代码生成信号纳入实验", exact: true }).first().waitFor();
+  await guideFrame.getByRole("heading", { name: "Python 编程选做：具体操作", exact: true }).first().waitFor();
   assert.deepEqual(errors, []);
-  console.log("PASS: 12 guided tasks, all comparisons, prediction gate, completion checks, Python resources and drafts, responsive light/dark layouts, account save/refresh/retry/conflict, backup/JSON/PDF, isolation and teacher guide");
+  console.log("PASS: 12 guided tasks, all comparisons, prediction gate, completion checks, Python resources and drafts, responsive light/dark layouts, account save/refresh/retry/conflict, backup/JSON/PDF, v1/v1.1 archive import/refresh/export/print, shared ECG design, audio and pole dragging, isolation and teacher guide");
 } catch (error) {
   if (page) console.error("Browser page alert:", await page.locator('[role="alert"]').allTextContents().catch(() => []));
   if (page) await page.screenshot({ path: join(artifacts, "failure.png") }).catch(() => {});

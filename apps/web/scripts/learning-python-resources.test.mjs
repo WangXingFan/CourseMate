@@ -59,10 +59,10 @@ test("Python verification follows all task models and current numerical paramete
     assert.ok(!/NaN|undefined/.test(source), id);
   }
   assert.match(buildPythonLabStarter("L1-1", { ...engine.defaults("L1-1"), mode: "impulse", delta: 0.1 }), /plt.step\(pulse_t, pulse/);
-  assert.match(buildPythonLabStarter("L1-2", { ...engine.defaults("L1-2"), kind: "varying", x1: "cos", test: "invariance" }), /x1=lambda t: np.cos\(2\*t\)/);
+  assert.match(buildPythonLabStarter("L1-2", { ...engine.defaults("L1-2"), kind: "timescale", x1: "sin", test: "invariance" }), /x1=lambda t: causal_input\("sin", t\)/);
   assert.match(buildPythonLabStarter("L1-3", { initial: 0.5, enabled: "off", A: 2.5 }), /y0=0.5, input_on=False, A=2.5/);
   assert.match(buildPythonLabStarter("L2-2", { A: 2, T: 0.5, center: -1 }), /A=2, T=0.5, shift=-1/);
-  assert.match(buildPythonLabStarter("L3-3", { initial: "0.5", measureTime: 2.2 }), /y0=0.5/);
+  assert.match(buildPythonLabStarter("L3-3", { center: 48, alpha: 12, measureTime: 0.2 }), /center=48, alpha=12/);
   assert.throws(() => buildPythonLabStarter("unknown", {}));
 });
 

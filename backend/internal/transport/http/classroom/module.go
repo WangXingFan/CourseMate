@@ -14,8 +14,11 @@ func NewModule(handler *Handler) *Module {
 // RegisterRoutes 注册教师班级管理路由。
 func (m *Module) RegisterRoutes(group *gin.RouterGroup) {
 	group.GET("/classrooms", m.Handler.ListClassrooms)
+	group.GET("/classrooms/:id/mastery", m.Handler.MasteryReport)
+	group.GET("/classrooms/:id/students/:student_id/mastery", m.Handler.StudentMastery)
 	group.POST("/classrooms", m.Handler.CreateClassroom)
 	group.PATCH("/classrooms/:id", m.Handler.UpdateClassroom)
+	group.PUT("/classrooms/:id/experiments/:course_id", m.Handler.SetExperiment)
 	group.DELETE("/classrooms/:id", m.Handler.DeleteClassroom)
 	group.GET("/classrooms/:id/students", m.Handler.ListStudents)
 	group.POST("/classrooms/:id/students", m.Handler.AddStudent)

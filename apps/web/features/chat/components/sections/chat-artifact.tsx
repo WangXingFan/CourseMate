@@ -231,7 +231,7 @@ function ChatArtifactPanel({
                   className="size-8 rounded-md text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground"
                   value={artifact.code}
                   messages={{ copied: t("sourceCopied"), failed: t("copyFailed") }}
-                  iconClassName="size-3"
+                  iconClassName="size-3.5"
                   aria-label={t("copySource")}
                 />
               </TooltipTrigger>

@@ -63,7 +63,7 @@ export function ClassroomActivities({ model }: { model: ClassroomActivitiesModel
             <span className="hidden sm:inline">{t("refresh")}</span>
           </Button>
           <Button type="button" size="sm" className="h-9 px-2" onClick={createDialog.open}>
-            <Plus className="size-3.5" strokeWidth={1.8} />
+            <Plus className="size-3.5" strokeWidth={1.6} />
             {t("create")}
           </Button>
         </div>
@@ -98,7 +98,7 @@ export function ClassroomActivities({ model }: { model: ClassroomActivitiesModel
           </div>
           <p className="text-sm font-medium text-foreground">{t("empty")}</p>
           <Button type="button" size="sm" className="mt-1" onClick={createDialog.open}>
-            <Plus className="size-3.5" strokeWidth={1.8} />
+            <Plus className="size-3.5" strokeWidth={1.6} />
             {t("create")}
           </Button>
         </div>
@@ -305,7 +305,7 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
                                 {count}
                               </span>
                               {correct ? (
-                                <CheckCircle2 className="size-4 shrink-0 text-primary" strokeWidth={1.8} />
+                                <CheckCircle2 className="size-4 shrink-0 text-primary" strokeWidth={1.6} />
                               ) : (
                                 <span className="size-4 shrink-0" />
                               )}
@@ -323,7 +323,7 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-sm font-medium text-foreground">{t("reportDialog.random")}</p>
                   <Button type="button" size="sm" variant="outline" className="h-9" onClick={pick}>
-                    <Shuffle className="size-3.5" strokeWidth={1.7} />
+                    <Shuffle className="size-3.5" strokeWidth={1.6} />
                     {picked ? t("reportDialog.pickAgain") : t("reportDialog.random")}
                   </Button>
                 </div>

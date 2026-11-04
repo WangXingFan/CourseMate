@@ -5,8 +5,9 @@ import { ApiError, resolveApiBaseURL } from "@/shared/api/http-client";
 import { getLearningVirtualLab, saveLearningVirtualLab } from "@/shared/api/learning-virtual-lab";
 import { useAuthSession } from "@/shared/auth/auth-session-context";
 import { createSecureUUID } from "@/shared/lib/secure-id";
+import { useLearningLabAccess } from "./use-learning-lab-access";
 
-type Status = "loading" | "ready" | "saving" | "saved" | "error" | "conflict" | "invalid";
+type Status = "loading" | "ready" | "saving" | "saved" | "error" | "conflict" | "invalid" | "closed";
 type Snapshot = { key: string; document: string; nonce: string; status: Status; localWarning: boolean; available: boolean };
 type Draft = { document: string; revision: number };
 type Session = {
@@ -24,6 +25,8 @@ function parseDraft(raw: string | null): Draft | null {
 }
 
 export function useLearningVirtualLab() {
+  const access = useLearningLabAccess();
+  const { refresh: refreshAccess } = access;
   const { user, accessToken } = useAuthSession();
   const accountId = user?.id;
   const storageKey = user ? `coursemate.virtual-lab:${resolveApiBaseURL()}:${user.id}` : "";
@@ -78,6 +81,9 @@ export function useLearningVirtualLab() {
             if (error instanceof ApiError && error.status === 409) {
               session.stopped = true;
               update({ status: "conflict" });
+            } else if (error instanceof ApiError && error.status === 403) {
+              update({ status: "closed" });
+              refreshAccess();
             } else update({ status: "error" });
           }).finally(() => {
             saving = false;
@@ -119,7 +125,7 @@ export function useLearningVirtualLab() {
       window.removeEventListener("beforeunload", beforeUnload);
       if (current.current === session) current.current = null;
     };
-  }, [accessToken, accountId, storageKey, key, generation]);
+  }, [accessToken, accountId, storageKey, key, generation, refreshAccess]);
 
   const record = useCallback((document: string) => {
     const session = current.current;
@@ -155,5 +161,5 @@ export function useLearningVirtualLab() {
   const start = useCallback((document: string) => {
     if (current.current?.key === key) current.current.start(document);
   }, [key]);
-  return { user, snapshot: snapshot?.key === key ? snapshot : null, record, retry, reload, backup, failRestore, start };
+  return { user, access, snapshot: snapshot?.key === key ? snapshot : null, record, retry, reload, backup, failRestore, start };
 }

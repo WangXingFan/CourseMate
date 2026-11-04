@@ -139,9 +139,9 @@ function UIBlockFallback({ reason, component, version, issues, raw }: UIBlockFal
         onClick={() => setOpen((value) => !value)}
         className="flex w-full items-center gap-2 px-4 py-3 text-left text-xs text-muted-foreground transition-colors hover:bg-accent/40"
       >
-        <LayoutGrid className="size-3.5 shrink-0" strokeWidth={1.8} />
+        <LayoutGrid className="size-3.5 shrink-0" strokeWidth={1.6} />
         <span className="min-w-0 flex-1 truncate">{title}</span>
-        <ChevronDown className={cn("size-3.5 shrink-0 transition-transform", open && "rotate-180")} strokeWidth={1.8} />
+        <ChevronDown className={cn("size-3.5 shrink-0 transition-transform", open && "rotate-180")} strokeWidth={1.6} />
       </button>
       <CollapsibleMotionContent id={contentID} open={open}>
         {issues && issues.length > 0 ? (

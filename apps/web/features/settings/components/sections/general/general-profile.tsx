@@ -205,7 +205,7 @@ export function GeneralProfileSection({
                   <SpinnerLabel>{t("generalPage.avatarDialog.uploading")}</SpinnerLabel>
                 ) : (
                   <>
-                    <Upload className="size-3.5 stroke-1" />
+                    <Upload className="size-3.5 stroke-[1.6]" />
                     {t("generalPage.avatarDialog.upload")}
                   </>
                 )}
@@ -218,7 +218,7 @@ export function GeneralProfileSection({
                 disabled={saving || avatarUploading}
                 onClick={onCycleGeneratedAvatar}
               >
-                <Sparkles className="size-3.5 stroke-1" />
+                <Sparkles className="size-3.5 stroke-[1.6]" />
                 {t("generalPage.avatarDialog.generate")}
               </Button>
             </div>

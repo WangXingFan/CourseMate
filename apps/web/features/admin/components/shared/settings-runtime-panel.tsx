@@ -128,11 +128,11 @@ export type ServiceRuntimePanelProps = {
 function resolveServiceRuntimeBadgeClassName(tone: ServiceRuntimeStatusBadgeTone = "neutral"): string {
   switch (tone) {
     case "success":
-      return "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-50";
+      return "border-success/30 bg-success/10 text-success hover:bg-success/10";
     case "warning":
-      return "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-50";
+      return "border-warning/30 bg-warning/10 text-warning hover:bg-warning/10";
     case "error":
-      return "border-red-200 bg-red-50 text-red-700 hover:bg-red-50";
+      return "border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/10";
     default:
       return "border-border/70 bg-muted/40 text-muted-foreground hover:bg-accent/40";
   }
@@ -218,7 +218,7 @@ function resolveRuntimeMessageToneClassName({
   pendingAction,
 }: Pick<ServiceRuntimePanelProps, "runtime" | "dirty" | "loading" | "pendingAction">): string {
   if (dirty) {
-    return "text-amber-700";
+    return "text-warning";
   }
   if (pendingAction) {
     return "text-muted-foreground";
@@ -229,12 +229,12 @@ function resolveRuntimeMessageToneClassName({
   switch (runtime?.status) {
     case "available":
     case "running":
-      return "text-emerald-700";
+      return "text-success";
     case "unhealthy":
-      return "text-amber-700";
+      return "text-warning";
     case "failed":
     case "unavailable":
-      return "text-red-700";
+      return "text-destructive";
     default:
       return "text-muted-foreground";
   }
@@ -408,7 +408,7 @@ export function SettingsFieldEditor({
     }),
     [t],
   );
-  const dirtyBadge = dirty ? <Badge variant="ghost" className="relative -mt-1.5 text-2xs font-medium text-amber-800">{t("states.unsaved")}</Badge> : null;
+  const dirtyBadge = dirty ? <Badge variant="ghost" className="relative -mt-1.5 text-2xs font-medium text-warning">{t("states.unsaved")}</Badge> : null;
   const inlineRuntimeStatusBadge =
     field.statusBadge ??
     (field.serviceRuntime

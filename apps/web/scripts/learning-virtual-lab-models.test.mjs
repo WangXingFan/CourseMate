@@ -22,19 +22,20 @@ test('L1-1: unit-area pulses remain normalized at all required widths', () => {
     close(scene.readings.numericalArea, 1, 0.005); close(scene.readings.height, 1 / delta);
   }
 });
-test('L1-2: gain and time-varying systems are linear; square yields a counterexample', () => {
-  for (const kind of ['gain', 'varying']) for (const x1 of ['constant', 'sin', 'cos']) {
-    const c = M.compare({ ...L.defaults('L1-2'), kind, x1, x2: 'cos', alpha: 1.3, beta: -0.7 });
-    assert.ok(c.error < 1e-9);
+test('L1-2: five systems use causal inputs and the two operation orders', () => {
+  for (const kind of ['timescale', 'delay', 'integrator']) for (const x1 of ['step', 'pulse', 'exp', 'sin']) {
+    const c = M.compare({ ...L.defaults('L1-2'), kind, x1, x2: 'exp', alpha: 1.3, beta: -0.7 });
+    assert.ok(c.error < 1e-9, kind);
   }
+  close(M.compare(L.defaults('L1-2')).error, 1);
   close(M.compare({ ...L.defaults('L1-2'), kind: 'square' }).error, 2);
-});
-test('L1-2: both time-shift paths shift the time multiplier; constants cover all times', () => {
-  for (const kind of ['gain', 'square']) for (const x1 of ['constant', 'sin', 'cos']) {
-    assert.ok(M.compare({ ...L.defaults('L1-2'), test: 'invariance', kind, x1, delay: 1.7 }).error < 1e-9);
+  for (const kind of ['affine', 'square', 'delay', 'integrator']) for (const x1 of ['step', 'pulse', 'exp', 'sin']) {
+    assert.ok(M.compare({ ...L.defaults('L1-2'), test: 'invariance', kind, x1, delay: -1.7 }).error < 1e-9, kind);
   }
-  const c = M.compare({ ...L.defaults('L1-2'), test: 'invariance', kind: 'varying' });
-  close(c.error, 1); close(c.left(-2), -2); close(c.right(-2), -3);
+  const c = M.compare({ ...L.defaults('L1-2'), test: 'invariance', kind: 'timescale' });
+  close(c.error, 1); close(c.left(0.75), 1); close(c.right(0.75), 0);
+  const integral = M.compare({ ...L.defaults('L1-2'), kind: 'integrator', x1: 'exp', x2: 'pulse', alpha: 1, beta: 0 });
+  close(integral.left(2), 1-Math.exp(-2)); close(integral.left(-1), 0);
 });
 test('L1-3: independent RK4 agrees with analytic full response, including initial value', () => {
   for (const initial of [0, 0.5, 2, -1]) for (const A of [0, 1, 2.7]) {

@@ -279,5 +279,18 @@
         "neither": "Neither submitted"
       }
     }
-  }
+  },
+  "experiments": {
+    "title": "Experiment access",
+    "L1": "Experiment 1",
+    "L2": "Experiment 2",
+    "L3": "Experiment 3",
+    "open": "Open",
+    "shut": "Closed",
+    "opened": "Experiment opened for this class",
+    "closed": "Experiment closed for this class",
+    "failed": "Could not update experiment access"
+  },
+  "masteryTab": "Knowledge mastery",
+  "labAssessmentsTab": "Lab assessments"
 }

@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createVirtualLabEngine } from "../public/vendor/signal-lab/core.mjs";
+import { createVirtualLabEngine as createLegacyEngine } from "../public/vendor/signal-lab/legacy-v1.mjs";
 const L=createVirtualLabEngine(),M=L.models,R=L.records,close=(a,b,tol=1e-9)=>assert.ok(Math.abs(a-b)<=tol,`${a} != ${b} tol ${tol}`);
 const clone=v=>JSON.parse(JSON.stringify(v)),evidence={};
 test('native engine instances isolate account records and expose no window global',()=>{
@@ -30,8 +31,8 @@ test('L2-2 rectangle exact zero, area and translation phase',()=>{
 });
 test('L2-3 independent RK4 fit satisfies amplitude and phase tolerance',()=>{
  evidence.filter=[];
- for(const fc of [50,100,200,500,1000]){const r=M.filter(fc);const errors=r.fit.components.map((c,i)=>({relativeAmplitude:Math.abs(c.ratio-r.theory[i].ratio)/r.theory[i].ratio,phase:Math.abs(c.phase-r.theory[i].phase)}));for(const e of errors){assert.ok(e.relativeAmplitude<=.01);assert.ok(e.phase<=1);}evidence.filter.push({fc,components:r.fit.components,errors,passed:r.passed});}
- assert.equal(M.filter(100).passed,false);assert.equal(M.filter(200).passed,true);assert.equal(M.filter(500).passed,false);
+ for(const fc of [50,100,200,500,1000]){const r=M.filter(fc);const errors=r.fit.components.map((c,i)=>({relativeAmplitude:Math.abs(c.ratio-r.theory[i].ratio)/r.theory[i].ratio,phase:Math.abs(c.phase-r.theory[i].phase*180/Math.PI)}));for(const e of errors){assert.ok(e.relativeAmplitude<=.01);assert.ok(e.phase<=1);}evidence.filter.push({fc,components:r.fit.components,errors,passed:r.passed});}
+ assert.equal(M.filter(100).passed,false);assert.equal(M.filter(200).passed,false);assert.equal(M.filter(200,1e-5,2).passed,true);assert.equal(M.filter(500).passed,false);
  close(M.filter(200).fit.components[0].ratio,Math.sqrt(.8),1e-6);close(M.filter(200).fit.components[1].ratio,1/Math.sqrt(26),1e-6);
 });
 test('filter half-step comparison improves independent fit error',()=>{
@@ -50,11 +51,11 @@ test('L3-1 four templates preserve student inputs and correct absolute delays',(
  const bad=L.scene('L3-1',{...L.defaults('L3-1'),mode:'delayed'},{coefficient:'1',denShift:'0',delay1:'1',delay2:'1'});assert.ok(bad.answerFeedback.some(a=>a.status==='review'));
 });
 test('L3-2 student zero-state coefficients and measured t90',()=>{
- const a={hShift:'1',xGain:'1',C:'1',D:'-1'},s=L.scene('L3-2',L.defaults('L3-2'),a);assert.ok(s.answerFeedback.every(a=>a.status==='correct'));close(s.readings.yAtTime,1-Math.exp(-1),1e-3);close(s.readings.t90,Math.log(10),.01);assert.equal(s.plots[0].series.length,2);assert.equal(L.scene('L3-2',L.defaults('L3-2'),{}).plots[0].series.length,1);
+ const a={hShift:'1',xGain:'1',C:'1',D:'-1',b0:'0'},s=L.scene('L3-2',L.defaults('L3-2'),a);assert.ok(s.answerFeedback.every(a=>a.status==='correct'));close(s.readings.yAtTime,1-Math.exp(-1),1e-3);close(s.readings.t90,Math.log(10),.01);assert.equal(s.plots[0].series.length,2);assert.equal(L.scene('L3-2',L.defaults('L3-2'),{}).plots[0].series.length,1);
  evidence.zeroState={y1:s.readings.yAtTime,t90:s.readings.t90};
 });
-test('L3-3 independent initial states, decomposition and answer checks',()=>{
- for(const y0 of [0,.5,2]){const p={initial:String(y0),measureTime:1},a={initialTerm:String(y0),C:'1',D:String(y0-1)},s=L.scene('L3-3',p,a);assert.ok(s.answerFeedback.every(a=>a.status==='correct'));close(s.readings.initialValue,y0);assert.ok(s.readings.decompositionError<1e-3);close(s.readings.yAtTime,1+(y0-1)*Math.exp(-1),1e-3);assert.equal(s.plots[0].series.length,4);}
+test('L3-2 independent initial states, decomposition and answer checks',()=>{
+ for(const y0 of [0,.5,2]){const p={initial:String(y0),measureTime:1},a={hShift:'1',xGain:'1',b0:String(y0),C:'1',D:String(y0-1)},s=L.scene('L3-2',p,a);assert.ok(s.answerFeedback.every(a=>a.status==='correct'));close(s.readings.initialValue,y0);assert.ok(s.readings.decompositionError<1e-3);close(s.readings.yAtTime,1+(y0-1)*Math.exp(-1),1e-3);assert.equal(s.plots[0].series.length,2);}
 });
 test('L3-4 exact peak at pulse boundary, strict threshold and convergence',()=>{
  evidence.pulse=[];
@@ -72,8 +73,8 @@ test('schema2 full records preserve twelve scenes and answer snapshots',()=>{
  const expected=clone(R.data),clean=R.validate(expected);assert.deepEqual(clean.tasks,expected.tasks);R.import(expected);assert.deepEqual(R.data.tasks,expected.tasks);
 });
 test('schema1 legacy first-experiment records migrate without losing evidence',()=>{
- const old=clone(R.data);old.schemaVersion=1;old.appVersion='0.1.0';old.tasks=Object.fromEntries(L.courseIds('L1').map(id=>{const t=old.tasks[id];delete t.answers;t.trials.forEach(v=>{delete v.answers;});t.figures.forEach(v=>{delete v.answers;});return[id,t];}));
- const clean=R.validate(old);assert.equal(clean.schemaVersion,2);assert.equal(Object.keys(clean.tasks).length,12);for(const id of L.courseIds('L1'))assert.deepEqual(clean.tasks[id].trials.map(v=>v.measurements),old.tasks[id].trials.map(v=>v.measurements));assert.equal(clean.tasks['L2-1'].trials.length,0);
+ const old=clone(createLegacyEngine().records.data);old.schemaVersion=1;old.appVersion='0.1.0';old.tasks=Object.fromEntries(L.courseIds('L1').map(id=>{const t=old.tasks[id];delete t.answers;t.trials.forEach(v=>{delete v.answers;});t.figures.forEach(v=>{delete v.answers;});return[id,t];}));
+ const clean=R.validate(old);assert.equal(clean.schemaVersion,2);assert.equal(Object.keys(clean.tasks).length,12);for(const id of L.courseIds('L1').filter(id=>id!=='L1-2'))assert.deepEqual(clean.tasks[id].trials.map(v=>v.measurements),old.tasks[id].trials.map(v=>v.measurements));assert.ok(clean.legacyArchive.tasks['L1-2']);assert.equal(clean.tasks['L2-1'].trials.length,0);
 });
 test('broken imports fail atomically for every experiment',()=>{
  const original=clone(R.data),snapshot=JSON.stringify(R.data);

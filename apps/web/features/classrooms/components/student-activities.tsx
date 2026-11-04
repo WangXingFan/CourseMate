@@ -38,7 +38,7 @@ export function StudentActivitiesEntry() {
             <Button asChild size="sm" variant="outline">
               <Link href="/classrooms">
                 {t("goToClassrooms")}
-                <ArrowRight className="size-3.5" strokeWidth={1.8} />
+                <ArrowRight className="size-3.5" strokeWidth={1.6} />
               </Link>
             </Button>
           </div>
@@ -162,7 +162,7 @@ function QuizCard({
             </Badge>
             {quiz.submitted ? (
               <Badge variant="secondary" className="gap-1 rounded-md text-xs font-normal">
-                <CheckCircle2 className="size-4" strokeWidth={1.8} />
+                <CheckCircle2 className="size-4" strokeWidth={1.6} />
                 {studentT("submitted")}
               </Badge>
             ) : null}
@@ -223,12 +223,12 @@ function QuizCard({
       <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-border/40 px-4 py-3">
         {quiz.submitted ? (
           <span className="flex items-center gap-1 text-sm text-muted-foreground">
-            <LockKeyhole className="size-4" strokeWidth={1.7} />
+            <LockKeyhole className="size-4" strokeWidth={1.6} />
             {studentT("locked")}
           </span>
         ) : quiz.status !== "open" ? (
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
-            <LockKeyhole className="size-4" strokeWidth={1.7} />
+            <LockKeyhole className="size-4" strokeWidth={1.6} />
             {studentT("closedNote")}
           </span>
         ) : (

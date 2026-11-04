@@ -27,7 +27,7 @@ export function MobileHeader({
           aria-label={t("openSidebar")}
           onClick={toggleSidebar}
         >
-          <PanelLeft aria-hidden className="size-[18px]" strokeWidth={1.4} />
+          <PanelLeft aria-hidden className="size-[18px]" strokeWidth={1.6} />
         </Button>
       </div>
 

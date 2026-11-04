@@ -455,11 +455,11 @@ function TokenBadge({
 
   return (
     <span className="ml-0.5 inline-flex items-center gap-1.5 rounded px-1.5 py-0.5 text-xs leading-3.5 font-mono text-muted-foreground/70 bg-muted/30 select-none whitespace-nowrap">
-      <TokenMetric label={t("inputTokens")} value={inputValue} icon={<ArrowUpFromLine className="size-4" strokeWidth={1.4} />} />
-      <TokenMetric label={t("cacheReadTokens")} value={cacheReadValue} icon={<DatabaseSearch className="size-4" strokeWidth={1.4} />} />
-      <TokenMetric label={t("reasoningTokens")} value={reasoningValue} icon={<Brain className="size-4" strokeWidth={1.4} />} />
-      <TokenMetric label={t("outputTokens")} value={outputValue} icon={<ArrowDownToLine className="size-4" strokeWidth={1.4} />} />
-      <TokenMetric label={t("cacheWriteTokens")} value={cacheWriteValue} icon={<DatabaseZap className="size-4" strokeWidth={1.4} />} />
+      <TokenMetric label={t("inputTokens")} value={inputValue} icon={<ArrowUpFromLine className="size-4" strokeWidth={1.6} />} />
+      <TokenMetric label={t("cacheReadTokens")} value={cacheReadValue} icon={<DatabaseSearch className="size-4" strokeWidth={1.6} />} />
+      <TokenMetric label={t("reasoningTokens")} value={reasoningValue} icon={<Brain className="size-4" strokeWidth={1.6} />} />
+      <TokenMetric label={t("outputTokens")} value={outputValue} icon={<ArrowDownToLine className="size-4" strokeWidth={1.6} />} />
+      <TokenMetric label={t("cacheWriteTokens")} value={cacheWriteValue} icon={<DatabaseZap className="size-4" strokeWidth={1.6} />} />
     </span>
   );
 }
@@ -500,9 +500,9 @@ function LatencyBadge({ item }: { item: ChatMetaMessage }) {
         >
           <span className="sr-only">{isLive ? t("generationDuration") : t("totalDuration")}</span>
           {isLive ? (
-            <ClockArrowUp className="size-4" strokeWidth={1.4} />
+            <ClockArrowUp className="size-4" strokeWidth={1.6} />
           ) : (
-            <ClockCheck className="size-4" strokeWidth={1.4} />
+            <ClockCheck className="size-4" strokeWidth={1.6} />
           )}
           {label}
         </span>
@@ -523,7 +523,7 @@ function EditedBadge({ messageRole = "assistant" }: { messageRole?: "user" | "as
         <span
           className="ml-0.5 inline-flex items-center gap-1 rounded bg-muted/30 px-1.5 py-0.5 text-xs leading-3.5 text-muted-foreground/70 select-none whitespace-nowrap"
         >
-          <FilePenLine className="size-4" strokeWidth={1.4} />
+          <FilePenLine className="size-4" strokeWidth={1.6} />
           {label}
           <span className="sr-only">{tooltip}</span>
         </span>
@@ -547,7 +547,7 @@ function ModelBadge({ label }: { label: string }) {
           className="ml-0.5 inline-flex max-w-48 items-center gap-1 rounded bg-muted/30 px-1.5 py-0.5 font-mono text-xs leading-3.5 text-muted-foreground/70 select-none whitespace-nowrap"
         >
           <span className="sr-only">{t("model")}</span>
-          <Cpu className="size-4 shrink-0" strokeWidth={1.4} />
+          <Cpu className="size-4 shrink-0" strokeWidth={1.6} />
           <span className="truncate">{normalized}</span>
         </span>
       </TooltipTrigger>
@@ -717,7 +717,7 @@ export function AssistantMessageMeta({
                     label={t("continueReply")}
                     onClick={onContinue}
                   >
-                    <Forward strokeWidth={1.8} />
+                    <Forward strokeWidth={1.6} />
                   </MetaIconButton>
                 ) : null}
                 {canFork && onFork ? (

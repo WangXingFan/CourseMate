@@ -21,20 +21,44 @@ var ErrVirtualLabConflict = errors.New("virtual lab record changed in another se
 //go:embed content/virtual-lab-task-specs.json
 var virtualLabTaskSpecsJSON []byte
 
+//go:embed content/virtual-lab-task-specs-v1.json
+var legacyVirtualLabTaskSpecsJSON []byte
+
+//go:embed content/virtual-lab-task-specs-v1.1.json
+var phaseTwoVirtualLabTaskSpecsJSON []byte
+
 type labParameterSpec struct {
+	Default any
 	Type    string
 	Min     float64
 	Max     float64
 	Options []string
 }
 type labTaskSpec struct {
-	Params  map[string]labParameterSpec
-	Answers []string
+	Params      map[string]labParameterSpec
+	Answers     []string
+	AnswerTypes map[string]string
 }
 
 var virtualLabTaskSpecs = func() map[string]labTaskSpec {
 	var specs map[string]labTaskSpec
 	if err := json.Unmarshal(virtualLabTaskSpecsJSON, &specs); err != nil {
+		panic(err)
+	}
+	return specs
+}()
+
+var legacyVirtualLabTaskSpecs = func() map[string]labTaskSpec {
+	var specs map[string]labTaskSpec
+	if err := json.Unmarshal(legacyVirtualLabTaskSpecsJSON, &specs); err != nil {
+		panic(err)
+	}
+	return specs
+}()
+
+var phaseTwoVirtualLabTaskSpecs = func() map[string]labTaskSpec {
+	var specs map[string]labTaskSpec
+	if err := json.Unmarshal(phaseTwoVirtualLabTaskSpecsJSON, &specs); err != nil {
 		panic(err)
 	}
 	return specs
@@ -58,8 +82,14 @@ func ValidateVirtualLab(document string) error {
 	if err := json.Unmarshal([]byte(document), &raw); err != nil {
 		return err
 	}
-	if !boundedLabValue(raw, 0) || raw["schemaVersion"] != float64(2) || raw["appVersion"] != "1.0.0" {
+	if !boundedLabValue(raw, 0) || raw["schemaVersion"] != float64(2) || (raw["appVersion"] != "1.0.0" && raw["appVersion"] != "1.1.0" && raw["appVersion"] != "1.2.0") {
 		return errors.New("unsupported lab document")
+	}
+	specs := virtualLabTaskSpecs
+	if raw["appVersion"] == "1.0.0" {
+		specs = legacyVirtualLabTaskSpecs
+	} else if raw["appVersion"] == "1.1.0" {
+		specs = phaseTwoVirtualLabTaskSpecs
 	}
 	for _, key := range []string{"createdAt", "updatedAt"} {
 		value, ok := raw[key].(string)
@@ -84,97 +114,135 @@ func ValidateVirtualLab(document string) error {
 	if !ok || len(tasks) != 12 {
 		return errors.New("expected twelve tasks")
 	}
+	ids := make([]string, 0, 12)
 	for course := 1; course <= 3; course++ {
 		for task := 1; task <= 4; task++ {
-			id := fmt.Sprintf("L%d-%d", course, task)
-			item, ok := tasks[id].(map[string]any)
-			if !ok || item["taskId"] != id || item["experimentId"] != id[:2] {
-				return errors.New("invalid task")
-			}
-			for _, key := range []string{"params", "answers", "completion"} {
-				if _, ok := item[key].(map[string]any); !ok {
-					return errors.New("missing task object")
-				}
-			}
-			if !validLabInputs(id, item) {
-				return errors.New("invalid experiment parameters or answers")
-			}
-			if python, exists := item["python"]; exists && !validLabPython(id, python) {
-				return errors.New("invalid Python evidence")
-			}
-			for _, key := range []string{"prediction", "predictionDraft", "derivation", "analysis"} {
-				if _, ok := item[key].(string); !ok {
-					return errors.New("missing task text")
-				}
-			}
-			for key, limit := range map[string]int{"trials": 200, "figures": 200, "revisions": 100} {
-				value, ok := item[key].([]any)
-				if !ok || len(value) > limit {
-					return errors.New("invalid task evidence")
-				}
-			}
-			for _, key := range []string{"trials", "figures"} {
-				for _, value := range item[key].([]any) {
-					evidence, ok := value.(map[string]any)
-					if !ok || !validLabInputs(id, evidence) || !validLabDate(evidence["time"]) {
-						return errors.New("invalid saved experiment")
-					}
-					if key == "trials" {
-						if _, ok := evidence["measurements"].(map[string]any); !ok {
-							return errors.New("invalid measurement")
-						}
-						units, ok := evidence["units"].(map[string]any)
-						if !ok || units["time"] != "s" || units["amplitude"] != "归一化" || units["area"] != "幅度·s" {
-							return errors.New("invalid units")
-						}
-						windows, ok := evidence["window"].([]any)
-						if !ok || len(windows) < 1 || len(windows) > 4 {
-							return errors.New("invalid plot window")
-						}
-						for _, value := range windows {
-							window, ok := value.(map[string]any)
-							if !ok {
-								return errors.New("invalid plot window")
-							}
-							pair, ok := window["range"].([]any)
-							if !ok || len(pair) != 2 {
-								return errors.New("invalid plot range")
-							}
-							lo, ok1 := pair[0].(float64)
-							hi, ok2 := pair[1].(float64)
-							if !ok1 || !ok2 || lo >= hi {
-								return errors.New("invalid plot range")
-							}
-						}
-					}
-				}
-			}
-			for _, value := range item["revisions"].([]any) {
-				revision, ok := value.(map[string]any)
-				if !ok || !validLabDate(revision["time"]) {
-					return errors.New("invalid prediction revision")
-				}
-				if _, ok := revision["text"].(string); !ok {
-					return errors.New("invalid prediction text")
-				}
-			}
-			completion := item["completion"].(map[string]any)
-			confirmed, ok := completion["confirmed"].(bool)
-			if !ok {
-				return errors.New("invalid completion")
-			}
-			if completion["confirmedAt"] != nil && !validLabDate(completion["confirmedAt"]) {
-				return errors.New("invalid completion date")
-			}
-			if confirmed && (item["prediction"] == "" || item["analysis"] == "" || len(item["trials"].([]any)) == 0) {
-				return errors.New("missing completion evidence")
-			}
+			ids = append(ids, fmt.Sprintf("L%d-%d", course, task))
+		}
+	}
+	if err := validateLabTasks(tasks, specs, ids); err != nil {
+		return err
+	}
+	for _, archiveSpec := range []struct {
+		key     string
+		version string
+		ids     []string
+		specs   map[string]labTaskSpec
+	}{
+		{"legacyArchive", "1.0.0", []string{"L1-2", "L2-3", "L2-4", "L3-2", "L3-3"}, legacyVirtualLabTaskSpecs},
+		{"phaseTwoArchive", "1.1.0", []string{"L1-4", "L2-3", "L3-3"}, phaseTwoVirtualLabTaskSpecs},
+	} {
+		value, exists := raw[archiveSpec.key]
+		if !exists {
+			continue
+		}
+		archive, ok := value.(map[string]any)
+		if !ok || archive["appVersion"] != archiveSpec.version || raw["appVersion"] == "1.0.0" || (archiveSpec.key == "phaseTwoArchive" && raw["appVersion"] != "1.2.0") {
+			return errors.New("invalid legacy archive")
+		}
+		archived, ok := archive["tasks"].(map[string]any)
+		if !ok {
+			return errors.New("invalid legacy tasks")
+		}
+		if err := validateLabTasks(archived, archiveSpec.specs, archiveSpec.ids); err != nil {
+			return fmt.Errorf("%s: %w", archiveSpec.key, err)
 		}
 	}
 	return nil
 }
 
-func validLabPython(id string, value any) bool {
+func validateLabTasks(tasks map[string]any, specs map[string]labTaskSpec, ids []string) error {
+	if len(tasks) != len(ids) {
+		return errors.New("invalid task count")
+	}
+	for _, id := range ids {
+		item, ok := tasks[id].(map[string]any)
+		if !ok || item["taskId"] != id || item["experimentId"] != id[:2] {
+			return errors.New("invalid task")
+		}
+		for _, key := range []string{"params", "answers", "completion"} {
+			if _, ok := item[key].(map[string]any); !ok {
+				return errors.New("missing task object")
+			}
+		}
+		if !validLabInputs(id, item, specs) {
+			return errors.New("invalid experiment parameters or answers")
+		}
+		if python, exists := item["python"]; exists && !validLabPython(id, python, specs) {
+			return errors.New("invalid Python evidence")
+		}
+		for _, key := range []string{"prediction", "predictionDraft", "derivation", "analysis"} {
+			if _, ok := item[key].(string); !ok {
+				return errors.New("missing task text")
+			}
+		}
+		for key, limit := range map[string]int{"trials": 200, "figures": 200, "revisions": 100} {
+			value, ok := item[key].([]any)
+			if !ok || len(value) > limit {
+				return errors.New("invalid task evidence")
+			}
+		}
+		for _, key := range []string{"trials", "figures"} {
+			for _, value := range item[key].([]any) {
+				evidence, ok := value.(map[string]any)
+				if !ok || !validLabInputs(id, evidence, specs) || !validLabDate(evidence["time"]) {
+					return errors.New("invalid saved experiment")
+				}
+				if key == "trials" {
+					if _, ok := evidence["measurements"].(map[string]any); !ok {
+						return errors.New("invalid measurement")
+					}
+					units, ok := evidence["units"].(map[string]any)
+					if !ok || units["time"] != "s" || units["amplitude"] != "归一化" || units["area"] != "幅度·s" {
+						return errors.New("invalid units")
+					}
+					windows, ok := evidence["window"].([]any)
+					if !ok || len(windows) < 1 || len(windows) > 4 {
+						return errors.New("invalid plot window")
+					}
+					for _, value := range windows {
+						window, ok := value.(map[string]any)
+						if !ok {
+							return errors.New("invalid plot window")
+						}
+						pair, ok := window["range"].([]any)
+						if !ok || len(pair) != 2 {
+							return errors.New("invalid plot range")
+						}
+						lo, ok1 := pair[0].(float64)
+						hi, ok2 := pair[1].(float64)
+						if !ok1 || !ok2 || lo >= hi {
+							return errors.New("invalid plot range")
+						}
+					}
+				}
+			}
+		}
+		for _, value := range item["revisions"].([]any) {
+			revision, ok := value.(map[string]any)
+			if !ok || !validLabDate(revision["time"]) {
+				return errors.New("invalid prediction revision")
+			}
+			if _, ok := revision["text"].(string); !ok {
+				return errors.New("invalid prediction text")
+			}
+		}
+		completion := item["completion"].(map[string]any)
+		confirmed, ok := completion["confirmed"].(bool)
+		if !ok {
+			return errors.New("invalid completion")
+		}
+		if completion["confirmedAt"] != nil && !validLabDate(completion["confirmedAt"]) {
+			return errors.New("invalid completion date")
+		}
+		if confirmed && (item["prediction"] == "" || item["analysis"] == "" || len(item["trials"].([]any)) == 0) {
+			return errors.New("missing completion evidence")
+		}
+	}
+	return nil
+}
+
+func validLabPython(id string, value any, specs map[string]labTaskSpec) bool {
 	python, ok := value.(map[string]any)
 	if !ok || !validLabText(python["code"]) {
 		return false
@@ -188,10 +256,10 @@ func validLabPython(id string, value any) bool {
 		return false
 	}
 	answers := map[string]any{}
-	for _, key := range virtualLabTaskSpecs[id].Answers {
+	for _, key := range specs[id].Answers {
 		answers[key] = ""
 	}
-	if !validLabInputs(id, map[string]any{"params": run["params"], "answers": answers}) {
+	if !validLabInputs(id, map[string]any{"params": run["params"], "answers": answers}, specs) {
 		return false
 	}
 	plots, ok := run["plots"].([]any)
@@ -240,8 +308,8 @@ func validLabDate(value any) bool {
 	return err == nil
 }
 
-func validLabInputs(id string, item map[string]any) bool {
-	spec, ok := virtualLabTaskSpecs[id]
+func validLabInputs(id string, item map[string]any, specs map[string]labTaskSpec) bool {
+	spec, ok := specs[id]
 	if !ok {
 		return false
 	}
@@ -273,6 +341,9 @@ func validLabInputs(id string, item map[string]any) bool {
 			}
 		}
 	}
+	if id == "L2-4" && params["mode"] != nil && ((params["mode"] == "audio") != (params["fs"] == "4000")) {
+		return false
+	}
 	answers, ok := item["answers"].(map[string]any)
 	if !ok || len(answers) != len(spec.Answers) {
 		return false
@@ -283,6 +354,9 @@ func validLabInputs(id string, item map[string]any) bool {
 			return false
 		}
 		value = strings.TrimSpace(value)
+		if spec.AnswerTypes[key] == "text" {
+			continue
+		}
 		if value != "" {
 			number, err := strconv.ParseFloat(value, 64)
 			if err != nil || math.IsNaN(number) || math.IsInf(number, 0) || math.Abs(number) > 100 {

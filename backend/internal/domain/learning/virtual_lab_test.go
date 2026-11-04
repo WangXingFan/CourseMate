@@ -70,3 +70,63 @@ func TestVirtualLabPythonEvidence(t *testing.T) {
 	delete(task, "python")
 	check(true)
 }
+
+func TestVirtualLabPhaseTwoVersionsAndArchives(t *testing.T) {
+	for _, name := range []string{"virtual-lab.json", "virtual-lab-v1.1.json", "virtual-lab-migrated.json", "virtual-lab-v1.2.json", "virtual-lab-v1.2-migrated.json"} {
+		t.Run(name, func(t *testing.T) {
+			document, err := os.ReadFile("testdata/" + name)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := ValidateVirtualLab(string(document)); err != nil {
+				t.Fatal(err)
+			}
+			var raw map[string]any
+			if err := json.Unmarshal(document, &raw); err != nil {
+				t.Fatal(err)
+			}
+			tasks := raw["tasks"].(map[string]any)
+			check := func(wantValid bool) {
+				t.Helper()
+				encoded, err := json.Marshal(raw)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if err := ValidateVirtualLab(string(encoded)); (err == nil) != wantValid {
+					t.Fatalf("valid=%v, error=%v", wantValid, err)
+				}
+			}
+			if raw["appVersion"] == "1.0.0" {
+				// Historical Python snapshots use the historical answer schema.
+				item := tasks["L3-3"].(map[string]any)
+				item["python"] = map[string]any{"code": "print(1)", "result": map[string]any{"code": "print(1)", "params": item["params"], "time": raw["updatedAt"], "stdout": "1", "stderr": "", "plots": []any{}}}
+				check(true)
+				return
+			}
+			params := tasks["L2-4"].(map[string]any)["params"].(map[string]any)
+			params["mode"] = "audio"
+			check(false)
+			params["fs"] = "4000"
+			check(true)
+			answers := tasks["L1-2"].(map[string]any)["answers"].(map[string]any)
+			answers["evidence"] = "x1=step; x2=step; alpha=1; beta=1"
+			check(true)
+			answers["evidence"] = strings.Repeat("x", 101)
+			check(false)
+			answers["evidence"] = ""
+			if archive, exists := raw["phaseTwoArchive"]; exists {
+				params := archive.(map[string]any)["tasks"].(map[string]any)["L3-3"].(map[string]any)["params"].(map[string]any)
+				previous := params["zeta"]
+				params["zeta"] = 9.0
+				check(false)
+				params["zeta"] = previous
+				check(true)
+			}
+			if archive, exists := raw["legacyArchive"]; exists {
+				archived := archive.(map[string]any)["tasks"].(map[string]any)
+				archived["L3-3"].(map[string]any)["params"].(map[string]any)["initial"] = "invalid"
+				check(false)
+			}
+		})
+	}
+}

@@ -633,7 +633,7 @@ export function PreviewMedia({
                     )}
                     onClick={() => void togglePlay()}
                   >
-                    <Play className={cn("ml-0.5", inline ? "size-4.5" : "size-5")} strokeWidth={1.9} />
+                    <Play className={cn("ml-0.5", inline ? "size-4.5" : "size-5")} strokeWidth={1.6} />
                   </Button>
                 ) : null}
 
@@ -661,7 +661,7 @@ export function PreviewMedia({
                         className="size-8 shrink-0 rounded-md text-neutral-50 hover:bg-neutral-50/10 hover:text-neutral-50"
                         onClick={() => void togglePlay()}
                       >
-                        {playing ? <Pause className="size-3.5" strokeWidth={1.9} /> : <Play className="ml-0.5 size-3.5" strokeWidth={1.9} />}
+                        {playing ? <Pause className="size-3.5" strokeWidth={1.6} /> : <Play className="ml-0.5 size-3.5" strokeWidth={1.6} />}
                       </Button>
                       <span className="shrink-0 tabular-nums">{formatTime(currentTime)}</span>
                       <div
@@ -697,7 +697,7 @@ export function PreviewMedia({
                         className="size-8 shrink-0 rounded-md text-neutral-300 hover:bg-neutral-50/10 hover:text-neutral-50"
                         onClick={() => void toggleVideoFullscreen()}
                       >
-                        {videoIsFullscreen ? <Minimize2 className="size-3.5" strokeWidth={1.7} /> : <Maximize2 className="size-3.5" strokeWidth={1.7} />}
+                        {videoIsFullscreen ? <Minimize2 className="size-3.5" strokeWidth={1.6} /> : <Maximize2 className="size-3.5" strokeWidth={1.6} />}
                       </Button>
                     </div>
                   </div>
@@ -733,7 +733,7 @@ export function PreviewMedia({
                     className="absolute inset-0 z-20 size-full rounded-md bg-neutral-950/55 text-neutral-50 opacity-0 backdrop-blur-md transition-opacity duration-200 hover:bg-neutral-950/70 hover:text-neutral-50 group-hover:opacity-100 focus-visible:opacity-100"
                     onClick={() => void togglePlay()}
                   >
-                    {playing ? <Pause className="size-8" strokeWidth={1.8} /> : <Play className="ml-1 size-8" strokeWidth={1.8} />}
+                    {playing ? <Pause className="size-8" strokeWidth={1.6} /> : <Play className="ml-1 size-8" strokeWidth={1.6} />}
                   </Button>
                 </div>
               </div>

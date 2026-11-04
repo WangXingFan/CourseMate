@@ -279,5 +279,18 @@
         "neither": "两次未交"
       }
     }
-  }
+  },
+  "experiments": {
+    "title": "实验开放",
+    "L1": "实验一",
+    "L2": "实验二",
+    "L3": "实验三",
+    "open": "已开放",
+    "shut": "已关闭",
+    "opened": "已向本班开放实验",
+    "closed": "已关闭本班实验",
+    "failed": "实验开放状态更新失败"
+  },
+  "masteryTab": "知识掌握",
+  "labAssessmentsTab": "实验验收"
 }

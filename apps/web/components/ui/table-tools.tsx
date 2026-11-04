@@ -127,7 +127,7 @@ function MenuOption({
     >
       {icon}
       <span className="flex-1 truncate">{label}</span>
-      {active ? <Check className="size-3 stroke-1 text-muted-foreground" /> : null}
+      {active ? <Check className="size-3 stroke-[1.6] text-muted-foreground" /> : null}
     </DropdownMenuItem>
   );
 }
@@ -295,7 +295,7 @@ export function TableToolbar({
           <Popover>
             <PopoverTrigger asChild>
               <ToolbarButton aria-label={t("search")}>
-                <Search className="size-3.5 stroke-1" />
+                <Search className="size-3.5 stroke-[1.6]" />
                 <span className="hidden sm:inline">{t("search")}</span>
                 {hasQuery ? <span className="text-2xs tabular-nums">1</span> : null}
               </ToolbarButton>
@@ -304,7 +304,7 @@ export function TableToolbar({
               <div className="space-y-2">
                 <PopoverField label={t("search")}>
                   <div className="relative">
-                    <Search className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 stroke-1 text-muted-foreground" />
+                    <Search className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 stroke-[1.6] text-muted-foreground" />
                     <Input
                       value={queryDraft.draft}
                       placeholder={queryPlaceholder ?? t("searchPlaceholder")}
@@ -332,7 +332,7 @@ export function TableToolbar({
         </div>
 
         <div className="relative hidden min-w-[220px] flex-1 md:block md:max-w-[320px]">
-          <Search className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 stroke-1 text-muted-foreground" />
+          <Search className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 stroke-[1.6] text-muted-foreground" />
           <Input
             value={queryDraft.draft}
             placeholder={queryPlaceholder ?? t("searchPlaceholder")}
@@ -345,7 +345,7 @@ export function TableToolbar({
           <Popover>
             <PopoverTrigger asChild>
               <ToolbarButton disabled={loading} aria-label={t("filter")}>
-                <Funnel className="size-3.5 stroke-1" />
+                <Funnel className="size-3.5 stroke-[1.6]" />
                 <span className="hidden sm:inline">{t("filter")}</span>
                 {activeFilterCount ? <span className="text-2xs tabular-nums">{activeFilterCount}</span> : null}
               </ToolbarButton>
@@ -372,7 +372,7 @@ export function TableToolbar({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <ToolbarButton disabled={loading} aria-label={t("sort")}>
-                <ArrowDownUp className="size-3.5 stroke-1" />
+                <ArrowDownUp className="size-3.5 stroke-[1.6]" />
                 <span className="hidden sm:inline">{t("sort")}</span>
               </ToolbarButton>
             </DropdownMenuTrigger>
@@ -383,7 +383,7 @@ export function TableToolbar({
                     key={option.value}
                     label={option.label}
                     active={sort.value === option.value}
-                    icon={<ArrowDownUp className="size-3 stroke-1 text-muted-foreground" />}
+                    icon={<ArrowDownUp className="size-3 stroke-[1.6] text-muted-foreground" />}
                     onSelect={() => sort.onValueChange(option.value)}
                   />
                 ))}
@@ -399,7 +399,7 @@ export function TableToolbar({
                 disabled={loading || !hasSelection}
                 aria-label={t("bulk")}
               >
-                <ListChecks className="size-3.5 stroke-1" />
+                <ListChecks className="size-3.5 stroke-[1.6]" />
                 <span className="hidden sm:inline">{t("bulk")}</span>
               </ToolbarButton>
             </PopoverTrigger>
@@ -442,7 +442,7 @@ export function TableToolbar({
           aria-label={refreshLabel ?? t("refresh")}
           title={refreshLabel ?? t("refresh")}
         >
-          <RefreshCw className={cn("size-3.5 stroke-1", (refreshLoading ?? loading) && "animate-spin")} />
+          <RefreshCw className={cn("size-3.5 stroke-[1.6]", (refreshLoading ?? loading) && "animate-spin")} />
         </ToolbarButton>
         {children}
       </div>
@@ -497,7 +497,7 @@ export function TablePagination({
           aria-label={t("previousPage")}
           title={t("previousPage")}
         >
-          <ChevronLeft className="size-4 stroke-1" />
+          <ChevronLeft className="size-4 stroke-[1.6]" />
         </Button>
 
         {showPageSize ? (
@@ -540,7 +540,7 @@ export function TablePagination({
           aria-label={t("nextPage")}
           title={t("nextPage")}
         >
-          <ChevronRight className="size-4 stroke-1" />
+          <ChevronRight className="size-4 stroke-[1.6]" />
         </Button>
       </div>
     </div>

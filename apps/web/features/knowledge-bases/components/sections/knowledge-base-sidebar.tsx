@@ -274,7 +274,7 @@ function KnowledgeBaseSidebarItem({
                   event.stopPropagation();
                 }}
               >
-                <Ellipsis className="size-4" strokeWidth={1} />
+                <Ellipsis className="size-4" strokeWidth={1.6} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-32">
@@ -312,7 +312,7 @@ function KnowledgeBaseSidebarItem({
               onDelete(item);
             }}
           >
-            <Trash2 className="size-4" strokeWidth={1} />
+            <Trash2 className="size-4" strokeWidth={1.6} />
           </Button>
         </div>
       ) : null}

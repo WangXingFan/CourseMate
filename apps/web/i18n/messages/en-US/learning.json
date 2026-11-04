@@ -29,6 +29,9 @@
       "knowledge": {
         "title": "Course knowledge",
         "description": "Read chapter notes and revisit key concepts."
+      },
+      "mastery": {
+        "title": "Knowledge mastery"
       }
     },
     "paths": {
@@ -316,6 +319,7 @@
     "open": "Open lab workspace",
     "back": "Back to labs",
     "guide": "Teacher course guide",
+    "guideLoadFailed": "Could not load the teacher guide. Please retry.",
     "guideSubtitle": "Teaching steps, reference results and checkpoints for all three labs",
     "teacherOnly": "Only teachers and administrators can access this guide.",
     "workflowTitle": "Complete a lab session",
@@ -336,20 +340,21 @@
       "saved": "Saved to your account",
       "error": "Sync failed; retry or download a backup",
       "conflict": "Conflicting record; uploads paused",
-      "invalid": "Record validation failed"
+      "invalid": "Record validation failed",
+      "closed": "Experiment closed; changes pending"
     },
     "courses": {
       "L1": {
         "title": "Lab 1 · Signals and time-domain systems",
-        "description": "Signal transformations and narrow pulses, system properties, response decomposition and graphical convolution."
+        "description": "Signal transforms, system properties, response decomposition and ECG moving-average convolution."
       },
       "L2": {
         "title": "Lab 2 · Frequency analysis and sampling",
-        "description": "Harmonic synthesis, pulse spectra, two-tone low-pass filtering, sampling and reconstruction."
+        "description": "Harmonics, spectra, ECG mains-notch design, sampling and anti-alias filtering."
       },
       "L3": {
         "title": "Lab 3 · Laplace transforms and design",
-        "description": "Transform pairs, zero-state response, initial conditions and pulse-duration design."
+        "description": "Laplace transforms, first-order initial conditions, ECG notch zeros and poles, and pulse design."
       }
     },
     "directory": "Lab directory and teaching guide →",
@@ -410,20 +415,24 @@
       },
       "tasks": {
         "L1-1": "Build a time array and generate sine, step, exponential and triangular signals. Write your own cosine and rectangle expressions. Compare time transformations and check finite-pulse areas with midpoint sums.",
-        "L1-2": "Implement three systems and both operation paths. Change inputs and coefficients, compute differences and find counterexamples. Explain why finitely many zero differences do not prove a property.",
+        "L1-2": "Test affine, timescale, delay, integrator and square systems for linearity and time invariance with causal inputs. Change inputs and coefficients to construct counterexamples; compare both paths and their difference, and record the parameters and limits of finite tests.",
         "L1-3": "Compute zero-input, zero-state and total responses. Change the initial state and input switch, read specified times and verify the sum of components.",
-        "L1-4": "Generate rectangle and exponential responses, apply np.convolve and multiply by the time step. Construct the output time axis, implement overlap-area calculations and compare errors after halving the step.",
-        "L2-1": "Sum odd sine harmonics in a loop. Compare term counts, highest frequencies and overshoot for K=1, 3, 7 and 15. Distinguish harmonic order from number of terms.",
+        "L1-4": "Change the averaging window from 0.02 to 0.08 s, compare R-wave distortion and delay, then halve dt to check integration error.",
+        "L2-1": "Sum odd sine harmonics in a loop. Compare term counts, highest frequencies and overshoot for K=3, 7 and 15. Distinguish harmonic order from number of terms.",
         "L2-2": "Generate a rectangular pulse and approximate its continuous Fourier integral with an FFT. Compare the analytic spectrum while changing width, amplitude and delay. Check scaling and avoid phase readings at spectral zeros.",
-        "L2-3": "Generate a 100 Hz plus 1000 Hz input, solve the continuous low-pass system with SciPy and fit amplitudes and phases over 0.1–0.2 s. Select a cutoff using both specifications.",
-        "L2-4": "Generate cosine samples at explicit sampling times and apply finite sinc interpolation. Change sampling rates and candidate frequencies, find matching samples and distinguish aliasing from edge truncation.",
+        "L2-3": "Use both cutoff constraints to show that a first-order low-pass is infeasible; specify the notch center and alpha, then compare waveform distortion for narrow and wide notches.",
+        "L2-4": "Compare low-frequency sampling and 3 kHz / 4 kHz audio aliasing. Use an independent Butterworth anti-alias low-pass at fixed playback gain; the 50 Hz ECG notch cannot replace this low-pass.",
         "L3-1": "Generate exponential, delayed-step and rectangular signals. Numerically integrate at several s points within a convergence region and compare with your own derivations. Extend the window to assess truncation.",
-        "L3-2": "Derive the zero-state response first, solve the differential equation with solve_ivp, measure y(1) and the 90% rise time, then add your analytic curve and compare errors.",
-        "L3-3": "Solve the zero-input, zero-state and total responses for three initial states. Check starting values and decomposition errors and explain the initial-condition term in your derivation.",
+        "L3-2": "Solve the first-order equation for initial values 0, 0.5 and 2. Compare total, zero-input and zero-state responses, retain sY−y₀ in the derivation, measure y(1) and the zero-state t90, and record numerical error.",
+        "L3-3": "Change center and alpha; compare zeros, poles, ECG response and frequency response. For alpha<0, distinguish the algebraic slice from a steady-state response.",
         "L3-4": "Generate pulses with different durations and solve each output in smooth segments. Add your own candidates near the threshold and record failures and successes. Justify the shortest duration using a derivation and parameter resolution."
       }
     },
     "native": {
+      "parameterExact": "{label} exact value",
+      "parameterSlider": "{label} slider",
+      "defaultYLabel": "Normalized amplitude",
+      "defaultXLabel": "Time t / s",
       "overview": "Overview",
       "records": "My experiment records",
       "help": "How to use",
@@ -518,7 +527,10 @@
         }
       },
       "clearRecords": "Clear experiment records",
-      "clearWarning": "Clear all three experiments for this account and sync the change. Download a JSON backup first."
+      "clearWarning": "Clear all three experiments for this account and sync the change. Download a JSON backup first.",
+      "legacyRecords": "Historical records",
+      "cursorX": "Horizontal axis",
+      "cursorY": "Vertical axis"
     },
     "flow": {
       "steps": "Experiment steps",
@@ -529,6 +541,14 @@
       "conclusionPlaceholder": "Answer using your readings.",
       "start": "Start experiment",
       "comparison": "Current comparison",
+      "estimateReading": "Predict the reading",
+      "estimateReadingPlaceholder": "Enter your estimate",
+      "showReading": "Submit estimate and show plot",
+      "predictedValue": "Your prediction",
+      "measuredValue": "Your reading",
+      "predictionLargeDifference": "Your reading differs from the prediction by more than 20%. Explain the difference and how you revised your reasoning in the conclusion.",
+      "predictionDifferent": "Your choice differs from your reading. Explain your reasoning in the conclusion.",
+      "enterEstimate": "Estimate this reading before showing the plot.",
       "resetStep": "Load this setup",
       "recorded": "Recorded {count}/{total}",
       "recordNext": "Check and continue",
@@ -553,37 +573,44 @@
       "waveform": "Original and current signal",
       "tasks": {
         "L1-1": {
-          "question": "Shift the signal right by 1 s. What happens to its peak time and height?",
-          "conclusion": "Use the table: what changed under shifting, reversal and compression? Is width × height equal for all three pulses?",
+          "question": "For 2f(2(t−1)), how do the peak time and height change?",
+          "conclusion": "Compare the original signal with 2f(2(t−1)). How does the combined scale and shift change its peak? Does the 0.2 s narrow pulse still have area 1?",
           "steps": {
             "original": "Original: read peak time and height",
             "shift": "Set the shift to 1 s and compare the peak position",
             "reverse": "Set scale a to −1 and observe reversal",
             "compress": "Set scale a to 2 and observe compression",
-            "combine": "Create 2p(2(t−1)): amplitude 2, scale 2, shift 1 s",
+            "combine": "Create 2f(2(t−1)): amplitude 2, scale 2, shift 1 s",
             "pulse0": "Set the pulse width to 0.5 s and read its height",
             "pulse1": "Set the pulse width to 0.2 s and read its height",
             "pulse2": "Set the pulse width to 0.1 s and read its height"
           },
-          "given": "Original p(t): a triangular pulse from 0 to 3 s, with its peak at (1 s, 1).",
-          "objective": "Use peak, position and width to verify shifts, reversal and scaling; check pulse area.",
+          "given": "Original f(t): a triangular pulse from 0 to 3 s, with its peak at (1 s, 1).",
+          "objective": "Compare the original and combined transform, then check the narrow pulse area.",
           "pythonExercise": "Increase shift by 1 in the code. Run it and check whether the peak time also increases by 1 s.",
-          "pythonExercisePulse": "Set delta to 0.05 in the code. Run it and check that the pulse area remains 1."
+          "pythonExercisePulse": "Set delta to 0.05 in the code. Run it and check that the pulse area remains 1.",
+          "pulseGiven": "Reference pulse: Δ=0.5 s, height 2, area 1. The area stays 1 as the width changes."
         },
         "L1-2": {
-          "question": "Which systems, 2x, x² and t·x, are linear? Which are time invariant?",
-          "conclusion": "Classify all three systems. Give a counterexample for nonlinearity and one for time variance.",
+          "question": "Are the five systems linear and time invariant?",
+          "conclusion": "Classify all five systems using counterexamples or algebraic arguments.",
           "steps": {
             "linear0": "2x: compare the two superposition paths",
             "shift0": "2x: compare the two time-shift paths",
             "linear1": "x²: compare the two superposition paths",
             "shift1": "x²: compare the two time-shift paths",
             "linear2": "t·x: compare the two superposition paths",
-            "shift2": "t·x: compare the two time-shift paths"
+            "shift2": "t·x: compare the two time-shift paths",
+            "affine": "x+1: linearity counterexample",
+            "square": "x²: linearity counterexample",
+            "timescale": "x(2t): time-variance counterexample",
+            "delay": "x(t−1): time invariance",
+            "integrator": "Integrator: time invariance"
           },
-          "given": "Compare these three input–output relations.",
-          "objective": "Test linearity and time invariance by comparing two calculation paths.",
-          "pythonExercise": "Change x1 to lambda t: np.sin(t), run the code and compare the maximum path difference."
+          "given": "All inputs are zero for t<0.",
+          "objective": "Construct counterexamples for linearity and time invariance.",
+          "pythonExercise": "Change the inputs or coefficients and compare both paths.",
+          "target": "The parameters or reading do not meet this target."
         },
         "L1-3": {
           "question": "Starting at 2, will the output rise or fall when a unit step is applied?",
@@ -594,13 +621,13 @@
             "total": "Initial value 2: compare total with the sum of parts",
             "lower": "Initial value 0.5: compare the direction"
           },
-          "given": "Input: a unit step switched on at t=0.",
+          "given": "Input and initial state are specified below.",
           "objective": "Separate the response caused by the initial state from the response caused by the input.",
           "pythonExercise": "Set y0 to 0.5, run the code and compare its output at t=1 s with the experiment."
         },
         "L1-4": {
-          "question": "What shape results from convolving two unit rectangles?",
-          "conclusion": "How does overlap area determine output? With an exponential response, why does output persist after the input ends?",
+          "question": "How does a moving average suppress ECG mains interference, and why does it delay the waveform?",
+          "conclusion": "Explain convolution using product area; compare interference suppression, R-wave distortion and the W/2 phase delay.",
           "steps": {
             "overlap0": "t=-0.5 s: inspect rectangle overlap and area",
             "overlap1": "t=0.5 s: inspect rectangle overlap and area",
@@ -608,17 +635,17 @@
             "overlap3": "t=1.5 s: inspect rectangle overlap and area",
             "overlap4": "t=2.5 s: inspect rectangle overlap and area",
             "response0": "t=0.5 s: inspect rectangle–exponential convolution",
-            "response1": "t=1 s: inspect rectangle–exponential convolution",
+            "response1": "W=20 ms, t=0.41 s: read the averaged output",
             "response2": "t=1.5 s: inspect rectangle–exponential convolution",
-            "response3": "t=2 s: inspect rectangle–exponential convolution"
+            "response3": "W=80 ms, t=0.44 s: compare delay and distortion"
           },
-          "given": "Inputs: two identical unit rectangles, each 1 s wide.",
-          "objective": "Connect the overlap area of signals to the convolution output.",
-          "pythonExercise": "Halve dt from 0.002, run the code and compare the convolution readings."
+          "given": "Start with two unit rectangles, then process a synthetic ECG with 50 Hz interference; amplitudes are normalized.",
+          "objective": "Connect overlap area to output and compare 20/80 ms averaging windows.",
+          "pythonExercise": "Change the averaging window from 0.02 to 0.08 s, compare R-wave distortion and delay, then halve dt to check integration error."
         },
         "L2-1": {
           "question": "Will adding harmonics remove overshoot at a square-wave jump?",
-          "conclusion": "Compare K=1 and K=15. Where is the approximation better, and how does overshoot change?",
+          "conclusion": "Compare K=3 and K=15. Where is the approximation better, and how does overshoot change?",
           "steps": {
             "harmonic0": "K=1: inspect flat regions and jumps",
             "harmonic1": "K=3: inspect flat regions and jumps",
@@ -639,35 +666,43 @@
             "shift": "Shift right 1 s: compare phase at f=0.25 Hz",
             "amplitude": "Double amplitude: compare the DC value"
           },
-          "given": "Original rectangle: amplitude 1, width 1 s, centered at t=0.",
+          "given": "Rectangular pulse x(t); amplitude, width and center are specified below.",
           "objective": "Verify how pulse width, delay and amplitude change the spectrum.",
           "pythonExercise": "Set T to 0.5, run the code and compare the first positive zero with the experiment."
         },
         "L2-3": {
-          "question": "Does lowering the cutoff frequency always improve filtering?",
-          "conclusion": "Choose a cutoff meeting R(100)≥0.85 and R(1000)≤0.25. Give both amplitude ratios.",
+          "question": "How can you remove 50 Hz interference while retaining low-frequency ECG components?",
+          "conclusion": "Use both cutoff constraints to show that a first-order low-pass is infeasible; specify the notch center and alpha, then compare waveform distortion for narrow and wide notches.",
           "steps": {
             "cutoff0": "fc=100 Hz: compare both amplitude ratios",
             "cutoff1": "fc=200 Hz: compare both amplitude ratios",
-            "cutoff2": "fc=500 Hz: compare both amplitude ratios"
+            "cutoff2": "fc=500 Hz: compare both amplitude ratios",
+            "first0": "First-order low-pass, fc=2 Hz: is the ECG retained?",
+            "first1": "First-order low-pass, fc=40 Hz: is mains interference suppressed?",
+            "design": "Tune the notch center and alpha to meet both ratios",
+            "higher": "Alpha=60: compare the wider notch and waveform distortion"
           },
-          "given": "Input: useful signal at 100 Hz, interference at 1000 Hz; a first-order low-pass filter.",
-          "objective": "Choose a cutoff that preserves the desired signal and suppresses interference.",
-          "pythonExercise": "Set fc to 200, run the code and check both amplitude-ratio requirements."
+          "given": "Require a ratio ≥0.95 at 10 Hz and ≤0.05 at 50 Hz. Ratios are measured with separate sinusoidal probes.",
+          "objective": "Design a second-order notch to remove mains interference and inspect ECG distortion.",
+          "pythonExercise": "Shift the notch center from 50 to 48 Hz and change alpha; compare suppression and ECG output.",
+          "target": "The parameters or reading do not meet this target."
         },
         "L2-4": {
-          "question": "Which sampling rates, 100, 25 and 15 Hz, can reconstruct a 10 Hz cosine?",
-          "conclusion": "At 15 Hz sampling, which lower-frequency cosine shares the samples? Why is the original signal ambiguous?",
+          "question": "Which sampling rates, 100 Hz and 15 Hz, can reconstruct a 10 Hz cosine?",
+          "conclusion": "Explain sample ambiguity and the effect of filtering before sampling.",
           "steps": {
             "sample0": "fs=100 Hz: compare original and reconstruction",
             "sample1": "fs=25 Hz: compare original and reconstruction",
             "sample2": "fs=15 Hz: compare original and reconstruction",
-            "candidate": "Find a lower-frequency cosine matching all samples"
+            "candidate": "Find a lower-frequency cosine matching all samples",
+            "audio": "3 kHz input, 4 kHz sampling",
+            "filtered": "Set an independent anti-alias low-pass and compare alias amplitudes"
           },
           "given": "Original signal: a cosine of amplitude 1 and frequency 10 Hz.",
-          "objective": "Explain aliasing using reconstruction curves and identical samples.",
+          "objective": "Compare candidate signals, audio aliasing and antialias filtering.",
           "pythonExercise": "Keep fs=15, set candidate to 5, run the code and check the maximum sample difference.",
-          "target": "Keep adjusting: the candidate must be below 7.5 Hz and pass through all samples."
+          "target": "Keep adjusting: the candidate must be below 7.5 Hz and pass through all samples.",
+          "audioGiven": "Input: a unit-amplitude 3 kHz cosine."
         },
         "L3-1": {
           "question": "What factor appears in the Laplace transform when a signal is delayed?",
@@ -686,31 +721,39 @@
           "pythonExercise": "Compare the numerical integral with your derived X(s) at the same values of s."
         },
         "L3-2": {
-          "question": "For y′+y=u(t) with zero initial state, what value does the output approach?",
-          "conclusion": "Give y(1) and the time to reach 90% of the final value. Compare with your analytical result.",
+          "question": "How does the initial term enter the full response?",
+          "conclusion": "Derive the full response with its initial term and explain both components.",
           "steps": {
             "initial": "Fill H, X and partial fractions; check y(0)",
             "one": "t=1 s: compare analytical and numerical responses",
-            "ninety": "Adjust measurement time to find y≈0.9"
+            "ninety": "Adjust measurement time to find y≈0.9",
+            "initial1": "Initial value 0.5: update coefficients",
+            "initial2": "Initial value 2: update coefficients"
           },
           "derivation": "Show H(s), Y(s), partial fractions and y(t).",
-          "given": "Input: a unit step; zero initial state.",
-          "objective": "Derive the response from the equation and check it against the numerical curve.",
-          "pythonExercise": "Halve dt, run the code and compare y(1) and t90.",
+          "given": "y′+y=u(t), initial values 0, 0.5 and 2.",
+          "objective": "Solve and verify zero-state and nonzero-initial-state responses.",
+          "pythonExercise": "Change the initial state and check the sum of both components.",
           "target": "Adjust the measurement time until y(t) is within 0.002 of 0.900."
         },
         "L3-3": {
-          "question": "Does changing the initial value change both the starting and final values?",
-          "conclusion": "What changes across the three initial values? Why is Y=HX insufficient for the total response?",
+          "question": "What do the notch zeros and poles each determine?",
+          "conclusion": "Derive zeros, poles and the causal ROC; explain how alpha affects transients, bandwidth and stability, using the same notch design as Lab 2.",
           "steps": {
             "initial0": "y₀=0: update coefficients; compare the start and y(1)",
             "initial1": "y₀=0.5: update coefficients; compare the start and y(1)",
-            "initial2": "y₀=2: update coefficients; compare the start and y(1)"
+            "initial2": "y₀=2: update coefficients; compare the start and y(1)",
+            "under": "Alpha=5: zeros, poles and a narrow notch",
+            "over": "Alpha=60: compare decay and bandwidth",
+            "unstable": "Alpha=−10: right-half-plane poles and divergence",
+            "design": "Load the Lab 2 design, tune poles and meet both ratios",
+            "frequency": "Compare ECG output and frequency response for the same design"
           },
-          "derivation": "Derive the total response, retaining the initial-condition term.",
-          "given": "Keep the unit-step input and change only the initial state.",
-          "objective": "Retain initial conditions and explain the response start and final value.",
-          "pythonExercise": "Set y0 to 2, run the code and check that the full response equals the sum of its components."
+          "derivation": "Find zeros, poles and the causal ROC; invert H(s)−1 for the non-impulsive part of h(t), and explain cancellation at alpha=0.",
+          "given": "H(s)=(s²+ω₀²)/((s+α)²+ω₀²), ω₀=2πf₀; the input is the same synthetic ECG with mains interference.",
+          "objective": "Compare narrow and wide notches and right-half-plane poles, then design a stable notch and inspect its frequency response.",
+          "pythonExercise": "Change center and alpha; compare zeros, poles, ECG response and frequency response. For alpha<0, distinguish the algebraic slice from a steady-state response.",
+          "target": "The parameters or reading do not meet this target."
         },
         "L3-4": {
           "question": "How does the duration of a unit rectangular pulse affect the output peak?",
@@ -723,7 +766,7 @@
             "refine": "Refine the width to just meet the target (peak 0.800–0.802)"
           },
           "derivation": "Derive the minimum width from the peak requirement.",
-          "given": "Input: a rectangular pulse of amplitude 1 and duration T; T=1 s in the plot.",
+          "given": "Input: a unit-amplitude rectangular pulse lasting T seconds.",
           "objective": "Find and justify the shortest pulse width that produces a peak of at least 0.8.",
           "pythonExercise": "Run with width=1.60 and 1.61 and compare the peaks and whether they meet the target.",
           "target": "Refine the pulse width until the peak is between 0.800 and 0.802."
@@ -749,6 +792,11 @@
       "resultWidth": "Width / s",
       "resultHeight": "Height",
       "resultArea": "Area",
+      "predictionComparison": "Predictions and readings",
+      "comparisonStep": "Comparison",
+      "comparisonReading": "Reading",
+      "comparisonPredicted": "Predicted",
+      "comparisonMeasured": "Measured",
       "readings": {
         "peakTime": "At what time does the current signal peak (s)?",
         "supportStart": "After reversal, when does the signal start (s)?",
@@ -763,7 +811,12 @@
         "zeroFrequency": "What is the zero-frequency value X(0)?",
         "passed": "Do both amplitude ratios meet their requirements?",
         "aliasing": "Does aliasing occur at the current sample rate?",
-        "peak": "What is the peak output?"
+        "peak": "What is the peak output?",
+        "aliasFrequency": "Aliased frequency / Hz",
+        "aliasedAmplitude": "Filtered alias amplitude",
+        "overshoot": "Overshoot / %",
+        "stable": "Is the system stable?",
+        "components_1_ratio": "Amplitude ratio at 50 Hz"
       },
       "transformNames": {
         "original": "Original",
@@ -771,7 +824,165 @@
         "reverse": "Reverse",
         "compress": "Compress",
         "combine": "Combined"
-      }
+      },
+      "playOriginal": "Play original",
+      "playReconstruction": "Play reconstruction",
+      "stopAudio": "Stop",
+      "audioFailed": "Playback failed"
+    },
+    "access": {
+      "checking": "Checking access",
+      "failed": "Could not check experiment access. Please retry.",
+      "closed": "This experiment is closed. Please wait for your teacher to open it.",
+      "closedShort": "Closed",
+      "open": "Open",
+      "refresh": "Refresh access",
+      "saveClosed": "These changes include a closed experiment and have not been saved. Your draft remains in this tab. Retry after your teacher reopens it, or download a backup."
+    }
+  },
+  "mastery": {
+    "title": "Knowledge mastery",
+    "history": "Learning history & mistakes",
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "loading": "Loading learning records…",
+    "status": {
+      "weak": "Needs practice",
+      "developing": "Developing",
+      "secure": "Initial mastery",
+      "unassessed": "Not assessed"
+    },
+    "kind": {
+      "course": "Course knowledge",
+      "practice": "Topic practice"
+    },
+    "empty": "No graded answers in the last 90 days. There is not enough evidence to identify knowledge gaps yet.",
+    "start": "Start a practice session",
+    "method": "Assessment rules · Last {days} days",
+    "methodBody": "Course lessons and topic practice are assessed separately. Only the latest answer to each question counts: a wrong answer on the most recent question means “Needs practice”; a correct one means “Developing”; correct answers on the two most recent distinct questions mean “Initial mastery”. No records means “Not assessed”. Evidence comes from graded practice, reviews and closed classroom quizzes. Page views and experiment completion are excluded. With small samples, these states describe current answer performance only.",
+    "concepts": "Knowledge & evidence",
+    "filterStatus": "Filter by mastery",
+    "filterKind": "Filter by source",
+    "filterChapter": "Filter by chapter",
+    "allStatuses": "All states",
+    "allKinds": "All sources",
+    "allChapters": "All chapters",
+    "noMatches": "No knowledge areas match these filters.",
+    "sample": "Distinct questions: {correct} / {total} correct",
+    "noEvidence": "No answer evidence",
+    "review": "Review",
+    "practice": "Practice",
+    "activities": "Classroom quizzes",
+    "evidence": "View recent evidence",
+    "reviewItem": "Review variant · {id}",
+    "correct": "Correct",
+    "incorrect": "Incorrect",
+    "source": {
+      "practice": "Topic practice",
+      "review": "Mistake review",
+      "course": "Course practice",
+      "classroom": "Classroom quiz"
+    },
+    "weeks": "Answers over six weeks",
+    "weekLegend": "Weekly accuracy · Answer count. Includes repeated attempts; “—” means no answers, not a mastery score.",
+    "classTitle": "Class knowledge mastery",
+    "studentTitle": "{name} · Knowledge mastery",
+    "backClass": "Back to class",
+    "classScope": "Last 90 days · Current students’ practice, reviews and closed quizzes from this class.",
+    "classWeak": "Shared knowledge gaps",
+    "weakStudents": "{weak} need practice / {assessed} assessed",
+    "noClassWeak": "No gaps have been identified yet. Check the student list for assessment coverage.",
+    "students": "Students · {count}",
+    "clearFilter": "Show all students",
+    "studentCounts": "{assessed} assessed · {weak} need practice · {secure} initial mastery",
+    "noStudents": "No students have joined this class yet."
+  },
+  "assessment": {
+    "title": "Graded assessment",
+    "teacherTitle": "Lab assessments",
+    "teacherNotice": "Use the classroom Lab assessments tab to preview papers, publish assessments and review grades.",
+    "classrooms": "Open classrooms",
+    "course": "Lab",
+    "task": "Task",
+    "L1": "Lab 1",
+    "L2": "Lab 2",
+    "L3": "Lab 3",
+    "refresh": "Refresh grades",
+    "rules": "Each task: operations 5, independent assessment 15, concepts 5. Four tasks total 100. Predictions, written conclusions and optional Python work are ungraded. The server assigns parameters; completing practice does not guarantee full marks.",
+    "unpublished": "Your teacher has not published this assessment. You can continue practicing.",
+    "courseScore": "Lab grade",
+    "open": "Open",
+    "closed": "Submissions unavailable",
+    "startsAt": "Starts",
+    "deadline": "Deadline",
+    "noDeadline": "No deadline; teacher closes manually",
+    "practice": "Return to lab workspace",
+    "operations": "Operations",
+    "independent": "Independent",
+    "concepts": "Concepts",
+    "operationTitle": "Operation checkpoints · 5 points",
+    "operationHint": "Set the prescribed parameters in the workspace and enter your readings. All conditions must pass to earn a checkpoint. Unlimited retries; no duplicate credit. You can start the formal assessment before completing practice.",
+    "passed": "Passed",
+    "notPassed": "Not passed",
+    "formalTitle": "Formal assessment · 20 points",
+    "attemptRule": "Two attempts maximum; the better whole attempt counts. {count} new attempts remaining. Refresh resumes the current paper.",
+    "attempt": "Attempt {count}",
+    "retry": "Try again · new parameters",
+    "start": "Start assessment",
+    "explain": "View explanations",
+    "explanationOpen": "Explanations are open. No new attempts are available for this task.",
+    "explainTitle": "View explanations and end retries?",
+    "explainDescription": "This forfeits remaining formal attempts for this task. Your grade is retained. Operation checkpoints remain available until closure.",
+    "confirmExplain": "End retries and view explanations",
+    "correction": "Teacher corrected the total to {score}/25: {reason}. Original automatic scores are retained.",
+    "reference": "Given input signal",
+    "correct": "Correct",
+    "incorrect": "Not passed",
+    "yourAnswer": "Your answer: ",
+    "referenceAnswer": "Reference answer: ",
+    "blank": "Blank",
+    "numberHint": "Enter numbers or numeric fractions, e.g. 0.5 or 1/2. Time accepts 1, 1s, 1秒 or 1000ms. Use the printed unit, without formulas. Usually keep three decimal places for independent questions; operation readings allow plot measurement error.",
+    "points": "{value} points",
+    "choose": "Select an answer",
+    "saving": "Saving…",
+    "check": "Check and record",
+    "submit": "Submit for grading",
+    "blankTitle": "Some answers are blank",
+    "blankDescription": "Blank fields receive zero. Submission uses this attempt. You may return to complete the answers.",
+    "confirmSubmit": "Submit current answers",
+    "back": "Go back",
+    "teacherRules": "Open the corresponding lab above, then publish its assessment. Each classroom has one publication per lab, with four 25-point tasks. Closing or reaching the deadline stops submissions and releases existing paper explanations. Students who viewed explanations cannot retry after reopening. The lab access switch only pauses work and does not release answers.",
+    "publishTitle": "Publish assessment",
+    "startOptional": "Start time (blank for now)",
+    "deadlineOptional": "Deadline (optional)",
+    "published": "Already published",
+    "publish": "Publish assessment",
+    "closeAction": "Close assessment",
+    "openAction": "Open assessment",
+    "viewReport": "Papers and grades",
+    "report": "Class grades",
+    "previewHint": "Teacher samples include answers and create no student grades. Student papers use different parameters.",
+    "previewTask": "Task {count} sample",
+    "sample": "Teacher sample",
+    "noStudents": "There are no students in this classroom.",
+    "inProgress": "Not submitted",
+    "correctGrade": "Correct task grade",
+    "correctedScore": "Corrected total (0–25)",
+    "reason": "Reason (required)",
+    "saveCorrection": "Save correction record",
+    "guide": "Step-by-step teaching guide",
+    "errors": {
+      "invalid": "Invalid answer format or schedule. Enter a number, numeric fraction or option in the printed unit. No attempt was consumed.",
+      "closed": "The lab or assessment is not open, or the deadline has passed. Refresh to see the current status.",
+      "limit": "No attempts remain, or explanations have already been viewed.",
+      "conflict": "This lab is already published, or the paper was submitted. Refresh to see the latest record.",
+      "not_found": "Assessment or paper not found. Refresh this page.",
+      "forbidden": "Only the assigned teacher and classroom students can access this assessment."
+    },
+    "status": {
+      "awaiting": "Awaiting assessment",
+      "missing": "Formal assessment missing (zero points)",
+      "graded": "Assessment graded"
     }
   }
 }

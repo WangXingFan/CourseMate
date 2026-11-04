@@ -260,6 +260,7 @@ func toClassroomResponse(item domainclassroom.Classroom) ClassroomResponse {
 		Description:  item.Description,
 		TeacherName:  item.TeacherName,
 		StudentCount: item.StudentCount,
+		Experiments:  map[string]bool{"L1": item.Lab1Open, "L2": item.Lab2Open, "L3": item.Lab3Open},
 		CreatedAt:    item.CreatedAt,
 	}
 }

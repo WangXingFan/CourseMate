@@ -7,13 +7,18 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CenteredEmptyState } from "@/components/ui/empty-state";
+import { Switch } from "@/components/ui/switch";
 import { Spinner } from "@/components/ui/spinner";
 import { ClassroomActivitiesSection } from "@/features/classrooms/components/sections/classroom-activities";
+import { ClassroomMastery } from "@/features/classrooms/components/sections/classroom-mastery";
+import { ClassroomLabAssessments } from "@/features/classrooms/components/sections/classroom-lab-assessments";
 import type { ClassroomDetailTab } from "@/features/classrooms/types/classrooms";
 import { cn } from "@/lib/utils";
 import type { ClassroomDTO, ClassroomStudentDTO } from "@/shared/api/classroom-types";
 
 type ClassroomDetailProps = {
+  experimentPending: string;
+  onSetExperiment: (courseID: string, open: boolean) => Promise<void>;
   accessToken: string;
   selected: ClassroomDTO | null;
   students: ClassroomStudentDTO[];
@@ -32,6 +37,8 @@ type ClassroomDetailProps = {
 
 export function ClassroomDetail({
   accessToken,
+  experimentPending,
+  onSetExperiment,
   selected,
   students,
   studentsLoading,
@@ -121,9 +128,19 @@ export function ClassroomDetail({
             <span>{t("createdAt", { date: formatDate(selected.createdAt, locale) })}</span>
           </div>
 
+          <section aria-label={t("experiments.title")} className="shrink-0 border-b border-border px-4 py-4 md:px-8" data-classroom-experiments>
+            <h3 className="mb-3 font-display text-lg font-normal">{t("experiments.title")}</h3>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {["L1", "L2", "L3"].map((id) => <label key={`${selected.id}:${id}`} className="flex items-center justify-between gap-3 text-sm">
+                <span>{t(`experiments.${id}`)} · {t(selected.experiments[id] ? "experiments.open" : "experiments.shut")}</span>
+                <Switch aria-label={t(`experiments.${id}`)} checked={!!selected.experiments[id]} disabled={!canManage || !!experimentPending} onCheckedChange={(open) => { void onSetExperiment(id, open); }} />
+              </label>)}
+            </div>
+          </section>
+
           {canManage ? (
             <div className="flex h-12 shrink-0 items-center justify-between gap-2 border-b border-border px-4 md:px-8">
-              <div className="flex items-center gap-0.5">
+              <div className="flex min-w-0 items-center gap-0.5 overflow-x-auto">
                 <TabButton active={tab === "students"} onClick={() => setTab("students")}>
                   <Users className="size-4" strokeWidth={1.6} />
                   {activitiesT("tabStudents")}
@@ -132,6 +149,8 @@ export function ClassroomDetail({
                   <BarChart3 className="size-4" strokeWidth={1.6} />
                   {activitiesT("tabActivities")}
                 </TabButton>
+                <TabButton active={tab === "mastery"} onClick={() => setTab("mastery")}>{t("masteryTab")}</TabButton>
+                <TabButton active={tab === "lab-assessments"} onClick={() => setTab("lab-assessments")}>{t("labAssessmentsTab")}</TabButton>
               </div>
               {tab === "students" ? (
                 <div className="flex items-center gap-1">
@@ -158,7 +177,11 @@ export function ClassroomDetail({
             </div>
           )}
 
-          {canManage && tab === "activities" ? (
+          {canManage && tab === "lab-assessments" ? (
+            <ClassroomLabAssessments key={`${accessToken}:${selected.id}`} accessToken={accessToken} classroomID={selected.id} />
+          ) : canManage && tab === "mastery" ? (
+            <ClassroomMastery key={`${accessToken}:${selected.id}`} accessToken={accessToken} classroomID={selected.id} />
+          ) : canManage && tab === "activities" ? (
             <ClassroomActivitiesSection accessToken={accessToken} classroomID={selected.id} />
           ) : studentsLoading && students.length === 0 ? (
             <div className="flex min-h-0 flex-1 items-center justify-center text-muted-foreground">

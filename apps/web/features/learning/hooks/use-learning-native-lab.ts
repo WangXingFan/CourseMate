@@ -51,6 +51,10 @@ export function useLearningNativeLab() {
   const updateParams = (id: string, partial: LabParameters) => {
     if (!engine || active.current !== engine) return false;
     const next = { ...engine.records.data.tasks[id].params, ...partial };
+    if (id === "L2-4") {
+      if (partial.mode !== undefined && partial.fs === undefined) next.fs = partial.mode === "audio" ? "4000" : "100";
+      if (partial.fs !== undefined && partial.mode === undefined) next.mode = partial.fs === "4000" ? "audio" : "base";
+    }
     if (!engine.validParams(id, next)) return false;
     engine.records.data.tasks[id].params = next;
     engine.records.data.tasks[id].completion = { confirmed: false, confirmedAt: null };

@@ -20,6 +20,8 @@ func Models() []any {
 		&models.LearningQuizRound{},
 		&models.LearningLessonAttempt{},
 		&models.LearningVirtualLab{},
+		&models.LabAssessment{},
+		&models.LabAssessmentState{},
 		&models.UserContactVerification{},
 		&models.UserCredential{},
 		&models.UserSession{},

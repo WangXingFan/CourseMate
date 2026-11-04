@@ -93,7 +93,7 @@ export function NavUser({
                 <span className="truncate font-medium text-foreground/95">{user.name}</span>
               </div>
               <SidebarTransitionContent asChild>
-                <ChevronDown aria-hidden className="ml-auto size-4 stroke-1 group-data-[collapsible=icon]:hidden" />
+                <ChevronDown aria-hidden className="ml-auto size-4 stroke-[1.6] group-data-[collapsible=icon]:hidden" />
               </SidebarTransitionContent>
             </SidebarMenuButton>
           </DropdownMenuTrigger>

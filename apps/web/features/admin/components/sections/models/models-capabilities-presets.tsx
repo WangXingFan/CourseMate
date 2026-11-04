@@ -494,7 +494,7 @@ export function ModelCapabilitiesPresetDialog({
                           </span>
                           <span className="flex h-5 w-[76px] shrink-0 items-center justify-end">
                             {selected ? (
-                              <Check className="size-4 text-foreground" strokeWidth={1.8} />
+                              <Check className="size-4 text-foreground" strokeWidth={1.6} />
                             ) : matched ? (
                               <span className="sr-only">
                                 {protocolLabel}
@@ -561,7 +561,7 @@ export function ModelCapabilitiesPresetDialog({
                                 <span className="hidden min-w-0 shrink truncate text-xs leading-5 text-muted-foreground sm:block">
                                   {protocolLabel || t("sheet.capabilitiesPreset.noProtocol")}
                                 </span>
-                                <Check className={cn("size-4 shrink-0 text-foreground transition-opacity", selected ? "opacity-100" : "opacity-0")} strokeWidth={1.8} />
+                                <Check className={cn("size-4 shrink-0 text-foreground transition-opacity", selected ? "opacity-100" : "opacity-0")} strokeWidth={1.6} />
                                 <span className="sr-only">
                                   {protocolLabel || t("sheet.capabilitiesPreset.noProtocol")}
                                 </span>

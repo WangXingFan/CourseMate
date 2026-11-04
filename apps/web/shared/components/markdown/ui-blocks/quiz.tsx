@@ -159,15 +159,15 @@ function Quiz({ id, props }: UIBlockRenderProps<QuizProps>) {
                 className={cn(
                   "flex items-center gap-2 rounded-md border-[0.5px] px-3 py-2 text-left text-sm transition-colors disabled:cursor-default",
                   !revealed && "border-border bg-background hover:border-primary/40 hover:bg-accent",
-                  revealed && graded && isAnswer && "border-green-500/50 bg-green-500/10",
-                  revealed && graded && isChosen && !isAnswer && "border-red-500/50 bg-red-500/10",
+                  revealed && graded && isAnswer && "border-success/50 bg-success/10",
+                  revealed && graded && isChosen && !isAnswer && "border-destructive/50 bg-destructive/10",
                   revealed && !graded && isChosen && "border-primary/50 bg-primary/5",
                   revealed && !isAnswer && !isChosen && "border-border text-muted-foreground opacity-70",
                 )}
               >
                 <span className="flex size-4 shrink-0 items-center justify-center">
-                  {revealed && graded && isAnswer ? <Check className="size-4 text-green-600 dark:text-green-400" strokeWidth={2.2} /> : null}
-                  {revealed && graded && isChosen && !isAnswer ? <X className="size-4 text-red-600 dark:text-red-400" strokeWidth={2.2} /> : null}
+                  {revealed && graded && isAnswer ? <Check className="size-4 text-success" strokeWidth={1.6} /> : null}
+                  {revealed && graded && isChosen && !isAnswer ? <X className="size-4 text-destructive" strokeWidth={1.6} /> : null}
                   {revealed && !graded && isChosen ? <span className="size-3 rounded-full border-4 border-primary" /> : null}
                   {!revealed || (!isAnswer && !isChosen) ? <span className="size-3 rounded-full border border-border" /> : null}
                 </span>
@@ -196,7 +196,7 @@ function Quiz({ id, props }: UIBlockRenderProps<QuizProps>) {
           {scoreLabel ? <span className={cn(finished && "font-medium text-foreground")}>{scoreLabel}</span> : null}
           {answered > 0 || path.length > 1 ? (
             <button type="button" onClick={reset} className="inline-flex items-center gap-1 hover:text-foreground">
-              <RotateCcw className="size-3.5" strokeWidth={1.8} />
+              <RotateCcw className="size-3.5" strokeWidth={1.6} />
               {t("reset")}
             </button>
           ) : null}
@@ -216,7 +216,7 @@ function Quiz({ id, props }: UIBlockRenderProps<QuizProps>) {
             )}
             <div className="mt-3 flex items-center justify-between text-xs">
               <button type="button" onClick={back} disabled={path.length <= 1 && !ended} className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground disabled:invisible">
-                <ArrowLeft className="size-3.5" strokeWidth={1.8} />
+                <ArrowLeft className="size-3.5" strokeWidth={1.6} />
                 {t("back")}
               </button>
               {!ended ? (
@@ -227,7 +227,7 @@ function Quiz({ id, props }: UIBlockRenderProps<QuizProps>) {
                   className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 font-medium text-primary-foreground transition-opacity disabled:opacity-40"
                 >
                   {t("quizNext")}
-                  <ArrowRight className="size-3.5" strokeWidth={2} />
+                  <ArrowRight className="size-3.5" strokeWidth={1.6} />
                 </button>
               ) : null}
             </div>

@@ -36,7 +36,7 @@ class SignalLabsTest(unittest.TestCase):
             self.assertTrue(np.all(exponential[t < 0] == 0))
 
     def test_system_paths_and_response_decomposition(self):
-        for kind, linear_error, shift_error in [("gain", 0, 0), ("square", 2, 0), ("varying", 0, 1)]:
+        for kind, linear_error, shift_error in [("affine", 1, 0), ("square", 2, 0), ("timescale", 0, 1), ("delay", 0, 0), ("integrator", 0, 0)]:
             for test, expected in [("linearity", linear_error), ("invariance", shift_error)]:
                 _, left, right = LAB1["compare_system"](kind=kind, test=test)
                 self.assertAlmostEqual(float(np.max(np.abs(left - right))), expected)
@@ -77,6 +77,63 @@ class SignalLabsTest(unittest.TestCase):
             f = np.array([100, 1000])
             np.testing.assert_allclose(ratios, 1 / np.sqrt(1 + (f / fc)**2), atol=0.0005)
             np.testing.assert_allclose(phases, -np.arctan(f / fc), atol=0.0005)
+
+    def test_multi_order_filter_design_and_audio(self):
+        for order in [1, 2, 3]:
+            for fc in [100, 200, 316, 500]:
+                _, _, _, ratios, _ = LAB2["lowpass"](fc=fc, order=order)
+                expected = 1/np.sqrt(1+(np.array([100, 1000])/fc)**(2*order))
+                np.testing.assert_allclose(ratios, expected, rtol=0.002)
+                self.assertEqual(bool(ratios[0] >= 0.95 and ratios[1] <= 0.05), (order >= 2 and fc == 200) or (order == 3 and fc == 316))
+        for enabled in [False, True]:
+            t, _, sample_t, samples, rebuilt, ratio = LAB2["sample_audio"](enabled)
+            np.testing.assert_allclose(np.interp(sample_t, t, rebuilt), samples, atol=1e-12)
+            self.assertAlmostEqual(ratio, 1/np.sqrt(1+15**4) if enabled else 1)
+
+    def test_second_order_poles_and_settling(self):
+        for zeta in [0, 0.3, 0.6, 1, 1.5, -0.2]:
+            t, y, poles, overshoot, settling = LAB3["second_order_response"](zeta, 3)
+            self.assertEqual(y[0], 0)
+            np.testing.assert_allclose(np.poly(poles), [1, 6*zeta, 9], atol=1e-12)
+            if zeta == 0:
+                np.testing.assert_allclose(y, 1-np.cos(3*t), atol=1e-8)
+            elif zeta == 1:
+                np.testing.assert_allclose(y, 1-(1+3*t)*np.exp(-3*t), atol=1e-8)
+            elif zeta < 0:
+                self.assertIsNone(settling)
+                self.assertGreater(np.max(np.abs(y[-100:]-1)), 10)
+            elif zeta < 1:
+                self.assertAlmostEqual(overshoot, 100*np.exp(-np.pi*zeta/np.sqrt(1-zeta*zeta)), places=3)
+            if zeta == 0.6:
+                self.assertLess(overshoot, 15)
+                self.assertLess(settling, 3)
+                self.assertTrue(np.all(np.abs(y[t >= settling+0.002]-1) <= 0.02))
+
+    def test_ecg_notch_models_and_shared_waveform(self):
+        t = np.linspace(-.1, 2, 2101)
+        np.testing.assert_allclose(LAB1["ecg_signal"](t), LAB2["ecg_signal"](t), atol=0)
+        np.testing.assert_allclose(LAB1["ecg_signal"](t), LAB3["ecg_signal"](t), atol=0)
+        for center, alpha in [(50, 5), (50, 10), (50, 60), (48, 10)]:
+            _, _, _, ratios = LAB2["ecg_filter"](center=center, alpha=alpha)
+            w0, w = 2*np.pi*center, 2*np.pi*np.array([10, 50])
+            expected = abs(w0*w0-w*w)/np.hypot(alpha*alpha+w0*w0-w*w, 2*alpha*w)
+            np.testing.assert_allclose(ratios, expected, atol=.0002)
+        for width in [.02, .08]:
+            t, y = LAB1["numerical_convolution"](kind="ecg", width=width, dt=.00025)
+            q = .4+width/2
+            samples = np.linspace(q-width, q, 10001)
+            expected = np.trapezoid(LAB1["ecg_signal"](samples), samples)/width
+            self.assertAlmostEqual(float(np.interp(q, t, y)), expected, places=4)
+        for alpha in [-10, 0, 10]:
+            t, x, y, zeros, poles, f, h = LAB3["notch_poles"](alpha=alpha)
+            if alpha == 0:
+                np.testing.assert_allclose(y, x, atol=1e-12)
+                self.assertEqual(len(poles), 0)
+                np.testing.assert_allclose(h, 1)
+            else:
+                np.testing.assert_allclose(poles.real, -alpha)
+                np.testing.assert_allclose(np.abs(zeros.imag), 100*np.pi)
+                self.assertAlmostEqual(abs(h[np.argmin(abs(f-50))]), 0)
 
     def test_aliasing_and_sinc_interpolation(self):
         _, _, _, samples, _, alternative = LAB2["sample_cosine"](fs=15, candidate=5)
@@ -154,11 +211,11 @@ const engine = createVirtualLabEngine();
 const cases = engine.taskIds.map(id => ({ id, params: engine.defaults(id) }));
 for (const [id, changes] of [
   ['L1-1', {mode:'impulse',delta:0.1}], ['L1-1', {a:-2,shift:1,A:2}],
-  ['L1-2', {kind:'varying',test:'invariance',x1:'cos',delay:0.5}],
+  ['L1-2', {kind:'timescale',test:'invariance',x1:'sin',delay:0.5}],
   ['L1-3', {A:2.5,initial:0.5,enabled:'on'}], ['L1-3', {A:2.5,initial:0.5,enabled:'off'}],
-  ['L1-4', {kind:'rh',time:1.5}], ['L2-1', {K:'15'}], ['L2-2', {A:2,T:0.5,center:-1}],
-  ['L2-4', {fs:'15',candidate:5}], ['L3-1', {mode:'delayed',A:3,T:2,start:1}],
-  ['L3-3', {initial:'0.5',measureTime:2.2}], ['L3-4', {T:1.61}]
+  ['L1-4', {kind:'ecg',time:0.44,width:0.08}], ['L2-1', {K:'15'}], ['L2-2', {A:2,T:0.5,center:-1}],
+  ['L2-3', {filterType:'notch',center:50,alpha:10}], ['L2-4', {mode:'audio',fs:'4000',antiAlias:'on',filterOrder:'2',filterCutoff:200}], ['L2-4', {fs:'15',candidate:5}], ['L3-1', {mode:'delayed',A:3,T:2,start:1}],
+  ['L3-2', {initial:'0.5',measureTime:2.2}], ['L3-3', {center:50,alpha:10}], ['L3-4', {T:1.61}]
 ]) cases.push({id, params:{...engine.defaults(id),...changes}});
 process.stdout.write(JSON.stringify(cases.map(c => ({...c, code:buildPythonLabStarter(c.id,c.params)}))));
 """

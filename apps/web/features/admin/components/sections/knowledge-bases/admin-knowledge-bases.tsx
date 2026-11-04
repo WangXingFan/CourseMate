@@ -117,7 +117,7 @@ export function AdminKnowledgeBasesPage() {
               bulkActions={[{
                 key: "delete",
                 label: t("bulkDeleteAction"),
-                icon: <Trash2 className="size-3.5 stroke-1" />,
+                icon: <Trash2 className="size-3.5 stroke-[1.6]" />,
                 onClick: list.requestBulkDelete,
                 disabled: list.bulkDeleting,
               }]}
@@ -130,13 +130,14 @@ export function AdminKnowledgeBasesPage() {
                 variant="outline"
                 className="h-9 gap-1 px-2 text-sm shadow-none"
                 onClick={() => setPlatformFilesOpen(true)}
+                aria-label={t("localFiles")}
               >
-                <HardDrive className="size-3.5 stroke-1" />
-                {t("localFiles")}
+                <HardDrive className="size-4" strokeWidth={1.6} aria-hidden />
+                <span className="hidden sm:inline">{t("localFiles")}</span>
               </Button>
-              <Button type="button" size="sm" className="h-9 gap-1 px-2 text-sm" onClick={list.create}>
-                <Plus className="size-3.5 stroke-1" />
-                {t("create")}
+              <Button type="button" size="sm" className="h-9 gap-1 px-2 text-sm" onClick={list.create} aria-label={t("create")}>
+                <Plus className="size-4" strokeWidth={1.6} aria-hidden />
+                <span className="hidden sm:inline">{t("create")}</span>
               </Button>
             </TableToolbar>
 
@@ -189,7 +190,7 @@ export function AdminKnowledgeBasesPage() {
                     </TableCell>
                     <TableCell className="max-w-[460px] py-3">
                       <div className="flex min-w-0 items-center gap-2.5">
-                        <BookOpen className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.4} />
+                        <BookOpen className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.6} />
                         <div className="min-w-0">
                           <p className="truncate font-medium text-foreground">{item.name}</p>
                           {item.description ? (
@@ -215,21 +216,21 @@ export function AdminKnowledgeBasesPage() {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button type="button" size="icon-sm" variant="ghost" className="text-muted-foreground shadow-none" aria-label={t("moreActions")}>
-                              <MoreHorizontal className="size-3.5 stroke-1" />
+                              <MoreHorizontal className="size-3.5 stroke-[1.6]" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => openDetail(item.publicID)}>
-                              <FolderOpen className="size-3.5 stroke-1" />
+                              <FolderOpen className="size-3.5 stroke-[1.6]" />
                               {t("manage")}
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => list.edit(item)}>
-                              <PencilLine className="size-3.5 stroke-1" />
+                              <PencilLine className="size-3.5 stroke-[1.6]" />
                               {t("editTitle")}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem variant="destructive" onClick={() => list.requestDelete(item)}>
-                              <Trash2 className="size-3.5 stroke-1" />
+                              <Trash2 className="size-3.5 stroke-[1.6]" />
                               {t("delete")}
                             </DropdownMenuItem>
                           </DropdownMenuContent>

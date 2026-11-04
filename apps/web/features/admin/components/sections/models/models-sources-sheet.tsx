@@ -312,7 +312,7 @@ export function UpstreamSourcesSheet({
                 variant={bindOpen ? "secondary" : "outline"}
                 onClick={() => setBindOpen((current) => !current)}
               >
-                <Plus className="size-3.5 stroke-1" />
+                <Plus className="size-3.5 stroke-[1.6]" />
                 {t("bindSource")}
               </Button>
             </div>
@@ -481,7 +481,7 @@ export function UpstreamSourcesSheet({
                           }}
                           aria-label={commonT("actions.cancel")}
                         >
-                          <X className="size-3.5 stroke-1" />
+                          <X className="size-3.5 stroke-[1.6]" />
                         </Button>
                         <Button
                           type="button"
@@ -490,7 +490,7 @@ export function UpstreamSourcesSheet({
                           onClick={() => void handleBindSubmit()}
                           aria-label={t("bindConfirm")}
                         >
-                          {bindPending ? <Spinner className="size-3.5" /> : <Check className="size-3.5 stroke-1" />}
+                          {bindPending ? <Spinner className="size-3.5" /> : <Check className="size-3.5 stroke-[1.6]" />}
                         </Button>
                       </div>
                     </TableCell>
@@ -605,28 +605,28 @@ export function UpstreamSourcesSheet({
                                     {actionPending ? (
                                       <Spinner className="size-3.5" />
                                     ) : (
-                                      <MoreHorizontal className="size-3.5 stroke-1" />
+                                      <MoreHorizontal className="size-3.5 stroke-[1.6]" />
                                     )}
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                   <DropdownMenuItem onSelect={() => void handleTestSource(source)}>
-                                    <Activity className="size-3.5 stroke-1" />
+                                    <Activity className="size-3.5 stroke-[1.6]" />
                                     {probeT("actions.test")}
                                   </DropdownMenuItem>
                                   <DropdownMenuItem onSelect={() => openCircuitSettings(source)}>
-                                    <SlidersHorizontal className="size-3.5 stroke-1" />
+                                    <SlidersHorizontal className="size-3.5 stroke-[1.6]" />
                                     {t("circuitSettings")}
                                   </DropdownMenuItem>
                                   {circuitBreakerEnabled ? (
                                     source.circuitOpen ? (
                                       <DropdownMenuItem onSelect={() => void handleCircuitAction(source, "reset")}>
-                                        <RefreshCw className="size-3.5 stroke-1" />
+                                        <RefreshCw className="size-3.5 stroke-[1.6]" />
                                         {t("resetCircuit")}
                                       </DropdownMenuItem>
                                     ) : (
                                       <DropdownMenuItem onSelect={() => void handleCircuitAction(source, "open")}>
-                                        <CircleOff className="size-3.5 stroke-1" />
+                                        <CircleOff className="size-3.5 stroke-[1.6]" />
                                         {t("openCircuit")}
                                       </DropdownMenuItem>
                                     )

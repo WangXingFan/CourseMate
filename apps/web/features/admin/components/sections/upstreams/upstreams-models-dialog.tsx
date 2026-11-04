@@ -426,7 +426,7 @@ const ModelRow = React.memo(function ModelRow({ row, isSelected, upstreamInactiv
                   onClick={() => onTest(row, testRouteID)}
                   aria-label={modelT("actions.test")}
                 >
-                  <Activity className="size-3.5 stroke-1" />
+                  <Activity className="size-3.5 stroke-[1.6]" />
                 </Button>
               </span>
             </TooltipTrigger>
@@ -824,7 +824,7 @@ function RemoteModelsDialog({
                   aria-label={t("modelsDialog.reloadRemote")}
                   title={t("modelsDialog.reloadRemote")}
                 >
-                  <RefreshCw className={cn("size-3.5 stroke-1", loading && "animate-spin")} />
+                  <RefreshCw className={cn("size-3.5 stroke-[1.6]", loading && "animate-spin")} />
                 </Button>
             </div>
           </div>
@@ -833,7 +833,7 @@ function RemoteModelsDialog({
             <div>
               <div className="px-5 pb-2">
                 <div className="relative">
-                  <Search className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 stroke-1 text-muted-foreground" />
+                  <Search className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 stroke-[1.6] text-muted-foreground" />
                   <Input
                     value={query}
                     placeholder={t("modelsDialog.syncSearchPlaceholder")}
@@ -1377,7 +1377,7 @@ export function UpstreamModelsDialog({
                 bulkContent={
                   <div className="space-y-1">
                     <BulkActionControlRow
-                      icon={<ToggleLeft className="size-4 stroke-1" />}
+                      icon={<ToggleLeft className="size-4 stroke-[1.6]" />}
                       label={t("actions.apply")}
                       onApply={() => setBulkPatchConfirm({ patch: { routeStatus: bulkRouteStatus } })}
                       disabled={selectedCount === 0}
@@ -1400,7 +1400,7 @@ export function UpstreamModelsDialog({
                     </BulkActionControlRow>
   
                     <BulkActionControlRow
-                      icon={<Cable className="size-4 stroke-1" />}
+                      icon={<Cable className="size-4 stroke-[1.6]" />}
                       label={t("actions.apply")}
                       onApply={() =>
                         setBulkPatchConfirm({
@@ -1422,7 +1422,7 @@ export function UpstreamModelsDialog({
                     </BulkActionControlRow>
   
                     <BulkActionControlRow
-                      icon={<Tags className="size-4 stroke-1" />}
+                      icon={<Tags className="size-4 stroke-[1.6]" />}
                       label={t("actions.apply")}
                       onApply={() => setBulkPatchConfirm({ patch: { kindsDisplay: bulkKindsDisplay } })}
                       disabled={selectedCount === 0 || !bulkKindsDisplay}

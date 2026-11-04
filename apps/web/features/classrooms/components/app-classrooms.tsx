@@ -42,6 +42,8 @@ export function AppClassrooms({
       <ClassroomDetail
         accessToken={accessToken}
         selected={detail.selected}
+        experimentPending={detail.experimentPending}
+        onSetExperiment={detail.setExperiment}
         students={detail.students}
         studentsLoading={detail.studentsLoading}
         mobileView={detail.mobileView}

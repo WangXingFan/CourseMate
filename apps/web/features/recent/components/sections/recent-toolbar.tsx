@@ -131,7 +131,7 @@ export function RecentToolbar({
                   disabled={selectedCount === 0}
                   aria-label={allSelectedArchived ? t("unarchiveSelected") : t("archiveSelected")}
                 >
-                  <Archive className="size-4.5" strokeWidth={1} />
+                  <Archive className="size-4.5" strokeWidth={1.6} />
                 </Button>
               </ToolbarActionTooltip>
               <ToolbarActionTooltip label={t("deleteSelected")}>
@@ -149,7 +149,7 @@ export function RecentToolbar({
                   disabled={selectedCount === 0}
                   aria-label={t("deleteSelected")}
                 >
-                  <Trash className="size-4.5" strokeWidth={1} />
+                  <Trash className="size-4.5" strokeWidth={1.6} />
                 </Button>
               </ToolbarActionTooltip>
               <ToolbarActionTooltip label={t("exitSelection")}>
@@ -161,7 +161,7 @@ export function RecentToolbar({
                   onClick={onExitSelectionMode}
                   aria-label={t("exitSelection")}
                 >
-                  <X className="size-4.5" strokeWidth={1} />
+                  <X className="size-4.5" strokeWidth={1.6} />
                 </Button>
               </ToolbarActionTooltip>
             </div>
@@ -181,7 +181,7 @@ export function RecentToolbar({
                   onClick={onEnterSelectionMode}
                   aria-label={t("enterSelection")}
                 >
-                  <SquareMousePointer className="size-4" strokeWidth={1.4} />
+                  <SquareMousePointer className="size-4" strokeWidth={1.6} />
                 </Button>
               </ToolbarActionTooltip>
             </div>

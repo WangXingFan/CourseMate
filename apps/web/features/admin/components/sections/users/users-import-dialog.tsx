@@ -159,7 +159,7 @@ export function UserRosterImportDialog({
                   className="h-9 shrink-0 gap-1 px-2 text-sm"
                   onClick={() => downloadTextFile("student-roster-template.csv", ROSTER_TEMPLATE)}
                 >
-                  <Download className="size-3.5 stroke-1" />
+                  <Download className="size-3.5 stroke-[1.6]" />
                   {t("downloadTemplate")}
                 </Button>
               </div>
@@ -228,7 +228,7 @@ export function UserRosterImportDialog({
                           downloadTextFile("student-initial-passwords.csv", buildCredentialCsv(credentials))
                         }
                       >
-                        <Download className="size-3.5 stroke-1" />
+                        <Download className="size-3.5 stroke-[1.6]" />
                         {t("downloadCredentials")}
                       </Button>
                     </div>

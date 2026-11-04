@@ -54,7 +54,7 @@ function ChatMentionMenuItemButton({
         <ModelIcon iconUrl={iconURL} label={item.label} />
       ) : (
         <span className="flex size-4 shrink-0 items-center justify-center rounded-sm text-muted-foreground">
-          <FileText className="size-3.5" strokeWidth={1.7} />
+          <FileText className="size-3.5" strokeWidth={1.6} />
         </span>
       )}
       <span className="flex min-w-0 flex-1 items-baseline gap-2 overflow-hidden">
@@ -64,7 +64,7 @@ function ChatMentionMenuItemButton({
         ) : null}
       </span>
       <span className="flex size-3.5 shrink-0 items-center justify-center">
-        {item.selected ? <Check className="size-3.5 text-current" strokeWidth={1.8} /> : null}
+        {item.selected ? <Check className="size-3.5 text-current" strokeWidth={1.6} /> : null}
       </span>
     </button>
   );
@@ -144,13 +144,13 @@ const ChatMentionMenuContent = React.memo(function ChatMentionMenuContent({
                   <span className="min-w-0 flex-1 truncate">
                     {t("mention.viewAll", { count: row.count })}
                   </span>
-                  <ChevronRight className="size-3.5 shrink-0" strokeWidth={1.7} />
+                  <ChevronRight className="size-3.5 shrink-0" strokeWidth={1.6} />
                 </button>
               );
             }
             return (
               <div key={row.key} className="flex h-8 items-center justify-center" aria-hidden>
-                <LoaderCircle className="size-3.5 animate-spin text-muted-foreground/70" strokeWidth={1.8} />
+                <LoaderCircle className="size-3.5 animate-spin text-muted-foreground/70" strokeWidth={1.6} />
               </div>
             );
           })}

@@ -72,7 +72,7 @@ function NavigationSearchResultItem({
           <span className="min-w-0 truncate font-medium text-foreground">{item.title}</span>
           {item.status === "archived" ? (
             <span className="inline-flex shrink-0 items-center gap-1 text-xs text-foreground/45">
-              <Archive aria-hidden className="!size-3.5" strokeWidth={1.4} />
+              <Archive aria-hidden className="!size-3.5" strokeWidth={1.6} />
               <span className="sr-only">{navigationT("archived")}</span>
             </span>
           ) : null}

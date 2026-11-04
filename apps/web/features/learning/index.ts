@@ -10,9 +10,13 @@ export { ModulationLesson } from "@/features/learning/components/lessons/modulat
 export { ExperimentHub } from "@/features/learning/components/experiments/experiment-hub";
 export { LearningQuiz } from "@/features/learning/components/quiz/learning-quiz";
 export { LearningProgress } from "@/features/learning/components/learning-progress";
+export { LearningMastery } from "@/features/learning/components/learning-mastery";
+export { MasteryProfile } from "@/features/learning/components/mastery-profile";
 export { SignalWorkbench } from "@/features/learning/components/workbench/signal-workbench";
 export { KnowledgeCourse } from "./components/knowledge-course";
 
 export { VirtualLabWorkspace } from "./components/experiments/virtual-lab-workspace";
 export { VirtualLabGuide } from "./components/experiments/virtual-lab-guide";
 export { PythonLabResources } from "./components/experiments/python-lab-resources";
+export { LearningLabAssessment } from "./components/experiments/learning-lab-assessment";
+export { LabAssessmentPaper, LabAssessmentResult } from "./components/experiments/lab-assessment-paper";

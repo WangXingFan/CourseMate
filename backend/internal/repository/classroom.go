@@ -12,6 +12,7 @@ type ClassroomRepository interface {
 	GetClassroom(context.Context, string) (*domain.Classroom, error)
 	GetOwnedClassroom(context.Context, string, uint) (*domain.Classroom, error)
 	UpdateClassroom(context.Context, string, uint, string, string) error
+	SetClassroomExperiment(context.Context, string, uint, string, bool) error
 	DeleteClassroom(context.Context, string, uint) error
 	ListClassroomStudents(context.Context, uint) ([]domain.Student, error)
 	AddClassroomStudent(context.Context, uint, uint, string) error

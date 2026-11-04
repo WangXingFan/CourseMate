@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowDown, ArrowUp, ArrowUpDown, Download, Search } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Check, Download, Minus, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import * as React from "react";
 
@@ -65,7 +65,7 @@ function compareCells(a: Cell, b: Cell, type: ColumnType): number {
 
 function formatCell(value: Cell, type: ColumnType): string {
   if (value === null || value === undefined || value === "") return "—";
-  if (type === "boolean") return value ? "✓" : "✗";
+  if (type === "boolean") return value ? "true" : "false";
   if (type === "number" && typeof value === "number") return NUMBER_FORMAT.format(value);
   return String(value);
 }
@@ -146,7 +146,7 @@ function DataTable({ id, props }: UIBlockRenderProps<DataTableProps>) {
         </div>
         <div className="flex items-center gap-1.5">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" strokeWidth={1.8} />
+            <Search className="pointer-events-none absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" strokeWidth={1.6} />
             <Input
               value={query}
               onChange={(event) => {
@@ -158,7 +158,7 @@ function DataTable({ id, props }: UIBlockRenderProps<DataTableProps>) {
             />
           </div>
           <Button type="button" variant="ghost" size="icon-sm" onClick={exportCSV} aria-label={t("exportCSV")} title={t("exportCSV")} className="text-muted-foreground">
-            <Download strokeWidth={1.8} />
+            <Download strokeWidth={1.6} />
           </Button>
         </div>
       </div>
@@ -213,7 +213,12 @@ function DataTable({ id, props }: UIBlockRenderProps<DataTableProps>) {
                         end && "text-right tabular-nums",
                       )}
                     >
-                      {needle && typeof row[column.key] === "string" ? highlight(text, needle) : text}
+                      {type === "boolean" && text !== "—" ? (
+                        <span className="inline-flex items-center">
+                          {text === "true" ? <Check className="size-4 text-primary" strokeWidth={1.6} aria-hidden /> : <Minus className="size-4 text-muted-foreground" strokeWidth={1.6} aria-hidden />}
+                          <span className="sr-only">{t(text === "true" ? "booleanTrue" : "booleanFalse")}</span>
+                        </span>
+                      ) : needle && typeof row[column.key] === "string" ? highlight(text, needle) : text}
                     </TableCell>
                   );
                 })}

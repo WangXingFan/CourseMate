@@ -568,3 +568,7 @@ func TestStudentQuizRequiresMembership(t *testing.T) {
 		t.Fatalf("SubmitQuiz() error = %v, want ErrNotInClassroom", err)
 	}
 }
+
+func (r *fakeClassroomRepository) SetClassroomExperiment(context.Context, string, uint, string, bool) error {
+	return nil
+}

@@ -7658,6 +7658,209 @@
                 }
             }
         },
+        "/classrooms/{id}/experiments/{course_id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "Open or close one experiment for the teacher's classroom",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Classroom ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "L1, L2 or L3",
+                        "name": "course_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Access state",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ClassroomExperimentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ClassroomMutationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/classrooms/{id}/lab-assessments": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lab-assessments"
+                ],
+                "summary": "List a classroom's lab assessments",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Classroom ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LabAssignmentsResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lab-assessments"
+                ],
+                "summary": "Publish one lab course assessment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Classroom ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Schedule",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LabPublishRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LabAssignmentResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/classrooms/{id}/mastery": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "Read the classroom's knowledge gaps and student summaries",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Classroom ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ClassroomMasteryResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/classrooms/{id}/quiz-lessons": {
             "get": {
                 "security": [
@@ -8222,6 +8425,64 @@
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/classrooms/{id}/students/{student_id}/mastery": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "Read mastery for a current student in an authorized classroom",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Classroom ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Student public ID",
+                        "name": "student_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningMasteryResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/Envelope"
                         }
@@ -10705,6 +10966,183 @@
                 }
             }
         },
+        "/lab-assessments/{id}": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lab-assessments"
+                ],
+                "summary": "Open or close a lab assessment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Assessment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Status",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LabOpenRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LabUpdatedResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/lab-assessments/{id}/preview": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lab-assessments"
+                ],
+                "summary": "Preview a teacher sample with answers; creates no grade",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Assessment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Task ID",
+                        "name": "task",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LabPreviewResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/lab-assessments/{id}/report": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lab-assessments"
+                ],
+                "summary": "Read classroom lab grades and original submissions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Assessment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LabReportResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/lab-assessments/{id}/students/{student_id}/tasks/{task}/correction": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lab-assessments"
+                ],
+                "summary": "Correct a task total, preserving the original score and audit history",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Assessment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Student public ID",
+                        "name": "student_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Task ID",
+                        "name": "task",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Correction and reason",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LabCorrectionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LabUpdatedResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/learning/attempts": {
             "post": {
                 "security": [
@@ -10798,6 +11236,261 @@
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/lab-assessments": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lab-assessments"
+                ],
+                "summary": "List my lab assessments",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LabAssignmentsResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/lab-assessments/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lab-assessments"
+                ],
+                "summary": "Read my lab assessment, without unreleased answers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Assessment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LabAssessmentResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/lab-assessments/{id}/tasks/{task}/attempts": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lab-assessments"
+                ],
+                "summary": "Start or resume an immutable assessment attempt",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Assessment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Task ID",
+                        "name": "task",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LabAssessmentResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/lab-assessments/{id}/tasks/{task}/attempts/{attempt}/submit": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lab-assessments"
+                ],
+                "summary": "Grade a formal attempt once, with idempotent retries",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Assessment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Task ID",
+                        "name": "task",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Attempt ID",
+                        "name": "attempt",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Answers",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LabAnswersRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LabAssessmentResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/lab-assessments/{id}/tasks/{task}/checkpoints/{key}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lab-assessments"
+                ],
+                "summary": "Verify an operation checkpoint, unlimited retries",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Assessment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Task ID",
+                        "name": "task",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "O1 or O2",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Readings",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LabAnswersRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LabAssessmentResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/lab-assessments/{id}/tasks/{task}/explanations": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "lab-assessments"
+                ],
+                "summary": "Reveal explanations and forfeit remaining attempts",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Assessment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Task ID",
+                        "name": "task",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LabAssessmentResponse"
                         }
                     }
                 }
@@ -10905,6 +11598,42 @@
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/mastery": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Read personal knowledge mastery from graded evidence",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningMasteryResponse"
                         }
                     },
                     "401": {
@@ -11369,8 +12098,44 @@
                             "$ref": "#/definitions/Envelope"
                         }
                     },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
                     "409": {
                         "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/virtual-lab/access": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Read the experiments currently open to this account",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningVirtualLabAccessResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/Envelope"
                         }
@@ -15049,6 +15814,17 @@
                 }
             }
         },
+        "ClassroomExperimentRequest": {
+            "type": "object",
+            "required": [
+                "open"
+            ],
+            "properties": {
+                "open": {
+                    "type": "boolean"
+                }
+            }
+        },
         "ClassroomListResponse": {
             "type": "object",
             "required": [
@@ -15059,6 +15835,88 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/ClassroomResponse"
+                    }
+                }
+            }
+        },
+        "ClassroomMasteryConceptResponse": {
+            "type": "object",
+            "required": [
+                "assessed",
+                "concept",
+                "developing",
+                "secure",
+                "weak"
+            ],
+            "properties": {
+                "assessed": {
+                    "type": "integer"
+                },
+                "concept": {
+                    "$ref": "#/definitions/LearningMasteryConceptResponse"
+                },
+                "developing": {
+                    "type": "integer"
+                },
+                "secure": {
+                    "type": "integer"
+                },
+                "weak": {
+                    "type": "integer"
+                }
+            }
+        },
+        "ClassroomMasteryResponse": {
+            "type": "object",
+            "required": [
+                "classroomId",
+                "concepts",
+                "students"
+            ],
+            "properties": {
+                "classroomId": {
+                    "type": "string"
+                },
+                "concepts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ClassroomMasteryConceptResponse"
+                    }
+                },
+                "students": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ClassroomMasteryStudentResponse"
+                    }
+                }
+            }
+        },
+        "ClassroomMasteryStudentResponse": {
+            "type": "object",
+            "required": [
+                "counts",
+                "id",
+                "name",
+                "username",
+                "weakConceptIds"
+            ],
+            "properties": {
+                "counts": {
+                    "$ref": "#/definitions/LearningMasteryCountsResponse"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "weakConceptIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
                     }
                 }
             }
@@ -15079,6 +15937,7 @@
             "required": [
                 "createdAt",
                 "description",
+                "experiments",
                 "id",
                 "name",
                 "studentCount",
@@ -15090,6 +15949,12 @@
                 },
                 "description": {
                     "type": "string"
+                },
+                "experiments": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "boolean"
+                    }
                 },
                 "id": {
                     "type": "string"
@@ -18817,6 +19682,538 @@
                 }
             }
         },
+        "LabAnswersRequest": {
+            "type": "object",
+            "required": [
+                "answers",
+                "confirmBlank",
+                "requestId"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "confirmBlank": {
+                    "type": "boolean"
+                },
+                "requestId": {
+                    "type": "string"
+                }
+            }
+        },
+        "LabAssessmentResponse": {
+            "type": "object",
+            "required": [
+                "assignment",
+                "tasks",
+                "total"
+            ],
+            "properties": {
+                "assignment": {
+                    "$ref": "#/definitions/LabAssignmentResponse"
+                },
+                "tasks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LabTaskResponse"
+                    }
+                },
+                "total": {
+                    "type": "number"
+                }
+            }
+        },
+        "LabAssignmentResponse": {
+            "type": "object",
+            "required": [
+                "active",
+                "classroomId",
+                "courseId",
+                "deadline",
+                "id",
+                "open",
+                "startsAt",
+                "version"
+            ],
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "classroomId": {
+                    "type": "string"
+                },
+                "courseId": {
+                    "type": "string"
+                },
+                "deadline": {
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "id": {
+                    "type": "string"
+                },
+                "open": {
+                    "type": "boolean"
+                },
+                "startsAt": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "LabAssignmentsResponse": {
+            "type": "object",
+            "required": [
+                "items"
+            ],
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LabAssignmentResponse"
+                    }
+                }
+            }
+        },
+        "LabAttemptResponse": {
+            "type": "object",
+            "required": [
+                "answers",
+                "id",
+                "paper",
+                "result",
+                "startedAt",
+                "submittedAt"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "paper": {
+                    "$ref": "#/definitions/LabPaperResponse"
+                },
+                "result": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/LabResultResponse"
+                        }
+                    ],
+                    "x-nullable": true
+                },
+                "startedAt": {
+                    "type": "string"
+                },
+                "submittedAt": {
+                    "type": "string",
+                    "x-nullable": true
+                }
+            }
+        },
+        "LabCheckpointResponse": {
+            "type": "object",
+            "required": [
+                "answers",
+                "id",
+                "maximum",
+                "paper",
+                "passed",
+                "result"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "maximum": {
+                    "type": "number"
+                },
+                "paper": {
+                    "$ref": "#/definitions/LabPaperResponse"
+                },
+                "passed": {
+                    "type": "boolean"
+                },
+                "result": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/LabResultResponse"
+                        }
+                    ],
+                    "x-nullable": true
+                }
+            }
+        },
+        "LabCorrectionRequest": {
+            "type": "object",
+            "required": [
+                "reason",
+                "score"
+            ],
+            "properties": {
+                "reason": {
+                    "type": "string"
+                },
+                "score": {
+                    "type": "number"
+                }
+            }
+        },
+        "LabCorrectionResponse": {
+            "type": "object",
+            "required": [
+                "at",
+                "reason",
+                "score"
+            ],
+            "properties": {
+                "at": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "score": {
+                    "type": "number"
+                }
+            }
+        },
+        "LabFieldResponse": {
+            "type": "object",
+            "required": [
+                "id",
+                "kind",
+                "label",
+                "options",
+                "points",
+                "unit"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LabOptionResponse"
+                    }
+                },
+                "points": {
+                    "type": "number"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            }
+        },
+        "LabFieldResultResponse": {
+            "type": "object",
+            "required": [
+                "correct",
+                "id",
+                "maximum",
+                "points",
+                "submitted"
+            ],
+            "properties": {
+                "correct": {
+                    "type": "boolean"
+                },
+                "expected": {
+                    "type": "string"
+                },
+                "explanation": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "maximum": {
+                    "type": "number"
+                },
+                "points": {
+                    "type": "number"
+                },
+                "submitted": {
+                    "type": "string"
+                }
+            }
+        },
+        "LabOpenRequest": {
+            "type": "object",
+            "required": [
+                "open"
+            ],
+            "properties": {
+                "open": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "LabOptionResponse": {
+            "type": "object",
+            "required": [
+                "id",
+                "label"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                }
+            }
+        },
+        "LabPaperResponse": {
+            "type": "object",
+            "required": [
+                "fields",
+                "formula",
+                "prompt",
+                "reference",
+                "taskId",
+                "title"
+            ],
+            "properties": {
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LabFieldResponse"
+                    }
+                },
+                "formula": {
+                    "type": "string"
+                },
+                "prompt": {
+                    "type": "string"
+                },
+                "reference": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LabPointResponse"
+                    }
+                },
+                "taskId": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "LabPointResponse": {
+            "type": "object",
+            "required": [
+                "x",
+                "y"
+            ],
+            "properties": {
+                "x": {
+                    "type": "number"
+                },
+                "y": {
+                    "type": "number"
+                }
+            }
+        },
+        "LabPreviewResponse": {
+            "type": "object",
+            "required": [
+                "paper",
+                "result"
+            ],
+            "properties": {
+                "paper": {
+                    "$ref": "#/definitions/LabPaperResponse"
+                },
+                "result": {
+                    "$ref": "#/definitions/LabResultResponse"
+                }
+            }
+        },
+        "LabPublishRequest": {
+            "type": "object",
+            "required": [
+                "courseId",
+                "deadline",
+                "startsAt"
+            ],
+            "properties": {
+                "courseId": {
+                    "type": "string"
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "startsAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "LabReportResponse": {
+            "type": "object",
+            "required": [
+                "assignment",
+                "students"
+            ],
+            "properties": {
+                "assignment": {
+                    "$ref": "#/definitions/LabAssignmentResponse"
+                },
+                "students": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LabStudentGradeResponse"
+                    }
+                }
+            }
+        },
+        "LabResultResponse": {
+            "type": "object",
+            "required": [
+                "concepts",
+                "fields",
+                "independent",
+                "score"
+            ],
+            "properties": {
+                "concepts": {
+                    "type": "number"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LabFieldResultResponse"
+                    }
+                },
+                "independent": {
+                    "type": "number"
+                },
+                "score": {
+                    "type": "number"
+                }
+            }
+        },
+        "LabStudentGradeResponse": {
+            "type": "object",
+            "required": [
+                "grade",
+                "id",
+                "name",
+                "username"
+            ],
+            "properties": {
+                "grade": {
+                    "$ref": "#/definitions/LabAssessmentResponse"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "LabTaskResponse": {
+            "type": "object",
+            "required": [
+                "attempts",
+                "checkpoints",
+                "concepts",
+                "corrections",
+                "explained",
+                "id",
+                "independent",
+                "operations",
+                "remaining",
+                "status",
+                "title",
+                "total"
+            ],
+            "properties": {
+                "attempts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LabAttemptResponse"
+                    }
+                },
+                "checkpoints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LabCheckpointResponse"
+                    }
+                },
+                "concepts": {
+                    "type": "number"
+                },
+                "corrections": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LabCorrectionResponse"
+                    }
+                },
+                "explained": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "independent": {
+                    "type": "number"
+                },
+                "operations": {
+                    "type": "number"
+                },
+                "remaining": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "number"
+                }
+            }
+        },
+        "LabUpdatedResponse": {
+            "type": "object",
+            "required": [
+                "updated"
+            ],
+            "properties": {
+                "updated": {
+                    "type": "boolean"
+                }
+            }
+        },
         "LearningAttemptData": {
             "type": "object",
             "required": [
@@ -19173,6 +20570,172 @@
                 }
             }
         },
+        "LearningMasteryConceptResponse": {
+            "type": "object",
+            "required": [
+                "chapter",
+                "correct",
+                "evidence",
+                "id",
+                "kind",
+                "lastAt",
+                "practiceHref",
+                "questions",
+                "reviewHref",
+                "status",
+                "title",
+                "topic"
+            ],
+            "properties": {
+                "chapter": {
+                    "type": "string"
+                },
+                "correct": {
+                    "type": "integer"
+                },
+                "evidence": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningMasteryEvidenceResponse"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "lastAt": {
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "practiceHref": {
+                    "type": "string"
+                },
+                "questions": {
+                    "type": "integer"
+                },
+                "reviewHref": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "topic": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningMasteryCountsResponse": {
+            "type": "object",
+            "required": [
+                "assessed",
+                "developing",
+                "secure",
+                "total",
+                "weak"
+            ],
+            "properties": {
+                "assessed": {
+                    "type": "integer"
+                },
+                "developing": {
+                    "type": "integer"
+                },
+                "secure": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "weak": {
+                    "type": "integer"
+                }
+            }
+        },
+        "LearningMasteryEvidenceResponse": {
+            "type": "object",
+            "required": [
+                "at",
+                "correct",
+                "prompt",
+                "questionId",
+                "source"
+            ],
+            "properties": {
+                "at": {
+                    "type": "string"
+                },
+                "correct": {
+                    "type": "boolean"
+                },
+                "prompt": {
+                    "type": "string"
+                },
+                "questionId": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningMasteryResponse": {
+            "type": "object",
+            "required": [
+                "concepts",
+                "counts",
+                "updatedAt",
+                "weeks",
+                "windowDays"
+            ],
+            "properties": {
+                "concepts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningMasteryConceptResponse"
+                    }
+                },
+                "counts": {
+                    "$ref": "#/definitions/LearningMasteryCountsResponse"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "weeks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningMasteryWeekResponse"
+                    }
+                },
+                "windowDays": {
+                    "type": "integer"
+                }
+            }
+        },
+        "LearningMasteryWeekResponse": {
+            "type": "object",
+            "required": [
+                "answers",
+                "correct",
+                "start"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "integer"
+                },
+                "correct": {
+                    "type": "integer"
+                },
+                "start": {
+                    "type": "string"
+                }
+            }
+        },
         "LearningProgressResponse": {
             "type": "object",
             "required": [
@@ -19505,6 +21068,20 @@
                 },
                 "prompt": {
                     "type": "string"
+                }
+            }
+        },
+        "LearningVirtualLabAccessResponse": {
+            "type": "object",
+            "required": [
+                "courses"
+            ],
+            "properties": {
+                "courses": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "boolean"
+                    }
                 }
             }
         },

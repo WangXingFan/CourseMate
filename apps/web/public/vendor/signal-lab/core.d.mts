@@ -4,16 +4,18 @@ export type LabAnswers = Record<string, string>;
 export type LabMeasurement = string | number | boolean | null | LabMeasurement[] | { [key: string]: LabMeasurement };
 export type LabSeries = { label: string; points: [number, number | null][]; color?: string; dash?: string; width?: number; fill?: boolean; pointsOnly?: boolean; stems?: boolean };
 export type LabPlot = { key: string; title: string; range: [number, number]; series: LabSeries[]; xLabel?: string; yLabel?: string; xUnit?: string; breakJump?: number; marker?: number };
-export type LabScene = { plots: LabPlot[]; metrics: { label: string; value: string; unit: string }[]; readings: Record<string, LabMeasurement>; formula: string; note: string; studentExpression?: string; answerFeedback?: { key: string; label: string; message: string; status: "missing" | "correct" | "review" }[] };
+export type LabScene = { zeros?: { re: number; im: number }[]; poles?: { re: number; im: number }[]; plots: LabPlot[]; metrics: { label: string; value: string; unit: string }[]; readings: Record<string, LabMeasurement>; formula: string; note: string; studentExpression?: string; answerFeedback?: { key: string; label: string; message: string; status: "missing" | "correct" | "review" }[] };
 export type LabParameter = { key: string; label: string; value: LabValue; type: "number" | "select"; min?: number; max?: number; step?: number; unit?: string; options?: [string, string][] };
-export type LabTask = { title: string; short?: string; eyebrow: string; question: string; goal: string; prediction: string; analysis: string; hints: string[]; evidence: string; params: LabParameter[]; answers?: { key: string; label: string; placeholder: string }[]; guide?: { title?: string; steps?: string[] } };
+export type LabTask = { title: string; short?: string; eyebrow: string; question: string; goal: string; prediction: string; analysis: string; hints: string[]; evidence: string; params: LabParameter[]; answers?: { key: string; label: string; placeholder: string; type?: "number" | "text" }[]; guide?: { title?: string; steps?: string[] } };
 export type LabCourse = { id: string; number: string; name: string; short: string; subtitle: string; chapter: string; available: boolean; tags: string[]; objectives: string[] };
 export type LabTrial = { params: LabParameters; answers: LabAnswers; measurements: Record<string, LabMeasurement>; time: string; units: Record<string, string>; window: { key: string; range: [number, number] }[]; cursor: number | null };
 // PNG base64 is split into bounded strings for the existing document envelope.
 export type LabPythonRun = { code: string; params: LabParameters; stdout: string; stderr: string; plots: string[][]; time: string };
 export type LabTaskRecord = { experimentId: string; taskId: string; params: LabParameters; answers: LabAnswers; prediction: string; predictionDraft: string; revisions: { text: string; time: string }[]; trials: LabTrial[]; derivation: string; analysis: string; python: { code: string; result: LabPythonRun | null }; figures: { params: LabParameters; answers: LabAnswers; time: string }[]; completion: { confirmed: boolean; confirmedAt: string | null } };
-export type LabDocument = { schemaVersion: number; appVersion: string; createdAt: string; updatedAt: string; student: { name: string; number: string; classroom: string }; tasks: Record<string, LabTaskRecord> };
+export type LabDocument = { phaseTwoArchive?: { appVersion: string; tasks: Record<string, LabTaskRecord> }; legacyArchive?: { appVersion: string; tasks: Record<string, LabTaskRecord> }; schemaVersion: number; appVersion: string; createdAt: string; updatedAt: string; student: { name: string; number: string; classroom: string }; tasks: Record<string, LabTaskRecord> };
 export type VirtualLabEngine = {
+  audioSamples: (params: LabParameters, original?: boolean) => { samples: Float32Array; sampleRate: number };
+  playAudio: (samples: Float32Array, sampleRate: number) => Promise<void>; stopAudio: () => void;
   version: string; courses: LabCourse[]; taskIds: string[]; tasks: Record<string, LabTask>;
   guides: Record<string, { steps: string[]; evidence: string }>;
   defaults: (id: string) => LabParameters; defaultAnswers: (id: string) => LabAnswers;

@@ -167,7 +167,9 @@
       "diffPrevChange": "Previous change",
       "diffNextChange": "Next change",
       "diffCopyAfter": "Copy result",
-      "quizNext": "Next"
+      "quizNext": "Next",
+      "booleanTrue": "Yes",
+      "booleanFalse": "No"
     },
     "copyLatex": "Copy formula source",
     "latexCopied": "Formula source copied",

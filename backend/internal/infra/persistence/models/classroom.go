@@ -8,6 +8,9 @@ type Classroom struct {
 	TeacherID   uint   `gorm:"not null;index"`
 	Name        string `gorm:"size:80;not null"`
 	Description string `gorm:"size:255;not null;default:''"`
+	Lab1Open    bool   `gorm:"not null;default:false"`
+	Lab2Open    bool   `gorm:"not null;default:false"`
+	Lab3Open    bool   `gorm:"not null;default:false"`
 }
 
 func (Classroom) TableName() string { return "classrooms" }

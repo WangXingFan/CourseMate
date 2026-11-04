@@ -496,7 +496,7 @@ export function InitialSecurityGuard() {
                         aria-label={t("actions.syncTimezone")}
                         title={t("actions.syncTimezone")}
                       >
-                        <MapPinned className="size-3.5 stroke-1" />
+                        <MapPinned className="size-3.5 stroke-[1.6]" />
                       </Button>
                     </div>
                   </label>

@@ -712,7 +712,7 @@ function ModelOptionFilterBadge({
       data-filtered={status === "filtered"}
       data-inactive={status === "inactive"}
       data-route-dependent={status === "route-dependent"}
-      className="shrink-0 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-2xs leading-none text-emerald-700 data-[filtered=true]:bg-muted data-[filtered=true]:text-muted-foreground data-[inactive=true]:bg-muted data-[inactive=true]:text-muted-foreground data-[route-dependent=true]:bg-amber-500/10 data-[route-dependent=true]:text-amber-700"
+      className="shrink-0 rounded-md bg-success/10 px-1.5 py-0.5 text-2xs leading-none text-success data-[filtered=true]:bg-muted data-[filtered=true]:text-muted-foreground data-[inactive=true]:bg-muted data-[inactive=true]:text-muted-foreground data-[route-dependent=true]:bg-warning/10 data-[route-dependent=true]:text-warning"
     >
       {status === "inactive"
         ? inactiveLabel

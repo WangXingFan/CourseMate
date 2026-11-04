@@ -11,7 +11,7 @@
     "description": "Use the formula and the parameters to commit to an answer, and write down why. The plot appears only after you submit.",
     "optionsLabel": "Choose one answer",
     "reasonLabel": "Your reasoning",
-    "reasonPlaceholder": "For example: because the real part of the pole is negative, the envelope decays as e^{σt}, so ...",
+    "reasonPlaceholder": "For example: because the real part of the pole is negative, the envelope decays as e^'{'σt'}', so ...",
     "reasonHint": "Explain your reasoning in at least {count} characters.",
     "submit": "Submit and unlock",
     "retry": "Edit and retry",
@@ -109,14 +109,14 @@
       "pzTitle": "s-plane and ROC",
       "pzDescription": "The shaded region is to the right of the rightmost pole; a causal ROC extends to the right.",
       "impulseTitle": "Impulse response h(t)",
-      "impulseDescription": "The envelope is e^{σt}; ω controls the oscillation.",
+      "impulseDescription": "The envelope is e^'{'σt'}'; ω controls the oscillation.",
       "clipped": "Peak is about {peak}; the vertical axis is clipped.",
       "timeAxis": "t (s)",
       "impulse": "h(t)"
     },
     "insight": {
       "title": "What to notice",
-      "left": "A left half-plane pole gives an e^{σt} decaying envelope: stable.",
+      "left": "A left half-plane pole gives an e^'{'σt'}' decaying envelope: stable.",
       "axis": "A simple pole on the imaginary axis gives constant oscillation: marginal.",
       "right": "A right half-plane pole gives a growing envelope: unstable.",
       "roc": "The ROC contains the jω axis if and only if the system is stable. For a causal system the ROC is to the right of the rightmost pole."
@@ -415,7 +415,7 @@
         "left": "Conjugate poles in the left half-plane → decaying oscillation.",
         "axis": "Conjugate poles on the imaginary axis → constant-amplitude oscillation, marginally stable.",
         "right": "Conjugate poles in the right half-plane → growing oscillation, unstable.",
-        "repeat": "A double real pole → a t·e^{σt} shape, still monotonic (it may rise before falling)."
+        "repeat": "A double real pole → a t·e^'{'σt'}' shape, still monotonic (it may rise before falling)."
       }
     }
   },

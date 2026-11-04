@@ -62,6 +62,10 @@ for (const locale of ["zh-CN", "en-US"]) {
     assert.ok(t("learning.convolution.controls.description").includes("e^{-t}"));
     assert.ok(t("learning.convolution.observe.rising").includes("e^{−(t+0.5)}"));
     assert.ok(t("learning.firstOrder.insight.definition").includes("e^{−1}"));
+    // `e^{σt}` parses as an ICU argument; it only fails once values are passed and formatting runs, so pass `{}`.
+    for (const key of ["labs.prediction.reasonPlaceholder", "labs.laplace.plot.impulseDescription", "labs.laplace.insight.left", "labs.experiments.sDomain.insight.repeat"]) {
+      assert.ok(t(key, {}).includes("e^{σt}"), key);
+    }
     assert.ok(t.raw("learning.convolution.formula").includes("\\int_{-\\infty}^{\\infty}"));
   });
 }

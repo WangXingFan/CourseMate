@@ -24,9 +24,9 @@ export function ExperimentTutor({ seed, selected, ...input }: ExperimentTutorPro
   const t = useTranslations("learningLabs.tutor");
   const model = useLearningTutor(seed, { ...input, selected: selected ?? "" });
   return (
-    <section className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-4" aria-label={t("title")}>
+    <section className="rounded-lg border border-warning/25 bg-warning/5 p-4" aria-label={t("title")}>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-sm font-medium"><Lightbulb className="size-4 text-amber-600" />{t("title")}</div>
+        <div className="flex items-center gap-2 text-sm font-medium"><Lightbulb className="size-4 text-warning" />{t("title")}</div>
         <Button size="sm" variant="outline" onClick={() => void model.request()} disabled={model.loading}>
           {model.loading ? <LoaderCircle className="size-3.5 animate-spin" /> : null}
           {t(model.loading ? "loading" : model.error ? "retry" : input.action)}

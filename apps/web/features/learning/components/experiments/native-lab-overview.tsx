@@ -5,10 +5,10 @@ import { useTranslations } from "next-intl";
 import { labTaskComplete } from "@/features/learning/model/virtual-lab-flow";
 import type { VirtualLabEngine } from "@/public/vendor/signal-lab/core.mjs";
 
-export function NativeLabOverview({ engine, courseID }: { engine: VirtualLabEngine; courseID?: string }) {
+export function NativeLabOverview({ engine, courseID, openCourses }: { engine: VirtualLabEngine; courseID?: string; openCourses: Record<string, boolean> }) {
   const t = useTranslations("learning.virtualLab.native");
   const v = useTranslations("learning.virtualLab");
-  const courses = courseID ? engine.courses.filter((course) => course.id === courseID) : engine.courses;
+  const courses = engine.courses.filter((course) => openCourses[course.id] && (!courseID || course.id === courseID));
   return <div className="space-y-7">
     {!courseID && <header className="border-b border-border pb-8"><h1 className="font-display max-w-3xl text-3xl md:text-4xl leading-tight font-normal tracking-[-0.015em]">{t("title")}</h1></header>}
     <div className={courseID ? "space-y-6" : "space-y-5"}>{courses.map((course) => {

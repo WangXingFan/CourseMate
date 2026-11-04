@@ -63,7 +63,7 @@ export function ClassroomSidebar({
               aria-label={t("refresh")}
               title={t("refresh")}
             >
-              <RefreshCw className="size-3.5 stroke-1" />
+              <RefreshCw className="size-3.5 stroke-[1.6]" />
             </Button>
             {canManage ? (
               <Button
@@ -75,7 +75,7 @@ export function ClassroomSidebar({
                 aria-label={t("create")}
                 title={t("create")}
               >
-                <Plus className="size-4 stroke-1" />
+                <Plus className="size-4 stroke-[1.6]" />
               </Button>
             ) : null}
           </div>

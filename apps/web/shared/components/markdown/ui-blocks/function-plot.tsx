@@ -34,17 +34,13 @@ type CompiledRow = FunctionRow & { curve: Curve | null; error?: RowError };
 const MAX_FUNCTIONS = 8;
 const PLOT_HEIGHT = 280;
 const DEFAULT_X: readonly [number, number] = [-5, 5];
-// Line colours need more contrast than the chart fill palette; each pair reads
-// on both themes.
+// Series follow the theme chart tokens in order (DESIGN.md §2.1); each token is tuned for both modes.
 const SERIES_COLORS = [
   { stroke: "stroke-[var(--chart-1)]", dot: "bg-[var(--chart-1)]" },
   { stroke: "stroke-[var(--chart-2)]", dot: "bg-[var(--chart-2)]" },
-  { stroke: "stroke-emerald-600 dark:stroke-emerald-400", dot: "bg-emerald-600 dark:bg-emerald-400" },
-  { stroke: "stroke-sky-600 dark:stroke-sky-400", dot: "bg-sky-600 dark:bg-sky-400" },
-  { stroke: "stroke-amber-600 dark:stroke-amber-400", dot: "bg-amber-600 dark:bg-amber-400" },
-  { stroke: "stroke-pink-600 dark:stroke-pink-400", dot: "bg-pink-600 dark:bg-pink-400" },
-  { stroke: "stroke-violet-600 dark:stroke-violet-400", dot: "bg-violet-600 dark:bg-violet-400" },
-  { stroke: "stroke-teal-600 dark:stroke-teal-400", dot: "bg-teal-600 dark:bg-teal-400" },
+  { stroke: "stroke-[var(--chart-3)]", dot: "bg-[var(--chart-3)]" },
+  { stroke: "stroke-[var(--chart-4)]", dot: "bg-[var(--chart-4)]" },
+  { stroke: "stroke-[var(--chart-5)]", dot: "bg-[var(--chart-5)]" },
 ] as const;
 const EDGE_LABEL_GAP = 10;
 const ZOOM_STEP = 1.5;
@@ -463,7 +459,7 @@ function FunctionPlot({ id, props }: UIBlockRenderProps<FunctionPlotProps>) {
         {props.title ? <h3 className="text-lg font-semibold leading-7">{props.title}</h3> : <span />}
         {dirty ? (
           <button type="button" onClick={reset} className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-            <RotateCcw className="size-3.5" strokeWidth={1.8} />
+            <RotateCcw className="size-3.5" strokeWidth={1.6} />
             {t("reset")}
           </button>
         ) : null}
@@ -532,7 +528,7 @@ function FunctionPlot({ id, props }: UIBlockRenderProps<FunctionPlotProps>) {
                           aria-label={rowErrorText(row.error)}
                           className="flex size-6 items-center justify-center text-destructive"
                         >
-                          <CircleAlert className="size-3.5" strokeWidth={1.8} />
+                          <CircleAlert className="size-3.5" strokeWidth={1.6} />
                         </span>
                       ) : null}
                       <button
@@ -542,7 +538,7 @@ function FunctionPlot({ id, props }: UIBlockRenderProps<FunctionPlotProps>) {
                         aria-label={t("toggleVisibility")}
                         className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
                       >
-                        {row.hidden ? <EyeOff className="size-3.5" strokeWidth={1.8} /> : <Eye className="size-3.5" strokeWidth={1.8} />}
+                        {row.hidden ? <EyeOff className="size-3.5" strokeWidth={1.6} /> : <Eye className="size-3.5" strokeWidth={1.6} />}
                       </button>
                       <button
                         type="button"
@@ -550,7 +546,7 @@ function FunctionPlot({ id, props }: UIBlockRenderProps<FunctionPlotProps>) {
                         aria-label={t("removeFunction")}
                         className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
                       >
-                        <X className="size-3.5" strokeWidth={1.8} />
+                        <X className="size-3.5" strokeWidth={1.6} />
                       </button>
                     </div>
                   </div>
@@ -560,7 +556,7 @@ function FunctionPlot({ id, props }: UIBlockRenderProps<FunctionPlotProps>) {
             {rows.length < MAX_FUNCTIONS ? (
               <li>
                 <button type="button" onClick={addRow} className="flex h-[35px] w-full items-center gap-2 px-2.5 text-xs text-muted-foreground hover:text-foreground">
-                  <Plus className="size-3.5" strokeWidth={1.8} />
+                  <Plus className="size-3.5" strokeWidth={1.6} />
                   {t("addFunction")}
                 </button>
               </li>
@@ -621,13 +617,13 @@ function FunctionPlot({ id, props }: UIBlockRenderProps<FunctionPlotProps>) {
 
           <div className="absolute right-2 bottom-2 flex overflow-hidden rounded-md border-[0.5px] border-border bg-card text-muted-foreground">
             <button type="button" aria-label={t("zoomIn")} onClick={() => zoomBy(1 / ZOOM_STEP)} className="flex size-8 items-center justify-center hover:bg-accent hover:text-foreground">
-              <Plus className="size-3.5" strokeWidth={1.8} />
+              <Plus className="size-3.5" strokeWidth={1.6} />
             </button>
             <button type="button" aria-label={t("zoomOut")} onClick={() => zoomBy(ZOOM_STEP)} className="flex size-8 items-center justify-center border-l-[0.5px] border-border hover:bg-accent hover:text-foreground">
-              <Minus className="size-3.5" strokeWidth={1.8} />
+              <Minus className="size-3.5" strokeWidth={1.6} />
             </button>
             <button type="button" aria-label={t("resetView")} onClick={resetView} disabled={view === null} className="flex size-8 items-center justify-center border-l-[0.5px] border-border hover:bg-accent hover:text-foreground disabled:opacity-40 disabled:hover:bg-transparent">
-              <Home className="size-3.5" strokeWidth={1.8} />
+              <Home className="size-3.5" strokeWidth={1.6} />
             </button>
           </div>
         </div>

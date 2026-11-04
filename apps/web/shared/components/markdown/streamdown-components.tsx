@@ -253,7 +253,7 @@ function FootnoteBackrefContent({
 
   return (
     <>
-      <CornerUpLeft className="size-3.5" strokeWidth={2} />
+      <CornerUpLeft className="size-3.5" strokeWidth={1.6} />
       {shouldShowIndex ? <span className="ml-0.5 text-2xs leading-none">{backrefIndex}</span> : null}
       <span className="sr-only">{t("back")}</span>
     </>
@@ -385,7 +385,7 @@ function CodeBlockActions({
       >
         {canOpenArtifact ? (
           <CodeBlockActionButton label={artifactCopy("openPreview")} onClick={handleOpenArtifact}>
-            <Eye className="size-3.5" strokeWidth={2.25} />
+            <Eye className="size-3.5" strokeWidth={1.6} />
           </CodeBlockActionButton>
         ) : null}
         <Tooltip>

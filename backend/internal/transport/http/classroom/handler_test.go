@@ -441,3 +441,7 @@ func TestQuizRoutesCreatePublishSubmitAndReport(t *testing.T) {
 		t.Fatalf("close status = %d, body = %s", closeQuiz.Code, closeQuiz.Body.String())
 	}
 }
+
+func (r *handlerTestRepository) SetClassroomExperiment(context.Context, string, uint, string, bool) error {
+	return nil
+}

@@ -314,7 +314,7 @@ function Gantt({ id, props }: UIBlockRenderProps<GanttProps>) {
                 className="flex w-full items-center gap-1 px-3 text-left text-xs font-medium tracking-[0.04em] text-muted-foreground transition-colors hover:text-foreground"
                 style={{ height: GROUP_HEIGHT }}
               >
-                <ChevronRight className={cn("size-3.5 shrink-0 transition-transform", !collapsed.has(entry.name) && "rotate-90")} strokeWidth={2} />
+                <ChevronRight className={cn("size-3.5 shrink-0 transition-transform", !collapsed.has(entry.name) && "rotate-90")} strokeWidth={1.6} />
                 <span className="truncate">{entry.name}</span>
               </motion.button>
             ) : (

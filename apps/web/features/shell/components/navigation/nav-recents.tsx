@@ -207,7 +207,7 @@ export function NavRecents() {
                 <ChevronDown
                   aria-hidden
                   className={cn(
-                    "!size-3 stroke-1.5 transition-transform duration-200",
+                    "!size-3.5 stroke-[1.6] transition-transform duration-200",
                     !recentsOpen && "-rotate-90",
                   )}
                 />

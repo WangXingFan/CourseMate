@@ -29,7 +29,7 @@ const base = externalBase || `http://127.0.0.1:${server.address().port}`;
 const course = JSON.parse(await readFile("backend/internal/domain/learning/content/course.json", "utf8"));
 const pairs = JSON.parse(await readFile("backend/internal/domain/learning/content/paired-questions.json", "utf8")).pairs;
 const now = new Date().toISOString();
-const classroom = { id: "class_one", name: "预习测验证班", description: "", teacherId: "teacher_one", teacherName: "任课老师", studentCount: 1, createdAt: now };
+const classroom = { experiments: { L1: false, L2: false, L3: false }, id: "class_one", name: "预习测验证班", description: "", teacherId: "teacher_one", teacherName: "任课老师", studentCount: 1, createdAt: now };
 const lessons = course.lessons.map((lesson) => {
   const preview = lesson.questions.find((question) => question.stage === "preview");
   return { id: lesson.id, number: lesson.number, title: lesson.title, chapter: lesson.chapter, prompt: preview.prompt, options: preview.options, answer: preview.answer, explanation: preview.explanation, followup: pairs.find((p) => p.lessonID === lesson.id).followup };

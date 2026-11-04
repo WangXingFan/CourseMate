@@ -49,7 +49,7 @@ function StatCard({ item, periods }: { item: StatItem; periods?: string[] }) {
   const [hoverIndex, setHoverIndex] = React.useState<number | null>(null);
   const hovered = hoverIndex !== null ? history[hoverIndex] : undefined;
   const Trend = item.trend === "up" ? TrendingUp : item.trend === "down" ? TrendingDown : Minus;
-  const trendClass = item.trend === "up" ? "text-green-600 dark:text-green-400" : item.trend === "down" ? "text-red-600 dark:text-red-400" : "text-muted-foreground";
+  const trendClass = item.trend === "up" ? "text-success" : item.trend === "down" ? "text-destructive" : "text-muted-foreground";
 
   return (
     <div className="flex min-w-0 flex-col rounded-lg border-[0.5px] border-border bg-background p-3" onMouseLeave={() => setHoverIndex(null)}>
@@ -111,8 +111,8 @@ function Sparkline({
   const toX = (index: number) => index * stepX;
   const toY = (value: number) => 3 + (1 - (value - min) / span) * (SPARK_HEIGHT - 6);
   const points = values.map((value, index) => `${toX(index).toFixed(1)},${toY(value).toFixed(1)}`).join(" ");
-  const stroke = trend === "up" ? "stroke-green-600 dark:stroke-green-400" : trend === "down" ? "stroke-red-600 dark:stroke-red-400" : "stroke-foreground/60";
-  const fill = trend === "up" ? "fill-green-600 dark:fill-green-400" : trend === "down" ? "fill-red-600 dark:fill-red-400" : "fill-foreground/60";
+  const stroke = trend === "up" ? "stroke-success" : trend === "down" ? "stroke-destructive" : "stroke-foreground/60";
+  const fill = trend === "up" ? "fill-success" : trend === "down" ? "fill-destructive" : "fill-foreground/60";
 
   const onMove = (event: React.PointerEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();

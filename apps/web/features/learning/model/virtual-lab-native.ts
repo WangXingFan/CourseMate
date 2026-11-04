@@ -20,7 +20,7 @@ export function labPresets(id: string): { label: string; params: LabParameters }
   if (id === "L1-3") return [0, 0.5, 2].map((initial) => ({ label: `y₀=${initial}`, params: { initial } }));
   if (id === "L1-4") return [-0.5, 0.5, 1, 1.5, 2.5].map((time) => ({ label: `t=${time}`, params: { time } }));
   if (id === "L2-2") return [0.5, 1, 2].map((T) => ({ label: `T=${T} s`, params: { T } }));
-  if (id === "L2-3") return [100, 200, 500].map((fc) => ({ label: `${fc} Hz`, params: { fc } }));
+  if (id === "L2-3") return [2, 40].map((fc) => ({ label: `${fc} Hz`, params: { filterType: "lowpass", fc } }));
   if (id === "L3-4") return [0.5, 1, 2, 3].map((T) => ({ label: `T=${T} s`, params: { T } }));
   return [];
 }

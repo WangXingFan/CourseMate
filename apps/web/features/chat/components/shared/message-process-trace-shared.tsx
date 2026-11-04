@@ -153,7 +153,7 @@ export function RAGCitationList({
             className="inline-flex max-w-[180px] items-center gap-1 rounded-full border border-border/35 bg-background/45 px-1.5 py-0 text-xs leading-5 text-muted-foreground/76"
             title={item.previews.join("\n")}
           >
-            {item.imageMatch ? <ImageIcon className="size-3.5 shrink-0 stroke-1" aria-label={labels.rag.imageMatch} /> : null}
+            {item.imageMatch ? <ImageIcon className="size-3.5 shrink-0 stroke-[1.6]" aria-label={labels.rag.imageMatch} /> : null}
             <span className="truncate font-medium">{item.fileName}</span>
             <span className="shrink-0 text-muted-foreground/50">
               {labels.rag.chunksShort(item.chunkCount, Math.round(item.maxScore * 100))}
@@ -182,7 +182,7 @@ export function RAGCitationList({
               <div className="flex min-w-0 items-center justify-between gap-3 px-0.5">
                 <div className="flex min-w-0 items-center gap-2">
                   <span className="size-1 shrink-0 rounded-full bg-foreground/40" aria-hidden="true" />
-                  {item.imageMatch ? <ImageIcon className="size-3.5 shrink-0 stroke-1 text-muted-foreground/70" aria-label={labels.rag.imageMatch} /> : null}
+                  {item.imageMatch ? <ImageIcon className="size-3.5 shrink-0 stroke-[1.6] text-muted-foreground/70" aria-label={labels.rag.imageMatch} /> : null}
                   <div className="truncate text-xs font-medium text-foreground/82" title={item.fileName}>{item.fileName}</div>
                 </div>
                 {itemMeta ? <span className="shrink-0 text-2xs text-muted-foreground/50">{itemMeta}</span> : null}

@@ -11,11 +11,11 @@
         const t = M.transform(params);
         const lo = Math.min(-0.5, t.support[0] - 0.5), hi = Math.max(3.5, t.support[1] + 0.5);
         const exact = [[lo, 0], [t.support[0], 0], [t.peakTime, t.peak], [t.support[1], 0], [hi, 0]].sort((a, b) => a[0] - b[0]);
-        plots.push({ key: 'main', title: '原信号、目标与当前结果', range: [lo, hi], series: [series('当前结果', exact, { fill: true }), series('原信号 p(t)', [[lo, 0], [0, 0], [1, 1], [3, 0], [hi, 0]], { dash: '7 4' }), series('目标波形', [[lo, 0], [1, 0], [1.5, 2], [2.5, 0], [hi, 0]], { dash: '2 5' })] });
+        plots.push({ key: 'main', title: '原信号、目标与当前结果', range: [lo, hi], series: [series('当前结果', exact, { fill: true }), series('原信号 f(t)', [[lo, 0], [0, 0], [1, 1], [3, 0], [hi, 0]], { dash: '7 4' }), series('目标波形', [[lo, 0], [1, 0], [1.5, 2], [2.5, 0], [hi, 0]], { dash: '2 5' })] });
         metrics.push(metric('支撑起点', t.support[0], 's'), metric('支撑终点', t.support[1], 's'), metric('峰值时刻', t.peakTime, 's'), metric('峰值幅度', t.peak));
         Object.assign(readings, { supportStart: t.support[0], supportEnd: t.support[1], peakTime: t.peakTime, peak: t.peak });
-        formula = `${f(params.A)} · p(${f(params.a)}(t − (${f(params.shift)})))`;
-        note = '原信号：0≤t<1 时 p(t)=t；1≤t≤3 时 p(t)=(3−t)/2；其余为 0。图窗自动覆盖完整支撑。';
+        formula = `${f(params.A)} · f(${f(params.a)}(t − (${f(params.shift)})))`;
+        note = '原信号：0≤t<1 时 f(t)=t；1≤t≤3 时 f(t)=(3−t)/2；其余为 0。图窗自动覆盖完整支撑。';
       } else {
         const d = params.delta;
         plots.push({ key: 'main', title: '面积为 1 的窄脉冲近似', range: [-0.15, 0.8], series: [series('qΔ(t) · 近似脉冲', [[-0.15, 0], [0, 0], [0, 1 / d], [d, 1 / d], [d, 0], [0.8, 0]], { fill: true })] });

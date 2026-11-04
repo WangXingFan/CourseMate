@@ -23,10 +23,11 @@ export function BrandingDocumentMetadata() {
       <meta name="application-name" content={title} />
       <meta name="apple-mobile-web-app-title" content={title} />
       <meta name="description" content={branding.description} />
-      <link rel="icon" href={branding.faviconURL} />
-      <link rel="icon" href={branding.pwaIcon192URL} sizes="192x192" />
-      <link rel="icon" href={branding.pwaIcon512URL} sizes="512x512" />
-      <link rel="apple-touch-icon" href={branding.appleTouchIcon180URL} sizes="180x180" />
+      {/* Unconfigured icons arrive as ""; an empty href would re-request the current page. */}
+      {branding.faviconURL ? <link rel="icon" href={branding.faviconURL} /> : null}
+      {branding.pwaIcon192URL ? <link rel="icon" href={branding.pwaIcon192URL} sizes="192x192" /> : null}
+      {branding.pwaIcon512URL ? <link rel="icon" href={branding.pwaIcon512URL} sizes="512x512" /> : null}
+      {branding.appleTouchIcon180URL ? <link rel="apple-touch-icon" href={branding.appleTouchIcon180URL} sizes="180x180" /> : null}
       <link
         rel="manifest"
         href={`${resolveApiBaseURL()}/api/v1/branding/manifest.webmanifest`}

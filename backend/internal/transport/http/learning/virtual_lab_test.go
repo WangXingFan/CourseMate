@@ -42,7 +42,7 @@ func labDocument(t *testing.T, text string) string {
 				"completion": map[string]any{"confirmed": false, "confirmedAt": nil}}
 		}
 	}
-	data, err := json.Marshal(map[string]any{"schemaVersion": 2, "appVersion": "1.0.0", "createdAt": time.Now().UTC().Format(time.RFC3339),
+	data, err := json.Marshal(map[string]any{"schemaVersion": 2, "appVersion": "1.2.0", "createdAt": time.Now().UTC().Format(time.RFC3339),
 		"updatedAt": time.Now().UTC().Format(time.RFC3339), "student": map[string]string{"name": "", "number": "", "classroom": ""}, "tasks": tasks})
 	if err != nil {
 		t.Fatal(err)

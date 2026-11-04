@@ -909,6 +909,13 @@ definitions:
     required:
     - classroom
     type: object
+  ClassroomExperimentRequest:
+    properties:
+      open:
+        type: boolean
+    required:
+    - open
+    type: object
   ClassroomListResponse:
     properties:
       classrooms:
@@ -917,6 +924,63 @@ definitions:
         type: array
     required:
     - classrooms
+    type: object
+  ClassroomMasteryConceptResponse:
+    properties:
+      assessed:
+        type: integer
+      concept:
+        $ref: '#/definitions/LearningMasteryConceptResponse'
+      developing:
+        type: integer
+      secure:
+        type: integer
+      weak:
+        type: integer
+    required:
+    - assessed
+    - concept
+    - developing
+    - secure
+    - weak
+    type: object
+  ClassroomMasteryResponse:
+    properties:
+      classroomId:
+        type: string
+      concepts:
+        items:
+          $ref: '#/definitions/ClassroomMasteryConceptResponse'
+        type: array
+      students:
+        items:
+          $ref: '#/definitions/ClassroomMasteryStudentResponse'
+        type: array
+    required:
+    - classroomId
+    - concepts
+    - students
+    type: object
+  ClassroomMasteryStudentResponse:
+    properties:
+      counts:
+        $ref: '#/definitions/LearningMasteryCountsResponse'
+      id:
+        type: string
+      name:
+        type: string
+      username:
+        type: string
+      weakConceptIds:
+        items:
+          type: string
+        type: array
+    required:
+    - counts
+    - id
+    - name
+    - username
+    - weakConceptIds
     type: object
   ClassroomMutationResponse:
     properties:
@@ -931,6 +995,10 @@ definitions:
         type: string
       description:
         type: string
+      experiments:
+        additionalProperties:
+          type: boolean
+        type: object
       id:
         type: string
       name:
@@ -942,6 +1010,7 @@ definitions:
     required:
     - createdAt
     - description
+    - experiments
     - id
     - name
     - studentCount
@@ -3538,6 +3607,372 @@ definitions:
     required:
     - errorMsg
     type: object
+  LabAnswersRequest:
+    properties:
+      answers:
+        additionalProperties:
+          type: string
+        type: object
+      confirmBlank:
+        type: boolean
+      requestId:
+        type: string
+    required:
+    - answers
+    - confirmBlank
+    - requestId
+    type: object
+  LabAssessmentResponse:
+    properties:
+      assignment:
+        $ref: '#/definitions/LabAssignmentResponse'
+      tasks:
+        items:
+          $ref: '#/definitions/LabTaskResponse'
+        type: array
+      total:
+        type: number
+    required:
+    - assignment
+    - tasks
+    - total
+    type: object
+  LabAssignmentResponse:
+    properties:
+      active:
+        type: boolean
+      classroomId:
+        type: string
+      courseId:
+        type: string
+      deadline:
+        type: string
+        x-nullable: true
+      id:
+        type: string
+      open:
+        type: boolean
+      startsAt:
+        type: string
+      version:
+        type: string
+    required:
+    - active
+    - classroomId
+    - courseId
+    - deadline
+    - id
+    - open
+    - startsAt
+    - version
+    type: object
+  LabAssignmentsResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/LabAssignmentResponse'
+        type: array
+    required:
+    - items
+    type: object
+  LabAttemptResponse:
+    properties:
+      answers:
+        additionalProperties:
+          type: string
+        type: object
+      id:
+        type: string
+      paper:
+        $ref: '#/definitions/LabPaperResponse'
+      result:
+        allOf:
+        - $ref: '#/definitions/LabResultResponse'
+        x-nullable: true
+      startedAt:
+        type: string
+      submittedAt:
+        type: string
+        x-nullable: true
+    required:
+    - answers
+    - id
+    - paper
+    - result
+    - startedAt
+    - submittedAt
+    type: object
+  LabCheckpointResponse:
+    properties:
+      answers:
+        additionalProperties:
+          type: string
+        type: object
+      id:
+        type: string
+      maximum:
+        type: number
+      paper:
+        $ref: '#/definitions/LabPaperResponse'
+      passed:
+        type: boolean
+      result:
+        allOf:
+        - $ref: '#/definitions/LabResultResponse'
+        x-nullable: true
+    required:
+    - answers
+    - id
+    - maximum
+    - paper
+    - passed
+    - result
+    type: object
+  LabCorrectionRequest:
+    properties:
+      reason:
+        type: string
+      score:
+        type: number
+    required:
+    - reason
+    - score
+    type: object
+  LabCorrectionResponse:
+    properties:
+      at:
+        type: string
+      reason:
+        type: string
+      score:
+        type: number
+    required:
+    - at
+    - reason
+    - score
+    type: object
+  LabFieldResponse:
+    properties:
+      id:
+        type: string
+      kind:
+        type: string
+      label:
+        type: string
+      options:
+        items:
+          $ref: '#/definitions/LabOptionResponse'
+        type: array
+      points:
+        type: number
+      unit:
+        type: string
+    required:
+    - id
+    - kind
+    - label
+    - options
+    - points
+    - unit
+    type: object
+  LabFieldResultResponse:
+    properties:
+      correct:
+        type: boolean
+      expected:
+        type: string
+      explanation:
+        type: string
+      id:
+        type: string
+      maximum:
+        type: number
+      points:
+        type: number
+      submitted:
+        type: string
+    required:
+    - correct
+    - id
+    - maximum
+    - points
+    - submitted
+    type: object
+  LabOpenRequest:
+    properties:
+      open:
+        type: boolean
+    required:
+    - open
+    type: object
+  LabOptionResponse:
+    properties:
+      id:
+        type: string
+      label:
+        type: string
+    required:
+    - id
+    - label
+    type: object
+  LabPaperResponse:
+    properties:
+      fields:
+        items:
+          $ref: '#/definitions/LabFieldResponse'
+        type: array
+      formula:
+        type: string
+      prompt:
+        type: string
+      reference:
+        items:
+          $ref: '#/definitions/LabPointResponse'
+        type: array
+      taskId:
+        type: string
+      title:
+        type: string
+    required:
+    - fields
+    - formula
+    - prompt
+    - reference
+    - taskId
+    - title
+    type: object
+  LabPointResponse:
+    properties:
+      x:
+        type: number
+      "y":
+        type: number
+    required:
+    - x
+    - "y"
+    type: object
+  LabPreviewResponse:
+    properties:
+      paper:
+        $ref: '#/definitions/LabPaperResponse'
+      result:
+        $ref: '#/definitions/LabResultResponse'
+    required:
+    - paper
+    - result
+    type: object
+  LabPublishRequest:
+    properties:
+      courseId:
+        type: string
+      deadline:
+        type: string
+      startsAt:
+        type: string
+    required:
+    - courseId
+    - deadline
+    - startsAt
+    type: object
+  LabReportResponse:
+    properties:
+      assignment:
+        $ref: '#/definitions/LabAssignmentResponse'
+      students:
+        items:
+          $ref: '#/definitions/LabStudentGradeResponse'
+        type: array
+    required:
+    - assignment
+    - students
+    type: object
+  LabResultResponse:
+    properties:
+      concepts:
+        type: number
+      fields:
+        items:
+          $ref: '#/definitions/LabFieldResultResponse'
+        type: array
+      independent:
+        type: number
+      score:
+        type: number
+    required:
+    - concepts
+    - fields
+    - independent
+    - score
+    type: object
+  LabStudentGradeResponse:
+    properties:
+      grade:
+        $ref: '#/definitions/LabAssessmentResponse'
+      id:
+        type: string
+      name:
+        type: string
+      username:
+        type: string
+    required:
+    - grade
+    - id
+    - name
+    - username
+    type: object
+  LabTaskResponse:
+    properties:
+      attempts:
+        items:
+          $ref: '#/definitions/LabAttemptResponse'
+        type: array
+      checkpoints:
+        items:
+          $ref: '#/definitions/LabCheckpointResponse'
+        type: array
+      concepts:
+        type: number
+      corrections:
+        items:
+          $ref: '#/definitions/LabCorrectionResponse'
+        type: array
+      explained:
+        type: boolean
+      id:
+        type: string
+      independent:
+        type: number
+      operations:
+        type: number
+      remaining:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      total:
+        type: number
+    required:
+    - attempts
+    - checkpoints
+    - concepts
+    - corrections
+    - explained
+    - id
+    - independent
+    - operations
+    - remaining
+    - status
+    - title
+    - total
+    type: object
+  LabUpdatedResponse:
+    properties:
+      updated:
+        type: boolean
+    required:
+    - updated
+    type: object
   LearningAttemptData:
     properties:
       attempt:
@@ -3791,6 +4226,124 @@ definitions:
     - expected
     - id
     type: object
+  LearningMasteryConceptResponse:
+    properties:
+      chapter:
+        type: string
+      correct:
+        type: integer
+      evidence:
+        items:
+          $ref: '#/definitions/LearningMasteryEvidenceResponse'
+        type: array
+      id:
+        type: string
+      kind:
+        type: string
+      lastAt:
+        type: string
+        x-nullable: true
+      practiceHref:
+        type: string
+      questions:
+        type: integer
+      reviewHref:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+      topic:
+        type: string
+    required:
+    - chapter
+    - correct
+    - evidence
+    - id
+    - kind
+    - lastAt
+    - practiceHref
+    - questions
+    - reviewHref
+    - status
+    - title
+    - topic
+    type: object
+  LearningMasteryCountsResponse:
+    properties:
+      assessed:
+        type: integer
+      developing:
+        type: integer
+      secure:
+        type: integer
+      total:
+        type: integer
+      weak:
+        type: integer
+    required:
+    - assessed
+    - developing
+    - secure
+    - total
+    - weak
+    type: object
+  LearningMasteryEvidenceResponse:
+    properties:
+      at:
+        type: string
+      correct:
+        type: boolean
+      prompt:
+        type: string
+      questionId:
+        type: string
+      source:
+        type: string
+    required:
+    - at
+    - correct
+    - prompt
+    - questionId
+    - source
+    type: object
+  LearningMasteryResponse:
+    properties:
+      concepts:
+        items:
+          $ref: '#/definitions/LearningMasteryConceptResponse'
+        type: array
+      counts:
+        $ref: '#/definitions/LearningMasteryCountsResponse'
+      updatedAt:
+        type: string
+        x-nullable: true
+      weeks:
+        items:
+          $ref: '#/definitions/LearningMasteryWeekResponse'
+        type: array
+      windowDays:
+        type: integer
+    required:
+    - concepts
+    - counts
+    - updatedAt
+    - weeks
+    - windowDays
+    type: object
+  LearningMasteryWeekResponse:
+    properties:
+      answers:
+        type: integer
+      correct:
+        type: integer
+      start:
+        type: string
+    required:
+    - answers
+    - correct
+    - start
+    type: object
   LearningProgressResponse:
     properties:
       accountId:
@@ -4025,6 +4578,15 @@ definitions:
     - lesson
     - options
     - prompt
+    type: object
+  LearningVirtualLabAccessResponse:
+    properties:
+      courses:
+        additionalProperties:
+          type: boolean
+        type: object
+    required:
+    - courses
     type: object
   LearningVirtualLabGuideResponse:
     properties:
@@ -13014,6 +13576,134 @@ paths:
       summary: 更新班级
       tags:
       - classrooms
+  /classrooms/{id}/experiments/{course_id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: L1, L2 or L3
+        in: path
+        name: course_id
+        required: true
+        type: string
+      - description: Access state
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/ClassroomExperimentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ClassroomMutationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Open or close one experiment for the teacher's classroom
+      tags:
+      - classrooms
+  /classrooms/{id}/lab-assessments:
+    get:
+      parameters:
+      - description: Classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LabAssignmentsResponse'
+      security:
+      - BearerAuth: []
+      summary: List a classroom's lab assessments
+      tags:
+      - lab-assessments
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Schedule
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/LabPublishRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LabAssignmentResponse'
+      security:
+      - BearerAuth: []
+      summary: Publish one lab course assessment
+      tags:
+      - lab-assessments
+  /classrooms/{id}/mastery:
+    get:
+      parameters:
+      - description: Classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ClassroomMasteryResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Read the classroom's knowledge gaps and student summaries
+      tags:
+      - classrooms
   /classrooms/{id}/quiz-lessons:
     get:
       description: 教师从课程章节中选择预习题，无需手动录入题目。
@@ -13241,6 +13931,43 @@ paths:
       security:
       - BearerAuth: []
       summary: 移出班级学生
+      tags:
+      - classrooms
+  /classrooms/{id}/students/{student_id}/mastery:
+    get:
+      parameters:
+      - description: Classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Student public ID
+        in: path
+        name: student_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningMasteryResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Read mastery for a current student in an authorized classroom
       tags:
       - classrooms
   /classrooms/{id}/students/accounts:
@@ -14956,6 +15683,117 @@ paths:
       summary: 将文件移出个人知识库
       tags:
       - knowledge-bases
+  /lab-assessments/{id}:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Assessment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Status
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/LabOpenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LabUpdatedResponse'
+      security:
+      - BearerAuth: []
+      summary: Open or close a lab assessment
+      tags:
+      - lab-assessments
+  /lab-assessments/{id}/preview:
+    get:
+      parameters:
+      - description: Assessment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task ID
+        in: query
+        name: task
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LabPreviewResponse'
+      security:
+      - BearerAuth: []
+      summary: Preview a teacher sample with answers; creates no grade
+      tags:
+      - lab-assessments
+  /lab-assessments/{id}/report:
+    get:
+      parameters:
+      - description: Assessment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LabReportResponse'
+      security:
+      - BearerAuth: []
+      summary: Read classroom lab grades and original submissions
+      tags:
+      - lab-assessments
+  /lab-assessments/{id}/students/{student_id}/tasks/{task}/correction:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Assessment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Student public ID
+        in: path
+        name: student_id
+        required: true
+        type: string
+      - description: Task ID
+        in: path
+        name: task
+        required: true
+        type: string
+      - description: Correction and reason
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/LabCorrectionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LabUpdatedResponse'
+      security:
+      - BearerAuth: []
+      summary: Correct a task total, preserving the original score and audit history
+      tags:
+      - lab-assessments
   /learning/attempts:
     post:
       consumes:
@@ -15019,6 +15857,166 @@ paths:
         previews
       tags:
       - learning
+  /learning/lab-assessments:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LabAssignmentsResponse'
+      security:
+      - BearerAuth: []
+      summary: List my lab assessments
+      tags:
+      - lab-assessments
+  /learning/lab-assessments/{id}:
+    get:
+      parameters:
+      - description: Assessment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LabAssessmentResponse'
+      security:
+      - BearerAuth: []
+      summary: Read my lab assessment, without unreleased answers
+      tags:
+      - lab-assessments
+  /learning/lab-assessments/{id}/tasks/{task}/attempts:
+    post:
+      parameters:
+      - description: Assessment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task ID
+        in: path
+        name: task
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LabAssessmentResponse'
+      security:
+      - BearerAuth: []
+      summary: Start or resume an immutable assessment attempt
+      tags:
+      - lab-assessments
+  /learning/lab-assessments/{id}/tasks/{task}/attempts/{attempt}/submit:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Assessment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task ID
+        in: path
+        name: task
+        required: true
+        type: string
+      - description: Attempt ID
+        in: path
+        name: attempt
+        required: true
+        type: string
+      - description: Answers
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/LabAnswersRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LabAssessmentResponse'
+      security:
+      - BearerAuth: []
+      summary: Grade a formal attempt once, with idempotent retries
+      tags:
+      - lab-assessments
+  /learning/lab-assessments/{id}/tasks/{task}/checkpoints/{key}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Assessment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task ID
+        in: path
+        name: task
+        required: true
+        type: string
+      - description: O1 or O2
+        in: path
+        name: key
+        required: true
+        type: string
+      - description: Readings
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/LabAnswersRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LabAssessmentResponse'
+      security:
+      - BearerAuth: []
+      summary: Verify an operation checkpoint, unlimited retries
+      tags:
+      - lab-assessments
+  /learning/lab-assessments/{id}/tasks/{task}/explanations:
+    post:
+      parameters:
+      - description: Assessment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task ID
+        in: path
+        name: task
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LabAssessmentResponse'
+      security:
+      - BearerAuth: []
+      summary: Reveal explanations and forfeit remaining attempts
+      tags:
+      - lab-assessments
   /learning/lesson-attempts:
     post:
       consumes:
@@ -15093,6 +16091,28 @@ paths:
       - BearerAuth: []
       summary: Read lesson notes; students receive no standalone questions or answer
         keys
+      tags:
+      - learning
+  /learning/mastery:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningMasteryResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Read personal knowledge mastery from graded evidence
       tags:
       - learning
   /learning/progress:
@@ -15368,6 +16388,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
         "409":
           description: Conflict
           schema:
@@ -15375,6 +16399,24 @@ paths:
       security:
       - BearerAuth: []
       summary: Save account-scoped experiment evidence with optimistic concurrency
+      tags:
+      - learning
+  /learning/virtual-lab/access:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningVirtualLabAccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Read the experiments currently open to this account
       tags:
       - learning
   /learning/virtual-lab/guide:

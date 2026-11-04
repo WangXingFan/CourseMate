@@ -24,6 +24,7 @@ import (
 	appembedding "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/embedding"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/extraction"
 	appknowledgebase "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/knowledgebase"
+	applabassessment "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/labassessment"
 	applearning "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/learning"
 	applogcleanup "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/logcleanup"
 	appstorage "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/objectstorage"
@@ -54,6 +55,7 @@ import (
 	contentmoderationrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/contentmoderation"
 	conversationrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/conversation"
 	knowledgebaserepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/knowledgebase"
+	labassessmentrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/labassessment"
 	learningrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/learning"
 	logcleanuprepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/logcleanup"
 	settingsrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/settings"
@@ -71,6 +73,7 @@ import (
 	contentmoderationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/contentmoderation"
 	conversationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/conversation"
 	knowledgebasehttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/knowledgebase"
+	labassessmenthttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/labassessment"
 	learninghttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/learning"
 	settingshttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/settings"
 	uicomponenthttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/uicomponent"
@@ -390,8 +393,10 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	classroomHandler := classroomhttp.NewHandler(classroomService)
 	classroomModule := classroomhttp.NewModule(classroomHandler)
 	learningService := applearning.NewService(learningrepo.NewRepo(db))
+	classroomService.SetMasteryReader(learningService)
 	learningService.SetTutor(channelService, llmClient)
 	learningModule := learninghttp.NewModule(learningService)
+	labAssessmentModule := labassessmenthttp.NewModule(applabassessment.NewService(labassessmentrepo.NewRepo(db), classroomRepo, userRepo))
 
 	hc := newHealthChecker(db, cacheBackend)
 	rateLimiter := cacheBackend.RateLimiter()
@@ -401,6 +406,7 @@ func NewAppWithOptions(opts Options) (*App, error) {
 		Channel:           channelModule,
 		Classroom:         classroomModule,
 		Learning:          learningModule,
+		LabAssessment:     labAssessmentModule,
 		Conversation:      conversationModule,
 		Admin:             adminModule,
 		ContentModeration: contentModerationModule,
