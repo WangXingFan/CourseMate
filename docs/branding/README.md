@@ -18,6 +18,6 @@ pnpm --filter @deeix/web sync:pwa-assets
 
 第一步更新网页的四种 Logo、favicon、PWA 图标和桌面图标源，第二步生成桌面各平台图标，第三步刷新 PWA 内容哈希清单。Tauri CLI 默认也会生成 Android/iOS 目录；当前项目只交付桌面客户端，可以不保留这些移动端衍生文件。
 
-`outputs/branding/ke-zhi-ban/brand-preview.png` 是浅色、深色版本的并排预览。
+第一步还会在本地生成 `outputs/branding/ke-zhi-ban/brand-preview.png` 和 `.svg`，用于并排预览浅色、深色版本。预览目录已被 Git 忽略，不随仓库分发。
 
 展示名称与产品标字使用「课知伴」。现有仓库 URL、内部包名、数据存储键、应用标识与更新渠道维持兼容。

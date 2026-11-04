@@ -150,6 +150,11 @@ dist
 # Local browser automation snapshots and downloaded test records
 /.playwright-mcp/
 
+# Local design explorations, generated previews, and archived screenshots
+/outputs/logo-explorations/
+/outputs/branding/
+/docs/assets/screenshots/
+
 # yarn v2
 .yarn/cache
 .yarn/unplugged

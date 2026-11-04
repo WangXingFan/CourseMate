@@ -150,7 +150,7 @@ The backend keeps clear internal boundaries: `backend/cmd/server` is the executa
 │   ├── api-contract/         # generated TypeScript API contract (single source for all clients)
 │   └── core/                 # platform-agnostic client logic shared by web / desktop / mobile
 ├── deploy/                    # Docker deployment: compose profiles, config templates, optional services
-├── docs/                      # project guides and screenshots
+├── docs/                      # project guides and brand sources
 └── Dockerfile                 # frontend + backend production image
 ```
 

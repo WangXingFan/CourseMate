@@ -149,7 +149,7 @@ flowchart TB
 │   ├── api-contract/         # 生成的 TypeScript API 契约（所有客户端的唯一来源）
 │   └── core/                 # Web / 桌面 / 移动端共享的平台无关客户端逻辑
 ├── deploy/                    # Docker 部署：compose 方案、配置模板、可选服务
-├── docs/                      # 项目指南和截图
+├── docs/                      # 项目指南和品牌源文件
 └── Dockerfile                 # 前后端生产镜像
 ```
 
