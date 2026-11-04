@@ -24,4 +24,4 @@ type LabAssessmentState struct {
 	UpdatedAt    time.Time
 }
 
-func (LabAssessmentState) TableName() string { return "student_lab_assessment_states" }
+func (LabAssessmentState) TableName() string { return "classroom_lab_assessment_states" }

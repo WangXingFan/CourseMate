@@ -86,7 +86,7 @@ function LessonContent({ data, onSaved }: { data: LearningCourseLessonData; onSa
   }
   return <>
     <p className="text-xs text-muted-foreground">{data.lesson.chapter}</p>
-    <h2 className="mt-2 mb-6 font-display text-2xl font-normal text-foreground"><span className="mr-3 font-mono text-lg text-muted-foreground">{data.lesson.number}</span>{data.lesson.title}</h2>
+    <h2 className="mt-2 mb-6 font-display text-2xl font-normal text-foreground"><span className="mr-3 font-mono text-lg text-muted-foreground">{data.lesson.number}</span>{" "}{data.lesson.title}</h2>
     <div className="space-y-5">
       {!data.canPractice && <section className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-accent p-4 shadow-[inset_2px_0_0_var(--primary)] md:p-5"><h3 className="text-sm font-medium">{t("assignedTitle")}</h3><Button asChild size="sm" variant="outline"><Link href="/activities" prefetch={false}>{t("goToActivities")}<ArrowRight className="size-4" strokeWidth={1.6} aria-hidden /></Link></Button></section>}
       {card("preview", "01")}

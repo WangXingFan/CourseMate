@@ -222,12 +222,17 @@ try {
     }
     for (const key of step.controls ?? []) await frame().locator(`#param-${key}`).fill(String(step.params[key]));
     if (index === 1) {
-      await frame().locator("#reading-estimate").fill("1.5");
-      await frame().locator('[data-action="reading-estimate"]').click();
+      assert.equal(await frame().locator('svg[data-chart="main"]').count(), 1, "Changing parameters keeps the waveform visible");
+      assert.equal(await frame().locator("[data-reading-prediction]").count(), 0, "Exploration does not require another estimate");
+      assert.equal(await frame().locator("[data-reading-comparison]").count(), 0, "An estimate for the old parameters is not reused");
       assert.equal(await frame().locator("#observation").inputValue(), "", "Changing parameters clears the old reading");
       await frame().locator("#observation").fill("99");
       await frame().locator('[data-action="trial"]').click();
       await frame().getByRole("alert").filter({ hasText: "读数与当前图形不符" }).waitFor();
+      await saved();
+      await page.reload();
+      await frame().locator("#reading-estimate").fill("1.5");
+      await frame().locator('[data-action="reading-estimate"]').click();
     }
     await fillObservation("L1-1", step, { ...engine.defaults("L1-1"), ...step.params }, index === 0 ? "0" : undefined);
     if (step.predictedReadingKey) {
