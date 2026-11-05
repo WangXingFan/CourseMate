@@ -11,7 +11,7 @@ import (
 func TestFollowupSnapshotLifecycleOwnershipAndIdempotency(t *testing.T) {
 	s, repo := newClassroomTestService()
 	ctx := context.Background()
-	preview, err := s.CreateQuiz(ctx, 1, "class_one", "一个知识点", []string{"ss-1-1"})
+	preview, err := s.CreateQuiz(ctx, 1, "class_one", "一个知识点", []string{"ss-1-1"}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -120,7 +120,7 @@ func TestComparisonDoesNotTreatInvalidOrMissingAnswersAsWrong(t *testing.T) {
 
 func TestLegacyPreviewCanCreateMatchedFollowup(t *testing.T) {
 	s, repo := newClassroomTestService()
-	quiz, err := s.CreateQuiz(context.Background(), 1, "class_one", "旧预习", []string{"ss-2-1"})
+	quiz, err := s.CreateQuiz(context.Background(), 1, "class_one", "旧预习", []string{"ss-2-1"}, "")
 	if err != nil {
 		t.Fatal(err)
 	}

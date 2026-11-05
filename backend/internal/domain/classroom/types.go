@@ -24,8 +24,9 @@ type Student struct {
 }
 
 const (
-	QuizPhasePreClass = "pre_class"
-	QuizPhaseInClass  = "in_class"
+	QuizPhasePreClass   = "pre_class"
+	QuizPhaseInClass    = "in_class"
+	QuizPhaseAfterClass = "after_class"
 
 	QuizStatusDraft  = "draft"
 	QuizStatusOpen   = "open"
@@ -44,10 +45,21 @@ type QuizQuestion struct {
 	Prompt       string
 	Options      []string
 	Answer       int
+	Formula      string
+	Fields       []QuizField
 }
 
 // QuizLesson describes a course lesson whose preview question can be assigned.
+type QuizField struct {
+	ID       string
+	Label    string
+	Unit     string
+	Expected float64
+}
+
 type QuizLesson struct {
+	Formula     string
+	Fields      []QuizField
 	ID          string
 	Number      string
 	Title       string
@@ -75,6 +87,7 @@ type Quiz struct {
 	SubmissionCount int64
 	Submitted       bool
 	Score           int
+	FieldAnswers    map[string]map[string]string
 	Answers         []int
 }
 
@@ -85,6 +98,7 @@ type QuizSubmission struct {
 	StudentPublicID string
 	StudentName     string
 	Username        string
+	FieldAnswers    map[string]map[string]string
 	Answers         []int
 	Score           int
 	SubmittedAt     time.Time

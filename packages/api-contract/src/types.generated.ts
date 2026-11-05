@@ -994,6 +994,7 @@ export interface CreateQuizRequest {
    * @minItems 1
    */
   lessonIds: string[];
+  phase: "pre_class" | "in_class" | "after_class";
   /** @maxLength 120 */
   title: string;
 }
@@ -3056,6 +3057,13 @@ export interface QuizDataResponse {
   quiz: QuizResponse;
 }
 
+export interface QuizFieldResponse {
+  expected: number;
+  id: string;
+  label: string;
+  unit: string;
+}
+
 export interface QuizLessonListResponse {
   lessons: QuizLessonResponse[];
 }
@@ -3064,7 +3072,9 @@ export interface QuizLessonResponse {
   answer: number;
   chapter: string;
   explanation: string;
+  fields: QuizFieldResponse[];
   followup?: QuizQuestionResponse | null;
+  formula: string;
   id: string;
   number: string;
   options: string[];
@@ -3081,6 +3091,8 @@ export interface QuizQuestionResponse {
   conceptId: string;
   conceptTitle: string;
   explanation: string;
+  fields: QuizFieldResponse[];
+  formula: string;
   id: string;
   lessonId: string;
   options: string[];
@@ -3092,6 +3104,8 @@ export interface QuizQuestionStatisticsResponse {
   conceptTitle: string;
   correctCount: number;
   explanation: string;
+  fields: QuizFieldResponse[];
+  formula: string;
   id: string;
   optionCounts: number[];
   options: string[];
@@ -3162,6 +3176,7 @@ export interface QuizStudentComparisonResponse {
 
 export interface QuizSubmissionResponse {
   answers: number[];
+  fieldAnswers: Record<string, Record<string, string>>;
   score: number;
   studentId: string;
   studentName: string;
@@ -3387,12 +3402,20 @@ export interface StudentListResponse {
   students: StudentResponse[];
 }
 
+export interface StudentQuizFieldResponse {
+  id: string;
+  label: string;
+  unit: string;
+}
+
 export interface StudentQuizListResponse {
   classroom: ClassroomResponse;
   quizzes: StudentQuizResponse[];
 }
 
 export interface StudentQuizQuestionResponse {
+  fields: StudentQuizFieldResponse[];
+  formula: string;
   id: string;
   options: string[];
   prompt: string;
@@ -3400,11 +3423,13 @@ export interface StudentQuizQuestionResponse {
 
 export interface StudentQuizResponse {
   answers: number[];
+  fieldAnswers: Record<string, Record<string, string>>;
   id: string;
   openedAt: string;
   phase: string;
   questions: StudentQuizQuestionResponse[];
   score: number;
+  sourceQuizId: string;
   status: string;
   submitted: boolean;
   title: string;
@@ -3434,6 +3459,7 @@ export interface SubmitPlatformFileEmbeddingsRequest {
 
 export interface SubmitQuizRequest {
   answers: number[];
+  fieldAnswers: Record<string, Record<string, string>>;
 }
 
 export interface SuccessDoc {
@@ -7251,10 +7277,10 @@ export namespace Classrooms {
   }
 
   /**
-   * @description 教师从课程章节中选择预习题，无需手动录入题目。
+   * @description 教师按课前预习、课中练习或课后巩固选择习题，省略阶段时返回课前预习。
    * @tags classrooms
    * @name QuizLessonsList
-   * @summary 查询可下发的课程预习题
+   * @summary 查询可下发的课程阶段习题
    * @request GET:/classrooms/{id}/quiz-lessons
    * @secure
    */
@@ -7263,7 +7289,10 @@ export namespace Classrooms {
       /** 班级公开 ID */
       id: string;
     };
-    export type RequestQuery = {};
+    export type RequestQuery = {
+      /** 活动类型 */
+      phase?: "pre_class" | "in_class" | "after_class";
+    };
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = QuizLessonListResponse;
@@ -7289,7 +7318,7 @@ export namespace Classrooms {
   }
 
   /**
-   * @description 教师选择课程章节，系统读取对应的课前预习题创建草稿；发布后学生才能作答。
+   * @description 教师选择课程小节及活动类型，系统保存对应习题快照；发布后学生才能作答。
    * @tags classrooms
    * @name QuizzesCreate
    * @summary 创建班级小测
@@ -9412,16 +9441,16 @@ export namespace Quizzes {
   }
 
   /**
-   * @description 每份预习测最多关联一份复测，重复请求返回同一份；题目使用创建预习测时保存的变式快照。
+   * @description 每份预习测或课中练习最多关联一份复测，重复请求返回同一份；题目使用创建预习测或课中练习时保存的变式快照。
    * @tags classrooms
    * @name FollowupCreate
-   * @summary 为已截止的预习测创建同知识点复测草稿
+   * @summary 为已截止的预习测或课中练习创建同知识点复测草稿
    * @request POST:/quizzes/{id}/followup
    * @secure
    */
   export namespace FollowupCreate {
     export type RequestParams = {
-      /** 预习测公开 ID */
+      /** 预习测或课中练习公开 ID */
       id: string;
     };
     export type RequestQuery = {};

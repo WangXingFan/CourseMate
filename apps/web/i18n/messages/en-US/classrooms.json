@@ -148,16 +148,17 @@
   "activities": {
     "tabStudents": "Roster",
     "tabActivities": "Class activities",
-    "title": "Class quizzes",
-    "create": "New preview quiz",
+    "title": "Class activities",
+    "create": "New activity",
     "refresh": "Refresh",
     "empty": "No quizzes yet",
-    "emptyDescription": "Choose course lessons to create a preview quiz, then publish it for your students.",
+    "emptyDescription": "Choose an activity type and course sections, then publish.",
     "loadFailed": "Failed to load quizzes",
     "reportLoadFailed": "Failed to load statistics",
     "phase": {
-      "pre_class": "Pre-class preview",
-      "in_class": "Matched concept retest"
+      "pre_class": "Pre-class preparation",
+      "in_class": "In-class practice",
+      "after_class": "After-class consolidation"
     },
     "status": {
       "draft": "Draft",
@@ -171,21 +172,22 @@
     "report": "Statistics & pick",
     "createdAt": "Created {date}",
     "createDialog": {
-      "title": "Choose course preview questions",
-      "description": "Select up to 10 questions; one concept per round is recommended. Save a preview draft, then create its retest after closing the preview.",
-      "quizTitle": "Quiz title",
-      "quizTitlePlaceholder": "For example: Chapter 1 preview",
+      "title": "Choose activity questions",
+      "description": "Up to 10 questions. Preparation and in-class practice support a retest after closing.",
+      "quizTitle": "Activity name",
+      "quizTitlePlaceholder": "For example: Chapter 1 in-class practice",
       "question": "Question {index}",
       "lessons": "Select lessons",
       "search": "Search lesson number, title or chapter",
       "selected": "{count}/{max} selected",
-      "loading": "Loading course preview questions",
-      "loadFailed": "Failed to load course preview questions",
+      "loading": "Loading questions",
+      "loadFailed": "Could not load questions",
       "noLessons": "No matching lessons",
       "invalid": "Enter a title and select 1 to 10 lessons.",
       "cancel": "Cancel",
       "save": "Save draft",
-      "saving": "Saving"
+      "saving": "Saving",
+      "phase": "Activity type"
     },
     "toast": {
       "created": "Quiz saved as a draft",
@@ -195,7 +197,7 @@
       "closed": "Quiz closed",
       "closeFailed": "Failed to close",
       "followupCreated": "Retest draft ready. Review it before publishing.",
-      "followupFailed": "Retest creation failed. Make sure the preview is closed."
+      "followupFailed": "Could not create retest. Check that the original activity is closed."
     },
     "reportDialog": {
       "title": "Quiz statistics",
@@ -203,7 +205,7 @@
       "missing": "Missing",
       "average": "Average score",
       "scoreUnit": "{score}/{total}",
-      "distribution": "Option distribution",
+      "distribution": "Question accuracy and option distribution",
       "correct": "Correct",
       "missingTitle": "Missing students",
       "missingEmpty": "Everyone has submitted.",
@@ -239,7 +241,8 @@
       "refresh": "Refresh",
       "teacherHintTitle": "Manage class activities from the class page",
       "teacherHint": "Manage quizzes under Classes → Class activities.",
-      "goToClassrooms": "Open classes"
+      "goToClassrooms": "Open classes",
+      "numericInput": "Enter numbers or fractions (1 point per correct blank)"
     },
     "workflow": {
       "title": "Publish preview → Close and discuss → Publish retest → Compare results"
@@ -255,16 +258,16 @@
       "draft": "The retest is a draft. Review its questions before publishing.",
       "provisional": "Retest in progress. These results are provisional until it is closed.",
       "paired": "Both submitted",
-      "beforeOnly": "Preview only",
+      "beforeOnly": "First attempt only",
       "afterOnly": "Retest only",
       "neither": "Neither submitted",
-      "beforeRate": "Paired preview accuracy",
+      "beforeRate": "Paired initial accuracy",
       "afterRate": "Paired retest accuracy",
       "change": "Accuracy change: {value} percentage points",
       "interpretation": "One correct answer does not establish mastery. Verify again with delayed practice.",
       "students": "Show student transitions",
       "student": "Student / ID",
-      "before": "Preview",
+      "before": "Initial",
       "after": "Retest",
       "outcome": "Concept transition",
       "submitted": "Submitted",
@@ -274,11 +277,12 @@
         "retained": "Right → right",
         "regressed": "Right → wrong",
         "unresolved": "Wrong → wrong",
-        "before_only": "Preview only",
+        "before_only": "First attempt only",
         "after_only": "Retest only",
         "neither": "Neither submitted"
       }
-    }
+    },
+    "followupLabel": "Concept retest"
   },
   "experiments": {
     "title": "Experiment access",

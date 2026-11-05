@@ -32,7 +32,7 @@ const now = new Date().toISOString();
 const classroom = { experiments: { L1: false, L2: false, L3: false }, id: "class_one", name: "预习测验证班", description: "", teacherId: "teacher_one", teacherName: "任课老师", studentCount: 1, createdAt: now };
 const lessons = course.lessons.map((lesson) => {
   const preview = lesson.questions.find((question) => question.stage === "preview");
-  return { id: lesson.id, number: lesson.number, title: lesson.title, chapter: lesson.chapter, prompt: preview.prompt, options: preview.options, answer: preview.answer, explanation: preview.explanation, followup: pairs.find((p) => p.lessonID === lesson.id).followup };
+  return { id: lesson.id, number: lesson.number, title: lesson.title, chapter: lesson.chapter, formula: preview.formula, fields: [], prompt: preview.prompt, options: preview.options, answer: preview.answer, explanation: preview.explanation, followup: pairs.find((p) => p.lessonID === lesson.id).followup };
 });
 assert.equal(lessons.length, 52);
 assert.deepEqual(new Set(lessons.map((lesson) => lesson.chapter)), new Set([
@@ -90,8 +90,8 @@ async function session(role, width) {
     } else if (path.endsWith("/class_one/quizzes")) {
       if (request.method() === "POST") {
         createBody = request.postDataJSON();
-        assert.deepEqual(Object.keys(createBody).sort(), ["lessonIds", "title"]);
-        quiz = { id: "quiz_one", title: createBody.title, phase: "pre_class", status: "draft", questions: createBody.lessonIds.map((id) => { const q = course.lessons.find((lesson) => lesson.id === id).questions.find((question) => question.stage === "preview"); const pair = pairs.find((p) => p.lessonID === id); return { id: q.id, prompt: q.prompt, options: q.options, answer: q.answer, explanation: q.explanation, lessonId: id, conceptId: pair.conceptID, conceptTitle: pair.conceptTitle }; }), submissionCount: 0, createdAt: now, openedAt: null, closedAt: null };
+        assert.deepEqual(Object.keys(createBody).sort(), ["lessonIds", "phase", "title"]);
+        quiz = { id: "quiz_one", title: createBody.title, phase: "pre_class", status: "draft", questions: createBody.lessonIds.map((id) => { const q = course.lessons.find((lesson) => lesson.id === id).questions.find((question) => question.stage === "preview"); const pair = pairs.find((p) => p.lessonID === id); return { id: q.id, formula: q.formula, fields: [], prompt: q.prompt, options: q.options, answer: q.answer, explanation: q.explanation, lessonId: id, conceptId: pair.conceptID, conceptTitle: pair.conceptTitle }; }), submissionCount: 0, createdAt: now, openedAt: null, closedAt: null };
         data = { quiz };
       } else data = { quizzes: [quiz,followup].filter(Boolean) };
     } else if (path.endsWith("/quizzes/quiz_one/open")) { quiz.status = "open"; quiz.openedAt = now; data = { updated: true }; }
@@ -102,7 +102,7 @@ async function session(role, width) {
       data = {quiz:followup};
     } else if (path.endsWith("/quizzes/quiz_followup/open")) { followup.status="open";followup.openedAt=now;data={updated:true}; }
     else if (path.endsWith("/quizzes/quiz_followup/close")) { followup.status="closed";data={updated:true}; }
-    else if (path.endsWith("/student/quizzes")) data = { classroom, quizzes:[quiz,followup].filter((q) => q && q.status!=="draft").map((q) => ({...q,questions:q.questions.map(({id,prompt,options})=>({id,prompt,options})), submitted:q===quiz?submitted:retestSubmitted,score:q===quiz?0:(retestSubmitted?1:0),answers:q===quiz?selectedAnswers:retestAnswers})) };
+    else if (path.endsWith("/student/quizzes")) data = { classroom, quizzes:[quiz,followup].filter((q) => q && q.status!=="draft").map((q) => ({...q,questions:q.questions.map(({id,prompt,options,formula,fields})=>({id,prompt,options,formula,fields})), submitted:q===quiz?submitted:retestSubmitted,score:q===quiz?0:(retestSubmitted?1:0),answers:q===quiz?selectedAnswers:retestAnswers})) };
     else if (path.endsWith("/quizzes/quiz_followup/submissions") && request.method()==="POST") {
       assert.equal(followup.status,"open");retestAnswers=request.postDataJSON().answers;assert.deepEqual(retestAnswers,followup.questions.map((q)=>q.answer));retestSubmitted=true;followup.submissionCount=1;data={score:1,total:1,submitted:true};
     } else if (/\/quizzes\/[^/]+\/submissions$/.test(path) && request.method()==="GET") {
@@ -181,13 +181,13 @@ try {
   assert.deepEqual(rosterImports, ["xlsx", "csv"]);
   await teacher.getByRole("button", { name: "完成", exact: true }).click();
   await teacher.getByRole("button", { name: "课堂活动", exact: true }).click();
-  await teacher.getByRole("button", { name: "新建预习测", exact: true }).first().click();
+  await teacher.getByRole("button", { name: "新建课堂活动", exact: true }).first().click();
   const dialog = teacher.getByRole("dialog");
-  await dialog.getByText("课程预习题加载失败", { exact: true }).waitFor();
+  await dialog.getByText("习题加载失败", { exact: true }).waitFor();
   await dialog.getByRole("button", { name: "刷新", exact: true }).click();
   await dialog.getByRole("checkbox").first().waitFor();
   assert.equal(await dialog.getByRole("textbox").count(), 2, "manual question editing remains");
-  await dialog.getByRole("textbox", { name: "预习测名称", exact: true }).fill("卷积课前预习");
+  await dialog.getByRole("textbox", { name: "活动名称", exact: true }).fill("卷积课前预习");
   assert.equal(await dialog.getByRole("button", { name: "保存草稿", exact: true }).isDisabled(), true);
   for (const checkbox of (await dialog.getByRole("checkbox").all()).slice(0, 10)) await checkbox.check();
   assert.equal(await dialog.getByRole("checkbox").nth(10).isDisabled(), true);
@@ -210,9 +210,9 @@ try {
   await teacher.setViewportSize({ width: 1360, height: 950 });
   await dialog.getByRole("button", { name: "保存草稿", exact: true }).click();
   await dialog.waitFor({ state: "hidden" });
-  assert.deepEqual(createBody, { title: "卷积课前预习", lessonIds: ["ss-2-5"] });
+  assert.deepEqual(createBody, { title: "卷积课前预习", lessonIds: ["ss-2-5"], phase: "pre_class" });
   await student.goto(`${base}/learn/knowledge?lesson=ss-2-5`);
-  await student.getByRole("heading", { name: "预习题由老师下发", exact: true }).waitFor();
+  await student.getByText("本节知识讲义", { exact: true }).waitFor();
   assert.deepEqual(await student.locator("#knowledge-chapter option").allTextContents(), [
     "选择章节",
     "第1章 信号与系统基本概念",
@@ -232,7 +232,7 @@ try {
   await student.getByRole("heading", { name: "4.1 拉普拉斯变换的定义与收敛域", exact: true }).waitFor();
   assert.equal(new URL(student.url()).searchParams.get("lesson"), "ss-5-1");
   await student.screenshot({ path: join(artifacts, "student-renumbered-s-domain-mobile.png") });
-  await student.getByRole("link", { name: "查看课堂活动", exact: true }).click();
+  await student.goto(`${base}/activities`);
   await student.getByText("暂时没有已发布的小测", { exact: true }).waitFor();
   await teacher.getByRole("button", { name: "发布", exact: true }).click();
   await teacher.getByText("小测已发布", { exact: true }).waitFor();

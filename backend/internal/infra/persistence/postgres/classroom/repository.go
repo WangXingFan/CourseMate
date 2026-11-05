@@ -225,7 +225,7 @@ func (r *Repo) CreateQuiz(ctx context.Context, input domain.Quiz) (*domain.Quiz,
 			if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("public_id = ? AND teacher_id = ? AND classroom_id = ?", input.SourceQuizID, input.TeacherID, input.ClassroomID).First(&parent).Error; err != nil {
 				return err
 			}
-			if parent.Status != domain.QuizStatusClosed || parent.Phase != domain.QuizPhasePreClass || parent.SourceQuizID != nil {
+			if parent.Status != domain.QuizStatusClosed || (parent.Phase != domain.QuizPhasePreClass && parent.Phase != domain.QuizPhaseInClass) || parent.SourceQuizID != nil {
 				return repository.ErrInvalidInput
 			}
 		}
@@ -407,6 +407,9 @@ func (r *Repo) ListStudentQuizzes(ctx context.Context, classroomID, studentID ui
 			item.Submitted = true
 			item.Score = submission.Score
 			item.Answers = answers
+			if err := json.Unmarshal([]byte(submission.FieldAnswers), &item.FieldAnswers); err != nil {
+				return nil, err
+			}
 		}
 		items = append(items, *item)
 	}
@@ -421,11 +424,16 @@ func (r *Repo) CreateQuizSubmission(ctx context.Context, input domain.QuizSubmis
 	if err != nil {
 		return err
 	}
+	fields, err := json.Marshal(input.FieldAnswers)
+	if err != nil {
+		return err
+	}
 	record := models.ClassroomQuizSubmission{
-		QuizID:    input.QuizID,
-		StudentID: input.StudentID,
-		Answers:   string(encoded),
-		Score:     input.Score,
+		FieldAnswers: string(fields),
+		QuizID:       input.QuizID,
+		StudentID:    input.StudentID,
+		Answers:      string(encoded),
+		Score:        input.Score,
 	}
 	if err := r.db.WithContext(ctx).Create(&record).Error; err != nil {
 		if dberror.IsUniqueConstraint(err) {
@@ -444,6 +452,7 @@ type quizSubmissionRow struct {
 	StudentName     string    `gorm:"column:student_name"`
 	Username        string    `gorm:"column:username"`
 	Answers         string    `gorm:"column:answers"`
+	FieldAnswers    string    `gorm:"column:field_answers"`
 	Score           int       `gorm:"column:score"`
 	SubmittedAt     time.Time `gorm:"column:submitted_at"`
 }
@@ -458,7 +467,7 @@ func (r *Repo) ListQuizSubmissions(ctx context.Context, quizID uint) ([]domain.Q
 		Select(`submissions.id, submissions.quiz_id, submissions.student_id,
 			users.public_id AS student_public_id,
 			COALESCE(NULLIF(users.display_name, ''), users.username) AS student_name,
-			users.username, submissions.answers, submissions.score,
+			users.username, submissions.answers, submissions.field_answers, submissions.score,
 			submissions.created_at AS submitted_at`).
 		Joins("JOIN identity_users AS users ON users.id = submissions.student_id AND users.deleted_at IS NULL").
 		Where("submissions.quiz_id = ?", quizID).
@@ -473,7 +482,12 @@ func (r *Repo) ListQuizSubmissions(ctx context.Context, quizID uint) ([]domain.Q
 		if err := json.Unmarshal([]byte(row.Answers), &answers); err != nil {
 			return nil, err
 		}
+		var fields map[string]map[string]string
+		if err := json.Unmarshal([]byte(row.FieldAnswers), &fields); err != nil {
+			return nil, err
+		}
 		items = append(items, domain.QuizSubmission{
+			FieldAnswers:    fields,
 			ID:              row.ID,
 			QuizID:          row.QuizID,
 			StudentID:       row.StudentID,

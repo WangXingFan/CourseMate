@@ -12,6 +12,8 @@ import type {
   ImportClassroomStudentsRequest,
   CreateQuizRequest,
   QuizComparisonResponse,
+  QuizFieldResponse,
+  StudentQuizFieldResponse,
   QuizLessonListResponse,
   QuizLessonResponse,
   StudentListResponse,
@@ -36,10 +38,12 @@ export type StudentImportResultDTO = ContractStudentImportResult;
 export type ClassroomQuizLessonDTO = QuizLessonResponse;
 export type ClassroomQuizLessonListData = QuizLessonListResponse;
 
-export type ClassroomQuizPhase = "pre_class" | "in_class";
+export type ClassroomQuizPhase = "pre_class" | "in_class" | "after_class";
 export type ClassroomQuizStatus = "draft" | "open" | "closed";
 
 export type ClassroomQuizQuestionDTO = {
+  formula: string;
+  fields: QuizFieldResponse[];
   id: string;
   prompt: string;
   options: string[];
@@ -74,6 +78,7 @@ export type ClassroomQuizData = {
 export type CreateClassroomQuizPayload = CreateQuizRequest;
 
 export type ClassroomQuizSubmissionDTO = {
+  fieldAnswers: Record<string, Record<string, string>> | null;
   studentId: string;
   studentName: string;
   username: string;
@@ -83,6 +88,8 @@ export type ClassroomQuizSubmissionDTO = {
 };
 
 export type ClassroomQuizQuestionStatisticsDTO = {
+  formula: string;
+  fields: QuizFieldResponse[];
   id: string;
   prompt: string;
   options: string[];
@@ -108,12 +115,16 @@ export type ClassroomQuizReportDTO = {
 };
 
 export type StudentClassroomQuizQuestionDTO = {
+  formula: string;
+  fields: StudentQuizFieldResponse[];
   id: string;
   prompt: string;
   options: string[];
 };
 
 export type StudentClassroomQuizDTO = {
+  sourceQuizId: string;
+  fieldAnswers: Record<string, Record<string, string>> | null;
   id: string;
   title: string;
   phase: ClassroomQuizPhase;
@@ -131,6 +142,7 @@ export type StudentClassroomQuizListData = {
 };
 
 export type SubmitClassroomQuizPayload = {
+  fieldAnswers: Record<string, Record<string, string>> | null;
   answers: number[];
 };
 

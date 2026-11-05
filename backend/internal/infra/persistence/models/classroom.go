@@ -43,13 +43,14 @@ type ClassroomQuiz struct {
 func (ClassroomQuiz) TableName() string { return "classroom_quizzes" }
 
 type ClassroomQuizSubmission struct {
-	ID        uint   `gorm:"primaryKey;autoIncrement"`
-	QuizID    uint   `gorm:"not null;uniqueIndex:idx_classroom_quiz_submission"`
-	StudentID uint   `gorm:"not null;uniqueIndex:idx_classroom_quiz_submission"`
-	Answers   string `gorm:"type:text;not null"`
-	Score     int    `gorm:"not null;default:0"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID           uint   `gorm:"primaryKey;autoIncrement"`
+	QuizID       uint   `gorm:"not null;uniqueIndex:idx_classroom_quiz_submission"`
+	StudentID    uint   `gorm:"not null;uniqueIndex:idx_classroom_quiz_submission"`
+	Answers      string `gorm:"type:text;not null"`
+	FieldAnswers string `gorm:"type:text;not null;default:'{}'"`
+	Score        int    `gorm:"not null;default:0"`
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 func (ClassroomQuizSubmission) TableName() string { return "classroom_quiz_submissions" }

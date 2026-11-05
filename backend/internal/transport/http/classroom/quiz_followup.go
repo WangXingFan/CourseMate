@@ -8,12 +8,12 @@ import (
 )
 
 // CreateQuizFollowup godoc
-// @Summary 为已截止的预习测创建同知识点复测草稿
-// @Description 每份预习测最多关联一份复测，重复请求返回同一份；题目使用创建预习测时保存的变式快照。
+// @Summary 为已截止的预习测或课中练习创建同知识点复测草稿
+// @Description 每份预习测或课中练习最多关联一份复测，重复请求返回同一份；题目使用创建预习测或课中练习时保存的变式快照。
 // @Tags classrooms
 // @Produce json
 // @Security BearerAuth
-// @Param id path string true "预习测公开 ID"
+// @Param id path string true "预习测或课中练习公开 ID"
 // @Success 200 {object} QuizDataResponse
 // @Failure 400 {object} response.Envelope
 // @Failure 403 {object} response.Envelope

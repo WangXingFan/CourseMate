@@ -2336,11 +2336,18 @@ definitions:
         maxItems: 10
         minItems: 1
         type: array
+      phase:
+        enum:
+        - pre_class
+        - in_class
+        - after_class
+        type: string
       title:
         maxLength: 120
         type: string
     required:
     - lessonIds
+    - phase
     - title
     type: object
   CreateStudentAccountRequest:
@@ -6927,6 +6934,22 @@ definitions:
     required:
     - quiz
     type: object
+  QuizFieldResponse:
+    properties:
+      expected:
+        type: number
+      id:
+        type: string
+      label:
+        type: string
+      unit:
+        type: string
+    required:
+    - expected
+    - id
+    - label
+    - unit
+    type: object
   QuizLessonListResponse:
     properties:
       lessons:
@@ -6944,10 +6967,16 @@ definitions:
         type: string
       explanation:
         type: string
+      fields:
+        items:
+          $ref: '#/definitions/QuizFieldResponse'
+        type: array
       followup:
         allOf:
         - $ref: '#/definitions/QuizQuestionResponse'
         x-nullable: true
+      formula:
+        type: string
       id:
         type: string
       number:
@@ -6964,7 +6993,9 @@ definitions:
     - answer
     - chapter
     - explanation
+    - fields
     - followup
+    - formula
     - id
     - number
     - options
@@ -6990,6 +7021,12 @@ definitions:
         type: string
       explanation:
         type: string
+      fields:
+        items:
+          $ref: '#/definitions/QuizFieldResponse'
+        type: array
+      formula:
+        type: string
       id:
         type: string
       lessonId:
@@ -7005,6 +7042,8 @@ definitions:
     - conceptId
     - conceptTitle
     - explanation
+    - fields
+    - formula
     - id
     - lessonId
     - options
@@ -7019,6 +7058,12 @@ definitions:
       correctCount:
         type: integer
       explanation:
+        type: string
+      fields:
+        items:
+          $ref: '#/definitions/QuizFieldResponse'
+        type: array
+      formula:
         type: string
       id:
         type: string
@@ -7037,6 +7082,8 @@ definitions:
     - conceptTitle
     - correctCount
     - explanation
+    - fields
+    - formula
     - id
     - optionCounts
     - options
@@ -7223,6 +7270,12 @@ definitions:
         items:
           type: integer
         type: array
+      fieldAnswers:
+        additionalProperties:
+          additionalProperties:
+            type: string
+          type: object
+        type: object
       score:
         type: integer
       studentId:
@@ -7235,6 +7288,7 @@ definitions:
         type: string
     required:
     - answers
+    - fieldAnswers
     - score
     - studentId
     - studentName
@@ -7696,6 +7750,19 @@ definitions:
     required:
     - students
     type: object
+  StudentQuizFieldResponse:
+    properties:
+      id:
+        type: string
+      label:
+        type: string
+      unit:
+        type: string
+    required:
+    - id
+    - label
+    - unit
+    type: object
   StudentQuizListResponse:
     properties:
       classroom:
@@ -7710,6 +7777,12 @@ definitions:
     type: object
   StudentQuizQuestionResponse:
     properties:
+      fields:
+        items:
+          $ref: '#/definitions/StudentQuizFieldResponse'
+        type: array
+      formula:
+        type: string
       id:
         type: string
       options:
@@ -7719,6 +7792,8 @@ definitions:
       prompt:
         type: string
     required:
+    - fields
+    - formula
     - id
     - options
     - prompt
@@ -7729,6 +7804,12 @@ definitions:
         items:
           type: integer
         type: array
+      fieldAnswers:
+        additionalProperties:
+          additionalProperties:
+            type: string
+          type: object
+        type: object
       id:
         type: string
       openedAt:
@@ -7741,6 +7822,8 @@ definitions:
         type: array
       score:
         type: integer
+      sourceQuizId:
+        type: string
       status:
         type: string
       submitted:
@@ -7749,11 +7832,13 @@ definitions:
         type: string
     required:
     - answers
+    - fieldAnswers
     - id
     - openedAt
     - phase
     - questions
     - score
+    - sourceQuizId
     - status
     - submitted
     - title
@@ -7799,8 +7884,15 @@ definitions:
         items:
           type: integer
         type: array
+      fieldAnswers:
+        additionalProperties:
+          additionalProperties:
+            type: string
+          type: object
+        type: object
     required:
     - answers
+    - fieldAnswers
     type: object
   SuccessDoc:
     properties:
@@ -14555,8 +14647,16 @@ paths:
       - classrooms
   /classrooms/{id}/quiz-lessons:
     get:
-      description: 教师从课程章节中选择预习题，无需手动录入题目。
+      description: 教师按课前预习、课中练习或课后巩固选择习题，省略阶段时返回课前预习。
       parameters:
+      - description: 活动类型
+        enum:
+        - pre_class
+        - in_class
+        - after_class
+        in: query
+        name: phase
+        type: string
       - description: 班级公开 ID
         in: path
         name: id
@@ -14569,6 +14669,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/QuizLessonListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
         "403":
           description: Forbidden
           schema:
@@ -14579,7 +14683,7 @@ paths:
             $ref: '#/definitions/Envelope'
       security:
       - BearerAuth: []
-      summary: 查询可下发的课程预习题
+      summary: 查询可下发的课程阶段习题
       tags:
       - classrooms
   /classrooms/{id}/quizzes:
@@ -14618,7 +14722,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: 教师选择课程章节，系统读取对应的课前预习题创建草稿；发布后学生才能作答。
+      description: 教师选择课程小节及活动类型，系统保存对应习题快照；发布后学生才能作答。
       parameters:
       - description: 班级公开 ID
         in: path
@@ -18299,9 +18403,9 @@ paths:
       - classrooms
   /quizzes/{id}/followup:
     post:
-      description: 每份预习测最多关联一份复测，重复请求返回同一份；题目使用创建预习测时保存的变式快照。
+      description: 每份预习测或课中练习最多关联一份复测，重复请求返回同一份；题目使用创建预习测或课中练习时保存的变式快照。
       parameters:
-      - description: 预习测公开 ID
+      - description: 预习测或课中练习公开 ID
         in: path
         name: id
         required: true
@@ -18327,7 +18431,7 @@ paths:
             $ref: '#/definitions/Envelope'
       security:
       - BearerAuth: []
-      summary: 为已截止的预习测创建同知识点复测草稿
+      summary: 为已截止的预习测或课中练习创建同知识点复测草稿
       tags:
       - classrooms
   /quizzes/{id}/open:

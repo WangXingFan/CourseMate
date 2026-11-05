@@ -42,13 +42,15 @@ func (h *Handler) ListQuizzes(c *gin.Context) {
 }
 
 // ListQuizLessons godoc
-// @Summary 查询可下发的课程预习题
-// @Description 教师从课程章节中选择预习题，无需手动录入题目。
+// @Summary 查询可下发的课程阶段习题
+// @Description 教师按课前预习、课中练习或课后巩固选择习题，省略阶段时返回课前预习。
+// @Param phase query string false "活动类型" Enums(pre_class,in_class,after_class)
 // @Tags classrooms
 // @Produce json
 // @Security BearerAuth
 // @Param id path string true "班级公开 ID"
 // @Success 200 {object} QuizLessonListResponse
+// @Failure 400 {object} response.Envelope
 // @Failure 403 {object} response.Envelope
 // @Failure 404 {object} response.Envelope
 // @Router /classrooms/{id}/quiz-lessons [get]
@@ -57,7 +59,7 @@ func (h *Handler) ListQuizLessons(c *gin.Context) {
 	if !ok {
 		return
 	}
-	items, err := h.service.QuizLessons(c.Request.Context(), middleware.MustUserID(c), classroomID)
+	items, err := h.service.QuizLessons(c.Request.Context(), middleware.MustUserID(c), classroomID, c.Query("phase"))
 	if err != nil {
 		h.writeError(c, err)
 		return
@@ -65,6 +67,7 @@ func (h *Handler) ListQuizLessons(c *gin.Context) {
 	views := make([]QuizLessonResponse, 0, len(items))
 	for _, item := range items {
 		views = append(views, QuizLessonResponse{
+			Formula: item.Formula, Fields: quizFields(item.Fields),
 			ID: item.ID, Number: item.Number, Title: item.Title, Chapter: item.Chapter,
 			Prompt: item.Prompt, Options: item.Options, Answer: item.Answer, Explanation: item.Explanation, Followup: toOptionalQuizQuestion(item.Followup),
 		})
@@ -74,7 +77,7 @@ func (h *Handler) ListQuizLessons(c *gin.Context) {
 
 // CreateQuiz godoc
 // @Summary 创建班级小测
-// @Description 教师选择课程章节，系统读取对应的课前预习题创建草稿；发布后学生才能作答。
+// @Description 教师选择课程小节及活动类型，系统保存对应习题快照；发布后学生才能作答。
 // @Tags classrooms
 // @Accept json
 // @Produce json
@@ -103,6 +106,7 @@ func (h *Handler) CreateQuiz(c *gin.Context) {
 		classroomID,
 		req.Title,
 		req.LessonIDs,
+		req.Phase,
 	)
 	if err != nil {
 		h.writeError(c, err)
@@ -236,7 +240,7 @@ func (h *Handler) SubmitQuiz(c *gin.Context) {
 		response.InvalidRequestBody(c, err)
 		return
 	}
-	result, err := h.service.SubmitQuiz(c.Request.Context(), middleware.MustUserID(c), quizID, req.Answers)
+	result, err := h.service.SubmitQuiz(c.Request.Context(), middleware.MustUserID(c), quizID, req.Answers, req.FieldAnswers)
 	if err != nil {
 		h.writeError(c, err)
 		return
@@ -261,6 +265,7 @@ func toQuizResponse(item domainclassroom.Quiz) QuizResponse {
 	questions := make([]QuizQuestionResponse, 0, len(item.Questions))
 	for _, question := range item.Questions {
 		questions = append(questions, QuizQuestionResponse{
+			Formula: question.Formula, Fields: quizFields(question.Fields),
 			ID:       question.ID,
 			LessonID: question.LessonID, ConceptID: question.ConceptID, ConceptTitle: question.ConceptTitle, Explanation: question.Explanation,
 			Prompt:  question.Prompt,
@@ -285,13 +290,19 @@ func toQuizResponse(item domainclassroom.Quiz) QuizResponse {
 func toStudentQuizResponse(item domainclassroom.Quiz) StudentQuizResponse {
 	questions := make([]StudentQuizQuestionResponse, 0, len(item.Questions))
 	for _, question := range item.Questions {
+		fields := make([]StudentQuizFieldResponse, 0, len(question.Fields))
+		for _, field := range question.Fields {
+			fields = append(fields, StudentQuizFieldResponse{ID: field.ID, Label: field.Label, Unit: field.Unit})
+		}
 		questions = append(questions, StudentQuizQuestionResponse{
+			Formula: question.Formula, Fields: fields,
 			ID:      question.ID,
 			Prompt:  question.Prompt,
 			Options: question.Options,
 		})
 	}
 	return StudentQuizResponse{
+		SourceQuizID: item.SourceQuizID, FieldAnswers: item.FieldAnswers,
 		ID:        item.PublicID,
 		Title:     item.Title,
 		Phase:     item.Phase,
@@ -316,17 +327,19 @@ func toQuizReportResponse(report appclassroom.QuizReport) QuizReportResponse {
 	submissions := make([]QuizSubmissionResponse, 0, len(report.Submissions))
 	for _, item := range report.Submissions {
 		submissions = append(submissions, QuizSubmissionResponse{
-			StudentID:   item.StudentPublicID,
-			StudentName: item.StudentName,
-			Username:    item.Username,
-			Answers:     item.Answers,
-			Score:       item.Score,
-			SubmittedAt: item.SubmittedAt,
+			FieldAnswers: item.FieldAnswers,
+			StudentID:    item.StudentPublicID,
+			StudentName:  item.StudentName,
+			Username:     item.Username,
+			Answers:      item.Answers,
+			Score:        item.Score,
+			SubmittedAt:  item.SubmittedAt,
 		})
 	}
 	questions := make([]QuizQuestionStatisticsResponse, 0, len(report.Questions))
 	for _, item := range report.Questions {
 		questions = append(questions, QuizQuestionStatisticsResponse{
+			Formula: item.Question.Formula, Fields: quizFields(item.Question.Fields),
 			ID:           item.Question.ID,
 			ConceptTitle: item.Question.ConceptTitle, Explanation: item.Question.Explanation,
 			Prompt:       item.Question.Prompt,
@@ -379,5 +392,13 @@ func toOptionalQuizQuestion(q *domainclassroom.QuizQuestion) *QuizQuestionRespon
 	if q == nil {
 		return nil
 	}
-	return &QuizQuestionResponse{ID: q.ID, Prompt: q.Prompt, Options: q.Options, Answer: q.Answer, LessonID: q.LessonID, ConceptID: q.ConceptID, ConceptTitle: q.ConceptTitle, Explanation: q.Explanation}
+	return &QuizQuestionResponse{Formula: q.Formula, Fields: quizFields(q.Fields), ID: q.ID, Prompt: q.Prompt, Options: q.Options, Answer: q.Answer, LessonID: q.LessonID, ConceptID: q.ConceptID, ConceptTitle: q.ConceptTitle, Explanation: q.Explanation}
+}
+
+func quizFields(fields []domainclassroom.QuizField) []QuizFieldResponse {
+	result := make([]QuizFieldResponse, 0, len(fields))
+	for _, field := range fields {
+		result = append(result, QuizFieldResponse{ID: field.ID, Label: field.Label, Unit: field.Unit, Expected: field.Expected})
+	}
+	return result
 }

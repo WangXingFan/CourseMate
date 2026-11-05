@@ -14,7 +14,21 @@ import (
 )
 
 func pairedSnapshot(lessonID string, question *domainlearning.CourseQuestion) domain.QuizQuestion {
-	q := domain.QuizQuestion{ID: question.ID, LessonID: lessonID, Prompt: question.Prompt, Options: append([]string(nil), question.Options...), Answer: question.Answer, Explanation: question.Explanation}
+	q := domain.QuizQuestion{Formula: question.Formula, Fields: []domain.QuizField{}, ID: question.ID, LessonID: lessonID, Prompt: question.Prompt, Options: append([]string{}, question.Options...), Answer: question.Answer, Explanation: question.Explanation}
+	for _, f := range question.Fields {
+		q.Fields = append(q.Fields, domain.QuizField{ID: f.ID, Label: f.Label, Unit: f.Unit, Expected: f.Expected})
+	}
+	if lesson := domainlearning.FindCourseLesson(lessonID); lesson != nil {
+		q.ConceptTitle = lesson.Title
+	}
+	q.ConceptID = lessonID + "-" + question.Stage + "-concept"
+	if question.Stage == "in_class" {
+		if followup := domainlearning.FindInClassFollowup(lessonID); followup != nil {
+			next := pairedSnapshot(lessonID, followup)
+			next.ConceptID, next.ConceptTitle = q.ConceptID, q.ConceptTitle
+			q.Followup = &next
+		}
+	}
 	if pair := domainlearning.FindCourseQuestionPair(lessonID); pair != nil && pair.PreviewQuestionID == question.ID {
 		q.ConceptID, q.ConceptTitle = pair.ConceptID, pair.ConceptTitle
 		followup := pair.Followup
@@ -37,13 +51,13 @@ func (s *Service) findFollowup(ctx context.Context, source domain.Quiz) (*domain
 }
 
 // CreateQuizFollowup creates at most one immutable same-concept retest per
-// preview quiz. Repeated requests return the same draft/published quiz.
+// preview or in-class quiz. Repeated requests return the same draft/published quiz.
 func (s *Service) CreateQuizFollowup(ctx context.Context, actor uint, sourceID string) (*domain.Quiz, error) {
 	source, err := s.ownedQuiz(ctx, actor, sourceID)
 	if err != nil {
 		return nil, err
 	}
-	if source.Phase != domain.QuizPhasePreClass || source.SourceQuizID != "" {
+	if (source.Phase != domain.QuizPhasePreClass && source.Phase != domain.QuizPhaseInClass) || source.SourceQuizID != "" {
 		return nil, ErrQuizInvalid
 	}
 	existing, err := s.findFollowup(ctx, *source)
@@ -62,10 +76,10 @@ func (s *Service) CreateQuizFollowup(ctx context.Context, actor uint, sourceID s
 			if pair == nil {
 				return nil, ErrQuizInvalid
 			}
-			snapshot := pairedSnapshot(pair.LessonID, previewQuestion(domainlearning.FindCourseLesson(pair.LessonID)))
+			snapshot := pairedSnapshot(pair.LessonID, phaseQuestion(domainlearning.FindCourseLesson(pair.LessonID), domain.QuizPhasePreClass))
 			followup = snapshot.Followup
 		}
-		if followup == nil || followup.ConceptID == "" || len(followup.Options) != 4 {
+		if followup == nil || followup.ConceptID == "" || (len(followup.Options) < 2 && len(followup.Fields) == 0) {
 			return nil, ErrQuizInvalid
 		}
 		q := *followup
@@ -122,10 +136,6 @@ func questionConcept(q domain.QuizQuestion) string {
 		return pair.ConceptID
 	}
 	return ""
-}
-
-func validChoice(sub domain.QuizSubmission, index int, q domain.QuizQuestion) bool {
-	return index < len(sub.Answers) && sub.Answers[index] >= 0 && sub.Answers[index] < len(q.Options)
 }
 
 func buildComparison(before, after domain.Quiz, roster []domain.Student, pre, post []domain.QuizSubmission) *QuizComparison {
@@ -188,13 +198,14 @@ func buildComparison(before, after domain.Quiz, roster []domain.Student, pre, po
 		}
 		for k, pair := range pairs {
 			preQ, postQ := before.Questions[pair.before], after.Questions[pair.after]
-			validPre, validPost := hasPre && validChoice(a, pair.before, preQ), hasPost && validChoice(b, pair.after, postQ)
+			correctPre, validPre := quizAnswer(a, pair.before, preQ)
+			correctPost, validPost := quizAnswer(b, pair.after, postQ)
+			validPre, validPost = hasPre && validPre, hasPost && validPost
 			outcome := "neither"
 			switch {
 			case validPre && validPost:
 				stat := &result.Questions[k]
 				stat.PairedCount++
-				correctPre, correctPost := a.Answers[pair.before] == preQ.Answer, b.Answers[pair.after] == postQ.Answer
 				if correctPre {
 					stat.BeforeCorrect++
 					row.BeforeScore++
@@ -242,7 +253,7 @@ func (s *Service) quizComparison(ctx context.Context, actor uint, quiz domain.Qu
 	if quiz.SourceQuizID != "" {
 		after = &quiz
 		before, err = s.ownedQuiz(ctx, actor, quiz.SourceQuizID)
-	} else if quiz.Phase == domain.QuizPhasePreClass {
+	} else if quiz.Phase == domain.QuizPhasePreClass || quiz.Phase == domain.QuizPhaseInClass {
 		after, err = s.findFollowup(ctx, quiz)
 	}
 	if err != nil || after == nil {

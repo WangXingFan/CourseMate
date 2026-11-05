@@ -8285,15 +8285,26 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "教师从课程章节中选择预习题，无需手动录入题目。",
+                "description": "教师按课前预习、课中练习或课后巩固选择习题，省略阶段时返回课前预习。",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "classrooms"
                 ],
-                "summary": "查询可下发的课程预习题",
+                "summary": "查询可下发的课程阶段习题",
                 "parameters": [
+                    {
+                        "enum": [
+                            "pre_class",
+                            "in_class",
+                            "after_class"
+                        ],
+                        "type": "string",
+                        "description": "活动类型",
+                        "name": "phase",
+                        "in": "query"
+                    },
                     {
                         "type": "string",
                         "description": "班级公开 ID",
@@ -8307,6 +8318,12 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/QuizLessonListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
                         }
                     },
                     "403": {
@@ -8381,7 +8398,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "教师选择课程章节，系统读取对应的课前预习题创建草稿；发布后学生才能作答。",
+                "description": "教师选择课程小节及活动类型，系统保存对应习题快照；发布后学生才能作答。",
                 "consumes": [
                     "application/json"
                 ],
@@ -14190,18 +14207,18 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "每份预习测最多关联一份复测，重复请求返回同一份；题目使用创建预习测时保存的变式快照。",
+                "description": "每份预习测或课中练习最多关联一份复测，重复请求返回同一份；题目使用创建预习测或课中练习时保存的变式快照。",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "classrooms"
                 ],
-                "summary": "为已截止的预习测创建同知识点复测草稿",
+                "summary": "为已截止的预习测或课中练习创建同知识点复测草稿",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "预习测公开 ID",
+                        "description": "预习测或课中练习公开 ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -18434,6 +18451,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "lessonIds",
+                "phase",
                 "title"
             ],
             "properties": {
@@ -18444,6 +18462,14 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "phase": {
+                    "type": "string",
+                    "enum": [
+                        "pre_class",
+                        "in_class",
+                        "after_class"
+                    ]
                 },
                 "title": {
                     "type": "string",
@@ -25011,6 +25037,29 @@ const docTemplate = `{
                 }
             }
         },
+        "QuizFieldResponse": {
+            "type": "object",
+            "required": [
+                "expected",
+                "id",
+                "label",
+                "unit"
+            ],
+            "properties": {
+                "expected": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            }
+        },
         "QuizLessonListResponse": {
             "type": "object",
             "required": [
@@ -25031,7 +25080,9 @@ const docTemplate = `{
                 "answer",
                 "chapter",
                 "explanation",
+                "fields",
                 "followup",
+                "formula",
                 "id",
                 "number",
                 "options",
@@ -25048,6 +25099,12 @@ const docTemplate = `{
                 "explanation": {
                     "type": "string"
                 },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QuizFieldResponse"
+                    }
+                },
                 "followup": {
                     "allOf": [
                         {
@@ -25055,6 +25112,9 @@ const docTemplate = `{
                         }
                     ],
                     "x-nullable": true
+                },
+                "formula": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "string"
@@ -25097,6 +25157,8 @@ const docTemplate = `{
                 "conceptId",
                 "conceptTitle",
                 "explanation",
+                "fields",
+                "formula",
                 "id",
                 "lessonId",
                 "options",
@@ -25113,6 +25175,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "explanation": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QuizFieldResponse"
+                    }
+                },
+                "formula": {
                     "type": "string"
                 },
                 "id": {
@@ -25139,6 +25210,8 @@ const docTemplate = `{
                 "conceptTitle",
                 "correctCount",
                 "explanation",
+                "fields",
+                "formula",
                 "id",
                 "optionCounts",
                 "options",
@@ -25155,6 +25228,15 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "explanation": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QuizFieldResponse"
+                    }
+                },
+                "formula": {
                     "type": "string"
                 },
                 "id": {
@@ -25429,6 +25511,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "answers",
+                "fieldAnswers",
                 "score",
                 "studentId",
                 "studentName",
@@ -25440,6 +25523,15 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "type": "integer"
+                    }
+                },
+                "fieldAnswers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
                 },
                 "score": {
@@ -26115,6 +26207,25 @@ const docTemplate = `{
                 }
             }
         },
+        "StudentQuizFieldResponse": {
+            "type": "object",
+            "required": [
+                "id",
+                "label",
+                "unit"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            }
+        },
         "StudentQuizListResponse": {
             "type": "object",
             "required": [
@@ -26136,11 +26247,22 @@ const docTemplate = `{
         "StudentQuizQuestionResponse": {
             "type": "object",
             "required": [
+                "fields",
+                "formula",
                 "id",
                 "options",
                 "prompt"
             ],
             "properties": {
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/StudentQuizFieldResponse"
+                    }
+                },
+                "formula": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -26159,11 +26281,13 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "answers",
+                "fieldAnswers",
                 "id",
                 "openedAt",
                 "phase",
                 "questions",
                 "score",
+                "sourceQuizId",
                 "status",
                 "submitted",
                 "title"
@@ -26173,6 +26297,15 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "type": "integer"
+                    }
+                },
+                "fieldAnswers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
                 },
                 "id": {
@@ -26192,6 +26325,9 @@ const docTemplate = `{
                 },
                 "score": {
                     "type": "integer"
+                },
+                "sourceQuizId": {
+                    "type": "string"
                 },
                 "status": {
                     "type": "string"
@@ -26258,13 +26394,23 @@ const docTemplate = `{
         "SubmitQuizRequest": {
             "type": "object",
             "required": [
-                "answers"
+                "answers",
+                "fieldAnswers"
             ],
             "properties": {
                 "answers": {
                     "type": "array",
                     "items": {
                         "type": "integer"
+                    }
+                },
+                "fieldAnswers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
                     }
                 }
             }

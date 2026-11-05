@@ -148,16 +148,17 @@
   "activities": {
     "tabStudents": "学生名单",
     "tabActivities": "课堂活动",
-    "title": "课堂小测",
-    "create": "新建预习测",
+    "title": "课堂活动",
+    "create": "新建课堂活动",
     "refresh": "刷新",
     "empty": "还没有小测",
-    "emptyDescription": "选择课程章节创建预习测，发布后学生即可作答。",
+    "emptyDescription": "选择活动类型和课程小节，发布后学生即可作答。",
     "loadFailed": "小测加载失败",
     "reportLoadFailed": "统计加载失败",
     "phase": {
-      "pre_class": "课前预习测",
-      "in_class": "同知识点复测"
+      "pre_class": "课前预习",
+      "in_class": "课中练习",
+      "after_class": "课后巩固"
     },
     "status": {
       "draft": "草稿",
@@ -171,21 +172,22 @@
     "report": "统计与抽人",
     "createdAt": "创建于 {date}",
     "createDialog": {
-      "title": "选择课程预习题",
-      "description": "每次最多 10 题；建议选择一个知识点。先保存预习草稿，截止后再创建复测。",
-      "quizTitle": "预习测名称",
-      "quizTitlePlaceholder": "例如：第 1 章课前预习测",
+      "title": "选择课堂活动习题",
+      "description": "每次最多 10 题。预习和课中练习截止后可创建复测。",
+      "quizTitle": "活动名称",
+      "quizTitlePlaceholder": "例如：第 1 章课中练习",
       "question": "第 {index} 题",
       "lessons": "选择小节",
       "search": "搜索小节编号、标题或章节",
       "selected": "已选 {count}/{max} 题",
-      "loading": "正在加载课程预习题",
-      "loadFailed": "课程预习题加载失败",
+      "loading": "正在加载习题",
+      "loadFailed": "习题加载失败",
       "noLessons": "没有匹配的小节",
       "invalid": "请填写名称，并选择 1 至 10 个小节。",
       "cancel": "取消",
       "save": "保存草稿",
-      "saving": "保存中"
+      "saving": "保存中",
+      "phase": "活动类型"
     },
     "toast": {
       "created": "小测已保存为草稿",
@@ -195,7 +197,7 @@
       "closed": "小测已截止",
       "closeFailed": "截止失败",
       "followupCreated": "复测草稿已就绪，请确认题目后发布",
-      "followupFailed": "创建复测失败，请确认预习测已截止"
+      "followupFailed": "创建复测失败，请确认原活动已截止"
     },
     "reportDialog": {
       "title": "小测统计",
@@ -203,7 +205,7 @@
       "missing": "未提交",
       "average": "平均得分",
       "scoreUnit": "{score}/{total}",
-      "distribution": "选项分布",
+      "distribution": "题目正确率与选项分布",
       "correct": "正确",
       "missingTitle": "未提交名单",
       "missingEmpty": "全班均已提交。",
@@ -239,7 +241,8 @@
       "refresh": "刷新",
       "teacherHintTitle": "课堂活动由班级页管理",
       "teacherHint": "前往「班级 → 课堂活动」管理小测。",
-      "goToClassrooms": "打开班级"
+      "goToClassrooms": "打开班级",
+      "numericInput": "填写数值（支持小数或分数；每个填空独立计 1 分）"
     },
     "workflow": {
       "title": "发布预习 → 截止并讲评 → 发布复测 → 对比结果"
@@ -255,16 +258,16 @@
       "draft": "复测仍为草稿，请确认题目后发布。",
       "provisional": "复测进行中，当前为临时统计，请截止后再判断结果。",
       "paired": "两次均提交",
-      "beforeOnly": "仅交预习",
+      "beforeOnly": "仅交首测",
       "afterOnly": "仅交复测",
       "neither": "两次均未交",
-      "beforeRate": "配对预习正确率",
+      "beforeRate": "配对首测正确率",
       "afterRate": "配对复测正确率",
       "change": "正确率变化 {value} 个百分点",
       "interpretation": "一次答对不代表掌握，建议延迟复习再验证。",
       "students": "展开学生变化明细",
       "student": "学生 / 学号",
-      "before": "预习",
+      "before": "首测",
       "after": "复测",
       "outcome": "知识点变化",
       "submitted": "已提交",
@@ -274,11 +277,12 @@
         "retained": "对 → 对",
         "regressed": "对 → 错",
         "unresolved": "错 → 错",
-        "before_only": "仅交预习",
+        "before_only": "仅交首测",
         "after_only": "仅交复测",
         "neither": "两次未交"
       }
-    }
+    },
+    "followupLabel": "同知识点复测"
   },
   "experiments": {
     "title": "实验开放",

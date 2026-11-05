@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CenteredEmptyState } from "@/components/ui/empty-state";
 import { Spinner, SpinnerLabel } from "@/components/ui/spinner";
@@ -111,6 +112,8 @@ function StudentActivities({ accessToken }: { accessToken: string }) {
                   key={quiz.id}
                   quiz={quiz}
                   selected={model.answers[quiz.id] ?? []}
+                  fieldAnswers={model.fieldAnswers[quiz.id] ?? {}}
+                  onFieldAnswer={(questionID, fieldID, value) => model.setFieldAnswer(quiz.id, questionID, fieldID, value)}
                   submitting={model.submittingID === quiz.id}
                   onSelect={(questionIndex, optionIndex) => model.setAnswer(quiz.id, questionIndex, optionIndex)}
                   onSubmit={() => void model.submit(quiz)}
@@ -135,6 +138,8 @@ function StudentActivities({ accessToken }: { accessToken: string }) {
 function QuizCard({
   quiz,
   selected,
+  fieldAnswers,
+  onFieldAnswer,
   submitting,
   onSelect,
   onSubmit,
@@ -142,6 +147,8 @@ function QuizCard({
 }: {
   quiz: StudentClassroomQuizDTO;
   selected: number[];
+  fieldAnswers: Record<string, Record<string, string>>;
+  onFieldAnswer: (questionID: string, fieldID: string, value: string) => void;
   submitting: boolean;
   onSelect: (questionIndex: number, optionIndex: number) => void;
   onSubmit: () => void;
@@ -150,6 +157,7 @@ function QuizCard({
   const t = useTranslations("classrooms.activities");
   const studentT = useTranslations("classrooms.activities.student");
   const total = quiz.questions.length;
+  const scoreTotal = quiz.questions.reduce((sum, q) => sum + Math.max(1, q.fields.length), 0);
 
   return (
     <article className="rounded-lg border border-border/60 bg-card">
@@ -158,7 +166,7 @@ function QuizCard({
           <div className="flex flex-wrap items-center gap-1.5">
             <h2 className="font-display text-xl font-normal text-foreground">{quiz.title}</h2>
             <Badge variant="outline" className="rounded-md text-xs font-normal">
-              {t(`phase.${quiz.phase}`)}
+              {t(quiz.sourceQuizId ? "followupLabel" : `phase.${quiz.phase}`)}
             </Badge>
             <Badge variant="outline" className="rounded-md text-xs font-normal">
               {t(`status.${quiz.status}`)}
@@ -177,7 +185,7 @@ function QuizCard({
         </div>
         {quiz.submitted ? (
           <Badge variant="outline" className="rounded-md font-mono text-xs font-normal tabular-nums">
-            {studentT("score", { score: quiz.score, total })}
+            {studentT("score", { score: quiz.score, total: scoreTotal })}
           </Badge>
         ) : null}
       </header>
@@ -189,6 +197,10 @@ function QuizCard({
               <span className="shrink-0">{questionIndex + 1}.</span>
               <div className="min-w-0"><StreamdownRender content={question.prompt} /></div>
             </div>
+            {question.formula && <div className="overflow-x-auto text-base"><StreamdownRender content={`$$
+${question.formula}
+$$`} /></div>}
+            {question.fields.length > 0 && <fieldset disabled={quiz.submitted || submitting || quiz.status !== "open"} className="grid gap-4 sm:grid-cols-2"><legend className="mb-3 text-sm">{studentT("numericInput")}</legend>{question.fields.map((field) => <label key={field.id} className="space-y-1.5 text-sm"><span>{field.label}{field.unit && ` (${field.unit})`}</span><Input aria-label={`${questionIndex + 1}. ${field.label}`} autoComplete="off" maxLength={64} value={fieldAnswers[question.id]?.[field.id] ?? ""} onChange={(event) => onFieldAnswer(question.id, field.id, event.target.value)} /></label>)}</fieldset>}
             <div className="grid gap-1.5 sm:grid-cols-2">
               {question.options.map((option, optionIndex) => {
                 const active = selected[questionIndex] === optionIndex;

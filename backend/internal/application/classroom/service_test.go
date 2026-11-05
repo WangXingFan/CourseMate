@@ -432,7 +432,7 @@ func TestCreateQuizUsesCoursePreviewQuestions(t *testing.T) {
 	service, _ := newClassroomTestService()
 	ctx := context.Background()
 	lessonIDs := []string{"ss-1-1", "ss-1-2"}
-	item, err := service.CreateQuiz(ctx, 1, "class_one", "  Pre-class quiz  ", lessonIDs)
+	item, err := service.CreateQuiz(ctx, 1, "class_one", "  Pre-class quiz  ", lessonIDs, "")
 	if err != nil {
 		t.Fatalf("CreateQuiz() error = %v", err)
 	}
@@ -443,16 +443,16 @@ func TestCreateQuizUsesCoursePreviewQuestions(t *testing.T) {
 		t.Fatalf("quiz = %#v", item)
 	}
 	for index, lessonID := range lessonIDs {
-		question := previewQuestion(domainlearning.FindPracticeCourseLesson(lessonID))
+		question := phaseQuestion(domainlearning.FindPracticeCourseLesson(lessonID), domainmodel.QuizPhasePreClass)
 		if item.Questions[index].ID != question.ID || item.Questions[index].Prompt != question.Prompt || item.Questions[index].Answer != question.Answer {
 			t.Fatalf("question did not come from the course: %#v", item.Questions[index])
 		}
 	}
 	item.Questions[0].Options[0] = "changed snapshot"
-	if previewQuestion(domainlearning.FindPracticeCourseLesson(lessonIDs[0])).Options[0] == "changed snapshot" {
+	if phaseQuestion(domainlearning.FindPracticeCourseLesson(lessonIDs[0]), domainmodel.QuizPhasePreClass).Options[0] == "changed snapshot" {
 		t.Fatal("quiz snapshot mutated the course catalog")
 	}
-	if _, err := service.CreateQuiz(ctx, 4, "class_one", "Quiz", lessonIDs); !errors.Is(err, ErrForbidden) {
+	if _, err := service.CreateQuiz(ctx, 4, "class_one", "Quiz", lessonIDs, ""); !errors.Is(err, ErrForbidden) {
 		t.Fatalf("student CreateQuiz() error = %v, want ErrForbidden", err)
 	}
 	for name, input := range map[string]struct {
@@ -466,7 +466,7 @@ func TestCreateQuizUsesCoursePreviewQuestions(t *testing.T) {
 		"duplicate lessons":  {title: "Quiz", lessonIDs: []string{"ss-1-1", " ss-1-1 "}},
 		"too many lessons":   {title: "Quiz", lessonIDs: make([]string, 11)},
 	} {
-		if _, err := service.CreateQuiz(ctx, 1, "class_one", input.title, input.lessonIDs); !errors.Is(err, ErrQuizInvalid) {
+		if _, err := service.CreateQuiz(ctx, 1, "class_one", input.title, input.lessonIDs, ""); !errors.Is(err, ErrQuizInvalid) {
 			t.Fatalf("%s CreateQuiz() error = %v, want ErrQuizInvalid", name, err)
 		}
 	}
@@ -475,14 +475,14 @@ func TestCreateQuizUsesCoursePreviewQuestions(t *testing.T) {
 func TestQuizLessonsRequiresClassroomOwnership(t *testing.T) {
 	service, _ := newClassroomTestService()
 	ctx := context.Background()
-	items, err := service.QuizLessons(ctx, 1, "class_one")
+	items, err := service.QuizLessons(ctx, 1, "class_one", "")
 	if err != nil || len(items) != len(domainlearning.PracticeCourseLessons()) {
 		t.Fatalf("QuizLessons() count = %d, error = %v", len(items), err)
 	}
-	if _, err := service.QuizLessons(ctx, 4, "class_one"); !errors.Is(err, ErrForbidden) {
+	if _, err := service.QuizLessons(ctx, 4, "class_one", ""); !errors.Is(err, ErrForbidden) {
 		t.Fatalf("student QuizLessons() error = %v", err)
 	}
-	if _, err := service.QuizLessons(ctx, 2, "class_one"); !errors.Is(err, ErrNotFound) {
+	if _, err := service.QuizLessons(ctx, 2, "class_one", ""); !errors.Is(err, ErrNotFound) {
 		t.Fatalf("other teacher QuizLessons() error = %v", err)
 	}
 }
@@ -494,7 +494,7 @@ func TestStudentQuizFlowHidesAnswersAndEnforcesOnce(t *testing.T) {
 		{PublicID: "student_6", Username: "student_two", DisplayName: "Student Two"},
 	}
 	ctx := context.Background()
-	quiz, err := service.CreateQuiz(ctx, 1, "class_one", "Warm-up", []string{"ss-1-1", "ss-1-2"})
+	quiz, err := service.CreateQuiz(ctx, 1, "class_one", "Warm-up", []string{"ss-1-1", "ss-1-2"}, "")
 	if err != nil {
 		t.Fatalf("CreateQuiz() error = %v", err)
 	}
@@ -503,7 +503,7 @@ func TestStudentQuizFlowHidesAnswersAndEnforcesOnce(t *testing.T) {
 	if _, items, err := service.StudentQuizzes(ctx, 4); err != nil || len(items) != 0 {
 		t.Fatalf("draft was visible: %#v, %v", items, err)
 	}
-	if _, err := service.SubmitQuiz(ctx, 4, quiz.PublicID, correct); !errors.Is(err, ErrQuizClosed) {
+	if _, err := service.SubmitQuiz(ctx, 4, quiz.PublicID, correct, nil); !errors.Is(err, ErrQuizClosed) {
 		t.Fatalf("draft SubmitQuiz() error = %v", err)
 	}
 	if err := service.OpenQuiz(ctx, 1, quiz.PublicID); err != nil {
@@ -518,7 +518,7 @@ func TestStudentQuizFlowHidesAnswersAndEnforcesOnce(t *testing.T) {
 		t.Fatalf("student quiz leaked answers: %#v", items[0].Questions)
 	}
 
-	result, err := service.SubmitQuiz(ctx, 4, quiz.PublicID, partlyCorrect)
+	result, err := service.SubmitQuiz(ctx, 4, quiz.PublicID, partlyCorrect, nil)
 	if err != nil || result.Score != 1 || result.Total != 2 || !result.Submitted {
 		t.Fatalf("SubmitQuiz() = %#v, %v", result, err)
 	}
@@ -526,13 +526,13 @@ func TestStudentQuizFlowHidesAnswersAndEnforcesOnce(t *testing.T) {
 	repo.submissions[len(repo.submissions)-1].StudentName = "Student One"
 	repo.submissions[len(repo.submissions)-1].Username = "student_one"
 
-	if _, err := service.SubmitQuiz(ctx, 4, quiz.PublicID, correct); !errors.Is(err, ErrQuizSubmitted) {
+	if _, err := service.SubmitQuiz(ctx, 4, quiz.PublicID, correct, nil); !errors.Is(err, ErrQuizSubmitted) {
 		t.Fatalf("duplicate SubmitQuiz() error = %v, want ErrQuizSubmitted", err)
 	}
-	if _, err := service.SubmitQuiz(ctx, 6, quiz.PublicID, []int{0}); !errors.Is(err, ErrQuizInvalid) {
+	if _, err := service.SubmitQuiz(ctx, 6, quiz.PublicID, []int{0}, nil); !errors.Is(err, ErrQuizInvalid) {
 		t.Fatalf("short SubmitQuiz() error = %v, want ErrQuizInvalid", err)
 	}
-	if _, err := service.SubmitQuiz(ctx, 6, quiz.PublicID, []int{len(quiz.Questions[0].Options), correct[1]}); !errors.Is(err, ErrQuizInvalid) {
+	if _, err := service.SubmitQuiz(ctx, 6, quiz.PublicID, []int{len(quiz.Questions[0].Options), correct[1]}, nil); !errors.Is(err, ErrQuizInvalid) {
 		t.Fatalf("out-of-range SubmitQuiz() error = %v, want ErrQuizInvalid", err)
 	}
 
@@ -550,7 +550,7 @@ func TestStudentQuizFlowHidesAnswersAndEnforcesOnce(t *testing.T) {
 	if err := service.CloseQuiz(ctx, 1, quiz.PublicID); err != nil {
 		t.Fatalf("CloseQuiz() error = %v", err)
 	}
-	if _, err := service.SubmitQuiz(ctx, 6, quiz.PublicID, []int{1, 0}); !errors.Is(err, ErrQuizClosed) {
+	if _, err := service.SubmitQuiz(ctx, 6, quiz.PublicID, []int{1, 0}, nil); !errors.Is(err, ErrQuizClosed) {
 		t.Fatalf("closed SubmitQuiz() error = %v, want ErrQuizClosed", err)
 	}
 	if _, _, err := service.StudentQuizzes(ctx, 5); !errors.Is(err, ErrForbidden) {
@@ -565,7 +565,7 @@ func TestStudentQuizRequiresMembership(t *testing.T) {
 	if _, _, err := service.StudentQuizzes(ctx, 6); !errors.Is(err, ErrNotInClassroom) {
 		t.Fatalf("StudentQuizzes() error = %v, want ErrNotInClassroom", err)
 	}
-	if _, err := service.SubmitQuiz(ctx, 6, "missing", []int{0}); !errors.Is(err, ErrNotInClassroom) {
+	if _, err := service.SubmitQuiz(ctx, 6, "missing", []int{0}, nil); !errors.Is(err, ErrNotInClassroom) {
 		t.Fatalf("SubmitQuiz() error = %v, want ErrNotInClassroom", err)
 	}
 }

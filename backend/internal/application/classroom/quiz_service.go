@@ -45,11 +45,15 @@ type QuizReport struct {
 	Questions       []QuizQuestionStatistics
 }
 
-func previewQuestion(lesson *domainlearning.CourseLesson) *domainlearning.CourseQuestion {
+func phaseQuestion(lesson *domainlearning.CourseLesson, phase string) *domainlearning.CourseQuestion {
+	stage := phase
+	if phase == domain.QuizPhasePreClass {
+		stage = "preview"
+	}
 	if lesson != nil {
 		for index := range lesson.Questions {
 			question := &lesson.Questions[index]
-			if question.Stage == "preview" && len(question.Options) >= 2 {
+			if question.Stage == stage {
 				return question
 			}
 		}
@@ -57,19 +61,25 @@ func previewQuestion(lesson *domainlearning.CourseLesson) *domainlearning.Course
 	return nil
 }
 
-// QuizLessons lists the built-in preview questions for a teacher's classroom.
-func (s *Service) QuizLessons(ctx context.Context, actor uint, classroomPublicID string) ([]domain.QuizLesson, error) {
+// QuizLessons lists the selected course stage questions for a teacher's classroom.
+func (s *Service) QuizLessons(ctx context.Context, actor uint, classroomPublicID, phase string) ([]domain.QuizLesson, error) {
 	if _, err := s.owned(ctx, actor, classroomPublicID); err != nil {
 		return nil, err
+	}
+	phase, valid := quizPhase(phase)
+	if !valid {
+		return nil, ErrQuizInvalid
 	}
 	practiceLessons := domainlearning.PracticeCourseLessons()
 	items := make([]domain.QuizLesson, 0, len(practiceLessons))
 	for _, lesson := range practiceLessons {
-		if question := previewQuestion(&lesson); question != nil {
+		if question := phaseQuestion(&lesson, phase); question != nil {
+			snapshot := pairedSnapshot(lesson.ID, question)
 			items = append(items, domain.QuizLesson{
+				Formula: snapshot.Formula, Fields: snapshot.Fields,
 				ID: lesson.ID, Number: lesson.Number, Title: lesson.Title, Chapter: lesson.Chapter,
-				Prompt: question.Prompt, Options: append([]string(nil), question.Options...),
-				Answer: question.Answer, Explanation: question.Explanation, Followup: pairedSnapshot(lesson.ID, question).Followup,
+				Prompt: question.Prompt, Options: append([]string{}, question.Options...),
+				Answer: question.Answer, Explanation: question.Explanation, Followup: snapshot.Followup,
 			})
 		}
 	}
@@ -85,16 +95,21 @@ func (s *Service) Quizzes(ctx context.Context, actor uint, classroomPublicID str
 	return s.repo.ListQuizzes(ctx, item.ID)
 }
 
-// CreateQuiz snapshots built-in preview questions; publishing is a separate action.
+// CreateQuiz snapshots selected course stage questions; publishing is a separate action.
 func (s *Service) CreateQuiz(
 	ctx context.Context,
 	actor uint,
 	classroomPublicID, title string,
 	lessonIDs []string,
+	phase string,
 ) (*domain.Quiz, error) {
 	item, err := s.owned(ctx, actor, classroomPublicID)
 	if err != nil {
 		return nil, err
+	}
+	phase, valid := quizPhase(phase)
+	if !valid {
+		return nil, ErrQuizInvalid
 	}
 	title = strings.TrimSpace(title)
 	if title == "" || utf8.RuneCountInString(title) > quizTitleMaxLength || len(lessonIDs) == 0 || len(lessonIDs) > quizMaxQuestions {
@@ -104,7 +119,7 @@ func (s *Service) CreateQuiz(
 	seen := make(map[string]bool, len(lessonIDs))
 	for _, rawID := range lessonIDs {
 		lessonID := strings.TrimSpace(rawID)
-		question := previewQuestion(domainlearning.FindPracticeCourseLesson(lessonID))
+		question := phaseQuestion(domainlearning.FindPracticeCourseLesson(lessonID), phase)
 		if seen[lessonID] || question == nil {
 			return nil, ErrQuizInvalid
 		}
@@ -116,7 +131,7 @@ func (s *Service) CreateQuiz(
 		ClassroomID: item.ID,
 		TeacherID:   actor,
 		Title:       title,
-		Phase:       domain.QuizPhasePreClass,
+		Phase:       phase,
 		Status:      domain.QuizStatusDraft,
 		Questions:   questions,
 	})
@@ -207,6 +222,11 @@ func (s *Service) StudentQuizzes(ctx context.Context, actor uint) (*domain.Class
 			items[index].Questions[questionIndex].Answer = -1
 			items[index].Questions[questionIndex].Explanation = ""
 			items[index].Questions[questionIndex].Followup = nil
+			fields := append([]domain.QuizField(nil), items[index].Questions[questionIndex].Fields...)
+			for i := range fields {
+				fields[i].Expected = 0
+			}
+			items[index].Questions[questionIndex].Fields = fields
 		}
 	}
 	return classroom, items, nil
@@ -218,6 +238,7 @@ func (s *Service) SubmitQuiz(
 	actor uint,
 	publicID string,
 	answers []int,
+	fieldAnswers map[string]map[string]string,
 ) (*QuizSubmissionResult, error) {
 	user, err := s.actor(ctx, actor)
 	if err != nil {
@@ -249,20 +270,21 @@ func (s *Service) SubmitQuiz(
 	if len(answers) != len(quiz.Questions) {
 		return nil, ErrQuizInvalid
 	}
-	score := 0
-	for index, answer := range answers {
-		if answer < 0 || answer >= len(quiz.Questions[index].Options) {
+	score, total := 0, 0
+	for index, question := range quiz.Questions {
+		points, possible, valid := quizAnswerScore(domain.QuizSubmission{Answers: answers, FieldAnswers: fieldAnswers}, index, question)
+		if !valid {
 			return nil, ErrQuizInvalid
 		}
-		if answer == quiz.Questions[index].Answer {
-			score++
-		}
+		score += points
+		total += possible
 	}
 	err = s.repo.CreateQuizSubmission(ctx, domain.QuizSubmission{
-		QuizID:    quiz.ID,
-		StudentID: actor,
-		Answers:   append([]int(nil), answers...),
-		Score:     score,
+		QuizID:       quiz.ID,
+		StudentID:    actor,
+		Answers:      append([]int(nil), answers...),
+		FieldAnswers: fieldAnswers,
+		Score:        score,
 	})
 	if errors.Is(err, repository.ErrConflict) || errors.Is(err, repository.ErrDuplicate) {
 		return nil, ErrQuizSubmitted
@@ -270,7 +292,7 @@ func (s *Service) SubmitQuiz(
 	if err != nil {
 		return nil, err
 	}
-	return &QuizSubmissionResult{Score: score, Total: len(quiz.Questions), Submitted: true}, nil
+	return &QuizSubmissionResult{Score: score, Total: total, Submitted: true}, nil
 }
 
 // QuizReport builds the teacher statistics view, including missing students.
@@ -311,7 +333,7 @@ func (s *Service) QuizReport(ctx context.Context, actor uint, publicID string) (
 			if answer >= 0 && answer < len(options) {
 				options[answer]++
 			}
-			if answer == question.Answer {
+			if isCorrect, _ := quizAnswer(submission, questionIndex, question); isCorrect {
 				correct++
 			}
 		}

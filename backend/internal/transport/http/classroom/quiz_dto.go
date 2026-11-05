@@ -3,6 +3,8 @@ package classroom
 import "time"
 
 type QuizLessonResponse struct {
+	Formula     string                `json:"formula"`
+	Fields      []QuizFieldResponse   `json:"fields"`
 	ID          string                `json:"id"`
 	Number      string                `json:"number"`
 	Title       string                `json:"title"`
@@ -20,20 +22,23 @@ type QuizLessonListResponse struct {
 
 // CreateQuizRequest creates a draft quiz for a classroom.
 type CreateQuizRequest struct {
+	Phase     string   `json:"phase" binding:"omitempty,oneof=pre_class in_class after_class" enums:"pre_class,in_class,after_class"`
 	Title     string   `json:"title" binding:"required,max=120"`
 	LessonIDs []string `json:"lessonIds" binding:"required,min=1,max=10,dive,required,max=64"`
 }
 
 // QuizQuestionResponse is the teacher view and includes the correct option.
 type QuizQuestionResponse struct {
-	ID           string   `json:"id"`
-	Prompt       string   `json:"prompt"`
-	Options      []string `json:"options"`
-	Answer       int      `json:"answer"`
-	LessonID     string   `json:"lessonId"`
-	ConceptID    string   `json:"conceptId"`
-	ConceptTitle string   `json:"conceptTitle"`
-	Explanation  string   `json:"explanation"`
+	Formula      string              `json:"formula"`
+	Fields       []QuizFieldResponse `json:"fields"`
+	ID           string              `json:"id"`
+	Prompt       string              `json:"prompt"`
+	Options      []string            `json:"options"`
+	Answer       int                 `json:"answer"`
+	LessonID     string              `json:"lessonId"`
+	ConceptID    string              `json:"conceptId"`
+	ConceptTitle string              `json:"conceptTitle"`
+	Explanation  string              `json:"explanation"`
 }
 
 // QuizResponse is the teacher-facing quiz summary.
@@ -62,24 +67,27 @@ type QuizDataResponse struct {
 
 // QuizSubmissionResponse is one student's submitted answer sheet.
 type QuizSubmissionResponse struct {
-	StudentID   string    `json:"studentId"`
-	StudentName string    `json:"studentName"`
-	Username    string    `json:"username"`
-	Answers     []int     `json:"answers"`
-	Score       int       `json:"score"`
-	SubmittedAt time.Time `json:"submittedAt"`
+	FieldAnswers map[string]map[string]string `json:"fieldAnswers"`
+	StudentID    string                       `json:"studentId"`
+	StudentName  string                       `json:"studentName"`
+	Username     string                       `json:"username"`
+	Answers      []int                        `json:"answers"`
+	Score        int                          `json:"score"`
+	SubmittedAt  time.Time                    `json:"submittedAt"`
 }
 
 // QuizQuestionStatisticsResponse aggregates the option distribution.
 type QuizQuestionStatisticsResponse struct {
-	ID           string   `json:"id"`
-	Prompt       string   `json:"prompt"`
-	Options      []string `json:"options"`
-	Answer       int      `json:"answer"`
-	OptionCounts []int    `json:"optionCounts"`
-	CorrectCount int      `json:"correctCount"`
-	Explanation  string   `json:"explanation"`
-	ConceptTitle string   `json:"conceptTitle"`
+	Formula      string              `json:"formula"`
+	Fields       []QuizFieldResponse `json:"fields"`
+	ID           string              `json:"id"`
+	Prompt       string              `json:"prompt"`
+	Options      []string            `json:"options"`
+	Answer       int                 `json:"answer"`
+	OptionCounts []int               `json:"optionCounts"`
+	CorrectCount int                 `json:"correctCount"`
+	Explanation  string              `json:"explanation"`
+	ConceptTitle string              `json:"conceptTitle"`
 }
 
 // QuizStatisticsResponse summarizes completion and correctness.
@@ -100,24 +108,41 @@ type QuizReportResponse struct {
 	Comparison  *QuizComparisonResponse  `json:"comparison" extensions:"x-nullable"`
 }
 
+type QuizFieldResponse struct {
+	ID       string  `json:"id"`
+	Label    string  `json:"label"`
+	Unit     string  `json:"unit"`
+	Expected float64 `json:"expected"`
+}
+
+type StudentQuizFieldResponse struct {
+	ID    string `json:"id"`
+	Label string `json:"label"`
+	Unit  string `json:"unit"`
+}
+
 // StudentQuizQuestionResponse never contains the correct option.
 type StudentQuizQuestionResponse struct {
-	ID      string   `json:"id"`
-	Prompt  string   `json:"prompt"`
-	Options []string `json:"options"`
+	Formula string                     `json:"formula"`
+	Fields  []StudentQuizFieldResponse `json:"fields"`
+	ID      string                     `json:"id"`
+	Prompt  string                     `json:"prompt"`
+	Options []string                   `json:"options"`
 }
 
 // StudentQuizResponse is the student-facing quiz view.
 type StudentQuizResponse struct {
-	ID        string                        `json:"id"`
-	Title     string                        `json:"title"`
-	Phase     string                        `json:"phase"`
-	Status    string                        `json:"status"`
-	Questions []StudentQuizQuestionResponse `json:"questions"`
-	OpenedAt  *time.Time                    `json:"openedAt"`
-	Submitted bool                          `json:"submitted"`
-	Score     int                           `json:"score"`
-	Answers   []int                         `json:"answers"`
+	SourceQuizID string                        `json:"sourceQuizId"`
+	FieldAnswers map[string]map[string]string  `json:"fieldAnswers"`
+	ID           string                        `json:"id"`
+	Title        string                        `json:"title"`
+	Phase        string                        `json:"phase"`
+	Status       string                        `json:"status"`
+	Questions    []StudentQuizQuestionResponse `json:"questions"`
+	OpenedAt     *time.Time                    `json:"openedAt"`
+	Submitted    bool                          `json:"submitted"`
+	Score        int                           `json:"score"`
+	Answers      []int                         `json:"answers"`
 }
 
 // StudentQuizListResponse is the current classroom and its open quizzes.
@@ -128,7 +153,8 @@ type StudentQuizListResponse struct {
 
 // SubmitQuizRequest contains one option index per question.
 type SubmitQuizRequest struct {
-	Answers []int `json:"answers" binding:"required"`
+	FieldAnswers map[string]map[string]string `json:"fieldAnswers"`
+	Answers      []int                        `json:"answers" binding:"required"`
 }
 
 // QuizSubmissionResultResponse reports the score without revealing answers.

@@ -1,0 +1,944 @@
+{
+  "ss-1-1": {
+    "id": "ss-1-1-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "计算 x(t)=4e^(−2t)u(t) 的能量。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "能量 E",
+        "expected": 4,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "能量为 ∫₀∞16e^(−4t)dt=16/4=4。"
+  },
+  "ss-1-2": {
+    "id": "ss-1-2-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "x(t) 仅在 0≤t≤4 非零。求 y(t)=x(2t−4) 的非零区间。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "左端点",
+        "expected": 2,
+        "unit": "s",
+        "id": "f1"
+      },
+      {
+        "label": "右端点",
+        "expected": 4,
+        "unit": "s",
+        "id": "f2"
+      }
+    ],
+    "options": [],
+    "explanation": "解 0≤2t−4≤4，得到 2≤t≤4。"
+  },
+  "ss-1-3": {
+    "id": "ss-1-3-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "计算全实轴积分 ∫(t²+1)δ(3t−6)dt。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "积分值",
+        "expected": 1.6666666666666667,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "δ(3t−6)=δ(t−2)/3；积分为 (2²+1)/3=5/3。"
+  },
+  "ss-1-4": {
+    "id": "ss-1-4-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "对理想微分器，哪个光滑有界输入能证明它不满足 BIBO 稳定性？",
+    "formula": "",
+    "fields": [],
+    "options": [
+      "sin(t²)",
+      "sin(t)",
+      "1"
+    ],
+    "explanation": "sin(t²) 有界，但其导数 2t cos(t²) 无界。",
+    "answer": 0
+  },
+  "ss-1-5": {
+    "id": "ss-1-5-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "RC 低通满足 RC y′+y=x，R=4 kΩ，C=50 μF。求时间常数。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "时间常数",
+        "expected": 0.2,
+        "unit": "s",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "τ=4000×50×10⁻⁶=0.2 s。"
+  },
+  "ss-1-6": {
+    "id": "ss-1-6-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "某时刻线性系统零输入响应为 −3，零状态响应为 8，求全响应。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "全响应",
+        "expected": 5,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "全响应为两部分之和：−3+8=5。"
+  },
+  "ss-2-1": {
+    "id": "ss-2-1-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "y′+3y=12，y(0⁺)=2。填入 t≥0 解 y=A+B e^(−3t) 的系数。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "A",
+        "expected": 4,
+        "unit": "",
+        "id": "f1"
+      },
+      {
+        "label": "B",
+        "expected": -2,
+        "unit": "",
+        "id": "f2"
+      }
+    ],
+    "options": [],
+    "explanation": "常值特解 A=12/3=4；A+B=2，故 B=−2。"
+  },
+  "ss-2-2": {
+    "id": "ss-2-2-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "y′+4y=5δ(t)，y(0⁻)=−2。求 y(0⁺)。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "y(0⁺)",
+        "expected": 3,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "跨零积分得跳变5，故 y(0⁺)=−2+5=3。"
+  },
+  "ss-2-3": {
+    "id": "ss-2-3-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "y′+3y=x，y(0⁻)=−4。求零输入响应 yzi=Ae^(−3t) 的 A。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "A",
+        "expected": -4,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "零输入响应由初值决定，A=−4。"
+  },
+  "ss-2-4": {
+    "id": "ss-2-4-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "h(t)=6e^(−3t)u(t)，阶跃响应 g=A(1−e^(−3t))u(t)，求 A。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "A",
+        "expected": 2,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "对 h 积分得到 2(1−e^(−3t))u(t)。"
+  },
+  "ss-2-5": {
+    "id": "ss-2-5-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "x=2[u(t)−u(t−1)]，h=u(t)−u(t−2)。卷积在 0≤t<1 为 at，在 1≤t<2 为 b，在 2≤t≤3 为 c+dt。求 a、b、c、d。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "a",
+        "expected": 2,
+        "unit": "",
+        "id": "f1"
+      },
+      {
+        "label": "b",
+        "expected": 2,
+        "unit": "",
+        "id": "f2"
+      },
+      {
+        "label": "c",
+        "expected": 6,
+        "unit": "",
+        "id": "f3"
+      },
+      {
+        "label": "d",
+        "expected": -2,
+        "unit": "",
+        "id": "f4"
+      }
+    ],
+    "options": [],
+    "explanation": "卷积为重叠长度的2倍，三段依次为 2t、2、6−2t。"
+  },
+  "ss-2-6": {
+    "id": "ss-2-6-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "已知 x*h=y(t)，求 x(t−4)*h(t−1)=y(t−d) 中的 d。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "总延迟 d",
+        "expected": 5,
+        "unit": "s",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "两路延迟相加：4+1=5 s。"
+  },
+  "ss-2-7": {
+    "id": "ss-2-7-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "实信号 x 为 [0,2] 上幅度2的矩形。求 Rxx(0)、Rxx(1)。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "Rxx(0)",
+        "expected": 8,
+        "unit": "",
+        "id": "f1"
+      },
+      {
+        "label": "Rxx(1)",
+        "expected": 4,
+        "unit": "",
+        "id": "f2"
+      }
+    ],
+    "options": [],
+    "explanation": "相关为幅度平方乘重叠长度，分别为 4×2=8 和 4×1=4。"
+  },
+  "ss-2-8": {
+    "id": "ss-2-8-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "零状态系统 (p²+5p+6)y=(p+5)x。写 H(p)=(p+a)/[(p+b)(p+c)]，按 b<c 填系数。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "a",
+        "expected": 5,
+        "unit": "",
+        "id": "f1"
+      },
+      {
+        "label": "b",
+        "expected": 2,
+        "unit": "",
+        "id": "f2"
+      },
+      {
+        "label": "c",
+        "expected": 3,
+        "unit": "",
+        "id": "f3"
+      }
+    ],
+    "options": [],
+    "explanation": "p²+5p+6=(p+2)(p+3)，分子常数为5。"
+  },
+  "ss-2-9": {
+    "id": "ss-2-9-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "y′+y=3u(t)，y(0⁻)=5。t≥0 时 y=A+B e^(−t)，求 A、B。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "A",
+        "expected": 3,
+        "unit": "",
+        "id": "f1"
+      },
+      {
+        "label": "B",
+        "expected": 2,
+        "unit": "",
+        "id": "f2"
+      }
+    ],
+    "options": [],
+    "explanation": "零状态为3(1−e^(−t))，零输入为5e^(−t)，相加得3+2e^(−t)。"
+  },
+  "ss-3-1": {
+    "id": "ss-3-1-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "在一个完整周期 T 上，同一整数谐波复指数与自身的内积是多少？",
+    "formula": "",
+    "fields": [],
+    "options": [
+      "0",
+      "T",
+      "1/T"
+    ],
+    "explanation": "复指数模平方为1，在长度为T的区间积分得到T。",
+    "answer": 1
+  },
+  "ss-3-2": {
+    "id": "ss-3-2-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "x(t)=4+5cos(Ωt)。求复指数傅里叶级数的 F₀、F₁。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "F₀",
+        "expected": 4,
+        "unit": "",
+        "id": "f1"
+      },
+      {
+        "label": "F₁",
+        "expected": 2.5,
+        "unit": "",
+        "id": "f2"
+      }
+    ],
+    "options": [],
+    "explanation": "直流系数为4，余弦幅度分到正负频率各5/2。"
+  },
+  "ss-3-3": {
+    "id": "ss-3-3-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "周期信号 T=0.04 s，谱线间隔是多少 Hz？",
+    "formula": "",
+    "fields": [
+      {
+        "label": "谱线间隔",
+        "expected": 25,
+        "unit": "Hz",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "谱线间隔为1/T=25 Hz。"
+  },
+  "ss-3-4": {
+    "id": "ss-3-4-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "x(t)=2e^(−4t)u(t)，求 X(j0)。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "X(j0)",
+        "expected": 0.5,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "零频值为时间积分2/4=1/2。"
+  },
+  "ss-3-5": {
+    "id": "ss-3-5-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "X(j0)=12，求 x(4t) 的傅里叶变换在零频处的值。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "Y(j0)",
+        "expected": 3,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "时间压缩4倍，频谱系数为1/4，故12/4=3。"
+  },
+  "ss-3-6": {
+    "id": "ss-3-6-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "周期信号 F₁=3，变换在 ω=Ω 处的冲激系数为 Kπ，求 K。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "K",
+        "expected": 6,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "该系数为2πF₁=6π，K=6。"
+  },
+  "ss-3-7": {
+    "id": "ss-3-7-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "某频率处 |H|=1/4，输入余弦幅度为8，求稳态输出幅度。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "输出幅度",
+        "expected": 2,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "输出幅度为8×1/4=2。"
+  },
+  "ss-3-8": {
+    "id": "ss-3-8-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "H(jω)=3e^(−j5ω)，求幅度增益 K 和群时延。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "K",
+        "expected": 3,
+        "unit": "",
+        "id": "f1"
+      },
+      {
+        "label": "群时延",
+        "expected": 5,
+        "unit": "s",
+        "id": "f2"
+      }
+    ],
+    "options": [],
+    "explanation": "幅度增益为3，相位−5ω的负导数为5 s。"
+  },
+  "ss-3-9": {
+    "id": "ss-3-9-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "最高频率为4 kHz的基带信号，奈奎斯特速率阈值是多少 kHz？实际采样率应高于该阈值。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "阈值",
+        "expected": 8,
+        "unit": "kHz",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "阈值为2×4=8 kHz。"
+  },
+  "ss-3-10": {
+    "id": "ss-3-10-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "已知 ∫|X(jω)|²dω=12π，求总能量。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "E",
+        "expected": 6,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "按角频率变换约定，E=12π/(2π)=6。"
+  },
+  "ss-5-1": {
+    "id": "ss-5-1-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "x=e^(−5t)u(t)，ROC 写作 Re(s)>a，求 a。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "ROC边界 a",
+        "expected": -5,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "右边指数要求 Re(s+5)>0，故 a=−5。"
+  },
+  "ss-5-2": {
+    "id": "ss-5-2-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "F(s)=3/(s+4)，求对应因果信号的初值和终值。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "初值",
+        "expected": 3,
+        "unit": "",
+        "id": "f1"
+      },
+      {
+        "label": "终值",
+        "expected": 0,
+        "unit": "",
+        "id": "f2"
+      }
+    ],
+    "options": [],
+    "explanation": "f(t)=3e^(−4t)u(t)，初值3，终值0。"
+  },
+  "ss-5-3": {
+    "id": "ss-5-3-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "因果 X(s)=2/[(s+1)(s+3)]，写成 A/(s+1)+B/(s+3)，求 A、B。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "A",
+        "expected": 1,
+        "unit": "",
+        "id": "f1"
+      },
+      {
+        "label": "B",
+        "expected": -1,
+        "unit": "",
+        "id": "f2"
+      }
+    ],
+    "options": [],
+    "explanation": "通分后2=A(s+3)+B(s+1)，代s=−1、−3得1、−1。"
+  },
+  "ss-5-4": {
+    "id": "ss-5-4-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "y′+4y=2u(t)，y(0⁻)=2。Y(s)=A/s+B/(s+4)，求 A、B。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "A",
+        "expected": 0.5,
+        "unit": "",
+        "id": "f1"
+      },
+      {
+        "label": "B",
+        "expected": 1.5,
+        "unit": "",
+        "id": "f2"
+      }
+    ],
+    "options": [],
+    "explanation": "(s+4)Y=2/s+2，分解得0.5/s+1.5/(s+4)。"
+  },
+  "ss-5-5": {
+    "id": "ss-5-5-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "H(s)=(s+5)/[(s+2)(s+4)]，填零点和按从小到大排列的两个极点。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "零点",
+        "expected": -5,
+        "unit": "",
+        "id": "f1"
+      },
+      {
+        "label": "较小极点",
+        "expected": -4,
+        "unit": "",
+        "id": "f2"
+      },
+      {
+        "label": "较大极点",
+        "expected": -2,
+        "unit": "",
+        "id": "f3"
+      }
+    ],
+    "options": [],
+    "explanation": "零点−5，极点−4、−2；无公因式对消。"
+  },
+  "ss-5-6": {
+    "id": "ss-5-6-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "h(t)=4e^(−2t)u(t)，求 ∫|h(t)|dt。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "绝对积分",
+        "expected": 2,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "h非负，绝对积分为4/2=2，系统稳定。"
+  },
+  "ss-5-7": {
+    "id": "ss-5-7-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "H(s)=6/(s+3)，求直流增益和相对直流增益的−3dB截止角频率。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "直流增益",
+        "expected": 2,
+        "unit": "",
+        "id": "f1"
+      },
+      {
+        "label": "截止角频率",
+        "expected": 3,
+        "unit": "rad/s",
+        "id": "f2"
+      }
+    ],
+    "options": [],
+    "explanation": "直流增益6/3=2，ω=3时幅值降为直流值的1/√2。"
+  },
+  "ss-5-8": {
+    "id": "ss-5-8-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "单一前向通路增益 P=12，一个接触该通路的回路增益 L=−3，求总传输增益。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "T",
+        "expected": 3,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "总增益 P/(1−L)=12/4=3。"
+  },
+  "ss-5-9": {
+    "id": "ss-5-9-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "四阶严格真有理传递函数采用标准直接II型，需要多少个积分器？",
+    "formula": "",
+    "fields": [
+      {
+        "label": "积分器数",
+        "expected": 4,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "标准直接II型的n阶共享状态链使用n个积分器，故需4个。"
+  },
+  "ss-5-10": {
+    "id": "ss-5-10-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "R=2 kΩ，C=10 μF，求RC时间常数和截止角频率。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "τ",
+        "expected": 0.02,
+        "unit": "s",
+        "id": "f1"
+      },
+      {
+        "label": "ωc",
+        "expected": 50,
+        "unit": "rad/s",
+        "id": "f2"
+      }
+    ],
+    "options": [],
+    "explanation": "τ=2000×10×10⁻⁶=0.02 s，ωc=1/τ=50 rad/s。"
+  },
+  "ss-a-1": {
+    "id": "ss-a-1-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "幅度2、宽度4的中心矩形，X(jω)=A Sa(2ω)，求 A。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "A",
+        "expected": 8,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "零频谱值等于矩形面积2×4=8。"
+  },
+  "ss-a-2": {
+    "id": "ss-a-2-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "x=3t²u(t)，X(s)=A/s³，求 A。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "A",
+        "expected": 6,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "L[t²u(t)]=2/s³，再乘幅度3，A=6。"
+  },
+  "ss-a-3": {
+    "id": "ss-a-3-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "f(0⁻)=3，F(2)=4。求单边拉氏变换 L[f′] 在 s=2 的值。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "变换值",
+        "expected": 5,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "sF(s)−f(0⁻)=2×4−3=5。"
+  },
+  "ss-a-4": {
+    "id": "ss-a-4-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "2u(t)*3u(t)=A t u(t)，求 A。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "A",
+        "expected": 6,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "幅度相乘为6，积分重叠区间长度为t，A=6。"
+  },
+  "ss-a-5": {
+    "id": "ss-a-5-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "理想直接通路 y=−3x 的冲激响应为 −3δ(t)。关于其稳定性的结论是？",
+    "formula": "",
+    "fields": [],
+    "options": [
+      "不稳定，因为增益为负",
+      "稳定，因为有界输入满足 |y|≤3 sup|x|",
+      "只有周期输入才稳定"
+    ],
+    "explanation": "有限常数增益保持输入有界，负号不影响BIBO稳定性。",
+    "answer": 1
+  },
+  "ss-a-6": {
+    "id": "ss-a-6-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "fs=1200 Hz，实际采样300点。求观察时长和原始DFT频点间隔。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "T",
+        "expected": 0.25,
+        "unit": "s",
+        "id": "f1"
+      },
+      {
+        "label": "Δf",
+        "expected": 4,
+        "unit": "Hz",
+        "id": "f2"
+      }
+    ],
+    "options": [],
+    "explanation": "T=300/1200=0.25 s，Δf=1/T=4 Hz。"
+  },
+  "ss-a-7": {
+    "id": "ss-a-7-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "两个稳定系统串联，直流增益分别为4和0.5，求总直流增益。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "总直流增益",
+        "expected": 2,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "串联增益相乘，4×0.5=2。"
+  },
+  "ss-b-1": {
+    "id": "ss-b-1-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "x=cos(4t)+cos(6t)，最小正周期 T=kπ，求 k。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "k",
+        "expected": 1,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "两个分量周期为π/2与π/3，最小公共周期为π。"
+  },
+  "ss-b-2": {
+    "id": "ss-b-2-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "原信号峰值在 t=2。变换 x(−3t+8) 后，峰值在何时？",
+    "formula": "",
+    "fields": [
+      {
+        "label": "峰值时刻",
+        "expected": 2,
+        "unit": "s",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "解−3t+8=2，得t=2 s。"
+  },
+  "ss-b-3": {
+    "id": "ss-b-3-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "y′+y=0，y(0⁻)=6，求 y(ln2)。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "y(ln2)",
+        "expected": 3,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "y(t)=6e^(−t)，代入ln2得3。"
+  },
+  "ss-b-4": {
+    "id": "ss-b-4-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "x为[0,1]上幅度2的矩形，h为[0,1]上幅度1的矩形。求卷积 y(0.5)、y(1.5)。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "y(0.5)",
+        "expected": 1,
+        "unit": "",
+        "id": "f1"
+      },
+      {
+        "label": "y(1.5)",
+        "expected": 1,
+        "unit": "",
+        "id": "f2"
+      }
+    ],
+    "options": [],
+    "explanation": "两处重叠长度均为0.5，乘幅度2，均得1。"
+  },
+  "ss-b-5": {
+    "id": "ss-b-5-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "x(t)=4cos(3t)，求平均功率。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "P",
+        "expected": 8,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "余弦的均方为1/2，平均功率为16/2=8。"
+  },
+  "ss-b-6": {
+    "id": "ss-b-6-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "因果 F(s)=(2s+5)/[(s+1)(s+3)]，求 f(0⁺)。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "初值",
+        "expected": 2,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "严格真分式无冲激，lim sF(s)=2。"
+  },
+  "ss-b-7": {
+    "id": "ss-b-7-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "多项式 s³+s²+s+2 系数全正。根据 Routh 判据，所有根是否都在左半平面？",
+    "formula": "",
+    "fields": [],
+    "options": [
+      "是，全正系数足够",
+      "否，Routh首列为1、1、−1、2，有两个右半平面根",
+      "否，有一个右半平面根"
+    ],
+    "explanation": "三阶稳定还要求a₂a₁>a₃a₀，本例1<2，首列两次变号。",
+    "answer": 1
+  },
+  "ss-b-8": {
+    "id": "ss-b-8-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "fs=2400 Hz，希望原始DFT频点间隔4 Hz，至少采集多少真实样本？",
+    "formula": "",
+    "fields": [
+      {
+        "label": "N",
+        "expected": 600,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "N=fs/Δf=2400/4=600。"
+  },
+  "ss-b-9": {
+    "id": "ss-b-9-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "一维状态模型 A=−2、B=3、C=4、D=1，求 H(0)。",
+    "formula": "",
+    "fields": [
+      {
+        "label": "H(0)",
+        "expected": 7,
+        "unit": "",
+        "id": "f1"
+      }
+    ],
+    "options": [],
+    "explanation": "H(0)=CB/(0−A)+D=12/2+1=7。"
+  },
+  "ss-b-10": {
+    "id": "ss-b-10-in-class-followup-v1",
+    "stage": "in_class_retest",
+    "prompt": "角频率 ω=300π rad/s 对应的频率是多少 Hz？",
+    "formula": "",
+    "fields": [],
+    "options": [
+      "300 Hz",
+      "150 Hz",
+      "300π Hz"
+    ],
+    "explanation": "f=ω/(2π)=150 Hz。",
+    "answer": 1
+  }
+}

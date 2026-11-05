@@ -28,6 +28,7 @@ const QUIZ_MAX_QUESTIONS = 10;
 function emptyDraft(): QuizDraft {
   return {
     title: "",
+    phase: "pre_class",
     lessonIds: [],
   };
 }
@@ -98,6 +99,7 @@ export function useClassroomActivities(accessToken: string, classroomID: string)
   }, [saving]);
 
   const editorOpen = draft !== null;
+  const phase = draft?.phase ?? "pre_class";
   React.useEffect(() => {
     if (!editorOpen) return;
     const controller = new AbortController();
@@ -106,7 +108,7 @@ export function useClassroomActivities(accessToken: string, classroomID: string)
     setLessonsError("");
     void (async () => {
       try {
-        const data = await listClassroomQuizLessons(accessToken, classroomID, controller.signal);
+        const data = await listClassroomQuizLessons(accessToken, classroomID, phase, controller.signal);
         if (!controller.signal.aborted) setLessons(data.lessons);
       } catch (error) {
         if (!controller.signal.aborted) setLessonsError(resolveErrorMessage(error));
@@ -115,7 +117,7 @@ export function useClassroomActivities(accessToken: string, classroomID: string)
       }
     })();
     return () => controller.abort();
-  }, [accessToken, classroomID, editorOpen, lessonReload, resolveErrorMessage]);
+  }, [accessToken, classroomID, editorOpen, phase, lessonReload, resolveErrorMessage]);
 
   const toggleLesson = React.useCallback((lessonID: string) => {
     setDraft((current) => {
@@ -143,7 +145,7 @@ export function useClassroomActivities(accessToken: string, classroomID: string)
     }
     setSaving(true);
     try {
-      await createClassroomQuiz(accessToken, classroomID, { title, lessonIds: draft.lessonIds });
+      await createClassroomQuiz(accessToken, classroomID, { title, lessonIds: draft.lessonIds, phase: draft.phase });
       toast.success(t("toast.created"));
       setDraft(null);
       refresh();

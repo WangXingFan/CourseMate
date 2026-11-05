@@ -30,7 +30,7 @@ import {
 import { QuizComparisonPanel } from "@/features/classrooms/components/sections/quiz-comparison-panel";
 import { cn } from "@/lib/utils";
 import { StreamdownRender } from "@/shared/components/markdown/streamdown-render";
-import type { ClassroomQuizDTO, ClassroomStudentDTO } from "@/shared/api/classroom-types";
+import type { ClassroomQuizDTO, ClassroomQuizQuestionDTO, ClassroomStudentDTO } from "@/shared/api/classroom-types";
 
 const OPTION_LETTERS = ["A", "B", "C", "D", "E", "F"];
 
@@ -138,7 +138,7 @@ function QuizRow({
           <div className="flex flex-wrap items-center gap-1.5">
             <p className="truncate text-sm font-medium text-foreground">{quiz.title}</p>
             <Badge variant="outline" className="h-5 rounded-md px-1.5 text-xs font-normal">
-              {t(`phase.${quiz.phase}`)}
+              {t(quiz.sourceQuizId ? "followupLabel" : `phase.${quiz.phase}`)}
             </Badge>
             <Badge
               variant={quiz.status === "open" ? "default" : "secondary"}
@@ -171,7 +171,7 @@ function QuizRow({
               {t("close")}
             </Button>
           ) : null}
-          {quiz.phase === "pre_class" && quiz.status === "closed" && <Button type="button" variant="outline" size="sm" className="h-9 px-2" disabled={busy} onClick={onFollowup}>{t(followup ? "viewFollowup" : "createFollowup")}</Button>}
+          {!quiz.sourceQuizId && quiz.phase !== "after_class" && quiz.status === "closed" && <Button type="button" variant="outline" size="sm" className="h-9 px-2" disabled={busy} onClick={onFollowup}>{t(followup ? "viewFollowup" : "createFollowup")}</Button>}
           <Button type="button" variant="ghost" size="sm" className="h-9 px-2" aria-label={t("report")} onClick={onReport}>
             <BarChart3 className="size-3.5" strokeWidth={1.6} />
             <span className="hidden sm:inline">{t("report")}</span>
@@ -203,6 +203,7 @@ function QuizEditorDialog({ model }: { model: ClassroomActivitiesModel }) {
                 <label className="text-sm text-muted-foreground" htmlFor="quiz-title">{t("createDialog.quizTitle")}</label>
                 <Input id="quiz-title" maxLength={120} value={draft?.title ?? ""} placeholder={t("createDialog.quizTitlePlaceholder")} disabled={saving} onChange={(event) => draft && change({ ...draft, title: event.target.value })} />
               </div>
+              <fieldset disabled={saving} className="space-y-2"><legend className="mb-2 text-sm">{t("createDialog.phase")}</legend><div className="flex flex-wrap gap-2">{(["pre_class", "in_class", "after_class"] as const).map((phase) => <label key={phase} className="flex cursor-pointer items-center gap-2 rounded-md border border-border px-3 py-2 text-sm"><input type="radio" name="quiz-phase" checked={draft?.phase === phase} onChange={() => draft && change({ ...draft, phase })} className="accent-primary" />{t(`phase.${phase}`)}</label>)}</div></fieldset>
               <fieldset className="space-y-3" disabled={saving}>
                 <legend className="text-xs font-medium">{t("createDialog.lessons")}</legend>
                 <div className="flex items-center justify-between gap-3">
@@ -226,7 +227,7 @@ function QuizEditorDialog({ model }: { model: ClassroomActivitiesModel }) {
                             <input id={inputID} type="checkbox" checked={selected} disabled={saving || (!selected && selectedCount >= maxQuestions)} onChange={() => toggleLesson(lesson.id)} className="mt-0.5 accent-primary" />
                             <span className="min-w-0"><span className="block font-medium">{lesson.number} {lesson.title}</span><span className="mt-1 block text-xs text-muted-foreground">{lesson.chapter}</span></span>
                           </label>
-                          {selected && <div className="mt-3 space-y-3 border-t border-primary/15 pt-3 text-xs" lang="zh-CN"><StreamdownRender content={lesson.prompt} /><ol className="space-y-1 text-muted-foreground">{lesson.options.map((option, index) => <li key={index} className="flex gap-2"><span className="shrink-0 font-mono">{OPTION_LETTERS[index]}.</span><div className="min-w-0"><StreamdownRender content={option} /></div></li>)}</ol><p className="text-sm font-medium text-primary">{t("answerKey", { answer: OPTION_LETTERS[lesson.answer] })}</p><StreamdownRender content={lesson.explanation} />{lesson.followup && <details className="rounded-md bg-muted/50 p-3"><summary className="cursor-pointer font-medium">{t("pairedPreview")}</summary><div className="mt-3 space-y-2"><StreamdownRender content={lesson.followup.prompt} /><ol className="space-y-1 text-muted-foreground">{lesson.followup.options.map((option, index) => <li key={index} className="flex gap-2"><span className="font-mono">{OPTION_LETTERS[index]}.</span><StreamdownRender content={option} /></li>)}</ol><p className="text-primary">{t("answerKey", { answer: OPTION_LETTERS[lesson.followup.answer] })}</p><StreamdownRender content={lesson.followup.explanation} /></div></details>}</div>}
+                          {selected && <div className="mt-3 space-y-3 border-t border-border pt-3" lang="zh-CN"><QuizQuestionPreview question={lesson} />{lesson.followup && <details className="rounded-md bg-muted/50 p-3"><summary className="cursor-pointer text-sm font-medium">{t("pairedPreview")}</summary><div className="mt-3"><QuizQuestionPreview question={lesson.followup} /></div></details>}</div>}
                         </div>
                       );
                     })}
@@ -249,7 +250,7 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
   const t = useTranslations("classrooms.activities");
   const locale = useLocale();
   const { report, loading, picked, close, pick } = model.reportDialog;
-  const total = report?.quiz.questions.length ?? 0;
+  const total = report?.quiz.questions.reduce((sum, q) => sum + Math.max(1, q.fields.length), 0) ?? 0;
 
   return (
     <Dialog open={report !== null || loading} onOpenChange={(open) => !open && close()}>
@@ -281,8 +282,8 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
                   {report.statistics.questions.map((question, questionIndex) => (
                     <div key={question.id} className="space-y-1.5">
                       <p className="text-sm text-muted-foreground">{t("createDialog.question", { index: questionIndex + 1 })}{question.conceptTitle ? ` · ${question.conceptTitle}` : ""}</p>
-                      <div className="text-xs" lang="zh-CN"><StreamdownRender content={question.prompt} /></div>
-                      <p className="text-sm font-medium text-primary">{t("answerKey", { answer: OPTION_LETTERS[question.answer] })} · {t("accuracy", { correct: question.correctCount, total: report.statistics.submissionCount })}</p>
+                      <div className="text-sm" lang="zh-CN"><StreamdownRender content={question.prompt} />{question.formula && <StreamdownRender content={`$$\n${question.formula}\n$$`} />}</div>
+                      <QuizNumericKey question={question} /><p className="text-sm font-medium text-primary">{question.options.length > 0 && `${t("answerKey", { answer: OPTION_LETTERS[question.answer] })} · `}{t("accuracy", { correct: question.correctCount, total: report.statistics.submissionCount })}</p>
                       <div className="space-y-1">
                         {question.options.map((option, optionIndex) => {
                           const count = question.optionCounts[optionIndex] ?? 0;
@@ -374,7 +375,7 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
           <DialogFooter className="shrink-0 flex-wrap px-4 py-3">
             {report && <Button type="button" variant="outline" disabled={loading} onClick={() => void model.actions.openReport(report.quiz)}>{t("refresh")}</Button>}
             {report?.quiz.status === "draft" && <Button type="button" disabled={!!model.actions.busyQuizID} onClick={() => { void model.actions.publish(report.quiz); close(); }}>{t("open")}</Button>}
-            {report?.quiz.phase === "pre_class" && report.quiz.status === "closed" && !report.comparison && <Button type="button" disabled={!!model.actions.busyQuizID} onClick={() => void model.actions.createFollowup(report.quiz)}>{t("createFollowup")}</Button>}
+            {report && !report.quiz.sourceQuizId && report.quiz.phase !== "after_class" && report.quiz.status === "closed" && !report.comparison && <Button type="button" disabled={!!model.actions.busyQuizID} onClick={() => void model.actions.createFollowup(report.quiz)}>{t("createFollowup")}</Button>}
             <Button type="button" variant="ghost" onClick={close}>
               {t("reportDialog.close")}
             </Button>
@@ -383,6 +384,17 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
       </DialogContent>
     </Dialog>
   );
+}
+
+type PreviewQuestion = Pick<ClassroomQuizQuestionDTO, "prompt" | "formula" | "fields" | "options" | "answer" | "explanation">;
+
+function QuizNumericKey({ question }: { question: Pick<PreviewQuestion, "fields"> }) {
+  return question.fields.length > 0 && <dl className="flex flex-wrap gap-x-6 gap-y-2 text-sm">{question.fields.map((field) => <div key={field.id}><dt className="text-muted-foreground">{field.label}{field.unit && ` (${field.unit})`}</dt><dd className="font-mono">{field.expected}</dd></div>)}</dl>;
+}
+
+function QuizQuestionPreview({ question }: { question: PreviewQuestion }) {
+  const t = useTranslations("classrooms.activities");
+  return <div className="space-y-3 text-sm"><StreamdownRender content={question.prompt} />{question.formula && <StreamdownRender content={`$$\n${question.formula}\n$$`} />}<ol className="space-y-2">{question.options.map((option, index) => <li key={option} className="flex gap-2"><span className="font-mono">{OPTION_LETTERS[index]}.</span><StreamdownRender content={option} /></li>)}</ol>{question.options.length > 0 && <p className="font-medium text-primary">{t("answerKey", { answer: OPTION_LETTERS[question.answer] })}</p>}<QuizNumericKey question={question} /><StreamdownRender content={question.explanation} /></div>;
 }
 
 function ReportStat({ label, value }: { label: string; value: string }) {

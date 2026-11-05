@@ -18,6 +18,7 @@ export function useClassroomStudentActivities(accessToken: string) {
   const [loadError, setLoadError] = React.useState("");
   const [reloadVersion, setReloadVersion] = React.useState(0);
   const [answers, setAnswers] = React.useState<Record<string, number[]>>({});
+  const [fieldAnswers, setFieldAnswers] = React.useState<Record<string, Record<string, Record<string, string>>>>({});
   const [submittingID, setSubmittingID] = React.useState("");
 
   React.useEffect(() => {
@@ -32,6 +33,7 @@ export function useClassroomStudentActivities(accessToken: string) {
         const next = await listStudentQuizzes(accessToken, controller.signal);
         if (cancelled) return;
         setData(next);
+        setFieldAnswers((current) => Object.fromEntries(next.quizzes.map((quiz) => [quiz.id, quiz.submitted ? quiz.fieldAnswers ?? {} : current[quiz.id] ?? {}])));
         setAnswers((current) => {
           const merged: Record<string, number[]> = {};
           for (const quiz of next.quizzes ?? []) {
@@ -77,13 +79,14 @@ export function useClassroomStudentActivities(accessToken: string) {
     async (quiz: StudentClassroomQuizDTO) => {
       if (submittingID) return;
       const selected = answers[quiz.id] ?? [];
-      if (selected.length !== quiz.questions.length || selected.some((value) => value < 0)) {
+      const fields = fieldAnswers[quiz.id] ?? {};
+      if (quiz.questions.some((q, i) => q.options.length ? selected[i] === undefined || selected[i] < 0 : q.fields.some((f) => !fields[q.id]?.[f.id]?.trim()))) {
         toast.error(t("answerAll"));
         return;
       }
       setSubmittingID(quiz.id);
       try {
-        await submitClassroomQuiz(accessToken, quiz.id, { answers: selected });
+        await submitClassroomQuiz(accessToken, quiz.id, { answers: quiz.questions.map((q, i) => q.options.length ? selected[i] : -1), fieldAnswers: fields });
         toast.success(t("submittedToast"));
         refresh();
       } catch (error) {
@@ -92,7 +95,7 @@ export function useClassroomStudentActivities(accessToken: string) {
         setSubmittingID("");
       }
     },
-    [accessToken, answers, refresh, resolveErrorMessage, submittingID, t],
+    [accessToken, answers, fieldAnswers, refresh, resolveErrorMessage, submittingID, t],
   );
 
   return {
@@ -102,6 +105,8 @@ export function useClassroomStudentActivities(accessToken: string) {
     loadError,
     submittingID,
     answers,
+    fieldAnswers,
+    setFieldAnswer: (quizID: string, questionID: string, fieldID: string, value: string) => setFieldAnswers((current) => ({ ...current, [quizID]: { ...current[quizID], [questionID]: { ...current[quizID]?.[questionID], [fieldID]: value } } })),
     refresh,
     setAnswer,
     submit,

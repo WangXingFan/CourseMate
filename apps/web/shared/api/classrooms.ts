@@ -139,10 +139,11 @@ export async function listClassroomQuizzes(
 export async function listClassroomQuizLessons(
   accessToken: string,
   classroomID: string,
+  phase: string,
   signal?: AbortSignal,
 ): Promise<ClassroomQuizLessonListData> {
   return authedRequest<ClassroomQuizLessonListData>(
-    `${CLASSROOMS_PATH}/${pathParam(classroomID)}/quiz-lessons`,
+    `${CLASSROOMS_PATH}/${pathParam(classroomID)}/quiz-lessons?phase=${encodeURIComponent(phase)}`,
     { accessToken, signal },
     true,
   );
