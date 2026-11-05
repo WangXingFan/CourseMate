@@ -9,24 +9,28 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLearningCourse, useLearningCourseLesson, useLearningLessonAnswer } from "@/features/learning/hooks/use-learning-course";
+import { COURSE_LESSON_VIDEOS } from "@/features/learning/model/course-videos";
 import type { LearningCourseLessonData, LearningCourseQuestionDTO, LearningLessonAnswerData } from "@/shared/api/learning-types";
 import { StreamdownRender } from "@/shared/components/markdown/streamdown-render";
 import { MathFormula } from "./shared/math-formula";
+import { LessonVideos } from "./shared/lesson-videos";
 
-export function KnowledgeCourse() {
+export function KnowledgeCourse({ preview = false }: { preview?: boolean }) {
   const t = useTranslations("learning.knowledge");
+  const p = useTranslations("learning.preview");
   const params = useSearchParams();
   const catalog = useLearningCourse();
   const [search, setSearch] = React.useState("");
   const [chapter, setChapter] = React.useState("");
-  const practiceLessons = catalog.data?.lessons ?? [];
+  const practiceLessons = (catalog.data?.lessons ?? []).filter((lesson) => !preview || COURSE_LESSON_VIDEOS[lesson.id]);
+  const lessonHref = (id: string) => `/learn/${preview ? "preview" : "knowledge"}?lesson=${encodeURIComponent(id)}`;
   const selected = params.get("lesson")?.trim() || practiceLessons[0]?.id || "";
   const detail = useLearningCourseLesson(selected);
   const chapters = [...new Set(practiceLessons.map((lesson) => lesson.chapter))];
   const filtered = practiceLessons.filter((lesson) => (!chapter || lesson.chapter === chapter) && `${lesson.number} ${lesson.title} ${lesson.chapter}`.toLowerCase().includes(search.toLowerCase()));
   const index = practiceLessons.findIndex((lesson) => lesson.id === selected);
   const previous = practiceLessons[index - 1];
-  const next = practiceLessons[index + 1];
+  const next = index >= 0 ? practiceLessons[index + 1] : undefined;
   const completed = practiceLessons.reduce((sum, lesson) => sum + lesson.completedStages, 0);
   const mastered = practiceLessons.reduce((sum, lesson) => sum + lesson.masteredStages, 0);
 
@@ -35,8 +39,8 @@ export function KnowledgeCourse() {
       <div className="mx-auto w-full max-w-5xl px-5 pt-6 pb-16 md:px-10 md:pt-10">
         <Link href="/learn" prefetch={false} className="inline-flex items-center gap-1.5 rounded-md text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35"><ArrowLeft className="size-4" strokeWidth={1.6} aria-hidden />{t("back")}</Link>
         <header className="mt-6 mb-8 flex flex-wrap items-end justify-between gap-6 border-b border-border pb-8">
-          <h1 className="font-display text-3xl leading-[1.12] font-normal tracking-[-0.015em] text-foreground md:text-4xl">{t("title")}</h1>
-          {catalog.data?.canPractice && <div className="border-l-2 border-border py-1 pl-3 text-sm text-muted-foreground">
+          <h1 className="font-display text-3xl leading-[1.12] font-normal tracking-[-0.015em] text-foreground md:text-4xl">{preview ? p("title") : t("title")}</h1>
+          {!preview && catalog.data?.canPractice && <div className="border-l-2 border-border py-1 pl-3 text-sm text-muted-foreground">
             <p><span className="mr-2 font-mono text-lg font-medium tabular-nums text-foreground">{completed}</span>/ {t("total", { count: practiceLessons.length * 3 })}</p>
             <p className="mt-1 text-xs">{t("mastered", { count: mastered })}</p>
           </div>}
@@ -53,9 +57,9 @@ export function KnowledgeCourse() {
               {chapters.map((value) => <option key={value} value={value}>{value}</option>)}
             </select>
             <nav aria-label={t("catalog")} className="mt-4 max-h-60 overflow-y-auto border-t border-border lg:max-h-[65vh]">
-              {filtered.map((lesson) => <Link key={lesson.id} href={`/learn/knowledge?lesson=${lesson.id}`} prefetch={false} aria-current={selected === lesson.id ? "page" : undefined} className={`flex items-center gap-2 border-b border-border px-2 py-2.5 text-sm leading-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35 ${selected === lesson.id ? "bg-accent text-foreground shadow-[inset_2px_0_0_var(--primary)]" : "text-muted-foreground hover:text-foreground"}`}>
+              {filtered.map((lesson) => <Link key={lesson.id} href={lessonHref(lesson.id)} prefetch={false} aria-current={selected === lesson.id ? "page" : undefined} className={`flex items-center gap-2 border-b border-border px-2 py-2.5 text-sm leading-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35 ${selected === lesson.id ? "bg-accent text-foreground shadow-[inset_2px_0_0_var(--primary)]" : "text-muted-foreground hover:text-foreground"}`}>
                 <span className="w-8 shrink-0 font-mono text-xs tabular-nums">{lesson.number}</span><span className="flex-1">{lesson.title}</span>
-                {catalog.data?.canPractice && <span className="shrink-0 font-mono text-xs tabular-nums"><span aria-hidden="true">{lesson.completedStages}/3</span><span className="sr-only">{t("stageProgress", { completed: lesson.completedStages })}</span></span>}
+                {!preview && catalog.data?.canPractice && <span className="shrink-0 font-mono text-xs tabular-nums"><span aria-hidden="true">{lesson.completedStages}/3</span><span className="sr-only">{t("stageProgress", { completed: lesson.completedStages })}</span></span>}
               </Link>)}
               {catalog.data && filtered.length === 0 && <p className="py-4 text-sm text-muted-foreground">{t("empty")}</p>}
             </nav>
@@ -63,10 +67,10 @@ export function KnowledgeCourse() {
 
           <main className="min-w-0">
             {/* With an empty catalog there is no lesson to load; the sidebar already shows the empty state. */}
-            {catalog.data && !selected ? null : detail.error ? <ErrorNotice error={detail.error} reload={detail.reload} /> : !detail.data ? <p role="status" className="py-12 text-sm text-muted-foreground">{t("loading")}</p> : <LessonContent key={`${detail.ownerKey}|${detail.data.version}`} data={detail.data} onSaved={catalog.reload} />}
+            {catalog.data && !selected ? null : detail.error ? <ErrorNotice error={detail.error} reload={detail.reload} /> : !detail.data ? <p role="status" className="py-12 text-sm text-muted-foreground">{t("loading")}</p> : <LessonContent key={`${detail.ownerKey}|${detail.data.version}`} data={detail.data} preview={preview} onSaved={catalog.reload} />}
             {detail.data && <nav aria-label={t("lessonNavigation")} className="mt-8 flex flex-wrap justify-between gap-3 border-t border-border pt-5">
-              {previous ? <Link href={`/learn/knowledge?lesson=${previous.id}`} prefetch={false} className="flex max-w-full items-center gap-2 text-sm text-muted-foreground hover:text-primary"><ArrowLeft className="size-4 shrink-0" strokeWidth={1.6} aria-hidden /><span className="font-mono text-xs">{previous.number}</span>{previous.title}</Link> : <span />}
-              {next && <Link href={`/learn/knowledge?lesson=${next.id}`} prefetch={false} className="flex max-w-full items-center gap-2 text-sm text-muted-foreground hover:text-primary"><span className="font-mono text-xs">{next.number}</span>{next.title}<ArrowRight className="size-4 shrink-0" strokeWidth={1.6} aria-hidden /></Link>}
+              {previous ? <Link href={lessonHref(previous.id)} prefetch={false} className="flex max-w-full items-center gap-2 text-sm text-muted-foreground hover:text-primary"><ArrowLeft className="size-4 shrink-0" strokeWidth={1.6} aria-hidden /><span className="font-mono text-xs">{previous.number}</span>{previous.title}</Link> : <span />}
+              {next && <Link href={lessonHref(next.id)} prefetch={false} className="flex max-w-full items-center gap-2 text-sm text-muted-foreground hover:text-primary"><span className="font-mono text-xs">{next.number}</span>{next.title}<ArrowRight className="size-4 shrink-0" strokeWidth={1.6} aria-hidden /></Link>}
             </nav>}
           </main>
         </div>
@@ -75,7 +79,7 @@ export function KnowledgeCourse() {
   );
 }
 
-function LessonContent({ data, onSaved }: { data: LearningCourseLessonData; onSaved: () => void }) {
+function LessonContent({ data, preview, onSaved }: { data: LearningCourseLessonData; preview: boolean; onSaved: () => void }) {
   const t = useTranslations("learning.knowledge");
   const [reading, setReading] = React.useState(true);
   const question = (stage: string) => data.questions.find((item) => item.stage === stage);
@@ -87,7 +91,9 @@ function LessonContent({ data, onSaved }: { data: LearningCourseLessonData; onSa
   return <>
     <p className="text-xs text-muted-foreground">{data.lesson.chapter}</p>
     <h2 className="mt-2 mb-6 font-display text-2xl font-normal text-foreground"><span className="mr-3 font-mono text-lg text-muted-foreground">{data.lesson.number}</span>{" "}{data.lesson.title}</h2>
+    {preview ? <LessonVideos lessonId={data.lesson.id} showActions /> :
     <div className="space-y-5">
+      <LessonVideos lessonId={data.lesson.id} />
       {!data.canPractice && <section className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-accent p-4 shadow-[inset_2px_0_0_var(--primary)] md:p-5"><h3 className="text-sm font-medium">{t("assignedTitle")}</h3><Button asChild size="sm" variant="outline"><Link href="/activities" prefetch={false}>{t("goToActivities")}<ArrowRight className="size-4" strokeWidth={1.6} aria-hidden /></Link></Button></section>}
       {card("preview", "01")}
       <section className="min-w-0 rounded-lg border border-border bg-card p-5 md:p-6">
@@ -96,7 +102,7 @@ function LessonContent({ data, onSaved }: { data: LearningCourseLessonData; onSa
       </section>
       {card("in_class", "02")}
       {card("after_class", "03")}
-    </div>
+    </div>}
   </>;
 }
 

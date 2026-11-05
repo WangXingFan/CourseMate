@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, ArrowUpRight, Calculator, Code2, Gamepad2, Lightbulb, SlidersHorizontal, Trophy } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BookOpen, Calculator, Code2, Gamepad2, Lightbulb, SlidersHorizontal, Trophy } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -41,10 +41,13 @@ export function LearningHub() {
     >
       <div className="mx-auto w-full max-w-5xl px-5 pt-10 pb-16 md:px-10 md:pt-16">
         <header className="space-y-8 border-b border-border">
-          <div className="max-w-2xl">
+          <div className="flex flex-wrap items-end justify-between gap-5">
             <h1 className="font-display text-3xl leading-tight font-normal tracking-[-0.015em] text-foreground md:text-4xl">
               {t("hub.title")}
             </h1>
+            <Link href="/learn/preview" prefetch={false} className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35">
+              <BookOpen className="size-4" strokeWidth={1.6} aria-hidden />{t("preview.title")}<ArrowRight className="size-4" strokeWidth={1.6} aria-hidden />
+            </Link>
           </div>
 
           <div role="tablist" aria-label={t("hub.paths.label")} className="flex gap-5 sm:gap-8">

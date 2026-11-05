@@ -268,6 +268,23 @@
       "connect": "Connect the cutoff frequency to the time constant: smaller τ means wider bandwidth."
     }
   },
+  "preview": {
+    "title": "Pre-class study",
+    "videos": "Lesson videos",
+    "fullCourse": "Full course",
+    "lecturer": "Lecturer",
+    "lecturerName": "Guo Baolong",
+    "source": "Video source",
+    "recommended": "Watch first",
+    "extra": "Further viewing ({count} episodes)",
+    "watch": "Watch on Bilibili",
+    "newTab": " (opens in a new tab)",
+    "duration": "Video duration: ",
+    "unavailable": "No videos are linked to this lesson yet.",
+    "nextSteps": "Continue this lesson",
+    "notes": "Read lesson notes",
+    "activities": "View assigned pre-class quizzes"
+  },
   "knowledge": {
     "back": "Back to learning lab",
     "title": "Course knowledge",

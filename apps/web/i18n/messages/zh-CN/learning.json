@@ -268,6 +268,23 @@
       "connect": "把截止频率与时间常数联系起来：τ 越小，带宽越宽。"
     }
   },
+  "preview": {
+    "title": "课前预习",
+    "videos": "本节预习视频",
+    "fullCourse": "完整课程",
+    "lecturer": "主讲",
+    "lecturerName": "郭宝龙",
+    "source": "视频来源",
+    "recommended": "建议先看",
+    "extra": "拓展观看（{count} 集）",
+    "watch": "前往 B 站观看",
+    "newTab": "（在新标签页打开）",
+    "duration": "视频时长：",
+    "unavailable": "本节暂无关联视频。",
+    "nextSteps": "继续本节学习",
+    "notes": "阅读章节重点",
+    "activities": "查看老师布置的预习题"
+  },
   "knowledge": {
     "back": "返回学习实验室",
     "title": "课程知识",
