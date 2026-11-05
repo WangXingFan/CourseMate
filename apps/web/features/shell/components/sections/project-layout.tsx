@@ -19,6 +19,7 @@ import { ShellConversationNavigationProvider } from "@/features/shell/context/sh
 import { MobileHeaderActionProvider } from "@/features/shell/context/mobile-header-action-context";
 import { AppearancePreferencesSync } from "@/features/settings";
 import { UserLocaleSync } from "@/i18n/user-locale-sync";
+import { UsageTracker } from "@/features/analytics";
 
 const InitialSecurityGuard = dynamic(
   () => import("@/features/auth").then((mod) => mod.InitialSecurityGuard),
@@ -85,6 +86,7 @@ export function ProjectLayout({
   return (
     <>
       <UserLocaleSync />
+      <UsageTracker />
       <AppearancePreferencesSync />
       <InitialSecurityGuard />
       <SidebarProvider className="h-svh overflow-hidden" defaultOpen={defaultSidebarOpen}>

@@ -17,6 +17,7 @@ import (
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/lifecycle"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/response"
 	adminhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/admin"
+	analyticshttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/analytics"
 	attendancehttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/attendance"
 	authhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/auth"
 	channelhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/channel"
@@ -56,6 +57,7 @@ type Modules struct {
 	AuthService       middleware.SessionValidator
 	Channel           *channelhttp.Module
 	Classroom         *classroomhttp.Module
+	Analytics         *analyticshttp.Module
 	Attendance        *attendancehttp.Module
 	Learning          *learninghttp.Module
 	LabAssessment     *labassessmenthttp.Module
@@ -161,6 +163,9 @@ func NewEngine(cfg *config.Runtime, log *zap.Logger, modules Modules, hc HealthC
 	authRequired := api.Group("")
 	authRequired.Use(middleware.AuthMiddleware(snapshot.JWTSecret, modules.AuthService))
 	authRequired.Use(middleware.RateLimit(limiter, cfg))
+	if modules.Analytics != nil {
+		modules.Analytics.RegisterRoutes(authRequired)
+	}
 
 	if modules.Auth != nil {
 		modules.Auth.RegisterProtectedRoutes(authRequired, gate)

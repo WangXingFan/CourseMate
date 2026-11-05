@@ -278,6 +278,45 @@ definitions:
     - updatedAt
     - username
     type: object
+  AssessmentStatsResponse:
+    properties:
+      classroomId:
+        type: string
+      classroomName:
+        type: string
+      completed:
+        type: integer
+      distribution:
+        items:
+          type: integer
+        type: array
+      expected:
+        type: integer
+      id:
+        type: string
+      itemKey:
+        type: string
+      scoreCount:
+        type: integer
+      scoreSum:
+        type: number
+      started:
+        type: integer
+      title:
+        type: string
+    required:
+    - classroomId
+    - classroomName
+    - completed
+    - distribution
+    - expected
+    - id
+    - itemKey
+    - scoreCount
+    - scoreSum
+    - started
+    - title
+    type: object
   AttendanceCheckInRequest:
     properties:
       code:
@@ -4999,6 +5038,37 @@ definitions:
     - revision
     - updatedAt
     type: object
+  LessonStatsResponse:
+    properties:
+      answered:
+        type: integer
+      classroomId:
+        type: string
+      correct:
+        type: integer
+      expected:
+        type: integer
+      lessonId:
+        type: string
+      number:
+        type: string
+      quizId:
+        type: string
+      quizTitle:
+        type: string
+      title:
+        type: string
+    required:
+    - answered
+    - classroomId
+    - correct
+    - expected
+    - lessonId
+    - number
+    - quizId
+    - quizTitle
+    - title
+    type: object
   LocalGrantExchangeRequest:
     properties:
       grant:
@@ -8855,6 +8925,138 @@ definitions:
     - suggestedProtocol
     - updated
     - upstreamModelName
+    type: object
+  UsageClassroomResponse:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      students:
+        type: integer
+      visits:
+        type: integer
+    required:
+    - id
+    - name
+    - students
+    - visits
+    type: object
+  UsageDailyResponse:
+    properties:
+      date:
+        type: string
+      visits:
+        type: integer
+    required:
+    - date
+    - visits
+    type: object
+  UsageReportResponse:
+    properties:
+      classrooms:
+        items:
+          $ref: '#/definitions/UsageClassroomResponse'
+        type: array
+      daily:
+        items:
+          $ref: '#/definitions/UsageDailyResponse'
+        type: array
+      firstVisitAt:
+        type: string
+        x-nullable: true
+      from:
+        type: string
+      generatedAt:
+        type: string
+      homeworks:
+        items:
+          $ref: '#/definitions/AssessmentStatsResponse'
+        type: array
+      labs:
+        items:
+          $ref: '#/definitions/AssessmentStatsResponse'
+        type: array
+      lessons:
+        items:
+          $ref: '#/definitions/LessonStatsResponse'
+        type: array
+      resources:
+        items:
+          $ref: '#/definitions/UsageResourceResponse'
+        type: array
+      scope:
+        type: string
+      summary:
+        $ref: '#/definitions/UsageSummaryResponse'
+      through:
+        type: string
+      timezone:
+        type: string
+    required:
+    - classrooms
+    - daily
+    - firstVisitAt
+    - from
+    - generatedAt
+    - homeworks
+    - labs
+    - lessons
+    - resources
+    - scope
+    - summary
+    - through
+    - timezone
+    type: object
+  UsageResourceResponse:
+    properties:
+      category:
+        type: string
+      key:
+        type: string
+      visits:
+        type: integer
+    required:
+    - category
+    - key
+    - visits
+    type: object
+  UsageSummaryResponse:
+    properties:
+      homeworkSubmissions:
+        type: integer
+      practiceAnswers:
+        type: integer
+      quizSubmissions:
+        type: integer
+      users:
+        type: integer
+      visits:
+        type: integer
+    required:
+    - homeworkSubmissions
+    - practiceAnswers
+    - quizSubmissions
+    - users
+    - visits
+    type: object
+  UsageVisitRequest:
+    properties:
+      eventId:
+        type: string
+      path:
+        maxLength: 100
+        type: string
+    required:
+    - eventId
+    - path
+    type: object
+  UsageVisitResponse:
+    properties:
+      recorded:
+        type: boolean
+    required:
+    - recorded
     type: object
   UserAuthEventListResponseDoc:
     properties:
@@ -13149,6 +13351,74 @@ paths:
       summary: 管理员导入学生名单
       tags:
       - admin
+  /analytics/usage:
+    get:
+      parameters:
+      - default: 30
+        description: 'Reporting days: 7, 30 or 90'
+        in: query
+        name: days
+        type: integer
+      - description: Optional classroom public ID
+        in: query
+        name: classroomId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UsageReportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Usage statistics for a teacher's classrooms or the administrator's
+        entire site
+      tags:
+      - analytics
+  /analytics/visits:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Page visit
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/UsageVisitRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UsageVisitResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Record an authenticated product page visit (idempotent by event ID)
+      tags:
+      - analytics
   /attendance/{id}:
     get:
       parameters:

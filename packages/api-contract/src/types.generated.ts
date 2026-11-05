@@ -117,6 +117,20 @@ export interface AdminUserResponse {
   username: string;
 }
 
+export interface AssessmentStatsResponse {
+  classroomId: string;
+  classroomName: string;
+  completed: number;
+  distribution: number[];
+  expected: number;
+  id: string;
+  itemKey: string;
+  scoreCount: number;
+  scoreSum: number;
+  started: number;
+  title: string;
+}
+
 export interface AttendanceCheckInRequest {
   code: string;
 }
@@ -2175,6 +2189,18 @@ export interface LearningVirtualLabResponse {
   updatedAt: string;
 }
 
+export interface LessonStatsResponse {
+  answered: number;
+  classroomId: string;
+  correct: number;
+  expected: number;
+  lessonId: string;
+  number: string;
+  quizId: string;
+  quizTitle: string;
+  title: string;
+}
+
 export interface LocalGrantExchangeRequest {
   grant: string;
 }
@@ -3967,6 +3993,58 @@ export interface UpstreamSyncModelResponse {
   suggestedProtocol: string;
   updated: boolean;
   upstreamModelName: string;
+}
+
+export interface UsageClassroomResponse {
+  id: string;
+  name: string;
+  students: number;
+  visits: number;
+}
+
+export interface UsageDailyResponse {
+  date: string;
+  visits: number;
+}
+
+export interface UsageReportResponse {
+  classrooms: UsageClassroomResponse[];
+  daily: UsageDailyResponse[];
+  firstVisitAt?: string | null;
+  from: string;
+  generatedAt: string;
+  homeworks: AssessmentStatsResponse[];
+  labs: AssessmentStatsResponse[];
+  lessons: LessonStatsResponse[];
+  resources: UsageResourceResponse[];
+  scope: string;
+  summary: UsageSummaryResponse;
+  through: string;
+  timezone: string;
+}
+
+export interface UsageResourceResponse {
+  category: string;
+  key: string;
+  visits: number;
+}
+
+export interface UsageSummaryResponse {
+  homeworkSubmissions: number;
+  practiceAnswers: number;
+  quizSubmissions: number;
+  users: number;
+  visits: number;
+}
+
+export interface UsageVisitRequest {
+  eventId: string;
+  /** @maxLength 100 */
+  path: string;
+}
+
+export interface UsageVisitResponse {
+  recorded: boolean;
 }
 
 export interface UserAuthEventListResponseDoc {
@@ -6445,6 +6523,48 @@ export namespace Admin {
     export type RequestBody = UpdateUserStatusRequest;
     export type RequestHeaders = {};
     export type ResponseBody = UpdateUserStatusResponseDoc;
+  }
+}
+
+export namespace Analytics {
+  /**
+   * No description
+   * @tags analytics
+   * @name UsageList
+   * @summary Usage statistics for a teacher's classrooms or the administrator's entire site
+   * @request GET:/analytics/usage
+   * @secure
+   */
+  export namespace UsageList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Optional classroom public ID */
+      classroomId?: string;
+      /**
+       * Reporting days: 7, 30 or 90
+       * @default 30
+       */
+      days?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UsageReportResponse;
+  }
+
+  /**
+   * No description
+   * @tags analytics
+   * @name VisitsCreate
+   * @summary Record an authenticated product page visit (idempotent by event ID)
+   * @request POST:/analytics/visits
+   * @secure
+   */
+  export namespace VisitsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = UsageVisitRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = UsageVisitResponse;
   }
 }
 

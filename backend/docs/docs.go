@@ -6397,6 +6397,113 @@ const docTemplate = `{
                 }
             }
         },
+        "/analytics/usage": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "Usage statistics for a teacher's classrooms or the administrator's entire site",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 30,
+                        "description": "Reporting days: 7, 30 or 90",
+                        "name": "days",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Optional classroom public ID",
+                        "name": "classroomId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UsageReportResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/analytics/visits": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "Record an authenticated product page visit (idempotent by event ID)",
+                "parameters": [
+                    {
+                        "description": "Page visit",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UsageVisitRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UsageVisitResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/attendance/{id}": {
             "get": {
                 "security": [
@@ -15415,6 +15522,60 @@ const docTemplate = `{
                 }
             }
         },
+        "AssessmentStatsResponse": {
+            "type": "object",
+            "required": [
+                "classroomId",
+                "classroomName",
+                "completed",
+                "distribution",
+                "expected",
+                "id",
+                "itemKey",
+                "scoreCount",
+                "scoreSum",
+                "started",
+                "title"
+            ],
+            "properties": {
+                "classroomId": {
+                    "type": "string"
+                },
+                "classroomName": {
+                    "type": "string"
+                },
+                "completed": {
+                    "type": "integer"
+                },
+                "distribution": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "expected": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "itemKey": {
+                    "type": "string"
+                },
+                "scoreCount": {
+                    "type": "integer"
+                },
+                "scoreSum": {
+                    "type": "number"
+                },
+                "started": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "AttendanceCheckInRequest": {
             "type": "object",
             "required": [
@@ -22157,6 +22318,49 @@ const docTemplate = `{
                 }
             }
         },
+        "LessonStatsResponse": {
+            "type": "object",
+            "required": [
+                "answered",
+                "classroomId",
+                "correct",
+                "expected",
+                "lessonId",
+                "number",
+                "quizId",
+                "quizTitle",
+                "title"
+            ],
+            "properties": {
+                "answered": {
+                    "type": "integer"
+                },
+                "classroomId": {
+                    "type": "string"
+                },
+                "correct": {
+                    "type": "integer"
+                },
+                "expected": {
+                    "type": "integer"
+                },
+                "lessonId": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "quizId": {
+                    "type": "string"
+                },
+                "quizTitle": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "LocalGrantExchangeRequest": {
             "type": "object",
             "required": [
@@ -27656,6 +27860,195 @@ const docTemplate = `{
                 },
                 "upstreamModelName": {
                     "type": "string"
+                }
+            }
+        },
+        "UsageClassroomResponse": {
+            "type": "object",
+            "required": [
+                "id",
+                "name",
+                "students",
+                "visits"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "students": {
+                    "type": "integer"
+                },
+                "visits": {
+                    "type": "integer"
+                }
+            }
+        },
+        "UsageDailyResponse": {
+            "type": "object",
+            "required": [
+                "date",
+                "visits"
+            ],
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "visits": {
+                    "type": "integer"
+                }
+            }
+        },
+        "UsageReportResponse": {
+            "type": "object",
+            "required": [
+                "classrooms",
+                "daily",
+                "firstVisitAt",
+                "from",
+                "generatedAt",
+                "homeworks",
+                "labs",
+                "lessons",
+                "resources",
+                "scope",
+                "summary",
+                "through",
+                "timezone"
+            ],
+            "properties": {
+                "classrooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UsageClassroomResponse"
+                    }
+                },
+                "daily": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UsageDailyResponse"
+                    }
+                },
+                "firstVisitAt": {
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "from": {
+                    "type": "string"
+                },
+                "generatedAt": {
+                    "type": "string"
+                },
+                "homeworks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AssessmentStatsResponse"
+                    }
+                },
+                "labs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AssessmentStatsResponse"
+                    }
+                },
+                "lessons": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LessonStatsResponse"
+                    }
+                },
+                "resources": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UsageResourceResponse"
+                    }
+                },
+                "scope": {
+                    "type": "string"
+                },
+                "summary": {
+                    "$ref": "#/definitions/UsageSummaryResponse"
+                },
+                "through": {
+                    "type": "string"
+                },
+                "timezone": {
+                    "type": "string"
+                }
+            }
+        },
+        "UsageResourceResponse": {
+            "type": "object",
+            "required": [
+                "category",
+                "key",
+                "visits"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "visits": {
+                    "type": "integer"
+                }
+            }
+        },
+        "UsageSummaryResponse": {
+            "type": "object",
+            "required": [
+                "homeworkSubmissions",
+                "practiceAnswers",
+                "quizSubmissions",
+                "users",
+                "visits"
+            ],
+            "properties": {
+                "homeworkSubmissions": {
+                    "type": "integer"
+                },
+                "practiceAnswers": {
+                    "type": "integer"
+                },
+                "quizSubmissions": {
+                    "type": "integer"
+                },
+                "users": {
+                    "type": "integer"
+                },
+                "visits": {
+                    "type": "integer"
+                }
+            }
+        },
+        "UsageVisitRequest": {
+            "type": "object",
+            "required": [
+                "eventId",
+                "path"
+            ],
+            "properties": {
+                "eventId": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string",
+                    "maxLength": 100
+                }
+            }
+        },
+        "UsageVisitResponse": {
+            "type": "object",
+            "required": [
+                "recorded"
+            ],
+            "properties": {
+                "recorded": {
+                    "type": "boolean"
                 }
             }
         },

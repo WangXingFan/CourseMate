@@ -89,7 +89,8 @@
     "archived": "已归档",
     "yesterday": "昨天",
     "courseKnowledge": "课程知识",
-    "homeworks": "我的作业"
+    "homeworks": "我的作业",
+    "analytics": "数据统计"
   },
   "time": {
     "todayTime": "{time}",

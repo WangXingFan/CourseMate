@@ -80,4 +80,5 @@ export const NAVIGATION_ITEMS = [
     group: "secondary",
   },
   { id: "homeworks", kind: "link", href: "/homeworks", icon: ClipboardList, group: "secondary" },
+  { id: "analytics", kind: "link", href: "/analytics", icon: BarChart3, group: "secondary" },
 ] as const satisfies readonly NavigationItem[];

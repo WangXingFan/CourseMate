@@ -16,6 +16,7 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 // Hooks are named `use-<domain>-<purpose>.ts` and export `use<Domain><Purpose>`.
 // A new feature must be registered here before the naming rules accept it.
 const FEATURE_DOMAINS = {
+  analytics: "analytics",
   admin: "admin",
   auth: "auth",
   chat: "chat",

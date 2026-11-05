@@ -416,5 +416,10 @@
     "code": "Incorrect or expired code. Enter the latest classroom code.",
     "attempts": "Too many attempts. Wait for the next code.",
     "activation": "Change your initial password before checking in."
+  },
+  "analytics": {
+    "forbidden": "Analytics requires a teacher or administrator account.",
+    "invalid": "Invalid analytics query.",
+    "classroom": "This classroom is unavailable."
   }
 }

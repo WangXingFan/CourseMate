@@ -10,6 +10,7 @@ import enDesktopTabs from "@/i18n/messages/en-US/desktop-tabs.json";
 import enDesktopUpdate from "@/i18n/messages/en-US/desktop-update.json";
 import enChat from "@/i18n/messages/en-US/chat.json";
 import enClassrooms from "@/i18n/messages/en-US/classrooms.json";
+import enAnalytics from "@/i18n/messages/en-US/analytics.json";
 import enCommon from "@/i18n/messages/en-US/common.json";
 import enConversation from "@/i18n/messages/en-US/conversation.json";
 import enErrors from "@/i18n/messages/en-US/errors.json";
@@ -34,6 +35,7 @@ const ENGLISH_MESSAGES = {
   guide: enGuide,
   chat: enChat,
   classrooms: enClassrooms,
+  analytics: enAnalytics,
   desktopSetup: enDesktopSetup,
   desktopTabs: enDesktopTabs,
   desktopUpdate: enDesktopUpdate,
@@ -112,6 +114,7 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
     guide,
     chat,
     classrooms,
+    analytics,
     recent,
     knowledgeBases,
     learning,
@@ -135,6 +138,7 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
     import("@/i18n/messages/zh-CN/guide.json"),
     import("@/i18n/messages/zh-CN/chat.json"),
     import("@/i18n/messages/zh-CN/classrooms.json"),
+    import("@/i18n/messages/zh-CN/analytics.json"),
     import("@/i18n/messages/zh-CN/recent.json"),
     import("@/i18n/messages/zh-CN/knowledge-bases.json"),
     import("@/i18n/messages/zh-CN/learning.json"),
@@ -160,6 +164,7 @@ export async function loadLocaleMessages(locale: AppLocale): Promise<AppMessages
     guide: guide.default,
     chat: chat.default,
     classrooms: classrooms.default,
+    analytics: analytics.default,
     recent: recent.default,
     knowledgeBases: knowledgeBases.default,
     learning: learning.default,

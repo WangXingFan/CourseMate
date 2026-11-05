@@ -89,7 +89,8 @@
     "archived": "Archived",
     "yesterday": "Yesterday",
     "courseKnowledge": "Course knowledge",
-    "homeworks": "My homework"
+    "homeworks": "My homework",
+    "analytics": "Analytics"
   },
   "time": {
     "todayTime": "{time}",
