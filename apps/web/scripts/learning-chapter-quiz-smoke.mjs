@@ -63,7 +63,8 @@ await context.route("**/api/v1/**", async (route) => {
   } else if (path.endsWith("/student/quizzes")) {
     if (activityStatus !== 200) { await route.fulfill({ status: activityStatus, json: { errorMsg: "加载错误", errorCode: activityStatus === 403 ? "classroom.not_joined" : "system.internal", data: null } }); return; }
     data = { classroom: { id: "joined-class", name: "导入名单测试班", teacherName: "任课老师" }, quizzes: [] };
-  } else if (path.endsWith("/auth/refresh")) data = { accessToken: "quiz-qa", sessionID: "quiz-qa" };
+  } else if (path.endsWith("/student/attendance")) data = { items: [] };
+  else if (path.endsWith("/auth/refresh")) data = { accessToken: "quiz-qa", sessionID: "quiz-qa" };
   else if (path.endsWith("/me")) data = { user };
   else if (path.endsWith("/capabilities")) data = { features: { knowledgeBases: true, classrooms: true } };
   else if (path.endsWith("/branding")) data = { title: "CourseMate", shortName: "CourseMate", logoURL: "", faviconURL: "/favicon.ico" };

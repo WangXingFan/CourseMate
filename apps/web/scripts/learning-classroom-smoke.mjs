@@ -58,7 +58,7 @@ const rosterImports = [];
 function rosterImportResult(line) {
   return { total: 2, created: 1, skipped: 1, failed: 0,
     rows: [{ line, username: "00123456789", status: "created" }, { line: line + 1, username: "00123456789", status: "duplicate" }],
-    credentials: [{ username: "00123456789", displayName: "示例学生", initialPassword: "student" }] };
+    credentials: [{ username: "00123456789", displayName: "示例学生", initialPassword: "TestPassword2026" }] };
 }
 let browser;
 const pages = [];
@@ -71,6 +71,7 @@ async function session(role, width) {
     const request = route.request(), path = new URL(request.url()).pathname;
     let data = {};
     if (path.endsWith("/classrooms")) data = { classrooms: [classroom] };
+    else if (path.endsWith("/student/attendance")) data = { items: [] };
     else if (path.endsWith("/students")) data = { students: [{ id: "student_one", username: "student", displayName: "student" }] };
     else if (path.endsWith("/students/accounts/import/file")) {
       assert.equal(role, "teacher");
@@ -171,7 +172,7 @@ try {
   const downloaded = teacher.waitForEvent("download");
   await teacher.getByRole("button", { name: "下载密码表（1）", exact: true }).click();
   const passwordDownload = await downloaded;
-  assert.match(await readFile(await passwordDownload.path(), "utf8"), /00123456789,示例学生,student/);
+  assert.match(await readFile(await passwordDownload.path(), "utf8"), /00123456789,示例学生,TestPassword2026/);
   await teacher.getByRole("button", { name: "完成", exact: true }).click();
   await teacher.getByRole("button", { name: "导入学生名单", exact: true }).click();
   await teacher.getByRole("dialog").locator("textarea").fill("学号,姓名\n00123456789,示例学生");
@@ -235,7 +236,7 @@ try {
   await student.getByText("暂时没有已发布的小测", { exact: true }).waitFor();
   await teacher.getByRole("button", { name: "发布", exact: true }).click();
   await teacher.getByText("小测已发布", { exact: true }).waitFor();
-  await student.getByRole("button", { name: "刷新", exact: true }).click();
+  await student.locator("main > header").getByRole("button", { name: "刷新", exact: true }).click();
   await student.getByRole("heading", { name: "卷积课前预习", exact: true }).waitFor();
   const article = student.locator("article");
   await article.getByRole("button").nth((quiz.questions[0].answer+1)%quiz.questions[0].options.length).click();
@@ -245,7 +246,7 @@ try {
   assert.ok(await student.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), "mobile overflow");
   await student.screenshot({ path: join(artifacts, "student-published-answer-mobile.png") });
   await teacher.getByRole("button", { name: "截止", exact: true }).click();
-  await student.getByRole("button", { name: "刷新", exact: true }).click();
+  await student.locator("main > header").getByRole("button", { name: "刷新", exact: true }).click();
   await student.getByText("已截止", { exact: true }).waitFor();
   assert.equal(directSubmissions, 0);
   await teacher.getByRole("button", {name:"创建同知识点复测",exact:true}).click();
@@ -253,7 +254,7 @@ try {
   await report.getByText("复测仍为草稿，请确认题目后发布。",{exact:true}).waitFor();
   await report.getByRole("button",{name:"发布",exact:true}).click();
   await report.waitFor({state:"hidden"});
-  await student.getByRole("button",{name:"刷新",exact:true}).click();
+  await student.locator("main > header").getByRole("button",{name:"刷新",exact:true}).click();
   await student.getByRole("heading",{name:followup.title,exact:true}).waitFor();
   const retest=student.locator("article").filter({has:student.getByRole("heading",{name:followup.title,exact:true})});
   await retest.locator(".grid > button").nth(followup.questions[0].answer).click();
@@ -274,7 +275,7 @@ try {
   await teacher.setViewportSize({width:1360,height:950});
   await verifyClassroomRollCall({ teacher, student, base, artifacts });
   assert.deepEqual(errors, []);
-  console.log("PASS: default student password, Excel roster upload, CSV fallback, row results and password download, course preview and matched retest, paired statistics and transitions, random roll call with no repeats, class switching, reset, empty roster, retry, stale response isolation, teacher-only navigation, desktop and mobile");
+  console.log("PASS: generated student password export, Excel roster upload, CSV fallback, row results and password download, course preview and matched retest, paired statistics and transitions, random roll call with no repeats, class switching, reset, empty roster, retry, stale response isolation, teacher-only navigation, desktop and mobile");
 } catch (error) {
   for (const [index, page] of pages.entries()) await page.screenshot({ path: join(artifacts, `failure-${index}.png`) }).catch(() => {});
   throw error;

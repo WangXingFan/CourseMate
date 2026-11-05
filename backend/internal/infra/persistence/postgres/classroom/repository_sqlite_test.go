@@ -3,16 +3,17 @@ package classroom
 import (
 	"context"
 	"errors"
-	appclassroom "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/classroom"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	appclassroom "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/classroom"
 	domainmodel "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/classroom"
 	domainuser "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/user"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/models"
 	userrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/user"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/repository"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -192,7 +193,17 @@ func TestImportedStudentCanReadClassroomActivities(t *testing.T) {
 	if err != nil || joined.PublicID != class.PublicID || len(quizzes) != 0 {
 		t.Fatalf("activities: %+v %+v %v", joined, quizzes, err)
 	}
-	if result.Credentials[0].InitialPassword != "student" {
-		t.Fatal("default password changed")
+	if len(result.Credentials) != 1 || len(result.Credentials[0].InitialPassword) != 16 {
+		t.Fatal("expected a generated initial password for the imported student")
+	}
+	var credential models.UserCredential
+	if err = db.Where("user_id = ?", student.ID).First(&credential).Error; err != nil {
+		t.Fatal(err)
+	}
+	if err = bcrypt.CompareHashAndPassword([]byte(credential.PasswordHash), []byte(result.Credentials[0].InitialPassword)); err != nil {
+		t.Fatal("exported initial password does not match the stored credential")
+	}
+	if !credential.MustResetPassword {
+		t.Fatal("imported students must reset their initial password")
 	}
 }
