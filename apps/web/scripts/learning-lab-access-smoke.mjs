@@ -46,6 +46,7 @@ async function account(role) {
       data = record;
     } else if (path.endsWith("/classrooms")) data = { classrooms: [{ id: "class-one", name: "实验开放验证班", description: "", teacherName: "任课教师", studentCount: 1, createdAt: now, experiments: courses }] };
     else if (/\/experiments\/L[123]$/.test(path)) { courses[path.split("/").at(-1)] = req.postDataJSON().open; data = { updated: true }; }
+    else if (path.endsWith("/lab-assessments")) data = { items: [] };
     else if (path.endsWith("/students")) data = { students: [{id:"student",username:"student",displayName:"测试学生"}] };
     else if (path.endsWith("/capabilities")) data = { features: { classrooms: true, knowledgeBases: true } };
     else if (path.endsWith("/user/settings")) data = { settings: {} };
@@ -76,12 +77,11 @@ try {
   await student.getByText("本实验尚未开放，请等待任课教师开启。",{exact:true}).waitFor();
   assert.equal(await student.locator("[data-native-task]").count(),0);
   await screenshots(student,"closed");
-  await teacher.goto(`${base}/classrooms`);
-  const toggles = teacher.locator("[data-classroom-experiments]");
-  await toggles.getByRole("switch",{name:"实验一",exact:true}).waitFor();
-  await teacher.getByRole("button", {name:/实验开放验证班/}).click();
+  await teacher.goto(`${base}/learn/experiments`);
+  const toggles = teacher.locator("[data-experiment-access]");
+  await toggles.getByRole("switch",{name:"开放 L1",exact:true}).waitFor();
   await screenshots(teacher,"teacher");
-  await toggles.getByRole("switch",{name:"实验一",exact:true}).click();
+  await toggles.getByRole("switch",{name:"开放 L1",exact:true}).click();
   await student.locator('[data-native-task="L1-1"]').waitFor();
   assert.deepEqual(courses,{L1:true,L2:false,L3:false});
   await student.locator("#prediction").fill("预测信号平移、反转和压缩会改变关键点的位置。");
@@ -132,8 +132,8 @@ try {
     assert.equal(await student.locator("#observation").inputValue(),width===0.2?"5":"");
   }
   await screenshots(student,"pulse-readout");
-  await toggles.getByRole("switch",{name:"实验二",exact:true}).click();
-  await toggles.getByRole("switch",{name:"实验一",exact:true}).click();
+  await toggles.getByRole("switch",{name:"开放 L2",exact:true}).click();
+  await toggles.getByRole("switch",{name:"开放 L1",exact:true}).click();
   await student.getByText("本实验尚未开放，请等待任课教师开启。",{exact:true}).waitFor();
   assert.equal(await student.locator("[data-native-task]").count(),0);
   await student.goto(`${base}/learn/experiments/workspace#task/L2-1`);

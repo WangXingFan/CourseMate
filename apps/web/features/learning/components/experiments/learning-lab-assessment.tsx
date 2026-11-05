@@ -17,7 +17,7 @@ const LabAssessmentWorkbench = dynamic(() => import("./lab-assessment-workbench"
 export function LearningLabAssessment() {
   const { accessToken, user } = useAuthSession();
   const t = useTranslations("learning.assessment");
-  if (user?.role === "teacher") return <LessonShell title={t("title")}><p className="mb-5 text-sm">{t("teacherNotice")}</p><Button asChild><Link href="/classrooms">{t("classrooms")}</Link></Button></LessonShell>;
+  if (user?.role === "teacher") return <LessonShell title={t("title")}><p className="mb-5 text-sm">{t("teacherNotice")}</p><Button asChild><Link href="/learn/experiments">{t("teacherManagement")}</Link></Button></LessonShell>;
   return <AssessmentWorkspace key={user?.id} accessToken={accessToken} accountID={user?.id ?? 0} />;
 }
 function AssessmentWorkspace({ accessToken, accountID }: { accessToken: string; accountID: number }) {
