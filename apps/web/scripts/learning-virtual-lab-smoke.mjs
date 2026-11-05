@@ -548,6 +548,9 @@ try {
   await page.pdf({path:join(artifacts,"historical-report.pdf"),format:"A4",printBackground:true});
   await page.screenshot({path:join(artifacts,"historical-report-preview.png")});
   await page.emulateMedia({media:"screen"}); await page.evaluate(()=>window.dispatchEvent(new Event("afterprint")));
+  // JSON export also saves; finish that write before replacing the server fixture.
+  await saved();
+  await page.goto(`${base}/learn/experiments`);
   const invalidRecord = JSON.parse(validRecord.document);
   invalidRecord.tasks["L1-1"].params.a = 0;
   records.set(101, { ...validRecord, document: JSON.stringify(invalidRecord) });
