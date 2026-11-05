@@ -221,7 +221,7 @@ func (s *Service) Submit(ctx context.Context, actor uint, id, task, attempt, req
 		return domain.State{}, domain.ErrInvalid
 	}
 	// An exact retry remains idempotent even after the deadline or a closure.
-	a, _, err := s.student(ctx, actor, id)
+	a, c, err := s.student(ctx, actor, id)
 	if err != nil {
 		return domain.State{}, err
 	}
@@ -241,10 +241,8 @@ func (s *Service) Submit(ctx context.Context, actor uint, id, task, attempt, req
 				}
 				return domain.ErrConflict
 			}
-			c, err := s.studentClass(ctx, actor)
-			if err != nil {
-				return err
-			}
+			// Membership is already checked before opening the state transaction.
+			// Querying the outer repositories here can exhaust a one-connection pool.
 			if !current.Active(s.now()) || !classOpen(c, current.CourseID) {
 				return domain.ErrClosed
 			}

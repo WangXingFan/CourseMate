@@ -57,6 +57,36 @@ func key(p domain.Paper) map[string]string {
 	}
 	return a
 }
+func TestSubmitWithSingleDatabaseConnection(t *testing.T) {
+	s, db := setup(t)
+	sqlDB, err := db.DB()
+	if err != nil {
+		t.Fatal(err)
+	}
+	sqlDB.SetMaxOpenConns(1)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	a, err := s.Publish(ctx, 1, "class", "L1", time.Time{}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state, err := s.Start(ctx, 2, a.ID, "L1-1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	attempt := state.Task("L1-1").Attempts[0]
+	if _, err = s.Submit(ctx, 2, a.ID, "L1-1", attempt.ID, uuid.NewString(), key(attempt.Paper), false); err != nil {
+		t.Fatal("submit with a single connection", err)
+	}
+	_, state, err = s.Read(ctx, 2, a.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result := state.Task("L1-1").Attempts[0].Result; result == nil || result.Score != 20 {
+		t.Fatalf("persisted score: %+v", result)
+	}
+}
+
 func TestAssessmentLifecycle(t *testing.T) {
 	s, _ := setup(t)
 	ctx := context.Background()
