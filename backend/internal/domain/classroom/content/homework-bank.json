@@ -1,0 +1,649 @@
+[
+  {
+    "id": "homework-1",
+    "title": "作业1",
+    "source": "作业1.doc",
+    "sourceSha256": "b42a4f1f3063a4f931d8b354e413e840d1271cfbdca2a07ef69b3083c649c364",
+    "questions": [
+      {
+        "id": "hw1-q1",
+        "kind": "single",
+        "prompt": "下列信号的分类方法不正确的是",
+        "options": [
+          "数字信号和离散信号",
+          "确定信号和随机信号",
+          "周期信号和非周期信号",
+          "因果信号与反因果信号"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "0"
+          ]
+        ]
+      },
+      {
+        "id": "hw1-q2",
+        "kind": "single",
+        "prompt": "下列说法正确的是",
+        "options": [
+          "两个周期信号x(t)，y(t)的和x(t)+y(t)一定是周期信号",
+          "两个周期信号x(t)，y(t)的周期分别为2和 $\\pi$，则其和信号x(t)+y(t)是周期信号。",
+          "两个周期信号x(t)，y(t)的周期分别为2和 $\\sqrt{2}$，其和信号x(t)+y(t)是周期信号",
+          "两个周期信号x(t)，y(t)的周期分别为2和3，其和信号x(t)+y(t)是周期信号"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "3"
+          ]
+        ]
+      },
+      {
+        "id": "hw1-q3",
+        "kind": "single",
+        "prompt": "下列说法不正确的是",
+        "options": [
+          "一般周期信号为功率信号",
+          "时限信号(仅在有限时间区间不为零的非周期信号)为能量信号",
+          "ε(t)是功率信号",
+          "$e^t$ 为能量信号"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "3"
+          ]
+        ]
+      },
+      {
+        "id": "hw1-q4",
+        "kind": "single",
+        "prompt": "将信号f(t)变换为（）称为对信号f(t)的平移或移位",
+        "options": [
+          "$f(t-t_0)$",
+          "$f(k-k_0)$",
+          "$f(at)$",
+          "$f(-t)$"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "0"
+          ]
+        ]
+      },
+      {
+        "id": "hw1-q5",
+        "kind": "single",
+        "prompt": "已知系统的输入为$e\\left(t\\right)$,输出为 $y\\left(t\\right)$，其输入输出关系为 $y\\left(t\\right)+ty\\left(t\\right)=2e^2\\left(t\\right)$，则系统为",
+        "options": [
+          "非线性时变系统",
+          "线性时不变系统",
+          "线性时变系统",
+          "非线性时不变系统"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "0"
+          ]
+        ]
+      },
+      {
+        "id": "hw1-q6",
+        "kind": "blank",
+        "prompt": "求 $\\int_{-4}^{4}(t^2+3t+2)[\\delta(t)+2\\delta(t-2)]\\,dt$ 的结果",
+        "options": [],
+        "points": 10,
+        "accepted": [
+          [
+            "26"
+          ]
+        ]
+      },
+      {
+        "id": "hw1-q7",
+        "kind": "blank",
+        "prompt": "求 $\\int_{-\\infty}^{+\\infty}[t^2+\\sin(\\frac{\\pi t}{4})]\\delta(t+2)\\,dt$ 等于多少",
+        "options": [],
+        "points": 10,
+        "accepted": [
+          [
+            "3"
+          ]
+        ]
+      },
+      {
+        "id": "hw1-q8",
+        "kind": "blank",
+        "prompt": "此函数 $f_1(k)=\\cos(\\frac{3\\pi}{5}k)$ 的周期为多少",
+        "options": [],
+        "points": 10,
+        "accepted": [
+          [
+            "10"
+          ]
+        ]
+      },
+      {
+        "id": "hw1-q9",
+        "kind": "true_false",
+        "prompt": "信号f(5-3t)是f(3t)右移5",
+        "options": [
+          "正确",
+          "错误"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "1"
+          ]
+        ]
+      },
+      {
+        "id": "hw1-q10",
+        "kind": "true_false",
+        "prompt": "$f_3(t)=3\\cos t+2\\sin(\\pi t)$ 为周期函数",
+        "options": [
+          "正确",
+          "错误"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "1"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "homework-2",
+    "title": "作业2",
+    "source": "作业2.doc",
+    "sourceSha256": "4efdb525c718744c41a0d1c66d7f5593484e35ab6369d168f162c7823e14ea74",
+    "questions": [
+      {
+        "id": "hw2-q1",
+        "kind": "single",
+        "prompt": "f(t)如图所示，f(-2t-2)的图形为（）。 ![波形图 2-1](/learning/homework/2-1.png)",
+        "options": [
+          "![波形图 2-2](/learning/homework/2-2.png)",
+          "![波形图 2-3](/learning/homework/2-3.png)",
+          "![波形图 2-4](/learning/homework/2-4.png)"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "0"
+          ]
+        ]
+      },
+      {
+        "id": "hw2-q2",
+        "kind": "single",
+        "prompt": "已知f(t)的波形如题3（a）图所示，则f(5-2t)的波形为![波形图 2-5](/learning/homework/2-5.png)",
+        "options": [
+          "![波形图 2-6](/learning/homework/2-6.png)",
+          "![波形图 2-7](/learning/homework/2-7.png)",
+          "![波形图 2-8](/learning/homework/2-8.png)"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "2"
+          ]
+        ]
+      },
+      {
+        "id": "hw2-q3",
+        "kind": "blank",
+        "prompt": "计算 $\\cos(5t)*\\delta(t)=$",
+        "options": [],
+        "points": 10,
+        "accepted": [
+          [
+            "cos(5t )",
+            "cos(5*t)",
+            "cos(t*5)",
+            "\\cos 5t"
+          ]
+        ]
+      },
+      {
+        "id": "hw2-q4",
+        "kind": "blank",
+        "prompt": "计算 $\\sin(9t)*\\delta^{\\prime}(t)=$",
+        "options": [],
+        "points": 10,
+        "accepted": [
+          [
+            "9cos(9t)",
+            "9*cos(9*t)",
+            "cos(9*t)*9",
+            "9\\cos 9t"
+          ]
+        ]
+      },
+      {
+        "id": "hw2-q5",
+        "kind": "blank",
+        "prompt": "已知f(t)的波形，为画出f(2t-4)的波形,f(t)右移___后压缩__倍",
+        "options": [],
+        "points": 10,
+        "accepted": [
+          [
+            "4",
+            "4个单位"
+          ],
+          [
+            "2"
+          ]
+        ]
+      },
+      {
+        "id": "hw2-q6",
+        "kind": "true_false",
+        "prompt": "某系统的输入-输出关系 $y(t)=t^2x(t-1)$该系统为线性时变系统",
+        "options": [
+          "正确",
+          "错误"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "0"
+          ]
+        ]
+      },
+      {
+        "id": "hw2-q7",
+        "kind": "true_false",
+        "prompt": "判断下面卷积公式是否正确 $f(t)*\\delta(t)=f(t)$ ， $\\varepsilon(t)*\\varepsilon(t)=t\\varepsilon(t)$ 。",
+        "options": [
+          "正确",
+          "错误"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "0"
+          ]
+        ]
+      },
+      {
+        "id": "hw2-q8",
+        "kind": "true_false",
+        "prompt": "$f_1(t)=f_2(t)=e^{-2t}\\varepsilon(t)$ ， $f_1(t)*f_2(t)=te^{-2t}\\varepsilon(t)$",
+        "options": [
+          "正确",
+          "错误"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "0"
+          ]
+        ]
+      },
+      {
+        "id": "hw2-q9",
+        "kind": "true_false",
+        "prompt": "判断该表达式是否正确 $\\int_{-\\infty}^{\\infty}f(t)\\delta^{\\prime}(t)\\,dt=f^{\\prime}(0)$",
+        "options": [
+          "正确",
+          "错误"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "1"
+          ]
+        ]
+      },
+      {
+        "id": "hw2-q10",
+        "kind": "true_false",
+        "prompt": "![波形图 2-17](/learning/homework/2-17.png) ，其表达式为 $t\\varepsilon(t-1)$ 是否正确",
+        "options": [
+          "正确",
+          "错误"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "1"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "homework-3",
+    "title": "作业3",
+    "source": "作业3.doc",
+    "sourceSha256": "07178497af4d7365955794c316040053fd1abff56ec93dd38a805d15f9b11381",
+    "questions": [
+      {
+        "id": "hw3-q1",
+        "kind": "single",
+        "prompt": "下图所示信号f (t)的傅里叶变换为( )![波形图 3-1](/learning/homework/3-1.png)",
+        "options": [
+          "2Sa(ω) cos4ω",
+          "4Sa(ω) cos4ω",
+          "2Sa(ω) cos2ω",
+          "4Sa(ω) cos2ω"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "3"
+          ]
+        ]
+      },
+      {
+        "id": "hw3-q2",
+        "kind": "single",
+        "prompt": "信号f(t)的带宽为Δω，则信号f(2t-1)的带宽为",
+        "options": [
+          "2Δω",
+          "Δω-1",
+          "Δω/2",
+          "（Δω-1）/2"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "0"
+          ]
+        ]
+      },
+      {
+        "id": "hw3-q3",
+        "kind": "single",
+        "prompt": "信号f1(t)与f2(t)的波形分别如下所示,则信号f2(t)的频带宽度是信号f1(t)的频带宽度的（） ![波形图 3-2](/learning/homework/3-2.png)",
+        "options": [
+          "2倍",
+          "1/2倍",
+          "1倍",
+          "4倍"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "1"
+          ]
+        ]
+      },
+      {
+        "id": "hw3-q4",
+        "kind": "single",
+        "prompt": "已知f(t)的频谱为 $F(j\\omega)$，则f(2t-4)的频谱为（）",
+        "options": [
+          "$-\\frac{1}{2}F(j\\frac{1}{2}\\omega)e^{-j2\\omega}$",
+          "$\\frac{1}{2}F(j\\frac{1}{2}\\omega)e^{-j2\\omega}$",
+          "$\\frac{1}{2}F(j\\frac{1}{2}\\omega)e^{-j\\frac{1}{2}\\omega}$",
+          "$2F(j2\\omega)e^{j2\\omega}$"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "1"
+          ]
+        ]
+      },
+      {
+        "id": "hw3-q5",
+        "kind": "blank",
+        "prompt": "已知f(t)=δ′(t)，则其频谱F（jω）=（）",
+        "options": [],
+        "points": 10,
+        "accepted": [
+          [
+            "jw",
+            "jω"
+          ]
+        ]
+      },
+      {
+        "id": "hw3-q6",
+        "kind": "blank",
+        "prompt": "已知信号f(t)如图所示，其傅里叶变换为F（jw），则F(0)为( )![波形图 3-8](/learning/homework/3-8.png)",
+        "options": [],
+        "points": 10,
+        "accepted": [
+          [
+            "2"
+          ]
+        ]
+      },
+      {
+        "id": "hw3-q7",
+        "kind": "true_false",
+        "prompt": "理想不失真传输系统的传输函数H（jω）是 $Ke^{-jw^{ }_0t}$",
+        "options": [
+          "正确",
+          "错误"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "1"
+          ]
+        ]
+      },
+      {
+        "id": "hw3-q8",
+        "kind": "true_false",
+        "prompt": "理想低通滤波器是因果系统",
+        "options": [
+          "正确",
+          "错误"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "1"
+          ]
+        ]
+      },
+      {
+        "id": "hw3-q9",
+        "kind": "true_false",
+        "prompt": "周期信号满足f(t)=-f(-t)时，其傅里叶级数展开式只有余弦项。",
+        "options": [
+          "正确",
+          "错误"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "1"
+          ]
+        ]
+      },
+      {
+        "id": "hw3-q10",
+        "kind": "true_false",
+        "prompt": "周期信号的频谱特点是离散谱。",
+        "options": [
+          "正确",
+          "错误"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "0"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "homework-4",
+    "title": "作业4",
+    "source": "作业4.doc",
+    "sourceSha256": "0f9e4aaf712d71d00fedbfd9173dfb96f5f21ba70cdfeb13991c422b4a80c0cc",
+    "questions": [
+      {
+        "id": "hw4-q1",
+        "kind": "single",
+        "prompt": "已知系统的冲激响应 $h(t)=8e^{-3t}\\varepsilon(t)$，则系统函数 $H(s)$ 为（ ）。",
+        "options": [
+          "$\\frac{8}{S}$",
+          "$\\frac{8}{S-3}$",
+          "$\\frac{8}{S+3}$",
+          "$\\frac{3}{S}$"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "2"
+          ]
+        ]
+      },
+      {
+        "id": "hw4-q2",
+        "kind": "single",
+        "prompt": "如图所示的信号，其单边拉普拉斯变换分别为 $F_1(s),F_2(s),F_3(s)$，则（ ）。 ![波形图 4-5](/learning/homework/4-5.png)",
+        "options": [
+          "$F_1(s)=F_2(s)\\ne F_3(s)$",
+          "$F_1(s)\\ne F_2(s)=F_3(s)$",
+          "$F_1(s)\\ne F_2(s)\\ne F_3(s)$",
+          "$F_1(s)=F_2(s)=F_3(s)$"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "3"
+          ]
+        ]
+      },
+      {
+        "id": "hw4-q3",
+        "kind": "single",
+        "prompt": "函数$f(t)=\\int_{-\\infty}^{t-2}\\delta(x)\\,dx$的单边拉氏变换F（s）等于",
+        "options": [
+          "1",
+          "$\\frac{1}{S}$",
+          "$e^{-2s}$",
+          "$\\frac{1}{s}e^{-2s}$"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "3"
+          ]
+        ]
+      },
+      {
+        "id": "hw4-q4",
+        "kind": "single",
+        "prompt": "若f(t)对应F(s)，则f(3t-7)的拉普拉斯变换为（）",
+        "options": [
+          "$\\frac{1}{3}F\\left(\\frac{s}{3}\\right)e^{-\\frac{7}{3}s}$",
+          "$\\frac{1}{3}F\\left(\\frac{s}{3}\\right)e^{-7s}$",
+          "$\\frac{1}{3}F\\left(\\frac{s}{3}\\right)e^{\\frac{7}{3}s}$",
+          "$\\frac{1}{3}F\\left(\\frac{s}{3}\\right)e^{7s}$"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "0"
+          ]
+        ]
+      },
+      {
+        "id": "hw4-q5",
+        "kind": "single",
+        "prompt": "单边拉氏变换F（s）= $\\frac{e^{-\\left(s+2\\right)}}{s+2}$ ,的原函数f(t)等于",
+        "options": [
+          "$e^{-2(t-1)}\\varepsilon(t-1)$",
+          "$e^{-2t}\\varepsilon\\left(t-1\\right)$",
+          "$e^{-2t}\\varepsilon\\left(t-2\\right)$",
+          "$e^{-2(t-2)}\\varepsilon(t-2)$"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "1"
+          ]
+        ]
+      },
+      {
+        "id": "hw4-q6",
+        "kind": "single",
+        "prompt": "已知f(t)的拉普拉斯变换为F（s），则f（t）的一阶导数的拉普拉斯变换为",
+        "options": [
+          "$sF(s)$",
+          "$sF(s)-f(0^-)$",
+          "$sF(s)+f(0^-)$"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "1"
+          ]
+        ]
+      },
+      {
+        "id": "hw4-q7",
+        "kind": "blank",
+        "prompt": "若信号f(t)的 $F\\left(S\\right)=\\frac{1+3S}{\\left(S+2\\right)^2}$ , $f\\left(\\infty\\right)=$则其终值",
+        "options": [],
+        "points": 10,
+        "accepted": [
+          [
+            "0"
+          ]
+        ]
+      },
+      {
+        "id": "hw4-q8",
+        "kind": "true_false",
+        "prompt": "sin(3t)的拉普拉斯变换为 $\\frac{s}{s^2+9}$",
+        "options": [
+          "正确",
+          "错误"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "1"
+          ]
+        ]
+      },
+      {
+        "id": "hw4-q9",
+        "kind": "true_false",
+        "prompt": "$\\frac{1}{2}t^2\\varepsilon\\left(t\\right)$ 的拉普拉斯变换为 $\\frac{1}{S^3}$",
+        "options": [
+          "正确",
+          "错误"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "0"
+          ]
+        ]
+      },
+      {
+        "id": "hw4-q10",
+        "kind": "true_false",
+        "prompt": "$\\frac{1}{\\left(S-4\\right)^2}$ 的拉普拉斯逆变换为 $te^{4t}$",
+        "options": [
+          "正确",
+          "错误"
+        ],
+        "points": 10,
+        "accepted": [
+          [
+            "1"
+          ]
+        ]
+      }
+    ]
+  }
+]

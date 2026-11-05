@@ -13,6 +13,7 @@ import { ClassroomActivitiesSection } from "@/features/classrooms/components/sec
 import { ClassroomMastery } from "@/features/classrooms/components/sections/classroom-mastery";
 import { ClassroomLabAssessments } from "@/features/classrooms/components/sections/classroom-lab-assessments";
 import { ClassroomAttendance } from "@/features/classrooms/components/sections/classroom-attendance";
+import { ClassroomHomeworks } from "@/features/classrooms/components/sections/classroom-homeworks";
 import type { ClassroomDetailTab } from "@/features/classrooms/types/classrooms";
 import { cn } from "@/lib/utils";
 import type { ClassroomDTO, ClassroomStudentDTO } from "@/shared/api/classroom-types";
@@ -151,6 +152,7 @@ export function ClassroomDetail({
                   {activitiesT("tabActivities")}
                 </TabButton>
                 <TabButton active={tab === "mastery"} onClick={() => setTab("mastery")}>{t("masteryTab")}</TabButton>
+                <TabButton active={tab === "homeworks"} onClick={() => setTab("homeworks")}>{t("homework.tab")}</TabButton>
                 <TabButton active={tab === "lab-assessments"} onClick={() => setTab("lab-assessments")}>{t("labAssessmentsTab")}</TabButton>
                 <TabButton active={tab === "attendance"} onClick={() => setTab("attendance")}>{t("attendance.title")}</TabButton>
               </div>
@@ -181,6 +183,8 @@ export function ClassroomDetail({
 
           {canManage && tab === "attendance" ? (
             <ClassroomAttendance key={`${accessToken}:${selected.id}`} accessToken={accessToken} classroomID={selected.id} />
+          ) : canManage && tab === "homeworks" ? (
+            <ClassroomHomeworks key={`${accessToken}:${selected.id}`} accessToken={accessToken} classroomID={selected.id} />
           ) : canManage && tab === "lab-assessments" ? (
             <ClassroomLabAssessments key={`${accessToken}:${selected.id}`} accessToken={accessToken} classroomID={selected.id} />
           ) : canManage && tab === "mastery" ? (

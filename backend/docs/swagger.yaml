@@ -3129,6 +3129,209 @@ definitions:
     - data
     - errorMsg
     type: object
+  HomeworkBankResponse:
+    properties:
+      papers:
+        items:
+          $ref: '#/definitions/HomeworkPaperResponse'
+        type: array
+    required:
+    - papers
+    type: object
+  HomeworkListResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/HomeworkResponse'
+        type: array
+      serverTime:
+        type: string
+    required:
+    - items
+    - serverTime
+    type: object
+  HomeworkPaperResponse:
+    properties:
+      id:
+        type: string
+      questions:
+        items:
+          $ref: '#/definitions/HomeworkQuestionResponse'
+        type: array
+      title:
+        type: string
+      total:
+        type: integer
+    required:
+    - id
+    - questions
+    - title
+    - total
+    type: object
+  HomeworkPublishRequest:
+    properties:
+      bankId:
+        maxLength: 64
+        type: string
+      deadline:
+        type: string
+      startsAt:
+        type: string
+    required:
+    - bankId
+    - deadline
+    - startsAt
+    type: object
+  HomeworkQuestionResponse:
+    properties:
+      accepted:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
+      blankCount:
+        type: integer
+      id:
+        type: string
+      kind:
+        type: string
+      options:
+        items:
+          type: string
+        type: array
+      points:
+        type: integer
+      prompt:
+        type: string
+    required:
+    - blankCount
+    - id
+    - kind
+    - options
+    - points
+    - prompt
+    type: object
+  HomeworkReportResponse:
+    properties:
+      homework:
+        $ref: '#/definitions/HomeworkResponse'
+      students:
+        items:
+          $ref: '#/definitions/StudentResponse'
+        type: array
+      submissions:
+        items:
+          $ref: '#/definitions/HomeworkSubmissionResponse'
+        type: array
+    required:
+    - homework
+    - students
+    - submissions
+    type: object
+  HomeworkResponse:
+    properties:
+      bankId:
+        type: string
+      deadline:
+        type: string
+      id:
+        type: string
+      questionCount:
+        type: integer
+      questions:
+        items:
+          $ref: '#/definitions/HomeworkQuestionResponse'
+        type: array
+      startsAt:
+        type: string
+      status:
+        type: string
+      submission:
+        allOf:
+        - $ref: '#/definitions/HomeworkSubmissionResponse'
+        x-nullable: true
+      submissionCount:
+        type: integer
+      title:
+        type: string
+      total:
+        type: integer
+    required:
+    - bankId
+    - deadline
+    - id
+    - questionCount
+    - questions
+    - startsAt
+    - status
+    - submission
+    - submissionCount
+    - title
+    - total
+    type: object
+  HomeworkResultResponse:
+    properties:
+      correct:
+        items:
+          type: boolean
+        type: array
+      questionId:
+        type: string
+      score:
+        type: integer
+      total:
+        type: integer
+    required:
+    - correct
+    - questionId
+    - score
+    - total
+    type: object
+  HomeworkSubmissionResponse:
+    properties:
+      answers:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
+      results:
+        items:
+          $ref: '#/definitions/HomeworkResultResponse'
+        type: array
+      score:
+        type: integer
+      studentId:
+        type: string
+      studentName:
+        type: string
+      submittedAt:
+        type: string
+      username:
+        type: string
+    required:
+    - answers
+    - results
+    - score
+    - studentId
+    - studentName
+    - submittedAt
+    - username
+    type: object
+  HomeworkSubmitRequest:
+    properties:
+      answers:
+        items:
+          items:
+            type: string
+          type: array
+        maxItems: 40
+        minItems: 1
+        type: array
+    required:
+    - answers
+    type: object
   IdentityProviderDeleteResponse:
     properties:
       deleted:
@@ -7398,6 +7601,21 @@ definitions:
     - updatedAt
     - usedBytes
     - userID
+    type: object
+  StudentHomeworksResponse:
+    properties:
+      classroom:
+        $ref: '#/definitions/ClassroomResponse'
+      items:
+        items:
+          $ref: '#/definitions/HomeworkResponse'
+        type: array
+      serverTime:
+        type: string
+    required:
+    - classroom
+    - items
+    - serverTime
     type: object
   StudentListResponse:
     properties:
@@ -13919,6 +14137,73 @@ paths:
       summary: Open or close one experiment for the teacher's classroom
       tags:
       - classrooms
+  /classrooms/{id}/homework-bank:
+    get:
+      parameters:
+      - description: 班级 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/HomeworkBankResponse'
+      security:
+      - BearerAuth: []
+      summary: 教师查看作业库与参考答案
+      tags:
+      - classrooms
+  /classrooms/{id}/homeworks:
+    get:
+      parameters:
+      - description: 班级 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/HomeworkListResponse'
+      security:
+      - BearerAuth: []
+      summary: 查询班级已发布作业
+      tags:
+      - classrooms
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 班级 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 作业与时间
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/HomeworkPublishRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/HomeworkResponse'
+      security:
+      - BearerAuth: []
+      summary: 选择作业库作业并设置开始与截止时间发布
+      tags:
+      - classrooms
   /classrooms/{id}/lab-assessments:
     get:
       parameters:
@@ -15588,6 +15873,54 @@ paths:
       summary: 批量查询文件处理状态
       tags:
       - chat
+  /homeworks/{id}/report:
+    get:
+      parameters:
+      - description: 作业 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/HomeworkReportResponse'
+      security:
+      - BearerAuth: []
+      summary: 教师查看作业成绩与逐题提交记录
+      tags:
+      - classrooms
+  /homeworks/{id}/submissions:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 作业 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 按题目与空格顺序的答案，选项为从 0 开始的索引字符串
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/HomeworkSubmitRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/HomeworkSubmissionResponse'
+      security:
+      - BearerAuth: []
+      summary: 学生在规定时间内提交一次作业并自动评分
+      tags:
+      - classrooms
   /knowledge-bases:
     get:
       parameters:
@@ -17961,6 +18294,20 @@ paths:
       summary: Check in as the authenticated student using the current classroom code
       tags:
       - attendance
+  /student/homeworks:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/StudentHomeworksResponse'
+      security:
+      - BearerAuth: []
+      summary: 学生查看本班作业与个人成绩，不返回参考答案
+      tags:
+      - classrooms
   /student/quizzes:
     get:
       description: 学生查询当前班级已发布的小测；响应不包含正确答案。

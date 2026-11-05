@@ -87,7 +87,8 @@ export function NavMain({
               (knowledgeBaseEnabled || item.id !== "knowledgeBases") &&
               (item.id !== "classrooms" || canSeeClassrooms) &&
               (item.id !== "rollCall" || sessionUser?.role === "teacher") &&
-              (item.id !== "activities" || canSeeActivities),
+              (item.id !== "activities" || canSeeActivities) &&
+              (item.id !== "homeworks" || canSeeActivities),
           ).map((item) => (
             <NavMainItem
               key={item.id}

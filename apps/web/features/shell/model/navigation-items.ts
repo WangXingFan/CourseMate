@@ -5,7 +5,7 @@ import { Search } from "@/components/animate-ui/icons/search";
 import { Sparkles } from "@/components/animate-ui/icons/sparkles";
 import { PlusIcon } from "@/components/ui/plus";
 import type { NavigationItem } from "@/features/shell/types/navigation";
-import { BarChart3, FlaskConical, Shuffle } from "lucide-react";
+import { BarChart3, ClipboardList, FlaskConical, Shuffle } from "lucide-react";
 
 export const NAVIGATION_ITEMS = [
   {
@@ -79,4 +79,5 @@ export const NAVIGATION_ITEMS = [
     icon: BarChart3,
     group: "secondary",
   },
+  { id: "homeworks", kind: "link", href: "/homeworks", icon: ClipboardList, group: "secondary" },
 ] as const satisfies readonly NavigationItem[];

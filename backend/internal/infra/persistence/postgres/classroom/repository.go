@@ -158,6 +158,12 @@ func (r *Repo) DeleteClassroom(ctx context.Context, publicID string, teacherID u
 		if err := tx.Where("classroom_id = ?", item.ID).Delete(&models.ClassroomQuiz{}).Error; err != nil {
 			return err
 		}
+		if err := tx.Where("homework_id IN (?)", tx.Model(&models.ClassroomHomework{}).Select("id").Where("classroom_id = ?", item.ID)).Delete(&models.ClassroomHomeworkSubmission{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("classroom_id = ?", item.ID).Delete(&models.ClassroomHomework{}).Error; err != nil {
+			return err
+		}
 		result := tx.Delete(&item)
 		if result.Error != nil {
 			return result.Error

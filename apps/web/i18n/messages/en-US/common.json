@@ -88,7 +88,8 @@
     "today": "Today",
     "archived": "Archived",
     "yesterday": "Yesterday",
-    "courseKnowledge": "Course knowledge"
+    "courseKnowledge": "Course knowledge",
+    "homeworks": "My homework"
   },
   "time": {
     "todayTime": "{time}",

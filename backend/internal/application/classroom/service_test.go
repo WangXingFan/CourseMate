@@ -27,6 +27,7 @@ func (f fakeUserReader) GetByID(_ context.Context, id uint) (*domainuser.User, e
 }
 
 type fakeClassroomRepository struct {
+	repository.ClassroomRepository
 	classrooms            []domainmodel.Classroom
 	students              map[uint][]domainmodel.Student
 	memberships           map[uint]uint

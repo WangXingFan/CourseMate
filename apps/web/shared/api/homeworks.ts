@@ -1,0 +1,24 @@
+import type { HomeworkBankResponse, HomeworkListResponse, HomeworkPublishRequest, HomeworkResponse, HomeworkReportResponse, HomeworkSubmissionResponse, StudentHomeworksResponse } from "@deeix/api-contract";
+import { authedRequest } from "@/shared/api/authed-client";
+import { pathParam } from "@/shared/api/http-client";
+
+export type { HomeworkPaperResponse, HomeworkQuestionResponse, HomeworkResponse, HomeworkReportResponse, HomeworkSubmissionResponse, StudentHomeworksResponse } from "@deeix/api-contract";
+
+export function getHomeworkBank(accessToken: string, classroomID: string, signal?: AbortSignal): Promise<HomeworkBankResponse> {
+  return authedRequest(`/api/v1/classrooms/${pathParam(classroomID)}/homework-bank`, { accessToken, signal });
+}
+export function listHomeworks(accessToken: string, classroomID: string, signal?: AbortSignal): Promise<HomeworkListResponse> {
+  return authedRequest(`/api/v1/classrooms/${pathParam(classroomID)}/homeworks`, { accessToken, signal });
+}
+export function publishHomework(accessToken: string, classroomID: string, body: HomeworkPublishRequest): Promise<HomeworkResponse> {
+  return authedRequest(`/api/v1/classrooms/${pathParam(classroomID)}/homeworks`, { accessToken, method: "POST", body });
+}
+export function getHomeworkReport(accessToken: string, id: string, signal?: AbortSignal): Promise<HomeworkReportResponse> {
+  return authedRequest(`/api/v1/homeworks/${pathParam(id)}/report`, { accessToken, signal });
+}
+export function listStudentHomeworks(accessToken: string, signal?: AbortSignal): Promise<StudentHomeworksResponse> {
+  return authedRequest("/api/v1/student/homeworks", { accessToken, signal });
+}
+export function submitHomework(accessToken: string, id: string, answers: string[][]): Promise<HomeworkSubmissionResponse> {
+  return authedRequest(`/api/v1/homeworks/${pathParam(id)}/submissions`, { accessToken, method: "POST", body: { answers } });
+}

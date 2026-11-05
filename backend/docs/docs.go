@@ -7935,6 +7935,115 @@ const docTemplate = `{
                 }
             }
         },
+        "/classrooms/{id}/homework-bank": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "教师查看作业库与参考答案",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "班级 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/HomeworkBankResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/classrooms/{id}/homeworks": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "查询班级已发布作业",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "班级 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/HomeworkListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "选择作业库作业并设置开始与截止时间发布",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "班级 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "作业与时间",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/HomeworkPublishRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/HomeworkResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/classrooms/{id}/lab-assessments": {
             "get": {
                 "security": [
@@ -10542,6 +10651,84 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/ConversationErrorDoc"
+                        }
+                    }
+                }
+            }
+        },
+        "/homeworks/{id}/report": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "教师查看作业成绩与逐题提交记录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "作业 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/HomeworkReportResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/homeworks/{id}/submissions": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "学生在规定时间内提交一次作业并自动评分",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "作业 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "按题目与空格顺序的答案，选项为从 0 开始的索引字符串",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/HomeworkSubmitRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/HomeworkSubmissionResponse"
                         }
                     }
                 }
@@ -14312,6 +14499,30 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/AttendanceRecordResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/student/homeworks": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "学生查看本班作业与个人成绩，不返回参考答案",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/StudentHomeworksResponse"
                         }
                     }
                 }
@@ -19257,6 +19468,300 @@ const docTemplate = `{
                 },
                 "errorMsg": {
                     "type": "string"
+                }
+            }
+        },
+        "HomeworkBankResponse": {
+            "type": "object",
+            "required": [
+                "papers"
+            ],
+            "properties": {
+                "papers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HomeworkPaperResponse"
+                    }
+                }
+            }
+        },
+        "HomeworkListResponse": {
+            "type": "object",
+            "required": [
+                "items",
+                "serverTime"
+            ],
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HomeworkResponse"
+                    }
+                },
+                "serverTime": {
+                    "type": "string"
+                }
+            }
+        },
+        "HomeworkPaperResponse": {
+            "type": "object",
+            "required": [
+                "id",
+                "questions",
+                "title",
+                "total"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HomeworkQuestionResponse"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "HomeworkPublishRequest": {
+            "type": "object",
+            "required": [
+                "bankId",
+                "deadline",
+                "startsAt"
+            ],
+            "properties": {
+                "bankId": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "startsAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "HomeworkQuestionResponse": {
+            "type": "object",
+            "required": [
+                "blankCount",
+                "id",
+                "kind",
+                "options",
+                "points",
+                "prompt"
+            ],
+            "properties": {
+                "accepted": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "blankCount": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "points": {
+                    "type": "integer"
+                },
+                "prompt": {
+                    "type": "string"
+                }
+            }
+        },
+        "HomeworkReportResponse": {
+            "type": "object",
+            "required": [
+                "homework",
+                "students",
+                "submissions"
+            ],
+            "properties": {
+                "homework": {
+                    "$ref": "#/definitions/HomeworkResponse"
+                },
+                "students": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/StudentResponse"
+                    }
+                },
+                "submissions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HomeworkSubmissionResponse"
+                    }
+                }
+            }
+        },
+        "HomeworkResponse": {
+            "type": "object",
+            "required": [
+                "bankId",
+                "deadline",
+                "id",
+                "questionCount",
+                "questions",
+                "startsAt",
+                "status",
+                "submission",
+                "submissionCount",
+                "title",
+                "total"
+            ],
+            "properties": {
+                "bankId": {
+                    "type": "string"
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "questionCount": {
+                    "type": "integer"
+                },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HomeworkQuestionResponse"
+                    }
+                },
+                "startsAt": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "submission": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/HomeworkSubmissionResponse"
+                        }
+                    ],
+                    "x-nullable": true
+                },
+                "submissionCount": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "HomeworkResultResponse": {
+            "type": "object",
+            "required": [
+                "correct",
+                "questionId",
+                "score",
+                "total"
+            ],
+            "properties": {
+                "correct": {
+                    "type": "array",
+                    "items": {
+                        "type": "boolean"
+                    }
+                },
+                "questionId": {
+                    "type": "string"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "HomeworkSubmissionResponse": {
+            "type": "object",
+            "required": [
+                "answers",
+                "results",
+                "score",
+                "studentId",
+                "studentName",
+                "submittedAt",
+                "username"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HomeworkResultResponse"
+                    }
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "studentId": {
+                    "type": "string"
+                },
+                "studentName": {
+                    "type": "string"
+                },
+                "submittedAt": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "HomeworkSubmitRequest": {
+            "type": "object",
+            "required": [
+                "answers"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "array",
+                    "maxItems": 40,
+                    "minItems": 1,
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
@@ -25367,6 +25872,28 @@ const docTemplate = `{
                 },
                 "userID": {
                     "type": "integer"
+                }
+            }
+        },
+        "StudentHomeworksResponse": {
+            "type": "object",
+            "required": [
+                "classroom",
+                "items",
+                "serverTime"
+            ],
+            "properties": {
+                "classroom": {
+                    "$ref": "#/definitions/ClassroomResponse"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HomeworkResponse"
+                    }
+                },
+                "serverTime": {
+                    "type": "string"
                 }
             }
         },

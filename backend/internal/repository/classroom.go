@@ -27,4 +27,9 @@ type ClassroomRepository interface {
 	ListStudentQuizzes(context.Context, uint, uint) ([]domain.Quiz, error)
 	CreateQuizSubmission(context.Context, domain.QuizSubmission) error
 	ListQuizSubmissions(context.Context, uint) ([]domain.QuizSubmission, error)
+	CreateHomework(context.Context, domain.Homework) (*domain.Homework, error)
+	ListHomeworks(context.Context, uint) ([]domain.Homework, error)
+	GetHomework(context.Context, string) (*domain.Homework, error)
+	ListHomeworkSubmissions(context.Context, uint, uint) ([]domain.HomeworkSubmission, error)
+	CreateHomeworkSubmission(context.Context, domain.HomeworkSubmission) error
 }

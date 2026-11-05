@@ -230,6 +230,9 @@ func classroomIDFromPath(c *gin.Context) (string, bool) {
 }
 
 func (h *Handler) writeError(c *gin.Context, err error) {
+	if h.writeHomeworkError(c, err) {
+		return
+	}
 	if h.writeQuizError(c, err) {
 		return
 	}

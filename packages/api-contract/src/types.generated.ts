@@ -1398,6 +1398,84 @@ export interface GroupUsersResponseDoc {
   errorMsg: string;
 }
 
+export interface HomeworkBankResponse {
+  papers: HomeworkPaperResponse[];
+}
+
+export interface HomeworkListResponse {
+  items: HomeworkResponse[];
+  serverTime: string;
+}
+
+export interface HomeworkPaperResponse {
+  id: string;
+  questions: HomeworkQuestionResponse[];
+  title: string;
+  total: number;
+}
+
+export interface HomeworkPublishRequest {
+  /** @maxLength 64 */
+  bankId: string;
+  deadline: string;
+  startsAt: string;
+}
+
+export interface HomeworkQuestionResponse {
+  accepted?: string[][];
+  blankCount: number;
+  id: string;
+  kind: string;
+  options: string[];
+  points: number;
+  prompt: string;
+}
+
+export interface HomeworkReportResponse {
+  homework: HomeworkResponse;
+  students: StudentResponse[];
+  submissions: HomeworkSubmissionResponse[];
+}
+
+export interface HomeworkResponse {
+  bankId: string;
+  deadline: string;
+  id: string;
+  questionCount: number;
+  questions: HomeworkQuestionResponse[];
+  startsAt: string;
+  status: string;
+  submission?: HomeworkSubmissionResponse | null;
+  submissionCount: number;
+  title: string;
+  total: number;
+}
+
+export interface HomeworkResultResponse {
+  correct: boolean[];
+  questionId: string;
+  score: number;
+  total: number;
+}
+
+export interface HomeworkSubmissionResponse {
+  answers: string[][];
+  results: HomeworkResultResponse[];
+  score: number;
+  studentId: string;
+  studentName: string;
+  submittedAt: string;
+  username: string;
+}
+
+export interface HomeworkSubmitRequest {
+  /**
+   * @maxItems 40
+   * @minItems 1
+   */
+  answers: string[][];
+}
+
 export interface IdentityProviderDeleteResponse {
   deleted: boolean;
 }
@@ -3271,6 +3349,12 @@ export interface StorageQuotaResponse {
   updatedAt: string;
   usedBytes: number;
   userID: number;
+}
+
+export interface StudentHomeworksResponse {
+  classroom: ClassroomResponse;
+  items: HomeworkResponse[];
+  serverTime: string;
 }
 
 export interface StudentListResponse {
@@ -6934,6 +7018,63 @@ export namespace Classrooms {
 
   /**
    * No description
+   * @tags classrooms
+   * @name HomeworkBankList
+   * @summary 教师查看作业库与参考答案
+   * @request GET:/classrooms/{id}/homework-bank
+   * @secure
+   */
+  export namespace HomeworkBankList {
+    export type RequestParams = {
+      /** 班级 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = HomeworkBankResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name HomeworksList
+   * @summary 查询班级已发布作业
+   * @request GET:/classrooms/{id}/homeworks
+   * @secure
+   */
+  export namespace HomeworksList {
+    export type RequestParams = {
+      /** 班级 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = HomeworkListResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name HomeworksCreate
+   * @summary 选择作业库作业并设置开始与截止时间发布
+   * @request POST:/classrooms/{id}/homeworks
+   * @secure
+   */
+  export namespace HomeworksCreate {
+    export type RequestParams = {
+      /** 班级 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = HomeworkPublishRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = HomeworkResponse;
+  }
+
+  /**
+   * No description
    * @tags lab-assessments
    * @name LabAssessmentsList
    * @summary List a classroom's lab assessments
@@ -7831,6 +7972,46 @@ export namespace Files {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = FileProcessingStatusResponseDoc;
+  }
+}
+
+export namespace Homeworks {
+  /**
+   * No description
+   * @tags classrooms
+   * @name ReportList
+   * @summary 教师查看作业成绩与逐题提交记录
+   * @request GET:/homeworks/{id}/report
+   * @secure
+   */
+  export namespace ReportList {
+    export type RequestParams = {
+      /** 作业 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = HomeworkReportResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name SubmissionsCreate
+   * @summary 学生在规定时间内提交一次作业并自动评分
+   * @request POST:/homeworks/{id}/submissions
+   * @secure
+   */
+  export namespace SubmissionsCreate {
+    export type RequestParams = {
+      /** 作业 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = HomeworkSubmitRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = HomeworkSubmissionResponse;
   }
 }
 
@@ -9304,6 +9485,22 @@ export namespace Student {
     export type RequestBody = AttendanceCheckInRequest;
     export type RequestHeaders = {};
     export type ResponseBody = AttendanceRecordResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name HomeworksList
+   * @summary 学生查看本班作业与个人成绩，不返回参考答案
+   * @request GET:/student/homeworks
+   * @secure
+   */
+  export namespace HomeworksList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = StudentHomeworksResponse;
   }
 
   /**

@@ -32,6 +32,7 @@ func (u handlerTestUsers) GetByID(_ context.Context, id uint) (*domainuser.User,
 }
 
 type handlerTestRepository struct {
+	repository.ClassroomRepository
 	classrooms  []domainclassroom.Classroom
 	createInput domainclassroom.Classroom
 	quizzes     []domainclassroom.Quiz

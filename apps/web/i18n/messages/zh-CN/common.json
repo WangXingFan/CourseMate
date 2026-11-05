@@ -88,7 +88,8 @@
     "today": "今天",
     "archived": "已归档",
     "yesterday": "昨天",
-    "courseKnowledge": "课程知识"
+    "courseKnowledge": "课程知识",
+    "homeworks": "我的作业"
   },
   "time": {
     "todayTime": "{time}",
