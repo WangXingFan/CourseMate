@@ -6,7 +6,7 @@ export type ClassroomDraft = {
 
 export type ClassroomMobileView = "list" | "detail";
 
-export type ClassroomDetailTab = "students" | "activities" | "mastery" | "lab-assessments";
+export type ClassroomDetailTab = "students" | "activities" | "mastery" | "lab-assessments" | "attendance";
 
 export type QuizDraft = {
   title: string;

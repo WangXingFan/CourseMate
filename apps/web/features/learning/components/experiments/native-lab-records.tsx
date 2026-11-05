@@ -10,7 +10,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { labMissingWork, labTaskComplete } from "@/features/learning/model/virtual-lab-flow";
 import { labMeasurementText, labParameterText } from "@/features/learning/model/virtual-lab-native";
 import type { VirtualLabEngine } from "@/public/vendor/signal-lab/core.mjs";
-import { PythonLabResult } from "./python-lab-runner";
 import { NativeLabPlot } from "./native-lab-plot";
 import { NativeLabLegacy } from "./native-lab-legacy";
 
@@ -58,7 +57,6 @@ export function NativeLabRecords({ engine, courseID, onPrint, openCourses }: { e
 
 export function NativeLabReport({ engine, courseID, onClose }: { engine: VirtualLabEngine; courseID: string; onClose: (value: null) => void }) {
   const f = useTranslations("learning.virtualLab.flow");
-  const python = useTranslations("learning.virtualLab.python");
   const t = useTranslations("learning.virtualLab.native");
   const course = engine.courses.find((item) => item.id === courseID);
   useEffect(() => {
@@ -80,7 +78,6 @@ export function NativeLabReport({ engine, courseID, onClose }: { engine: Virtual
     {engine.courseIds(courseID).map((id) => {
       const record = data.tasks[id];
       return <section key={id} className="native-lab-report-task"><h2>{id} {engine.tasks[id].title}</h2><h3>{t("prediction")}</h3><p>{record.prediction || "—"}</p>{record.predictionDraft.trim() !== (record.revisions.at(-1)?.text ?? record.prediction) && <><h3>{t("draft")}</h3><p>{record.predictionDraft || "—"}</p></>}{record.revisions.map((item, index) => <div key={`${item.time}-${index}`}><h3>{t("revision", { number: index + 1 })} · {new Date(item.time).toLocaleString()}</h3><p>{item.text}</p></div>)}<h3>{t("derivation")}</h3><p>{record.derivation || "—"}</p><h3>{t("measurements")}</h3><NativeLabTrials engine={engine} taskID={id} report /><h3>{t("analysis")}</h3><p>{record.analysis || "—"}</p><h3>{t("selfCheck")}</h3><p>{labTaskComplete(id, record) ? t("confirmed") : labMissingWork(id, record).map((key) => f(key)).join("；") || t("notConfirmed")}</p>
-        {(record.python.code || record.python.result) && <section data-python-report={id}><h3>{python("verification")}</h3>{record.python.result && <><h4>{python("savedCode")}</h4><pre>{record.python.result.code}</pre><PythonLabResult taskID={id} result={record.python.result} engine={engine} /></>}{record.python.code !== record.python.result?.code && <><h4>{python("draftCode")}</h4><pre>{record.python.code}</pre></>}</section>}
         {record.figures.map((figure, index) => {
           const scene = engine.scene(id, figure.params, figure.answers);
           return <div key={`${figure.time}-${index}`} className="native-lab-report-figure"><h3>{t("trialNumber", { number: index + 1 })} · {new Date(figure.time).toLocaleString()}</h3><p>{labParameterText(engine, id, figure.params)}</p>{scene.studentExpression && <p>{scene.studentExpression}</p>}{scene.plots.map((plot) => <div key={plot.key}><h4>{plot.title}</h4><NativeLabPlot engine={engine} taskID={id} plot={plot} cursor={plot.marker} /></div>)}</div>;

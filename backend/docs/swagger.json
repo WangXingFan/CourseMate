@@ -6390,6 +6390,124 @@
                 }
             }
         },
+        "/attendance/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "attendance"
+                ],
+                "summary": "Read attendance records and the current teacher-only check-in code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Attendance ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/AttendanceReportResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/attendance/{id}/close": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "attendance"
+                ],
+                "summary": "End attendance immediately",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Attendance ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/AttendanceMutationResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/attendance/{id}/students/{student_id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "attendance"
+                ],
+                "summary": "Correct a student's attendance and retain the reason and operator",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Attendance ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Student public ID",
+                        "name": "student_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Correction",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AttendanceCorrectionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/AttendanceRecordResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/2fa/email/start": {
             "post": {
                 "description": "为待完成的双因素登录挑战向用户已验证邮箱发送验证码",
@@ -7658,6 +7776,82 @@
                 }
             }
         },
+        "/classrooms/{id}/attendance": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "attendance"
+                ],
+                "summary": "List attendance sessions in my classroom",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Classroom ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/AttendanceListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "attendance"
+                ],
+                "summary": "Start attendance and snapshot the expected student roster",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Classroom ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Schedule",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AttendanceCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/AttendanceSessionResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/classrooms/{id}/experiments/{course_id}": {
             "put": {
                 "security": [
@@ -8160,7 +8354,7 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "仅限班级所属教师；创建学生角色账号，默认初始密码为 student，首次登录须修改密码。已有账号不会被覆盖。",
+                "description": "仅限班级所属教师；创建学生角色账号，每人生成独立随机初始密码，首次登录须修改密码。已有账号不会被覆盖。",
                 "consumes": [
                     "application/json"
                 ],
@@ -8236,7 +8430,7 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "仅限班级所属教师。UTF-8 CSV 表头为 username,displayName,email 或 学号,姓名,邮箱（邮箱列可省略），最多 200 行、1 MiB；逐行创建并加入班级，默认初始密码为 student，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和逐行结果。",
+                "description": "仅限班级所属教师。UTF-8 CSV 表头为 username,displayName,email 或 学号,姓名,邮箱（邮箱列可省略），最多 200 行、1 MiB；逐行创建并加入班级，每人生成独立随机初始密码，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和逐行结果。",
                 "consumes": [
                     "application/json"
                 ],
@@ -8306,7 +8500,7 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "支持教务系统导出的 XLSX 点名册，自动识别学号、姓名列并忽略标题、空行及考勤列；兼容 UTF-8 CSV。最多 200 人、1 MiB；默认初始密码为 student，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和原始行号。",
+                "description": "支持教务系统导出的 XLSX 点名册，自动识别学号、姓名列并忽略标题、空行及考勤列；兼容 UTF-8 CSV。最多 200 人、1 MiB；每人生成独立随机初始密码，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和原始行号。",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -14047,6 +14241,75 @@
                 }
             }
         },
+        "/student/attendance": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "attendance"
+                ],
+                "summary": "Read my attendance sessions and my own records only",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/AttendanceStudentListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/student/attendance/{id}/check-in": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "attendance"
+                ],
+                "summary": "Check in as the authenticated student using the current classroom code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Attendance ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Code",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AttendanceCheckInRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/AttendanceRecordResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/student/quizzes": {
             "get": {
                 "security": [
@@ -14931,6 +15194,253 @@
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "AttendanceCheckInRequest": {
+            "type": "object",
+            "required": [
+                "code"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                }
+            }
+        },
+        "AttendanceCorrectionRequest": {
+            "type": "object",
+            "required": [
+                "reason",
+                "status"
+            ],
+            "properties": {
+                "reason": {
+                    "type": "string",
+                    "maxLength": 300
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "present",
+                        "late",
+                        "absent",
+                        "excused"
+                    ]
+                }
+            }
+        },
+        "AttendanceCorrectionResponse": {
+            "type": "object",
+            "required": [
+                "actorId",
+                "at",
+                "previous",
+                "reason",
+                "status"
+            ],
+            "properties": {
+                "actorId": {
+                    "type": "integer"
+                },
+                "at": {
+                    "type": "string"
+                },
+                "previous": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "AttendanceCreateRequest": {
+            "type": "object",
+            "required": [
+                "lateAfter",
+                "minutes",
+                "title"
+            ],
+            "properties": {
+                "lateAfter": {
+                    "type": "integer",
+                    "maximum": 179,
+                    "minimum": 0
+                },
+                "minutes": {
+                    "type": "integer",
+                    "maximum": 180,
+                    "minimum": 1
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 120
+                }
+            }
+        },
+        "AttendanceListResponse": {
+            "type": "object",
+            "required": [
+                "items"
+            ],
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AttendanceSessionResponse"
+                    }
+                }
+            }
+        },
+        "AttendanceMutationResponse": {
+            "type": "object",
+            "required": [
+                "updated"
+            ],
+            "properties": {
+                "updated": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "AttendanceRecordResponse": {
+            "type": "object",
+            "required": [
+                "checkedAt",
+                "corrections",
+                "displayName",
+                "status",
+                "studentId",
+                "username"
+            ],
+            "properties": {
+                "checkedAt": {
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "corrections": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AttendanceCorrectionResponse"
+                    }
+                },
+                "displayName": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "present",
+                        "late",
+                        "absent",
+                        "excused"
+                    ]
+                },
+                "studentId": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "AttendanceReportResponse": {
+            "type": "object",
+            "required": [
+                "code",
+                "codeExpiresAt",
+                "records",
+                "serverTime",
+                "session"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "codeExpiresAt": {
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "records": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AttendanceRecordResponse"
+                    }
+                },
+                "serverTime": {
+                    "type": "string"
+                },
+                "session": {
+                    "$ref": "#/definitions/AttendanceSessionResponse"
+                }
+            }
+        },
+        "AttendanceSessionResponse": {
+            "type": "object",
+            "required": [
+                "closedAt",
+                "endsAt",
+                "id",
+                "lateAt",
+                "open",
+                "startsAt",
+                "title"
+            ],
+            "properties": {
+                "closedAt": {
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "endsAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lateAt": {
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "open": {
+                    "type": "boolean"
+                },
+                "startsAt": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "AttendanceStudentItemResponse": {
+            "type": "object",
+            "required": [
+                "record",
+                "session"
+            ],
+            "properties": {
+                "record": {
+                    "$ref": "#/definitions/AttendanceRecordResponse"
+                },
+                "session": {
+                    "$ref": "#/definitions/AttendanceSessionResponse"
+                }
+            }
+        },
+        "AttendanceStudentListResponse": {
+            "type": "object",
+            "required": [
+                "items"
+            ],
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AttendanceStudentItemResponse"
+                    }
                 }
             }
         },

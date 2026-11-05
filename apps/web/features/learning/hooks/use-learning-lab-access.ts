@@ -31,5 +31,6 @@ export function useLearningLabAccess() {
     return () => { controller.abort(); clearInterval(timer); window.removeEventListener("focus", check); };
   }, [key, accessToken, user, generation]);
   const current = state?.key === key ? state : null;
-  return { courses: current?.data?.courses ?? null, error: current?.error ?? false, refresh };
+  const preview = user?.role === "teacher" || user?.role === "admin" || user?.role === "superadmin";
+  return { courses: current?.data?.courses ?? null, error: current?.error ?? false, preview, refresh };
 }

@@ -76,7 +76,7 @@ func TestImportStudentAccountsFileAcceptsExcelAttendanceRoster(t *testing.T) {
 				if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
 					t.Fatal(err)
 				}
-				if payload.Data.Created != 1 || len(payload.Data.Credentials) != 1 || payload.Data.Credentials[0].Username != "00123456789" || payload.Data.Credentials[0].InitialPassword != "student" {
+				if payload.Data.Created != 1 || len(payload.Data.Credentials) != 1 || payload.Data.Credentials[0].Username != "00123456789" || len(payload.Data.Credentials[0].InitialPassword) != 16 {
 					t.Fatal("upload did not create the expected student account")
 				}
 				if test.filename != "roster.csv" && payload.Data.Rows[0].Line != 8 {

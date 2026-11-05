@@ -17,7 +17,6 @@ import { NativeLabAudio } from "./native-lab-audio";
 import { NativeLabGivens } from "./native-lab-givens";
 import { labReadingUnit, parseLabReading } from "@/features/learning/model/virtual-lab-reading";
 import { NativeLabPredictionSummary } from "./native-lab-prediction-summary";
-import { NativeLabPython } from "./native-lab-python";
 import { NativeLabPlot } from "./native-lab-plot";
 import { NativeLabParameter } from "./native-lab-parameter";
 import { NativeLabTrials } from "./native-lab-records";
@@ -244,7 +243,6 @@ export function NativeLabTask({ model, engine, taskID }: { model: NativeLabModel
     {phase !== "predict" && <div className="space-y-4 border-t border-border pt-5">
       <details className="text-sm"><summary className="cursor-pointer">{f("help")}</summary><ul className="mt-3 list-disc space-y-2 pl-5 leading-7">{task.hints.map((hint) => <li key={hint}>{hint}</li>)}</ul></details>
       <details className="text-sm" data-lab-history><summary className="cursor-pointer">{f("history", { count: record.trials.length })}</summary><NativeLabTrials engine={engine} taskID={taskID} onRestore={(index) => { const trial = record.trials[index]; record.answers = { ...engine.defaultAnswers(taskID), ...trial.answers }; model.updateParams(taskID, trial.params); const matching = flow.steps.findIndex((item) => matchesLabStep(item, trial)); if (matching >= 0) setStepIndex(matching); go("observe"); }} /></details>
-      {phase === "conclude" && <NativeLabPython engine={engine} taskID={taskID} />}
     </div>}
     <a className="inline-flex items-center gap-2 text-sm text-muted-foreground" href={`#course/${taskID.slice(0, 2)}`}><ArrowLeft aria-hidden className="size-4" />{f("back")}</a>
   </div>;

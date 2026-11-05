@@ -16,6 +16,8 @@ func Models() []any {
 		&models.ClassroomStudent{},
 		&models.ClassroomQuiz{},
 		&models.ClassroomQuizSubmission{},
+		&models.AttendanceSession{},
+		&models.AttendanceRecord{},
 		&models.LearningAttempt{},
 		&models.LearningQuizRound{},
 		&models.LearningLessonAttempt{},
@@ -165,6 +167,9 @@ func Migrate(db *gorm.DB) error {
 		return err
 	}
 	if err := backfillContextArtifactMessageIDs(db); err != nil {
+		return err
+	}
+	if err := retireBundledSignalsKnowledgeBase(db); err != nil {
 		return err
 	}
 	return nil

@@ -2,6 +2,8 @@ package classroom
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"errors"
 	"strings"
 	"time"
@@ -17,7 +19,6 @@ import (
 
 const StudentCSVMaxBytes = 1 << 20
 const StudentCSVMaxRows = 200
-const StudentDefaultPassword = "student"
 
 type StudentAccountInput struct {
 	Username    string
@@ -78,7 +79,12 @@ func (s *Service) CreateStudentAccount(ctx context.Context, actor uint, publicID
 }
 
 func (s *Service) createStudentAccount(ctx context.Context, actor, classroomID uint, input StudentAccountInput) (*StudentCredential, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(StudentDefaultPassword), 12)
+	secret := make([]byte, 12)
+	if _, err := rand.Read(secret); err != nil {
+		return nil, err
+	}
+	initialPassword := base64.RawURLEncoding.EncodeToString(secret)
+	hash, err := bcrypt.GenerateFromPassword([]byte(initialPassword), 12)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +108,7 @@ func (s *Service) createStudentAccount(ctx context.Context, actor, classroomID u
 	if err != nil {
 		return nil, mapError(err)
 	}
-	return &StudentCredential{Username: input.Username, DisplayName: input.DisplayName, InitialPassword: StudentDefaultPassword}, nil
+	return &StudentCredential{Username: input.Username, DisplayName: input.DisplayName, InitialPassword: initialPassword}, nil
 }
 
 // ImportStudentAccounts accepts an Excel attendance roster or UTF-8 CSV.

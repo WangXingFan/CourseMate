@@ -5,7 +5,7 @@ import { test } from "node:test";
 import { createVirtualLabEngine } from "../public/vendor/signal-lab/core.mjs";
 
 const modelSource = readFileSync(new URL("../features/learning/model/python-labs.ts", import.meta.url), "utf8");
-const { PYTHON_LAB_ROOT, PYTHON_LABS, PYTHON_LAB_STARTERS, buildPythonLabStarter } = await import(
+const { PYTHON_LAB_ROOT, PYTHON_LABS, PYTHON_LAB_STARTERS } = await import(
   `data:text/javascript;base64,${Buffer.from(stripTypeScriptTypes(modelSource)).toString("base64")}`
 );
 const root = new URL(`../public${PYTHON_LAB_ROOT}/`, import.meta.url);
@@ -46,27 +46,12 @@ test("all twelve interactive tasks have matching Python resources and translated
   const teacherGuide = readFileSync(new URL("../../../backend/internal/application/learning/assets/teacher-guide.html", import.meta.url), "utf8");
   assert.equal((teacherGuide.match(/<section id="python">/g) ?? []).length, 1);
   assert.ok(teacherGuide.includes('href="#python">Python 编程</a>'));
-  assert.ok(teacherGuide.includes("选做：用 Python 复现本实验"));
+  assert.ok(teacherGuide.includes("学习工具 → Python 编程资源"));
   assert.ok(teacherGuide.includes("主实验不要求安装 Python"));
   assert.ok(teacherGuide.includes("源代码、Notebook、图形和 CSV"));
 });
 
-test("Python verification follows all task models and current numerical parameters", () => {
-  const engine = createVirtualLabEngine();
-  for (const id of engine.taskIds) {
-    const source = buildPythonLabStarter(id, engine.defaults(id));
-    assert.ok(source.includes("plt.show()"), id);
-    assert.ok(!/NaN|undefined/.test(source), id);
-  }
-  assert.match(buildPythonLabStarter("L1-1", { ...engine.defaults("L1-1"), mode: "impulse", delta: 0.1 }), /plt.step\(pulse_t, pulse/);
-  assert.match(buildPythonLabStarter("L1-2", { ...engine.defaults("L1-2"), kind: "timescale", x1: "sin", test: "invariance" }), /x1=lambda t: causal_input\("sin", t\)/);
-  assert.match(buildPythonLabStarter("L1-3", { initial: 0.5, enabled: "off", A: 2.5 }), /y0=0.5, input_on=False, A=2.5/);
-  assert.match(buildPythonLabStarter("L2-2", { A: 2, T: 0.5, center: -1 }), /A=2, T=0.5, shift=-1/);
-  assert.match(buildPythonLabStarter("L3-3", { center: 48, alpha: 12, measureTime: 0.2 }), /center=48, alpha=12/);
-  assert.throws(() => buildPythonLabStarter("unknown", {}));
-});
-
-test("Python drafts, run snapshots and bounded PNGs survive round-trip and old imports", () => {
+test("Historical Python drafts, run snapshots and bounded PNGs survive round-trip and old imports", () => {
   const engine = createVirtualLabEngine();
   const task = engine.records.data.tasks["L1-1"];
   const png = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=";

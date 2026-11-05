@@ -49,7 +49,7 @@ type ClassroomStudentImportResponse struct {
 
 // CreateStudentAccount godoc
 // @Summary 教师创建学生账号并加入班级
-// @Description 仅限班级所属教师；创建学生角色账号，默认初始密码为 student，首次登录须修改密码。已有账号不会被覆盖。
+// @Description 仅限班级所属教师；创建学生角色账号，每人生成独立随机初始密码，首次登录须修改密码。已有账号不会被覆盖。
 // @Tags classrooms
 // @Accept json
 // @Produce json
@@ -87,7 +87,7 @@ func (h *Handler) CreateStudentAccount(c *gin.Context) {
 
 // ImportStudentAccounts godoc
 // @Summary 教师导入学生名单并创建账号
-// @Description 仅限班级所属教师。UTF-8 CSV 表头为 username,displayName,email 或 学号,姓名,邮箱（邮箱列可省略），最多 200 行、1 MiB；逐行创建并加入班级，默认初始密码为 student，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和逐行结果。
+// @Description 仅限班级所属教师。UTF-8 CSV 表头为 username,displayName,email 或 学号,姓名,邮箱（邮箱列可省略），最多 200 行、1 MiB；逐行创建并加入班级，每人生成独立随机初始密码，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和逐行结果。
 // @Tags classrooms
 // @Accept json
 // @Produce json
@@ -124,7 +124,7 @@ func (h *Handler) ImportStudentAccounts(c *gin.Context) {
 
 // ImportStudentAccountsFile godoc
 // @Summary 教师上传 Excel 点名册并创建学生账号
-// @Description 支持教务系统导出的 XLSX 点名册，自动识别学号、姓名列并忽略标题、空行及考勤列；兼容 UTF-8 CSV。最多 200 人、1 MiB；默认初始密码为 student，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和原始行号。
+// @Description 支持教务系统导出的 XLSX 点名册，自动识别学号、姓名列并忽略标题、空行及考勤列；兼容 UTF-8 CSV。最多 200 人、1 MiB；每人生成独立随机初始密码，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和原始行号。
 // @Tags classrooms
 // @Accept multipart/form-data
 // @Produce json

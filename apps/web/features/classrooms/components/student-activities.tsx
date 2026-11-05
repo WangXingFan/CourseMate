@@ -1,5 +1,7 @@
 "use client";
 
+import { StudentAttendance } from "@/features/classrooms/components/student-attendance";
+
 import { ArrowRight, CheckCircle2, ClipboardList, LockKeyhole, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -101,6 +103,7 @@ function StudentActivities({ accessToken }: { accessToken: string }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 md:px-8">
         <div className="mx-auto w-full max-w-4xl">
+          <StudentAttendance accessToken={accessToken} />
           {quizzes.length > 0 ? (
             <div className="space-y-4">
               {quizzes.map((quiz) => (

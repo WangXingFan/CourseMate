@@ -367,7 +367,7 @@ func TestCreateStudentAccountCreatesStudentWithForcedPasswordReset(t *testing.T)
 	if err != nil {
 		t.Fatalf("CreateStudentAccount() error = %v", err)
 	}
-	if credential.Username != "s20260001" || credential.DisplayName != "张三" || credential.InitialPassword != "student" {
+	if credential.Username != "s20260001" || credential.DisplayName != "张三" || len(credential.InitialPassword) != 16 {
 		t.Fatalf("student credential = %#v", credential)
 	}
 	if len(repo.studentAccountRecords) != 1 {
@@ -380,7 +380,7 @@ func TestCreateStudentAccountCreatesStudentWithForcedPasswordReset(t *testing.T)
 	if !record.Credential.MustResetPassword || !record.Credential.PasswordEnabled || record.Credential.PasswordHash == credential.InitialPassword {
 		t.Fatalf("created credential policy = %#v", record.Credential)
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(record.Credential.PasswordHash), []byte("student")); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(record.Credential.PasswordHash), []byte(credential.InitialPassword)); err != nil {
 		t.Fatal("created student password does not match the default")
 	}
 
@@ -408,10 +408,10 @@ func TestImportStudentAccountsParsesBeforeCreatingAndReportsRows(t *testing.T) {
 	if len(repo.studentAccountRecords) != 1 || repo.studentAccountRecords[0].User.Username != "s20260001" {
 		t.Fatalf("created account records = %#v", repo.studentAccountRecords)
 	}
-	if result.Credentials[0].InitialPassword != "student" || !repo.studentAccountRecords[0].Credential.MustResetPassword {
+	if len(result.Credentials[0].InitialPassword) != 16 || !repo.studentAccountRecords[0].Credential.MustResetPassword {
 		t.Fatal("imported students must use the default password and reset it on first sign-in")
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(repo.studentAccountRecords[0].Credential.PasswordHash), []byte("student")); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(repo.studentAccountRecords[0].Credential.PasswordHash), []byte(result.Credentials[0].InitialPassword)); err != nil {
 		t.Fatal("imported student password does not match the default")
 	}
 

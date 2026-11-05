@@ -359,19 +359,14 @@
     },
     "directory": "Lab directory and teaching guide →",
     "python": {
-      "verification": "Python verification",
-      "workspaceSnapshot": "Workspace parameters at run time",
       "lastRun": "Last run",
-      "loadParameters": "Load code with current parameters",
       "downloadCode": "Download my code",
       "retryRuntime": "Reload runtime",
-      "staleResult": "Code or experiment parameters have changed. These are the previous run’s results.",
+      "staleResult": "The code has changed. These are the results from the previous run.",
       "replaceCodeWarning": "This replaces the editor contents with example code. The last saved run will be kept.",
       "cancel": "Cancel",
       "replaceCode": "Replace code",
       "runtimeFrame": "Python runtime",
-      "savedCode": "Executed code",
-      "draftCode": "Current code draft",
       "title": "Python programming resources",
       "taskTitle": "Reproduce in Python · {task}",
       "task": "Lab task",
@@ -569,7 +564,6 @@
       "history": "All records ({count})",
       "tools": "Explore parameters · More plots",
       "back": "Back to experiment",
-      "python": "Optional: reproduce this experiment in Python",
       "waveform": "Original and current signal",
       "tasks": {
         "L1-1": {
@@ -587,8 +581,6 @@
           },
           "given": "Original f(t): a triangular pulse from 0 to 3 s, with its peak at (1 s, 1).",
           "objective": "Compare the original and combined transform, then check the narrow pulse area.",
-          "pythonExercise": "Increase shift by 1 in the code. Run it and check whether the peak time also increases by 1 s.",
-          "pythonExercisePulse": "Set delta to 0.05 in the code. Run it and check that the pulse area remains 1.",
           "pulseGiven": "Reference pulse: Δ=0.5 s, height 2, area 1. The area stays 1 as the width changes."
         },
         "L1-2": {
@@ -609,7 +601,6 @@
           },
           "given": "All inputs are zero for t<0.",
           "objective": "Construct counterexamples for linearity and time invariance.",
-          "pythonExercise": "Change the inputs or coefficients and compare both paths.",
           "target": "The parameters or reading do not meet this target."
         },
         "L1-3": {
@@ -622,8 +613,7 @@
             "lower": "Initial value 0.5: compare the direction"
           },
           "given": "Input and initial state are specified below.",
-          "objective": "Separate the response caused by the initial state from the response caused by the input.",
-          "pythonExercise": "Set y0 to 0.5, run the code and compare its output at t=1 s with the experiment."
+          "objective": "Separate the response caused by the initial state from the response caused by the input."
         },
         "L1-4": {
           "question": "How does a moving average suppress ECG mains interference, and why does it delay the waveform?",
@@ -640,8 +630,7 @@
             "response3": "W=80 ms, t=0.44 s: compare delay and distortion"
           },
           "given": "Start with two unit rectangles, then process a synthetic ECG with 50 Hz interference; amplitudes are normalized.",
-          "objective": "Connect overlap area to output and compare 20/80 ms averaging windows.",
-          "pythonExercise": "Change the averaging window from 0.02 to 0.08 s, compare R-wave distortion and delay, then halve dt to check integration error."
+          "objective": "Connect overlap area to output and compare 20/80 ms averaging windows."
         },
         "L2-1": {
           "question": "Will adding harmonics remove overshoot at a square-wave jump?",
@@ -653,8 +642,7 @@
             "harmonic3": "K=15: inspect flat regions and jumps"
           },
           "given": "Target square wave: amplitude ±1, fundamental 10 Hz; K is the highest odd harmonic index.",
-          "objective": "Compare how added harmonics change the square-wave approximation and overshoot.",
-          "pythonExercise": "Set K to 31, run the code and compare the maximum to check whether overshoot disappears."
+          "objective": "Compare how added harmonics change the square-wave approximation and overshoot."
         },
         "L2-2": {
           "question": "Does a narrower rectangular pulse have a wider or narrower spectrum?",
@@ -667,8 +655,7 @@
             "amplitude": "Double amplitude: compare the DC value"
           },
           "given": "Rectangular pulse x(t); amplitude, width and center are specified below.",
-          "objective": "Verify how pulse width, delay and amplitude change the spectrum.",
-          "pythonExercise": "Set T to 0.5, run the code and compare the first positive zero with the experiment."
+          "objective": "Verify how pulse width, delay and amplitude change the spectrum."
         },
         "L2-3": {
           "question": "How can you remove 50 Hz interference while retaining low-frequency ECG components?",
@@ -684,7 +671,6 @@
           },
           "given": "Require a ratio ≥0.95 at 10 Hz and ≤0.05 at 50 Hz. Ratios are measured with separate sinusoidal probes.",
           "objective": "Design a second-order notch to remove mains interference and inspect ECG distortion.",
-          "pythonExercise": "Shift the notch center from 50 to 48 Hz and change alpha; compare suppression and ECG output.",
           "target": "The parameters or reading do not meet this target."
         },
         "L2-4": {
@@ -700,7 +686,6 @@
           },
           "given": "Original signal: a cosine of amplitude 1 and frequency 10 Hz.",
           "objective": "Compare candidate signals, audio aliasing and antialias filtering.",
-          "pythonExercise": "Keep fs=15, set candidate to 5, run the code and check the maximum sample difference.",
           "target": "Keep adjusting: the candidate must be below 7.5 Hz and pass through all samples.",
           "audioGiven": "Input: a unit-amplitude 3 kHz cosine."
         },
@@ -717,8 +702,7 @@
           },
           "derivation": "Write the delayed rectangle and its Laplace transform.",
           "given": "Input: a unit step delayed by 1 s.",
-          "objective": "Express amplitude, decay and signal timing in the Laplace transform.",
-          "pythonExercise": "Compare the numerical integral with your derived X(s) at the same values of s."
+          "objective": "Express amplitude, decay and signal timing in the Laplace transform."
         },
         "L3-2": {
           "question": "How does the initial term enter the full response?",
@@ -733,7 +717,6 @@
           "derivation": "Show H(s), Y(s), partial fractions and y(t).",
           "given": "y′+y=u(t), initial values 0, 0.5 and 2.",
           "objective": "Solve and verify zero-state and nonzero-initial-state responses.",
-          "pythonExercise": "Change the initial state and check the sum of both components.",
           "target": "Adjust the measurement time until y(t) is within 0.002 of 0.900."
         },
         "L3-3": {
@@ -752,7 +735,6 @@
           "derivation": "Find zeros, poles and the causal ROC; invert H(s)−1 for the non-impulsive part of h(t), and explain cancellation at alpha=0.",
           "given": "H(s)=(s²+ω₀²)/((s+α)²+ω₀²), ω₀=2πf₀; the input is the same synthetic ECG with mains interference.",
           "objective": "Compare narrow and wide notches and right-half-plane poles, then design a stable notch and inspect its frequency response.",
-          "pythonExercise": "Change center and alpha; compare zeros, poles, ECG response and frequency response. For alpha<0, distinguish the algebraic slice from a steady-state response.",
           "target": "The parameters or reading do not meet this target."
         },
         "L3-4": {
@@ -768,7 +750,6 @@
           "derivation": "Derive the minimum width from the peak requirement.",
           "given": "Input: a unit-amplitude rectangular pulse lasting T seconds.",
           "objective": "Find and justify the shortest pulse width that produces a peak of at least 0.8.",
-          "pythonExercise": "Run with width=1.60 and 1.61 and compare the peaks and whether they meet the target.",
           "target": "Refine the pulse width until the peak is between 0.800 and 0.802."
         }
       },
@@ -836,6 +817,7 @@
       "closed": "This experiment is closed. Please wait for your teacher to open it.",
       "closedShort": "Closed",
       "open": "Open",
+      "preview": "Teaching preview",
       "refresh": "Refresh access",
       "saveClosed": "These changes include a closed experiment and have not been saved. Your draft remains in this tab. Retry after your teacher reopens it, or download a backup."
     }

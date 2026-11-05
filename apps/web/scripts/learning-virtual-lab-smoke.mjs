@@ -207,7 +207,7 @@ try {
       assert.equal(await frame().locator('[data-reading-prediction]').count(), 1);
       assert.equal(await frame().locator('svg[data-chart="main"]').count(), 0, "The result plot waits for an estimate");
     }
-    assert.equal(await frame().locator('[data-python-task]').count(), 0, "Python is only offered after the main experiment");
+    assert.equal(await frame().locator('[data-python-task]').count(), 0, "Python is available separately in Learning Tools");
     if (index === 1) {
       await saved();
       await page.reload();
@@ -273,24 +273,7 @@ try {
   assert.equal((await readFile(await png.path())).subarray(1, 4).toString(), "PNG");
   await frame().locator('[data-lab-tools] > summary').click();
   await frame().locator('[data-phase="conclude"]').click();
-  const embedded = frame().locator('[data-python-task="L1-1"]');
-  await embedded.locator("summary").click();
-  const editor = embedded.locator("[data-python-editor]");
-  await editor.waitFor();
-  assert.match(await editor.inputValue(), /a=2, shift=0/);
-  await editor.fill(`${await editor.inputValue()}\n# integration evidence`);
-  await saved();
-  assert.equal(JSON.parse(records.get(101).document).tasks["L1-1"].python.code.endsWith("# integration evidence"), true);
-  if (process.env.PYTHON_RUNTIME_SMOKE === "1") {
-    await embedded.getByRole("button", { name: "运行代码", exact: true }).click({ timeout: 120000 });
-    await embedded.locator("figure img").waitFor({ timeout: 120000 });
-    await assertEventually(async () => assert.ok(JSON.parse(records.get(101).document).tasks["L1-1"].python.result));
-    const evidence = JSON.parse(records.get(101).document).tasks["L1-1"].python;
-    assert.equal(evidence.result.params.a, 2);
-    assert.equal(evidence.result.params.shift, 0);
-    assert.ok(evidence.result.stdout.includes("sampled peak"));
-  }
-  await embedded.locator("summary").click();
+  assert.equal(await frame().locator("[data-python-task], [data-python-editor], iframe").count(), 0, "Experiments do not embed a Python runtime");
   // Screenshots check each phase, including a clean initial view, in both themes.
   for (const width of [1440, 390]) for (const theme of ["light", "dark"]) {
     await page.setViewportSize({ width, height: 950 });
@@ -320,10 +303,6 @@ try {
           await page.screenshot({ path: join(artifacts, `guided-summary-values-${width}-${theme}.png`), animations: "disabled" });
           await scroller.evaluate((element) => { element.scrollLeft = 0; });
         }
-        const optional = frame().locator('[data-python-task="L1-1"]');
-        await optional.locator("summary").click();
-        await optional.locator("summary").scrollIntoViewIfNeeded();
-        await page.screenshot({ path: join(artifacts, `guided-python-${width}-${theme}.png`), animations: "disabled" });
       }
     }
   }
@@ -407,13 +386,9 @@ try {
       await frame().locator("#derivation").fill("推导过程与数值核验记录。");
     }
     await frame().locator('[data-action="complete"]').click();
-    const python = frame().locator(`[data-python-task="${id}"]`);
-    assert.equal(await python.evaluate((element) => element.open), false);
-    await python.locator("summary").click();
-    await python.locator("[data-python-editor]").waitFor();
-    assert.ok((await python.locator("[data-python-editor]").inputValue()).includes("plt.show()"));
+    assert.equal(await frame().locator("[data-python-task], [data-python-editor]").count(), 0);
     await saved();
-    assert.equal(JSON.parse(records.get(101).document).tasks[id].completion.confirmed, true, "Opening optional Python must not undo the completed experiment");
+    assert.equal(JSON.parse(records.get(101).document).tasks[id].completion.confirmed, true);
   }
   await page.goto(`${base}/learn/experiments/workspace#task/L1-1`);
   await frame().locator("#analysis").waitFor();
@@ -475,10 +450,7 @@ try {
   await page.locator("#print-report").waitFor({ state: "attached" });
   const report = await page.locator("#print-report").textContent();
   for (const id of ["L1-1", "L1-2", "L1-3", "L1-4"]) assert.ok(report.includes(id));
-  if (process.env.PYTHON_RUNTIME_SMOKE === "1") {
-    assert.ok(report.includes("integration evidence"), "Printed report includes executed Python code");
-    assert.equal(await page.locator('[data-python-report="L1-1"] img').count(), 1);
-  }
+  assert.equal(await page.locator("[data-python-report]").count(), 0, "Lab reports omit the retired Python section");
   await page.emulateMedia({ media: "print" });
   assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor), "rgb(255, 255, 255)", "Reports must print on white paper in either theme");
   await page.pdf({ path: join(artifacts, "account-report.pdf"), format: "A4", printBackground: true, preferCSSPageSize: true });

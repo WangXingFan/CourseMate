@@ -31,7 +31,6 @@ test("all guided comparisons have valid setups, bilingual prompts and portable e
         assert.ok(message.tasks[id].conclusion);
         assert.ok(message.tasks[id].given);
         assert.ok(message.tasks[id].objective);
-        assert.ok(message.tasks[id].pythonExercise);
         assert.ok(message.estimateReading);
         assert.ok(message.showReading);
         if (step.observation) assert.ok(message.readings[step.observation.reading.replaceAll(".", "_")]);

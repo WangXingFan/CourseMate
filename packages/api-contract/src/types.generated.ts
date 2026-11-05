@@ -117,6 +117,83 @@ export interface AdminUserResponse {
   username: string;
 }
 
+export interface AttendanceCheckInRequest {
+  code: string;
+}
+
+export interface AttendanceCorrectionRequest {
+  /** @maxLength 300 */
+  reason: string;
+  status: "present" | "late" | "absent" | "excused";
+}
+
+export interface AttendanceCorrectionResponse {
+  actorId: number;
+  at: string;
+  previous: string;
+  reason: string;
+  status: string;
+}
+
+export interface AttendanceCreateRequest {
+  /**
+   * @min 0
+   * @max 179
+   */
+  lateAfter: number;
+  /**
+   * @min 1
+   * @max 180
+   */
+  minutes: number;
+  /** @maxLength 120 */
+  title: string;
+}
+
+export interface AttendanceListResponse {
+  items: AttendanceSessionResponse[];
+}
+
+export interface AttendanceMutationResponse {
+  updated: boolean;
+}
+
+export interface AttendanceRecordResponse {
+  checkedAt?: string | null;
+  corrections: AttendanceCorrectionResponse[];
+  displayName: string;
+  status: "present" | "late" | "absent" | "excused";
+  studentId: string;
+  username: string;
+}
+
+export interface AttendanceReportResponse {
+  code: string;
+  codeExpiresAt?: string | null;
+  records: AttendanceRecordResponse[];
+  serverTime: string;
+  session: AttendanceSessionResponse;
+}
+
+export interface AttendanceSessionResponse {
+  closedAt?: string | null;
+  endsAt: string;
+  id: string;
+  lateAt?: string | null;
+  open: boolean;
+  startsAt: string;
+  title: string;
+}
+
+export interface AttendanceStudentItemResponse {
+  record: AttendanceRecordResponse;
+  session: AttendanceSessionResponse;
+}
+
+export interface AttendanceStudentListResponse {
+  items: AttendanceStudentItemResponse[];
+}
+
 export interface AuditLogListResponseDoc {
   data: {
     results: AuditLogResponse[];
@@ -6287,6 +6364,67 @@ export namespace Admin {
   }
 }
 
+export namespace Attendance {
+  /**
+   * No description
+   * @tags attendance
+   * @name AttendanceDetail
+   * @summary Read attendance records and the current teacher-only check-in code
+   * @request GET:/attendance/{id}
+   * @secure
+   */
+  export namespace AttendanceDetail {
+    export type RequestParams = {
+      /** Attendance ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AttendanceReportResponse;
+  }
+
+  /**
+   * No description
+   * @tags attendance
+   * @name CloseCreate
+   * @summary End attendance immediately
+   * @request POST:/attendance/{id}/close
+   * @secure
+   */
+  export namespace CloseCreate {
+    export type RequestParams = {
+      /** Attendance ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AttendanceMutationResponse;
+  }
+
+  /**
+   * No description
+   * @tags attendance
+   * @name StudentsUpdate
+   * @summary Correct a student's attendance and retain the reason and operator
+   * @request PUT:/attendance/{id}/students/{student_id}
+   * @secure
+   */
+  export namespace StudentsUpdate {
+    export type RequestParams = {
+      /** Attendance ID */
+      id: string;
+      /** Student public ID */
+      studentId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AttendanceCorrectionRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = AttendanceRecordResponse;
+  }
+}
+
 export namespace Auth {
   /**
    * @description 为待完成的双因素登录挑战向用户已验证邮箱发送验证码
@@ -6737,6 +6875,44 @@ export namespace Classrooms {
 
   /**
    * No description
+   * @tags attendance
+   * @name AttendanceList
+   * @summary List attendance sessions in my classroom
+   * @request GET:/classrooms/{id}/attendance
+   * @secure
+   */
+  export namespace AttendanceList {
+    export type RequestParams = {
+      /** Classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AttendanceListResponse;
+  }
+
+  /**
+   * No description
+   * @tags attendance
+   * @name AttendanceCreate
+   * @summary Start attendance and snapshot the expected student roster
+   * @request POST:/classrooms/{id}/attendance
+   * @secure
+   */
+  export namespace AttendanceCreate {
+    export type RequestParams = {
+      /** Classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AttendanceCreateRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = AttendanceSessionResponse;
+  }
+
+  /**
+   * No description
    * @tags classrooms
    * @name ExperimentsUpdate
    * @summary Open or close one experiment for the teacher's classroom
@@ -6909,7 +7085,7 @@ export namespace Classrooms {
   }
 
   /**
-   * @description 仅限班级所属教师；创建学生角色账号，默认初始密码为 student，首次登录须修改密码。已有账号不会被覆盖。
+   * @description 仅限班级所属教师；创建学生角色账号，每人生成独立随机初始密码，首次登录须修改密码。已有账号不会被覆盖。
    * @tags classrooms
    * @name StudentsAccountsCreate
    * @summary 教师创建学生账号并加入班级
@@ -6928,7 +7104,7 @@ export namespace Classrooms {
   }
 
   /**
-   * @description 仅限班级所属教师。UTF-8 CSV 表头为 username,displayName,email 或 学号,姓名,邮箱（邮箱列可省略），最多 200 行、1 MiB；逐行创建并加入班级，默认初始密码为 student，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和逐行结果。
+   * @description 仅限班级所属教师。UTF-8 CSV 表头为 username,displayName,email 或 学号,姓名,邮箱（邮箱列可省略），最多 200 行、1 MiB；逐行创建并加入班级，每人生成独立随机初始密码，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和逐行结果。
    * @tags classrooms
    * @name StudentsAccountsImportCreate
    * @summary 教师导入学生名单并创建账号
@@ -6947,7 +7123,7 @@ export namespace Classrooms {
   }
 
   /**
-   * @description 支持教务系统导出的 XLSX 点名册，自动识别学号、姓名列并忽略标题、空行及考勤列；兼容 UTF-8 CSV。最多 200 人、1 MiB；默认初始密码为 student，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和原始行号。
+   * @description 支持教务系统导出的 XLSX 点名册，自动识别学号、姓名列并忽略标题、空行及考勤列；兼容 UTF-8 CSV。最多 200 人、1 MiB；每人生成独立随机初始密码，首次登录须修改；已有账号跳过且不覆盖，返回初始密码和原始行号。
    * @tags classrooms
    * @name StudentsAccountsImportFileCreate
    * @summary 教师上传 Excel 点名册并创建学生账号
@@ -9095,6 +9271,41 @@ export namespace Settings {
 }
 
 export namespace Student {
+  /**
+   * No description
+   * @tags attendance
+   * @name AttendanceList
+   * @summary Read my attendance sessions and my own records only
+   * @request GET:/student/attendance
+   * @secure
+   */
+  export namespace AttendanceList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AttendanceStudentListResponse;
+  }
+
+  /**
+   * No description
+   * @tags attendance
+   * @name AttendanceCheckInCreate
+   * @summary Check in as the authenticated student using the current classroom code
+   * @request POST:/student/attendance/{id}/check-in
+   * @secure
+   */
+  export namespace AttendanceCheckInCreate {
+    export type RequestParams = {
+      /** Attendance ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AttendanceCheckInRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = AttendanceRecordResponse;
+  }
+
   /**
    * @description 学生查询当前班级已发布的小测；响应不包含正确答案。
    * @tags classrooms

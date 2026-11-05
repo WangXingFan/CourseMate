@@ -20,7 +20,7 @@ export function VirtualLabCards() {
           </div>
           <h3 className="mt-5 text-base font-medium">{t(`courses.${id}.title`)}</h3>
           <div className="mt-auto flex items-center justify-between border-t border-border/50 pt-3 text-sm">
-            <span>{access.error ? t("access.failed") : !access.courses ? t("access.checking") : t(access.courses[id] ? "access.open" : "access.closedShort")}</span>
+            <span>{access.error ? t("access.failed") : !access.courses ? t("access.checking") : t(access.preview ? "access.preview" : access.courses[id] ? "access.open" : "access.closedShort")}</span>
             <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </div>
         </Link>

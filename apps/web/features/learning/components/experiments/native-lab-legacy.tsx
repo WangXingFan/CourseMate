@@ -7,7 +7,6 @@ import { createVirtualLabEngine as createSecondEngine } from "@/public/vendor/si
 import type { LabDocument, LabTaskRecord, VirtualLabEngine } from "@/public/vendor/signal-lab/core.mjs";
 import { labMeasurementText, labParameterText } from "@/features/learning/model/virtual-lab-native";
 import { NativeLabPlot } from "./native-lab-plot";
-import { PythonLabResult } from "./python-lab-runner";
 
 function LegacyFigures({ engine, id, figures, report }: { engine: VirtualLabEngine; id: string; figures: LabTaskRecord["figures"]; report: boolean }) {
   const t = useTranslations("learning.virtualLab.native");
@@ -18,7 +17,6 @@ function LegacyFigures({ engine, id, figures, report }: { engine: VirtualLabEngi
 
 function Archive({ archive, courseID, report }: { archive: LabDocument["legacyArchive"]; courseID: string; report: boolean }) {
   const t = useTranslations("learning.virtualLab.native");
-  const python = useTranslations("learning.virtualLab.python");
   const [opened, setOpened] = useState(false);
   const legacy = useMemo(() => {
     if (!archive) return null;
@@ -40,7 +38,6 @@ function Archive({ archive, courseID, report }: { archive: LabDocument["legacyAr
       <h3>{t("analysis")}</h3><p className="whitespace-pre-wrap text-sm leading-7">{record.analysis || "—"}</p>
       {record.trials.map((trial, index) => <div key={`${trial.time}-${index}`} className="space-y-2 border-t border-border py-3 text-sm leading-6" data-legacy-trial><h4>{t("trialNumber", { number: index + 1 })} · {new Date(trial.time).toLocaleString()}</h4><p>{labParameterText(legacy, id, trial.params)}</p><p className="break-words font-mono">{Object.entries(trial.answers).map(([key, value]) => `${key}=${value || "—"}`).join("；")}</p><p className="break-words font-mono">{labMeasurementText(trial.measurements)}</p></div>)}
       <p className="text-sm">{record.completion.confirmed ? t("confirmed") : t("notConfirmed")}</p>
-      {(record.python.code || record.python.result) && <details open={report || undefined}><summary className="cursor-pointer text-sm">Python</summary>{record.python.result && <><h4>{python("savedCode")}</h4><pre className="overflow-x-auto py-3 text-sm">{record.python.result.code}</pre><PythonLabResult taskID={id} result={record.python.result} engine={legacy} /></>}{record.python.code !== record.python.result?.code && <><h4>{python("draftCode")}</h4><pre className="overflow-x-auto py-3 text-sm">{record.python.code}</pre></>}</details>}
       <LegacyFigures engine={legacy} id={id} figures={record.figures} report={report} />
     </section>)}
   </details>;

@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/admin"
+	appattendance "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/attendance"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/audit"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/auth"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/channel"
@@ -49,6 +50,7 @@ import (
 	platformlogger "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/observability/logger"
 	platformtracing "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/observability/tracing"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence"
+	attendancerepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/attendance"
 	auditrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/audit"
 	channelrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/channel"
 	classroomrepo "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/postgres/classroom"
@@ -67,6 +69,7 @@ import (
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/lifecycle"
 	platformhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http"
 	adminhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/admin"
+	attendancehttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/attendance"
 	authhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/auth"
 	channelhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/channel"
 	classroomhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/classroom"
@@ -405,6 +408,7 @@ func NewAppWithOptions(opts Options) (*App, error) {
 		AuthService:       authService,
 		Channel:           channelModule,
 		Classroom:         classroomModule,
+		Attendance:        attendancehttp.NewModule(appattendance.NewService(attendancerepo.NewRepo(db), classroomRepo, userRepo)),
 		Learning:          learningModule,
 		LabAssessment:     labAssessmentModule,
 		Conversation:      conversationModule,

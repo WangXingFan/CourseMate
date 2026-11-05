@@ -12,6 +12,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { ClassroomActivitiesSection } from "@/features/classrooms/components/sections/classroom-activities";
 import { ClassroomMastery } from "@/features/classrooms/components/sections/classroom-mastery";
 import { ClassroomLabAssessments } from "@/features/classrooms/components/sections/classroom-lab-assessments";
+import { ClassroomAttendance } from "@/features/classrooms/components/sections/classroom-attendance";
 import type { ClassroomDetailTab } from "@/features/classrooms/types/classrooms";
 import { cn } from "@/lib/utils";
 import type { ClassroomDTO, ClassroomStudentDTO } from "@/shared/api/classroom-types";
@@ -151,6 +152,7 @@ export function ClassroomDetail({
                 </TabButton>
                 <TabButton active={tab === "mastery"} onClick={() => setTab("mastery")}>{t("masteryTab")}</TabButton>
                 <TabButton active={tab === "lab-assessments"} onClick={() => setTab("lab-assessments")}>{t("labAssessmentsTab")}</TabButton>
+                <TabButton active={tab === "attendance"} onClick={() => setTab("attendance")}>{t("attendance.title")}</TabButton>
               </div>
               {tab === "students" ? (
                 <div className="flex items-center gap-1">
@@ -177,7 +179,9 @@ export function ClassroomDetail({
             </div>
           )}
 
-          {canManage && tab === "lab-assessments" ? (
+          {canManage && tab === "attendance" ? (
+            <ClassroomAttendance key={`${accessToken}:${selected.id}`} accessToken={accessToken} classroomID={selected.id} />
+          ) : canManage && tab === "lab-assessments" ? (
             <ClassroomLabAssessments key={`${accessToken}:${selected.id}`} accessToken={accessToken} classroomID={selected.id} />
           ) : canManage && tab === "mastery" ? (
             <ClassroomMastery key={`${accessToken}:${selected.id}`} accessToken={accessToken} classroomID={selected.id} />
@@ -229,7 +233,7 @@ function TabButton({
     <button
       type="button"
       className={cn(
-        "flex h-8 items-center gap-1.5 rounded-md px-2 text-sm font-medium transition-colors",
+        "flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md px-2 text-sm font-medium transition-colors",
         active ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground",
       )}
       onClick={onClick}
