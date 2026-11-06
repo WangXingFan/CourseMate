@@ -17,7 +17,7 @@ func TestMasteryUsesRecentDistinctEvidenceAndAllowsRecovery(t *testing.T) {
 		questions    int
 	}{
 		{"no evidence", "unassessed", nil, 0},
-		{"expired", "unassessed", []MasteryEvidence{evidence("a", false, 91)}, 0},
+		{"older than 90 days", "weak", []MasteryEvidence{evidence("a", false, 180)}, 1},
 		{"future", "unassessed", []MasteryEvidence{evidence("a", true, -1)}, 0},
 		{"wrong", "weak", []MasteryEvidence{evidence("a", false, 0)}, 1},
 		{"repeat is one question", "developing", []MasteryEvidence{evidence("a", true, 2), evidence("a", true, 1), evidence("a", true, 0)}, 1},
@@ -27,7 +27,7 @@ func TestMasteryUsesRecentDistinctEvidenceAndAllowsRecovery(t *testing.T) {
 		{"mixed simultaneous", "weak", []MasteryEvidence{evidence("a", true, 0), evidence("b", false, 0)}, 2},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			profile := BuildMastery(tc.items, now)
+			profile := BuildMastery(tc.items, now, MasteryPeriod{})
 			for _, item := range profile.Concepts {
 				if item.ID == concept {
 					if item.Status != tc.status || item.Questions != tc.questions {
@@ -40,7 +40,7 @@ func TestMasteryUsesRecentDistinctEvidenceAndAllowsRecovery(t *testing.T) {
 			}
 		})
 	}
-	p := BuildMastery([]MasteryEvidence{evidence("a", true, 0), evidence("a", true, 0)}, now)
+	p := BuildMastery([]MasteryEvidence{evidence("a", true, 0), evidence("a", true, 0)}, now, MasteryPeriod{})
 	if p.Weeks[5].Answers != 2 || p.Weeks[5].Correct != 2 {
 		t.Fatal("weekly activity should include repeated answers")
 	}

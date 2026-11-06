@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { HomeworkQuestionResponse, HomeworkSubmissionResponse } from "@/shared/api/homeworks";
-import { StreamdownRender } from "@/shared/components/markdown/streamdown-render";
+import { QuestionContent } from "@/shared/components/question-content";
 
 export function HomeworkQuestions({ questions, answers, disabled = false, showKey = false, submission, onAnswer }: {
   questions: HomeworkQuestionResponse[];
@@ -26,7 +26,7 @@ export function HomeworkQuestions({ questions, answers, disabled = false, showKe
           <Badge variant="outline">{t(`kind.${question.kind}`)}</Badge>
           <span className="ml-auto font-mono">{result ? t("graded", { score: result.score, total: result.total }) : t("points", { points: question.points })}</span>
         </div>
-        <div className="font-display text-lg font-normal leading-8 [&_img]:max-h-64 [&_img]:w-auto [&_img]:bg-white [&_img]:p-2"><StreamdownRender content={question.prompt} /></div>
+        <div className="font-display text-lg font-normal leading-8 [&_img]:max-h-64 [&_img]:w-auto [&_img]:bg-white [&_img]:p-2"><QuestionContent content={question.prompt} /></div>
         {question.kind === "blank" ? <div className="flex flex-wrap gap-4">
           {Array.from({ length: question.blankCount }, (_, blank) => <label key={blank} className="min-w-0 flex-1 space-y-2 text-sm">
             <span>{t("blank", { number: blank + 1 })}</span>
@@ -38,11 +38,11 @@ export function HomeworkQuestions({ questions, answers, disabled = false, showKe
             return <label key={optionIndex} className={cn("flex min-w-0 cursor-pointer items-start gap-3 rounded-md border p-3 text-base", selected ? "border-primary bg-accent shadow-[inset_2px_0_0_var(--primary)]" : "border-border", disabled && "cursor-default")}>
               <input className="mt-1.5 accent-primary" type="radio" name={question.id} checked={selected} onChange={() => onAnswer?.(index, 0, String(optionIndex))} />
               <span className="font-mono">{String.fromCharCode(65 + optionIndex)}.</span>
-              <div className="min-w-0 flex-1 [&_img]:max-h-48 [&_img]:w-auto [&_img]:bg-white [&_img]:p-2"><StreamdownRender content={question.kind === "true_false" ? t(optionIndex === 0 ? "true" : "false") : option} /></div>
+              <div className="min-w-0 flex-1 [&_img]:max-h-48 [&_img]:w-auto [&_img]:bg-white [&_img]:p-2"><QuestionContent content={question.kind === "true_false" ? t(optionIndex === 0 ? "true" : "false") : option} /></div>
             </label>;
           })}
         </div>}
-        {showKey && question.accepted && <div className="border-l-2 border-primary pl-3 text-sm"><span className="font-medium">{t("answerKey")}: </span>{question.kind === "blank" ? question.accepted.map((values) => values[0]).join("；") : String.fromCharCode(65 + Number(question.accepted[0]?.[0]))}</div>}
+        {showKey && question.accepted && <div className="border-l-2 border-primary pl-3 text-sm"><QuestionContent content={`${t("answerKey")}: ${question.kind === "blank" ? question.accepted.map((values) => values[0]).join("；") : String.fromCharCode(65 + Number(question.accepted[0]?.[0]))}`} /></div>}
       </fieldset>;
     })}
   </div>;

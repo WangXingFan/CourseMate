@@ -7,12 +7,11 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { QuestionBankItem } from "@/shared/api/question-bank";
-import { StreamdownRender } from "@/shared/components/markdown/streamdown-render";
+import { QuestionContent } from "@/shared/components/question-content";
 import { cn } from "@/lib/utils";
 
 function QuestionText({ text }: { text: string }) {
-  // Literal comparisons such as 0<k<K must never be interpreted as HTML tags.
-  return /\$|!\[|\\\(|\\\[/u.test(text) ? <StreamdownRender content={text} /> : <span className="whitespace-pre-wrap">{text}</span>;
+  return <QuestionContent content={text} className="text-inherit leading-[inherit]" />;
 }
 
 export function QuestionBankQuestion({ question, number, initiallyOpen }: { question: QuestionBankItem; number: number; initiallyOpen: boolean }) {

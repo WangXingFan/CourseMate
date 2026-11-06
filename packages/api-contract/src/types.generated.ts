@@ -2033,6 +2033,7 @@ export interface LearningMasteryConceptResponse {
   chapter: string;
   correct: number;
   evidence: LearningMasteryEvidenceResponse[];
+  experimentHref: string;
   id: string;
   kind: string;
   lastAt?: string | null;
@@ -2065,7 +2066,6 @@ export interface LearningMasteryResponse {
   counts: LearningMasteryCountsResponse;
   updatedAt?: string | null;
   weeks: LearningMasteryWeekResponse[];
-  windowDays: number;
 }
 
 export interface LearningMasteryWeekResponse {
@@ -7330,7 +7330,12 @@ export namespace Classrooms {
       /** Classroom ID */
       id: string;
     };
-    export type RequestQuery = {};
+    export type RequestQuery = {
+      /** Exclusive end time (RFC3339); omitted for no end limit */
+      endAt?: string;
+      /** Inclusive start time (RFC3339); omitted for all history */
+      startAt?: string;
+    };
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = ClassroomMasteryResponse;
@@ -7530,7 +7535,12 @@ export namespace Classrooms {
       /** Student public ID */
       studentId: string;
     };
-    export type RequestQuery = {};
+    export type RequestQuery = {
+      /** Exclusive end time (RFC3339); omitted for no end limit */
+      endAt?: string;
+      /** Inclusive start time (RFC3339); omitted for all history */
+      startAt?: string;
+    };
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = LearningMasteryResponse;
@@ -8793,7 +8803,12 @@ export namespace Learning {
    */
   export namespace MasteryList {
     export type RequestParams = {};
-    export type RequestQuery = {};
+    export type RequestQuery = {
+      /** Exclusive end time (RFC3339); omitted for no end limit */
+      endAt?: string;
+      /** Inclusive start time (RFC3339); omitted for all history */
+      startAt?: string;
+    };
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = LearningMasteryResponse;

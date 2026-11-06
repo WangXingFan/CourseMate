@@ -137,9 +137,9 @@ try {
   assert.equal(await page.locator(".katex-error").count(), 0);
   await selectCategory("lab_calculation");
   await search.fill("L2-3-version-01");
-  await question("L2-3-version-01").getByText("满足双指标的 α", { exact: true }).waitFor();
+  await question("L2-3-version-01").getByRole("heading", { name: /满足双指标/ }).waitFor();
   await question("L2-3-version-01").getByText(/参考方案/).first().waitFor();
-  assert.ok((await question("L2-3-version-01").innerText()).includes("0<α≤80"));
+  assert.ok(await question("L2-3-version-01").locator(".katex annotation").evaluateAll((nodes) => nodes.some((node) => node.textContent.replace(/\s+/g, "").includes("0<\\alpha\\le80"))));
   await page.screenshot({ path: join(artifacts, "lab-reference-mobile.png"), animations: "disabled" });
   failNext = true;
   await search.fill("L2-3-version-02");

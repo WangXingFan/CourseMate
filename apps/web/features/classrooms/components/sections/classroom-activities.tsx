@@ -29,7 +29,7 @@ import {
 } from "@/features/classrooms/hooks/use-classroom-activities";
 import { QuizComparisonPanel } from "@/features/classrooms/components/sections/quiz-comparison-panel";
 import { cn } from "@/lib/utils";
-import { StreamdownRender } from "@/shared/components/markdown/streamdown-render";
+import { QuestionContent } from "@/shared/components/question-content";
 import type { ClassroomQuizDTO, ClassroomQuizQuestionDTO, ClassroomStudentDTO } from "@/shared/api/classroom-types";
 
 const OPTION_LETTERS = ["A", "B", "C", "D", "E", "F"];
@@ -282,7 +282,7 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
                   {report.statistics.questions.map((question, questionIndex) => (
                     <div key={question.id} className="space-y-1.5">
                       <p className="text-sm text-muted-foreground">{t("createDialog.question", { index: questionIndex + 1 })}{question.conceptTitle ? ` · ${question.conceptTitle}` : ""}</p>
-                      <div className="text-sm" lang="zh-CN"><StreamdownRender content={question.prompt} />{question.formula && <StreamdownRender content={`$$\n${question.formula}\n$$`} />}</div>
+                      <div className="text-sm" lang="zh-CN"><QuestionContent content={question.prompt} />{question.formula && <QuestionContent content={`$$\n${question.formula}\n$$`} />}</div>
                       <QuizNumericKey question={question} /><p className="text-sm font-medium text-primary">{question.options.length > 0 && `${t("answerKey", { answer: OPTION_LETTERS[question.answer] })} · `}{t("accuracy", { correct: question.correctCount, total: report.statistics.submissionCount })}</p>
                       <div className="space-y-1">
                         {question.options.map((option, optionIndex) => {
@@ -295,7 +295,7 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
                               <span className="w-4 shrink-0 text-xs font-medium text-muted-foreground">
                                 {OPTION_LETTERS[optionIndex]}
                               </span>
-                              <div className="min-w-0 flex-[2] text-xs" lang="zh-CN"><StreamdownRender content={option} /></div>
+                              <div className="min-w-0 flex-[2] text-xs" lang="zh-CN"><QuestionContent content={option} /></div>
                               <div className="h-4 min-w-10 flex-1 overflow-hidden rounded-sm bg-muted/60">
                                 <div
                                   className={cn("h-full rounded-sm transition-[width]", correct ? "bg-primary" : "bg-muted-foreground/35")}
@@ -314,7 +314,7 @@ function QuizReportDialog({ model }: { model: ClassroomActivitiesModel }) {
                           );
                         })}
                       </div>
-                      {question.explanation && <div className="rounded-md bg-muted/30 px-3 py-2 text-xs leading-5 text-muted-foreground" lang="zh-CN"><StreamdownRender content={question.explanation} /></div>}
+                      {question.explanation && <div className="rounded-md bg-muted/30 px-3 py-2 text-xs leading-5 text-muted-foreground" lang="zh-CN"><QuestionContent content={question.explanation} /></div>}
                     </div>
                   ))}
                 </div>
@@ -394,7 +394,7 @@ function QuizNumericKey({ question }: { question: Pick<PreviewQuestion, "fields"
 
 function QuizQuestionPreview({ question }: { question: PreviewQuestion }) {
   const t = useTranslations("classrooms.activities");
-  return <div className="space-y-3 text-sm"><StreamdownRender content={question.prompt} />{question.formula && <StreamdownRender content={`$$\n${question.formula}\n$$`} />}<ol className="space-y-2">{question.options.map((option, index) => <li key={option} className="flex gap-2"><span className="font-mono">{OPTION_LETTERS[index]}.</span><StreamdownRender content={option} /></li>)}</ol>{question.options.length > 0 && <p className="font-medium text-primary">{t("answerKey", { answer: OPTION_LETTERS[question.answer] })}</p>}<QuizNumericKey question={question} /><StreamdownRender content={question.explanation} /></div>;
+  return <div className="space-y-3 text-sm"><QuestionContent content={question.prompt} />{question.formula && <QuestionContent content={`$$\n${question.formula}\n$$`} />}<ol className="space-y-2">{question.options.map((option, index) => <li key={option} className="flex gap-2"><span className="font-mono">{OPTION_LETTERS[index]}.</span><QuestionContent content={option} /></li>)}</ol>{question.options.length > 0 && <p className="font-medium text-primary">{t("answerKey", { answer: OPTION_LETTERS[question.answer] })}</p>}<QuizNumericKey question={question} /><QuestionContent content={question.explanation} /></div>;
 }
 
 function ReportStat({ label, value }: { label: string; value: string }) {

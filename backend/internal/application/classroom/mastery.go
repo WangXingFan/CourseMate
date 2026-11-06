@@ -7,7 +7,7 @@ import (
 )
 
 type masteryReader interface {
-	MasteryProfiles(context.Context, []uint, uint) (map[uint]domain.MasteryProfile, error)
+	MasteryProfiles(context.Context, []uint, uint, domain.MasteryPeriod) (map[uint]domain.MasteryProfile, error)
 }
 
 func (s *Service) SetMasteryReader(reader masteryReader) { s.mastery = reader }
@@ -27,7 +27,7 @@ type MasteryReport struct {
 	Concepts    []MasteryConceptSummary
 }
 
-func (s *Service) MasteryReport(ctx context.Context, actor uint, id string) (*MasteryReport, error) {
+func (s *Service) MasteryReport(ctx context.Context, actor uint, id string, period domain.MasteryPeriod) (*MasteryReport, error) {
 	classroom, err := s.readable(ctx, actor, id)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func (s *Service) MasteryReport(ctx context.Context, actor uint, id string) (*Ma
 	for _, student := range students {
 		ids = append(ids, student.ID)
 	}
-	profiles, err := s.mastery.MasteryProfiles(ctx, ids, classroom.ID)
+	profiles, err := s.mastery.MasteryProfiles(ctx, ids, classroom.ID, period)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (s *Service) MasteryReport(ctx context.Context, actor uint, id string) (*Ma
 	return report, nil
 }
 
-func (s *Service) StudentMastery(ctx context.Context, actor uint, classroomID, studentID string) (domain.MasteryProfile, error) {
+func (s *Service) StudentMastery(ctx context.Context, actor uint, classroomID, studentID string, period domain.MasteryPeriod) (domain.MasteryProfile, error) {
 	classroom, err := s.readable(ctx, actor, classroomID)
 	if err != nil {
 		return domain.MasteryProfile{}, err
@@ -98,7 +98,7 @@ func (s *Service) StudentMastery(ctx context.Context, actor uint, classroomID, s
 		if s.mastery == nil {
 			return domain.MasteryProfile{}, errors.New("mastery reader not configured")
 		}
-		profiles, err := s.mastery.MasteryProfiles(ctx, []uint{student.ID}, classroom.ID)
+		profiles, err := s.mastery.MasteryProfiles(ctx, []uint{student.ID}, classroom.ID, period)
 		return profiles[student.ID], err
 	}
 	return domain.MasteryProfile{}, ErrStudentNotFound

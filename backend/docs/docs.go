@@ -8317,6 +8317,18 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Inclusive start time (RFC3339); omitted for all history",
+                        "name": "startAt",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Exclusive end time (RFC3339); omitted for no end limit",
+                        "name": "endAt",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -8324,6 +8336,12 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/ClassroomMasteryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
                         }
                     },
                     "401": {
@@ -8963,6 +8981,18 @@ const docTemplate = `{
                         "name": "student_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Inclusive start time (RFC3339); omitted for all history",
+                        "name": "startAt",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Exclusive end time (RFC3339); omitted for no end limit",
+                        "name": "endAt",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -8970,6 +9000,12 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/LearningMasteryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
                         }
                     },
                     "401": {
@@ -12210,11 +12246,31 @@ const docTemplate = `{
                     "learning"
                 ],
                 "summary": "Read personal knowledge mastery from graded evidence",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Inclusive start time (RFC3339); omitted for all history",
+                        "name": "startAt",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Exclusive end time (RFC3339); omitted for no end limit",
+                        "name": "endAt",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/LearningMasteryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
                         }
                     },
                     "401": {
@@ -21975,6 +22031,7 @@ const docTemplate = `{
                 "chapter",
                 "correct",
                 "evidence",
+                "experimentHref",
                 "id",
                 "kind",
                 "lastAt",
@@ -21997,6 +22054,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/LearningMasteryEvidenceResponse"
                     }
+                },
+                "experimentHref": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "string"
@@ -22088,8 +22148,7 @@ const docTemplate = `{
                 "concepts",
                 "counts",
                 "updatedAt",
-                "weeks",
-                "windowDays"
+                "weeks"
             ],
             "properties": {
                 "concepts": {
@@ -22110,9 +22169,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/LearningMasteryWeekResponse"
                     }
-                },
-                "windowDays": {
-                    "type": "integer"
                 }
             }
         },

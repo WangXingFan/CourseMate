@@ -7,16 +7,17 @@ import (
 	classdomain "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/classroom"
 	domain "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/learning"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/models"
+	"gorm.io/gorm"
 	"time"
 )
 
-func (r *Repo) MasteryEvidence(ctx context.Context, users []uint, classroomID uint, since time.Time) ([]domain.MasteryEvidence, error) {
+func (r *Repo) MasteryEvidence(ctx context.Context, users []uint, classroomID uint, period domain.MasteryPeriod) ([]domain.MasteryEvidence, error) {
 	result := []domain.MasteryEvidence{}
 	if len(users) == 0 {
 		return result, nil
 	}
 	var attempts []models.LearningAttempt
-	if err := r.db.WithContext(ctx).Where("user_id IN ? AND created_at >= ?", users, since).Order("created_at ASC, id ASC").Find(&attempts).Error; err != nil {
+	if err := r.db.WithContext(ctx).Scopes(masteryPeriodScope("created_at", period)).Where("user_id IN ?", users).Order("created_at ASC, id ASC").Find(&attempts).Error; err != nil {
 		return nil, err
 	}
 	for _, item := range attempts {
@@ -35,7 +36,7 @@ func (r *Repo) MasteryEvidence(ctx context.Context, users []uint, classroomID ui
 		result = append(result, domain.MasteryEvidence{UserID: item.UserID, ConceptID: "topic:" + question.Topic, QuestionID: "practice:" + questionID, Source: source, Prompt: prompt, Correct: item.Correct, At: item.CreatedAt})
 	}
 	var lessons []models.LearningLessonAttempt
-	if err := r.db.WithContext(ctx).Where("user_id IN ? AND version = ? AND created_at >= ?", users, domain.CourseCatalog().Version, since).Order("created_at ASC, id ASC").Find(&lessons).Error; err != nil {
+	if err := r.db.WithContext(ctx).Scopes(masteryPeriodScope("created_at", period)).Where("user_id IN ? AND version = ?", users, domain.CourseCatalog().Version).Order("created_at ASC, id ASC").Find(&lessons).Error; err != nil {
 		return nil, err
 	}
 	for _, row := range lessons {
@@ -65,7 +66,8 @@ func (r *Repo) MasteryEvidence(ctx context.Context, users []uint, classroomID ui
 	query := r.db.WithContext(ctx).Table("classroom_quiz_submissions AS submissions").
 		Select("submissions.id, submissions.student_id, quizzes.questions, submissions.answers, submissions.created_at").
 		Joins("JOIN classroom_quizzes AS quizzes ON quizzes.id = submissions.quiz_id").
-		Where("submissions.student_id IN ? AND submissions.created_at >= ? AND quizzes.status = ?", users, since, "closed")
+		Scopes(masteryPeriodScope("submissions.created_at", period)).
+		Where("submissions.student_id IN ? AND quizzes.status = ?", users, "closed")
 	if classroomID != 0 {
 		query = query.Where("quizzes.classroom_id = ?", classroomID)
 	}
@@ -92,4 +94,16 @@ func (r *Repo) MasteryEvidence(ctx context.Context, users []uint, classroomID ui
 		}
 	}
 	return result, nil
+}
+
+func masteryPeriodScope(column string, period domain.MasteryPeriod) func(*gorm.DB) *gorm.DB {
+	return func(query *gorm.DB) *gorm.DB {
+		if !period.StartAt.IsZero() {
+			query = query.Where(column+" >= ?", period.StartAt)
+		}
+		if !period.EndAt.IsZero() {
+			query = query.Where(column+" < ?", period.EndAt)
+		}
+		return query
+	}
 }

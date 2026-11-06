@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog";
 import type { LabPaperResponse, LabResultResponse } from "@/shared/api/lab-assessments";
+import { QuestionContent } from "@/shared/components/question-content";
 
 export function LabAssessmentPaper({ paper }: { paper: LabPaperResponse }) {
   const t = useTranslations("learning.assessment");
@@ -15,8 +16,8 @@ export function LabAssessmentPaper({ paper }: { paper: LabPaperResponse }) {
   const x = (v: number) => 50 + (v - minX) / (maxX - minX || 1) * 500;
   const y = (v: number) => 170 - v / maxY * 120;
   return <div className="space-y-4">
-    <p className="text-base leading-8 whitespace-pre-wrap">{paper.prompt}</p>
-    {paper.formula && <p className="border-l-2 border-seal pl-4 text-sm leading-7 break-words">{paper.formula}</p>}
+    <QuestionContent className="text-base leading-8" content={paper.prompt} />
+    {paper.formula && <QuestionContent className="border-l-2 border-seal pl-4 text-sm leading-7 break-words" content={paper.formula} />}
     {points.length > 0 && <figure className="max-w-2xl border-b border-border pb-3">
       <figcaption className="text-sm text-muted-foreground">{t("reference")}</figcaption>
       <svg viewBox="0 0 600 210" role="img" aria-label={t("reference")} className="w-full">
@@ -35,9 +36,9 @@ export function LabAssessmentResult({ paper, result, conditionsOnly = false, ref
     {result.fields.map((item) => { const field = paper.fields.find((f) => f.id === item.id); const label = (value: string) => field?.options.find((o) => o.id === value)?.label ?? value;
       return <details key={item.id} open={!item.correct} className="py-3">
         <summary className="cursor-pointer text-sm leading-7">{field?.label} {!conditionsOnly && <span className="font-mono">{referenceOnly ? t("points", { value: Number(item.maximum.toFixed(2)) }) : `${Number(item.points.toFixed(2))}/${Number(item.maximum.toFixed(2))}`}</span>}{!referenceOnly && <> · {t(item.correct ? "correct" : "incorrect")}</>}</summary>
-        {!referenceOnly && <p className="mt-2 text-sm text-muted-foreground">{t("yourAnswer")}{label(item.submitted) || t("blank")}</p>}
-        {item.expected && <p className="mt-2 text-sm">{t("referenceAnswer")}{label(item.expected)} {field?.unit}</p>}
-        {item.explanation && <p className="mt-2 text-sm leading-7">{item.explanation}</p>}
+        {!referenceOnly && <QuestionContent className="mt-2 text-sm text-muted-foreground" content={`${t("yourAnswer")}${label(item.submitted) || t("blank")}`} />}
+        {item.expected && <QuestionContent className="mt-2 text-sm" content={`${t("referenceAnswer")}${label(item.expected)} ${field?.unit ?? ""}`} />}
+        {item.explanation && <QuestionContent className="mt-2 text-sm leading-7" content={item.explanation} />}
       </details>;
     })}
   </div>;

@@ -1,5 +1,7 @@
 "use client";
 
+import { QuestionContent } from "@/shared/components/question-content";
+
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
@@ -26,7 +28,7 @@ export function MasteryProfile({ profile, readOnly = false }: { profile: Learnin
       {statuses.map((key) => <div key={key} className="border-l-2 border-border pl-4"><dt className="text-sm">{t(`status.${key}`)}</dt><dd className="mt-2 font-display text-3xl tabular-nums">{counts[key]}</dd></div>)}
     </dl>
     {profile.counts.assessed === 0 && <div className="space-y-4 border-l-2 border-primary py-2 pl-4" data-mastery-empty><p className="text-base leading-7">{t("empty")}</p>{!readOnly && <Button asChild variant="outline"><Link href="/learn/quiz">{t("start")}</Link></Button>}</div>}
-    <details className="border-b border-border pb-4 text-sm leading-7"><summary className="cursor-pointer font-medium">{t("method", { days: profile.windowDays })}</summary><p className="mt-3 max-w-3xl">{t("methodBody")}</p></details>
+    <details className="border-b border-border pb-4 text-sm leading-7"><summary className="cursor-pointer font-medium">{t("method")}</summary><p className="mt-3 max-w-3xl">{t("methodBody")}</p></details>
     <section aria-label={t("concepts")}>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
         <h2 className="font-display text-2xl font-normal">{t("concepts")}</h2>
@@ -56,12 +58,16 @@ function ConceptRow({ item, title, readOnly }: { item: MasteryConcept; title: st
   return <article className="py-5" data-mastery-concept={item.id}>
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div className="min-w-0 flex-1"><h3 className="font-display text-xl font-normal leading-7">{title}</h3><div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm"><span className={cn("font-medium", item.status === "weak" ? "text-destructive" : "text-foreground")}>{t(`status.${item.status}`)}</span><span className="text-muted-foreground">{item.questions ? t("sample", { correct: item.correct, total: item.questions }) : t("noEvidence")}</span></div></div>
-      {!readOnly && <div className="flex gap-2"><Button asChild variant="ghost" size="sm"><Link href={item.reviewHref}>{t("review")}</Link></Button><Button asChild variant="outline" size="sm"><Link href={item.practiceHref}>{t(item.kind === "course" ? "activities" : "practice")}</Link></Button></div>}
+      {!readOnly && <div className="flex flex-wrap gap-2">
+        <Button asChild variant="ghost" size="sm"><Link href={item.reviewHref}>{t("review")}</Link></Button>
+        <Button asChild variant="outline" size="sm"><Link href={item.practiceHref}>{t(item.kind === "course" ? "activities" : "practice")}</Link></Button>
+        {item.experimentHref && <Button asChild variant="ghost" size="sm"><Link href={item.experimentHref}>{t("experiment")}</Link></Button>}
+      </div>}
     </div>
     {!!item.evidence.length && <details className="mt-4 text-sm leading-7"><summary className="w-fit cursor-pointer">{t("evidence")}</summary><ol className="mt-3 space-y-3 border-l border-border pl-4">{item.evidence.map((e) => {
       const questionID = e.questionId.replace(/^practice:/, "");
       const prompt = e.prompt || (questions.has(`${questionID}.prompt`) ? questions(`${questionID}.prompt`) : t("reviewItem", { id: questionID }));
-      return <li key={e.questionId}><p>{prompt}</p><div className="flex flex-wrap gap-x-4 text-sm"><span>{t(e.correct ? "correct" : "incorrect")}</span><span>{t(`source.${e.source}`)}</span><time dateTime={e.at}>{new Date(e.at).toLocaleDateString(locale)}</time></div></li>;
+      return <li key={e.questionId}><QuestionContent content={prompt} /><div className="flex flex-wrap gap-x-4 text-sm"><span>{t(e.correct ? "correct" : "incorrect")}</span><span>{t(`source.${e.source}`)}</span><time dateTime={e.at}>{new Date(e.at).toLocaleDateString(locale)}</time></div></li>;
     })}</ol></details>}
   </article>;
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { QuestionContent } from "@/shared/components/question-content";
+
 import { ArrowRight, CheckCircle2, ClipboardList, RefreshCw, Timer, ClipboardCheck, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -58,10 +60,10 @@ function QuizChapter({ chapter, onChapterChange, onReset }: { chapter: string; o
         <span className="ml-auto inline-flex items-center gap-1.5 font-mono text-sm"><ClipboardCheck className="size-4 text-primary" />{round.score}</span>
       </div>
       <LessonPanel title={t("question.eyebrow")}>
-        <p className="font-display text-xl font-normal leading-8">{t(`questions.${currentID}.prompt`)}</p>
-        <div className="mt-4 grid gap-2">{[0, 1, 2, 3].map((selected) => <button key={selected} type="button" disabled={!!answer || model.busy || !!model.error || model.timeLeft === 0} onClick={() => void model.answer(currentID, selected)} className={`flex min-h-12 items-center gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-colors disabled:cursor-default ${answer?.selected === selected ? answer.correct ? "border-primary/50 bg-accent/10" : "border-destructive/50 bg-destructive/5" : "border-border/60 enabled:hover:border-primary/40 enabled:hover:bg-primary/5"}`}><span className="font-mono text-xs text-muted-foreground">{String.fromCharCode(65 + selected)}</span><span className="flex-1">{t(`questions.${currentID}.option${selected + 1}`)}</span>{answer?.selected === selected && (answer.correct ? <CheckCircle2 className="size-4 text-primary" /> : <XCircle className="size-4 text-destructive" />)}</button>)}</div>
+        <div data-quiz-question={currentID} className="font-display text-xl font-normal leading-8"><QuestionContent content={t(`questions.${currentID}.prompt`)} /></div>
+        <div className="mt-4 grid gap-2">{[0, 1, 2, 3].map((selected) => <button key={selected} type="button" disabled={!!answer || model.busy || !!model.error || model.timeLeft === 0} onClick={() => void model.answer(currentID, selected)} className={`flex min-h-12 items-center gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-colors disabled:cursor-default ${answer?.selected === selected ? answer.correct ? "border-primary/50 bg-accent/10" : "border-destructive/50 bg-destructive/5" : "border-border/60 enabled:hover:border-primary/40 enabled:hover:bg-primary/5"}`}><span className="font-mono text-xs text-muted-foreground">{String.fromCharCode(65 + selected)}</span><div className="min-w-0 flex-1"><QuestionContent content={t(`questions.${currentID}.option${selected + 1}`)} /></div>{answer?.selected === selected && (answer.correct ? <CheckCircle2 className="size-4 text-primary" /> : <XCircle className="size-4 text-destructive" />)}</button>)}</div>
         {model.busy && <p role="status" className="mt-3 text-sm text-muted-foreground">{t("saving")}</p>}
-        {answer && <div className="mt-4 rounded-lg bg-muted/40 p-4"><p className="text-sm leading-6 text-muted-foreground">{t(`questions.${currentID}.explain`)}</p><Button className="mt-3" size="sm" onClick={() => { if (round.finishedAt) setShowResult(true); else setIndex((i) => i + 1); }}>{round.finishedAt ? t("question.finish") : t("question.next")}<ArrowRight className="size-3.5" /></Button></div>}
+        {answer && <div className="mt-4 rounded-lg bg-muted/40 p-4"><QuestionContent className="text-sm leading-6 text-muted-foreground" content={t(`questions.${currentID}.explain`)} /><Button className="mt-3" size="sm" onClick={() => { if (round.finishedAt) setShowResult(true); else setIndex((i) => i + 1); }}>{round.finishedAt ? t("question.finish") : t("question.next")}<ArrowRight className="size-3.5" /></Button></div>}
       </LessonPanel>
     </>}
     {done && <LessonPanel title={t("result.title")}>

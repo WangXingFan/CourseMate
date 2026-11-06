@@ -840,6 +840,17 @@
     }
   },
   "mastery": {
+    "period": {
+      "start": "Start date",
+      "end": "End date",
+      "apply": "Apply",
+      "all": "All records",
+      "invalid": "End date cannot be earlier than start date.",
+      "current": "Reporting period: {scope}",
+      "range": "{start} to {end}",
+      "from": "From {start}",
+      "until": "Through {end}"
+    },
     "title": "Knowledge mastery",
     "history": "Learning history & mistakes",
     "refresh": "Refresh",
@@ -855,9 +866,9 @@
       "course": "Course knowledge",
       "practice": "Topic practice"
     },
-    "empty": "No graded answers in the last 90 days. There is not enough evidence to identify knowledge gaps yet.",
+    "empty": "No graded answers in the selected period. There is not enough evidence to identify knowledge gaps yet.",
     "start": "Start a practice session",
-    "method": "Assessment rules · Last {days} days",
+    "method": "Assessment rules",
     "methodBody": "Course lessons and topic practice are assessed separately. Only the latest answer to each question counts: a wrong answer on the most recent question means “Needs practice”; a correct one means “Developing”; correct answers on the two most recent distinct questions mean “Initial mastery”. No records means “Not assessed”. Evidence comes from graded practice, reviews and closed classroom quizzes. Page views and experiment completion are excluded. With small samples, these states describe current answer performance only.",
     "concepts": "Knowledge & evidence",
     "filterStatus": "Filter by mastery",
@@ -871,6 +882,7 @@
     "noEvidence": "No answer evidence",
     "review": "Review",
     "practice": "Practice",
+    "experiment": "Related experiment",
     "activities": "Classroom quizzes",
     "evidence": "View recent evidence",
     "reviewItem": "Review variant · {id}",
@@ -882,12 +894,12 @@
       "course": "Course practice",
       "classroom": "Classroom quiz"
     },
-    "weeks": "Answers over six weeks",
-    "weekLegend": "Weekly accuracy · Answer count. Includes repeated attempts; “—” means no answers, not a mastery score.",
+    "weeks": "Six weeks up to the reporting cutoff",
+    "weekLegend": "Weekly accuracy · Answer count. Only answers within the selected period are included, including repeats; “—” means no answers, not a mastery score.",
     "classTitle": "Class knowledge mastery",
     "studentTitle": "{name} · Knowledge mastery",
     "backClass": "Back to class",
-    "classScope": "Last 90 days · Current students’ practice, reviews and closed quizzes from this class.",
+    "classScope": "Current students’ practice, reviews and closed quizzes from this class.",
     "classWeak": "Shared knowledge gaps",
     "weakStudents": "{weak} need practice / {assessed} assessed",
     "noClassWeak": "No gaps have been identified yet. Check the student list for assessment coverage.",

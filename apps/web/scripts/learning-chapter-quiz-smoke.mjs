@@ -25,7 +25,6 @@ const artifacts = resolve(".cache/chapter-quiz-smoke");
 await mkdir(artifacts, { recursive: true });
 const bank = JSON.parse(await readFile("backend/internal/domain/learning/content/quick-questions.json", "utf8"));
 const chapters = ["1", "2", "3", "4"].map((id) => ({ id, roundSize: 10, questionIds: bank.questions.filter((q) => q.chapterID === id).map((q) => q.id) }));
-const authored = new Map(bank.questions.map((q) => [q.id,q.zh]));
 assert.ok(chapters.every((chapter) => chapter.questionIds.length === 60));
 const correct = new Map(bank.questions.map((q) => [q.id, q.answer]));
 const user = { id: 101, publicID: "quiz-qa-student", username: "qa101", displayName: "答题测试", role: "student", status: "active", locale: "zh-CN", timezone: "Asia/Shanghai", initialSecurityRequired: false, initialUsernameRequired: false, mustResetPassword: false, onboardingCompletedAt: new Date().toISOString(), appearancePreferences: "", profilePreferences: "", identityProviders: [], email: "", phone: "", passwordEnabled: true };
@@ -101,7 +100,7 @@ try {
   for (let i = 1; i < 10; i++) {
     await page.getByRole("button", { name: "下一题", exact: true }).click();
     const id = round.questionIds[i];
-    await page.getByText(authored.get(id).prompt, { exact: true }).waitFor();
+    await page.locator(`[data-quiz-question="${id}"]`).waitFor();
     await page.getByRole("button", { name: new RegExp(`^${String.fromCharCode(65 + correct.get(id))} `) }).click();
     await page.getByRole("button", { name: i === 9 ? "查看结果" : "下一题", exact: true }).waitFor();
   }
@@ -124,7 +123,7 @@ try {
   assert.equal(mobileStartResponse.status(), 200);
   assert.equal(round.chapterId,"4");
   assert.ok(round.questionIds[0].startsWith("ext-routh-stable-bound-"));
-  await page.getByText(authored.get(round.questionIds[0]).prompt,{exact:true}).waitFor();
+  await page.locator(`[data-quiz-question="${round.questionIds[0]}"]`).waitFor();
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
   await page.screenshot({ path: resolve(artifacts,"expanded-question-mobile.png") });
   await page.goto(`${base}/activities`);

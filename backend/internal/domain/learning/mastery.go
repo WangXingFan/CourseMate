@@ -6,7 +6,10 @@ import (
 	"time"
 )
 
-const MasteryWindowDays = 90
+// StartAt is inclusive and EndAt is exclusive. Zero values leave a bound open.
+type MasteryPeriod struct {
+	StartAt, EndAt time.Time
+}
 
 // Evidence comes from server-graded answers. Viewing a page or completing a
 // simulation is not evidence of knowledge mastery.
@@ -18,11 +21,11 @@ type MasteryEvidence struct {
 }
 
 type MasteryConcept struct {
-	ID, Kind, Title, Topic, Chapter, LessonID, ReviewHref, PracticeHref string
-	Status                                                              string
-	Questions, Correct                                                  int
-	LastAt                                                              *time.Time
-	Evidence                                                            []MasteryEvidence
+	ID, Kind, Title, Topic, Chapter, LessonID, ReviewHref, PracticeHref, ExperimentHref string
+	Status                                                                              string
+	Questions, Correct                                                                  int
+	LastAt                                                                              *time.Time
+	Evidence                                                                            []MasteryEvidence
 }
 
 type MasteryCounts struct{ Total, Assessed, Weak, Developing, Secure int }
@@ -39,7 +42,10 @@ type MasteryProfile struct {
 
 func masteryCatalog() []MasteryConcept {
 	items := []MasteryConcept{}
+	chapterTitles := map[string]string{}
 	for _, lesson := range PracticeCourseLessons() {
+		chapterID, _, _ := strings.Cut(lesson.Number, ".")
+		chapterTitles[chapterID] = lesson.Chapter
 		items = append(items, MasteryConcept{ID: "lesson:" + lesson.ID, Kind: "course", Title: lesson.Number + " · " + lesson.Title, Chapter: lesson.Chapter, LessonID: lesson.ID, ReviewHref: "/learn/knowledge?lesson=" + lesson.ID, PracticeHref: "/activities"})
 	}
 	seen := map[string]bool{}
@@ -48,24 +54,32 @@ func masteryCatalog() []MasteryConcept {
 			continue
 		}
 		seen[q.Topic] = true
-		items = append(items, MasteryConcept{ID: "topic:" + q.Topic, Kind: "practice", Topic: q.Topic, Chapter: q.ChapterID, ReviewHref: q.Lesson, PracticeHref: "/learn/quiz?topic=" + q.Topic})
+		concept := MasteryConcept{ID: "topic:" + q.Topic, Kind: "practice", Topic: q.Topic, Chapter: chapterTitles[q.ChapterID], ReviewHref: "/learn/knowledge", PracticeHref: "/learn/quiz?topic=" + q.Topic, ExperimentHref: q.Lesson}
+		if lesson := FindCourseLesson(masteryTopicLessons[q.Topic]); lesson != nil {
+			concept.LessonID = lesson.ID
+			concept.ReviewHref += "?lesson=" + lesson.ID
+		}
+		items = append(items, concept)
 	}
 	return items
 }
 
 // Per-question latest answers avoid inflating mastery by repeating one item.
 // Two most recent distinct items must both be correct to count as secure.
-func BuildMastery(evidence []MasteryEvidence, now time.Time) MasteryProfile {
+func BuildMastery(evidence []MasteryEvidence, now time.Time, period MasteryPeriod) MasteryProfile {
 	profile := MasteryProfile{Concepts: masteryCatalog(), Weeks: []MasteryWeek{}}
-	since := now.AddDate(0, 0, -MasteryWindowDays)
 	byConcept := map[string]map[string]MasteryEvidence{}
-	day := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+	chartEnd := now
+	if !period.EndAt.IsZero() && period.EndAt.Before(now) {
+		chartEnd = period.EndAt.Add(-time.Nanosecond).UTC()
+	}
+	day := time.Date(chartEnd.Year(), chartEnd.Month(), chartEnd.Day(), 0, 0, 0, 0, time.UTC)
 	weekStart := day.AddDate(0, 0, -(int(day.Weekday())+6)%7)
 	for i := 5; i >= 0; i-- {
 		profile.Weeks = append(profile.Weeks, MasteryWeek{Start: weekStart.AddDate(0, 0, -7*i).Format("2006-01-02")})
 	}
 	for _, item := range evidence {
-		if item.At.Before(since) || item.At.After(now) {
+		if item.At.After(now) || (!period.StartAt.IsZero() && item.At.Before(period.StartAt)) || (!period.EndAt.IsZero() && !item.At.Before(period.EndAt)) {
 			continue
 		}
 		if profile.UpdatedAt == nil || item.At.After(*profile.UpdatedAt) {

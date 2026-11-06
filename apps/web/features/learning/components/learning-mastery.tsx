@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { LessonShell } from "@/features/learning/components/shared/lesson-shell";
 import { MasteryProfile } from "@/features/learning/components/mastery-profile";
+import { MasteryPeriodFilter } from "@/features/learning/components/shared/mastery-period-filter";
 import { useLearningMastery } from "@/features/learning/hooks/use-learning-mastery";
 
 export function LearningMastery() {
@@ -16,6 +17,7 @@ export function LearningMastery() {
       <Button asChild variant="outline"><Link href="/learn/progress">{t("history")}</Link></Button>
       <Button variant="ghost" onClick={model.refresh}>{t("refresh")}</Button>
     </div>
+    <MasteryPeriodFilter period={model.period} onChange={model.setPeriod} />
     {model.error ? <div role="alert" className="text-sm text-destructive">{model.error}<Button variant="ghost" onClick={model.refresh}>{t("retry")}</Button></div>
       : model.data ? <MasteryProfile profile={model.data} /> : <div role="status" className="flex items-center gap-2 text-sm"><Spinner />{t("loading")}</div>}
   </LessonShell>;

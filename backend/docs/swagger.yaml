@@ -4694,6 +4694,8 @@ definitions:
         items:
           $ref: '#/definitions/LearningMasteryEvidenceResponse'
         type: array
+      experimentHref:
+        type: string
       id:
         type: string
       kind:
@@ -4717,6 +4719,7 @@ definitions:
     - chapter
     - correct
     - evidence
+    - experimentHref
     - id
     - kind
     - lastAt
@@ -4780,14 +4783,11 @@ definitions:
         items:
           $ref: '#/definitions/LearningMasteryWeekResponse'
         type: array
-      windowDays:
-        type: integer
     required:
     - concepts
     - counts
     - updatedAt
     - weeks
-    - windowDays
     type: object
   LearningMasteryWeekResponse:
     properties:
@@ -14786,6 +14786,14 @@ paths:
         name: id
         required: true
         type: string
+      - description: Inclusive start time (RFC3339); omitted for all history
+        in: query
+        name: startAt
+        type: string
+      - description: Exclusive end time (RFC3339); omitted for no end limit
+        in: query
+        name: endAt
+        type: string
       produces:
       - application/json
       responses:
@@ -14793,6 +14801,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/ClassroomMasteryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
         "401":
           description: Unauthorized
           schema:
@@ -15064,6 +15076,14 @@ paths:
         name: student_id
         required: true
         type: string
+      - description: Inclusive start time (RFC3339); omitted for all history
+        in: query
+        name: startAt
+        type: string
+      - description: Exclusive end time (RFC3339); omitted for no end limit
+        in: query
+        name: endAt
+        type: string
       produces:
       - application/json
       responses:
@@ -15071,6 +15091,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/LearningMasteryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
         "401":
           description: Unauthorized
           schema:
@@ -17261,6 +17285,15 @@ paths:
       - learning
   /learning/mastery:
     get:
+      parameters:
+      - description: Inclusive start time (RFC3339); omitted for all history
+        in: query
+        name: startAt
+        type: string
+      - description: Exclusive end time (RFC3339); omitted for no end limit
+        in: query
+        name: endAt
+        type: string
       produces:
       - application/json
       responses:
@@ -17268,6 +17301,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/LearningMasteryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
         "401":
           description: Unauthorized
           schema:

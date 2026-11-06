@@ -1,5 +1,7 @@
 "use client";
 
+import { QuestionContent } from "@/shared/components/question-content";
+
 import { ArrowRight, CheckCircle2, ListChecks, RotateCcw, Timer, ClipboardCheck, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -175,7 +177,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
           </div>
 
           <LessonPanel title={t("question.eyebrow")}>
-            <p className="text-sm font-medium leading-6 text-foreground">{t(`questions.${question.id}.prompt`)}</p>
+            <QuestionContent className="text-sm font-medium leading-6 text-foreground" content={t(`questions.${question.id}.prompt`)} />
             <div className="mt-3 grid gap-2">
               {[0, 1, 2, 3].map((optionIndex) => {
                 const isSelected = selected === optionIndex;
@@ -200,7 +202,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
                     <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-border font-mono text-xs">
                       {String.fromCharCode(65 + optionIndex)}
                     </span>
-                    <span className="flex-1">{t(`questions.${question.id}.option${optionIndex + 1}`)}</span>
+                    <div className="min-w-0 flex-1"><QuestionContent content={t(`questions.${question.id}.option${optionIndex + 1}`)} /></div>
                     {isCorrect ? <CheckCircle2 className="size-3.5 text-primary" strokeWidth={1.6} /> : null}
                     {isWrong ? <XCircle className="size-3.5 text-destructive" strokeWidth={1.6} /> : null}
                   </button>
@@ -209,7 +211,7 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
             </div>
             {selected !== null ? (
               <div className="mt-3 rounded-lg border border-border/60 bg-muted/20 px-3 py-2">
-                <p className="text-sm leading-6 text-muted-foreground">{t(`questions.${question.id}.explain`)}</p>
+                <QuestionContent className="text-sm leading-6 text-muted-foreground" content={t(`questions.${question.id}.explain`)} />
                 <Button type="button" size="sm" className="mt-2" disabled={model.pendingCount > 0} onClick={next}>
                   {index + 1 >= order.length ? t("question.finish") : t("question.next")}
                   <ArrowRight className="size-3.5" strokeWidth={1.6} />
@@ -254,12 +256,10 @@ function Quiz({ practice, questionID, topic }: { practice: boolean; questionID: 
                         <XCircle className="mt-0.5 size-3.5 shrink-0 text-destructive" strokeWidth={1.6} />
                       )}
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm leading-6 text-foreground">{t(`questions.${record.id}.prompt`)}</p>
-                        <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                          {t("review.answer", {
+                        <QuestionContent className="text-sm leading-6 text-foreground" content={t(`questions.${record.id}.prompt`)} />
+                        <QuestionContent className="mt-1 text-sm leading-6 text-muted-foreground" content={t("review.answer", {
                             answer: t(`questions.${record.id}.option${(questions.find((item) => item.id === record.id)?.answer ?? 0) + 1}`),
-                          })}
-                        </p>
+                          })} />
                       </div>
                     </div>
                   </li>

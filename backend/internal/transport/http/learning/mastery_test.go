@@ -3,6 +3,7 @@ package learning
 import (
 	"context"
 	"encoding/json"
+	"net/url"
 	"path/filepath"
 	"testing"
 	"time"
@@ -48,7 +49,8 @@ func TestMasterySourcesAndClassroomIsolation(t *testing.T) {
 	save(&models.Classroom{ControlPlaneModel: models.ControlPlaneModel{ID: 2}, PublicID: "two", TeacherID: 2, Name: "Two"})
 	save(&models.ClassroomStudent{StudentID: 3, ClassroomID: 1})
 	save(&models.ClassroomStudent{StudentID: 4, ClassroomID: 2})
-	now := time.Now().UTC().Add(-time.Hour)
+	// All sources must remain available beyond the former 90-day window.
+	now := time.Now().UTC().AddDate(0, 0, -180).Truncate(time.Second)
 	question := domain.Questions()[0]
 	save(&models.LearningAttempt{UserID: 3, AttemptID: uuid.NewString(), QuestionID: question.ID, Correct: false, CreatedAt: now})
 	save(&models.LearningAttempt{UserID: 3, AttemptID: uuid.NewString(), QuestionID: question.ID, VariantID: question.ID + "-v1", Mode: domain.AttemptModeReview, Correct: true, CreatedAt: now.Add(time.Minute)})
@@ -127,6 +129,34 @@ func TestMasterySourcesAndClassroomIsolation(t *testing.T) {
 		if item.Concept.Questions != 0 || len(item.Concept.Evidence) != 0 || item.Concept.LastAt != nil {
 			t.Fatal("class aggregate contains individual evidence")
 		}
+	}
+	// The range includes the review at its start and excludes the quiz at its end.
+	query := url.Values{"startAt": {now.Add(time.Minute).Format(time.RFC3339)}, "endAt": {now.Add(2 * time.Minute).Format(time.RFC3339)}}.Encode()
+	for _, endpoint := range []struct {
+		actor uint
+		path  string
+	}{{3, "/learning/mastery"}, {1, "/classrooms/one/students/c/mastery"}} {
+		filtered := profile(endpoint.actor, endpoint.path+"?"+query)
+		if filtered.Counts.Assessed != 1 || filtered.Counts.Developing != 1 {
+			t.Fatalf("range should include only the review: %+v", filtered.Counts)
+		}
+		for _, c := range filtered.Concepts {
+			for _, e := range c.Evidence {
+				if e.Source != "review" {
+					t.Fatalf("unexpected evidence in date range: %+v", e)
+				}
+			}
+		}
+	}
+	if err := json.Unmarshal(call(1, "/classrooms/one/mastery?"+query, 200), &report); err != nil {
+		t.Fatal(err)
+	}
+	if report.Data.Students[0].Counts.Assessed != 1 || report.Data.Students[0].Counts.Developing != 1 {
+		t.Fatal("classroom report must use the same period as the student profile")
+	}
+	for _, path := range []string{"/learning/mastery", "/classrooms/one/mastery", "/classrooms/one/students/c/mastery"} {
+		call(1, path+"?startAt=invalid", 400)
+		call(1, path+"?startAt=2026-11-02T00:00:00Z&endAt=2026-11-01T00:00:00Z", 400)
 	}
 	if err := db.Where("student_id = ?", 3).Delete(&models.ClassroomStudent{}).Error; err != nil {
 		t.Fatal(err)

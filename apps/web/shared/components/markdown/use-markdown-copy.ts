@@ -8,9 +8,9 @@ import { CODE_BLOCK_PLAIN_TEXT_MIME } from "@/shared/lib/clipboard";
 
 const LATEX_COPYABLE_SELECTOR = ".katex, .katex-display";
 const LATEX_ANNOTATION_SELECTOR = "annotation[encoding='application/x-tex']";
-const LATEX_INTERACTION_EXCLUSION_SELECTOR = "a, button, input, textarea, select, summary, pre, code, [contenteditable='true']";
+const LATEX_INTERACTION_EXCLUSION_SELECTOR = "a, button, label, input, textarea, select, summary, pre, code, [contenteditable='true']";
 const INLINE_CODE_COPYABLE_SELECTOR = "code:not(pre code)";
-const INLINE_CODE_INTERACTION_EXCLUSION_SELECTOR = "a, button, input, textarea, select, summary, [contenteditable='true']";
+const INLINE_CODE_INTERACTION_EXCLUSION_SELECTOR = "a, button, label, input, textarea, select, summary, [contenteditable='true']";
 const CODE_BLOCK_BODY_SELECTOR = "[data-streamdown='code-block-body']";
 const MARKDOWN_COPY_POINTER_DRAG_THRESHOLD = 6;
 
@@ -139,7 +139,7 @@ function annotateLatexElements(root: HTMLElement, label: string) {
 
   root.querySelectorAll<HTMLElement>(LATEX_COPYABLE_SELECTOR).forEach((element) => {
     const copyElement = element.closest<HTMLElement>(".katex-display") ?? element;
-    if (seenElements.has(copyElement) || !getLatexSource(copyElement)) {
+    if (seenElements.has(copyElement) || copyElement.closest(LATEX_INTERACTION_EXCLUSION_SELECTOR) || !getLatexSource(copyElement)) {
       return;
     }
 

@@ -34,13 +34,20 @@ type ClassroomMasteryResponse struct {
 // @Produce json
 // @Security BearerAuth
 // @Param id path string true "Classroom ID"
+// @Param startAt query string false "Inclusive start time (RFC3339); omitted for all history"
+// @Param endAt query string false "Exclusive end time (RFC3339); omitted for no end limit"
 // @Success 200 {object} ClassroomMasteryResponse
+// @Failure 400 {object} response.Envelope
 // @Failure 401 {object} response.Envelope
 // @Failure 403 {object} response.Envelope
 // @Failure 404 {object} response.Envelope
 // @Router /classrooms/{id}/mastery [get]
 func (h *Handler) MasteryReport(c *gin.Context) {
-	item, err := h.service.MasteryReport(c.Request.Context(), middleware.MustUserID(c), c.Param("id"))
+	period, ok := learningview.ParseMasteryPeriod(c)
+	if !ok {
+		return
+	}
+	item, err := h.service.MasteryReport(c.Request.Context(), middleware.MustUserID(c), c.Param("id"), period)
 	if err != nil {
 		h.writeError(c, err)
 		return
@@ -56,13 +63,20 @@ func (h *Handler) MasteryReport(c *gin.Context) {
 // @Security BearerAuth
 // @Param id path string true "Classroom ID"
 // @Param student_id path string true "Student public ID"
+// @Param startAt query string false "Inclusive start time (RFC3339); omitted for all history"
+// @Param endAt query string false "Exclusive end time (RFC3339); omitted for no end limit"
 // @Success 200 {object} learningview.LearningMasteryResponse
+// @Failure 400 {object} response.Envelope
 // @Failure 401 {object} response.Envelope
 // @Failure 403 {object} response.Envelope
 // @Failure 404 {object} response.Envelope
 // @Router /classrooms/{id}/students/{student_id}/mastery [get]
 func (h *Handler) StudentMastery(c *gin.Context) {
-	item, err := h.service.StudentMastery(c.Request.Context(), middleware.MustUserID(c), c.Param("id"), c.Param("student_id"))
+	period, ok := learningview.ParseMasteryPeriod(c)
+	if !ok {
+		return
+	}
+	item, err := h.service.StudentMastery(c.Request.Context(), middleware.MustUserID(c), c.Param("id"), c.Param("student_id"), period)
 	if err != nil {
 		h.writeError(c, err)
 		return

@@ -1,5 +1,7 @@
 "use client";
 
+import { QuestionContent } from "@/shared/components/question-content";
+
 import { ArrowRight, BookOpen, CheckCircle2, History, RotateCcw, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
@@ -72,8 +74,8 @@ export function LearningProgress() {
             {recent.length ? <ol className="divide-y divide-border/50">{recent.map((attempt) => <li key={attempt.id} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
               {attempt.correct ? <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" /> : <XCircle className="mt-0.5 size-4 shrink-0 text-destructive" />}
               <div className="min-w-0 flex-1">
-                <p className="text-sm leading-6"><Badge variant="outline" className="mr-2 text-xs">{t(attempt.mode === "review" ? "reviewMode" : "quizMode")}</Badge>{attempt.mode === "review" ? t("reviewBaseQuestion", { question: q(`${attempt.questionId}.prompt`) }) : q(`${attempt.questionId}.prompt`)}</p>
-                <p className="mt-1 text-sm leading-6 text-muted-foreground">{attempt.mode === "review" ? t("variantHistory", { variant: attempt.variantId, choice: String.fromCharCode(65 + attempt.selected) }) : t("yourAnswer", { answer: q(`${attempt.questionId}.option${attempt.selected + 1}`) })}</p>
+                <div className="space-y-2 text-sm leading-6"><Badge variant="outline" className="text-xs">{t(attempt.mode === "review" ? "reviewMode" : "quizMode")}</Badge><QuestionContent content={attempt.mode === "review" ? t("reviewBaseQuestion", { question: q(`${attempt.questionId}.prompt`) }) : q(`${attempt.questionId}.prompt`)} /></div>
+                <QuestionContent className="mt-1 text-sm leading-6 text-muted-foreground" content={attempt.mode === "review" ? t("variantHistory", { variant: attempt.variantId, choice: String.fromCharCode(65 + attempt.selected) }) : t("yourAnswer", { answer: q(`${attempt.questionId}.option${attempt.selected + 1}`) })} />
                 <time dateTime={attempt.createdAt} className="mt-1 block text-xs text-muted-foreground">{format.dateTime(new Date(attempt.createdAt), { timeZone, year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</time>
               </div>
               {attempt.mode === "review" ? <Button size="xs" variant="ghost" onClick={() => setReviewTarget(attempt.variantId)}>{t("variantReview")}</Button> : <Button asChild size="xs" variant="ghost"><Link href={`/learn/quiz?question=${encodeURIComponent(attempt.questionId)}`}>{t("retryQuestion")}</Link></Button>}
@@ -98,12 +100,12 @@ function MistakeCard({ question, onReview }: { question: LearningQuestionDTO; on
           <Badge variant="secondary" className="rounded-md text-xs font-normal">{t(`topics.${question.topic}`)}</Badge>
           <span className="text-xs text-muted-foreground">{t("mistakeCount", { count: question.attempts - question.correctCount })} · {t(question.reviewStage === 5 ? "reviewCompleted" : "needsPractice")}</span>
         </div>
-        <h2 className="mt-3 font-display text-xl font-normal leading-7">{q(`${question.id}.prompt`)}</h2>
+        <div role="heading" aria-level={2} className="mt-3 font-display text-xl font-normal leading-7"><QuestionContent content={q(`${question.id}.prompt`)} /></div>
         {question.misconception ? <div className="mt-3 space-y-2 rounded-lg bg-accent/5 p-3 text-xs leading-6">
           <p className="font-medium">{t("diagnosis")}</p>
-          <p>{t(`diagnoses.${question.misconception}.thought`)}</p>
-          <p className="text-muted-foreground">{t(`diagnoses.${question.misconception}.correction`)}</p>
-          <p className="text-muted-foreground">{q(`${question.id}.explain`)}</p>
+          <QuestionContent content={t(`diagnoses.${question.misconception}.thought`)} />
+          <QuestionContent className="text-muted-foreground" content={t(`diagnoses.${question.misconception}.correction`)} />
+          <QuestionContent className="text-muted-foreground" content={q(`${question.id}.explain`)} />
         </div> : null}
         <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
           <Badge variant={question.reviewDue ? "default" : "secondary"}>{t("reviewStage", { stage: question.reviewStage })}</Badge>
@@ -112,10 +114,10 @@ function MistakeCard({ question, onReview }: { question: LearningQuestionDTO; on
         <details className="mt-3 text-sm">
           <summary className="w-fit cursor-pointer text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{t("showExplanation")}</summary>
           <div className="mt-2 space-y-1 rounded-lg bg-muted/30 p-3 leading-5">
-            {question.latestWrong ? <p className="text-muted-foreground">{t("lastMistake", { answer: q(`${question.id}.option${question.latestWrong.selected + 1}`) })}</p> : null}
+            {question.latestWrong ? <QuestionContent className="text-muted-foreground" content={t("lastMistake", { answer: q(`${question.id}.option${question.latestWrong.selected + 1}`) })} /> : null}
             {question.latest?.mode === "review" ? <p className="text-muted-foreground">{t(question.latest.correct ? "lastReviewCorrect" : "lastReviewIncorrect")}</p> : null}
-            <p>{t("correctAnswer", { answer: q(`${question.id}.option${question.answer + 1}`) })}</p>
-            <p className="text-muted-foreground">{q(`${question.id}.explain`)}</p>
+            <QuestionContent content={t("correctAnswer", { answer: q(`${question.id}.option${question.answer + 1}`) })} />
+            <QuestionContent className="text-muted-foreground" content={q(`${question.id}.explain`)} />
           </div>
         </details>
         <div className="mt-3 flex flex-wrap gap-2">

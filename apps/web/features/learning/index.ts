@@ -12,6 +12,7 @@ export { LearningQuiz } from "@/features/learning/components/quiz/learning-quiz"
 export { LearningProgress } from "@/features/learning/components/learning-progress";
 export { LearningMastery } from "@/features/learning/components/learning-mastery";
 export { MasteryProfile } from "@/features/learning/components/mastery-profile";
+export { MasteryPeriodFilter } from "@/features/learning/components/shared/mastery-period-filter";
 export { SignalWorkbench } from "@/features/learning/components/workbench/signal-workbench";
 export { KnowledgeCourse } from "./components/knowledge-course";
 

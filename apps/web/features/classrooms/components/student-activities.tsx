@@ -15,7 +15,7 @@ import { useClassroomStudentActivities } from "@/features/classrooms/hooks/use-c
 import { cn } from "@/lib/utils";
 import { useAuthSession } from "@/shared/auth/auth-session-context";
 import type { StudentClassroomQuizDTO } from "@/shared/api/classroom-types";
-import { StreamdownRender } from "@/shared/components/markdown/streamdown-render";
+import { QuestionContent } from "@/shared/components/question-content";
 
 const OPTION_LETTERS = ["A", "B", "C", "D", "E", "F"];
 
@@ -195,9 +195,9 @@ function QuizCard({
           <div key={question.id} className="space-y-2">
             <div className="flex items-start gap-3 text-base font-medium leading-7 text-foreground" lang="zh-CN">
               <span className="shrink-0">{questionIndex + 1}.</span>
-              <div className="min-w-0"><StreamdownRender content={question.prompt} /></div>
+              <div className="min-w-0"><QuestionContent content={question.prompt} /></div>
             </div>
-            {question.formula && <div className="overflow-x-auto text-base"><StreamdownRender content={`$$
+            {question.formula && <div className="overflow-x-auto text-base"><QuestionContent content={`$$
 ${question.formula}
 $$`} /></div>}
             {question.fields.length > 0 && <fieldset disabled={quiz.submitted || submitting || quiz.status !== "open"} className="grid gap-4 sm:grid-cols-2"><legend className="mb-3 text-sm">{studentT("numericInput")}</legend>{question.fields.map((field) => <label key={field.id} className="space-y-1.5 text-sm"><span>{field.label}{field.unit && ` (${field.unit})`}</span><Input aria-label={`${questionIndex + 1}. ${field.label}`} autoComplete="off" maxLength={64} value={fieldAnswers[question.id]?.[field.id] ?? ""} onChange={(event) => onFieldAnswer(question.id, field.id, event.target.value)} /></label>)}</fieldset>}
@@ -226,7 +226,7 @@ $$`} /></div>}
                     >
                       {OPTION_LETTERS[optionIndex]}
                     </span>
-                    <span className="min-w-0 flex-1" lang="zh-CN"><StreamdownRender content={option} /></span>
+                    <div className="min-w-0 flex-1" lang="zh-CN"><QuestionContent content={option} /></div>
                   </button>
                 );
               })}
