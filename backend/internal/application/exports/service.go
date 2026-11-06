@@ -12,13 +12,6 @@ import (
 	lab "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/labassessment"
 	user "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/user"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/repository"
-	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/apperr"
-)
-
-var (
-	ErrInvalid   = apperr.New("exports.invalid", "invalid export options")
-	ErrForbidden = apperr.New("exports.forbidden", "export access denied")
-	ErrNotFound  = apperr.New("exports.not_found", "classroom not found")
 )
 
 type userReader interface {
@@ -38,11 +31,11 @@ func NewService(c repository.ClassroomRepository, l repository.LabAssessmentRepo
 }
 
 type Options struct {
-	Kind             string             `json:"kind"`
-	IncludeOngoing   bool               `json:"includeOngoing"`
-	Weights          map[string]float64 `json:"weights"`
-	FilenameTemplate string             `json:"filenameTemplate"`
-	CourseID         string             `json:"courseID"`
+	Kind             string
+	IncludeOngoing   bool
+	Weights          map[string]float64
+	FilenameTemplate string
+	CourseID         string
 }
 type File struct {
 	Name, ContentType string

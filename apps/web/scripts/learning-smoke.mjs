@@ -33,12 +33,9 @@ let savedReview = null;
 let failReviewResponse = true;
 const reviewRequests = [];
 const course = JSON.parse(await readFile("backend/internal/domain/learning/content/course.json", "utf8"));
-const lessonAttempts = new Map();
 const lessonRequests = [];
-let failLessonResponse = true;
 function summary(lesson) {
-  const attempts = [...lessonAttempts.values()].filter((attempt) => attempt.lessonId === lesson.id);
-  return { id: lesson.id, number: lesson.number, title: lesson.title, chapter: lesson.chapter, completedStages: attempts.length, masteredStages: attempts.filter((attempt) => attempt.score === attempt.total).length };
+  return { id: lesson.id, number: lesson.number, title: lesson.title, chapter: lesson.chapter, completedStages: 0, masteredStages: 0 };
 }
 const tutorRequests = [];
 const errors = [];
@@ -55,21 +52,10 @@ try {
     } else if (url.pathname.includes("/learning/lessons/")) {
       const lesson = course.lessons.find((item) => item.id === url.pathname.split("/").at(-1));
       assert.ok(lesson);
-      data = { canPractice: true, version: course.version, lesson: summary(lesson), markdown: lesson.markdown, questions: lesson.questions.map(({ id, stage, prompt, options, formula, fields }) => ({ id, stage, prompt, options, formula, fields: fields.map(({ id, label, unit }) => ({ id, label, unit })) })), attempts: [...lessonAttempts.values()].filter((item) => item.lessonId === lesson.id) };
+      data = { canPractice: true, version: course.version, lesson: summary(lesson), markdown: lesson.markdown, questions: lesson.questions.map(({ id, stage, prompt, options, formula, fields }) => ({ id, stage, prompt, options, formula, fields: fields.map(({ id, label, unit }) => ({ id, label, unit })) })), attempts: [] };
     } else if (url.pathname.endsWith("/learning/lesson-attempts")) {
-      const body = request.postDataJSON(); lessonRequests.push(body);
-      const q = course.lessons.find((item) => item.id === body.lessonId).questions.find((item) => item.id === body.questionId);
-      const results = q.options.length ? [{ id: "choice", correct: Number(body.answers.choice) === q.answer, expected: q.options[q.answer] }] : q.fields.map((field) => {
-        const parts = body.answers[field.id].split("/").map(Number);
-        return { id: field.id, correct: Math.abs(parts[0] / (parts[1] ?? 1) - field.expected) < 1e-6, expected: String(field.expected) };
-      });
-      let saved = lessonAttempts.get(body.questionId);
-      if (!saved || saved.id !== body.id) {
-        saved = { ...body, stage: q.stage, score: results.filter((item) => item.correct).length, total: results.length, results, explanation: q.explanation, createdAt: now };
-        lessonAttempts.set(body.questionId, saved);
-      }
-      if (failLessonResponse) { failLessonResponse = false; await route.abort("connectionfailed"); return; }
-      data = saved;
+      lessonRequests.push(request.postDataJSON());
+      await route.fulfill({ status: 403, json: { errorMsg: "answer course questions through a teacher-published classroom quiz", errorCode: "learning.teacher_assigned" } }); return;
     } else if (url.pathname.endsWith("/learning/progress")) {
       data = { accountId: user.id, questions: catalog.map((q) => ({ ...q, attempts: q.id === "energy-signal" ? (savedReview ? 2 : 1) : 0, correctCount: q.id === "energy-signal" && savedReview ? 1 : 0, latest: q.id === "energy-signal" ? savedReview ?? wrong : null, latestWrong: q.id === "energy-signal" ? wrong : null, misconception: q.id === "energy-signal" ? "energy-signal-power" : "", suggestedVariantId: q.id === "energy-signal" ? "energy-signal-v1" : "", reviewStage: savedReview && q.id === "energy-signal" ? 1 : 0, nextReviewAt: q.id === "energy-signal" ? (savedReview ?? wrong).nextReviewAt : null, reviewDue: q.id === "energy-signal" && !savedReview })), recent: savedReview ? [savedReview, wrong] : [wrong] };
     } else if (url.pathname.includes("/learning/variants/")) {
@@ -135,29 +121,21 @@ try {
 
   await page.goto(`${base}/learn/knowledge?lesson=ss-1-1`);
   await page.getByRole("heading", { name: "1.1 信号的分类与基本量", exact: true }).waitFor();
-  for (const stage of ["课前预习", "课中练习", "课后巩固"]) await page.getByRole("heading", { name: stage, exact: true }).waitFor();
-  const inClass = page.getByRole("region", { name: "课中练习", exact: true });
-  await inClass.getByRole("textbox", { name: "能量 E", exact: true }).fill("9/4");
-  await inClass.getByText("公式预览：", { exact: false }).waitFor();
-  await inClass.getByRole("button", { name: "提交答案", exact: true }).click();
-  await inClass.getByRole("button", { name: "重试原提交", exact: true }).waitFor();
-  assert.equal(await inClass.getByRole("textbox").isDisabled(), true);
-  await inClass.getByRole("button", { name: "重试原提交", exact: true }).click();
-  await inClass.getByText("本次得分 1/1", { exact: true }).waitFor();
-  assert.deepEqual(lessonRequests[0], lessonRequests[1], "lesson retry changed original payload");
+  await page.getByText("本节知识讲义", { exact: true }).waitFor();
+  // Lesson exercises are published and submitted from classroom activities;
+  // the knowledge page keeps the reading view and no longer renders answer forms.
+  assert.equal(await page.getByRole("button", { name: "提交答案", exact: true }).count(), 0);
   await page.reload();
-  await inClass.getByText("本次得分 1/1", { exact: true }).waitFor();
+  await page.getByText("本节知识讲义", { exact: true }).waitFor();
   await screenshot("knowledge-desktop");
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${base}/learn/knowledge?lesson=ss-2-5`);
   await page.getByRole("heading", { name: "2.5 卷积积分", exact: true }).waitFor();
-  for (const [label, value] of [["a", "1"], ["b", "1"], ["c", "3"], ["d", "1"]]) await inClass.getByRole("textbox", { name: label, exact: true }).fill(value);
-  await inClass.getByRole("button", { name: "提交答案", exact: true }).click();
-  await inClass.getByText("本次得分 3/4", { exact: true }).waitFor();
-  await inClass.getByText("参考值：-1", { exact: true }).waitFor();
+  await page.getByText("本节知识讲义", { exact: true }).waitFor();
+  assert.equal(await page.getByRole("button", { name: "提交答案", exact: true }).count(), 0);
   await noOverflow();
-  await inClass.scrollIntoViewIfNeeded(); await screenshot("knowledge-piecewise-mobile");
+  await page.locator("#lesson-reading").scrollIntoViewIfNeeded(); await screenshot("knowledge-reading-mobile");
   const catalogNavigation = page.getByRole("navigation", { name: "小节目录", exact: true });
   const searchLesson = course.lessons.find((lesson) => lesson.id === "ss-2-5");
   assert.ok(searchLesson, "search fixture lesson is missing from the course catalog");
@@ -171,8 +149,9 @@ try {
   await catalogNavigation.getByRole("link").first().waitFor();
   assert.equal(await catalogNavigation.getByRole("link").count(), course.lessons.length);
   await screenshot("knowledge-search-mobile");
+  assert.deepEqual(lessonRequests, [], "knowledge reading must not submit course exercises");
   assert.deepEqual(errors, []);
-  console.log("PASS: workbench desktop/mobile, diagnosis, due filter, immutable review retry, scheduling display, history mode labels");
+  console.log("PASS: workbench desktop/mobile, diagnosis, due filter, immutable review retry, scheduling display, history mode labels, knowledge reading and catalog search without exercise submission");
 } catch (error) {
   if (page) await page.screenshot({ path: join(artifacts, "failure.png") }).catch(() => {});
   throw error;
