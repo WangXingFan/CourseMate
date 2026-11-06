@@ -88,6 +88,7 @@ export function NavMain({
               (item.id !== "classrooms" || canSeeClassrooms) &&
               (item.id !== "analytics" || canSeeClassrooms) &&
               (item.id !== "rollCall" || sessionUser?.role === "teacher") &&
+              (item.id !== "exports" || sessionUser?.role === "teacher") &&
               (item.id !== "activities" || canSeeActivities) &&
               (item.id !== "homeworks" || canSeeActivities),
           ).map((item) => (

@@ -476,6 +476,14 @@ export interface ClassroomExperimentRequest {
   open: boolean;
 }
 
+export interface ClassroomExportRequest {
+  courseID: "L1" | "L2" | "L3";
+  filenameTemplate: string;
+  includeOngoing: boolean;
+  kind: "homeworks" | "labs" | "attendance" | "summary" | "reports";
+  weights: Record<string, number>;
+}
+
 export interface ClassroomListResponse {
   classrooms: ClassroomResponse[];
 }
@@ -7160,6 +7168,25 @@ export namespace Classrooms {
     export type RequestBody = ClassroomExperimentRequest;
     export type RequestHeaders = {};
     export type ResponseBody = ClassroomMutationResponse;
+  }
+
+  /**
+   * No description
+   * @tags exports
+   * @name ExportsCreate
+   * @summary Export classroom scores as XLSX or individual PDF reports in a ZIP
+   * @request POST:/classrooms/{id}/exports
+   * @secure
+   */
+  export namespace ExportsCreate {
+    export type RequestParams = {
+      /** Owned classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ClassroomExportRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = Blob;
   }
 
   /**

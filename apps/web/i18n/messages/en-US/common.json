@@ -90,7 +90,8 @@
     "yesterday": "Yesterday",
     "courseKnowledge": "Course knowledge",
     "homeworks": "My homework",
-    "analytics": "Analytics"
+    "analytics": "Analytics",
+    "exports": "Export center"
   },
   "time": {
     "todayTime": "{time}",

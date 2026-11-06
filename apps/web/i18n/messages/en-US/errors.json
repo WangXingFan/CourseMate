@@ -421,5 +421,10 @@
     "forbidden": "Analytics requires a teacher or administrator account.",
     "invalid": "Invalid analytics query.",
     "classroom": "This classroom is unavailable."
+  },
+  "exports": {
+    "invalid": "Invalid export settings. Check the weights or filename template.",
+    "forbidden": "Only teachers can export their own classroom data.",
+    "not_found": "Classroom not found or not owned by this teacher."
   }
 }

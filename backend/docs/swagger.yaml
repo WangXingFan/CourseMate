@@ -1129,6 +1129,38 @@ definitions:
     required:
     - open
     type: object
+  ClassroomExportRequest:
+    properties:
+      courseID:
+        enum:
+        - L1
+        - L2
+        - L3
+        type: string
+      filenameTemplate:
+        type: string
+      includeOngoing:
+        type: boolean
+      kind:
+        enum:
+        - homeworks
+        - labs
+        - attendance
+        - summary
+        - reports
+        type: string
+      weights:
+        additionalProperties:
+          format: float64
+          type: number
+        type: object
+    required:
+    - courseID
+    - filenameTemplate
+    - includeOngoing
+    - kind
+    - weights
+    type: object
   ClassroomListResponse:
     properties:
       classrooms:
@@ -14499,6 +14531,50 @@ paths:
       summary: Open or close one experiment for the teacher's classroom
       tags:
       - classrooms
+  /classrooms/{id}/exports:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Owned classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Export settings
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/ClassroomExportRequest'
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Export classroom scores as XLSX or individual PDF reports in a ZIP
+      tags:
+      - exports
   /classrooms/{id}/homework-bank:
     get:
       parameters:

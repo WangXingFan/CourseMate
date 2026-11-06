@@ -8042,6 +8042,75 @@ const docTemplate = `{
                 }
             }
         },
+        "/classrooms/{id}/exports": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "exports"
+                ],
+                "summary": "Export classroom scores as XLSX or individual PDF reports in a ZIP",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Owned classroom ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Export settings",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ClassroomExportRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/classrooms/{id}/homework-bank": {
             "get": {
                 "security": [
@@ -16728,6 +16797,49 @@ const docTemplate = `{
             "properties": {
                 "open": {
                     "type": "boolean"
+                }
+            }
+        },
+        "ClassroomExportRequest": {
+            "type": "object",
+            "required": [
+                "courseID",
+                "filenameTemplate",
+                "includeOngoing",
+                "kind",
+                "weights"
+            ],
+            "properties": {
+                "courseID": {
+                    "type": "string",
+                    "enum": [
+                        "L1",
+                        "L2",
+                        "L3"
+                    ]
+                },
+                "filenameTemplate": {
+                    "type": "string"
+                },
+                "includeOngoing": {
+                    "type": "boolean"
+                },
+                "kind": {
+                    "type": "string",
+                    "enum": [
+                        "homeworks",
+                        "labs",
+                        "attendance",
+                        "summary",
+                        "reports"
+                    ]
+                },
+                "weights": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number",
+                        "format": "float64"
+                    }
                 }
             }
         },

@@ -398,5 +398,52 @@
       "blank": "Fill in the blank",
       "true_false": "True or false"
     }
+  },
+  "exports": {
+    "title": "Export center",
+    "forbidden": "Only teachers can export their own classroom data.",
+    "rules": "Scoring and export rules",
+    "scope": "Exports cumulative records for the current class roster. Times use Asia/Shanghai.",
+    "classroom": "Classroom",
+    "students": "students",
+    "loading": "Loading",
+    "noClasses": "No classrooms",
+    "refresh": "Refresh classrooms",
+    "scores": "Individual scores",
+    "includeOngoing": "Include ongoing homework and labs",
+    "items": {
+      "homeworks": "Homework scores",
+      "labs": "Lab scores",
+      "attendance": "Attendance",
+      "summary": "Combined grades",
+      "reports": "Student lab reports"
+    },
+    "downloadExcel": "Export Excel",
+    "downloadZip": "Download PDF archive",
+    "preparing": "Generating",
+    "downloaded": "Generated and downloaded: {name}",
+    "weightTotal": "Total weight {value}%",
+    "weight": "Weight for {name}",
+    "attendanceFormula": "Attendance = max(0, 100 − late × 10 − absent × 20)",
+    "invalidWeights": "Select components with positive weights totaling 100%.",
+    "filename": "One PDF per student · Filename template",
+    "tokens": "Insert filename field",
+    "preview": "Filename preview",
+    "invalidTemplate": "Enter a template using only the five supported fields below.",
+    "sampleClass": "Signals and systems",
+    "sampleName": "Student",
+    "rulesText": {
+      "homeworks": "Homework: includes closed assignments by default. Each is normalized to 100 points and averaged equally; missing submissions score zero. Include ongoing assignments to export current scores.",
+      "labs": "Labs: includes closed assessments by default, averaged equally. Uses formal scores and teacher corrections; unearned points score zero. Completion requires a submitted formal attempt for all four tasks.",
+      "attendance": "Attendance starts at 100, deducting 10 per late arrival and 20 per absence, with a floor of zero. Excused absences incur no deduction. Only ended sessions count; students outside a session roster are not penalized.",
+      "summary": "Combined grades: selected weights must total 100%. Final scores sum each component multiplied by its weight, rounded to two decimal places. Missing assessment data leaves the final score blank; weights are never silently redistributed.",
+      "reports": "Reports: select a classroom and a lab. Each student receives a PDF for that lab only, including completion status, saved predictions, parameters, answers, trials, derivations, conclusions and formal assessment scores. Details are added only for tasks with records. Filenames follow the template and are bundled as ZIP; invalid characters become underscores and duplicates receive a suffix."
+    },
+    "course": "Select lab",
+    "courses": {
+      "L1": "Lab 1 · Time-domain analysis",
+      "L2": "Lab 2 · Frequency-domain analysis",
+      "L3": "Lab 3 · Complex-frequency analysis"
+    }
   }
 }

@@ -12,6 +12,7 @@ require (
 	github.com/coregx/gxpdf v0.8.2
 	github.com/extrame/xls v0.0.1
 	github.com/gin-gonic/gin v1.12.0
+	github.com/go-pdf/fpdf v0.9.0
 	github.com/go-playground/validator/v10 v10.30.3
 	github.com/go-redis/redis/extra/redisotel/v8 v8.11.5
 	github.com/go-redis/redis/v8 v8.11.5

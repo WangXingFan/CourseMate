@@ -24,6 +24,7 @@ import (
 	appcontentmoderation "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/contentmoderation"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/conversation"
 	appembedding "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/embedding"
+	appexports "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/exports"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/extraction"
 	appknowledgebase "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/knowledgebase"
 	applabassessment "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/labassessment"
@@ -78,6 +79,7 @@ import (
 	classroomhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/classroom"
 	contentmoderationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/contentmoderation"
 	conversationhttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/conversation"
+	exportshttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/exports"
 	knowledgebasehttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/knowledgebase"
 	labassessmenthttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/labassessment"
 	learninghttp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/transport/http/learning"
@@ -398,7 +400,8 @@ func NewAppWithOptions(opts Options) (*App, error) {
 	classroomService := appclassroom.NewService(classroomRepo, userRepo)
 	classroomHandler := classroomhttp.NewHandler(classroomService)
 	classroomModule := classroomhttp.NewModule(classroomHandler)
-	learningService := applearning.NewService(learningrepo.NewRepo(db))
+	learningRepo := learningrepo.NewRepo(db)
+	learningService := applearning.NewService(learningRepo)
 	classroomService.SetMasteryReader(learningService)
 	learningService.SetTutor(channelService, llmClient)
 	learningModule := learninghttp.NewModule(learningService)
@@ -413,6 +416,7 @@ func NewAppWithOptions(opts Options) (*App, error) {
 		Classroom:         classroomModule,
 		Analytics:         analyticshttp.NewModule(appanalytics.NewService(analyticsrepo.NewRepo(db), userRepo)),
 		Attendance:        attendancehttp.NewModule(appattendance.NewService(attendancerepo.NewRepo(db), classroomRepo, userRepo)),
+		Exports:           exportshttp.NewModule(appexports.NewService(classroomRepo, labassessmentrepo.NewRepo(db), attendancerepo.NewRepo(db), learningRepo, userRepo)),
 		Learning:          learningModule,
 		LabAssessment:     labAssessmentModule,
 		Conversation:      conversationModule,

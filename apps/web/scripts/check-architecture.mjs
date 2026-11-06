@@ -22,6 +22,7 @@ const FEATURE_DOMAINS = {
   chat: "chat",
   classrooms: "classroom",
   desktop: "desktop",
+  exports: "export",
   "knowledge-bases": "knowledge-base",
   learning: "learning",
   recent: "recent",
