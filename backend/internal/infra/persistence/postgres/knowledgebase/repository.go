@@ -65,8 +65,8 @@ func (r *Repo) ListKnowledgeBases(ctx context.Context, filter repository.Knowled
 }
 
 // GetKnowledgeBaseByPublicID 按公开 ID 查询知识库。
-func (r *Repo) GetKnowledgeBaseByPublicID(ctx context.Context, publicID string) (*domainknowledgebase.KnowledgeBase, error) {
-	result, err := r.GetKnowledgeBaseAccessByPublicID(ctx, publicID)
+func (r *Repo) GetKnowledgeBaseByPublicID(ctx context.Context, publicID string, filter repository.KnowledgeBaseListFilter) (*domainknowledgebase.KnowledgeBase, error) {
+	result, err := r.GetKnowledgeBaseAccessByPublicID(ctx, publicID, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -78,9 +78,9 @@ func (r *Repo) GetKnowledgeBaseByPublicID(ctx context.Context, publicID string) 
 }
 
 // GetKnowledgeBaseAccessByPublicID 查询知识库访问控制所需的元数据，不聚合文件计数。
-func (r *Repo) GetKnowledgeBaseAccessByPublicID(ctx context.Context, publicID string) (*domainknowledgebase.KnowledgeBase, error) {
+func (r *Repo) GetKnowledgeBaseAccessByPublicID(ctx context.Context, publicID string, filter repository.KnowledgeBaseListFilter) (*domainknowledgebase.KnowledgeBase, error) {
 	var item models.KnowledgeBase
-	if err := r.db.WithContext(ctx).Where("public_id = ?", strings.TrimSpace(publicID)).First(&item).Error; err != nil {
+	if err := applyListFilter(r.db.WithContext(ctx), filter).Where("public_id = ?", strings.TrimSpace(publicID)).First(&item).Error; err != nil {
 		return nil, dberror.Translate(err)
 	}
 	result := toDomain(item)
@@ -458,9 +458,7 @@ func (r *Repo) ResolveVisibleKnowledgeBaseFiles(ctx context.Context, userID uint
 		return nil, nil, repository.ErrInvalidInput
 	}
 	bases := make([]models.KnowledgeBase, 0, len(publicIDs))
-	if err := r.db.WithContext(ctx).
-		Where("public_id IN ? AND enabled = ?", publicIDs, true).
-		Where("scope = ? OR (scope = ? AND owner_user_id = ?)", domainknowledgebase.ScopeBuiltin, domainknowledgebase.ScopeUser, userID).
+	if err := applyListFilter(r.db.WithContext(ctx), repository.KnowledgeBaseListFilter{VisibleUserID: &userID, PublicIDs: publicIDs}).
 		Find(&bases).Error; err != nil {
 		return nil, nil, dberror.Translate(err)
 	}
@@ -547,9 +545,18 @@ func applyListFilter(query *gorm.DB, filter repository.KnowledgeBaseListFilter) 
 		query = query.Where("public_id IN ?", filter.PublicIDs)
 	}
 	if filter.VisibleUserID != nil {
-		query = query.Where("(scope = ? AND enabled = ?) OR (scope = ? AND owner_user_id = ? AND enabled = ?)",
-			domainknowledgebase.ScopeBuiltin, true, domainknowledgebase.ScopeUser, *filter.VisibleUserID, true)
+		query = query.Where("enabled = ?", true).Where(`scope = ? OR (scope = ? AND (owner_user_id = ? OR owner_user_id IN (
+			SELECT c.teacher_id FROM classrooms c
+			JOIN classroom_students cs ON cs.classroom_id = c.id
+			JOIN identity_users teacher ON teacher.id = c.teacher_id AND teacher.role = ? AND teacher.deleted_at IS NULL
+			WHERE cs.student_id = ?
+		)))`, domainknowledgebase.ScopeBuiltin, domainknowledgebase.ScopeUser, *filter.VisibleUserID, models.RoleTeacher, *filter.VisibleUserID)
 	} else {
+		if filter.AdminVisible {
+			query = query.Where(`scope = ? OR (scope = ? AND owner_user_id IN (
+				SELECT id FROM identity_users WHERE role = ? AND deleted_at IS NULL
+			))`, domainknowledgebase.ScopeBuiltin, domainknowledgebase.ScopeUser, models.RoleTeacher)
+		}
 		if scope := strings.TrimSpace(filter.Scope); scope != "" {
 			query = query.Where("scope = ?", scope)
 		}

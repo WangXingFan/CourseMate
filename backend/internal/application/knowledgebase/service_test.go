@@ -356,7 +356,7 @@ func (s *knowledgeBaseRepositoryStub) ListKnowledgeBases(context.Context, reposi
 	return nil, 0, nil
 }
 
-func (s *knowledgeBaseRepositoryStub) GetKnowledgeBaseByPublicID(context.Context, string) (*domainknowledgebase.KnowledgeBase, error) {
+func (s *knowledgeBaseRepositoryStub) GetKnowledgeBaseByPublicID(context.Context, string, repository.KnowledgeBaseListFilter) (*domainknowledgebase.KnowledgeBase, error) {
 	if s.getErr != nil {
 		return nil, s.getErr
 	}
@@ -367,8 +367,8 @@ func (s *knowledgeBaseRepositoryStub) GetKnowledgeBaseByPublicID(context.Context
 	return &item, nil
 }
 
-func (s *knowledgeBaseRepositoryStub) GetKnowledgeBaseAccessByPublicID(ctx context.Context, publicID string) (*domainknowledgebase.KnowledgeBase, error) {
-	return s.GetKnowledgeBaseByPublicID(ctx, publicID)
+func (s *knowledgeBaseRepositoryStub) GetKnowledgeBaseAccessByPublicID(ctx context.Context, publicID string, filter repository.KnowledgeBaseListFilter) (*domainknowledgebase.KnowledgeBase, error) {
+	return s.GetKnowledgeBaseByPublicID(ctx, publicID, filter)
 }
 
 func (s *knowledgeBaseRepositoryStub) CreateKnowledgeBase(_ context.Context, item *domainknowledgebase.KnowledgeBase) (*domainknowledgebase.KnowledgeBase, error) {

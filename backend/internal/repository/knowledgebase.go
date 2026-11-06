@@ -16,6 +16,7 @@ type KnowledgeBaseListFilter struct {
 	OwnerUserID   *uint
 	Enabled       *bool
 	VisibleUserID *uint
+	AdminVisible  bool
 }
 
 // KnowledgeBaseFileProcessingSnapshot 描述知识库文件处理状态及聚合计数快照。
@@ -46,8 +47,8 @@ type KnowledgeBaseFileCleanupCandidate struct {
 // KnowledgeBaseRepository 定义知识库持久化能力。
 type KnowledgeBaseRepository interface {
 	ListKnowledgeBases(ctx context.Context, filter KnowledgeBaseListFilter, offset int, limit int) ([]domainknowledgebase.KnowledgeBase, int64, error)
-	GetKnowledgeBaseByPublicID(ctx context.Context, publicID string) (*domainknowledgebase.KnowledgeBase, error)
-	GetKnowledgeBaseAccessByPublicID(ctx context.Context, publicID string) (*domainknowledgebase.KnowledgeBase, error)
+	GetKnowledgeBaseByPublicID(ctx context.Context, publicID string, filter KnowledgeBaseListFilter) (*domainknowledgebase.KnowledgeBase, error)
+	GetKnowledgeBaseAccessByPublicID(ctx context.Context, publicID string, filter KnowledgeBaseListFilter) (*domainknowledgebase.KnowledgeBase, error)
 	CreateKnowledgeBase(ctx context.Context, item *domainknowledgebase.KnowledgeBase) (*domainknowledgebase.KnowledgeBase, error)
 	PatchKnowledgeBase(ctx context.Context, id uint, patch KnowledgeBasePatch) (*domainknowledgebase.KnowledgeBase, error)
 	DeleteKnowledgeBase(ctx context.Context, id uint) ([]KnowledgeBaseFileCleanupCandidate, error)

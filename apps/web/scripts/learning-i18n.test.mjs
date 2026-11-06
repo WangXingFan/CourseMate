@@ -16,7 +16,7 @@ const { parse } = await import(pathToFileURL(formatRequire.resolve("@formatjs/ic
 const messagesRoot = new URL("../i18n/messages/", import.meta.url);
 
 test("generated question messages preserve literal braces and apostrophes", () => {
-  const samples = ["e^{−2t}", "\\frac{{a}}{{b}}", "{a}{b}", "}{", "Student's response {x}'s value", "f' and f''"];
+  const samples = ["e^{−2t}", "\\frac{{a}}{{b}}", "{a}{b}", "}{", "Student's response {x}'s value", "f' and f''", "0<k<K", "0<k<ab", "<value>", "x>0"];
   for (const sample of samples) {
     const t = createTranslator({ locale: "en-US", messages: { sample: learningBankMessage(sample) }, onError(error) { throw error; } });
     assert.equal(t("sample"), sample);

@@ -13,7 +13,8 @@
     "chatFiles": "文件与检索",
     "knowledgeBases": "知识库",
     "about": "关于",
-    "contentModeration": "内容审核"
+    "contentModeration": "内容审核",
+    "questionBank": "题库"
   },
   "aboutPage": {
     "title": "关于",

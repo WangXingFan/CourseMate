@@ -56,7 +56,7 @@ func (h *Handler) requireKnowledgeBaseEnabled(c *gin.Context) {
 // @Router /knowledge-bases [get]
 func (h *Handler) ListVisible(c *gin.Context) {
 	items, total, err := h.service.ListVisible(c.Request.Context(), middleware.MustUserID(c), listInput(c))
-	writeList(c, items, total, err)
+	writeList(c, items, total, err, false)
 }
 
 // ListMine godoc
@@ -75,7 +75,7 @@ func (h *Handler) ListMine(c *gin.Context) {
 	input := listInput(c)
 	input.Enabled = queryparam.OptionalBool(strings.TrimSpace(c.Query("enabled")))
 	items, total, err := h.service.ListMine(c.Request.Context(), middleware.MustUserID(c), input)
-	writeList(c, items, total, err)
+	writeList(c, items, total, err, false)
 }
 
 // GetVisible godoc
@@ -91,7 +91,7 @@ func (h *Handler) GetVisible(c *gin.Context) {
 		writeError(c, err)
 		return
 	}
-	response.Success(c, KnowledgeBaseDataResponse{KnowledgeBase: toKnowledgeBaseResponse(*item)})
+	response.Success(c, KnowledgeBaseDataResponse{KnowledgeBase: toKnowledgeBaseResponse(*item, middleware.MustUserID(c), false)})
 }
 
 // CreateMine godoc
@@ -114,7 +114,7 @@ func (h *Handler) CreateMine(c *gin.Context) {
 		writeError(c, err)
 		return
 	}
-	response.Success(c, KnowledgeBaseDataResponse{KnowledgeBase: toKnowledgeBaseResponse(*item)})
+	response.Success(c, KnowledgeBaseDataResponse{KnowledgeBase: toKnowledgeBaseResponse(*item, middleware.MustUserID(c), false)})
 }
 
 // PatchMine godoc
@@ -270,7 +270,7 @@ func (h *Handler) RemoveMineFile(c *gin.Context) {
 }
 
 // ListAdmin godoc
-// @Summary 查询内置知识库
+// @Summary 查询内置和教师知识库
 // @Tags admin-knowledge-bases
 // @Security BearerAuth
 // @Param q query string false "搜索关键词"
@@ -284,8 +284,8 @@ func (h *Handler) RemoveMineFile(c *gin.Context) {
 func (h *Handler) ListAdmin(c *gin.Context) {
 	input := listInput(c)
 	input.Enabled = queryparam.OptionalBool(strings.TrimSpace(c.Query("enabled")))
-	items, total, err := h.service.ListAdminBuiltin(c.Request.Context(), input)
-	writeList(c, items, total, err)
+	items, total, err := h.service.ListAdmin(c.Request.Context(), input)
+	writeList(c, items, total, err, true)
 }
 
 // ListPlatformFiles godoc
@@ -491,11 +491,11 @@ func (h *Handler) CreateAdmin(c *gin.Context) {
 		return
 	}
 	h.audit(c, "knowledge_base.create_builtin", item.PublicID, map[string]any{"name": item.Name})
-	response.Success(c, KnowledgeBaseDataResponse{KnowledgeBase: toKnowledgeBaseResponse(*item)})
+	response.Success(c, KnowledgeBaseDataResponse{KnowledgeBase: toKnowledgeBaseResponse(*item, middleware.MustUserID(c), true)})
 }
 
 // GetAdmin godoc
-// @Summary 查询内置知识库详情
+// @Summary 查询内置和教师知识库详情
 // @Tags admin-knowledge-bases
 // @Security BearerAuth
 // @Param id path string true "知识库ID"
@@ -507,7 +507,7 @@ func (h *Handler) GetAdmin(c *gin.Context) {
 		writeError(c, err)
 		return
 	}
-	response.Success(c, KnowledgeBaseDataResponse{KnowledgeBase: toKnowledgeBaseResponse(*item)})
+	response.Success(c, KnowledgeBaseDataResponse{KnowledgeBase: toKnowledgeBaseResponse(*item, middleware.MustUserID(c), true)})
 }
 
 // PatchAdmin godoc
@@ -540,7 +540,7 @@ func (h *Handler) PatchAdmin(c *gin.Context) {
 func (h *Handler) DeleteAdmin(c *gin.Context) { h.delete(c, true) }
 
 // ListAdminFiles godoc
-// @Summary 查询内置知识库文件
+// @Summary 查询内置和教师知识库文件
 // @Tags admin-knowledge-bases
 // @Security BearerAuth
 // @Param id path string true "知识库ID"
@@ -555,7 +555,7 @@ func (h *Handler) ListAdminFiles(c *gin.Context) {
 }
 
 // GetAdminFileProcessingStatuses godoc
-// @Summary 批量查询内置知识库文件处理状态
+// @Summary 批量查询内置和教师知识库文件处理状态
 // @Tags admin-knowledge-bases
 // @Security BearerAuth
 // @Accept json
@@ -572,7 +572,7 @@ func (h *Handler) GetAdminFileProcessingStatuses(c *gin.Context) {
 }
 
 // GetAdminFileProcessingSnapshot godoc
-// @Summary 查询内置知识库处理快照
+// @Summary 查询内置和教师知识库处理快照
 // @Tags admin-knowledge-bases
 // @Accept json
 // @Produce json
@@ -612,8 +612,8 @@ func (h *Handler) ListAvailableAdminFiles(c *gin.Context) {
 }
 
 // GetAdminFileContent godoc
-// @Summary 获取内置知识库文件内容
-// @Description 仅允许读取仍与指定内置知识库关联的文件
+// @Summary 获取内置和教师知识库文件内容
+// @Description 仅允许读取仍与指定内置和教师知识库关联的文件
 // @Tags admin-knowledge-bases
 // @Produce application/octet-stream
 // @Security BearerAuth
@@ -668,7 +668,7 @@ func (h *Handler) patch(c *gin.Context, admin bool, input appknowledgebase.Patch
 	if admin {
 		h.audit(c, "knowledge_base.update_builtin", result.PublicID, nil)
 	}
-	response.Success(c, KnowledgeBaseDataResponse{KnowledgeBase: toKnowledgeBaseResponse(*result)})
+	response.Success(c, KnowledgeBaseDataResponse{KnowledgeBase: toKnowledgeBaseResponse(*result, middleware.MustUserID(c), admin)})
 }
 
 func (h *Handler) delete(c *gin.Context, admin bool) {
@@ -785,7 +785,7 @@ func (h *Handler) getFileProcessingSnapshot(c *gin.Context, admin bool) {
 		return
 	}
 	response.Success(c, KnowledgeBaseFileProcessingSnapshotResponse{
-		KnowledgeBase: toKnowledgeBaseResponse(*item),
+		KnowledgeBase: toKnowledgeBaseResponse(*item, middleware.MustUserID(c), admin),
 		Statuses: toKnowledgeBaseFileProcessingStatusResponses(
 			files,
 			h.service.ResolveFileVectorizationCapabilities(c.Request.Context(), files),
@@ -793,12 +793,12 @@ func (h *Handler) getFileProcessingSnapshot(c *gin.Context, admin bool) {
 	})
 }
 
-func writeList(c *gin.Context, items []domainknowledgebase.KnowledgeBase, total int64, err error) {
+func writeList(c *gin.Context, items []domainknowledgebase.KnowledgeBase, total int64, err error, admin bool) {
 	if err != nil {
 		writeError(c, err)
 		return
 	}
-	response.SuccessPage(c, total, toKnowledgeBaseResponses(items))
+	response.SuccessPage(c, total, toKnowledgeBaseResponses(items, middleware.MustUserID(c), admin))
 }
 
 func (h *Handler) writeFileList(c *gin.Context, items []domainconversation.FileObject, total int64, err error) {

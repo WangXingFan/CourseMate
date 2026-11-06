@@ -118,6 +118,15 @@ def main():
     bank[1]['questions'][2]['accepted'][0].extend(['cos(5*t)', 'cos(t*5)', r'\cos 5t'])
     bank[1]['questions'][3]['accepted'][0].extend(['9*cos(9*t)', 'cos(9*t)*9', r'9\cos 9t'])
     destination = ROOT / 'backend/internal/domain/classroom/content/homework-bank.json'
+    # Keep reviewed explanations only when the question and grading key are unchanged.
+    if destination.exists():
+        previous = {q['id']: q for paper in json.loads(destination.read_text('utf-8'))
+                    for q in paper['questions']}
+        for paper in bank:
+            for question in paper['questions']:
+                old = previous.get(question['id'], {})
+                if all(old.get(key) == question[key] for key in ('kind', 'prompt', 'options', 'accepted')) and old.get('explanation'):
+                    question['explanation'] = old['explanation']
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(json.dumps(bank, ensure_ascii=False, indent=2) + '\n', 'utf-8')
     print(f'Imported {len(bank)} papers / 40 questions / {formula_count} formulas / {diagram_count} diagrams')

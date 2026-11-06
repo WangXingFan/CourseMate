@@ -1,272 +1,760 @@
 # 题库答案与配对清单
 
-截至 2026-10-24。此文件由 `node scripts/export-learning-bank-audit.mjs` 从实际启用的题库生成，供教师逐题核对。
+题库版本：2026-11-06-v3。此文件由 `node scripts/export-learning-bank-audit.mjs` 从实际启用的题库生成，供教师逐题核对。
 
-快问快答 **80** 道，每章20道；复习变式 **160** 道；课程原题 **156** 道；同知识点复测 **52** 道。共448个题目实例，三类用途不同，不合并参与排行榜。
+快问快答 **240** 道（第1章 60 道、第2章 60 道、第3章 60 道、第4章 60 道）；复习变式 **480** 道；课程原题 **156** 道；同知识点复测 **52** 道。本清单收录 **928** 个题目实例，不包含作业、实验及其他用途题库。
 
-数值答案的独立公式回归在 `apps/web/scripts/learning-question-bank.test.mjs`；结构、章节、双语、答案范围、变式关联与数学渲染均有自动检查。概念题按定义、假设及解析逐项审读；这些核验不代替任课教师对教学适配性的最终审定。
+## 本次扩充与核验
+
+出题边界为 `content/signals/knowledge-base` 的 52 份已发布讲义（含附录 A、B）。快问快答从 80 道扩至 240 道，变式从 160 道扩至 480 道；每道主问题始终配两道变式。全部 720 道均标明讲义出处。
+
+新增 480 道题涵盖 80 个题型，每题均附中英文题面、唯一正确选项、解析和独立计算元数据。`apps/web/scripts/learning-question-bank.test.mjs` 逐题核验，`learning-expansion-calculations.mjs` 使用独立公式、数值积分、直接求和、直接 DFT 和微分方程数值解复算答案，不读取出题脚本的计算结果。选项按需要保留六位小数，并在题面提示选择最接近值。
+
+范围核对发现旧 `damping` 主问题及两道变式要求讲义未展开的阻尼比/超调量公式，已改用新 ID `second-order-mode-decay` 及配套变式，考查 2.1 节的特征根与衰减包络。这 3 道替换题同样经过独立复算，其余 79 组原题题面、答案与 ID 保留。相关函数统一使用讲义的 y(t−τ) 约定。
+
+题库版本升级隔离不同题量的排行榜。退役题的作答仍保存在数据库，当前题库与最近作答视图不再暴露其失效入口，也不把旧作答转记到新题。新增题的正确选项在 A/B/C/D 各分布 120 次；同步检查双语一致性、题目与变式关联、讲义引用和错题诊断。
 
 ## 快问快答与复习变式
 
 ### 第1章
 
-| ID | 题目 | 正确答案 | 解析 |
-| --- | --- | --- | --- |
-| energy-signal | x(t) = e^{−2t}u(t) 属于哪类信号？ | A · 能量信号 | 指数衰减信号的能量有限，平均功率为 0，因此是能量信号。 |
-| energy-signal-v1 | x(t)=2e^(−t)u(t) 的总能量是多少？ | A · 2 | E=∫₀∞4e^(−2t)dt=2。 |
-| energy-signal-v2 | x(t)=3cos(2πt) 的平均功率是多少？ | B · 4.5 | 余弦的均方值为幅度平方的一半：P=9/2。 |
-| finite-energy-power | 已知非零信号总能量 E=3<∞，按双边时间平均定义，其平均功率是多少？ | B · 0 | P=lim(E_T/(2T))=0，因为分子有界而观察时长趋于无穷。 |
-| finite-energy-power-v1 | 已知非零信号总能量 E=8<∞，按双边时间平均定义，其平均功率是多少？ | C · 0 | P=lim(E_T/(2T))=0，因为分子有界而观察时长趋于无穷。 |
-| finite-energy-power-v2 | 已知非零信号总能量 E=12<∞，按双边时间平均定义，其平均功率是多少？ | D · 0 | P=lim(E_T/(2T))=0，因为分子有界而观察时长趋于无穷。 |
-| cosine-average-power | x(t)=2cos(3t)，其平均功率是多少？ | C · 2 | cos² 的周期平均值为 1/2，P=2²/2=2。 |
-| cosine-average-power-v1 | x(t)=4cos(5t)，其平均功率是多少？ | D · 8 | cos² 的周期平均值为 1/2，P=4²/2=8。 |
-| cosine-average-power-v2 | x(t)=6cos(2t)，其平均功率是多少？ | A · 18 | cos² 的周期平均值为 1/2，P=6²/2=18。 |
-| rectangle-energy | 矩形信号在 [0,3] 秒内幅度为 2，其余为零。总能量是多少？ | D · 12 | E=幅度平方×时长=2²×3=12。 |
-| rectangle-energy-v1 | 矩形信号在 [0,2] 秒内幅度为 3，其余为零。总能量是多少？ | A · 18 | E=幅度平方×时长=3²×2=18。 |
-| rectangle-energy-v2 | 矩形信号在 [0,1] 秒内幅度为 4，其余为零。总能量是多少？ | B · 16 | E=幅度平方×时长=4²×1=16。 |
-| exponential-energy | x(t)=2e^(−2t)u(t)，总能量是多少？ | A · 1 | E=∫₀∞4e^(−4t)dt=1。 |
-| exponential-energy-v1 | x(t)=3e^(−3t)u(t)，总能量是多少？ | B · 1.5 | E=∫₀∞9e^(−6t)dt=1.5。 |
-| exponential-energy-v2 | x(t)=4e^(−2t)u(t)，总能量是多少？ | C · 4 | E=∫₀∞16e^(−4t)dt=4。 |
-| angular-to-hertz | 角频率 ω=40π rad/s，对应频率是多少 Hz？ | B · 20 Hz | f=ω/(2π)=20 Hz。 |
-| angular-to-hertz-v1 | 角频率 ω=100π rad/s，对应频率是多少 Hz？ | C · 50 Hz | f=ω/(2π)=50 Hz。 |
-| angular-to-hertz-v2 | 角频率 ω=240π rad/s，对应频率是多少 Hz？ | D · 120 Hz | f=ω/(2π)=120 Hz。 |
-| harmonic-period | x(t)=cos(2t)+cos(4t)，最小正周期 T=kπ 秒，k 是多少？ | C · 1 | 两频率为 1:2，基波角频率 2 rad/s，所以 T=2π/2。 |
-| harmonic-period-v1 | x(t)=cos(3t)+cos(6t)，最小正周期 T=kπ 秒，k 是多少？ | D · 0.666667 | 两频率为 1:2，基波角频率 3 rad/s，所以 T=2π/3。 |
-| harmonic-period-v2 | x(t)=cos(4t)+cos(8t)，最小正周期 T=kπ 秒，k 是多少？ | A · 0.5 | 两频率为 1:2，基波角频率 4 rad/s，所以 T=2π/4。 |
-| time-width-scale | x(t) 非零区间宽度为 12 秒，x(3t) 的非零区间宽度是多少秒？ | D · 4 s | 正时间压缩 3 倍，宽度为 12/3=4 秒。 |
-| time-width-scale-v1 | x(t) 非零区间宽度为 8 秒，x(2t) 的非零区间宽度是多少秒？ | A · 4 s | 正时间压缩 2 倍，宽度为 8/2=4 秒。 |
-| time-width-scale-v2 | x(t) 非零区间宽度为 15 秒，x(5t) 的非零区间宽度是多少秒？ | B · 3 s | 正时间压缩 5 倍，宽度为 15/5=3 秒。 |
-| support-delay-scale | x(t) 仅在 [0,2] 非零。x(2t−4) 非零区间的左端点是多少？ | A · 2 | 解 0≤2t−4≤2，左端点为 4/2=2。 |
-| support-delay-scale-v1 | x(t) 仅在 [0,3] 非零。x(3t−6) 非零区间的左端点是多少？ | B · 2 | 解 0≤3t−6≤3，左端点为 6/3=2。 |
-| support-delay-scale-v2 | x(t) 仅在 [0,4] 非零。x(2t−8) 非零区间的左端点是多少？ | C · 4 | 解 0≤2t−8≤4，左端点为 8/2=4。 |
-| energy-time-scale | x(t) 的能量为 12，x(-3t) 的能量是多少？ | B · 4 | 变量代换得 E新=E原/\|a\|=12/3=4。 |
-| energy-time-scale-v1 | x(t) 的能量为 20，x(4t) 的能量是多少？ | C · 5 | 变量代换得 E新=E原/\|a\|=20/4=5。 |
-| energy-time-scale-v2 | x(t) 的能量为 18，x(-2t) 的能量是多少？ | D · 9 | 变量代换得 E新=E原/\|a\|=18/2=9。 |
-| impulse-scale-weight | δ(2t)=cδ(t)，系数 c 是多少？ | C · 0.5 | δ(at)=δ(t)/\|a\|，因此 c=1/2。 |
-| impulse-scale-weight-v1 | δ(4t)=cδ(t)，系数 c 是多少？ | D · 0.25 | δ(at)=δ(t)/\|a\|，因此 c=1/4。 |
-| impulse-scale-weight-v2 | δ(5t)=cδ(t)，系数 c 是多少？ | A · 0.2 | δ(at)=δ(t)/\|a\|，因此 c=1/5。 |
-| impulse-sifting | 全实轴积分 ∫(t²+3)δ(t−2)dt 等于多少？ | D · 7 | 冲激取样 t=2，结果 2²+3=7。 |
-| impulse-sifting-v1 | 全实轴积分 ∫(t²+1)δ(t−3)dt 等于多少？ | A · 10 | 冲激取样 t=3，结果 3²+1=10。 |
-| impulse-sifting-v2 | 全实轴积分 ∫(t²+2)δ(t−4)dt 等于多少？ | B · 18 | 冲激取样 t=4，结果 4²+2=18。 |
-| linear-superposition | 线性系统 y(t)=2x(t)。同一时刻 x₁=3、x₂=4，输入 x₁+x₂ 的输出是多少？ | A · 14 | T(x₁+x₂)=2(3+4)=14，与两输出之和一致。 |
-| linear-superposition-v1 | 线性系统 y(t)=3x(t)。同一时刻 x₁=2、x₂=5，输入 x₁+x₂ 的输出是多少？ | B · 21 | T(x₁+x₂)=3(2+5)=21，与两输出之和一致。 |
-| linear-superposition-v2 | 线性系统 y(t)=4x(t)。同一时刻 x₁=1、x₂=3，输入 x₁+x₂ 的输出是多少？ | C · 16 | T(x₁+x₂)=4(1+3)=16，与两输出之和一致。 |
-| square-homogeneity | 非线性系统 T[x]=x²。对某时刻 x=3，T[2x] 的值是多少？ | B · 36 | T[ax]=(ax)²=36，一般不等于 aT[x]。 |
-| square-homogeneity-v1 | 非线性系统 T[x]=x²。对某时刻 x=2，T[3x] 的值是多少？ | C · 36 | T[ax]=(ax)²=36，一般不等于 aT[x]。 |
-| square-homogeneity-v2 | 非线性系统 T[x]=x²。对某时刻 x=4，T[2x] 的值是多少？ | D · 64 | T[ax]=(ax)²=64，一般不等于 aT[x]。 |
-| delay-causality | y(t)=x(t−1)，在全实轴信号上，该系统是否因果、是否有记忆？ | A · 因果且有记忆 | 输出依赖过去输入，因此因果，但不是仅依赖当前输入。 |
-| delay-causality-v1 | y(t)=x(t−2)，在全实轴信号上，该系统是否因果、是否有记忆？ | A · 因果且有记忆 | 输出依赖过去输入，因此因果，但不是仅依赖当前输入。 |
-| delay-causality-v2 | y(t)=x(t−3)，在全实轴信号上，该系统是否因果、是否有记忆？ | A · 因果且有记忆 | 输出依赖过去输入，因此因果，但不是仅依赖当前输入。 |
-| advance-causality | y(t)=x(t+1)，其因果性如何？ | B · 非因果，需要未来输入 | 时刻 t 的输出需要 t+1 的输入，即未来输入。 |
-| advance-causality-v1 | y(t)=x(t+2)，其因果性如何？ | B · 非因果，需要未来输入 | 时刻 t 的输出需要 t+2 的输入，即未来输入。 |
-| advance-causality-v2 | y(t)=x(t+3)，其因果性如何？ | B · 非因果，需要未来输入 | 时刻 t 的输出需要 t+3 的输入，即未来输入。 |
-| time-varying-multiplier | y(t)=t^1x(t)，在全实轴上属于时不变系统吗？ | C · 否，显式时间系数使移位检验不成立 | 移位输入得到 t^n x(t−t0)，移位输出为 (t−t0)^n x(t−t0)，一般不相同。 |
-| time-varying-multiplier-v1 | y(t)=t^2x(t)，在全实轴上属于时不变系统吗？ | C · 否，显式时间系数使移位检验不成立 | 移位输入得到 t^n x(t−t0)，移位输出为 (t−t0)^n x(t−t0)，一般不相同。 |
-| time-varying-multiplier-v2 | y(t)=t^3x(t)，在全实轴上属于时不变系统吗？ | C · 否，显式时间系数使移位检验不成立 | 移位输入得到 t^n x(t−t0)，移位输出为 (t−t0)^n x(t−t0)，一般不相同。 |
-| bounded-gain | y=3x 且 \|x(t)\|≤2，最紧的统一输出幅度上界是多少？ | B · 6 | \|y\|=3\|x\|≤6，常数输入取边界可达到。 |
-| bounded-gain-v1 | y=4x 且 \|x(t)\|≤3，最紧的统一输出幅度上界是多少？ | C · 12 | \|y\|=4\|x\|≤12，常数输入取边界可达到。 |
-| bounded-gain-v2 | y=2x 且 \|x(t)\|≤5，最紧的统一输出幅度上界是多少？ | D · 10 | \|y\|=2\|x\|≤10，常数输入取边界可达到。 |
-| rc-time-units | RC y′+y=x，R=2 kΩ、C=100 μF，时间常数为多少秒？ | C · 0.2 s | τ=RC=2×10³×100×10⁻⁶=0.2 s。 |
-| rc-time-units-v1 | RC y′+y=x，R=3 kΩ、C=200 μF，时间常数为多少秒？ | D · 0.6 s | τ=RC=3×10³×200×10⁻⁶=0.6 s。 |
-| rc-time-units-v2 | RC y′+y=x，R=4 kΩ、C=50 μF，时间常数为多少秒？ | A · 0.2 s | τ=RC=4×10³×50×10⁻⁶=0.2 s。 |
-| total-response | 线性系统某时刻零输入响应为 5，零状态响应为 -2，全响应是多少？ | D · 3 | 全响应是两部分之和：5+(-2)=3。 |
-| total-response-v1 | 线性系统某时刻零输入响应为 7，零状态响应为 3，全响应是多少？ | A · 10 | 全响应是两部分之和：7+(3)=10。 |
-| total-response-v2 | 线性系统某时刻零输入响应为 -2，零状态响应为 6，全响应是多少？ | B · 4 | 全响应是两部分之和：-2+(6)=4。 |
+| ID | 题目 | 正确答案 | 解析 | 讲义依据 |
+| --- | --- | --- | --- | --- |
+| energy-signal | x(t) = e^{−2t}u(t) 属于哪类信号？ | A · 能量信号 | 指数衰减信号的能量有限，平均功率为 0，因此是能量信号。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| energy-signal-v1 | x(t)=2e^(−t)u(t) 的总能量是多少？ | A · 2 | E=∫₀∞4e^(−2t)dt=2。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| energy-signal-v2 | x(t)=3cos(2πt) 的平均功率是多少？ | B · 4.5 | 余弦的均方值为幅度平方的一半：P=9/2。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| finite-energy-power | 已知非零信号总能量 E=3<∞，按双边时间平均定义，其平均功率是多少？ | B · 0 | P=lim(E_T/(2T))=0，因为分子有界而观察时长趋于无穷。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| finite-energy-power-v1 | 已知非零信号总能量 E=8<∞，按双边时间平均定义，其平均功率是多少？ | C · 0 | P=lim(E_T/(2T))=0，因为分子有界而观察时长趋于无穷。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| finite-energy-power-v2 | 已知非零信号总能量 E=12<∞，按双边时间平均定义，其平均功率是多少？ | D · 0 | P=lim(E_T/(2T))=0，因为分子有界而观察时长趋于无穷。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| cosine-average-power | x(t)=2cos(3t)，其平均功率是多少？ | C · 2 | cos² 的周期平均值为 1/2，P=2²/2=2。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| cosine-average-power-v1 | x(t)=4cos(5t)，其平均功率是多少？ | D · 8 | cos² 的周期平均值为 1/2，P=4²/2=8。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| cosine-average-power-v2 | x(t)=6cos(2t)，其平均功率是多少？ | A · 18 | cos² 的周期平均值为 1/2，P=6²/2=18。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| rectangle-energy | 矩形信号在 [0,3] 秒内幅度为 2，其余为零。总能量是多少？ | D · 12 | E=幅度平方×时长=2²×3=12。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| rectangle-energy-v1 | 矩形信号在 [0,2] 秒内幅度为 3，其余为零。总能量是多少？ | A · 18 | E=幅度平方×时长=3²×2=18。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| rectangle-energy-v2 | 矩形信号在 [0,1] 秒内幅度为 4，其余为零。总能量是多少？ | B · 16 | E=幅度平方×时长=4²×1=16。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| exponential-energy | x(t)=2e^(−2t)u(t)，总能量是多少？ | A · 1 | E=∫₀∞4e^(−4t)dt=1。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| exponential-energy-v1 | x(t)=3e^(−3t)u(t)，总能量是多少？ | B · 1.5 | E=∫₀∞9e^(−6t)dt=1.5。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| exponential-energy-v2 | x(t)=4e^(−2t)u(t)，总能量是多少？ | C · 4 | E=∫₀∞16e^(−4t)dt=4。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| angular-to-hertz | 角频率 ω=40π rad/s，对应频率是多少 Hz？ | B · 20 Hz | f=ω/(2π)=20 Hz。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| angular-to-hertz-v1 | 角频率 ω=100π rad/s，对应频率是多少 Hz？ | C · 50 Hz | f=ω/(2π)=50 Hz。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| angular-to-hertz-v2 | 角频率 ω=240π rad/s，对应频率是多少 Hz？ | D · 120 Hz | f=ω/(2π)=120 Hz。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| harmonic-period | x(t)=cos(2t)+cos(4t)，最小正周期 T=kπ 秒，k 是多少？ | C · 1 | 两频率为 1:2，基波角频率 2 rad/s，所以 T=2π/2。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| harmonic-period-v1 | x(t)=cos(3t)+cos(6t)，最小正周期 T=kπ 秒，k 是多少？ | D · 0.666667 | 两频率为 1:2，基波角频率 3 rad/s，所以 T=2π/3。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| harmonic-period-v2 | x(t)=cos(4t)+cos(8t)，最小正周期 T=kπ 秒，k 是多少？ | A · 0.5 | 两频率为 1:2，基波角频率 4 rad/s，所以 T=2π/4。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| time-width-scale | x(t) 非零区间宽度为 12 秒，x(3t) 的非零区间宽度是多少秒？ | D · 4 s | 正时间压缩 3 倍，宽度为 12/3=4 秒。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| time-width-scale-v1 | x(t) 非零区间宽度为 8 秒，x(2t) 的非零区间宽度是多少秒？ | A · 4 s | 正时间压缩 2 倍，宽度为 8/2=4 秒。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| time-width-scale-v2 | x(t) 非零区间宽度为 15 秒，x(5t) 的非零区间宽度是多少秒？ | B · 3 s | 正时间压缩 5 倍，宽度为 15/5=3 秒。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| support-delay-scale | x(t) 仅在 [0,2] 非零。x(2t−4) 非零区间的左端点是多少？ | A · 2 | 解 0≤2t−4≤2，左端点为 4/2=2。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| support-delay-scale-v1 | x(t) 仅在 [0,3] 非零。x(3t−6) 非零区间的左端点是多少？ | B · 2 | 解 0≤3t−6≤3，左端点为 6/3=2。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| support-delay-scale-v2 | x(t) 仅在 [0,4] 非零。x(2t−8) 非零区间的左端点是多少？ | C · 4 | 解 0≤2t−8≤4，左端点为 8/2=4。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| energy-time-scale | x(t) 的能量为 12，x(-3t) 的能量是多少？ | B · 4 | 变量代换得 E新=E原/\|a\|=12/3=4。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| energy-time-scale-v1 | x(t) 的能量为 20，x(4t) 的能量是多少？ | C · 5 | 变量代换得 E新=E原/\|a\|=20/4=5。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| energy-time-scale-v2 | x(t) 的能量为 18，x(-2t) 的能量是多少？ | D · 9 | 变量代换得 E新=E原/\|a\|=18/2=9。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| impulse-scale-weight | δ(2t)=cδ(t)，系数 c 是多少？ | C · 0.5 | δ(at)=δ(t)/\|a\|，因此 c=1/2。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| impulse-scale-weight-v1 | δ(4t)=cδ(t)，系数 c 是多少？ | D · 0.25 | δ(at)=δ(t)/\|a\|，因此 c=1/4。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| impulse-scale-weight-v2 | δ(5t)=cδ(t)，系数 c 是多少？ | A · 0.2 | δ(at)=δ(t)/\|a\|，因此 c=1/5。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| impulse-sifting | 全实轴积分 ∫(t²+3)δ(t−2)dt 等于多少？ | D · 7 | 冲激取样 t=2，结果 2²+3=7。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| impulse-sifting-v1 | 全实轴积分 ∫(t²+1)δ(t−3)dt 等于多少？ | A · 10 | 冲激取样 t=3，结果 3²+1=10。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| impulse-sifting-v2 | 全实轴积分 ∫(t²+2)δ(t−4)dt 等于多少？ | B · 18 | 冲激取样 t=4，结果 4²+2=18。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| linear-superposition | 线性系统 y(t)=2x(t)。同一时刻 x₁=3、x₂=4，输入 x₁+x₂ 的输出是多少？ | A · 14 | T(x₁+x₂)=2(3+4)=14，与两输出之和一致。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| linear-superposition-v1 | 线性系统 y(t)=3x(t)。同一时刻 x₁=2、x₂=5，输入 x₁+x₂ 的输出是多少？ | B · 21 | T(x₁+x₂)=3(2+5)=21，与两输出之和一致。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| linear-superposition-v2 | 线性系统 y(t)=4x(t)。同一时刻 x₁=1、x₂=3，输入 x₁+x₂ 的输出是多少？ | C · 16 | T(x₁+x₂)=4(1+3)=16，与两输出之和一致。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| square-homogeneity | 非线性系统 T[x]=x²。对某时刻 x=3，T[2x] 的值是多少？ | B · 36 | T[ax]=(ax)²=36，一般不等于 aT[x]。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| square-homogeneity-v1 | 非线性系统 T[x]=x²。对某时刻 x=2，T[3x] 的值是多少？ | C · 36 | T[ax]=(ax)²=36，一般不等于 aT[x]。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| square-homogeneity-v2 | 非线性系统 T[x]=x²。对某时刻 x=4，T[2x] 的值是多少？ | D · 64 | T[ax]=(ax)²=64，一般不等于 aT[x]。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| delay-causality | y(t)=x(t−1)，在全实轴信号上，该系统是否因果、是否有记忆？ | A · 因果且有记忆 | 输出依赖过去输入，因此因果，但不是仅依赖当前输入。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| delay-causality-v1 | y(t)=x(t−2)，在全实轴信号上，该系统是否因果、是否有记忆？ | A · 因果且有记忆 | 输出依赖过去输入，因此因果，但不是仅依赖当前输入。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| delay-causality-v2 | y(t)=x(t−3)，在全实轴信号上，该系统是否因果、是否有记忆？ | A · 因果且有记忆 | 输出依赖过去输入，因此因果，但不是仅依赖当前输入。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| advance-causality | y(t)=x(t+1)，其因果性如何？ | B · 非因果，需要未来输入 | 时刻 t 的输出需要 t+1 的输入，即未来输入。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| advance-causality-v1 | y(t)=x(t+2)，其因果性如何？ | B · 非因果，需要未来输入 | 时刻 t 的输出需要 t+2 的输入，即未来输入。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| advance-causality-v2 | y(t)=x(t+3)，其因果性如何？ | B · 非因果，需要未来输入 | 时刻 t 的输出需要 t+3 的输入，即未来输入。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| time-varying-multiplier | y(t)=t^1x(t)，在全实轴上属于时不变系统吗？ | C · 否，显式时间系数使移位检验不成立 | 移位输入得到 t^n x(t−t0)，移位输出为 (t−t0)^n x(t−t0)，一般不相同。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| time-varying-multiplier-v1 | y(t)=t^2x(t)，在全实轴上属于时不变系统吗？ | C · 否，显式时间系数使移位检验不成立 | 移位输入得到 t^n x(t−t0)，移位输出为 (t−t0)^n x(t−t0)，一般不相同。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| time-varying-multiplier-v2 | y(t)=t^3x(t)，在全实轴上属于时不变系统吗？ | C · 否，显式时间系数使移位检验不成立 | 移位输入得到 t^n x(t−t0)，移位输出为 (t−t0)^n x(t−t0)，一般不相同。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| bounded-gain | y=3x 且 \|x(t)\|≤2，最紧的统一输出幅度上界是多少？ | B · 6 | \|y\|=3\|x\|≤6，常数输入取边界可达到。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| bounded-gain-v1 | y=4x 且 \|x(t)\|≤3，最紧的统一输出幅度上界是多少？ | C · 12 | \|y\|=4\|x\|≤12，常数输入取边界可达到。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| bounded-gain-v2 | y=2x 且 \|x(t)\|≤5，最紧的统一输出幅度上界是多少？ | D · 10 | \|y\|=2\|x\|≤10，常数输入取边界可达到。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md) |
+| rc-time-units | RC y′+y=x，R=2 kΩ、C=100 μF，时间常数为多少秒？ | C · 0.2 s | τ=RC=2×10³×100×10⁻⁶=0.2 s。 | [4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md)；[1.5 系统的描述](../content/signals/knowledge-base/ss-1-5.md) |
+| rc-time-units-v1 | RC y′+y=x，R=3 kΩ、C=200 μF，时间常数为多少秒？ | D · 0.6 s | τ=RC=3×10³×200×10⁻⁶=0.6 s。 | [4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md)；[1.5 系统的描述](../content/signals/knowledge-base/ss-1-5.md) |
+| rc-time-units-v2 | RC y′+y=x，R=4 kΩ、C=50 μF，时间常数为多少秒？ | A · 0.2 s | τ=RC=4×10³×50×10⁻⁶=0.2 s。 | [4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md)；[1.5 系统的描述](../content/signals/knowledge-base/ss-1-5.md) |
+| total-response | 线性系统某时刻零输入响应为 5，零状态响应为 -2，全响应是多少？ | D · 3 | 全响应是两部分之和：5+(-2)=3。 | [1.6 LTI系统分析方法概述](../content/signals/knowledge-base/ss-1-6.md) |
+| total-response-v1 | 线性系统某时刻零输入响应为 7，零状态响应为 3，全响应是多少？ | A · 10 | 全响应是两部分之和：7+(3)=10。 | [1.6 LTI系统分析方法概述](../content/signals/knowledge-base/ss-1-6.md) |
+| total-response-v2 | 线性系统某时刻零输入响应为 -2，零状态响应为 6，全响应是多少？ | B · 4 | 全响应是两部分之和：-2+(6)=4。 | [1.6 LTI系统分析方法概述](../content/signals/knowledge-base/ss-1-6.md) |
+| ext-dc-sine-power-1 | 连续信号 x(t)=1+3cos(2t) 的平均功率是多少？ | A · 5.5 | 常数与余弦的交叉项平均为零，P=D²+A²/2。代入得 5.5。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-dc-sine-power-1-v1 | 连续信号 x(t)=2+4cos(3t) 的平均功率是多少？ | B · 12 | 常数与余弦的交叉项平均为零，P=D²+A²/2。代入得 12。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-dc-sine-power-1-v2 | 连续信号 x(t)=3+5cos(4t) 的平均功率是多少？ | C · 21.5 | 常数与余弦的交叉项平均为零，P=D²+A²/2。代入得 21.5。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-dc-sine-power-2 | 连续信号 x(t)=4+6cos(5t) 的平均功率是多少？ | D · 34 | 常数与余弦的交叉项平均为零，P=D²+A²/2。代入得 34。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-dc-sine-power-2-v1 | 连续信号 x(t)=5+7cos(6t) 的平均功率是多少？ | A · 49.5 | 常数与余弦的交叉项平均为零，P=D²+A²/2。代入得 49.5。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-dc-sine-power-2-v2 | 连续信号 x(t)=6+8cos(7t) 的平均功率是多少？ | B · 68 | 常数与余弦的交叉项平均为零，P=D²+A²/2。代入得 68。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-two-tone-power-1 | x(t)=2cos(2π·3t)+4sin(2π·6t)，平均功率是多少？ | B · 10 | 不同整数次谐波在共同周期内正交，P=(A²+B²)/2。代入得 10。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-two-tone-power-1-v1 | x(t)=3cos(2π·4t)+5sin(2π·8t)，平均功率是多少？ | C · 17 | 不同整数次谐波在共同周期内正交，P=(A²+B²)/2。代入得 17。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-two-tone-power-1-v2 | x(t)=4cos(2π·5t)+6sin(2π·10t)，平均功率是多少？ | D · 26 | 不同整数次谐波在共同周期内正交，P=(A²+B²)/2。代入得 26。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-two-tone-power-2 | x(t)=5cos(2π·6t)+7sin(2π·12t)，平均功率是多少？ | A · 37 | 不同整数次谐波在共同周期内正交，P=(A²+B²)/2。代入得 37。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-two-tone-power-2-v1 | x(t)=6cos(2π·7t)+8sin(2π·14t)，平均功率是多少？ | B · 50 | 不同整数次谐波在共同周期内正交，P=(A²+B²)/2。代入得 50。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-two-tone-power-2-v2 | x(t)=7cos(2π·8t)+9sin(2π·16t)，平均功率是多少？ | C · 65 | 不同整数次谐波在共同周期内正交，P=(A²+B²)/2。代入得 65。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-duty-power-1 | 周期矩形脉冲每周期前 1 s 为 2，其余为 0，周期 4 s。平均功率是多少？ | C · 1 | 周期功率是一个周期内的平方积分除以周期：P=A²τ/T。代入得 1。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-duty-power-1-v1 | 周期矩形脉冲每周期前 2 s 为 3，其余为 0，周期 7 s。平均功率是多少？（选最接近值。） | D · 2.571429 | 周期功率是一个周期内的平方积分除以周期：P=A²τ/T。代入得 2.571429。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-duty-power-1-v2 | 周期矩形脉冲每周期前 3 s 为 4，其余为 0，周期 10 s。平均功率是多少？ | A · 4.8 | 周期功率是一个周期内的平方积分除以周期：P=A²τ/T。代入得 4.8。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-duty-power-2 | 周期矩形脉冲每周期前 4 s 为 5，其余为 0，周期 13 s。平均功率是多少？（选最接近值。） | B · 7.692308 | 周期功率是一个周期内的平方积分除以周期：P=A²τ/T。代入得 7.692308。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-duty-power-2-v1 | 周期矩形脉冲每周期前 5 s 为 6，其余为 0，周期 16 s。平均功率是多少？ | C · 11.25 | 周期功率是一个周期内的平方积分除以周期：P=A²τ/T。代入得 11.25。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-duty-power-2-v2 | 周期矩形脉冲每周期前 6 s 为 7，其余为 0，周期 19 s。平均功率是多少？（选最接近值。） | D · 15.473684 | 周期功率是一个周期内的平方积分除以周期：P=A²τ/T。代入得 15.473684。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-pulse-amplitude-1 | 单个矩形脉冲宽 3 s、总能量 12，幅度 A>0。A 是多少？ | D · 2 | E=A²T，取正幅度 A=√(E/T)。代入得 2。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-pulse-amplitude-1-v1 | 单个矩形脉冲宽 4 s、总能量 36，幅度 A>0。A 是多少？ | A · 3 | E=A²T，取正幅度 A=√(E/T)。代入得 3。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-pulse-amplitude-1-v2 | 单个矩形脉冲宽 5 s、总能量 80，幅度 A>0。A 是多少？ | B · 4 | E=A²T，取正幅度 A=√(E/T)。代入得 4。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-pulse-amplitude-2 | 单个矩形脉冲宽 6 s、总能量 150，幅度 A>0。A 是多少？ | C · 5 | E=A²T，取正幅度 A=√(E/T)。代入得 5。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-pulse-amplitude-2-v1 | 单个矩形脉冲宽 7 s、总能量 252，幅度 A>0。A 是多少？ | D · 6 | E=A²T，取正幅度 A=√(E/T)。代入得 6。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-pulse-amplitude-2-v2 | 单个矩形脉冲宽 8 s、总能量 392，幅度 A>0。A 是多少？ | A · 7 | E=A²T，取正幅度 A=√(E/T)。代入得 7。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-triangle-energy-1 | x(t)=2(1−\|t\|/3)（\|t\|≤3），其余为零。总能量是多少？ | A · 8 | 利用偶对称，E=2A²∫₀ᵀ(1−t/T)²dt=2A²T/3。代入得 8。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-triangle-energy-1-v1 | x(t)=3(1−\|t\|/4)（\|t\|≤4），其余为零。总能量是多少？ | B · 24 | 利用偶对称，E=2A²∫₀ᵀ(1−t/T)²dt=2A²T/3。代入得 24。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-triangle-energy-1-v2 | x(t)=4(1−\|t\|/5)（\|t\|≤5），其余为零。总能量是多少？（选最接近值。） | C · 53.333333 | 利用偶对称，E=2A²∫₀ᵀ(1−t/T)²dt=2A²T/3。代入得 53.333333。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-triangle-energy-2 | x(t)=5(1−\|t\|/6)（\|t\|≤6），其余为零。总能量是多少？ | D · 100 | 利用偶对称，E=2A²∫₀ᵀ(1−t/T)²dt=2A²T/3。代入得 100。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-triangle-energy-2-v1 | x(t)=6(1−\|t\|/7)（\|t\|≤7），其余为零。总能量是多少？ | A · 168 | 利用偶对称，E=2A²∫₀ᵀ(1−t/T)²dt=2A²T/3。代入得 168。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-triangle-energy-2-v2 | x(t)=7(1−\|t\|/8)（\|t\|≤8），其余为零。总能量是多少？（选最接近值。） | B · 261.333333 | 利用偶对称，E=2A²∫₀ᵀ(1−t/T)²dt=2A²T/3。代入得 261.333333。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-ramp-energy-1 | x(t)=2t（0≤t≤3），区间外为零。总能量是多少？ | B · 36 | 能量积分的是幅度平方：E=∫₀ᵀk²t²dt=k²T³/3。代入得 36。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-ramp-energy-1-v1 | x(t)=3t（0≤t≤4），区间外为零。总能量是多少？ | C · 192 | 能量积分的是幅度平方：E=∫₀ᵀk²t²dt=k²T³/3。代入得 192。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-ramp-energy-1-v2 | x(t)=4t（0≤t≤5），区间外为零。总能量是多少？（选最接近值。） | D · 666.666667 | 能量积分的是幅度平方：E=∫₀ᵀk²t²dt=k²T³/3。代入得 666.666667。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-ramp-energy-2 | x(t)=5t（0≤t≤6），区间外为零。总能量是多少？ | A · 1800 | 能量积分的是幅度平方：E=∫₀ᵀk²t²dt=k²T³/3。代入得 1800。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-ramp-energy-2-v1 | x(t)=6t（0≤t≤7），区间外为零。总能量是多少？ | B · 4116 | 能量积分的是幅度平方：E=∫₀ᵀk²t²dt=k²T³/3。代入得 4116。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-ramp-energy-2-v2 | x(t)=7t（0≤t≤8），区间外为零。总能量是多少？（选最接近值。） | C · 8362.666667 | 能量积分的是幅度平方：E=∫₀ᵀk²t²dt=k²T³/3。代入得 8362.666667。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-bilateral-exp-energy-1 | 双边信号 x(t)=2e^(−3\|t\|) 的总能量是多少？（选最接近值。） | C · 1.333333 | 正负时间各贡献 A²/(2a)，故 E=A²/a。代入得 1.333333。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-bilateral-exp-energy-1-v1 | 双边信号 x(t)=3e^(−4\|t\|) 的总能量是多少？ | D · 2.25 | 正负时间各贡献 A²/(2a)，故 E=A²/a。代入得 2.25。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-bilateral-exp-energy-1-v2 | 双边信号 x(t)=4e^(−5\|t\|) 的总能量是多少？ | A · 3.2 | 正负时间各贡献 A²/(2a)，故 E=A²/a。代入得 3.2。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-bilateral-exp-energy-2 | 双边信号 x(t)=5e^(−6\|t\|) 的总能量是多少？（选最接近值。） | B · 4.166667 | 正负时间各贡献 A²/(2a)，故 E=A²/a。代入得 4.166667。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-bilateral-exp-energy-2-v1 | 双边信号 x(t)=6e^(−7\|t\|) 的总能量是多少？（选最接近值。） | C · 5.142857 | 正负时间各贡献 A²/(2a)，故 E=A²/a。代入得 5.142857。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-bilateral-exp-energy-2-v2 | 双边信号 x(t)=7e^(−8\|t\|) 的总能量是多少？ | D · 6.125 | 正负时间各贡献 A²/(2a)，故 E=A²/a。代入得 6.125。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-geometric-energy-1 | 离散信号 x[n]=2·(0.2)^n u[n]（u[n]=1 当 n≥0），能量 Σ\|x[n]\|² 是多少？（选最接近值。） | D · 4.166667 | 平方后公比为 r²，等比求和 E=A²/(1−r²)。代入得 4.166667。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-geometric-energy-1-v1 | 离散信号 x[n]=3·(0.25)^n u[n]（u[n]=1 当 n≥0），能量 Σ\|x[n]\|² 是多少？ | A · 9.6 | 平方后公比为 r²，等比求和 E=A²/(1−r²)。代入得 9.6。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-geometric-energy-1-v2 | 离散信号 x[n]=4·(0.4)^n u[n]（u[n]=1 当 n≥0），能量 Σ\|x[n]\|² 是多少？（选最接近值。） | B · 19.047619 | 平方后公比为 r²，等比求和 E=A²/(1−r²)。代入得 19.047619。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-geometric-energy-2 | 离散信号 x[n]=5·(0.5)^n u[n]（u[n]=1 当 n≥0），能量 Σ\|x[n]\|² 是多少？（选最接近值。） | C · 33.333333 | 平方后公比为 r²，等比求和 E=A²/(1−r²)。代入得 33.333333。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-geometric-energy-2-v1 | 离散信号 x[n]=6·(0.6)^n u[n]（u[n]=1 当 n≥0），能量 Σ\|x[n]\|² 是多少？ | D · 56.25 | 平方后公比为 r²，等比求和 E=A²/(1−r²)。代入得 56.25。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-geometric-energy-2-v2 | 离散信号 x[n]=7·(0.75)^n u[n]（u[n]=1 当 n≥0），能量 Σ\|x[n]\|² 是多少？ | A · 112 | 平方后公比为 r²，等比求和 E=A²/(1−r²)。代入得 112。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-finite-sequence-energy-1 | 离散信号仅三个非零样本，值为 1、-2、3。总能量是多少？ | A · 14 | 离散能量为各样本绝对值平方之和，不是样本和的平方。代入得 14。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-finite-sequence-energy-1-v1 | 离散信号仅三个非零样本，值为 2、-3、4。总能量是多少？ | B · 29 | 离散能量为各样本绝对值平方之和，不是样本和的平方。代入得 29。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-finite-sequence-energy-1-v2 | 离散信号仅三个非零样本，值为 3、-4、5。总能量是多少？ | C · 50 | 离散能量为各样本绝对值平方之和，不是样本和的平方。代入得 50。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-finite-sequence-energy-2 | 离散信号仅三个非零样本，值为 4、-5、6。总能量是多少？ | D · 77 | 离散能量为各样本绝对值平方之和，不是样本和的平方。代入得 77。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-finite-sequence-energy-2-v1 | 离散信号仅三个非零样本，值为 5、-6、7。总能量是多少？ | A · 110 | 离散能量为各样本绝对值平方之和，不是样本和的平方。代入得 110。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-finite-sequence-energy-2-v2 | 离散信号仅三个非零样本，值为 6、-7、8。总能量是多少？ | B · 149 | 离散能量为各样本绝对值平方之和，不是样本和的平方。代入得 149。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-even-component-1 | 已知 x(1)=5、x(−1)=-2，偶分量 xₑ(1) 是多少？ | B · 1.5 | 偶分量定义为 xₑ(t)=[x(t)+x(−t)]/2。代入得 1.5。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-even-component-1-v1 | 已知 x(2)=7、x(−2)=-3，偶分量 xₑ(2) 是多少？ | C · 2 | 偶分量定义为 xₑ(t)=[x(t)+x(−t)]/2。代入得 2。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-even-component-1-v2 | 已知 x(3)=9、x(−3)=-4，偶分量 xₑ(3) 是多少？ | D · 2.5 | 偶分量定义为 xₑ(t)=[x(t)+x(−t)]/2。代入得 2.5。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-even-component-2 | 已知 x(4)=11、x(−4)=-5，偶分量 xₑ(4) 是多少？ | A · 3 | 偶分量定义为 xₑ(t)=[x(t)+x(−t)]/2。代入得 3。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-even-component-2-v1 | 已知 x(5)=13、x(−5)=-6，偶分量 xₑ(5) 是多少？ | B · 3.5 | 偶分量定义为 xₑ(t)=[x(t)+x(−t)]/2。代入得 3.5。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-even-component-2-v2 | 已知 x(6)=15、x(−6)=-7，偶分量 xₑ(6) 是多少？ | C · 4 | 偶分量定义为 xₑ(t)=[x(t)+x(−t)]/2。代入得 4。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-odd-component-1 | 已知 x(2)=5、x(−2)=-1，奇分量 xₒ(2) 是多少？ | C · 3 | 奇分量定义为 xₒ(t)=[x(t)−x(−t)]/2。代入得 3。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-odd-component-1-v1 | 已知 x(3)=8、x(−3)=0，奇分量 xₒ(3) 是多少？ | D · 4 | 奇分量定义为 xₒ(t)=[x(t)−x(−t)]/2。代入得 4。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-odd-component-1-v2 | 已知 x(4)=11、x(−4)=1，奇分量 xₒ(4) 是多少？ | A · 5 | 奇分量定义为 xₒ(t)=[x(t)−x(−t)]/2。代入得 5。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-odd-component-2 | 已知 x(5)=14、x(−5)=2，奇分量 xₒ(5) 是多少？ | B · 6 | 奇分量定义为 xₒ(t)=[x(t)−x(−t)]/2。代入得 6。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-odd-component-2-v1 | 已知 x(6)=17、x(−6)=3，奇分量 xₒ(6) 是多少？ | C · 7 | 奇分量定义为 xₒ(t)=[x(t)−x(−t)]/2。代入得 7。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-odd-component-2-v2 | 已知 x(7)=20、x(−7)=4，奇分量 xₒ(7) 是多少？ | D · 8 | 奇分量定义为 xₒ(t)=[x(t)−x(−t)]/2。代入得 8。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-reversed-support-1 | x(t) 的支撑为 [1,5] s，y(t)=x(3−2t)。y 的支撑左端点是多少？ | D · -1 s | 解 L≤b−at≤R（a>0）得 (b−R)/a≤t≤(b−L)/a，反转后左右端点交换。代入得 -1 s。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-reversed-support-1-v1 | x(t) 的支撑为 [2,6] s，y(t)=x(4−3t)。y 的支撑左端点是多少？（选最接近值。） | A · -0.666667 s | 解 L≤b−at≤R（a>0）得 (b−R)/a≤t≤(b−L)/a，反转后左右端点交换。代入得 -0.666667 s。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-reversed-support-1-v2 | x(t) 的支撑为 [3,7] s，y(t)=x(5−4t)。y 的支撑左端点是多少？ | B · -0.5 s | 解 L≤b−at≤R（a>0）得 (b−R)/a≤t≤(b−L)/a，反转后左右端点交换。代入得 -0.5 s。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-reversed-support-2 | x(t) 的支撑为 [4,8] s，y(t)=x(6−5t)。y 的支撑左端点是多少？ | C · -0.4 s | 解 L≤b−at≤R（a>0）得 (b−R)/a≤t≤(b−L)/a，反转后左右端点交换。代入得 -0.4 s。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-reversed-support-2-v1 | x(t) 的支撑为 [5,9] s，y(t)=x(7−6t)。y 的支撑左端点是多少？（选最接近值。） | D · -0.333333 s | 解 L≤b−at≤R（a>0）得 (b−R)/a≤t≤(b−L)/a，反转后左右端点交换。代入得 -0.333333 s。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-reversed-support-2-v2 | x(t) 的支撑为 [6,10] s，y(t)=x(8−7t)。y 的支撑左端点是多少？（选最接近值。） | A · -0.285714 s | 解 L≤b−at≤R（a>0）得 (b−R)/a≤t≤(b−L)/a，反转后左右端点交换。代入得 -0.285714 s。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-scaled-signal-energy-1 | x(t) 能量为 3，y(t)=2x(−4t)。y(t) 的能量是多少？ | A · 3 | 幅度乘 k 使能量乘 k²，时间缩放使能量除以 \|a\|，反转不改变能量。代入得 3。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-scaled-signal-energy-1-v1 | x(t) 能量为 4，y(t)=3x(−5t)。y(t) 的能量是多少？ | B · 7.2 | 幅度乘 k 使能量乘 k²，时间缩放使能量除以 \|a\|，反转不改变能量。代入得 7.2。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-scaled-signal-energy-1-v2 | x(t) 能量为 5，y(t)=4x(−6t)。y(t) 的能量是多少？（选最接近值。） | C · 13.333333 | 幅度乘 k 使能量乘 k²，时间缩放使能量除以 \|a\|，反转不改变能量。代入得 13.333333。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-scaled-signal-energy-2 | x(t) 能量为 6，y(t)=5x(−7t)。y(t) 的能量是多少？（选最接近值。） | D · 21.428571 | 幅度乘 k 使能量乘 k²，时间缩放使能量除以 \|a\|，反转不改变能量。代入得 21.428571。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-scaled-signal-energy-2-v1 | x(t) 能量为 7，y(t)=6x(−8t)。y(t) 的能量是多少？ | A · 31.5 | 幅度乘 k 使能量乘 k²，时间缩放使能量除以 \|a\|，反转不改变能量。代入得 31.5。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-scaled-signal-energy-2-v2 | x(t) 能量为 8，y(t)=7x(−9t)。y(t) 的能量是多少？（选最接近值。） | B · 43.555556 | 幅度乘 k 使能量乘 k²，时间缩放使能量除以 \|a\|，反转不改变能量。代入得 43.555556。 | [1.2 基本运算与波形变换](../content/signals/knowledge-base/ss-1-2.md) |
+| ext-commensurate-period-1 | x(t)=cos(2π·2t)+cos(2π·3t)，基本周期是多少？ | B · 1 s | 两项非零，基本频率为两个整数频率的最大公约数，T₀=1/gcd(f₁,f₂)。代入得 1 s。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-commensurate-period-1-v1 | x(t)=cos(2π·4t)+cos(2π·6t)，基本周期是多少？ | C · 0.5 s | 两项非零，基本频率为两个整数频率的最大公约数，T₀=1/gcd(f₁,f₂)。代入得 0.5 s。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-commensurate-period-1-v2 | x(t)=cos(2π·6t)+cos(2π·9t)，基本周期是多少？（选最接近值。） | D · 0.333333 s | 两项非零，基本频率为两个整数频率的最大公约数，T₀=1/gcd(f₁,f₂)。代入得 0.333333 s。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-commensurate-period-2 | x(t)=cos(2π·8t)+cos(2π·12t)，基本周期是多少？ | A · 0.25 s | 两项非零，基本频率为两个整数频率的最大公约数，T₀=1/gcd(f₁,f₂)。代入得 0.25 s。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-commensurate-period-2-v1 | x(t)=cos(2π·10t)+cos(2π·15t)，基本周期是多少？ | B · 0.2 s | 两项非零，基本频率为两个整数频率的最大公约数，T₀=1/gcd(f₁,f₂)。代入得 0.2 s。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-commensurate-period-2-v2 | x(t)=cos(2π·12t)+cos(2π·18t)，基本周期是多少？（选最接近值。） | C · 0.166667 s | 两项非零，基本频率为两个整数频率的最大公约数，T₀=1/gcd(f₁,f₂)。代入得 0.166667 s。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-discrete-period-1 | x[n]=cos(2π·2n/5)，最小正整数周期 N 是多少？ | C · 5 | 周期须满足 pN/q 为整数，故 N=q/gcd(p,q)；本题分子分母互质。代入得 5。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-discrete-period-1-v1 | x[n]=cos(2π·3n/8)，最小正整数周期 N 是多少？ | D · 8 | 周期须满足 pN/q 为整数，故 N=q/gcd(p,q)；本题分子分母互质。代入得 8。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-discrete-period-1-v2 | x[n]=cos(2π·4n/9)，最小正整数周期 N 是多少？ | A · 9 | 周期须满足 pN/q 为整数，故 N=q/gcd(p,q)；本题分子分母互质。代入得 9。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-discrete-period-2 | x[n]=cos(2π·5n/12)，最小正整数周期 N 是多少？ | B · 12 | 周期须满足 pN/q 为整数，故 N=q/gcd(p,q)；本题分子分母互质。代入得 12。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-discrete-period-2-v1 | x[n]=cos(2π·5n/16)，最小正整数周期 N 是多少？ | C · 16 | 周期须满足 pN/q 为整数，故 N=q/gcd(p,q)；本题分子分母互质。代入得 16。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-discrete-period-2-v2 | x[n]=cos(2π·7n/18)，最小正整数周期 N 是多少？ | D · 18 | 周期须满足 pN/q 为整数，故 N=q/gcd(p,q)；本题分子分母互质。代入得 18。 | [1.1 信号的分类与基本量](../content/signals/knowledge-base/ss-1-1.md) |
+| ext-affine-impulse-area-1 | 积分 ∫₋∞∞ 4δ(-2t−1)dt 等于多少？ | D · 2 | δ(at−b) 的面积为 1/\|a\|，平移不改变面积，外部系数仍需乘入。代入得 2。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-affine-impulse-area-1-v1 | 积分 ∫₋∞∞ 5δ(-3t−2)dt 等于多少？（选最接近值。） | A · 1.666667 | δ(at−b) 的面积为 1/\|a\|，平移不改变面积，外部系数仍需乘入。代入得 1.666667。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-affine-impulse-area-1-v2 | 积分 ∫₋∞∞ 6δ(-4t−3)dt 等于多少？ | B · 1.5 | δ(at−b) 的面积为 1/\|a\|，平移不改变面积，外部系数仍需乘入。代入得 1.5。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-affine-impulse-area-2 | 积分 ∫₋∞∞ 7δ(-5t−4)dt 等于多少？ | C · 1.4 | δ(at−b) 的面积为 1/\|a\|，平移不改变面积，外部系数仍需乘入。代入得 1.4。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-affine-impulse-area-2-v1 | 积分 ∫₋∞∞ 8δ(-6t−5)dt 等于多少？（选最接近值。） | D · 1.333333 | δ(at−b) 的面积为 1/\|a\|，平移不改变面积，外部系数仍需乘入。代入得 1.333333。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-affine-impulse-area-2-v2 | 积分 ∫₋∞∞ 9δ(-7t−6)dt 等于多少？（选最接近值。） | A · 1.285714 | δ(at−b) 的面积为 1/\|a\|，平移不改变面积，外部系数仍需乘入。代入得 1.285714。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-affine-impulse-sift-1 | 积分 ∫₋∞∞ (3t+1)δ(2t−4)dt 等于多少？ | A · 3.5 | 冲激位于 t=b/a，还要乘尺度权重 1/\|a\|，结果为 (cb/a+d)/\|a\|。代入得 3.5。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-affine-impulse-sift-1-v1 | 积分 ∫₋∞∞ (4t+2)δ(3t−6)dt 等于多少？（选最接近值。） | B · 3.333333 | 冲激位于 t=b/a，还要乘尺度权重 1/\|a\|，结果为 (cb/a+d)/\|a\|。代入得 3.333333。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-affine-impulse-sift-1-v2 | 积分 ∫₋∞∞ (5t+3)δ(4t−8)dt 等于多少？ | C · 3.25 | 冲激位于 t=b/a，还要乘尺度权重 1/\|a\|，结果为 (cb/a+d)/\|a\|。代入得 3.25。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-affine-impulse-sift-2 | 积分 ∫₋∞∞ (6t+4)δ(5t−10)dt 等于多少？ | D · 3.2 | 冲激位于 t=b/a，还要乘尺度权重 1/\|a\|，结果为 (cb/a+d)/\|a\|。代入得 3.2。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-affine-impulse-sift-2-v1 | 积分 ∫₋∞∞ (7t+5)δ(6t−12)dt 等于多少？（选最接近值。） | A · 3.166667 | 冲激位于 t=b/a，还要乘尺度权重 1/\|a\|，结果为 (cb/a+d)/\|a\|。代入得 3.166667。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-affine-impulse-sift-2-v2 | 积分 ∫₋∞∞ (8t+6)δ(7t−14)dt 等于多少？（选最接近值。） | B · 3.142857 | 冲激位于 t=b/a，还要乘尺度权重 1/\|a\|，结果为 (cb/a+d)/\|a\|。代入得 3.142857。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-step-window-area-1 | x(t)=2[u(t−1)−u(t−5)]，全时间积分（面积）是多少？ | B · 8 | 两个阶跃之差形成宽 R−L、高 A 的矩形，面积为 A(R−L)。代入得 8。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-step-window-area-1-v1 | x(t)=3[u(t−2)−u(t−8)]，全时间积分（面积）是多少？ | C · 18 | 两个阶跃之差形成宽 R−L、高 A 的矩形，面积为 A(R−L)。代入得 18。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-step-window-area-1-v2 | x(t)=4[u(t−3)−u(t−11)]，全时间积分（面积）是多少？ | D · 32 | 两个阶跃之差形成宽 R−L、高 A 的矩形，面积为 A(R−L)。代入得 32。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-step-window-area-2 | x(t)=5[u(t−4)−u(t−14)]，全时间积分（面积）是多少？ | A · 50 | 两个阶跃之差形成宽 R−L、高 A 的矩形，面积为 A(R−L)。代入得 50。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-step-window-area-2-v1 | x(t)=6[u(t−5)−u(t−17)]，全时间积分（面积）是多少？ | B · 72 | 两个阶跃之差形成宽 R−L、高 A 的矩形，面积为 A(R−L)。代入得 72。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-step-window-area-2-v2 | x(t)=7[u(t−6)−u(t−20)]，全时间积分（面积）是多少？ | C · 98 | 两个阶跃之差形成宽 R−L、高 A 的矩形，面积为 A(R−L)。代入得 98。 | [1.3 阶跃函数与冲激函数](../content/signals/knowledge-base/ss-1-3.md) |
+| ext-differentiator-amplitude-1 | 理想微分器 y(t)=dx(t)/dt，输入 x(t)=3sin(4t)。输出正弦分量的幅度是多少？ | C · 12 | 对正弦求导得 Aωcos(ωt)，幅度为 Aω；此结论只针对题给正弦输入。代入得 12。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md)；[3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-differentiator-amplitude-1-v1 | 理想微分器 y(t)=dx(t)/dt，输入 x(t)=4sin(5t)。输出正弦分量的幅度是多少？ | D · 20 | 对正弦求导得 Aωcos(ωt)，幅度为 Aω；此结论只针对题给正弦输入。代入得 20。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md)；[3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-differentiator-amplitude-1-v2 | 理想微分器 y(t)=dx(t)/dt，输入 x(t)=5sin(6t)。输出正弦分量的幅度是多少？ | A · 30 | 对正弦求导得 Aωcos(ωt)，幅度为 Aω；此结论只针对题给正弦输入。代入得 30。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md)；[3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-differentiator-amplitude-2 | 理想微分器 y(t)=dx(t)/dt，输入 x(t)=6sin(7t)。输出正弦分量的幅度是多少？ | B · 42 | 对正弦求导得 Aωcos(ωt)，幅度为 Aω；此结论只针对题给正弦输入。代入得 42。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md)；[3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-differentiator-amplitude-2-v1 | 理想微分器 y(t)=dx(t)/dt，输入 x(t)=7sin(8t)。输出正弦分量的幅度是多少？ | C · 56 | 对正弦求导得 Aωcos(ωt)，幅度为 Aω；此结论只针对题给正弦输入。代入得 56。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md)；[3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-differentiator-amplitude-2-v2 | 理想微分器 y(t)=dx(t)/dt，输入 x(t)=8sin(9t)。输出正弦分量的幅度是多少？ | D · 72 | 对正弦求导得 Aωcos(ωt)，幅度为 Aω；此结论只针对题给正弦输入。代入得 72。 | [1.4 系统的定义、分类与性质](../content/signals/knowledge-base/ss-1-4.md)；[3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-difference-equation-order-1 | 差分方程 y[k+1]+2y[k−2]=x[k] 中，输出序列最高与最低序号都具有非零系数。方程阶数是多少？ | D · 3 | 差分方程阶数是未知输出序列最高序号与最低序号之差。代入得 3。 | [1.5 系统的描述](../content/signals/knowledge-base/ss-1-5.md) |
+| ext-difference-equation-order-1-v1 | 差分方程 y[k+2]+2y[k−3]=x[k] 中，输出序列最高与最低序号都具有非零系数。方程阶数是多少？ | A · 5 | 差分方程阶数是未知输出序列最高序号与最低序号之差。代入得 5。 | [1.5 系统的描述](../content/signals/knowledge-base/ss-1-5.md) |
+| ext-difference-equation-order-1-v2 | 差分方程 y[k+3]+2y[k−4]=x[k] 中，输出序列最高与最低序号都具有非零系数。方程阶数是多少？ | B · 7 | 差分方程阶数是未知输出序列最高序号与最低序号之差。代入得 7。 | [1.5 系统的描述](../content/signals/knowledge-base/ss-1-5.md) |
+| ext-difference-equation-order-2 | 差分方程 y[k+4]+2y[k−5]=x[k] 中，输出序列最高与最低序号都具有非零系数。方程阶数是多少？ | C · 9 | 差分方程阶数是未知输出序列最高序号与最低序号之差。代入得 9。 | [1.5 系统的描述](../content/signals/knowledge-base/ss-1-5.md) |
+| ext-difference-equation-order-2-v1 | 差分方程 y[k+5]+2y[k−6]=x[k] 中，输出序列最高与最低序号都具有非零系数。方程阶数是多少？ | D · 11 | 差分方程阶数是未知输出序列最高序号与最低序号之差。代入得 11。 | [1.5 系统的描述](../content/signals/knowledge-base/ss-1-5.md) |
+| ext-difference-equation-order-2-v2 | 差分方程 y[k+6]+2y[k−7]=x[k] 中，输出序列最高与最低序号都具有非零系数。方程阶数是多少？ | A · 13 | 差分方程阶数是未知输出序列最高序号与最低序号之差。代入得 13。 | [1.5 系统的描述](../content/signals/knowledge-base/ss-1-5.md) |
 
 ### 第2章
 
-| ID | 题目 | 正确答案 | 解析 |
-| --- | --- | --- | --- |
-| convolution-shift | 若 h(t) = δ(t − 2)，则 y(t) = x(t) * h(t) 等于？ | C · x(t − 2) | 与延迟冲激卷积会把输入整体右移 2：y(t) = x(t − 2)。 |
-| convolution-shift-v1 | 已知 y(t)=x(t)∗h(t)，x(t−2)∗h(t) 等于什么？ | A · y(t−2) | 输入延迟 2，卷积输出同样延迟 2。 |
-| convolution-shift-v2 | x(t−1)∗h(t−2) 相对于 y(t)=x(t)∗h(t) 如何变化？ | C · y(t−3) | 卷积的两个输入延迟相加：1+2=3。 |
-| step-response | 标准一阶低通 H(s)=K/(1+τs)，K≠0、τ>0。零状态单位阶跃响应在 t=τ 达到终值的约多少？ | B · 63.2% | g(t)=K(1−e^(−t/τ))u(t)，归一化后 1−e^(−1)≈63.2%。 |
-| step-response-v1 | 标准一阶低通 H(s)=K/(1+τs)，K≠0、τ>0，零状态阶跃激励。一阶系统在 t=3τ 时达到终值的约多少？ | C · 95.0% | 归一化响应 1−e^(−3)≈0.9502。 |
-| step-response-v2 | 标准一阶低通 H(s)=K/(1+τs)，K≠0、τ>0，零状态阶跃激励。一阶系统在 t=5τ 时达到终值的约多少？ | D · 99.3% | 1−e^(−5)≈0.9933，有限时刻仍未精确到达终值。 |
-| time-constant | 标准一阶低通 H(s)=K/(1+τs)，τ>0。保持 K 不变、增大 τ，−3 dB 截止频率如何变化？ | A · 降低 | ωc=1/τ，fc=1/(2πτ)，因此 τ 越大截止频率越低。 |
-| time-constant-v1 | 标准一阶低通 H(s)=K/(1+τs)，K≠0、τ>0，零状态阶跃激励。保持增益不变，时间常数加倍，一阶响应会怎样？ | A · 达到相同比例所需时间加倍 | t=−τ ln(1−r)，达到固定比例 r 的时间与 τ 成正比。 |
-| time-constant-v2 | 系统 H(s)=1/(s+4) 的时间常数是多少？ | B · 0.25 s | 极点为 −1/τ=−4，所以 τ=1/4 s。 |
-| damping | 标准无零点二阶低通 H(s)=ωn²/(s²+2ζωns+ωn²)，ωn>0。零状态单位阶跃下，ζ 从 0.3 增至 0.7，超调量如何变化？ | B · 减小 | 0<ζ<1 时 Mp=e^(−πζ/√(1−ζ²))，随 ζ 增大而减小。该结论使用题设标准二阶形式。 |
-| damping-v1 | 对标准无零点二阶低通的零状态单位阶跃响应，标准二阶系统 ζ 从 0.2 增大到 0.7，超调量如何变化？ | A · 减小 | 欠阻尼超调量 Mp=e^(−πζ/√(1−ζ²)) 随 ζ 增大而减小。 |
-| damping-v2 | 对标准无零点二阶低通的零状态单位阶跃响应，标准二阶系统 ζ=1 属于哪种阻尼？ | D · 临界阻尼 | ζ=1 对应重实极点，是欠阻尼与过阻尼的分界。 |
-| decay-exponent | 齐次方程 y′+2y=0，解 y=Ce^(λt) 中 λ 是多少？ | A · -2 | 代入得 λ+2=0，所以 λ=−2。 |
-| decay-exponent-v1 | 齐次方程 y′+3y=0，解 y=Ce^(λt) 中 λ 是多少？ | B · -3 | 代入得 λ+3=0，所以 λ=−3。 |
-| decay-exponent-v2 | 齐次方程 y′+5y=0，解 y=Ce^(λt) 中 λ 是多少？ | C · -5 | 代入得 λ+5=0，所以 λ=−5。 |
-| constant-forced-response | y′+2y=6，稳定稳态常值是多少？ | B · 3 | 稳态 y′=0，因此 y∞=6/2=3。 |
-| constant-forced-response-v1 | y′+3y=12，稳定稳态常值是多少？ | C · 4 | 稳态 y′=0，因此 y∞=12/3=4。 |
-| constant-forced-response-v2 | y′+4y=8，稳定稳态常值是多少？ | D · 2 | 稳态 y′=0，因此 y∞=8/4=2。 |
-| impulse-state-jump | y′+2y=3δ(t)，y(0−)=1，求 y(0+)。 | C · 4 | 跨零积分得 Δy=3，所以 y(0+)=4。 |
-| impulse-state-jump-v1 | y′+2y=4δ(t)，y(0−)=2，求 y(0+)。 | D · 6 | 跨零积分得 Δy=4，所以 y(0+)=6。 |
-| impulse-state-jump-v2 | y′+2y=5δ(t)，y(0−)=-1，求 y(0+)。 | A · 4 | 跨零积分得 Δy=5，所以 y(0+)=4。 |
-| second-order-jump | y″+3y′+2y=2δ(t)，y(0−) 有限，y′(0−)=1。求 y′(0+)。 | D · 3 | 无 δ′ 激励，y 连续；δ 系数匹配给出 Δy′=2，结果 3。 |
-| second-order-jump-v1 | y″+3y′+2y=5δ(t)，y(0−) 有限，y′(0−)=-2。求 y′(0+)。 | A · 3 | 无 δ′ 激励，y 连续；δ 系数匹配给出 Δy′=5，结果 3。 |
-| second-order-jump-v2 | y″+3y′+2y=4δ(t)，y(0−) 有限，y′(0−)=3。求 y′(0+)。 | B · 7 | 无 δ′ 激励，y 连续；δ 系数匹配给出 Δy′=4，结果 7。 |
-| zero-input-initial | y′+2y=x，y(0−)=3。零输入响应 A e^(−2t) 在 t≥0 的系数 A 是多少？ | A · 3 | 输入置零，无冲激引起跳变，A=y(0+)=3。 |
-| zero-input-initial-v1 | y′+2y=x，y(0−)=5。零输入响应 A e^(−2t) 在 t≥0 的系数 A 是多少？ | B · 5 | 输入置零，无冲激引起跳变，A=y(0+)=5。 |
-| zero-input-initial-v2 | y′+2y=x，y(0−)=-2。零输入响应 A e^(−2t) 在 t≥0 的系数 A 是多少？ | C · -2 | 输入置零，无冲激引起跳变，A=y(0+)=-2。 |
-| impulse-step-final | h(t)=4e^(−2t)u(t)，零状态单位阶跃响应终值是多少？ | B · 2 | g∞=∫₀∞h(t)dt=4/2=2。 |
-| impulse-step-final-v1 | h(t)=6e^(−3t)u(t)，零状态单位阶跃响应终值是多少？ | C · 2 | g∞=∫₀∞h(t)dt=6/3=2。 |
-| impulse-step-final-v2 | h(t)=8e^(−2t)u(t)，零状态单位阶跃响应终值是多少？ | D · 4 | g∞=∫₀∞h(t)dt=8/2=4。 |
-| step-impulse-coefficient | 零状态阶跃响应 g(t)=2(1−e^(−3t))u(t)，h(t)=A e^(−3t)u(t)，A 是多少？ | C · 6 | h=g′，且 g 在零点连续为0，无 δ 项；A=2×3=6。 |
-| step-impulse-coefficient-v1 | 零状态阶跃响应 g(t)=3(1−e^(−4t))u(t)，h(t)=A e^(−4t)u(t)，A 是多少？ | D · 12 | h=g′，且 g 在零点连续为0，无 δ 项；A=3×4=12。 |
-| step-impulse-coefficient-v2 | 零状态阶跃响应 g(t)=4(1−e^(−2t))u(t)，h(t)=A e^(−2t)u(t)，A 是多少？ | A · 8 | h=g′，且 g 在零点连续为0，无 δ 项；A=4×2=8。 |
-| impulse-convolution-gain | x(t)*[2δ(t−3)]=A x(t−3)，A 是多少？ | D · 2 | 延迟冲激负责平移，冲激权重保留为增益 2。 |
-| impulse-convolution-gain-v1 | x(t)*[3δ(t−2)]=A x(t−2)，A 是多少？ | A · 3 | 延迟冲激负责平移，冲激权重保留为增益 3。 |
-| impulse-convolution-gain-v2 | x(t)*[4δ(t−1)]=A x(t−1)，A 是多少？ | B · 4 | 延迟冲激负责平移，冲激权重保留为增益 4。 |
-| rectangle-convolution-peak | 两幅度1的因果矩形宽度分别为 2 s、5 s，其卷积峰值是多少？ | A · 2 | 峰值等于最大重叠长度 min(2,5)=2。 |
-| rectangle-convolution-peak-v1 | 两幅度1的因果矩形宽度分别为 3 s、6 s，其卷积峰值是多少？ | B · 3 | 峰值等于最大重叠长度 min(3,6)=3。 |
-| rectangle-convolution-peak-v2 | 两幅度1的因果矩形宽度分别为 4 s、7 s，其卷积峰值是多少？ | C · 4 | 峰值等于最大重叠长度 min(4,7)=4。 |
-| rectangle-convolution-width | 两单位幅度因果矩形支撑为 [0,2] 和 [0,3]，卷积的非零支撑闭包宽度是多少？ | B · 5 | 支撑端点相加，卷积支撑闭包为 [0,5]。 |
-| rectangle-convolution-width-v1 | 两单位幅度因果矩形支撑为 [0,3] 和 [0,5]，卷积的非零支撑闭包宽度是多少？ | C · 8 | 支撑端点相加，卷积支撑闭包为 [0,8]。 |
-| rectangle-convolution-width-v2 | 两单位幅度因果矩形支撑为 [0,4] 和 [0,6]，卷积的非零支撑闭包宽度是多少？ | D · 10 | 支撑端点相加，卷积支撑闭包为 [0,10]。 |
-| equal-exponential-convolution | x=2e^(−1t)u(t)，h=3e^(−1t)u(t)。卷积为 A t e^(−1t)u(t)，A 是多少？ | C · 6 | 积分内指数合为 e^(−1t)，积分区间长 t，A=6。 |
-| equal-exponential-convolution-v1 | x=3e^(−2t)u(t)，h=4e^(−2t)u(t)。卷积为 A t e^(−2t)u(t)，A 是多少？ | D · 12 | 积分内指数合为 e^(−2t)，积分区间长 t，A=12。 |
-| equal-exponential-convolution-v2 | x=4e^(−3t)u(t)，h=2e^(−3t)u(t)。卷积为 A t e^(−3t)u(t)，A 是多少？ | A · 8 | 积分内指数合为 e^(−3t)，积分区间长 t，A=8。 |
-| cascade-impulse-gain | 两 LTI 系统级联，h₁=2δ(t)、h₂=3δ(t)。总 h=Aδ(t)，A 是多少？ | D · 6 | 级联用卷积，δ*δ=δ，增益相乘得 6。 |
-| cascade-impulse-gain-v1 | 两 LTI 系统级联，h₁=3δ(t)、h₂=4δ(t)。总 h=Aδ(t)，A 是多少？ | A · 12 | 级联用卷积，δ*δ=δ，增益相乘得 12。 |
-| cascade-impulse-gain-v2 | 两 LTI 系统级联，h₁=4δ(t)、h₂=5δ(t)。总 h=Aδ(t)，A 是多少？ | B · 20 | 级联用卷积，δ*δ=δ，增益相乘得 20。 |
-| parallel-impulse-gain | 两 LTI 支路并联，输入相同且输出相加，h₁=2δ(t)、h₂=3δ(t)。总冲激权重是多少？ | A · 5 | 并联冲激响应相加：h=(2+(3))δ(t)，权重为 5。 |
-| parallel-impulse-gain-v1 | 两 LTI 支路并联，输入相同且输出相加，h₁=3δ(t)、h₂=-1δ(t)。总冲激权重是多少？ | B · 2 | 并联冲激响应相加：h=(3+(-1))δ(t)，权重为 2。 |
-| parallel-impulse-gain-v2 | 两 LTI 支路并联，输入相同且输出相加，h₁=4δ(t)、h₂=5δ(t)。总冲激权重是多少？ | C · 9 | 并联冲激响应相加：h=(4+(5))δ(t)，权重为 9。 |
-| autocorrelation-zero | 实矩形信号在 [0,3] 幅度为 2，定义 Rxx(τ)=∫x(t)x(t−τ)dt，Rxx(0) 是多少？ | B · 12 | 零延迟自相关等于能量：2²×3=12。 |
-| autocorrelation-zero-v1 | 实矩形信号在 [0,2] 幅度为 3，定义 Rxx(τ)=∫x(t)x(t−τ)dt，Rxx(0) 是多少？ | C · 18 | 零延迟自相关等于能量：3²×2=18。 |
-| autocorrelation-zero-v2 | 实矩形信号在 [0,1] 幅度为 4，定义 Rxx(τ)=∫x(t)x(t−τ)dt，Rxx(0) 是多少？ | D · 16 | 零延迟自相关等于能量：4²×1=16。 |
-| autocorrelation-overlap | x(t) 为 [0,4] 上幅度1矩形。Rxx(τ)=∫x(t)x(t−τ)dt，求 Rxx(1)。 | C · 3 | 重叠长度为 4−1=3，即相关值。 |
-| autocorrelation-overlap-v1 | x(t) 为 [0,5] 上幅度1矩形。Rxx(τ)=∫x(t)x(t−τ)dt，求 Rxx(2)。 | D · 3 | 重叠长度为 5−2=3，即相关值。 |
-| autocorrelation-overlap-v2 | x(t) 为 [0,6] 上幅度1矩形。Rxx(τ)=∫x(t)x(t−τ)dt，求 Rxx(4)。 | A · 2 | 重叠长度为 6−4=2，即相关值。 |
-| continuous-convolution-step | 连续卷积的黎曼和近似中，离散 conv 结果某点为 120，dt=0.01 s。积分近似值是多少？ | D · 1.2 | 离散求和需乘积分步长：120×0.01=1.2。 |
-| continuous-convolution-step-v1 | 连续卷积的黎曼和近似中，离散 conv 结果某点为 80，dt=0.02 s。积分近似值是多少？ | A · 1.6 | 离散求和需乘积分步长：80×0.02=1.6。 |
-| continuous-convolution-step-v2 | 连续卷积的黎曼和近似中，离散 conv 结果某点为 50，dt=0.04 s。积分近似值是多少？ | B · 2 | 离散求和需乘积分步长：50×0.04=2。 |
+| ID | 题目 | 正确答案 | 解析 | 讲义依据 |
+| --- | --- | --- | --- | --- |
+| convolution-shift | 若 h(t) = δ(t − 2)，则 y(t) = x(t) * h(t) 等于？ | C · x(t − 2) | 与延迟冲激卷积会把输入整体右移 2：y(t) = x(t − 2)。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| convolution-shift-v1 | 已知 y(t)=x(t)∗h(t)，x(t−2)∗h(t) 等于什么？ | A · y(t−2) | 输入延迟 2，卷积输出同样延迟 2。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| convolution-shift-v2 | x(t−1)∗h(t−2) 相对于 y(t)=x(t)∗h(t) 如何变化？ | C · y(t−3) | 卷积的两个输入延迟相加：1+2=3。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| step-response | 标准一阶低通 H(s)=K/(1+τs)，K≠0、τ>0。零状态单位阶跃响应在 t=τ 达到终值的约多少？ | B · 63.2% | g(t)=K(1−e^(−t/τ))u(t)，归一化后 1−e^(−1)≈63.2%。 | [4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| step-response-v1 | 标准一阶低通 H(s)=K/(1+τs)，K≠0、τ>0，零状态阶跃激励。一阶系统在 t=3τ 时达到终值的约多少？ | C · 95.0% | 归一化响应 1−e^(−3)≈0.9502。 | [4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| step-response-v2 | 标准一阶低通 H(s)=K/(1+τs)，K≠0、τ>0，零状态阶跃激励。一阶系统在 t=5τ 时达到终值的约多少？ | D · 99.3% | 1−e^(−5)≈0.9933，有限时刻仍未精确到达终值。 | [4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| time-constant | 标准一阶低通 H(s)=K/(1+τs)，τ>0。保持 K 不变、增大 τ，−3 dB 截止频率如何变化？ | A · 降低 | ωc=1/τ，fc=1/(2πτ)，因此 τ 越大截止频率越低。 | [4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| time-constant-v1 | 标准一阶低通 H(s)=K/(1+τs)，K≠0、τ>0，零状态阶跃激励。保持增益不变，时间常数加倍，一阶响应会怎样？ | A · 达到相同比例所需时间加倍 | t=−τ ln(1−r)，达到固定比例 r 的时间与 τ 成正比。 | [4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| time-constant-v2 | 系统 H(s)=1/(s+4) 的时间常数是多少？ | B · 0.25 s | 极点为 −1/τ=−4，所以 τ=1/4 s。 | [4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| second-order-mode-decay | 非零自由响应对应特征根 −2±j3。0.25 s 后的振幅包络是初始包络的多少倍？（选最接近值。） | B · 0.606531 | 共轭根产生 e^(−2t)(Ccos3t+Dsin3t)，包络比 e^(−2×0.25)≈0.606531。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| second-order-mode-decay-v1 | 非零自由响应对应特征根 −4±j5。0.5 s 后的振幅包络是初始包络的多少倍？（选最接近值。） | A · 0.135335 | 共轭根产生 e^(−4t)(Ccos5t+Dsin5t)，包络比 e^(−4×0.5)≈0.135335。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| second-order-mode-decay-v2 | 非零自由响应对应特征根 −6±j7。0.75 s 后的振幅包络是初始包络的多少倍？（选最接近值。） | D · 0.011109 | 共轭根产生 e^(−6t)(Ccos7t+Dsin7t)，包络比 e^(−6×0.75)≈0.011109。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| decay-exponent | 齐次方程 y′+2y=0，解 y=Ce^(λt) 中 λ 是多少？ | A · -2 | 代入得 λ+2=0，所以 λ=−2。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| decay-exponent-v1 | 齐次方程 y′+3y=0，解 y=Ce^(λt) 中 λ 是多少？ | B · -3 | 代入得 λ+3=0，所以 λ=−3。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| decay-exponent-v2 | 齐次方程 y′+5y=0，解 y=Ce^(λt) 中 λ 是多少？ | C · -5 | 代入得 λ+5=0，所以 λ=−5。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| constant-forced-response | y′+2y=6，稳定稳态常值是多少？ | B · 3 | 稳态 y′=0，因此 y∞=6/2=3。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| constant-forced-response-v1 | y′+3y=12，稳定稳态常值是多少？ | C · 4 | 稳态 y′=0，因此 y∞=12/3=4。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| constant-forced-response-v2 | y′+4y=8，稳定稳态常值是多少？ | D · 2 | 稳态 y′=0，因此 y∞=8/4=2。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| impulse-state-jump | y′+2y=3δ(t)，y(0−)=1，求 y(0+)。 | C · 4 | 跨零积分得 Δy=3，所以 y(0+)=4。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| impulse-state-jump-v1 | y′+2y=4δ(t)，y(0−)=2，求 y(0+)。 | D · 6 | 跨零积分得 Δy=4，所以 y(0+)=6。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| impulse-state-jump-v2 | y′+2y=5δ(t)，y(0−)=-1，求 y(0+)。 | A · 4 | 跨零积分得 Δy=5，所以 y(0+)=4。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| second-order-jump | y″+3y′+2y=2δ(t)，y(0−) 有限，y′(0−)=1。求 y′(0+)。 | D · 3 | 无 δ′ 激励，y 连续；δ 系数匹配给出 Δy′=2，结果 3。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| second-order-jump-v1 | y″+3y′+2y=5δ(t)，y(0−) 有限，y′(0−)=-2。求 y′(0+)。 | A · 3 | 无 δ′ 激励，y 连续；δ 系数匹配给出 Δy′=5，结果 3。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| second-order-jump-v2 | y″+3y′+2y=4δ(t)，y(0−) 有限，y′(0−)=3。求 y′(0+)。 | B · 7 | 无 δ′ 激励，y 连续；δ 系数匹配给出 Δy′=4，结果 7。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| zero-input-initial | y′+2y=x，y(0−)=3。零输入响应 A e^(−2t) 在 t≥0 的系数 A 是多少？ | A · 3 | 输入置零，无冲激引起跳变，A=y(0+)=3。 | [2.3 零输入响应与零状态响应](../content/signals/knowledge-base/ss-2-3.md) |
+| zero-input-initial-v1 | y′+2y=x，y(0−)=5。零输入响应 A e^(−2t) 在 t≥0 的系数 A 是多少？ | B · 5 | 输入置零，无冲激引起跳变，A=y(0+)=5。 | [2.3 零输入响应与零状态响应](../content/signals/knowledge-base/ss-2-3.md) |
+| zero-input-initial-v2 | y′+2y=x，y(0−)=-2。零输入响应 A e^(−2t) 在 t≥0 的系数 A 是多少？ | C · -2 | 输入置零，无冲激引起跳变，A=y(0+)=-2。 | [2.3 零输入响应与零状态响应](../content/signals/knowledge-base/ss-2-3.md) |
+| impulse-step-final | h(t)=4e^(−2t)u(t)，零状态单位阶跃响应终值是多少？ | B · 2 | g∞=∫₀∞h(t)dt=4/2=2。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| impulse-step-final-v1 | h(t)=6e^(−3t)u(t)，零状态单位阶跃响应终值是多少？ | C · 2 | g∞=∫₀∞h(t)dt=6/3=2。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| impulse-step-final-v2 | h(t)=8e^(−2t)u(t)，零状态单位阶跃响应终值是多少？ | D · 4 | g∞=∫₀∞h(t)dt=8/2=4。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| step-impulse-coefficient | 零状态阶跃响应 g(t)=2(1−e^(−3t))u(t)，h(t)=A e^(−3t)u(t)，A 是多少？ | C · 6 | h=g′，且 g 在零点连续为0，无 δ 项；A=2×3=6。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| step-impulse-coefficient-v1 | 零状态阶跃响应 g(t)=3(1−e^(−4t))u(t)，h(t)=A e^(−4t)u(t)，A 是多少？ | D · 12 | h=g′，且 g 在零点连续为0，无 δ 项；A=3×4=12。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| step-impulse-coefficient-v2 | 零状态阶跃响应 g(t)=4(1−e^(−2t))u(t)，h(t)=A e^(−2t)u(t)，A 是多少？ | A · 8 | h=g′，且 g 在零点连续为0，无 δ 项；A=4×2=8。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| impulse-convolution-gain | x(t)*[2δ(t−3)]=A x(t−3)，A 是多少？ | D · 2 | 延迟冲激负责平移，冲激权重保留为增益 2。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| impulse-convolution-gain-v1 | x(t)*[3δ(t−2)]=A x(t−2)，A 是多少？ | A · 3 | 延迟冲激负责平移，冲激权重保留为增益 3。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| impulse-convolution-gain-v2 | x(t)*[4δ(t−1)]=A x(t−1)，A 是多少？ | B · 4 | 延迟冲激负责平移，冲激权重保留为增益 4。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| rectangle-convolution-peak | 两幅度1的因果矩形宽度分别为 2 s、5 s，其卷积峰值是多少？ | A · 2 | 峰值等于最大重叠长度 min(2,5)=2。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| rectangle-convolution-peak-v1 | 两幅度1的因果矩形宽度分别为 3 s、6 s，其卷积峰值是多少？ | B · 3 | 峰值等于最大重叠长度 min(3,6)=3。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| rectangle-convolution-peak-v2 | 两幅度1的因果矩形宽度分别为 4 s、7 s，其卷积峰值是多少？ | C · 4 | 峰值等于最大重叠长度 min(4,7)=4。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| rectangle-convolution-width | 两单位幅度因果矩形支撑为 [0,2] 和 [0,3]，卷积的非零支撑闭包宽度是多少？ | B · 5 | 支撑端点相加，卷积支撑闭包为 [0,5]。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| rectangle-convolution-width-v1 | 两单位幅度因果矩形支撑为 [0,3] 和 [0,5]，卷积的非零支撑闭包宽度是多少？ | C · 8 | 支撑端点相加，卷积支撑闭包为 [0,8]。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| rectangle-convolution-width-v2 | 两单位幅度因果矩形支撑为 [0,4] 和 [0,6]，卷积的非零支撑闭包宽度是多少？ | D · 10 | 支撑端点相加，卷积支撑闭包为 [0,10]。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| equal-exponential-convolution | x=2e^(−1t)u(t)，h=3e^(−1t)u(t)。卷积为 A t e^(−1t)u(t)，A 是多少？ | C · 6 | 积分内指数合为 e^(−1t)，积分区间长 t，A=6。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| equal-exponential-convolution-v1 | x=3e^(−2t)u(t)，h=4e^(−2t)u(t)。卷积为 A t e^(−2t)u(t)，A 是多少？ | D · 12 | 积分内指数合为 e^(−2t)，积分区间长 t，A=12。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| equal-exponential-convolution-v2 | x=4e^(−3t)u(t)，h=2e^(−3t)u(t)。卷积为 A t e^(−3t)u(t)，A 是多少？ | A · 8 | 积分内指数合为 e^(−3t)，积分区间长 t，A=8。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| cascade-impulse-gain | 两 LTI 系统级联，h₁=2δ(t)、h₂=3δ(t)。总 h=Aδ(t)，A 是多少？ | D · 6 | 级联用卷积，δ*δ=δ，增益相乘得 6。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| cascade-impulse-gain-v1 | 两 LTI 系统级联，h₁=3δ(t)、h₂=4δ(t)。总 h=Aδ(t)，A 是多少？ | A · 12 | 级联用卷积，δ*δ=δ，增益相乘得 12。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| cascade-impulse-gain-v2 | 两 LTI 系统级联，h₁=4δ(t)、h₂=5δ(t)。总 h=Aδ(t)，A 是多少？ | B · 20 | 级联用卷积，δ*δ=δ，增益相乘得 20。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| parallel-impulse-gain | 两 LTI 支路并联，输入相同且输出相加，h₁=2δ(t)、h₂=3δ(t)。总冲激权重是多少？ | A · 5 | 并联冲激响应相加：h=(2+(3))δ(t)，权重为 5。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| parallel-impulse-gain-v1 | 两 LTI 支路并联，输入相同且输出相加，h₁=3δ(t)、h₂=-1δ(t)。总冲激权重是多少？ | B · 2 | 并联冲激响应相加：h=(3+(-1))δ(t)，权重为 2。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| parallel-impulse-gain-v2 | 两 LTI 支路并联，输入相同且输出相加，h₁=4δ(t)、h₂=5δ(t)。总冲激权重是多少？ | C · 9 | 并联冲激响应相加：h=(4+(5))δ(t)，权重为 9。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| autocorrelation-zero | 实矩形信号在 [0,3] 幅度为 2，定义 Rxx(τ)=∫x(t)x(t−τ)dt，Rxx(0) 是多少？ | B · 12 | 零延迟自相关等于能量：2²×3=12。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| autocorrelation-zero-v1 | 实矩形信号在 [0,2] 幅度为 3，定义 Rxx(τ)=∫x(t)x(t−τ)dt，Rxx(0) 是多少？ | C · 18 | 零延迟自相关等于能量：3²×2=18。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| autocorrelation-zero-v2 | 实矩形信号在 [0,1] 幅度为 4，定义 Rxx(τ)=∫x(t)x(t−τ)dt，Rxx(0) 是多少？ | D · 16 | 零延迟自相关等于能量：4²×1=16。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| autocorrelation-overlap | x(t) 为 [0,4] 上幅度1矩形。Rxx(τ)=∫x(t)x(t−τ)dt，求 Rxx(1)。 | C · 3 | 重叠长度为 4−1=3，即相关值。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| autocorrelation-overlap-v1 | x(t) 为 [0,5] 上幅度1矩形。Rxx(τ)=∫x(t)x(t−τ)dt，求 Rxx(2)。 | D · 3 | 重叠长度为 5−2=3，即相关值。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| autocorrelation-overlap-v2 | x(t) 为 [0,6] 上幅度1矩形。Rxx(τ)=∫x(t)x(t−τ)dt，求 Rxx(4)。 | A · 2 | 重叠长度为 6−4=2，即相关值。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| continuous-convolution-step | 连续卷积的黎曼和近似中，离散 conv 结果某点为 120，dt=0.01 s。积分近似值是多少？ | D · 1.2 | 离散求和需乘积分步长：120×0.01=1.2。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| continuous-convolution-step-v1 | 连续卷积的黎曼和近似中，离散 conv 结果某点为 80，dt=0.02 s。积分近似值是多少？ | A · 1.6 | 离散求和需乘积分步长：80×0.02=1.6。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| continuous-convolution-step-v2 | 连续卷积的黎曼和近似中，离散 conv 结果某点为 50，dt=0.04 s。积分近似值是多少？ | B · 2 | 离散求和需乘积分步长：50×0.04=2。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-unequal-exponential-convolution-1 | x(t)=e^(−1t)u(t)，h(t)=e^(−2t)u(t)。卷积 (x*h)(0.2) 是多少？（选最接近值。） | A · 0.148411 | 对 0≤τ≤t 积分，(x*h)(t)=[e^(−at)−e^(−bt)]/(b−a)，a≠b。代入得 0.148411。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-unequal-exponential-convolution-1-v1 | x(t)=e^(−2t)u(t)，h(t)=e^(−3t)u(t)。卷积 (x*h)(0.4) 是多少？（选最接近值。） | B · 0.148135 | 对 0≤τ≤t 积分，(x*h)(t)=[e^(−at)−e^(−bt)]/(b−a)，a≠b。代入得 0.148135。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-unequal-exponential-convolution-1-v2 | x(t)=e^(−3t)u(t)，h(t)=e^(−4t)u(t)。卷积 (x*h)(0.6) 是多少？（选最接近值。） | C · 0.074581 | 对 0≤τ≤t 积分，(x*h)(t)=[e^(−at)−e^(−bt)]/(b−a)，a≠b。代入得 0.074581。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-unequal-exponential-convolution-2 | x(t)=e^(−4t)u(t)，h(t)=e^(−5t)u(t)。卷积 (x*h)(0.8) 是多少？（选最接近值。） | D · 0.022447 | 对 0≤τ≤t 积分，(x*h)(t)=[e^(−at)−e^(−bt)]/(b−a)，a≠b。代入得 0.022447。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-unequal-exponential-convolution-2-v1 | x(t)=e^(−5t)u(t)，h(t)=e^(−6t)u(t)。卷积 (x*h)(1) 是多少？（选最接近值。） | A · 0.004259 | 对 0≤τ≤t 积分，(x*h)(t)=[e^(−at)−e^(−bt)]/(b−a)，a≠b。代入得 0.004259。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-unequal-exponential-convolution-2-v2 | x(t)=e^(−6t)u(t)，h(t)=e^(−7t)u(t)。卷积 (x*h)(1.2) 是多少？（选最接近值。） | B · 0.000522 | 对 0≤τ≤t 积分，(x*h)(t)=[e^(−at)−e^(−bt)]/(b−a)，a≠b。代入得 0.000522。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-first-order-step-sample-1 | 因果 LTI 系统 h(t)=2e^(−1t)u(t)，零初始状态下输入 u(t)。y(0.2) 是多少？（选最接近值。） | B · 0.362538 | 阶跃响应是 h 的积分，y(t)=(K/a)[1−e^(−at)]（t≥0）。代入得 0.362538。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| ext-first-order-step-sample-1-v1 | 因果 LTI 系统 h(t)=3e^(−2t)u(t)，零初始状态下输入 u(t)。y(0.3) 是多少？（选最接近值。） | C · 0.676783 | 阶跃响应是 h 的积分，y(t)=(K/a)[1−e^(−at)]（t≥0）。代入得 0.676783。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| ext-first-order-step-sample-1-v2 | 因果 LTI 系统 h(t)=4e^(−3t)u(t)，零初始状态下输入 u(t)。y(0.4) 是多少？（选最接近值。） | D · 0.931741 | 阶跃响应是 h 的积分，y(t)=(K/a)[1−e^(−at)]（t≥0）。代入得 0.931741。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| ext-first-order-step-sample-2 | 因果 LTI 系统 h(t)=5e^(−4t)u(t)，零初始状态下输入 u(t)。y(0.5) 是多少？（选最接近值。） | A · 1.080831 | 阶跃响应是 h 的积分，y(t)=(K/a)[1−e^(−at)]（t≥0）。代入得 1.080831。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| ext-first-order-step-sample-2-v1 | 因果 LTI 系统 h(t)=6e^(−5t)u(t)，零初始状态下输入 u(t)。y(0.6) 是多少？（选最接近值。） | B · 1.140256 | 阶跃响应是 h 的积分，y(t)=(K/a)[1−e^(−at)]（t≥0）。代入得 1.140256。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| ext-first-order-step-sample-2-v2 | 因果 LTI 系统 h(t)=7e^(−6t)u(t)，零初始状态下输入 u(t)。y(0.7) 是多少？（选最接近值。） | C · 1.149172 | 阶跃响应是 h 的积分，y(t)=(K/a)[1−e^(−at)]（t≥0）。代入得 1.149172。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| ext-natural-response-sample-1 | t≥0 时 y′+2y=0，y(0⁺)=3。y(0.1) 是多少？（选最接近值。） | C · 2.456192 | 一阶齐次方程的解为 y(t)=y(0⁺)e^(−at)，由初值确定系数。代入得 2.456192。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-natural-response-sample-1-v1 | t≥0 时 y′+3y=0，y(0⁺)=4。y(0.2) 是多少？（选最接近值。） | D · 2.195247 | 一阶齐次方程的解为 y(t)=y(0⁺)e^(−at)，由初值确定系数。代入得 2.195247。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-natural-response-sample-1-v2 | t≥0 时 y′+4y=0，y(0⁺)=5。y(0.3) 是多少？（选最接近值。） | A · 1.505971 | 一阶齐次方程的解为 y(t)=y(0⁺)e^(−at)，由初值确定系数。代入得 1.505971。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-natural-response-sample-2 | t≥0 时 y′+5y=0，y(0⁺)=6。y(0.4) 是多少？（选最接近值。） | B · 0.812012 | 一阶齐次方程的解为 y(t)=y(0⁺)e^(−at)，由初值确定系数。代入得 0.812012。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-natural-response-sample-2-v1 | t≥0 时 y′+6y=0，y(0⁺)=7。y(0.5) 是多少？（选最接近值。） | C · 0.348509 | 一阶齐次方程的解为 y(t)=y(0⁺)e^(−at)，由初值确定系数。代入得 0.348509。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-natural-response-sample-2-v2 | t≥0 时 y′+7y=0，y(0⁺)=8。y(0.6) 是多少？（选最接近值。） | D · 0.119965 | 一阶齐次方程的解为 y(t)=y(0⁺)e^(−at)，由初值确定系数。代入得 0.119965。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-total-response-sample-1 | t≥0 时 y′+2y=3，y(0⁺)=4。全响应 y(0.1) 是多少？（选最接近值。） | D · 3.546827 | 全响应为稳态值加暂态：y(t)=B/a+[y(0⁺)−B/a]e^(−at)。代入得 3.546827。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-total-response-sample-1-v1 | t≥0 时 y′+3y=5，y(0⁺)=5。全响应 y(0.2) 是多少？（选最接近值。） | A · 3.496039 | 全响应为稳态值加暂态：y(t)=B/a+[y(0⁺)−B/a]e^(−at)。代入得 3.496039。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-total-response-sample-1-v2 | t≥0 时 y′+4y=7，y(0⁺)=6。全响应 y(0.3) 是多少？（选最接近值。） | B · 3.030075 | 全响应为稳态值加暂态：y(t)=B/a+[y(0⁺)−B/a]e^(−at)。代入得 3.030075。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-total-response-sample-2 | t≥0 时 y′+5y=9，y(0⁺)=7。全响应 y(0.4) 是多少？（选最接近值。） | C · 2.503743 | 全响应为稳态值加暂态：y(t)=B/a+[y(0⁺)−B/a]e^(−at)。代入得 2.503743。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-total-response-sample-2-v1 | t≥0 时 y′+6y=11，y(0⁺)=8。全响应 y(0.5) 是多少？（选最接近值。） | D · 2.140354 | 全响应为稳态值加暂态：y(t)=B/a+[y(0⁺)−B/a]e^(−at)。代入得 2.140354。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-total-response-sample-2-v2 | t≥0 时 y′+7y=13，y(0⁺)=9。全响应 y(0.6) 是多少？（选最接近值。） | A · 1.964254 | 全响应为稳态值加暂态：y(t)=B/a+[y(0⁺)−B/a]e^(−at)。代入得 1.964254。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-pulse-response-after-end-1 | 零状态系统 h(t)=2e^(−2t)u(t)，输入 u(t)−u(t−0.1)。y(0.2) 是多少？（选最接近值。） | A · 0.148411 | 脉冲输入是两个错位阶跃之差；在 t=2T，y=(1−e^(−aT))e^(−aT)。代入得 0.148411。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-pulse-response-after-end-1-v1 | 零状态系统 h(t)=3e^(−3t)u(t)，输入 u(t)−u(t−0.2)。y(0.4) 是多少？（选最接近值。） | B · 0.247617 | 脉冲输入是两个错位阶跃之差；在 t=2T，y=(1−e^(−aT))e^(−aT)。代入得 0.247617。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-pulse-response-after-end-1-v2 | 零状态系统 h(t)=4e^(−4t)u(t)，输入 u(t)−u(t−0.3)。y(0.6) 是多少？（选最接近值。） | C · 0.210476 | 脉冲输入是两个错位阶跃之差；在 t=2T，y=(1−e^(−aT))e^(−aT)。代入得 0.210476。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-pulse-response-after-end-2 | 零状态系统 h(t)=5e^(−5t)u(t)，输入 u(t)−u(t−0.4)。y(0.8) 是多少？（选最接近值。） | D · 0.11702 | 脉冲输入是两个错位阶跃之差；在 t=2T，y=(1−e^(−aT))e^(−aT)。代入得 0.11702。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-pulse-response-after-end-2-v1 | 零状态系统 h(t)=6e^(−6t)u(t)，输入 u(t)−u(t−0.5)。y(1) 是多少？（选最接近值。） | A · 0.047308 | 脉冲输入是两个错位阶跃之差；在 t=2T，y=(1−e^(−aT))e^(−aT)。代入得 0.047308。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-pulse-response-after-end-2-v2 | 零状态系统 h(t)=7e^(−7t)u(t)，输入 u(t)−u(t−0.6)。y(1.2) 是多少？（选最接近值。） | B · 0.014771 | 脉冲输入是两个错位阶跃之差；在 t=2T，y=(1−e^(−aT))e^(−aT)。代入得 0.014771。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-rectangle-convolution-sample-1 | x(t) 在 [0,3] 为 2，h(t) 在 [0,5] 为 3，两者区间外均为零。(x*h)(5) 是多少？ | B · 18 | 重叠长度为 max(0,min(T₁,t)−max(0,t−T₂))，再乘两个幅度 AB。代入得 18。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-rectangle-convolution-sample-1-v1 | x(t) 在 [0,4] 为 3，h(t) 在 [0,6] 为 4，两者区间外均为零。(x*h)(7) 是多少？ | C · 36 | 重叠长度为 max(0,min(T₁,t)−max(0,t−T₂))，再乘两个幅度 AB。代入得 36。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-rectangle-convolution-sample-1-v2 | x(t) 在 [0,5] 为 4，h(t) 在 [0,7] 为 5，两者区间外均为零。(x*h)(9) 是多少？ | D · 60 | 重叠长度为 max(0,min(T₁,t)−max(0,t−T₂))，再乘两个幅度 AB。代入得 60。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-rectangle-convolution-sample-2 | x(t) 在 [0,6] 为 5，h(t) 在 [0,8] 为 6，两者区间外均为零。(x*h)(11) 是多少？ | A · 90 | 重叠长度为 max(0,min(T₁,t)−max(0,t−T₂))，再乘两个幅度 AB。代入得 90。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-rectangle-convolution-sample-2-v1 | x(t) 在 [0,7] 为 6，h(t) 在 [0,9] 为 7，两者区间外均为零。(x*h)(13) 是多少？ | B · 126 | 重叠长度为 max(0,min(T₁,t)−max(0,t−T₂))，再乘两个幅度 AB。代入得 126。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-rectangle-convolution-sample-2-v2 | x(t) 在 [0,8] 为 7，h(t) 在 [0,10] 为 8，两者区间外均为零。(x*h)(15) 是多少？ | C · 168 | 重叠长度为 max(0,min(T₁,t)−max(0,t−T₂))，再乘两个幅度 AB。代入得 168。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-shifted-convolution-end-1 | 两个矩形信号分别在 [1,3] s 和 [2,5] s 内恒为 1，外部为零。卷积支撑的右端点是多少？ | C · 8 s | 两个非负矩形的卷积支撑为 [L₁+L₂,R₁+R₂]，右端点是两右端点相加。代入得 8 s。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-shifted-convolution-end-1-v1 | 两个矩形信号分别在 [2,4] s 和 [3,6] s 内恒为 1，外部为零。卷积支撑的右端点是多少？ | D · 10 s | 两个非负矩形的卷积支撑为 [L₁+L₂,R₁+R₂]，右端点是两右端点相加。代入得 10 s。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-shifted-convolution-end-1-v2 | 两个矩形信号分别在 [3,5] s 和 [4,7] s 内恒为 1，外部为零。卷积支撑的右端点是多少？ | A · 12 s | 两个非负矩形的卷积支撑为 [L₁+L₂,R₁+R₂]，右端点是两右端点相加。代入得 12 s。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-shifted-convolution-end-2 | 两个矩形信号分别在 [4,6] s 和 [5,8] s 内恒为 1，外部为零。卷积支撑的右端点是多少？ | B · 14 s | 两个非负矩形的卷积支撑为 [L₁+L₂,R₁+R₂]，右端点是两右端点相加。代入得 14 s。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-shifted-convolution-end-2-v1 | 两个矩形信号分别在 [5,7] s 和 [6,9] s 内恒为 1，外部为零。卷积支撑的右端点是多少？ | C · 16 s | 两个非负矩形的卷积支撑为 [L₁+L₂,R₁+R₂]，右端点是两右端点相加。代入得 16 s。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-shifted-convolution-end-2-v2 | 两个矩形信号分别在 [6,8] s 和 [7,10] s 内恒为 1，外部为零。卷积支撑的右端点是多少？ | D · 18 s | 两个非负矩形的卷积支撑为 [L₁+L₂,R₁+R₂]，右端点是两右端点相加。代入得 18 s。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-convolution-total-area-1 | x(t)=3e^(−2t)u(t)，h(t)=5e^(−4t)u(t)。∫₋∞∞(x*h)(t)dt 是多少？ | D · 1.875 | 绝对可积信号的卷积面积等于两信号面积之积：(A/α)(B/β)。代入得 1.875。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-convolution-total-area-1-v1 | x(t)=4e^(−3t)u(t)，h(t)=6e^(−5t)u(t)。∫₋∞∞(x*h)(t)dt 是多少？ | A · 1.6 | 绝对可积信号的卷积面积等于两信号面积之积：(A/α)(B/β)。代入得 1.6。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-convolution-total-area-1-v2 | x(t)=5e^(−4t)u(t)，h(t)=7e^(−6t)u(t)。∫₋∞∞(x*h)(t)dt 是多少？（选最接近值。） | B · 1.458333 | 绝对可积信号的卷积面积等于两信号面积之积：(A/α)(B/β)。代入得 1.458333。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-convolution-total-area-2 | x(t)=6e^(−5t)u(t)，h(t)=8e^(−7t)u(t)。∫₋∞∞(x*h)(t)dt 是多少？（选最接近值。） | C · 1.371429 | 绝对可积信号的卷积面积等于两信号面积之积：(A/α)(B/β)。代入得 1.371429。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-convolution-total-area-2-v1 | x(t)=7e^(−6t)u(t)，h(t)=9e^(−8t)u(t)。∫₋∞∞(x*h)(t)dt 是多少？ | D · 1.3125 | 绝对可积信号的卷积面积等于两信号面积之积：(A/α)(B/β)。代入得 1.3125。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-convolution-total-area-2-v2 | x(t)=8e^(−7t)u(t)，h(t)=10e^(−9t)u(t)。∫₋∞∞(x*h)(t)dt 是多少？（选最接近值。） | A · 1.269841 | 绝对可积信号的卷积面积等于两信号面积之积：(A/α)(B/β)。代入得 1.269841。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-discrete-convolution-middle-1 | x[0]=1, x[1]=2, h[0]=3, h[1]=5，其余样本均为零。线性卷积 y[1] 是多少？ | A · 11 | 由 y[n]=Σₖx[k]h[n−k]，y[1]=x[0]h[1]+x[1]h[0]。代入得 11。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-discrete-convolution-middle-1-v1 | x[0]=2, x[1]=3, h[0]=4, h[1]=6，其余样本均为零。线性卷积 y[1] 是多少？ | B · 24 | 由 y[n]=Σₖx[k]h[n−k]，y[1]=x[0]h[1]+x[1]h[0]。代入得 24。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-discrete-convolution-middle-1-v2 | x[0]=3, x[1]=4, h[0]=5, h[1]=7，其余样本均为零。线性卷积 y[1] 是多少？ | C · 41 | 由 y[n]=Σₖx[k]h[n−k]，y[1]=x[0]h[1]+x[1]h[0]。代入得 41。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-discrete-convolution-middle-2 | x[0]=4, x[1]=5, h[0]=6, h[1]=8，其余样本均为零。线性卷积 y[1] 是多少？ | D · 62 | 由 y[n]=Σₖx[k]h[n−k]，y[1]=x[0]h[1]+x[1]h[0]。代入得 62。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-discrete-convolution-middle-2-v1 | x[0]=5, x[1]=6, h[0]=7, h[1]=9，其余样本均为零。线性卷积 y[1] 是多少？ | A · 87 | 由 y[n]=Σₖx[k]h[n−k]，y[1]=x[0]h[1]+x[1]h[0]。代入得 87。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-discrete-convolution-middle-2-v2 | x[0]=6, x[1]=7, h[0]=8, h[1]=10，其余样本均为零。线性卷积 y[1] 是多少？ | B · 116 | 由 y[n]=Σₖx[k]h[n−k]，y[1]=x[0]h[1]+x[1]h[0]。代入得 116。 | [2.5 卷积积分](../content/signals/knowledge-base/ss-2-5.md)；[A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-ramp-step-convolution-1 | x(t)=2t u(t)，h(t)=u(t)。连续卷积 y(3) 是多少？ | B · 9 | 与单位阶跃卷积相当于积分：y(t)=∫₀ᵗAτ dτ=At²/2（t≥0）。代入得 9。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-ramp-step-convolution-1-v1 | x(t)=3t u(t)，h(t)=u(t)。连续卷积 y(4) 是多少？ | C · 24 | 与单位阶跃卷积相当于积分：y(t)=∫₀ᵗAτ dτ=At²/2（t≥0）。代入得 24。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-ramp-step-convolution-1-v2 | x(t)=4t u(t)，h(t)=u(t)。连续卷积 y(5) 是多少？ | D · 50 | 与单位阶跃卷积相当于积分：y(t)=∫₀ᵗAτ dτ=At²/2（t≥0）。代入得 50。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-ramp-step-convolution-2 | x(t)=5t u(t)，h(t)=u(t)。连续卷积 y(6) 是多少？ | A · 90 | 与单位阶跃卷积相当于积分：y(t)=∫₀ᵗAτ dτ=At²/2（t≥0）。代入得 90。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-ramp-step-convolution-2-v1 | x(t)=6t u(t)，h(t)=u(t)。连续卷积 y(7) 是多少？ | B · 147 | 与单位阶跃卷积相当于积分：y(t)=∫₀ᵗAτ dτ=At²/2（t≥0）。代入得 147。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-ramp-step-convolution-2-v2 | x(t)=7t u(t)，h(t)=u(t)。连续卷积 y(8) 是多少？ | C · 224 | 与单位阶跃卷积相当于积分：y(t)=∫₀ᵗAτ dτ=At²/2（t≥0）。代入得 224。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-two-impulse-response-1 | 零状态系统 h(t)=e^(−1t)u(t)，输入 2δ(t)+3δ(t−0.1)。y(0.2) 是多少？（选最接近值。） | C · 4.351974 | 冲激卷积只产生移位与增益：y(t)=Ah(t)+Bh(t−T)，在 t=2T 代入。代入得 4.351974。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-two-impulse-response-1-v1 | 零状态系统 h(t)=e^(−2t)u(t)，输入 3δ(t)+4δ(t−0.2)。y(0.4) 是多少？（选最接近值。） | D · 4.029267 | 冲激卷积只产生移位与增益：y(t)=Ah(t)+Bh(t−T)，在 t=2T 代入。代入得 4.029267。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-two-impulse-response-1-v2 | 零状态系统 h(t)=e^(−3t)u(t)，输入 4δ(t)+5δ(t−0.3)。y(0.6) 是多少？（选最接近值。） | A · 2.694044 | 冲激卷积只产生移位与增益：y(t)=Ah(t)+Bh(t−T)，在 t=2T 代入。代入得 2.694044。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-two-impulse-response-2 | 零状态系统 h(t)=e^(−4t)u(t)，输入 5δ(t)+6δ(t−0.4)。y(0.8) 是多少？（选最接近值。） | B · 1.41519 | 冲激卷积只产生移位与增益：y(t)=Ah(t)+Bh(t−T)，在 t=2T 代入。代入得 1.41519。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-two-impulse-response-2-v1 | 零状态系统 h(t)=e^(−5t)u(t)，输入 6δ(t)+7δ(t−0.5)。y(1) 是多少？（选最接近值。） | C · 0.615023 | 冲激卷积只产生移位与增益：y(t)=Ah(t)+Bh(t−T)，在 t=2T 代入。代入得 0.615023。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-two-impulse-response-2-v2 | 零状态系统 h(t)=e^(−6t)u(t)，输入 7δ(t)+8δ(t−0.6)。y(1.2) 是多少？（选最接近值。） | D · 0.223816 | 冲激卷积只产生移位与增益：y(t)=Ah(t)+Bh(t−T)，在 t=2T 代入。代入得 0.223816。 | [2.6 卷积的性质](../content/signals/knowledge-base/ss-2-6.md) |
+| ext-repeated-pole-step-final-1 | 稳定因果系统 h(t)=4t e^(−2t)u(t)，单位阶跃零状态响应的终值是多少？ | D · 1 | 阶跃终值等于冲激响应面积，∫₀∞Kt e^(−at)dt=K/a²。代入得 1。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| ext-repeated-pole-step-final-1-v1 | 稳定因果系统 h(t)=5t e^(−3t)u(t)，单位阶跃零状态响应的终值是多少？（选最接近值。） | A · 0.555556 | 阶跃终值等于冲激响应面积，∫₀∞Kt e^(−at)dt=K/a²。代入得 0.555556。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| ext-repeated-pole-step-final-1-v2 | 稳定因果系统 h(t)=6t e^(−4t)u(t)，单位阶跃零状态响应的终值是多少？ | B · 0.375 | 阶跃终值等于冲激响应面积，∫₀∞Kt e^(−at)dt=K/a²。代入得 0.375。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| ext-repeated-pole-step-final-2 | 稳定因果系统 h(t)=7t e^(−5t)u(t)，单位阶跃零状态响应的终值是多少？ | C · 0.28 | 阶跃终值等于冲激响应面积，∫₀∞Kt e^(−at)dt=K/a²。代入得 0.28。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| ext-repeated-pole-step-final-2-v1 | 稳定因果系统 h(t)=8t e^(−6t)u(t)，单位阶跃零状态响应的终值是多少？（选最接近值。） | D · 0.222222 | 阶跃终值等于冲激响应面积，∫₀∞Kt e^(−at)dt=K/a²。代入得 0.222222。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| ext-repeated-pole-step-final-2-v2 | 稳定因果系统 h(t)=9t e^(−7t)u(t)，单位阶跃零状态响应的终值是多少？（选最接近值。） | A · 0.183673 | 阶跃终值等于冲激响应面积，∫₀∞Kt e^(−at)dt=K/a²。代入得 0.183673。 | [2.4 冲激响应与阶跃响应](../content/signals/knowledge-base/ss-2-4.md) |
+| ext-second-order-impulse-jump-1 | 系统 2y″+3y′+y=7δ(t)，初始静止，y 在 0 处连续。y′(0⁺) 是多少？ | A · 3.5 | 在冲激两侧积分，m[y′(0⁺)−y′(0⁻)]=J；初始静止，故 y′(0⁺)=J/m。代入得 3.5。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| ext-second-order-impulse-jump-1-v1 | 系统 3y″+4y′+y=10δ(t)，初始静止，y 在 0 处连续。y′(0⁺) 是多少？（选最接近值。） | B · 3.333333 | 在冲激两侧积分，m[y′(0⁺)−y′(0⁻)]=J；初始静止，故 y′(0⁺)=J/m。代入得 3.333333。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| ext-second-order-impulse-jump-1-v2 | 系统 4y″+5y′+y=13δ(t)，初始静止，y 在 0 处连续。y′(0⁺) 是多少？ | C · 3.25 | 在冲激两侧积分，m[y′(0⁺)−y′(0⁻)]=J；初始静止，故 y′(0⁺)=J/m。代入得 3.25。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| ext-second-order-impulse-jump-2 | 系统 5y″+6y′+y=16δ(t)，初始静止，y 在 0 处连续。y′(0⁺) 是多少？ | D · 3.2 | 在冲激两侧积分，m[y′(0⁺)−y′(0⁻)]=J；初始静止，故 y′(0⁺)=J/m。代入得 3.2。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| ext-second-order-impulse-jump-2-v1 | 系统 6y″+7y′+y=19δ(t)，初始静止，y 在 0 处连续。y′(0⁺) 是多少？（选最接近值。） | A · 3.166667 | 在冲激两侧积分，m[y′(0⁺)−y′(0⁻)]=J；初始静止，故 y′(0⁺)=J/m。代入得 3.166667。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| ext-second-order-impulse-jump-2-v2 | 系统 7y″+8y′+y=22δ(t)，初始静止，y 在 0 处连续。y′(0⁺) 是多少？（选最接近值。） | B · 3.142857 | 在冲激两侧积分，m[y′(0⁺)−y′(0⁻)]=J；初始静止，故 y′(0⁺)=J/m。代入得 3.142857。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| ext-first-order-initial-slope-1 | t>0 时 y′+2y=3，y(0⁺)=1。右侧初始斜率 y′(0⁺) 是多少？ | B · 1 | 把右侧初值直接代入微分方程：y′(0⁺)=B−ay(0⁺)。代入得 1。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| ext-first-order-initial-slope-1-v1 | t>0 时 y′+3y=4，y(0⁺)=2。右侧初始斜率 y′(0⁺) 是多少？ | C · -2 | 把右侧初值直接代入微分方程：y′(0⁺)=B−ay(0⁺)。代入得 -2。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| ext-first-order-initial-slope-1-v2 | t>0 时 y′+4y=5，y(0⁺)=3。右侧初始斜率 y′(0⁺) 是多少？ | D · -7 | 把右侧初值直接代入微分方程：y′(0⁺)=B−ay(0⁺)。代入得 -7。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| ext-first-order-initial-slope-2 | t>0 时 y′+5y=6，y(0⁺)=4。右侧初始斜率 y′(0⁺) 是多少？ | A · -14 | 把右侧初值直接代入微分方程：y′(0⁺)=B−ay(0⁺)。代入得 -14。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| ext-first-order-initial-slope-2-v1 | t>0 时 y′+6y=7，y(0⁺)=5。右侧初始斜率 y′(0⁺) 是多少？ | B · -23 | 把右侧初值直接代入微分方程：y′(0⁺)=B−ay(0⁺)。代入得 -23。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| ext-first-order-initial-slope-2-v2 | t>0 时 y′+7y=8，y(0⁺)=6。右侧初始斜率 y′(0⁺) 是多少？ | C · -34 | 把右侧初值直接代入微分方程：y′(0⁺)=B−ay(0⁺)。代入得 -34。 | [2.2 初始状态与初始值（0⁻/0⁺）](../content/signals/knowledge-base/ss-2-2.md) |
+| ext-complex-root-frequency-1 | 齐次方程 y″+4y′+20y=0 的特征根为 −2±j4。非零自由响应的振荡角频率是多少？ | C · 4 rad/s | 共轭根 α±jβ 对应 e^(αt)(Ccosβt+Dsinβt)，角频率是虚部的绝对值 \|β\|。代入得 4 rad/s。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-complex-root-frequency-1-v1 | 齐次方程 y″+6y′+34y=0 的特征根为 −3±j5。非零自由响应的振荡角频率是多少？ | D · 5 rad/s | 共轭根 α±jβ 对应 e^(αt)(Ccosβt+Dsinβt)，角频率是虚部的绝对值 \|β\|。代入得 5 rad/s。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-complex-root-frequency-1-v2 | 齐次方程 y″+8y′+52y=0 的特征根为 −4±j6。非零自由响应的振荡角频率是多少？ | A · 6 rad/s | 共轭根 α±jβ 对应 e^(αt)(Ccosβt+Dsinβt)，角频率是虚部的绝对值 \|β\|。代入得 6 rad/s。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-complex-root-frequency-2 | 齐次方程 y″+10y′+74y=0 的特征根为 −5±j7。非零自由响应的振荡角频率是多少？ | B · 7 rad/s | 共轭根 α±jβ 对应 e^(αt)(Ccosβt+Dsinβt)，角频率是虚部的绝对值 \|β\|。代入得 7 rad/s。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-complex-root-frequency-2-v1 | 齐次方程 y″+12y′+100y=0 的特征根为 −6±j8。非零自由响应的振荡角频率是多少？ | C · 8 rad/s | 共轭根 α±jβ 对应 e^(αt)(Ccosβt+Dsinβt)，角频率是虚部的绝对值 \|β\|。代入得 8 rad/s。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-complex-root-frequency-2-v2 | 齐次方程 y″+14y′+130y=0 的特征根为 −7±j9。非零自由响应的振荡角频率是多少？ | D · 9 rad/s | 共轭根 α±jβ 对应 e^(αt)(Ccosβt+Dsinβt)，角频率是虚部的绝对值 \|β\|。代入得 9 rad/s。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-complex-root-envelope-1 | 非零自由响应由特征根 −2±j4 产生。t=0.1 s 时振幅包络与 t=0 时的比值是多少？（选最接近值。） | D · 0.818731 | 特征根的实部控制振幅包络，包络比为 e^(−at)，虚部只控制振荡频率。代入得 0.818731。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-complex-root-envelope-1-v1 | 非零自由响应由特征根 −3±j5 产生。t=0.2 s 时振幅包络与 t=0 时的比值是多少？（选最接近值。） | A · 0.548812 | 特征根的实部控制振幅包络，包络比为 e^(−at)，虚部只控制振荡频率。代入得 0.548812。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-complex-root-envelope-1-v2 | 非零自由响应由特征根 −4±j6 产生。t=0.3 s 时振幅包络与 t=0 时的比值是多少？（选最接近值。） | B · 0.301194 | 特征根的实部控制振幅包络，包络比为 e^(−at)，虚部只控制振荡频率。代入得 0.301194。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-complex-root-envelope-2 | 非零自由响应由特征根 −5±j7 产生。t=0.4 s 时振幅包络与 t=0 时的比值是多少？（选最接近值。） | C · 0.135335 | 特征根的实部控制振幅包络，包络比为 e^(−at)，虚部只控制振荡频率。代入得 0.135335。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-complex-root-envelope-2-v1 | 非零自由响应由特征根 −6±j8 产生。t=0.5 s 时振幅包络与 t=0 时的比值是多少？（选最接近值。） | D · 0.049787 | 特征根的实部控制振幅包络，包络比为 e^(−at)，虚部只控制振荡频率。代入得 0.049787。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-complex-root-envelope-2-v2 | 非零自由响应由特征根 −7±j9 产生。t=0.6 s 时振幅包络与 t=0 时的比值是多少？（选最接近值。） | A · 0.014996 | 特征根的实部控制振幅包络，包络比为 e^(−at)，虚部只控制振荡频率。代入得 0.014996。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-second-order-step-gain-1 | 稳定因果系统 H(s)=4/(s²+3s+6)，初始静止。单位阶跃输出的终值是多少？（选最接近值。） | A · 0.666667 | 二阶分母各系数为正，极点在左半平面；阶跃终值为直流增益 H(0)=K/c。代入得 0.666667。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md)；[4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-second-order-step-gain-1-v1 | 稳定因果系统 H(s)=5/(s²+4s+7)，初始静止。单位阶跃输出的终值是多少？（选最接近值。） | B · 0.714286 | 二阶分母各系数为正，极点在左半平面；阶跃终值为直流增益 H(0)=K/c。代入得 0.714286。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md)；[4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-second-order-step-gain-1-v2 | 稳定因果系统 H(s)=6/(s²+5s+8)，初始静止。单位阶跃输出的终值是多少？ | C · 0.75 | 二阶分母各系数为正，极点在左半平面；阶跃终值为直流增益 H(0)=K/c。代入得 0.75。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md)；[4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-second-order-step-gain-2 | 稳定因果系统 H(s)=7/(s²+6s+9)，初始静止。单位阶跃输出的终值是多少？（选最接近值。） | D · 0.777778 | 二阶分母各系数为正，极点在左半平面；阶跃终值为直流增益 H(0)=K/c。代入得 0.777778。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md)；[4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-second-order-step-gain-2-v1 | 稳定因果系统 H(s)=8/(s²+7s+10)，初始静止。单位阶跃输出的终值是多少？ | A · 0.8 | 二阶分母各系数为正，极点在左半平面；阶跃终值为直流增益 H(0)=K/c。代入得 0.8。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md)；[4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-second-order-step-gain-2-v2 | 稳定因果系统 H(s)=9/(s²+8s+11)，初始静止。单位阶跃输出的终值是多少？（选最接近值。） | B · 0.818182 | 二阶分母各系数为正，极点在左半平面；阶跃终值为直流增益 H(0)=K/c。代入得 0.818182。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md)；[4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-critical-pole-1 | 特征方程 s²+4s+4=0，其重根是多少？ | B · -2 s⁻¹ | 特征多项式是 (s+a)²，重根为 s=−a。代入得 -2 s⁻¹。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-critical-pole-1-v1 | 特征方程 s²+6s+9=0，其重根是多少？ | C · -3 s⁻¹ | 特征多项式是 (s+a)²，重根为 s=−a。代入得 -3 s⁻¹。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-critical-pole-1-v2 | 特征方程 s²+8s+16=0，其重根是多少？ | D · -4 s⁻¹ | 特征多项式是 (s+a)²，重根为 s=−a。代入得 -4 s⁻¹。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-critical-pole-2 | 特征方程 s²+10s+25=0，其重根是多少？ | A · -5 s⁻¹ | 特征多项式是 (s+a)²，重根为 s=−a。代入得 -5 s⁻¹。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-critical-pole-2-v1 | 特征方程 s²+12s+36=0，其重根是多少？ | B · -6 s⁻¹ | 特征多项式是 (s+a)²，重根为 s=−a。代入得 -6 s⁻¹。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-critical-pole-2-v2 | 特征方程 s²+14s+49=0，其重根是多少？ | C · -7 s⁻¹ | 特征多项式是 (s+a)²，重根为 s=−a。代入得 -7 s⁻¹。 | [2.1 微分方程的经典解](../content/signals/knowledge-base/ss-2-1.md) |
+| ext-rectangle-autocorrelation-1 | 实信号 x(t) 在 [0,5] 为 2，其余为零。按 Rxx(τ)=∫x(t)x(t−τ)dt，Rxx(-2) 是多少？ | C · 12 | 矩形自相关为 A²max(T−\|τ\|,0)，由两个矩形的重叠长度得到。代入得 12。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| ext-rectangle-autocorrelation-1-v1 | 实信号 x(t) 在 [0,6] 为 3，其余为零。按 Rxx(τ)=∫x(t)x(t−τ)dt，Rxx(-3) 是多少？ | D · 27 | 矩形自相关为 A²max(T−\|τ\|,0)，由两个矩形的重叠长度得到。代入得 27。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| ext-rectangle-autocorrelation-1-v2 | 实信号 x(t) 在 [0,7] 为 4，其余为零。按 Rxx(τ)=∫x(t)x(t−τ)dt，Rxx(-4) 是多少？ | A · 48 | 矩形自相关为 A²max(T−\|τ\|,0)，由两个矩形的重叠长度得到。代入得 48。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| ext-rectangle-autocorrelation-2 | 实信号 x(t) 在 [0,8] 为 5，其余为零。按 Rxx(τ)=∫x(t)x(t−τ)dt，Rxx(-5) 是多少？ | B · 75 | 矩形自相关为 A²max(T−\|τ\|,0)，由两个矩形的重叠长度得到。代入得 75。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| ext-rectangle-autocorrelation-2-v1 | 实信号 x(t) 在 [0,9] 为 6，其余为零。按 Rxx(τ)=∫x(t)x(t−τ)dt，Rxx(-6) 是多少？ | C · 108 | 矩形自相关为 A²max(T−\|τ\|,0)，由两个矩形的重叠长度得到。代入得 108。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| ext-rectangle-autocorrelation-2-v2 | 实信号 x(t) 在 [0,10] 为 7，其余为零。按 Rxx(τ)=∫x(t)x(t−τ)dt，Rxx(-7) 是多少？ | D · 147 | 矩形自相关为 A²max(T−\|τ\|,0)，由两个矩形的重叠长度得到。代入得 147。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| ext-crosscorrelation-peak-1 | p(t) 是 [0,1] 上的单位矩形，x(t)=p(t−1)，y(t)=p(t−4)。Rxy(τ)=∫x(t)y(t−τ)dt 在哪个 τ 达到最大？ | D · -3 s | 最大值对应完全重叠：y(t−τ)=p(t−τ−b) 与 p(t−a) 对齐，故 τ=a−b。代入得 -3 s。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| ext-crosscorrelation-peak-1-v1 | p(t) 是 [0,1] 上的单位矩形，x(t)=p(t−2)，y(t)=p(t−7)。Rxy(τ)=∫x(t)y(t−τ)dt 在哪个 τ 达到最大？ | A · -5 s | 最大值对应完全重叠：y(t−τ)=p(t−τ−b) 与 p(t−a) 对齐，故 τ=a−b。代入得 -5 s。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| ext-crosscorrelation-peak-1-v2 | p(t) 是 [0,1] 上的单位矩形，x(t)=p(t−3)，y(t)=p(t−10)。Rxy(τ)=∫x(t)y(t−τ)dt 在哪个 τ 达到最大？ | B · -7 s | 最大值对应完全重叠：y(t−τ)=p(t−τ−b) 与 p(t−a) 对齐，故 τ=a−b。代入得 -7 s。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| ext-crosscorrelation-peak-2 | p(t) 是 [0,1] 上的单位矩形，x(t)=p(t−4)，y(t)=p(t−13)。Rxy(τ)=∫x(t)y(t−τ)dt 在哪个 τ 达到最大？ | C · -9 s | 最大值对应完全重叠：y(t−τ)=p(t−τ−b) 与 p(t−a) 对齐，故 τ=a−b。代入得 -9 s。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| ext-crosscorrelation-peak-2-v1 | p(t) 是 [0,1] 上的单位矩形，x(t)=p(t−5)，y(t)=p(t−16)。Rxy(τ)=∫x(t)y(t−τ)dt 在哪个 τ 达到最大？ | D · -11 s | 最大值对应完全重叠：y(t−τ)=p(t−τ−b) 与 p(t−a) 对齐，故 τ=a−b。代入得 -11 s。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
+| ext-crosscorrelation-peak-2-v2 | p(t) 是 [0,1] 上的单位矩形，x(t)=p(t−6)，y(t)=p(t−19)。Rxy(τ)=∫x(t)y(t−τ)dt 在哪个 τ 达到最大？ | A · -13 s | 最大值对应完全重叠：y(t−τ)=p(t−τ−b) 与 p(t−a) 对齐，故 τ=a−b。代入得 -13 s。 | [2.7 相关函数](../content/signals/knowledge-base/ss-2-7.md) |
 
 ### 第3章
 
-| ID | 题目 | 正确答案 | 解析 |
-| --- | --- | --- | --- |
-| aliasing | 5 Hz 实余弦以 8 Hz 均匀采样，折叠到 [0,fs/2] 后对应的频率是多少？ | D · 3 Hz | \|5 − 8\| = 3 Hz；采样后高频折叠到 3 Hz。 |
-| aliasing-v1 | 900 Hz 正弦信号以 1000 Hz 采样，折叠到 [0,500] Hz 后的频率是多少？ | D · 100 Hz | \|900−1000\|=100 Hz，位于奈奎斯特区间。 |
-| aliasing-v2 | 700 Hz 正弦信号以 800 Hz 采样，折叠到 [0,400] Hz 后的频率是多少？ | D · 100 Hz | \|700−800\|=100 Hz；混叠频率需落在第一奈奎斯特区间。 |
-| nyquist | 基带带限信号最高频率为 4 kHz，其奈奎斯特速率阈值 2fmax 是多少？本题求阈值，通用安全采样需 fs>2fmax。 | A · 8 kHz | 奈奎斯特速率阈值为 8 kHz。等号采样对临界频率分量不能普遍保证重建，实际还需抗混叠过渡带。 |
-| nyquist-v1 | 最高频率 300 Hz，要求 fs>2fmax，哪个采样率满足要求？ | B · 800 Hz | 需严格大于 600 Hz，因此选择 800 Hz。 |
-| nyquist-v2 | 最高频率 400 Hz，要求 fs>2fmax，哪个采样率满足要求？ | C · 1000 Hz | 需严格大于 800 Hz；等号不能满足本题约定。 |
-| square-wave | 零均值、50% 占空比、幅值为 ±A 的理想周期方波，为何没有偶次谐波？ | B · 具有半波反对称性 | 半波反对称 x(t+T/2)=−x(t) 消去直流和偶次谐波。仅有奇对称并不足以消去偶次谐波。 |
-| square-wave-v1 | 零均值、50% 占空比的双极性方波包含哪些谐波？ | A · 奇次谐波 | 半波反对称使偶次谐波和直流项为零。 |
-| square-wave-v2 | 零均值、50% 占空比的理想双极性方波，第三次谐波幅度是基波的多少？ | B · 1/3 | 奇次谐波幅度按 1/n 衰减，所以 A₃/A₁=1/3。 |
-| pulse-spectrum | 矩形脉冲越宽，其频谱主瓣？ | C · 越窄 | 时域展宽对应频域压缩：主瓣宽度与 1/τ 成正比。 |
-| pulse-spectrum-v1 | 矩形脉宽减半，频谱第一个正零点如何变化？ | C · 变为两倍 | 第一个正零点 f₀=1/T，与脉宽成反比。 |
-| pulse-spectrum-v2 | 幅度 A=2、宽度 T=3 的矩形脉冲，其 X(0) 是多少？ | D · 6 | 直流值等于时域积分，即脉冲面积 AT=6。 |
-| am-bandwidth | 单音双边带 AM，载频 fc>fm>0，调制频率为 fm。正频率上下边带之间的带宽是多少？ | C · 2fm | 两条边带位于 fc−fm 和 fc+fm，带宽为 2fm；单边带调制不适用此结论。 |
-| am-bandwidth-v1 | 单音双边带 AM 的调制频率为 4 kHz，带宽是多少？ | C · 8 kHz | 上下边带位于 fc±fm，总带宽为 2fm=8 kHz。 |
-| am-bandwidth-v2 | 载频 100 kHz、调制频率 3 kHz 的双边带 AM，占据的频率范围是什么？ | D · 97–103 kHz | 边带位于 100±3 kHz，即 97 和 103 kHz。 |
-| fourier-fundamental-frequency | 周期 T=0.02 s，傅里叶级数谱线间隔是多少 Hz？ | A · 50 Hz | Δf=f0=1/T=50 Hz。 |
-| fourier-fundamental-frequency-v1 | 周期 T=0.01 s，傅里叶级数谱线间隔是多少 Hz？ | B · 100 Hz | Δf=f0=1/T=100 Hz。 |
-| fourier-fundamental-frequency-v2 | 周期 T=0.04 s，傅里叶级数谱线间隔是多少 Hz？ | C · 25 Hz | Δf=f0=1/T=25 Hz。 |
-| fourier-cosine-coefficient | x(t)=2+4cos(Ωt)，复指数级数系数 F₁ 是多少？ | B · 2 | 余弦拆为正负频率两项，每项系数 4/2=2。 |
-| fourier-cosine-coefficient-v1 | x(t)=3+6cos(Ωt)，复指数级数系数 F₁ 是多少？ | C · 3 | 余弦拆为正负频率两项，每项系数 6/2=3。 |
-| fourier-cosine-coefficient-v2 | x(t)=1+8cos(Ωt)，复指数级数系数 F₁ 是多少？ | D · 4 | 余弦拆为正负频率两项，每项系数 8/2=4。 |
-| pulse-train-average | 周期矩形脉冲串高电平为 2、低电平为0，占空比 25%。直流系数是多少？ | C · 0.5 | 周期平均值为幅度×占空比=2×0.25=0.5。 |
-| pulse-train-average-v1 | 周期矩形脉冲串高电平为 3、低电平为0，占空比 50%。直流系数是多少？ | D · 1.5 | 周期平均值为幅度×占空比=3×0.5=1.5。 |
-| pulse-train-average-v2 | 周期矩形脉冲串高电平为 4、低电平为0，占空比 25%。直流系数是多少？ | A · 1 | 周期平均值为幅度×占空比=4×0.25=1。 |
-| fourier-exponential-dc | x(t)=2e^(−4t)u(t)，X(j0) 是多少？ | D · 0.5 | X(j0)=∫x(t)dt=2/4=0.5。 |
-| fourier-exponential-dc-v1 | x(t)=3e^(−2t)u(t)，X(j0) 是多少？ | A · 1.5 | X(j0)=∫x(t)dt=3/2=1.5。 |
-| fourier-exponential-dc-v2 | x(t)=4e^(−5t)u(t)，X(j0) 是多少？ | B · 0.8 | X(j0)=∫x(t)dt=4/5=0.8。 |
-| fourier-scale-dc | 可积信号 X(j0)=12，y(t)=x(3t)，Y(j0) 是多少？ | A · 4 | 时间尺度性质给出 Y(jω)=X(jω/3)/3，零频值为 4。 |
-| fourier-scale-dc-v1 | 可积信号 X(j0)=10，y(t)=x(2t)，Y(j0) 是多少？ | B · 5 | 时间尺度性质给出 Y(jω)=X(jω/2)/2，零频值为 5。 |
-| fourier-scale-dc-v2 | 可积信号 X(j0)=20，y(t)=x(4t)，Y(j0) 是多少？ | C · 5 | 时间尺度性质给出 Y(jω)=X(jω/4)/4，零频值为 5。 |
-| fourier-delay-phase | y(t)=x(t−2)，在 ω=3 rad/s，延迟因子引入的未折叠相位是多少 rad？ | B · -6 rad | 延迟因子 e^(−jωtd)，相位为 −ωtd=−3×2=-6 rad。 |
-| fourier-delay-phase-v1 | y(t)=x(t−3)，在 ω=4 rad/s，延迟因子引入的未折叠相位是多少 rad？ | C · -12 rad | 延迟因子 e^(−jωtd)，相位为 −ωtd=−4×3=-12 rad。 |
-| fourier-delay-phase-v2 | y(t)=x(t−4)，在 ω=2 rad/s，延迟因子引入的未折叠相位是多少 rad？ | D · -8 rad | 延迟因子 e^(−jωtd)，相位为 −ωtd=−2×4=-8 rad。 |
-| modulation-upper-edge | 基带频谱支撑 [−3,3] kHz，乘 cos(2π·100kHz·t)。平移后正频率频带的上界是多少 kHz？ | C · 103 kHz | 频谱移到 ±fc，上边界 fc+B=103 kHz。 |
-| modulation-upper-edge-v1 | 基带频谱支撑 [−4,4] kHz，乘 cos(2π·120kHz·t)。平移后正频率频带的上界是多少 kHz？ | D · 124 kHz | 频谱移到 ±fc，上边界 fc+B=124 kHz。 |
-| modulation-upper-edge-v2 | 基带频谱支撑 [−5,5] kHz，乘 cos(2π·80kHz·t)。平移后正频率频带的上界是多少 kHz？ | A · 85 kHz | 频谱移到 ±fc，上边界 fc+B=85 kHz。 |
-| sinusoidal-output-amplitude | 稳定 LTI 系统在输入余弦频率处 \|H\|=0.5，输入幅度为 6。正弦稳态输出幅度是多少？ | D · 3 | 同频输出幅度为 \|H\|A=0.5×6=3。 |
-| sinusoidal-output-amplitude-v1 | 稳定 LTI 系统在输入余弦频率处 \|H\|=2，输入幅度为 4。正弦稳态输出幅度是多少？ | A · 8 | 同频输出幅度为 \|H\|A=2×4=8。 |
-| sinusoidal-output-amplitude-v2 | 稳定 LTI 系统在输入余弦频率处 \|H\|=0.25，输入幅度为 8。正弦稳态输出幅度是多少？ | B · 2 | 同频输出幅度为 \|H\|A=0.25×8=2。 |
-| linear-phase-delay | H(jω)=2e^(−j3ω)，群时延是多少秒？ | A · 3 s | τg=−dφ/dω=−d(−3ω)/dω=3 s。 |
-| linear-phase-delay-v1 | H(jω)=3e^(−j2ω)，群时延是多少秒？ | B · 2 s | τg=−dφ/dω=−d(−2ω)/dω=2 s。 |
-| linear-phase-delay-v2 | H(jω)=4e^(−j5ω)，群时延是多少秒？ | C · 5 s | τg=−dφ/dω=−d(−5ω)/dω=5 s。 |
-| parseval-energy | 采用角频率傅里叶约定，∫\|X(jω)\|²dω=8π，总能量是多少？ | B · 4 | Parseval：E=(1/(2π))∫\|X\|²dω=8/2=4。 |
-| parseval-energy-v1 | 采用角频率傅里叶约定，∫\|X(jω)\|²dω=12π，总能量是多少？ | C · 6 | Parseval：E=(1/(2π))∫\|X\|²dω=12/2=6。 |
-| parseval-energy-v2 | 采用角频率傅里叶约定，∫\|X(jω)\|²dω=20π，总能量是多少？ | D · 10 | Parseval：E=(1/(2π))∫\|X\|²dω=20/2=10。 |
-| rectangle-first-zero | 单位幅度、宽度 0.02 s 的单个矩形脉冲，其频谱第一个正零点是多少 Hz？ | C · 50 Hz | X(f)∝sinc(fT)，首个正零点 f=1/T=50 Hz。 |
-| rectangle-first-zero-v1 | 单位幅度、宽度 0.01 s 的单个矩形脉冲，其频谱第一个正零点是多少 Hz？ | D · 100 Hz | X(f)∝sinc(fT)，首个正零点 f=1/T=100 Hz。 |
-| rectangle-first-zero-v2 | 单位幅度、宽度 0.05 s 的单个矩形脉冲，其频谱第一个正零点是多少 Hz？ | A · 20 Hz | X(f)∝sinc(fT)，首个正零点 f=1/T=20 Hz。 |
-| sampling-period | 均匀采样率 fs=1000 Hz，采样周期是多少毫秒？ | D · 1 ms | Ts=1/fs 秒=1000/1000=1 ms。 |
-| sampling-period-v1 | 均匀采样率 fs=2000 Hz，采样周期是多少毫秒？ | A · 0.5 ms | Ts=1/fs 秒=1000/2000=0.5 ms。 |
-| sampling-period-v2 | 均匀采样率 fs=500 Hz，采样周期是多少毫秒？ | B · 2 ms | Ts=1/fs 秒=1000/500=2 ms。 |
-| dft-frequency-grid | fs=800 Hz，采集 400 个真实样本，不补零。DFT 频点间隔是多少 Hz？ | A · 2 Hz | Δf=fs/N=800/400=2 Hz；频点间隔不等于所有信号条件下的实际分辨能力。 |
-| dft-frequency-grid-v1 | fs=1000 Hz，采集 200 个真实样本，不补零。DFT 频点间隔是多少 Hz？ | B · 5 Hz | Δf=fs/N=1000/200=5 Hz；频点间隔不等于所有信号条件下的实际分辨能力。 |
-| dft-frequency-grid-v2 | fs=2000 Hz，采集 500 个真实样本，不补零。DFT 频点间隔是多少 Hz？ | C · 4 Hz | Δf=fs/N=2000/500=4 Hz；频点间隔不等于所有信号条件下的实际分辨能力。 |
-| real-spectrum-conjugate | 实周期信号复系数 F₂=2+j(3)，F₋₂ 的虚部是多少？ | B · -3 | 实信号 F₋n=F_n*，虚部变号，所以为 -3。 |
-| real-spectrum-conjugate-v1 | 实周期信号复系数 F₂=4+j(-2)，F₋₂ 的虚部是多少？ | C · 2 | 实信号 F₋n=F_n*，虚部变号，所以为 2。 |
-| real-spectrum-conjugate-v2 | 实周期信号复系数 F₂=3+j(5)，F₋₂ 的虚部是多少？ | D · -5 | 实信号 F₋n=F_n*，虚部变号，所以为 -5。 |
-| periodic-transform-weight | 周期信号复指数级数系数 F₁=2，傅里叶变换在 ω=Ω 的冲激系数为 Kπ，K 是多少？ | C · 4 | X(jω)=2πΣF_nδ(ω−nΩ)，因此 K=2F₁=4。 |
-| periodic-transform-weight-v1 | 周期信号复指数级数系数 F₁=3，傅里叶变换在 ω=Ω 的冲激系数为 Kπ，K 是多少？ | D · 6 | X(jω)=2πΣF_nδ(ω−nΩ)，因此 K=2F₁=6。 |
-| periodic-transform-weight-v2 | 周期信号复指数级数系数 F₁=4，傅里叶变换在 ω=Ω 的冲激系数为 Kπ，K 是多少？ | A · 8 | X(jω)=2πΣF_nδ(ω−nΩ)，因此 K=2F₁=8。 |
+| ID | 题目 | 正确答案 | 解析 | 讲义依据 |
+| --- | --- | --- | --- | --- |
+| aliasing | 5 Hz 实余弦以 8 Hz 均匀采样，折叠到 [0,fs/2] 后对应的频率是多少？ | D · 3 Hz | \|5 − 8\| = 3 Hz；采样后高频折叠到 3 Hz。 | [3.9 取样定理](../content/signals/knowledge-base/ss-3-9.md) |
+| aliasing-v1 | 900 Hz 正弦信号以 1000 Hz 采样，折叠到 [0,500] Hz 后的频率是多少？ | D · 100 Hz | \|900−1000\|=100 Hz，位于奈奎斯特区间。 | [3.9 取样定理](../content/signals/knowledge-base/ss-3-9.md) |
+| aliasing-v2 | 700 Hz 正弦信号以 800 Hz 采样，折叠到 [0,400] Hz 后的频率是多少？ | D · 100 Hz | \|700−800\|=100 Hz；混叠频率需落在第一奈奎斯特区间。 | [3.9 取样定理](../content/signals/knowledge-base/ss-3-9.md) |
+| nyquist | 基带带限信号最高频率为 4 kHz，其奈奎斯特速率阈值 2fmax 是多少？本题求阈值，通用安全采样需 fs>2fmax。 | A · 8 kHz | 奈奎斯特速率阈值为 8 kHz。等号采样对临界频率分量不能普遍保证重建，实际还需抗混叠过渡带。 | [3.9 取样定理](../content/signals/knowledge-base/ss-3-9.md) |
+| nyquist-v1 | 最高频率 300 Hz，要求 fs>2fmax，哪个采样率满足要求？ | B · 800 Hz | 需严格大于 600 Hz，因此选择 800 Hz。 | [3.9 取样定理](../content/signals/knowledge-base/ss-3-9.md) |
+| nyquist-v2 | 最高频率 400 Hz，要求 fs>2fmax，哪个采样率满足要求？ | C · 1000 Hz | 需严格大于 800 Hz；等号不能满足本题约定。 | [3.9 取样定理](../content/signals/knowledge-base/ss-3-9.md) |
+| square-wave | 零均值、50% 占空比、幅值为 ±A 的理想周期方波，为何没有偶次谐波？ | B · 具有半波反对称性 | 半波反对称 x(t+T/2)=−x(t) 消去直流和偶次谐波。仅有奇对称并不足以消去偶次谐波。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| square-wave-v1 | 零均值、50% 占空比的双极性方波包含哪些谐波？ | A · 奇次谐波 | 半波反对称使偶次谐波和直流项为零。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| square-wave-v2 | 零均值、50% 占空比的理想双极性方波，第三次谐波幅度是基波的多少？ | B · 1/3 | 奇次谐波幅度按 1/n 衰减，所以 A₃/A₁=1/3。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| pulse-spectrum | 矩形脉冲越宽，其频谱主瓣？ | C · 越窄 | 时域展宽对应频域压缩：主瓣宽度与 1/τ 成正比。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| pulse-spectrum-v1 | 矩形脉宽减半，频谱第一个正零点如何变化？ | C · 变为两倍 | 第一个正零点 f₀=1/T，与脉宽成反比。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| pulse-spectrum-v2 | 幅度 A=2、宽度 T=3 的矩形脉冲，其 X(0) 是多少？ | D · 6 | 直流值等于时域积分，即脉冲面积 AT=6。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| am-bandwidth | 单音双边带 AM，载频 fc>fm>0，调制频率为 fm。正频率上下边带之间的带宽是多少？ | C · 2fm | 两条边带位于 fc−fm 和 fc+fm，带宽为 2fm；单边带调制不适用此结论。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| am-bandwidth-v1 | 单音双边带 AM 的调制频率为 4 kHz，带宽是多少？ | C · 8 kHz | 上下边带位于 fc±fm，总带宽为 2fm=8 kHz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| am-bandwidth-v2 | 载频 100 kHz、调制频率 3 kHz 的双边带 AM，占据的频率范围是什么？ | D · 97–103 kHz | 边带位于 100±3 kHz，即 97 和 103 kHz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| fourier-fundamental-frequency | 周期 T=0.02 s，傅里叶级数谱线间隔是多少 Hz？ | A · 50 Hz | Δf=f0=1/T=50 Hz。 | [3.3 周期信号的频谱](../content/signals/knowledge-base/ss-3-3.md) |
+| fourier-fundamental-frequency-v1 | 周期 T=0.01 s，傅里叶级数谱线间隔是多少 Hz？ | B · 100 Hz | Δf=f0=1/T=100 Hz。 | [3.3 周期信号的频谱](../content/signals/knowledge-base/ss-3-3.md) |
+| fourier-fundamental-frequency-v2 | 周期 T=0.04 s，傅里叶级数谱线间隔是多少 Hz？ | C · 25 Hz | Δf=f0=1/T=25 Hz。 | [3.3 周期信号的频谱](../content/signals/knowledge-base/ss-3-3.md) |
+| fourier-cosine-coefficient | x(t)=2+4cos(Ωt)，复指数级数系数 F₁ 是多少？ | B · 2 | 余弦拆为正负频率两项，每项系数 4/2=2。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| fourier-cosine-coefficient-v1 | x(t)=3+6cos(Ωt)，复指数级数系数 F₁ 是多少？ | C · 3 | 余弦拆为正负频率两项，每项系数 6/2=3。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| fourier-cosine-coefficient-v2 | x(t)=1+8cos(Ωt)，复指数级数系数 F₁ 是多少？ | D · 4 | 余弦拆为正负频率两项，每项系数 8/2=4。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| pulse-train-average | 周期矩形脉冲串高电平为 2、低电平为0，占空比 25%。直流系数是多少？ | C · 0.5 | 周期平均值为幅度×占空比=2×0.25=0.5。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| pulse-train-average-v1 | 周期矩形脉冲串高电平为 3、低电平为0，占空比 50%。直流系数是多少？ | D · 1.5 | 周期平均值为幅度×占空比=3×0.5=1.5。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| pulse-train-average-v2 | 周期矩形脉冲串高电平为 4、低电平为0，占空比 25%。直流系数是多少？ | A · 1 | 周期平均值为幅度×占空比=4×0.25=1。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| fourier-exponential-dc | x(t)=2e^(−4t)u(t)，X(j0) 是多少？ | D · 0.5 | X(j0)=∫x(t)dt=2/4=0.5。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| fourier-exponential-dc-v1 | x(t)=3e^(−2t)u(t)，X(j0) 是多少？ | A · 1.5 | X(j0)=∫x(t)dt=3/2=1.5。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| fourier-exponential-dc-v2 | x(t)=4e^(−5t)u(t)，X(j0) 是多少？ | B · 0.8 | X(j0)=∫x(t)dt=4/5=0.8。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| fourier-scale-dc | 可积信号 X(j0)=12，y(t)=x(3t)，Y(j0) 是多少？ | A · 4 | 时间尺度性质给出 Y(jω)=X(jω/3)/3，零频值为 4。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| fourier-scale-dc-v1 | 可积信号 X(j0)=10，y(t)=x(2t)，Y(j0) 是多少？ | B · 5 | 时间尺度性质给出 Y(jω)=X(jω/2)/2，零频值为 5。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| fourier-scale-dc-v2 | 可积信号 X(j0)=20，y(t)=x(4t)，Y(j0) 是多少？ | C · 5 | 时间尺度性质给出 Y(jω)=X(jω/4)/4，零频值为 5。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| fourier-delay-phase | y(t)=x(t−2)，在 ω=3 rad/s，延迟因子引入的未折叠相位是多少 rad？ | B · -6 rad | 延迟因子 e^(−jωtd)，相位为 −ωtd=−3×2=-6 rad。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| fourier-delay-phase-v1 | y(t)=x(t−3)，在 ω=4 rad/s，延迟因子引入的未折叠相位是多少 rad？ | C · -12 rad | 延迟因子 e^(−jωtd)，相位为 −ωtd=−4×3=-12 rad。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| fourier-delay-phase-v2 | y(t)=x(t−4)，在 ω=2 rad/s，延迟因子引入的未折叠相位是多少 rad？ | D · -8 rad | 延迟因子 e^(−jωtd)，相位为 −ωtd=−2×4=-8 rad。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| modulation-upper-edge | 基带频谱支撑 [−3,3] kHz，乘 cos(2π·100kHz·t)。平移后正频率频带的上界是多少 kHz？ | C · 103 kHz | 频谱移到 ±fc，上边界 fc+B=103 kHz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| modulation-upper-edge-v1 | 基带频谱支撑 [−4,4] kHz，乘 cos(2π·120kHz·t)。平移后正频率频带的上界是多少 kHz？ | D · 124 kHz | 频谱移到 ±fc，上边界 fc+B=124 kHz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| modulation-upper-edge-v2 | 基带频谱支撑 [−5,5] kHz，乘 cos(2π·80kHz·t)。平移后正频率频带的上界是多少 kHz？ | A · 85 kHz | 频谱移到 ±fc，上边界 fc+B=85 kHz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| sinusoidal-output-amplitude | 稳定 LTI 系统在输入余弦频率处 \|H\|=0.5，输入幅度为 6。正弦稳态输出幅度是多少？ | D · 3 | 同频输出幅度为 \|H\|A=0.5×6=3。 | [3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md) |
+| sinusoidal-output-amplitude-v1 | 稳定 LTI 系统在输入余弦频率处 \|H\|=2，输入幅度为 4。正弦稳态输出幅度是多少？ | A · 8 | 同频输出幅度为 \|H\|A=2×4=8。 | [3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md) |
+| sinusoidal-output-amplitude-v2 | 稳定 LTI 系统在输入余弦频率处 \|H\|=0.25，输入幅度为 8。正弦稳态输出幅度是多少？ | B · 2 | 同频输出幅度为 \|H\|A=0.25×8=2。 | [3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md) |
+| linear-phase-delay | H(jω)=2e^(−j3ω)，群时延是多少秒？ | A · 3 s | τg=−dφ/dω=−d(−3ω)/dω=3 s。 | [3.8 无失真传输与滤波](../content/signals/knowledge-base/ss-3-8.md) |
+| linear-phase-delay-v1 | H(jω)=3e^(−j2ω)，群时延是多少秒？ | B · 2 s | τg=−dφ/dω=−d(−2ω)/dω=2 s。 | [3.8 无失真传输与滤波](../content/signals/knowledge-base/ss-3-8.md) |
+| linear-phase-delay-v2 | H(jω)=4e^(−j5ω)，群时延是多少秒？ | C · 5 s | τg=−dφ/dω=−d(−5ω)/dω=5 s。 | [3.8 无失真传输与滤波](../content/signals/knowledge-base/ss-3-8.md) |
+| parseval-energy | 采用角频率傅里叶约定，∫\|X(jω)\|²dω=8π，总能量是多少？ | B · 4 | Parseval：E=(1/(2π))∫\|X\|²dω=8/2=4。 | [3.10 能量谱与功率谱](../content/signals/knowledge-base/ss-3-10.md) |
+| parseval-energy-v1 | 采用角频率傅里叶约定，∫\|X(jω)\|²dω=12π，总能量是多少？ | C · 6 | Parseval：E=(1/(2π))∫\|X\|²dω=12/2=6。 | [3.10 能量谱与功率谱](../content/signals/knowledge-base/ss-3-10.md) |
+| parseval-energy-v2 | 采用角频率傅里叶约定，∫\|X(jω)\|²dω=20π，总能量是多少？ | D · 10 | Parseval：E=(1/(2π))∫\|X\|²dω=20/2=10。 | [3.10 能量谱与功率谱](../content/signals/knowledge-base/ss-3-10.md) |
+| rectangle-first-zero | 单位幅度、宽度 0.02 s 的单个矩形脉冲，其频谱第一个正零点是多少 Hz？ | C · 50 Hz | X(f)∝sinc(fT)，首个正零点 f=1/T=50 Hz。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| rectangle-first-zero-v1 | 单位幅度、宽度 0.01 s 的单个矩形脉冲，其频谱第一个正零点是多少 Hz？ | D · 100 Hz | X(f)∝sinc(fT)，首个正零点 f=1/T=100 Hz。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| rectangle-first-zero-v2 | 单位幅度、宽度 0.05 s 的单个矩形脉冲，其频谱第一个正零点是多少 Hz？ | A · 20 Hz | X(f)∝sinc(fT)，首个正零点 f=1/T=20 Hz。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| sampling-period | 均匀采样率 fs=1000 Hz，采样周期是多少毫秒？ | D · 1 ms | Ts=1/fs 秒=1000/1000=1 ms。 | [3.9 取样定理](../content/signals/knowledge-base/ss-3-9.md) |
+| sampling-period-v1 | 均匀采样率 fs=2000 Hz，采样周期是多少毫秒？ | A · 0.5 ms | Ts=1/fs 秒=1000/2000=0.5 ms。 | [3.9 取样定理](../content/signals/knowledge-base/ss-3-9.md) |
+| sampling-period-v2 | 均匀采样率 fs=500 Hz，采样周期是多少毫秒？ | B · 2 ms | Ts=1/fs 秒=1000/500=2 ms。 | [3.9 取样定理](../content/signals/knowledge-base/ss-3-9.md) |
+| dft-frequency-grid | fs=800 Hz，采集 400 个真实样本，不补零。DFT 频点间隔是多少 Hz？ | A · 2 Hz | Δf=fs/N=800/400=2 Hz；频点间隔不等于所有信号条件下的实际分辨能力。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| dft-frequency-grid-v1 | fs=1000 Hz，采集 200 个真实样本，不补零。DFT 频点间隔是多少 Hz？ | B · 5 Hz | Δf=fs/N=1000/200=5 Hz；频点间隔不等于所有信号条件下的实际分辨能力。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| dft-frequency-grid-v2 | fs=2000 Hz，采集 500 个真实样本，不补零。DFT 频点间隔是多少 Hz？ | C · 4 Hz | Δf=fs/N=2000/500=4 Hz；频点间隔不等于所有信号条件下的实际分辨能力。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| real-spectrum-conjugate | 实周期信号复系数 F₂=2+j(3)，F₋₂ 的虚部是多少？ | B · -3 | 实信号 F₋n=F_n*，虚部变号，所以为 -3。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| real-spectrum-conjugate-v1 | 实周期信号复系数 F₂=4+j(-2)，F₋₂ 的虚部是多少？ | C · 2 | 实信号 F₋n=F_n*，虚部变号，所以为 2。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| real-spectrum-conjugate-v2 | 实周期信号复系数 F₂=3+j(5)，F₋₂ 的虚部是多少？ | D · -5 | 实信号 F₋n=F_n*，虚部变号，所以为 -5。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| periodic-transform-weight | 周期信号复指数级数系数 F₁=2，傅里叶变换在 ω=Ω 的冲激系数为 Kπ，K 是多少？ | C · 4 | X(jω)=2πΣF_nδ(ω−nΩ)，因此 K=2F₁=4。 | [3.6 周期信号的傅里叶变换](../content/signals/knowledge-base/ss-3-6.md) |
+| periodic-transform-weight-v1 | 周期信号复指数级数系数 F₁=3，傅里叶变换在 ω=Ω 的冲激系数为 Kπ，K 是多少？ | D · 6 | X(jω)=2πΣF_nδ(ω−nΩ)，因此 K=2F₁=6。 | [3.6 周期信号的傅里叶变换](../content/signals/knowledge-base/ss-3-6.md) |
+| periodic-transform-weight-v2 | 周期信号复指数级数系数 F₁=4，傅里叶变换在 ω=Ω 的冲激系数为 Kπ，K 是多少？ | A · 8 | X(jω)=2πΣF_nδ(ω−nΩ)，因此 K=2F₁=8。 | [3.6 周期信号的傅里叶变换](../content/signals/knowledge-base/ss-3-6.md) |
+| ext-period-ms-frequency-1 | 周期信号基本周期 T₀=3 ms，基频 f₀ 是多少 Hz？（选最接近值。） | A · 333.333333 Hz | 先将毫秒换算成秒，再用 f₀=1/T₀，即 f₀=1000/T₀(ms)。代入得 333.333333 Hz。 | [3.3 周期信号的频谱](../content/signals/knowledge-base/ss-3-3.md) |
+| ext-period-ms-frequency-1-v1 | 周期信号基本周期 T₀=5 ms，基频 f₀ 是多少 Hz？ | B · 200 Hz | 先将毫秒换算成秒，再用 f₀=1/T₀，即 f₀=1000/T₀(ms)。代入得 200 Hz。 | [3.3 周期信号的频谱](../content/signals/knowledge-base/ss-3-3.md) |
+| ext-period-ms-frequency-1-v2 | 周期信号基本周期 T₀=7 ms，基频 f₀ 是多少 Hz？（选最接近值。） | C · 142.857143 Hz | 先将毫秒换算成秒，再用 f₀=1/T₀，即 f₀=1000/T₀(ms)。代入得 142.857143 Hz。 | [3.3 周期信号的频谱](../content/signals/knowledge-base/ss-3-3.md) |
+| ext-period-ms-frequency-2 | 周期信号基本周期 T₀=9 ms，基频 f₀ 是多少 Hz？（选最接近值。） | D · 111.111111 Hz | 先将毫秒换算成秒，再用 f₀=1/T₀，即 f₀=1000/T₀(ms)。代入得 111.111111 Hz。 | [3.3 周期信号的频谱](../content/signals/knowledge-base/ss-3-3.md) |
+| ext-period-ms-frequency-2-v1 | 周期信号基本周期 T₀=11 ms，基频 f₀ 是多少 Hz？（选最接近值。） | A · 90.909091 Hz | 先将毫秒换算成秒，再用 f₀=1/T₀，即 f₀=1000/T₀(ms)。代入得 90.909091 Hz。 | [3.3 周期信号的频谱](../content/signals/knowledge-base/ss-3-3.md) |
+| ext-period-ms-frequency-2-v2 | 周期信号基本周期 T₀=13 ms，基频 f₀ 是多少 Hz？（选最接近值。） | B · 76.923077 Hz | 先将毫秒换算成秒，再用 f₀=1/T₀，即 f₀=1000/T₀(ms)。代入得 76.923077 Hz。 | [3.3 周期信号的频谱](../content/signals/knowledge-base/ss-3-3.md) |
+| ext-sine-series-imaginary-1 | 采用 x(t)=ΣCₖe^(jkω₀t)。x(t)=3sin(2t)，ω₀=2。C₁ 的虚部是多少？ | B · -1.5 | sin(ω₀t)=(e^(jω₀t)−e^(−jω₀t))/(2j)，因此 C₁=A/(2j)=−jA/2。代入得 -1.5。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-sine-series-imaginary-1-v1 | 采用 x(t)=ΣCₖe^(jkω₀t)。x(t)=4sin(3t)，ω₀=3。C₁ 的虚部是多少？ | C · -2 | sin(ω₀t)=(e^(jω₀t)−e^(−jω₀t))/(2j)，因此 C₁=A/(2j)=−jA/2。代入得 -2。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-sine-series-imaginary-1-v2 | 采用 x(t)=ΣCₖe^(jkω₀t)。x(t)=5sin(4t)，ω₀=4。C₁ 的虚部是多少？ | D · -2.5 | sin(ω₀t)=(e^(jω₀t)−e^(−jω₀t))/(2j)，因此 C₁=A/(2j)=−jA/2。代入得 -2.5。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-sine-series-imaginary-2 | 采用 x(t)=ΣCₖe^(jkω₀t)。x(t)=6sin(5t)，ω₀=5。C₁ 的虚部是多少？ | A · -3 | sin(ω₀t)=(e^(jω₀t)−e^(−jω₀t))/(2j)，因此 C₁=A/(2j)=−jA/2。代入得 -3。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-sine-series-imaginary-2-v1 | 采用 x(t)=ΣCₖe^(jkω₀t)。x(t)=7sin(6t)，ω₀=6。C₁ 的虚部是多少？ | B · -3.5 | sin(ω₀t)=(e^(jω₀t)−e^(−jω₀t))/(2j)，因此 C₁=A/(2j)=−jA/2。代入得 -3.5。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-sine-series-imaginary-2-v2 | 采用 x(t)=ΣCₖe^(jkω₀t)。x(t)=8sin(7t)，ω₀=7。C₁ 的虚部是多少？ | C · -4 | sin(ω₀t)=(e^(jω₀t)−e^(−jω₀t))/(2j)，因此 C₁=A/(2j)=−jA/2。代入得 -4。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-cosine-series-real-1 | 采用 x(t)=ΣCₖe^(jkt)。x(t)=2cos(t+60°)，C₁ 的实部是多少？ | C · 0.5 | 正频率系数为 C₁=(A/2)e^(jφ)，实部为 (A/2)cosφ；相位角按度换算。代入得 0.5。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-cosine-series-real-1-v1 | 采用 x(t)=ΣCₖe^(jkt)。x(t)=3cos(t+120°)，C₁ 的实部是多少？ | D · -0.75 | 正频率系数为 C₁=(A/2)e^(jφ)，实部为 (A/2)cosφ；相位角按度换算。代入得 -0.75。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-cosine-series-real-1-v2 | 采用 x(t)=ΣCₖe^(jkt)。x(t)=4cos(t+180°)，C₁ 的实部是多少？ | A · -2 | 正频率系数为 C₁=(A/2)e^(jφ)，实部为 (A/2)cosφ；相位角按度换算。代入得 -2。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-cosine-series-real-2 | 采用 x(t)=ΣCₖe^(jkt)。x(t)=5cos(t+240°)，C₁ 的实部是多少？ | B · -1.25 | 正频率系数为 C₁=(A/2)e^(jφ)，实部为 (A/2)cosφ；相位角按度换算。代入得 -1.25。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-cosine-series-real-2-v1 | 采用 x(t)=ΣCₖe^(jkt)。x(t)=6cos(t+0°)，C₁ 的实部是多少？ | C · 3 | 正频率系数为 C₁=(A/2)e^(jφ)，实部为 (A/2)cosφ；相位角按度换算。代入得 3。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-cosine-series-real-2-v2 | 采用 x(t)=ΣCₖe^(jkt)。x(t)=8cos(t+90°)，C₁ 的实部是多少？ | D · 0 | 正频率系数为 C₁=(A/2)e^(jφ)，实部为 (A/2)cosφ；相位角按度换算。代入得 0。 | [3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-series-parseval-power-1 | 指数傅里叶级数仅 C₀=1、C₁=2+j3、C₋₁=2−j3 非零。信号平均功率是多少？ | D · 27 | 帕塞瓦尔关系 P=Σ\|Cₖ\|²；正负频率各贡献一次，P=C₀²+2(Re(C₁)²+Im(C₁)²)。代入得 27。 | [3.1 正交分解与傅里叶级数的思想](../content/signals/knowledge-base/ss-3-1.md)；[3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-series-parseval-power-1-v1 | 指数傅里叶级数仅 C₀=2、C₁=3+j4、C₋₁=3−j4 非零。信号平均功率是多少？ | A · 54 | 帕塞瓦尔关系 P=Σ\|Cₖ\|²；正负频率各贡献一次，P=C₀²+2(Re(C₁)²+Im(C₁)²)。代入得 54。 | [3.1 正交分解与傅里叶级数的思想](../content/signals/knowledge-base/ss-3-1.md)；[3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-series-parseval-power-1-v2 | 指数傅里叶级数仅 C₀=3、C₁=4+j5、C₋₁=4−j5 非零。信号平均功率是多少？ | B · 91 | 帕塞瓦尔关系 P=Σ\|Cₖ\|²；正负频率各贡献一次，P=C₀²+2(Re(C₁)²+Im(C₁)²)。代入得 91。 | [3.1 正交分解与傅里叶级数的思想](../content/signals/knowledge-base/ss-3-1.md)；[3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-series-parseval-power-2 | 指数傅里叶级数仅 C₀=4、C₁=5+j6、C₋₁=5−j6 非零。信号平均功率是多少？ | C · 138 | 帕塞瓦尔关系 P=Σ\|Cₖ\|²；正负频率各贡献一次，P=C₀²+2(Re(C₁)²+Im(C₁)²)。代入得 138。 | [3.1 正交分解与傅里叶级数的思想](../content/signals/knowledge-base/ss-3-1.md)；[3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-series-parseval-power-2-v1 | 指数傅里叶级数仅 C₀=5、C₁=6+j7、C₋₁=6−j7 非零。信号平均功率是多少？ | D · 195 | 帕塞瓦尔关系 P=Σ\|Cₖ\|²；正负频率各贡献一次，P=C₀²+2(Re(C₁)²+Im(C₁)²)。代入得 195。 | [3.1 正交分解与傅里叶级数的思想](../content/signals/knowledge-base/ss-3-1.md)；[3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-series-parseval-power-2-v2 | 指数傅里叶级数仅 C₀=6、C₁=7+j8、C₋₁=7−j8 非零。信号平均功率是多少？ | A · 262 | 帕塞瓦尔关系 P=Σ\|Cₖ\|²；正负频率各贡献一次，P=C₀²+2(Re(C₁)²+Im(C₁)²)。代入得 262。 | [3.1 正交分解与傅里叶级数的思想](../content/signals/knowledge-base/ss-3-1.md)；[3.2 周期信号的傅里叶级数](../content/signals/knowledge-base/ss-3-2.md) |
+| ext-derivative-spectrum-1 | 采用 X(ω)=∫x(t)e^(−jωt)dt，x 满足微分性质条件。已知 \|X(3)\|=4。y=dx/dt，则 \|Y(3)\| 是多少？ | A · 12 | 时域微分对应 Y(ω)=jωX(ω)，幅度为 \|ω\|·\|X(ω)\|。代入得 12。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-derivative-spectrum-1-v1 | 采用 X(ω)=∫x(t)e^(−jωt)dt，x 满足微分性质条件。已知 \|X(4)\|=5。y=dx/dt，则 \|Y(4)\| 是多少？ | B · 20 | 时域微分对应 Y(ω)=jωX(ω)，幅度为 \|ω\|·\|X(ω)\|。代入得 20。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-derivative-spectrum-1-v2 | 采用 X(ω)=∫x(t)e^(−jωt)dt，x 满足微分性质条件。已知 \|X(5)\|=6。y=dx/dt，则 \|Y(5)\| 是多少？ | C · 30 | 时域微分对应 Y(ω)=jωX(ω)，幅度为 \|ω\|·\|X(ω)\|。代入得 30。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-derivative-spectrum-2 | 采用 X(ω)=∫x(t)e^(−jωt)dt，x 满足微分性质条件。已知 \|X(6)\|=7。y=dx/dt，则 \|Y(6)\| 是多少？ | D · 42 | 时域微分对应 Y(ω)=jωX(ω)，幅度为 \|ω\|·\|X(ω)\|。代入得 42。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-derivative-spectrum-2-v1 | 采用 X(ω)=∫x(t)e^(−jωt)dt，x 满足微分性质条件。已知 \|X(7)\|=8。y=dx/dt，则 \|Y(7)\| 是多少？ | A · 56 | 时域微分对应 Y(ω)=jωX(ω)，幅度为 \|ω\|·\|X(ω)\|。代入得 56。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-derivative-spectrum-2-v2 | 采用 X(ω)=∫x(t)e^(−jωt)dt，x 满足微分性质条件。已知 \|X(8)\|=9。y=dx/dt，则 \|Y(8)\| 是多少？ | B · 72 | 时域微分对应 Y(ω)=jωX(ω)，幅度为 \|ω\|·\|X(ω)\|。代入得 72。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-scaled-transform-area-1 | 可积信号 x(t) 满足 ∫x(t)dt=5。y(t)=3x(−2t)，采用 Y(ω)=∫y(t)e^(−jωt)dt。Y(0) 是多少？ | B · 7.5 | 零频值是面积，幅度因子只乘一次：Y(0)=kX(0)/\|a\|，不同于能量中的 k²。代入得 7.5。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-scaled-transform-area-1-v1 | 可积信号 x(t) 满足 ∫x(t)dt=6。y(t)=4x(−3t)，采用 Y(ω)=∫y(t)e^(−jωt)dt。Y(0) 是多少？ | C · 8 | 零频值是面积，幅度因子只乘一次：Y(0)=kX(0)/\|a\|，不同于能量中的 k²。代入得 8。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-scaled-transform-area-1-v2 | 可积信号 x(t) 满足 ∫x(t)dt=7。y(t)=5x(−4t)，采用 Y(ω)=∫y(t)e^(−jωt)dt。Y(0) 是多少？ | D · 8.75 | 零频值是面积，幅度因子只乘一次：Y(0)=kX(0)/\|a\|，不同于能量中的 k²。代入得 8.75。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-scaled-transform-area-2 | 可积信号 x(t) 满足 ∫x(t)dt=8。y(t)=6x(−5t)，采用 Y(ω)=∫y(t)e^(−jωt)dt。Y(0) 是多少？ | A · 9.6 | 零频值是面积，幅度因子只乘一次：Y(0)=kX(0)/\|a\|，不同于能量中的 k²。代入得 9.6。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-scaled-transform-area-2-v1 | 可积信号 x(t) 满足 ∫x(t)dt=9。y(t)=7x(−6t)，采用 Y(ω)=∫y(t)e^(−jωt)dt。Y(0) 是多少？ | B · 10.5 | 零频值是面积，幅度因子只乘一次：Y(0)=kX(0)/\|a\|，不同于能量中的 k²。代入得 10.5。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-scaled-transform-area-2-v2 | 可积信号 x(t) 满足 ∫x(t)dt=10。y(t)=8x(−7t)，采用 Y(ω)=∫y(t)e^(−jωt)dt。Y(0) 是多少？（选最接近值。） | C · 11.428571 | 零频值是面积，幅度因子只乘一次：Y(0)=kX(0)/\|a\|，不同于能量中的 k²。代入得 11.428571。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-exponential-spectrum-magnitude-1 | x(t)=2e^(−3t)u(t)，X(ω)=∫x(t)e^(−jωt)dt。\|X(4)\| 是多少？ | C · 0.4 | X(ω)=A/(a+jω)，分母模为 √(a²+ω²)，故 \|X\|=A/√(a²+ω²)。代入得 0.4。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-exponential-spectrum-magnitude-1-v1 | x(t)=3e^(−4t)u(t)，X(ω)=∫x(t)e^(−jωt)dt。\|X(3)\| 是多少？ | D · 0.6 | X(ω)=A/(a+jω)，分母模为 √(a²+ω²)，故 \|X\|=A/√(a²+ω²)。代入得 0.6。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-exponential-spectrum-magnitude-1-v2 | x(t)=4e^(−5t)u(t)，X(ω)=∫x(t)e^(−jωt)dt。\|X(12)\| 是多少？（选最接近值。） | A · 0.307692 | X(ω)=A/(a+jω)，分母模为 √(a²+ω²)，故 \|X\|=A/√(a²+ω²)。代入得 0.307692。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-exponential-spectrum-magnitude-2 | x(t)=5e^(−12t)u(t)，X(ω)=∫x(t)e^(−jωt)dt。\|X(5)\| 是多少？（选最接近值。） | B · 0.384615 | X(ω)=A/(a+jω)，分母模为 √(a²+ω²)，故 \|X\|=A/√(a²+ω²)。代入得 0.384615。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-exponential-spectrum-magnitude-2-v1 | x(t)=6e^(−8t)u(t)，X(ω)=∫x(t)e^(−jωt)dt。\|X(15)\| 是多少？（选最接近值。） | C · 0.352941 | X(ω)=A/(a+jω)，分母模为 √(a²+ω²)，故 \|X\|=A/√(a²+ω²)。代入得 0.352941。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-exponential-spectrum-magnitude-2-v2 | x(t)=7e^(−15t)u(t)，X(ω)=∫x(t)e^(−jωt)dt。\|X(8)\| 是多少？（选最接近值。） | D · 0.411765 | X(ω)=A/(a+jω)，分母模为 √(a²+ω²)，故 \|X\|=A/√(a²+ω²)。代入得 0.411765。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-bilateral-exponential-dc-1 | x(t)=2e^(−3\|t\|)，X(ω)=∫x(t)e^(−jωt)dt。X(0) 是多少？（选最接近值。） | D · 1.333333 | X(0) 等于信号面积；两侧各为 A/a，总面积为 2A/a。代入得 1.333333。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-bilateral-exponential-dc-1-v1 | x(t)=3e^(−4\|t\|)，X(ω)=∫x(t)e^(−jωt)dt。X(0) 是多少？ | A · 1.5 | X(0) 等于信号面积；两侧各为 A/a，总面积为 2A/a。代入得 1.5。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-bilateral-exponential-dc-1-v2 | x(t)=4e^(−5\|t\|)，X(ω)=∫x(t)e^(−jωt)dt。X(0) 是多少？ | B · 1.6 | X(0) 等于信号面积；两侧各为 A/a，总面积为 2A/a。代入得 1.6。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-bilateral-exponential-dc-2 | x(t)=5e^(−6\|t\|)，X(ω)=∫x(t)e^(−jωt)dt。X(0) 是多少？（选最接近值。） | C · 1.666667 | X(0) 等于信号面积；两侧各为 A/a，总面积为 2A/a。代入得 1.666667。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-bilateral-exponential-dc-2-v1 | x(t)=6e^(−7\|t\|)，X(ω)=∫x(t)e^(−jωt)dt。X(0) 是多少？（选最接近值。） | D · 1.714286 | X(0) 等于信号面积；两侧各为 A/a，总面积为 2A/a。代入得 1.714286。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-bilateral-exponential-dc-2-v2 | x(t)=7e^(−8\|t\|)，X(ω)=∫x(t)e^(−jωt)dt。X(0) 是多少？ | A · 1.75 | X(0) 等于信号面积；两侧各为 A/a，总面积为 2A/a。代入得 1.75。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-rectangle-spectrum-sample-1 | x(t) 在 \|t\|≤2/2 内为 2，外部为零。X(ω)=∫x(t)e^(−jωt)dt，X(π/2) 是多少？（选最接近值。） | A · 2.546479 | 对称矩形变换为 X(ω)=2A sin(ωT/2)/ω；代入 ω=π/T 得 2AT/π。代入得 2.546479。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-rectangle-spectrum-sample-1-v1 | x(t) 在 \|t\|≤4/2 内为 3，外部为零。X(ω)=∫x(t)e^(−jωt)dt，X(π/4) 是多少？（选最接近值。） | B · 7.639437 | 对称矩形变换为 X(ω)=2A sin(ωT/2)/ω；代入 ω=π/T 得 2AT/π。代入得 7.639437。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-rectangle-spectrum-sample-1-v2 | x(t) 在 \|t\|≤6/2 内为 4，外部为零。X(ω)=∫x(t)e^(−jωt)dt，X(π/6) 是多少？（选最接近值。） | C · 15.278875 | 对称矩形变换为 X(ω)=2A sin(ωT/2)/ω；代入 ω=π/T 得 2AT/π。代入得 15.278875。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-rectangle-spectrum-sample-2 | x(t) 在 \|t\|≤8/2 内为 5，外部为零。X(ω)=∫x(t)e^(−jωt)dt，X(π/8) 是多少？（选最接近值。） | D · 25.464791 | 对称矩形变换为 X(ω)=2A sin(ωT/2)/ω；代入 ω=π/T 得 2AT/π。代入得 25.464791。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-rectangle-spectrum-sample-2-v1 | x(t) 在 \|t\|≤10/2 内为 6，外部为零。X(ω)=∫x(t)e^(−jωt)dt，X(π/10) 是多少？（选最接近值。） | A · 38.197186 | 对称矩形变换为 X(ω)=2A sin(ωT/2)/ω；代入 ω=π/T 得 2AT/π。代入得 38.197186。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-rectangle-spectrum-sample-2-v2 | x(t) 在 \|t\|≤12/2 内为 7，外部为零。X(ω)=∫x(t)e^(−jωt)dt，X(π/12) 是多少？（选最接近值。） | B · 53.476061 | 对称矩形变换为 X(ω)=2A sin(ωT/2)/ω；代入 ω=π/T 得 2AT/π。代入得 53.476061。 | [3.4 非周期信号与傅里叶变换](../content/signals/knowledge-base/ss-3-4.md)；[A.1 傅里叶变换常用对](../content/signals/knowledge-base/ss-a-1.md) |
+| ext-delay-phase-degrees-1 | 纯延时系统 y(t)=x(t−5/1000)，时间单位 s。在 20 Hz 处，按 φ(f)=−360fT 的未折叠相位是多少度？ | B · -36° | 延时的频率响应为 e^(−j2πfT)，相位为 −360fT 度，本题不折叠到主值区间。代入得 -36°。 | [3.8 无失真传输与滤波](../content/signals/knowledge-base/ss-3-8.md) |
+| ext-delay-phase-degrees-1-v1 | 纯延时系统 y(t)=x(t−10/1000)，时间单位 s。在 30 Hz 处，按 φ(f)=−360fT 的未折叠相位是多少度？ | C · -108° | 延时的频率响应为 e^(−j2πfT)，相位为 −360fT 度，本题不折叠到主值区间。代入得 -108°。 | [3.8 无失真传输与滤波](../content/signals/knowledge-base/ss-3-8.md) |
+| ext-delay-phase-degrees-1-v2 | 纯延时系统 y(t)=x(t−15/1000)，时间单位 s。在 40 Hz 处，按 φ(f)=−360fT 的未折叠相位是多少度？ | D · -216° | 延时的频率响应为 e^(−j2πfT)，相位为 −360fT 度，本题不折叠到主值区间。代入得 -216°。 | [3.8 无失真传输与滤波](../content/signals/knowledge-base/ss-3-8.md) |
+| ext-delay-phase-degrees-2 | 纯延时系统 y(t)=x(t−20/1000)，时间单位 s。在 50 Hz 处，按 φ(f)=−360fT 的未折叠相位是多少度？ | A · -360° | 延时的频率响应为 e^(−j2πfT)，相位为 −360fT 度，本题不折叠到主值区间。代入得 -360°。 | [3.8 无失真传输与滤波](../content/signals/knowledge-base/ss-3-8.md) |
+| ext-delay-phase-degrees-2-v1 | 纯延时系统 y(t)=x(t−25/1000)，时间单位 s。在 60 Hz 处，按 φ(f)=−360fT 的未折叠相位是多少度？ | B · -540° | 延时的频率响应为 e^(−j2πfT)，相位为 −360fT 度，本题不折叠到主值区间。代入得 -540°。 | [3.8 无失真传输与滤波](../content/signals/knowledge-base/ss-3-8.md) |
+| ext-delay-phase-degrees-2-v2 | 纯延时系统 y(t)=x(t−30/1000)，时间单位 s。在 70 Hz 处，按 φ(f)=−360fT 的未折叠相位是多少度？ | C · -756° | 延时的频率响应为 e^(−j2πfT)，相位为 −360fT 度，本题不折叠到主值区间。代入得 -756°。 | [3.8 无失真传输与滤波](../content/signals/knowledge-base/ss-3-8.md) |
+| ext-delay-difference-notch-1 | 系统 y(t)=x(t)−x(t−2/1000)，时间单位 s。除直流外，幅频响应的第一个正频率零点是多少 Hz？ | C · 500 Hz | H(f)=1−e^(−j2πfT)，零点满足 fT 为整数；首个正频率为 1/T。代入得 500 Hz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md)；[3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md) |
+| ext-delay-difference-notch-1-v1 | 系统 y(t)=x(t)−x(t−3/1000)，时间单位 s。除直流外，幅频响应的第一个正频率零点是多少 Hz？（选最接近值。） | D · 333.333333 Hz | H(f)=1−e^(−j2πfT)，零点满足 fT 为整数；首个正频率为 1/T。代入得 333.333333 Hz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md)；[3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md) |
+| ext-delay-difference-notch-1-v2 | 系统 y(t)=x(t)−x(t−4/1000)，时间单位 s。除直流外，幅频响应的第一个正频率零点是多少 Hz？ | A · 250 Hz | H(f)=1−e^(−j2πfT)，零点满足 fT 为整数；首个正频率为 1/T。代入得 250 Hz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md)；[3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md) |
+| ext-delay-difference-notch-2 | 系统 y(t)=x(t)−x(t−5/1000)，时间单位 s。除直流外，幅频响应的第一个正频率零点是多少 Hz？ | B · 200 Hz | H(f)=1−e^(−j2πfT)，零点满足 fT 为整数；首个正频率为 1/T。代入得 200 Hz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md)；[3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md) |
+| ext-delay-difference-notch-2-v1 | 系统 y(t)=x(t)−x(t−6/1000)，时间单位 s。除直流外，幅频响应的第一个正频率零点是多少 Hz？（选最接近值。） | C · 166.666667 Hz | H(f)=1−e^(−j2πfT)，零点满足 fT 为整数；首个正频率为 1/T。代入得 166.666667 Hz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md)；[3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md) |
+| ext-delay-difference-notch-2-v2 | 系统 y(t)=x(t)−x(t−7/1000)，时间单位 s。除直流外，幅频响应的第一个正频率零点是多少 Hz？（选最接近值。） | D · 142.857143 Hz | H(f)=1−e^(−j2πfT)，零点满足 fT 为整数；首个正频率为 1/T。代入得 142.857143 Hz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md)；[3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md) |
+| ext-ideal-lowpass-output-power-1 | 理想低通在 \|f\|<20 Hz 时 H(f)=3，其余为零。输入 2cos(2π·10t)+4cos(2π·30t)，稳态输出功率是多少？ | D · 18 | 只保留低频分量，输出幅度为 GA，正弦平均功率为 (GA)²/2。代入得 18。 | [3.8 无失真传输与滤波](../content/signals/knowledge-base/ss-3-8.md)；[3.1 正交分解与傅里叶级数的思想](../content/signals/knowledge-base/ss-3-1.md) |
+| ext-ideal-lowpass-output-power-1-v1 | 理想低通在 \|f\|<40 Hz 时 H(f)=4，其余为零。输入 3cos(2π·20t)+5cos(2π·60t)，稳态输出功率是多少？ | A · 72 | 只保留低频分量，输出幅度为 GA，正弦平均功率为 (GA)²/2。代入得 72。 | [3.8 无失真传输与滤波](../content/signals/knowledge-base/ss-3-8.md)；[3.1 正交分解与傅里叶级数的思想](../content/signals/knowledge-base/ss-3-1.md) |
+| ext-ideal-lowpass-output-power-1-v2 | 理想低通在 \|f\|<60 Hz 时 H(f)=5，其余为零。输入 4cos(2π·30t)+6cos(2π·90t)，稳态输出功率是多少？ | B · 200 | 只保留低频分量，输出幅度为 GA，正弦平均功率为 (GA)²/2。代入得 200。 | [3.8 无失真传输与滤波](../content/signals/knowledge-base/ss-3-8.md)；[3.1 正交分解与傅里叶级数的思想](../content/signals/knowledge-base/ss-3-1.md) |
+| ext-ideal-lowpass-output-power-2 | 理想低通在 \|f\|<80 Hz 时 H(f)=6，其余为零。输入 5cos(2π·40t)+7cos(2π·120t)，稳态输出功率是多少？ | C · 450 | 只保留低频分量，输出幅度为 GA，正弦平均功率为 (GA)²/2。代入得 450。 | [3.8 无失真传输与滤波](../content/signals/knowledge-base/ss-3-8.md)；[3.1 正交分解与傅里叶级数的思想](../content/signals/knowledge-base/ss-3-1.md) |
+| ext-ideal-lowpass-output-power-2-v1 | 理想低通在 \|f\|<100 Hz 时 H(f)=7，其余为零。输入 6cos(2π·50t)+8cos(2π·150t)，稳态输出功率是多少？ | D · 882 | 只保留低频分量，输出幅度为 GA，正弦平均功率为 (GA)²/2。代入得 882。 | [3.8 无失真传输与滤波](../content/signals/knowledge-base/ss-3-8.md)；[3.1 正交分解与傅里叶级数的思想](../content/signals/knowledge-base/ss-3-1.md) |
+| ext-ideal-lowpass-output-power-2-v2 | 理想低通在 \|f\|<120 Hz 时 H(f)=8，其余为零。输入 7cos(2π·60t)+9cos(2π·180t)，稳态输出功率是多少？ | A · 1568 | 只保留低频分量，输出幅度为 GA，正弦平均功率为 (GA)²/2。代入得 1568。 | [3.8 无失真传输与滤波](../content/signals/knowledge-base/ss-3-8.md)；[3.1 正交分解与傅里叶级数的思想](../content/signals/knowledge-base/ss-3-1.md) |
+| ext-lowpass-sinusoid-amplitude-1 | 稳定一阶低通 H(jω)=2/(1+jω·0.1)，输入 3cos(4t)。稳态输出幅度是多少？（选最接近值。） | A · 5.57086 | 输出幅度为输入幅度乘 \|H(jω)\|：AK/√(1+(ωτ)²)。代入得 5.57086。 | [3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md)；[4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| ext-lowpass-sinusoid-amplitude-1-v1 | 稳定一阶低通 H(jω)=3/(1+jω·0.2)，输入 4cos(5t)。稳态输出幅度是多少？（选最接近值。） | B · 8.485281 | 输出幅度为输入幅度乘 \|H(jω)\|：AK/√(1+(ωτ)²)。代入得 8.485281。 | [3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md)；[4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| ext-lowpass-sinusoid-amplitude-1-v2 | 稳定一阶低通 H(jω)=4/(1+jω·0.3)，输入 5cos(6t)。稳态输出幅度是多少？（选最接近值。） | C · 9.712859 | 输出幅度为输入幅度乘 \|H(jω)\|：AK/√(1+(ωτ)²)。代入得 9.712859。 | [3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md)；[4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| ext-lowpass-sinusoid-amplitude-2 | 稳定一阶低通 H(jω)=5/(1+jω·0.4)，输入 6cos(7t)。稳态输出幅度是多少？（选最接近值。） | D · 10.090092 | 输出幅度为输入幅度乘 \|H(jω)\|：AK/√(1+(ωτ)²)。代入得 10.090092。 | [3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md)；[4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| ext-lowpass-sinusoid-amplitude-2-v1 | 稳定一阶低通 H(jω)=6/(1+jω·0.5)，输入 7cos(8t)。稳态输出幅度是多少？（选最接近值。） | A · 10.186496 | 输出幅度为输入幅度乘 \|H(jω)\|：AK/√(1+(ωτ)²)。代入得 10.186496。 | [3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md)；[4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| ext-lowpass-sinusoid-amplitude-2-v2 | 稳定一阶低通 H(jω)=7/(1+jω·0.6)，输入 8cos(9t)。稳态输出幅度是多少？（选最接近值。） | B · 10.196999 | 输出幅度为输入幅度乘 \|H(jω)\|：AK/√(1+(ωτ)²)。代入得 10.196999。 | [3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md)；[4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| ext-highpass-sinusoid-amplitude-1 | 稳定高通 H(jω)=jω/(3+jω)，输入 2cos(4t)。稳态输出幅度是多少？ | B · 1.6 | \|H(jω)\|=\|ω\|/√(a²+ω²)，再乘输入幅度。代入得 1.6。 | [3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md)；[4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| ext-highpass-sinusoid-amplitude-1-v1 | 稳定高通 H(jω)=jω/(4+jω)，输入 3cos(3t)。稳态输出幅度是多少？ | C · 1.8 | \|H(jω)\|=\|ω\|/√(a²+ω²)，再乘输入幅度。代入得 1.8。 | [3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md)；[4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| ext-highpass-sinusoid-amplitude-1-v2 | 稳定高通 H(jω)=jω/(5+jω)，输入 4cos(12t)。稳态输出幅度是多少？（选最接近值。） | D · 3.692308 | \|H(jω)\|=\|ω\|/√(a²+ω²)，再乘输入幅度。代入得 3.692308。 | [3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md)；[4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| ext-highpass-sinusoid-amplitude-2 | 稳定高通 H(jω)=jω/(12+jω)，输入 5cos(5t)。稳态输出幅度是多少？（选最接近值。） | A · 1.923077 | \|H(jω)\|=\|ω\|/√(a²+ω²)，再乘输入幅度。代入得 1.923077。 | [3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md)；[4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| ext-highpass-sinusoid-amplitude-2-v1 | 稳定高通 H(jω)=jω/(8+jω)，输入 6cos(15t)。稳态输出幅度是多少？（选最接近值。） | B · 5.294118 | \|H(jω)\|=\|ω\|/√(a²+ω²)，再乘输入幅度。代入得 5.294118。 | [3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md)；[4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| ext-highpass-sinusoid-amplitude-2-v2 | 稳定高通 H(jω)=jω/(15+jω)，输入 7cos(8t)。稳态输出幅度是多少？（选最接近值。） | C · 3.294118 | \|H(jω)\|=\|ω\|/√(a²+ω²)，再乘输入幅度。代入得 3.294118。 | [3.7 LTI系统的频域分析](../content/signals/knowledge-base/ss-3-7.md)；[4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| ext-multiple-zone-alias-1 | 频率 930 Hz 的实余弦按 fs=300 Hz 采样，折叠到 [0,150] Hz 后的频率是多少？ | C · 30 Hz | 采样后相差整数倍 fs 的频率等价，实余弦还可折叠负频率：fa=\|f−round(f/fs)fs\|。代入得 30 Hz。 | [3.9 取样定理](../content/signals/knowledge-base/ss-3-9.md) |
+| ext-multiple-zone-alias-1-v1 | 频率 1660 Hz 的实余弦按 fs=400 Hz 采样，折叠到 [0,200] Hz 后的频率是多少？ | D · 60 Hz | 采样后相差整数倍 fs 的频率等价，实余弦还可折叠负频率：fa=\|f−round(f/fs)fs\|。代入得 60 Hz。 | [3.9 取样定理](../content/signals/knowledge-base/ss-3-9.md) |
+| ext-multiple-zone-alias-1-v2 | 频率 2590 Hz 的实余弦按 fs=500 Hz 采样，折叠到 [0,250] Hz 后的频率是多少？ | A · 90 Hz | 采样后相差整数倍 fs 的频率等价，实余弦还可折叠负频率：fa=\|f−round(f/fs)fs\|。代入得 90 Hz。 | [3.9 取样定理](../content/signals/knowledge-base/ss-3-9.md) |
+| ext-multiple-zone-alias-2 | 频率 3720 Hz 的实余弦按 fs=600 Hz 采样，折叠到 [0,300] Hz 后的频率是多少？ | B · 120 Hz | 采样后相差整数倍 fs 的频率等价，实余弦还可折叠负频率：fa=\|f−round(f/fs)fs\|。代入得 120 Hz。 | [3.9 取样定理](../content/signals/knowledge-base/ss-3-9.md) |
+| ext-multiple-zone-alias-2-v1 | 频率 5050 Hz 的实余弦按 fs=700 Hz 采样，折叠到 [0,350] Hz 后的频率是多少？ | C · 150 Hz | 采样后相差整数倍 fs 的频率等价，实余弦还可折叠负频率：fa=\|f−round(f/fs)fs\|。代入得 150 Hz。 | [3.9 取样定理](../content/signals/knowledge-base/ss-3-9.md) |
+| ext-multiple-zone-alias-2-v2 | 频率 6580 Hz 的实余弦按 fs=800 Hz 采样，折叠到 [0,400] Hz 后的频率是多少？ | D · 180 Hz | 采样后相差整数倍 fs 的频率等价，实余弦还可折叠负频率：fa=\|f−round(f/fs)fs\|。代入得 180 Hz。 | [3.9 取样定理](../content/signals/knowledge-base/ss-3-9.md) |
+| ext-normalized-cycles-1 | 模拟正弦频率 100 Hz，采样率 2000 Hz。归一化频率是多少周期/样本（不是 rad/sample）？ | D · 0.05 cycles/sample | 每个样本间隔内经历 f/fs 个周期；若用 rad/sample 才需再乘 2π。代入得 0.05 cycles/sample。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-normalized-cycles-1-v1 | 模拟正弦频率 200 Hz，采样率 3000 Hz。归一化频率是多少周期/样本（不是 rad/sample）？（选最接近值。） | A · 0.066667 cycles/sample | 每个样本间隔内经历 f/fs 个周期；若用 rad/sample 才需再乘 2π。代入得 0.066667 cycles/sample。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-normalized-cycles-1-v2 | 模拟正弦频率 300 Hz，采样率 4000 Hz。归一化频率是多少周期/样本（不是 rad/sample）？ | B · 0.075 cycles/sample | 每个样本间隔内经历 f/fs 个周期；若用 rad/sample 才需再乘 2π。代入得 0.075 cycles/sample。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-normalized-cycles-2 | 模拟正弦频率 400 Hz，采样率 5000 Hz。归一化频率是多少周期/样本（不是 rad/sample）？ | C · 0.08 cycles/sample | 每个样本间隔内经历 f/fs 个周期；若用 rad/sample 才需再乘 2π。代入得 0.08 cycles/sample。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-normalized-cycles-2-v1 | 模拟正弦频率 500 Hz，采样率 6000 Hz。归一化频率是多少周期/样本（不是 rad/sample）？（选最接近值。） | D · 0.083333 cycles/sample | 每个样本间隔内经历 f/fs 个周期；若用 rad/sample 才需再乘 2π。代入得 0.083333 cycles/sample。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-normalized-cycles-2-v2 | 模拟正弦频率 600 Hz，采样率 7000 Hz。归一化频率是多少周期/样本（不是 rad/sample）？（选最接近值。） | A · 0.085714 cycles/sample | 每个样本间隔内经历 f/fs 个周期；若用 rad/sample 才需再乘 2π。代入得 0.085714 cycles/sample。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-finite-record-samples-1 | 从 t=0 开始以 400 Hz 采样，仅保留 0≤t<0.1 s 的样本。样本数 N 是多少？ | A · 40 | 采样时刻为 n/fs，本题 fsT 为整数且不含右端点，n=0,…,fsT−1，共 fsT 个。代入得 40。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-finite-record-samples-1-v1 | 从 t=0 开始以 600 Hz 采样，仅保留 0≤t<0.2 s 的样本。样本数 N 是多少？ | B · 120 | 采样时刻为 n/fs，本题 fsT 为整数且不含右端点，n=0,…,fsT−1，共 fsT 个。代入得 120。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-finite-record-samples-1-v2 | 从 t=0 开始以 800 Hz 采样，仅保留 0≤t<0.3 s 的样本。样本数 N 是多少？ | C · 240 | 采样时刻为 n/fs，本题 fsT 为整数且不含右端点，n=0,…,fsT−1，共 fsT 个。代入得 240。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-finite-record-samples-2 | 从 t=0 开始以 1000 Hz 采样，仅保留 0≤t<0.4 s 的样本。样本数 N 是多少？ | D · 400 | 采样时刻为 n/fs，本题 fsT 为整数且不含右端点，n=0,…,fsT−1，共 fsT 个。代入得 400。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-finite-record-samples-2-v1 | 从 t=0 开始以 1200 Hz 采样，仅保留 0≤t<0.5 s 的样本。样本数 N 是多少？ | A · 600 | 采样时刻为 n/fs，本题 fsT 为整数且不含右端点，n=0,…,fsT−1，共 fsT 个。代入得 600。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-finite-record-samples-2-v2 | 从 t=0 开始以 1400 Hz 采样，仅保留 0≤t<0.6 s 的样本。样本数 N 是多少？ | B · 840 | 采样时刻为 n/fs，本题 fsT 为整数且不含右端点，n=0,…,fsT−1，共 fsT 个。代入得 840。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-dft-coherent-cosine-1 | x[n]=2cos(2π·3n/32)，n=0,…,31。采用未归一化 DFT：X[k]=Σx[n]e^(−j2πkn/32)，\|X[3]\| 是多少？ | B · 32 | 相干采样且频点不是直流或奈奎斯特点，余弦能量分布在两个频点，每个 DFT 幅值为 AN/2。代入得 32。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-dft-coherent-cosine-1-v1 | x[n]=3cos(2π·4n/48)，n=0,…,47。采用未归一化 DFT：X[k]=Σx[n]e^(−j2πkn/48)，\|X[4]\| 是多少？ | C · 72 | 相干采样且频点不是直流或奈奎斯特点，余弦能量分布在两个频点，每个 DFT 幅值为 AN/2。代入得 72。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-dft-coherent-cosine-1-v2 | x[n]=4cos(2π·5n/64)，n=0,…,63。采用未归一化 DFT：X[k]=Σx[n]e^(−j2πkn/64)，\|X[5]\| 是多少？ | D · 128 | 相干采样且频点不是直流或奈奎斯特点，余弦能量分布在两个频点，每个 DFT 幅值为 AN/2。代入得 128。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-dft-coherent-cosine-2 | x[n]=5cos(2π·6n/80)，n=0,…,79。采用未归一化 DFT：X[k]=Σx[n]e^(−j2πkn/80)，\|X[6]\| 是多少？ | A · 200 | 相干采样且频点不是直流或奈奎斯特点，余弦能量分布在两个频点，每个 DFT 幅值为 AN/2。代入得 200。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-dft-coherent-cosine-2-v1 | x[n]=6cos(2π·7n/96)，n=0,…,95。采用未归一化 DFT：X[k]=Σx[n]e^(−j2πkn/96)，\|X[7]\| 是多少？ | B · 288 | 相干采样且频点不是直流或奈奎斯特点，余弦能量分布在两个频点，每个 DFT 幅值为 AN/2。代入得 288。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-dft-coherent-cosine-2-v2 | x[n]=7cos(2π·8n/112)，n=0,…,111。采用未归一化 DFT：X[k]=Σx[n]e^(−j2πkn/112)，\|X[8]\| 是多少？ | C · 392 | 相干采样且频点不是直流或奈奎斯特点，余弦能量分布在两个频点，每个 DFT 幅值为 AN/2。代入得 392。 | [A.6 采样与DFT参数速查](../content/signals/knowledge-base/ss-a-6.md) |
+| ext-am-sideband-amplitude-1 | AM 信号 s(t)=3[1+0.1cos(2π·100t)]cos(2π·1000t)。上边带余弦分量的幅度是多少？ | C · 0.15 | 利用 cosαcosβ=[cos(α+β)+cos(α−β)]/2，每个边带幅度为 Acμ/2。代入得 0.15。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-am-sideband-amplitude-1-v1 | AM 信号 s(t)=4[1+0.2cos(2π·200t)]cos(2π·2000t)。上边带余弦分量的幅度是多少？ | D · 0.4 | 利用 cosαcosβ=[cos(α+β)+cos(α−β)]/2，每个边带幅度为 Acμ/2。代入得 0.4。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-am-sideband-amplitude-1-v2 | AM 信号 s(t)=5[1+0.3cos(2π·300t)]cos(2π·3000t)。上边带余弦分量的幅度是多少？ | A · 0.75 | 利用 cosαcosβ=[cos(α+β)+cos(α−β)]/2，每个边带幅度为 Acμ/2。代入得 0.75。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-am-sideband-amplitude-2 | AM 信号 s(t)=6[1+0.4cos(2π·400t)]cos(2π·4000t)。上边带余弦分量的幅度是多少？ | B · 1.2 | 利用 cosαcosβ=[cos(α+β)+cos(α−β)]/2，每个边带幅度为 Acμ/2。代入得 1.2。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-am-sideband-amplitude-2-v1 | AM 信号 s(t)=7[1+0.5cos(2π·500t)]cos(2π·5000t)。上边带余弦分量的幅度是多少？ | C · 1.75 | 利用 cosαcosβ=[cos(α+β)+cos(α−β)]/2，每个边带幅度为 Acμ/2。代入得 1.75。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-am-sideband-amplitude-2-v2 | AM 信号 s(t)=8[1+0.6cos(2π·600t)]cos(2π·6000t)。上边带余弦分量的幅度是多少？ | D · 2.4 | 利用 cosαcosβ=[cos(α+β)+cos(α−β)]/2，每个边带幅度为 Acμ/2。代入得 2.4。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-mixer-difference-frequency-1 | 110 kHz 余弦与 85 kHz 本振余弦相乘。理想低通只保留差频项，输出频率是多少？ | D · 25 kHz | 两余弦乘积产生和频与差频，低通保留 \|fRF−fLO\|。代入得 25 kHz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-mixer-difference-frequency-1-v1 | 120 kHz 余弦与 90 kHz 本振余弦相乘。理想低通只保留差频项，输出频率是多少？ | A · 30 kHz | 两余弦乘积产生和频与差频，低通保留 \|fRF−fLO\|。代入得 30 kHz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-mixer-difference-frequency-1-v2 | 130 kHz 余弦与 95 kHz 本振余弦相乘。理想低通只保留差频项，输出频率是多少？ | B · 35 kHz | 两余弦乘积产生和频与差频，低通保留 \|fRF−fLO\|。代入得 35 kHz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-mixer-difference-frequency-2 | 140 kHz 余弦与 100 kHz 本振余弦相乘。理想低通只保留差频项，输出频率是多少？ | C · 40 kHz | 两余弦乘积产生和频与差频，低通保留 \|fRF−fLO\|。代入得 40 kHz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-mixer-difference-frequency-2-v1 | 150 kHz 余弦与 105 kHz 本振余弦相乘。理想低通只保留差频项，输出频率是多少？ | D · 45 kHz | 两余弦乘积产生和频与差频，低通保留 \|fRF−fLO\|。代入得 45 kHz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
+| ext-mixer-difference-frequency-2-v2 | 160 kHz 余弦与 110 kHz 本振余弦相乘。理想低通只保留差频项，输出频率是多少？ | A · 50 kHz | 两余弦乘积产生和频与差频，低通保留 \|fRF−fLO\|。代入得 50 kHz。 | [3.5 傅里叶变换的性质](../content/signals/knowledge-base/ss-3-5.md) |
 
 ### 第4章
 
-| ID | 题目 | 正确答案 | 解析 |
-| --- | --- | --- | --- |
-| right-half-plane | 因果、适当有理且已约分的连续 LTI 系统，若 H(s) 有右半平面极点，其 BIBO 稳定性如何？ | D · 不稳定 | 未对消的右半平面极点产生增长模态；因果 ROC 不含整个虚轴，所以不满足 BIBO 稳定。 |
-| right-half-plane-v1 | 因果有理系统有未对消单极点 s=+2 且留数非零，该极点对应的冲激响应模态怎样变化？ | D · 指数增长 | 该极点产生 e^(2t) 项，随时间增长。 |
-| right-half-plane-v2 | 因果系统 H(s)=1/(s+3)，其 BIBO 稳定性如何？ | A · 稳定 | 因果 ROC 为 Re(s)>−3，包含虚轴；冲激响应绝对可积。 |
-| imaginary-axis | 因果有理系统有一对未对消的单极点 s=±jω0（ω0>0），留数非零。这对极点对应的实冲激响应模态如何变化？ | A · 等幅振荡 | 单虚轴共轭极点对应等幅正弦模态；这里描述该对极点的分量，不代表含其他极点时的完整响应。 |
-| imaginary-axis-v1 | 简单极点 s=±j3 对应的自然响应特征是什么？ | A · 持续等幅振荡 | 实部为零，没有衰减或增长包络；虚部决定角频率。 |
-| imaginary-axis-v2 | 因果系统 H(s)=1/(s²+9) 是否 BIBO 稳定？ | B · 不稳定 | 因果 ROC 为 Re(s)>0，不包含虚轴；持续振荡的冲激响应不绝对可积。 |
-| laplace-right-roc | x=e^(−2t)u(t) 的双边拉氏 ROC 为 Re(s)>b，b 是多少？ | D · -2 | 积分收敛要求 Re(s+2)>0，所以 b=−2，边界不含。 |
-| laplace-right-roc-v1 | x=e^(−3t)u(t) 的双边拉氏 ROC 为 Re(s)>b，b 是多少？ | A · -3 | 积分收敛要求 Re(s+3)>0，所以 b=−3，边界不含。 |
-| laplace-right-roc-v2 | x=e^(−5t)u(t) 的双边拉氏 ROC 为 Re(s)>b，b 是多少？ | B · -5 | 积分收敛要求 Re(s+5)>0，所以 b=−5，边界不含。 |
-| laplace-left-roc | X(s)=1/(s+2)，ROC 为 Re(s)<−2。其双边逆变换是什么？ | B · −e^(−2t)u(−t) | 左半平面 ROC 对应左边指数信号；积分给出负号。 |
-| laplace-left-roc-v1 | X(s)=1/(s+3)，ROC 为 Re(s)<−3。其双边逆变换是什么？ | B · −e^(−3t)u(−t) | 左半平面 ROC 对应左边指数信号；积分给出负号。 |
-| laplace-left-roc-v2 | X(s)=1/(s+4)，ROC 为 Re(s)<−4。其双边逆变换是什么？ | B · −e^(−4t)u(−t) | 左半平面 ROC 对应左边指数信号；积分给出负号。 |
-| unilateral-derivative-value | 采用 0− 起点的单边拉氏变换，f(0−)=2，F(1)=5，L[f′] 在 s=1 的值是多少？ | B · 3 | L[f′]=sF−f(0−)=1×5−2=3。 |
-| unilateral-derivative-value-v1 | 采用 0− 起点的单边拉氏变换，f(0−)=3，F(2)=4，L[f′] 在 s=2 的值是多少？ | C · 5 | L[f′]=sF−f(0−)=2×4−3=5。 |
-| unilateral-derivative-value-v2 | 采用 0− 起点的单边拉氏变换，f(0−)=1，F(3)=3，L[f′] 在 s=3 的值是多少？ | D · 8 | L[f′]=sF−f(0−)=3×3−1=8。 |
-| laplace-initial-value | 因果 F(s)=2/(s+3)，原信号无冲激，f(0+) 是多少？ | C · 2 | 初值定理 lim(s→∞)sF(s)=2。 |
-| laplace-initial-value-v1 | 因果 F(s)=3/(s+4)，原信号无冲激，f(0+) 是多少？ | D · 3 | 初值定理 lim(s→∞)sF(s)=3。 |
-| laplace-initial-value-v2 | 因果 F(s)=4/(s+5)，原信号无冲激，f(0+) 是多少？ | A · 4 | 初值定理 lim(s→∞)sF(s)=4。 |
-| laplace-final-value | 因果 F(s)=6/[s(s+2)]，sF 的极点严格位于左半平面。f(∞) 是多少？ | D · 3 | 终值定理适用：lim(s→0)sF=6/2=3。 |
-| laplace-final-value-v1 | 因果 F(s)=12/[s(s+3)]，sF 的极点严格位于左半平面。f(∞) 是多少？ | A · 4 | 终值定理适用：lim(s→0)sF=12/3=4。 |
-| laplace-final-value-v2 | 因果 F(s)=8/[s(s+4)]，sF 的极点严格位于左半平面。f(∞) 是多少？ | B · 2 | 终值定理适用：lim(s→0)sF=8/4=2。 |
-| laplace-repeated-pole | 因果 X(s)=6/(s+2)³，x(t)=A t²e^(−2t)u(t)，A 是多少？ | A · 3 | L[t²e^(−2t)u(t)]=2!/(s+2)³，所以 A=6/2=3。 |
-| laplace-repeated-pole-v1 | 因果 X(s)=8/(s+3)³，x(t)=A t²e^(−3t)u(t)，A 是多少？ | B · 4 | L[t²e^(−3t)u(t)]=2!/(s+3)³，所以 A=8/2=4。 |
-| laplace-repeated-pole-v2 | 因果 X(s)=10/(s+4)³，x(t)=A t²e^(−4t)u(t)，A 是多少？ | C · 5 | L[t²e^(−4t)u(t)]=2!/(s+4)³，所以 A=10/2=5。 |
-| partial-fraction-residue | 1/[(s+1)(s+2)]=A/(s+1)+B/(s+2)，A 是多少？ | B · 1 | 两边乘(s+1)后代 s=−1，A=1/(2−1)=1。 |
-| partial-fraction-residue-v1 | 1/[(s+2)(s+4)]=A/(s+2)+B/(s+4)，A 是多少？ | C · 0.5 | 两边乘(s+2)后代 s=−2，A=1/(4−2)=0.5。 |
-| partial-fraction-residue-v2 | 1/[(s+3)(s+6)]=A/(s+3)+B/(s+6)，A 是多少？ | D · 0.333333 | 两边乘(s+3)后代 s=−3，A=1/(6−3)=0.333333。 |
-| inductor-initial-term | 被动参考方向电感 L=2 H、i(0−)=3 A，单边拉氏 V=sLI+c，初始源常数项 c 是多少？ | C · -6 | V=L(sI−i(0−))，所以 c=−L i(0−)=-6。 |
-| inductor-initial-term-v1 | 被动参考方向电感 L=3 H、i(0−)=2 A，单边拉氏 V=sLI+c，初始源常数项 c 是多少？ | D · -6 | V=L(sI−i(0−))，所以 c=−L i(0−)=-6。 |
-| inductor-initial-term-v2 | 被动参考方向电感 L=4 H、i(0−)=2 A，单边拉氏 V=sLI+c，初始源常数项 c 是多少？ | A · -8 | V=L(sI−i(0−))，所以 c=−L i(0−)=-8。 |
-| transfer-zero-location | 已约分 H(s)=(s+3)/[(s+1)(s+2)]，有限零点在哪里？ | D · -3 | 分子为零给出 s=−3，与分母无公因式。 |
-| transfer-zero-location-v1 | 已约分 H(s)=(s+4)/[(s+1)(s+3)]，有限零点在哪里？ | A · -4 | 分子为零给出 s=−4，与分母无公因式。 |
-| transfer-zero-location-v2 | 已约分 H(s)=(s+5)/[(s+2)(s+3)]，有限零点在哪里？ | B · -5 | 分子为零给出 s=−5，与分母无公因式。 |
-| transfer-rightmost-pole | H(s)=1/[(s+1)(s+3)]，最靠右的极点实部是多少？ | A · -1 | 极点为 −1、−3，较大的实部为 −1。 |
-| transfer-rightmost-pole-v1 | H(s)=1/[(s+2)(s+5)]，最靠右的极点实部是多少？ | B · -2 | 极点为 −2、−5，较大的实部为 −2。 |
-| transfer-rightmost-pole-v2 | H(s)=1/[(s+3)(s+6)]，最靠右的极点实部是多少？ | C · -3 | 极点为 −3、−6，较大的实部为 −3。 |
-| absolute-impulse-integral | h(t)=3e^(−2t)u(t)，∫\|h(t)\|dt 是多少？ | B · 1.5 | h 非负，绝对积分为 3/2=1.5<∞，该系统 BIBO 稳定。 |
-| absolute-impulse-integral-v1 | h(t)=4e^(−2t)u(t)，∫\|h(t)\|dt 是多少？ | C · 2 | h 非负，绝对积分为 4/2=2<∞，该系统 BIBO 稳定。 |
-| absolute-impulse-integral-v2 | h(t)=6e^(−3t)u(t)，∫\|h(t)\|dt 是多少？ | D · 2 | h 非负，绝对积分为 6/3=2<∞，该系统 BIBO 稳定。 |
-| amplitude-decibels | 幅值增益 \|H\|=10，用 20log10\|H\| 表示为多少 dB？ | C · 20 dB | 幅值比使用 20log10，得到 20 dB。 |
-| amplitude-decibels-v1 | 幅值增益 \|H\|=100，用 20log10\|H\| 表示为多少 dB？ | D · 40 dB | 幅值比使用 20log10，得到 40 dB。 |
-| amplitude-decibels-v2 | 幅值增益 \|H\|=1000，用 20log10\|H\| 表示为多少 dB？ | A · 60 dB | 幅值比使用 20log10，得到 60 dB。 |
-| lowpass-cutoff-radians | H(s)=2/(s+2)，−3 dB 截止角频率是多少 rad/s？ | D · 2 rad/s | 相对直流增益降为 1/√2 时 ω=2 rad/s；这里求角频率，不是 Hz。 |
-| lowpass-cutoff-radians-v1 | H(s)=4/(s+4)，−3 dB 截止角频率是多少 rad/s？ | A · 4 rad/s | 相对直流增益降为 1/√2 时 ω=4 rad/s；这里求角频率，不是 Hz。 |
-| lowpass-cutoff-radians-v2 | H(s)=5/(s+5)，−3 dB 截止角频率是多少 rad/s？ | B · 5 rad/s | 相对直流增益降为 1/√2 时 ω=5 rad/s；这里求角频率，不是 Hz。 |
-| mason-single-loop | 信号流图仅一条前向通路增益 P=6、一个接触通路的回路 L=-2。总传输增益是多少？ | A · 2 | 梅森公式 T=P/(1−L)=6/(1−(-2))=2。 |
-| mason-single-loop-v1 | 信号流图仅一条前向通路增益 P=8、一个接触通路的回路 L=-3。总传输增益是多少？ | B · 2 | 梅森公式 T=P/(1−L)=8/(1−(-3))=2。 |
-| mason-single-loop-v2 | 信号流图仅一条前向通路增益 P=10、一个接触通路的回路 L=-4。总传输增益是多少？ | C · 2 | 梅森公式 T=P/(1−L)=10/(1−(-4))=2。 |
-| mason-two-loops | 仅有两个互不接触回路 L₁=0.5、L₂=0.25，梅森行列式 Δ 是多少？ | B · 0.375 | Δ=1−L₁−L₂+L₁L₂=(1−0.5)(1−0.25)=0.375。 |
-| mason-two-loops-v1 | 仅有两个互不接触回路 L₁=0.25、L₂=0.5，梅森行列式 Δ 是多少？ | C · 0.375 | Δ=1−L₁−L₂+L₁L₂=(1−0.25)(1−0.5)=0.375。 |
-| mason-two-loops-v2 | 仅有两个互不接触回路 L₁=0.5、L₂=0.125，梅森行列式 Δ 是多少？ | D · 0.4375 | Δ=1−L₁−L₂+L₁L₂=(1−0.5)(1−0.125)=0.4375。 |
-| direct-two-integrators | 一个 2 阶、严格真有理传递函数采用标准连续直接 II 型实现，需要多少个积分器？ | C · 2 | 标准直接 II 型使用一条 2 级共享状态积分链，需要 2 个积分器。 |
-| direct-two-integrators-v1 | 一个 3 阶、严格真有理传递函数采用标准连续直接 II 型实现，需要多少个积分器？ | D · 3 | 标准直接 II 型使用一条 3 级共享状态积分链，需要 3 个积分器。 |
-| direct-two-integrators-v2 | 一个 4 阶、严格真有理传递函数采用标准连续直接 II 型实现，需要多少个积分器？ | A · 4 | 标准直接 II 型使用一条 4 级共享状态积分链，需要 4 个积分器。 |
-| rc-pole-location | 一阶 RC 低通时间常数 τ=0.1 s，其极点 s 是多少 s⁻¹？ | D · -10 s⁻¹ | H=1/(1+τs)，极点为 s=−1/τ=-10 s⁻¹。 |
-| rc-pole-location-v1 | 一阶 RC 低通时间常数 τ=0.2 s，其极点 s 是多少 s⁻¹？ | A · -5 s⁻¹ | H=1/(1+τs)，极点为 s=−1/τ=-5 s⁻¹。 |
-| rc-pole-location-v2 | 一阶 RC 低通时间常数 τ=0.5 s，其极点 s 是多少 s⁻¹？ | B · -2 s⁻¹ | H=1/(1+τs)，极点为 s=−1/τ=-2 s⁻¹。 |
-| hidden-unstable-mode | 某实现内部含模态 e^(1t)，但在约分后的输入输出传递函数中被零点对消。能否据约分后 H(s) 断言内部渐近稳定？ | B · 不能，可能存在隐藏的不稳定模态 | 代数对消只描述输入输出关系，内部渐近稳定仍需检查完整状态矩阵。 |
-| hidden-unstable-mode-v1 | 某实现内部含模态 e^(2t)，但在约分后的输入输出传递函数中被零点对消。能否据约分后 H(s) 断言内部渐近稳定？ | B · 不能，可能存在隐藏的不稳定模态 | 代数对消只描述输入输出关系，内部渐近稳定仍需检查完整状态矩阵。 |
-| hidden-unstable-mode-v2 | 某实现内部含模态 e^(3t)，但在约分后的输入输出传递函数中被零点对消。能否据约分后 H(s) 断言内部渐近稳定？ | B · 不能，可能存在隐藏的不稳定模态 | 代数对消只描述输入输出关系，内部渐近稳定仍需检查完整状态矩阵。 |
+| ID | 题目 | 正确答案 | 解析 | 讲义依据 |
+| --- | --- | --- | --- | --- |
+| right-half-plane | 因果、适当有理且已约分的连续 LTI 系统，若 H(s) 有右半平面极点，其 BIBO 稳定性如何？ | D · 不稳定 | 未对消的右半平面极点产生增长模态；因果 ROC 不含整个虚轴，所以不满足 BIBO 稳定。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| right-half-plane-v1 | 因果有理系统有未对消单极点 s=+2 且留数非零，该极点对应的冲激响应模态怎样变化？ | D · 指数增长 | 该极点产生 e^(2t) 项，随时间增长。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| right-half-plane-v2 | 因果系统 H(s)=1/(s+3)，其 BIBO 稳定性如何？ | A · 稳定 | 因果 ROC 为 Re(s)>−3，包含虚轴；冲激响应绝对可积。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| imaginary-axis | 因果有理系统有一对未对消的单极点 s=±jω0（ω0>0），留数非零。这对极点对应的实冲激响应模态如何变化？ | A · 等幅振荡 | 单虚轴共轭极点对应等幅正弦模态；这里描述该对极点的分量，不代表含其他极点时的完整响应。 | [4.5 系统函数与零极点](../content/signals/knowledge-base/ss-5-5.md) |
+| imaginary-axis-v1 | 简单极点 s=±j3 对应的自然响应特征是什么？ | A · 持续等幅振荡 | 实部为零，没有衰减或增长包络；虚部决定角频率。 | [4.5 系统函数与零极点](../content/signals/knowledge-base/ss-5-5.md) |
+| imaginary-axis-v2 | 因果系统 H(s)=1/(s²+9) 是否 BIBO 稳定？ | B · 不稳定 | 因果 ROC 为 Re(s)>0，不包含虚轴；持续振荡的冲激响应不绝对可积。 | [4.5 系统函数与零极点](../content/signals/knowledge-base/ss-5-5.md) |
+| laplace-right-roc | x=e^(−2t)u(t) 的双边拉氏 ROC 为 Re(s)>b，b 是多少？ | D · -2 | 积分收敛要求 Re(s+2)>0，所以 b=−2，边界不含。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| laplace-right-roc-v1 | x=e^(−3t)u(t) 的双边拉氏 ROC 为 Re(s)>b，b 是多少？ | A · -3 | 积分收敛要求 Re(s+3)>0，所以 b=−3，边界不含。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| laplace-right-roc-v2 | x=e^(−5t)u(t) 的双边拉氏 ROC 为 Re(s)>b，b 是多少？ | B · -5 | 积分收敛要求 Re(s+5)>0，所以 b=−5，边界不含。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| laplace-left-roc | X(s)=1/(s+2)，ROC 为 Re(s)<−2。其双边逆变换是什么？ | B · −e^(−2t)u(−t) | 左半平面 ROC 对应左边指数信号；积分给出负号。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| laplace-left-roc-v1 | X(s)=1/(s+3)，ROC 为 Re(s)<−3。其双边逆变换是什么？ | B · −e^(−3t)u(−t) | 左半平面 ROC 对应左边指数信号；积分给出负号。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| laplace-left-roc-v2 | X(s)=1/(s+4)，ROC 为 Re(s)<−4。其双边逆变换是什么？ | B · −e^(−4t)u(−t) | 左半平面 ROC 对应左边指数信号；积分给出负号。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| unilateral-derivative-value | 采用 0− 起点的单边拉氏变换，f(0−)=2，F(1)=5，L[f′] 在 s=1 的值是多少？ | B · 3 | L[f′]=sF−f(0−)=1×5−2=3。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| unilateral-derivative-value-v1 | 采用 0− 起点的单边拉氏变换，f(0−)=3，F(2)=4，L[f′] 在 s=2 的值是多少？ | C · 5 | L[f′]=sF−f(0−)=2×4−3=5。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| unilateral-derivative-value-v2 | 采用 0− 起点的单边拉氏变换，f(0−)=1，F(3)=3，L[f′] 在 s=3 的值是多少？ | D · 8 | L[f′]=sF−f(0−)=3×3−1=8。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| laplace-initial-value | 因果 F(s)=2/(s+3)，原信号无冲激，f(0+) 是多少？ | C · 2 | 初值定理 lim(s→∞)sF(s)=2。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| laplace-initial-value-v1 | 因果 F(s)=3/(s+4)，原信号无冲激，f(0+) 是多少？ | D · 3 | 初值定理 lim(s→∞)sF(s)=3。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| laplace-initial-value-v2 | 因果 F(s)=4/(s+5)，原信号无冲激，f(0+) 是多少？ | A · 4 | 初值定理 lim(s→∞)sF(s)=4。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| laplace-final-value | 因果 F(s)=6/[s(s+2)]，sF 的极点严格位于左半平面。f(∞) 是多少？ | D · 3 | 终值定理适用：lim(s→0)sF=6/2=3。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| laplace-final-value-v1 | 因果 F(s)=12/[s(s+3)]，sF 的极点严格位于左半平面。f(∞) 是多少？ | A · 4 | 终值定理适用：lim(s→0)sF=12/3=4。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| laplace-final-value-v2 | 因果 F(s)=8/[s(s+4)]，sF 的极点严格位于左半平面。f(∞) 是多少？ | B · 2 | 终值定理适用：lim(s→0)sF=8/4=2。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| laplace-repeated-pole | 因果 X(s)=6/(s+2)³，x(t)=A t²e^(−2t)u(t)，A 是多少？ | A · 3 | L[t²e^(−2t)u(t)]=2!/(s+2)³，所以 A=6/2=3。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| laplace-repeated-pole-v1 | 因果 X(s)=8/(s+3)³，x(t)=A t²e^(−3t)u(t)，A 是多少？ | B · 4 | L[t²e^(−3t)u(t)]=2!/(s+3)³，所以 A=8/2=4。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| laplace-repeated-pole-v2 | 因果 X(s)=10/(s+4)³，x(t)=A t²e^(−4t)u(t)，A 是多少？ | C · 5 | L[t²e^(−4t)u(t)]=2!/(s+4)³，所以 A=10/2=5。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| partial-fraction-residue | 1/[(s+1)(s+2)]=A/(s+1)+B/(s+2)，A 是多少？ | B · 1 | 两边乘(s+1)后代 s=−1，A=1/(2−1)=1。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| partial-fraction-residue-v1 | 1/[(s+2)(s+4)]=A/(s+2)+B/(s+4)，A 是多少？ | C · 0.5 | 两边乘(s+2)后代 s=−2，A=1/(4−2)=0.5。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| partial-fraction-residue-v2 | 1/[(s+3)(s+6)]=A/(s+3)+B/(s+6)，A 是多少？ | D · 0.333333 | 两边乘(s+3)后代 s=−3，A=1/(6−3)=0.333333。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| inductor-initial-term | 被动参考方向电感 L=2 H、i(0−)=3 A，单边拉氏 V=sLI+c，初始源常数项 c 是多少？ | C · -6 | V=L(sI−i(0−))，所以 c=−L i(0−)=-6。 | [4.4 电路的s域模型与微分方程变换解](../content/signals/knowledge-base/ss-5-4.md) |
+| inductor-initial-term-v1 | 被动参考方向电感 L=3 H、i(0−)=2 A，单边拉氏 V=sLI+c，初始源常数项 c 是多少？ | D · -6 | V=L(sI−i(0−))，所以 c=−L i(0−)=-6。 | [4.4 电路的s域模型与微分方程变换解](../content/signals/knowledge-base/ss-5-4.md) |
+| inductor-initial-term-v2 | 被动参考方向电感 L=4 H、i(0−)=2 A，单边拉氏 V=sLI+c，初始源常数项 c 是多少？ | A · -8 | V=L(sI−i(0−))，所以 c=−L i(0−)=-8。 | [4.4 电路的s域模型与微分方程变换解](../content/signals/knowledge-base/ss-5-4.md) |
+| transfer-zero-location | 已约分 H(s)=(s+3)/[(s+1)(s+2)]，有限零点在哪里？ | D · -3 | 分子为零给出 s=−3，与分母无公因式。 | [4.5 系统函数与零极点](../content/signals/knowledge-base/ss-5-5.md) |
+| transfer-zero-location-v1 | 已约分 H(s)=(s+4)/[(s+1)(s+3)]，有限零点在哪里？ | A · -4 | 分子为零给出 s=−4，与分母无公因式。 | [4.5 系统函数与零极点](../content/signals/knowledge-base/ss-5-5.md) |
+| transfer-zero-location-v2 | 已约分 H(s)=(s+5)/[(s+2)(s+3)]，有限零点在哪里？ | B · -5 | 分子为零给出 s=−5，与分母无公因式。 | [4.5 系统函数与零极点](../content/signals/knowledge-base/ss-5-5.md) |
+| transfer-rightmost-pole | H(s)=1/[(s+1)(s+3)]，最靠右的极点实部是多少？ | A · -1 | 极点为 −1、−3，较大的实部为 −1。 | [4.5 系统函数与零极点](../content/signals/knowledge-base/ss-5-5.md) |
+| transfer-rightmost-pole-v1 | H(s)=1/[(s+2)(s+5)]，最靠右的极点实部是多少？ | B · -2 | 极点为 −2、−5，较大的实部为 −2。 | [4.5 系统函数与零极点](../content/signals/knowledge-base/ss-5-5.md) |
+| transfer-rightmost-pole-v2 | H(s)=1/[(s+3)(s+6)]，最靠右的极点实部是多少？ | C · -3 | 极点为 −3、−6，较大的实部为 −3。 | [4.5 系统函数与零极点](../content/signals/knowledge-base/ss-5-5.md) |
+| absolute-impulse-integral | h(t)=3e^(−2t)u(t)，∫\|h(t)\|dt 是多少？ | B · 1.5 | h 非负，绝对积分为 3/2=1.5<∞，该系统 BIBO 稳定。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| absolute-impulse-integral-v1 | h(t)=4e^(−2t)u(t)，∫\|h(t)\|dt 是多少？ | C · 2 | h 非负，绝对积分为 4/2=2<∞，该系统 BIBO 稳定。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| absolute-impulse-integral-v2 | h(t)=6e^(−3t)u(t)，∫\|h(t)\|dt 是多少？ | D · 2 | h 非负，绝对积分为 6/3=2<∞，该系统 BIBO 稳定。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| amplitude-decibels | 幅值增益 \|H\|=10，用 20log10\|H\| 表示为多少 dB？ | C · 20 dB | 幅值比使用 20log10，得到 20 dB。 | [4.7 频率响应与滤波特性](../content/signals/knowledge-base/ss-5-7.md) |
+| amplitude-decibels-v1 | 幅值增益 \|H\|=100，用 20log10\|H\| 表示为多少 dB？ | D · 40 dB | 幅值比使用 20log10，得到 40 dB。 | [4.7 频率响应与滤波特性](../content/signals/knowledge-base/ss-5-7.md) |
+| amplitude-decibels-v2 | 幅值增益 \|H\|=1000，用 20log10\|H\| 表示为多少 dB？ | A · 60 dB | 幅值比使用 20log10，得到 60 dB。 | [4.7 频率响应与滤波特性](../content/signals/knowledge-base/ss-5-7.md) |
+| lowpass-cutoff-radians | H(s)=2/(s+2)，−3 dB 截止角频率是多少 rad/s？ | D · 2 rad/s | 相对直流增益降为 1/√2 时 ω=2 rad/s；这里求角频率，不是 Hz。 | [4.7 频率响应与滤波特性](../content/signals/knowledge-base/ss-5-7.md) |
+| lowpass-cutoff-radians-v1 | H(s)=4/(s+4)，−3 dB 截止角频率是多少 rad/s？ | A · 4 rad/s | 相对直流增益降为 1/√2 时 ω=4 rad/s；这里求角频率，不是 Hz。 | [4.7 频率响应与滤波特性](../content/signals/knowledge-base/ss-5-7.md) |
+| lowpass-cutoff-radians-v2 | H(s)=5/(s+5)，−3 dB 截止角频率是多少 rad/s？ | B · 5 rad/s | 相对直流增益降为 1/√2 时 ω=5 rad/s；这里求角频率，不是 Hz。 | [4.7 频率响应与滤波特性](../content/signals/knowledge-base/ss-5-7.md) |
+| mason-single-loop | 信号流图仅一条前向通路增益 P=6、一个接触通路的回路 L=-2。总传输增益是多少？ | A · 2 | 梅森公式 T=P/(1−L)=6/(1−(-2))=2。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| mason-single-loop-v1 | 信号流图仅一条前向通路增益 P=8、一个接触通路的回路 L=-3。总传输增益是多少？ | B · 2 | 梅森公式 T=P/(1−L)=8/(1−(-3))=2。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| mason-single-loop-v2 | 信号流图仅一条前向通路增益 P=10、一个接触通路的回路 L=-4。总传输增益是多少？ | C · 2 | 梅森公式 T=P/(1−L)=10/(1−(-4))=2。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| mason-two-loops | 仅有两个互不接触回路 L₁=0.5、L₂=0.25，梅森行列式 Δ 是多少？ | B · 0.375 | Δ=1−L₁−L₂+L₁L₂=(1−0.5)(1−0.25)=0.375。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| mason-two-loops-v1 | 仅有两个互不接触回路 L₁=0.25、L₂=0.5，梅森行列式 Δ 是多少？ | C · 0.375 | Δ=1−L₁−L₂+L₁L₂=(1−0.25)(1−0.5)=0.375。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| mason-two-loops-v2 | 仅有两个互不接触回路 L₁=0.5、L₂=0.125，梅森行列式 Δ 是多少？ | D · 0.4375 | Δ=1−L₁−L₂+L₁L₂=(1−0.5)(1−0.125)=0.4375。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| direct-two-integrators | 一个 2 阶、严格真有理传递函数采用标准连续直接 II 型实现，需要多少个积分器？ | C · 2 | 标准直接 II 型使用一条 2 级共享状态积分链，需要 2 个积分器。 | [4.9 连续系统的模拟结构](../content/signals/knowledge-base/ss-5-9.md) |
+| direct-two-integrators-v1 | 一个 3 阶、严格真有理传递函数采用标准连续直接 II 型实现，需要多少个积分器？ | D · 3 | 标准直接 II 型使用一条 3 级共享状态积分链，需要 3 个积分器。 | [4.9 连续系统的模拟结构](../content/signals/knowledge-base/ss-5-9.md) |
+| direct-two-integrators-v2 | 一个 4 阶、严格真有理传递函数采用标准连续直接 II 型实现，需要多少个积分器？ | A · 4 | 标准直接 II 型使用一条 4 级共享状态积分链，需要 4 个积分器。 | [4.9 连续系统的模拟结构](../content/signals/knowledge-base/ss-5-9.md) |
+| rc-pole-location | 一阶 RC 低通时间常数 τ=0.1 s，其极点 s 是多少 s⁻¹？ | D · -10 s⁻¹ | H=1/(1+τs)，极点为 s=−1/τ=-10 s⁻¹。 | [4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| rc-pole-location-v1 | 一阶 RC 低通时间常数 τ=0.2 s，其极点 s 是多少 s⁻¹？ | A · -5 s⁻¹ | H=1/(1+τs)，极点为 s=−1/τ=-5 s⁻¹。 | [4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| rc-pole-location-v2 | 一阶 RC 低通时间常数 τ=0.5 s，其极点 s 是多少 s⁻¹？ | B · -2 s⁻¹ | H=1/(1+τs)，极点为 s=−1/τ=-2 s⁻¹。 | [4.10 零极点配置与一阶RC低通](../content/signals/knowledge-base/ss-5-10.md) |
+| hidden-unstable-mode | 某实现内部含模态 e^(1t)，但在约分后的输入输出传递函数中被零点对消。能否据约分后 H(s) 断言内部渐近稳定？ | B · 不能，可能存在隐藏的不稳定模态 | 代数对消只描述输入输出关系，内部渐近稳定仍需检查完整状态矩阵。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| hidden-unstable-mode-v1 | 某实现内部含模态 e^(2t)，但在约分后的输入输出传递函数中被零点对消。能否据约分后 H(s) 断言内部渐近稳定？ | B · 不能，可能存在隐藏的不稳定模态 | 代数对消只描述输入输出关系，内部渐近稳定仍需检查完整状态矩阵。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| hidden-unstable-mode-v2 | 某实现内部含模态 e^(3t)，但在约分后的输入输出传递函数中被零点对消。能否据约分后 H(s) 断言内部渐近稳定？ | B · 不能，可能存在隐藏的不稳定模态 | 代数对消只描述输入输出关系，内部渐近稳定仍需检查完整状态矩阵。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| ext-laplace-exponential-value-1 | x(t)=3e^(−2t)u(t)，求单边拉氏变换 X(4)。 | A · 0.5 | X(s)=A/(s+a)，给定 s 在 Re(s)>−a 的收敛域内。代入得 0.5。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| ext-laplace-exponential-value-1-v1 | x(t)=4e^(−3t)u(t)，求单边拉氏变换 X(5)。 | B · 0.5 | X(s)=A/(s+a)，给定 s 在 Re(s)>−a 的收敛域内。代入得 0.5。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| ext-laplace-exponential-value-1-v2 | x(t)=5e^(−4t)u(t)，求单边拉氏变换 X(6)。 | C · 0.5 | X(s)=A/(s+a)，给定 s 在 Re(s)>−a 的收敛域内。代入得 0.5。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| ext-laplace-exponential-value-2 | x(t)=6e^(−5t)u(t)，求单边拉氏变换 X(7)。 | D · 0.5 | X(s)=A/(s+a)，给定 s 在 Re(s)>−a 的收敛域内。代入得 0.5。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| ext-laplace-exponential-value-2-v1 | x(t)=7e^(−6t)u(t)，求单边拉氏变换 X(8)。 | A · 0.5 | X(s)=A/(s+a)，给定 s 在 Re(s)>−a 的收敛域内。代入得 0.5。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| ext-laplace-exponential-value-2-v2 | x(t)=8e^(−7t)u(t)，求单边拉氏变换 X(9)。 | B · 0.5 | X(s)=A/(s+a)，给定 s 在 Re(s)>−a 的收敛域内。代入得 0.5。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| ext-laplace-polynomial-value-1 | x(t)=t^1u(t)，求单边拉氏变换 X(2)。 | B · 0.25 | L[tⁿu(t)]=n!/s^(n+1)，注意分子是阶乘，Re(s)>0。代入得 0.25。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| ext-laplace-polynomial-value-1-v1 | x(t)=t^2u(t)，求单边拉氏变换 X(2)。 | C · 0.25 | L[tⁿu(t)]=n!/s^(n+1)，注意分子是阶乘，Re(s)>0。代入得 0.25。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| ext-laplace-polynomial-value-1-v2 | x(t)=t^3u(t)，求单边拉氏变换 X(2)。 | D · 0.375 | L[tⁿu(t)]=n!/s^(n+1)，注意分子是阶乘，Re(s)>0。代入得 0.375。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| ext-laplace-polynomial-value-2 | x(t)=t^4u(t)，求单边拉氏变换 X(2)。 | A · 0.75 | L[tⁿu(t)]=n!/s^(n+1)，注意分子是阶乘，Re(s)>0。代入得 0.75。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| ext-laplace-polynomial-value-2-v1 | x(t)=t^5u(t)，求单边拉氏变换 X(2)。 | B · 1.875 | L[tⁿu(t)]=n!/s^(n+1)，注意分子是阶乘，Re(s)>0。代入得 1.875。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| ext-laplace-polynomial-value-2-v2 | x(t)=t^6u(t)，求单边拉氏变换 X(2)。 | C · 5.625 | L[tⁿu(t)]=n!/s^(n+1)，注意分子是阶乘，Re(s)>0。代入得 5.625。 | [4.1 拉普拉斯变换的定义与收敛域](../content/signals/knowledge-base/ss-5-1.md) |
+| ext-delayed-step-transform-1 | x(t)=2u(t−0.1)，求单边拉氏变换 X(2)。（选最接近值。） | C · 0.818731 | 延迟 T 的阶跃变换为 Ae^(−sT)/s，延迟因子不能遗漏。代入得 0.818731。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-delayed-step-transform-1-v1 | x(t)=3u(t−0.2)，求单边拉氏变换 X(3)。（选最接近值。） | D · 0.548812 | 延迟 T 的阶跃变换为 Ae^(−sT)/s，延迟因子不能遗漏。代入得 0.548812。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-delayed-step-transform-1-v2 | x(t)=4u(t−0.3)，求单边拉氏变换 X(4)。（选最接近值。） | A · 0.301194 | 延迟 T 的阶跃变换为 Ae^(−sT)/s，延迟因子不能遗漏。代入得 0.301194。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-delayed-step-transform-2 | x(t)=5u(t−0.4)，求单边拉氏变换 X(5)。（选最接近值。） | B · 0.135335 | 延迟 T 的阶跃变换为 Ae^(−sT)/s，延迟因子不能遗漏。代入得 0.135335。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-delayed-step-transform-2-v1 | x(t)=6u(t−0.5)，求单边拉氏变换 X(6)。（选最接近值。） | C · 0.049787 | 延迟 T 的阶跃变换为 Ae^(−sT)/s，延迟因子不能遗漏。代入得 0.049787。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-delayed-step-transform-2-v2 | x(t)=7u(t−0.6)，求单边拉氏变换 X(7)。（选最接近值。） | D · 0.014996 | 延迟 T 的阶跃变换为 Ae^(−sT)/s，延迟因子不能遗漏。代入得 0.014996。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-shifted-roc-boundary-1 | x(t)=e^(5t)e^(−2t)u(t)。双边拉氏收敛域为 Re(s)>b，b 是多少？ | D · 3 | 合并指数得到 e^((c−a)t)u(t)，或将原 ROC 右移 c，边界为 c−a。代入得 3。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-shifted-roc-boundary-1-v1 | x(t)=e^(7t)e^(−3t)u(t)。双边拉氏收敛域为 Re(s)>b，b 是多少？ | A · 4 | 合并指数得到 e^((c−a)t)u(t)，或将原 ROC 右移 c，边界为 c−a。代入得 4。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-shifted-roc-boundary-1-v2 | x(t)=e^(9t)e^(−4t)u(t)。双边拉氏收敛域为 Re(s)>b，b 是多少？ | B · 5 | 合并指数得到 e^((c−a)t)u(t)，或将原 ROC 右移 c，边界为 c−a。代入得 5。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-shifted-roc-boundary-2 | x(t)=e^(11t)e^(−5t)u(t)。双边拉氏收敛域为 Re(s)>b，b 是多少？ | C · 6 | 合并指数得到 e^((c−a)t)u(t)，或将原 ROC 右移 c，边界为 c−a。代入得 6。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-shifted-roc-boundary-2-v1 | x(t)=e^(13t)e^(−6t)u(t)。双边拉氏收敛域为 Re(s)>b，b 是多少？ | D · 7 | 合并指数得到 e^((c−a)t)u(t)，或将原 ROC 右移 c，边界为 c−a。代入得 7。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-shifted-roc-boundary-2-v2 | x(t)=e^(15t)e^(−7t)u(t)。双边拉氏收敛域为 Re(s)>b，b 是多少？ | A · 8 | 合并指数得到 e^((c−a)t)u(t)，或将原 ROC 右移 c，边界为 c−a。代入得 8。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-unilateral-second-derivative-1 | 采用从 0⁻ 开始的单边变换。F(2)=4，f(0⁻)=1，f′(0⁻)=3。L[f″] 在 s=2 处等于多少？ | A · 11 | 二阶微分要减去两个初始项：L[f″]=s²F(s)−sf(0⁻)−f′(0⁻)。代入得 11。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-unilateral-second-derivative-1-v1 | 采用从 0⁻ 开始的单边变换。F(3)=5，f(0⁻)=2，f′(0⁻)=4。L[f″] 在 s=3 处等于多少？ | B · 35 | 二阶微分要减去两个初始项：L[f″]=s²F(s)−sf(0⁻)−f′(0⁻)。代入得 35。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-unilateral-second-derivative-1-v2 | 采用从 0⁻ 开始的单边变换。F(4)=6，f(0⁻)=3，f′(0⁻)=5。L[f″] 在 s=4 处等于多少？ | C · 79 | 二阶微分要减去两个初始项：L[f″]=s²F(s)−sf(0⁻)−f′(0⁻)。代入得 79。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-unilateral-second-derivative-2 | 采用从 0⁻ 开始的单边变换。F(5)=7，f(0⁻)=4，f′(0⁻)=6。L[f″] 在 s=5 处等于多少？ | D · 149 | 二阶微分要减去两个初始项：L[f″]=s²F(s)−sf(0⁻)−f′(0⁻)。代入得 149。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-unilateral-second-derivative-2-v1 | 采用从 0⁻ 开始的单边变换。F(6)=8，f(0⁻)=5，f′(0⁻)=7。L[f″] 在 s=6 处等于多少？ | A · 251 | 二阶微分要减去两个初始项：L[f″]=s²F(s)−sf(0⁻)−f′(0⁻)。代入得 251。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-unilateral-second-derivative-2-v2 | 采用从 0⁻ 开始的单边变换。F(7)=9，f(0⁻)=6，f′(0⁻)=8。L[f″] 在 s=7 处等于多少？ | B · 391 | 二阶微分要减去两个初始项：L[f″]=s²F(s)−sf(0⁻)−f′(0⁻)。代入得 391。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-time-weighted-transform-1 | x(t)=3e^(−2t)u(t)，y(t)=t x(t)。单边拉氏变换 Y(4) 是多少？（选最接近值。） | B · 0.083333 | 时域乘 t 对应 −dX/ds。X=A/(s+a)，所以 Y=A/(s+a)²。代入得 0.083333。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-time-weighted-transform-1-v1 | x(t)=4e^(−3t)u(t)，y(t)=t x(t)。单边拉氏变换 Y(5) 是多少？ | C · 0.0625 | 时域乘 t 对应 −dX/ds。X=A/(s+a)，所以 Y=A/(s+a)²。代入得 0.0625。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-time-weighted-transform-1-v2 | x(t)=5e^(−4t)u(t)，y(t)=t x(t)。单边拉氏变换 Y(6) 是多少？ | D · 0.05 | 时域乘 t 对应 −dX/ds。X=A/(s+a)，所以 Y=A/(s+a)²。代入得 0.05。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-time-weighted-transform-2 | x(t)=6e^(−5t)u(t)，y(t)=t x(t)。单边拉氏变换 Y(7) 是多少？（选最接近值。） | A · 0.041667 | 时域乘 t 对应 −dX/ds。X=A/(s+a)，所以 Y=A/(s+a)²。代入得 0.041667。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-time-weighted-transform-2-v1 | x(t)=7e^(−6t)u(t)，y(t)=t x(t)。单边拉氏变换 Y(8) 是多少？（选最接近值。） | B · 0.035714 | 时域乘 t 对应 −dX/ds。X=A/(s+a)，所以 Y=A/(s+a)²。代入得 0.035714。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-time-weighted-transform-2-v2 | x(t)=8e^(−7t)u(t)，y(t)=t x(t)。单边拉氏变换 Y(9) 是多少？ | C · 0.03125 | 时域乘 t 对应 −dX/ds。X=A/(s+a)，所以 Y=A/(s+a)²。代入得 0.03125。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-integrated-transform-1 | x(t)=3e^(−2t)u(t)，y(t)=∫₀⁻ᵗx(τ)dτ。单边拉氏变换 Y(4) 是多少？ | C · 0.125 | 零初始积分对应 Y(s)=X(s)/s=A/[s(s+a)]。代入得 0.125。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-integrated-transform-1-v1 | x(t)=4e^(−3t)u(t)，y(t)=∫₀⁻ᵗx(τ)dτ。单边拉氏变换 Y(5) 是多少？ | D · 0.1 | 零初始积分对应 Y(s)=X(s)/s=A/[s(s+a)]。代入得 0.1。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-integrated-transform-1-v2 | x(t)=5e^(−4t)u(t)，y(t)=∫₀⁻ᵗx(τ)dτ。单边拉氏变换 Y(6) 是多少？（选最接近值。） | A · 0.083333 | 零初始积分对应 Y(s)=X(s)/s=A/[s(s+a)]。代入得 0.083333。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-integrated-transform-2 | x(t)=6e^(−5t)u(t)，y(t)=∫₀⁻ᵗx(τ)dτ。单边拉氏变换 Y(7) 是多少？（选最接近值。） | B · 0.071429 | 零初始积分对应 Y(s)=X(s)/s=A/[s(s+a)]。代入得 0.071429。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-integrated-transform-2-v1 | x(t)=7e^(−6t)u(t)，y(t)=∫₀⁻ᵗx(τ)dτ。单边拉氏变换 Y(8) 是多少？ | C · 0.0625 | 零初始积分对应 Y(s)=X(s)/s=A/[s(s+a)]。代入得 0.0625。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-integrated-transform-2-v2 | x(t)=8e^(−7t)u(t)，y(t)=∫₀⁻ᵗx(τ)dτ。单边拉氏变换 Y(9) 是多少？（选最接近值。） | D · 0.055556 | 零初始积分对应 Y(s)=X(s)/s=A/[s(s+a)]。代入得 0.055556。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-rational-initial-value-1 | 因果 F(s)=(3s+2)/[(s+4)(s+5)]，f 不含冲激。f(0⁺) 是多少？ | D · 3 | 初值定理 f(0⁺)=lim(s→∞)sF(s)，由最高次项的系数得到分子的一次项系数。代入得 3。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-rational-initial-value-1-v1 | 因果 F(s)=(4s+3)/[(s+5)(s+6)]，f 不含冲激。f(0⁺) 是多少？ | A · 4 | 初值定理 f(0⁺)=lim(s→∞)sF(s)，由最高次项的系数得到分子的一次项系数。代入得 4。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-rational-initial-value-1-v2 | 因果 F(s)=(5s+4)/[(s+6)(s+7)]，f 不含冲激。f(0⁺) 是多少？ | B · 5 | 初值定理 f(0⁺)=lim(s→∞)sF(s)，由最高次项的系数得到分子的一次项系数。代入得 5。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-rational-initial-value-2 | 因果 F(s)=(6s+5)/[(s+7)(s+8)]，f 不含冲激。f(0⁺) 是多少？ | C · 6 | 初值定理 f(0⁺)=lim(s→∞)sF(s)，由最高次项的系数得到分子的一次项系数。代入得 6。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-rational-initial-value-2-v1 | 因果 F(s)=(7s+6)/[(s+8)(s+9)]，f 不含冲激。f(0⁺) 是多少？ | D · 7 | 初值定理 f(0⁺)=lim(s→∞)sF(s)，由最高次项的系数得到分子的一次项系数。代入得 7。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-rational-initial-value-2-v2 | 因果 F(s)=(8s+7)/[(s+9)(s+10)]，f 不含冲激。f(0⁺) 是多少？ | A · 8 | 初值定理 f(0⁺)=lim(s→∞)sF(s)，由最高次项的系数得到分子的一次项系数。代入得 8。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-two-pole-final-value-1 | 因果 F(s)=5/[s(s+2)(s+3)]。f(t) 的终值是多少？（选最接近值。） | A · 0.833333 | sF 的极点均严格在左半平面，终值定理适用：lim(t→∞)f(t)=lim(s→0)sF(s)=K/(ab)。代入得 0.833333。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-two-pole-final-value-1-v1 | 因果 F(s)=6/[s(s+3)(s+4)]。f(t) 的终值是多少？ | B · 0.5 | sF 的极点均严格在左半平面，终值定理适用：lim(t→∞)f(t)=lim(s→0)sF(s)=K/(ab)。代入得 0.5。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-two-pole-final-value-1-v2 | 因果 F(s)=7/[s(s+4)(s+5)]。f(t) 的终值是多少？ | C · 0.35 | sF 的极点均严格在左半平面，终值定理适用：lim(t→∞)f(t)=lim(s→0)sF(s)=K/(ab)。代入得 0.35。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-two-pole-final-value-2 | 因果 F(s)=8/[s(s+5)(s+6)]。f(t) 的终值是多少？（选最接近值。） | D · 0.266667 | sF 的极点均严格在左半平面，终值定理适用：lim(t→∞)f(t)=lim(s→0)sF(s)=K/(ab)。代入得 0.266667。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-two-pole-final-value-2-v1 | 因果 F(s)=9/[s(s+6)(s+7)]。f(t) 的终值是多少？（选最接近值。） | A · 0.214286 | sF 的极点均严格在左半平面，终值定理适用：lim(t→∞)f(t)=lim(s→0)sF(s)=K/(ab)。代入得 0.214286。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-two-pole-final-value-2-v2 | 因果 F(s)=10/[s(s+7)(s+8)]。f(t) 的终值是多少？（选最接近值。） | B · 0.178571 | sF 的极点均严格在左半平面，终值定理适用：lim(t→∞)f(t)=lim(s→0)sF(s)=K/(ab)。代入得 0.178571。 | [4.2 拉普拉斯变换的性质](../content/signals/knowledge-base/ss-5-2.md) |
+| ext-inverse-damped-sine-1 | 因果 F(s)=4/[(s+2)²+9]，f(t)=A e^(−2t)sin(3t)u(t)。A 是多少？（选最接近值。） | B · 1.333333 | L[e^(−at)sin(ωt)u(t)]=ω/[(s+a)²+ω²]，分子匹配要求 A=K/ω。代入得 1.333333。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-inverse-damped-sine-1-v1 | 因果 F(s)=5/[(s+3)²+16]，f(t)=A e^(−3t)sin(4t)u(t)。A 是多少？ | C · 1.25 | L[e^(−at)sin(ωt)u(t)]=ω/[(s+a)²+ω²]，分子匹配要求 A=K/ω。代入得 1.25。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-inverse-damped-sine-1-v2 | 因果 F(s)=6/[(s+4)²+25]，f(t)=A e^(−4t)sin(5t)u(t)。A 是多少？ | D · 1.2 | L[e^(−at)sin(ωt)u(t)]=ω/[(s+a)²+ω²]，分子匹配要求 A=K/ω。代入得 1.2。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-inverse-damped-sine-2 | 因果 F(s)=7/[(s+5)²+36]，f(t)=A e^(−5t)sin(6t)u(t)。A 是多少？（选最接近值。） | A · 1.166667 | L[e^(−at)sin(ωt)u(t)]=ω/[(s+a)²+ω²]，分子匹配要求 A=K/ω。代入得 1.166667。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-inverse-damped-sine-2-v1 | 因果 F(s)=8/[(s+6)²+49]，f(t)=A e^(−6t)sin(7t)u(t)。A 是多少？（选最接近值。） | B · 1.142857 | L[e^(−at)sin(ωt)u(t)]=ω/[(s+a)²+ω²]，分子匹配要求 A=K/ω。代入得 1.142857。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-inverse-damped-sine-2-v2 | 因果 F(s)=9/[(s+7)²+64]，f(t)=A e^(−7t)sin(8t)u(t)。A 是多少？ | C · 1.125 | L[e^(−at)sin(ωt)u(t)]=ω/[(s+a)²+ω²]，分子匹配要求 A=K/ω。代入得 1.125。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-numerator-residue-1 | F(s)=2(s+5)/[(s+1)(s+3)]。部分分式中 1/(s+1) 的系数是多少？ | C · 4 | 单极点留数为 lim(s→−a)(s+a)F(s)=K(z−a)/(b−a)。代入得 4。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-numerator-residue-1-v1 | F(s)=3(s+6)/[(s+2)(s+4)]。部分分式中 1/(s+2) 的系数是多少？ | D · 6 | 单极点留数为 lim(s→−a)(s+a)F(s)=K(z−a)/(b−a)。代入得 6。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-numerator-residue-1-v2 | F(s)=4(s+7)/[(s+3)(s+5)]。部分分式中 1/(s+3) 的系数是多少？ | A · 8 | 单极点留数为 lim(s→−a)(s+a)F(s)=K(z−a)/(b−a)。代入得 8。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-numerator-residue-2 | F(s)=5(s+8)/[(s+4)(s+6)]。部分分式中 1/(s+4) 的系数是多少？ | B · 10 | 单极点留数为 lim(s→−a)(s+a)F(s)=K(z−a)/(b−a)。代入得 10。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-numerator-residue-2-v1 | F(s)=6(s+9)/[(s+5)(s+7)]。部分分式中 1/(s+5) 的系数是多少？ | C · 12 | 单极点留数为 lim(s→−a)(s+a)F(s)=K(z−a)/(b−a)。代入得 12。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-numerator-residue-2-v2 | F(s)=7(s+10)/[(s+6)(s+8)]。部分分式中 1/(s+6) 的系数是多少？ | D · 14 | 单极点留数为 lim(s→−a)(s+a)F(s)=K(z−a)/(b−a)。代入得 14。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-direct-impulse-coefficient-1 | 因果系统 H(s)=(3s+5)/(2s+4)。冲激响应中 δ(t) 的系数是多少？ | D · 1.5 | 分子分母同阶，先长除；商为最高次项系数比 b/a，对应冲激直接项。代入得 1.5。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-direct-impulse-coefficient-1-v1 | 因果系统 H(s)=(4s+6)/(3s+5)。冲激响应中 δ(t) 的系数是多少？（选最接近值。） | A · 1.333333 | 分子分母同阶，先长除；商为最高次项系数比 b/a，对应冲激直接项。代入得 1.333333。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-direct-impulse-coefficient-1-v2 | 因果系统 H(s)=(5s+7)/(4s+6)。冲激响应中 δ(t) 的系数是多少？ | B · 1.25 | 分子分母同阶，先长除；商为最高次项系数比 b/a，对应冲激直接项。代入得 1.25。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-direct-impulse-coefficient-2 | 因果系统 H(s)=(6s+8)/(5s+7)。冲激响应中 δ(t) 的系数是多少？ | C · 1.2 | 分子分母同阶，先长除；商为最高次项系数比 b/a，对应冲激直接项。代入得 1.2。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-direct-impulse-coefficient-2-v1 | 因果系统 H(s)=(7s+9)/(6s+8)。冲激响应中 δ(t) 的系数是多少？（选最接近值。） | D · 1.166667 | 分子分母同阶，先长除；商为最高次项系数比 b/a，对应冲激直接项。代入得 1.166667。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-direct-impulse-coefficient-2-v2 | 因果系统 H(s)=(8s+10)/(7s+9)。冲激响应中 δ(t) 的系数是多少？（选最接近值。） | A · 1.142857 | 分子分母同阶，先长除；商为最高次项系数比 b/a，对应冲激直接项。代入得 1.142857。 | [4.3 拉普拉斯逆变换](../content/signals/knowledge-base/ss-5-3.md) |
+| ext-capacitor-initial-current-term-1 | 被动参考方向电容 C=0.1 F，v(0⁻)=3 V。单边变换 I(s)=sCV(s)+q，常数项 q 的数值是多少？ | A · -0.3 | 由 i=C dv/dt，单边变换得到 I=sCV−Cv(0⁻)，初始项为负号。代入得 -0.3。 | [4.4 电路的s域模型与微分方程变换解](../content/signals/knowledge-base/ss-5-4.md) |
+| ext-capacitor-initial-current-term-1-v1 | 被动参考方向电容 C=0.2 F，v(0⁻)=4 V。单边变换 I(s)=sCV(s)+q，常数项 q 的数值是多少？ | B · -0.8 | 由 i=C dv/dt，单边变换得到 I=sCV−Cv(0⁻)，初始项为负号。代入得 -0.8。 | [4.4 电路的s域模型与微分方程变换解](../content/signals/knowledge-base/ss-5-4.md) |
+| ext-capacitor-initial-current-term-1-v2 | 被动参考方向电容 C=0.3 F，v(0⁻)=5 V。单边变换 I(s)=sCV(s)+q，常数项 q 的数值是多少？ | C · -1.5 | 由 i=C dv/dt，单边变换得到 I=sCV−Cv(0⁻)，初始项为负号。代入得 -1.5。 | [4.4 电路的s域模型与微分方程变换解](../content/signals/knowledge-base/ss-5-4.md) |
+| ext-capacitor-initial-current-term-2 | 被动参考方向电容 C=0.4 F，v(0⁻)=6 V。单边变换 I(s)=sCV(s)+q，常数项 q 的数值是多少？ | D · -2.4 | 由 i=C dv/dt，单边变换得到 I=sCV−Cv(0⁻)，初始项为负号。代入得 -2.4。 | [4.4 电路的s域模型与微分方程变换解](../content/signals/knowledge-base/ss-5-4.md) |
+| ext-capacitor-initial-current-term-2-v1 | 被动参考方向电容 C=0.5 F，v(0⁻)=7 V。单边变换 I(s)=sCV(s)+q，常数项 q 的数值是多少？ | A · -3.5 | 由 i=C dv/dt，单边变换得到 I=sCV−Cv(0⁻)，初始项为负号。代入得 -3.5。 | [4.4 电路的s域模型与微分方程变换解](../content/signals/knowledge-base/ss-5-4.md) |
+| ext-capacitor-initial-current-term-2-v2 | 被动参考方向电容 C=0.6 F，v(0⁻)=8 V。单边变换 I(s)=sCV(s)+q，常数项 q 的数值是多少？ | B · -4.8 | 由 i=C dv/dt，单边变换得到 I=sCV−Cv(0⁻)，初始项为负号。代入得 -4.8。 | [4.4 电路的s域模型与微分方程变换解](../content/signals/knowledge-base/ss-5-4.md) |
+| ext-inductor-s-impedance-1 | 零初始电流的理想电感 L=2 H，在 s=3 s⁻¹ 处的 s 域阻抗是多少？ | B · 6 Ω | 零初始状态下电感满足 V(s)=sLI(s)，故 ZL(s)=sL。代入得 6 Ω。 | [4.4 电路的s域模型与微分方程变换解](../content/signals/knowledge-base/ss-5-4.md) |
+| ext-inductor-s-impedance-1-v1 | 零初始电流的理想电感 L=3 H，在 s=4 s⁻¹ 处的 s 域阻抗是多少？ | C · 12 Ω | 零初始状态下电感满足 V(s)=sLI(s)，故 ZL(s)=sL。代入得 12 Ω。 | [4.4 电路的s域模型与微分方程变换解](../content/signals/knowledge-base/ss-5-4.md) |
+| ext-inductor-s-impedance-1-v2 | 零初始电流的理想电感 L=4 H，在 s=5 s⁻¹ 处的 s 域阻抗是多少？ | D · 20 Ω | 零初始状态下电感满足 V(s)=sLI(s)，故 ZL(s)=sL。代入得 20 Ω。 | [4.4 电路的s域模型与微分方程变换解](../content/signals/knowledge-base/ss-5-4.md) |
+| ext-inductor-s-impedance-2 | 零初始电流的理想电感 L=5 H，在 s=6 s⁻¹ 处的 s 域阻抗是多少？ | A · 30 Ω | 零初始状态下电感满足 V(s)=sLI(s)，故 ZL(s)=sL。代入得 30 Ω。 | [4.4 电路的s域模型与微分方程变换解](../content/signals/knowledge-base/ss-5-4.md) |
+| ext-inductor-s-impedance-2-v1 | 零初始电流的理想电感 L=6 H，在 s=7 s⁻¹ 处的 s 域阻抗是多少？ | B · 42 Ω | 零初始状态下电感满足 V(s)=sLI(s)，故 ZL(s)=sL。代入得 42 Ω。 | [4.4 电路的s域模型与微分方程变换解](../content/signals/knowledge-base/ss-5-4.md) |
+| ext-inductor-s-impedance-2-v2 | 零初始电流的理想电感 L=7 H，在 s=8 s⁻¹ 处的 s 域阻抗是多少？ | C · 56 Ω | 零初始状态下电感满足 V(s)=sLI(s)，故 ZL(s)=sL。代入得 56 Ω。 | [4.4 电路的s域模型与微分方程变换解](../content/signals/knowledge-base/ss-5-4.md) |
+| ext-routh-stable-bound-1 | 因果系统 H(s)=1/(s³+3s²+4s+k)，k>0。BIBO 稳定区间为 0<k<K，严格上界 K 是多少？ | C · 12 | 三阶劳斯首列为 1、a、(ab−k)/a、k。严格稳定要求全为正，故 0<k<ab；等号不稳定。代入得 12。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| ext-routh-stable-bound-1-v1 | 因果系统 H(s)=1/(s³+4s²+5s+k)，k>0。BIBO 稳定区间为 0<k<K，严格上界 K 是多少？ | D · 20 | 三阶劳斯首列为 1、a、(ab−k)/a、k。严格稳定要求全为正，故 0<k<ab；等号不稳定。代入得 20。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| ext-routh-stable-bound-1-v2 | 因果系统 H(s)=1/(s³+5s²+6s+k)，k>0。BIBO 稳定区间为 0<k<K，严格上界 K 是多少？ | A · 30 | 三阶劳斯首列为 1、a、(ab−k)/a、k。严格稳定要求全为正，故 0<k<ab；等号不稳定。代入得 30。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| ext-routh-stable-bound-2 | 因果系统 H(s)=1/(s³+6s²+7s+k)，k>0。BIBO 稳定区间为 0<k<K，严格上界 K 是多少？ | B · 42 | 三阶劳斯首列为 1、a、(ab−k)/a、k。严格稳定要求全为正，故 0<k<ab；等号不稳定。代入得 42。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| ext-routh-stable-bound-2-v1 | 因果系统 H(s)=1/(s³+7s²+8s+k)，k>0。BIBO 稳定区间为 0<k<K，严格上界 K 是多少？ | C · 56 | 三阶劳斯首列为 1、a、(ab−k)/a、k。严格稳定要求全为正，故 0<k<ab；等号不稳定。代入得 56。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| ext-routh-stable-bound-2-v2 | 因果系统 H(s)=1/(s³+8s²+9s+k)，k>0。BIBO 稳定区间为 0<k<K，严格上界 K 是多少？ | D · 72 | 三阶劳斯首列为 1、a、(ab−k)/a、k。严格稳定要求全为正，故 0<k<ab；等号不稳定。代入得 72。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| ext-routh-first-column-1 | 多项式 D(s)=s³+3s²+4s+2。按标准劳斯表计算，s¹ 行首列元素是多少？（选最接近值。） | D · 3.333333 | 前两行为 [1,b]、[a,c]，第三行首项为 (ab−c)/a。代入得 3.333333。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| ext-routh-first-column-1-v1 | 多项式 D(s)=s³+4s²+5s+3。按标准劳斯表计算，s¹ 行首列元素是多少？ | A · 4.25 | 前两行为 [1,b]、[a,c]，第三行首项为 (ab−c)/a。代入得 4.25。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| ext-routh-first-column-1-v2 | 多项式 D(s)=s³+5s²+6s+4。按标准劳斯表计算，s¹ 行首列元素是多少？ | B · 5.2 | 前两行为 [1,b]、[a,c]，第三行首项为 (ab−c)/a。代入得 5.2。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| ext-routh-first-column-2 | 多项式 D(s)=s³+6s²+7s+5。按标准劳斯表计算，s¹ 行首列元素是多少？（选最接近值。） | C · 6.166667 | 前两行为 [1,b]、[a,c]，第三行首项为 (ab−c)/a。代入得 6.166667。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| ext-routh-first-column-2-v1 | 多项式 D(s)=s³+7s²+8s+6。按标准劳斯表计算，s¹ 行首列元素是多少？（选最接近值。） | D · 7.142857 | 前两行为 [1,b]、[a,c]，第三行首项为 (ab−c)/a。代入得 7.142857。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| ext-routh-first-column-2-v2 | 多项式 D(s)=s³+8s²+9s+7。按标准劳斯表计算，s¹ 行首列元素是多少？ | A · 8.125 | 前两行为 [1,b]、[a,c]，第三行首项为 (ab−c)/a。代入得 8.125。 | [4.6 系统稳定性](../content/signals/knowledge-base/ss-5-6.md) |
+| ext-negative-feedback-gain-1 | 静态负反馈框图满足 e=r−0.1y，y=2e。闭环增益 y/r 是多少？（选最接近值。） | A · 1.666667 | 联立 y=G(r−Hy)，得 (1+GH)y=Gr，所以 T=G/(1+GH)。代入得 1.666667。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| ext-negative-feedback-gain-1-v1 | 静态负反馈框图满足 e=r−0.2y，y=3e。闭环增益 y/r 是多少？ | B · 1.875 | 联立 y=G(r−Hy)，得 (1+GH)y=Gr，所以 T=G/(1+GH)。代入得 1.875。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| ext-negative-feedback-gain-1-v2 | 静态负反馈框图满足 e=r−0.3y，y=4e。闭环增益 y/r 是多少？（选最接近值。） | C · 1.818182 | 联立 y=G(r−Hy)，得 (1+GH)y=Gr，所以 T=G/(1+GH)。代入得 1.818182。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| ext-negative-feedback-gain-2 | 静态负反馈框图满足 e=r−0.4y，y=5e。闭环增益 y/r 是多少？（选最接近值。） | D · 1.666667 | 联立 y=G(r−Hy)，得 (1+GH)y=Gr，所以 T=G/(1+GH)。代入得 1.666667。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| ext-negative-feedback-gain-2-v1 | 静态负反馈框图满足 e=r−0.5y，y=6e。闭环增益 y/r 是多少？ | A · 1.5 | 联立 y=G(r−Hy)，得 (1+GH)y=Gr，所以 T=G/(1+GH)。代入得 1.5。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| ext-negative-feedback-gain-2-v2 | 静态负反馈框图满足 e=r−0.6y，y=7e。闭环增益 y/r 是多少？（选最接近值。） | B · 1.346154 | 联立 y=G(r−Hy)，得 (1+GH)y=Gr，所以 T=G/(1+GH)。代入得 1.346154。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| ext-mason-touching-loops-1 | 信号流图恰有两个回路 L₁=0.05、L₂=-0.2，两回路共享节点。梅森特征式 Δ 是多少？ | B · 1.15 | 接触回路不能形成乘积项，只有 Δ=1−L₁−L₂；回路增益保留各自符号。代入得 1.15。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| ext-mason-touching-loops-1-v1 | 信号流图恰有两个回路 L₁=0.1、L₂=-0.3，两回路共享节点。梅森特征式 Δ 是多少？ | C · 1.2 | 接触回路不能形成乘积项，只有 Δ=1−L₁−L₂；回路增益保留各自符号。代入得 1.2。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| ext-mason-touching-loops-1-v2 | 信号流图恰有两个回路 L₁=0.15、L₂=-0.4，两回路共享节点。梅森特征式 Δ 是多少？ | D · 1.25 | 接触回路不能形成乘积项，只有 Δ=1−L₁−L₂；回路增益保留各自符号。代入得 1.25。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| ext-mason-touching-loops-2 | 信号流图恰有两个回路 L₁=0.2、L₂=-0.5，两回路共享节点。梅森特征式 Δ 是多少？ | A · 1.3 | 接触回路不能形成乘积项，只有 Δ=1−L₁−L₂；回路增益保留各自符号。代入得 1.3。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| ext-mason-touching-loops-2-v1 | 信号流图恰有两个回路 L₁=0.25、L₂=-0.6，两回路共享节点。梅森特征式 Δ 是多少？ | B · 1.35 | 接触回路不能形成乘积项，只有 Δ=1−L₁−L₂；回路增益保留各自符号。代入得 1.35。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| ext-mason-touching-loops-2-v2 | 信号流图恰有两个回路 L₁=0.3、L₂=-0.7，两回路共享节点。梅森特征式 Δ 是多少？ | C · 1.4 | 接触回路不能形成乘积项，只有 Δ=1−L₁−L₂；回路增益保留各自符号。代入得 1.4。 | [4.8 s域框图、信号流图与梅森公式](../content/signals/knowledge-base/ss-5-8.md) |
+| ext-cascade-dc-gain-1 | 两个稳定系统 H₁(s)=3/(s+2)、H₂(s)=5/(s+4) 级联，总直流增益是多少？ | C · 1.875 | 级联系统函数相乘，H(0)=H₁(0)H₂(0)=K₁K₂/(ab)。代入得 1.875。 | [4.9 连续系统的模拟结构](../content/signals/knowledge-base/ss-5-9.md) |
+| ext-cascade-dc-gain-1-v1 | 两个稳定系统 H₁(s)=4/(s+3)、H₂(s)=6/(s+5) 级联，总直流增益是多少？ | D · 1.6 | 级联系统函数相乘，H(0)=H₁(0)H₂(0)=K₁K₂/(ab)。代入得 1.6。 | [4.9 连续系统的模拟结构](../content/signals/knowledge-base/ss-5-9.md) |
+| ext-cascade-dc-gain-1-v2 | 两个稳定系统 H₁(s)=5/(s+4)、H₂(s)=7/(s+6) 级联，总直流增益是多少？（选最接近值。） | A · 1.458333 | 级联系统函数相乘，H(0)=H₁(0)H₂(0)=K₁K₂/(ab)。代入得 1.458333。 | [4.9 连续系统的模拟结构](../content/signals/knowledge-base/ss-5-9.md) |
+| ext-cascade-dc-gain-2 | 两个稳定系统 H₁(s)=6/(s+5)、H₂(s)=8/(s+7) 级联，总直流增益是多少？（选最接近值。） | B · 1.371429 | 级联系统函数相乘，H(0)=H₁(0)H₂(0)=K₁K₂/(ab)。代入得 1.371429。 | [4.9 连续系统的模拟结构](../content/signals/knowledge-base/ss-5-9.md) |
+| ext-cascade-dc-gain-2-v1 | 两个稳定系统 H₁(s)=7/(s+6)、H₂(s)=9/(s+8) 级联，总直流增益是多少？ | C · 1.3125 | 级联系统函数相乘，H(0)=H₁(0)H₂(0)=K₁K₂/(ab)。代入得 1.3125。 | [4.9 连续系统的模拟结构](../content/signals/knowledge-base/ss-5-9.md) |
+| ext-cascade-dc-gain-2-v2 | 两个稳定系统 H₁(s)=8/(s+7)、H₂(s)=10/(s+9) 级联，总直流增益是多少？（选最接近值。） | D · 1.269841 | 级联系统函数相乘，H(0)=H₁(0)H₂(0)=K₁K₂/(ab)。代入得 1.269841。 | [4.9 连续系统的模拟结构](../content/signals/knowledge-base/ss-5-9.md) |
+| ext-scalar-state-dc-gain-1 | 零初始状态的标量模型 x′=−2x+3u，y=4x+1u，其传递函数 H(s) 的直流增益 H(0) 是多少？ | D · 7 | H(s)=C(sI−A)⁻¹B+D=CB/(s+a)+D，令 s=0，保留直接通路 D。代入得 7。 | [A.7 系统关系速查](../content/signals/knowledge-base/ss-a-7.md)；[B.9 状态空间](../content/signals/knowledge-base/ss-b-9.md) |
+| ext-scalar-state-dc-gain-1-v1 | 零初始状态的标量模型 x′=−3x+4u，y=5x+2u，其传递函数 H(s) 的直流增益 H(0) 是多少？（选最接近值。） | A · 8.666667 | H(s)=C(sI−A)⁻¹B+D=CB/(s+a)+D，令 s=0，保留直接通路 D。代入得 8.666667。 | [A.7 系统关系速查](../content/signals/knowledge-base/ss-a-7.md)；[B.9 状态空间](../content/signals/knowledge-base/ss-b-9.md) |
+| ext-scalar-state-dc-gain-1-v2 | 零初始状态的标量模型 x′=−4x+5u，y=6x+3u，其传递函数 H(s) 的直流增益 H(0) 是多少？ | B · 10.5 | H(s)=C(sI−A)⁻¹B+D=CB/(s+a)+D，令 s=0，保留直接通路 D。代入得 10.5。 | [A.7 系统关系速查](../content/signals/knowledge-base/ss-a-7.md)；[B.9 状态空间](../content/signals/knowledge-base/ss-b-9.md) |
+| ext-scalar-state-dc-gain-2 | 零初始状态的标量模型 x′=−5x+6u，y=7x+4u，其传递函数 H(s) 的直流增益 H(0) 是多少？ | C · 12.4 | H(s)=C(sI−A)⁻¹B+D=CB/(s+a)+D，令 s=0，保留直接通路 D。代入得 12.4。 | [A.7 系统关系速查](../content/signals/knowledge-base/ss-a-7.md)；[B.9 状态空间](../content/signals/knowledge-base/ss-b-9.md) |
+| ext-scalar-state-dc-gain-2-v1 | 零初始状态的标量模型 x′=−6x+7u，y=8x+5u，其传递函数 H(s) 的直流增益 H(0) 是多少？（选最接近值。） | D · 14.333333 | H(s)=C(sI−A)⁻¹B+D=CB/(s+a)+D，令 s=0，保留直接通路 D。代入得 14.333333。 | [A.7 系统关系速查](../content/signals/knowledge-base/ss-a-7.md)；[B.9 状态空间](../content/signals/knowledge-base/ss-b-9.md) |
+| ext-scalar-state-dc-gain-2-v2 | 零初始状态的标量模型 x′=−7x+8u，y=9x+6u，其传递函数 H(s) 的直流增益 H(0) 是多少？（选最接近值。） | A · 16.285714 | H(s)=C(sI−A)⁻¹B+D=CB/(s+a)+D，令 s=0，保留直接通路 D。代入得 16.285714。 | [A.7 系统关系速查](../content/signals/knowledge-base/ss-a-7.md)；[B.9 状态空间](../content/signals/knowledge-base/ss-b-9.md) |
 
 ## 课程预习与同知识点复测配对
 

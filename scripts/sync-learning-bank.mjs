@@ -29,12 +29,16 @@ for (const [index, locale] of ["zh-CN", "en-US"].entries()) {
   const path = new URL(`../apps/web/i18n/messages/${locale}/learning-labs.json`, import.meta.url);
   const original = readFileSync(path, "utf8");
   const messages = JSON.parse(original);
+  const questionIDs = new Set(bank.questions.map((q) => q.id));
+  const diagnosisCodes = new Set(bank.questions.flatMap((q) => Object.values(q.misconceptions)));
+  messages.quiz.questions = Object.fromEntries(Object.entries(messages.quiz.questions).filter(([id]) => questionIDs.has(id)));
+  messages.progress.diagnoses = Object.fromEntries(Object.entries(messages.progress.diagnoses).filter(([code]) => diagnosisCodes.has(code)));
   for (const q of bank.questions) {
     const text = q[index === 0 ? "zh" : "en"];
     messages.quiz.questions[q.id] = { prompt: learningBankMessage(text.prompt), ...Object.fromEntries(text.options.map((option, i) => [`option${i + 1}`, learningBankMessage(option)])), explain: learningBankMessage(text.explanation) };
     for (const [option, code] of Object.entries(q.misconceptions)) {
       // Original individually authored diagnoses remain more specific.
-      if (!messages.progress.diagnoses[code]) messages.progress.diagnoses[code] = {
+      if (!messages.progress.diagnoses[code] || code === `${q.id}-option-${option}`) messages.progress.diagnoses[code] = {
         thought: learningBankMessage(index === 0 ? `选择“${text.options[Number(option)]}”与题设条件不符。` : `The choice “${text.options[Number(option)]}” does not satisfy the stated conditions.`),
         correction: learningBankMessage(text.explanation),
       };

@@ -87,8 +87,8 @@ export function KnowledgeBaseSidebar({
   const t = useTranslations("knowledgeBases");
   const selectedIDSet = React.useMemo(() => new Set(selectedIDs), [selectedIDs]);
   const selectableCount = React.useMemo(
-    () => items.filter((item) => mode === "admin" || item.scope === "user").length,
-    [items, mode],
+    () => items.filter((item) => item.canManage).length,
+    [items],
   );
 
   return (
@@ -194,7 +194,7 @@ function KnowledgeBaseSidebarItem({
   onDelete,
 }: KnowledgeBaseSidebarItemProps) {
   const t = useTranslations("knowledgeBases");
-  const editable = mode === "admin" || item.scope === "user";
+  const editable = item.canManage;
 
   return (
     <div className="group relative h-11 w-full min-w-0 overflow-hidden rounded-md">

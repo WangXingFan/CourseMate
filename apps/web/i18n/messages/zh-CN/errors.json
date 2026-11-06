@@ -17,7 +17,8 @@
   "learning": {
     "invalidAttempt": "作答内容无效，请重新打开练习。",
     "attemptConflict": "这条作答编号已经用于其他答案，请重新打开练习。",
-    "teacher_assigned": "请在老师发布的课堂活动中作答。"
+    "teacher_assigned": "请在老师发布的课堂活动中作答。",
+    "question_bank_forbidden": "仅教师和管理员可以查看题库"
   },
   "classroom": {
     "forbidden": "只有教师账号可以管理班级。",

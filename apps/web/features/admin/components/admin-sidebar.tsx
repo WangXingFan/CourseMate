@@ -18,6 +18,7 @@ const ADMIN_SECTION_LABEL_KEYS: Record<AdminSection, string> = {
   upstreams: "sections.upstreams",
   models: "sections.models",
   "knowledge-bases": "sections.knowledgeBases",
+  "question-bank": "sections.questionBank",
 };
 
 export function AdminSidebar({

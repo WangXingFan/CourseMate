@@ -95,7 +95,6 @@ export function KnowledgeBaseDetail({
           />
           {loading || files.length > 0 ? (
             <KnowledgeBaseFileList
-              mode={mode}
               selected={selected}
               files={files}
               filesTotal={filesTotal}
@@ -166,7 +165,7 @@ function KnowledgeBaseDetailHeader({
           <div className="flex min-w-0 items-center gap-1.5">
             <h2 className="truncate font-display text-2xl font-normal text-foreground md:text-3xl">{selected.name}</h2>
             <Badge variant="secondary" className="h-5 rounded-md px-1.5 text-xs font-normal">
-              {selected.scope === "builtin" ? t("builtin") : t("personal")}
+              {selected.scope === "builtin" ? t("builtin") : selected.canManage ? t("personal") : t("teacher")}
             </Badge>
           </div>
           <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
@@ -174,7 +173,7 @@ function KnowledgeBaseDetailHeader({
           </p>
         </div>
       </div>
-      {mode === "admin" || selected.scope === "user" ? (
+      {selected.canManage ? (
         <div className="flex shrink-0 items-center gap-1">
           {mode === "admin" ? (
             <label className="mr-1 flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -208,7 +207,6 @@ function KnowledgeBaseDetailHeader({
 
 type KnowledgeBaseFileListProps = Pick<
   KnowledgeBaseDetailProps,
-  | "mode"
   | "selected"
   | "files"
   | "filesTotal"
@@ -231,7 +229,6 @@ type KnowledgeBaseFileListProps = Pick<
 };
 
 function KnowledgeBaseFileList({
-  mode,
   selected,
   files,
   filesTotal,
@@ -252,7 +249,7 @@ function KnowledgeBaseFileList({
 }: KnowledgeBaseFileListProps) {
   const t = useTranslations("knowledgeBases");
   const tStatus = useTranslations("files.status");
-  const editable = mode === "admin" || selected.scope === "user";
+  const editable = selected.canManage;
   const selectedFileIDSet = new Set(selectedFileIDs);
   const vectorizingFileIDSet = new Set(vectorizingFileIDs);
   const vectorizingFiles = vectorizingFileIDs.length > 0;

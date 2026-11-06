@@ -148,12 +148,13 @@ export function AdminKnowledgeBasesPage() {
                     <div className="flex h-9 items-center justify-center">
                       <Checkbox
                         checked={
-                          list.items.length > 0 && list.selectedIDs.length === list.items.length
+                          list.selectableCount > 0 && list.selectedIDs.length === list.selectableCount
                             ? true
                             : list.selectedIDs.length > 0
                               ? "indeterminate"
                               : false
                         }
+                        disabled={list.selectableCount === 0}
                         onCheckedChange={(checked) => checked ? list.selectAll() : list.clearSelection()}
                         aria-label={t("selectAll")}
                       />
@@ -183,6 +184,7 @@ export function AdminKnowledgeBasesPage() {
                       <div className="flex h-9 items-center justify-center">
                         <Checkbox
                           checked={selectedIDs.has(item.publicID)}
+                          disabled={!item.canManage}
                           onCheckedChange={(checked) => list.toggleSelection(item.publicID, checked === true)}
                           aria-label={t("selectKnowledgeBase")}
                         />
@@ -224,12 +226,12 @@ export function AdminKnowledgeBasesPage() {
                               <FolderOpen className="size-3.5 stroke-[1.6]" />
                               {t("manage")}
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => list.edit(item)}>
+                            <DropdownMenuItem disabled={!item.canManage} onClick={() => list.edit(item)}>
                               <PencilLine className="size-3.5 stroke-[1.6]" />
                               {t("editTitle")}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem variant="destructive" onClick={() => list.requestDelete(item)}>
+                            <DropdownMenuItem disabled={!item.canManage} variant="destructive" onClick={() => list.requestDelete(item)}>
                               <Trash2 className="size-3.5 stroke-[1.6]" />
                               {t("delete")}
                             </DropdownMenuItem>

@@ -25,6 +25,7 @@ const FEATURE_DOMAINS = {
   exports: "export",
   "knowledge-bases": "knowledge-base",
   learning: "learning",
+  "question-bank": "question-bank",
   recent: "recent",
   settings: "settings",
   shell: "shell",

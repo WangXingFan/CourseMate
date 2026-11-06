@@ -5,7 +5,7 @@ import "time"
 const (
 	// ScopeBuiltin 表示管理员维护、所有登录用户可见的内置知识库。
 	ScopeBuiltin = "builtin"
-	// ScopeUser 表示仅所属用户可见的个人知识库。
+	// ScopeUser 表示用户所有的知识库；教师知识库也对其班级学生和管理员可见。
 	ScopeUser = "user"
 )
 

@@ -47,6 +47,7 @@
     "recent": "Recent",
     "files": "Files",
     "knowledgeBases": "Knowledge bases",
+    "coursePreview": "Pre-class preparation",
     "classrooms": "Classes",
     "rollCall": "Random roll call",
     "activities": "Class activities",
@@ -91,7 +92,8 @@
     "courseKnowledge": "Course knowledge",
     "homeworks": "My homework",
     "analytics": "Analytics",
-    "exports": "Export center"
+    "exports": "Export center",
+    "questionBank": "Question bank"
   },
   "time": {
     "todayTime": "{time}",

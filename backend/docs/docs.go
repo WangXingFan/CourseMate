@@ -931,7 +931,7 @@ const docTemplate = `{
                 "tags": [
                     "admin-knowledge-bases"
                 ],
-                "summary": "查询内置知识库",
+                "summary": "查询内置和教师知识库",
                 "parameters": [
                     {
                         "type": "string",
@@ -1295,7 +1295,7 @@ const docTemplate = `{
                 "tags": [
                     "admin-knowledge-bases"
                 ],
-                "summary": "查询内置知识库详情",
+                "summary": "查询内置和教师知识库详情",
                 "parameters": [
                     {
                         "type": "string",
@@ -1463,7 +1463,7 @@ const docTemplate = `{
                 "tags": [
                     "admin-knowledge-bases"
                 ],
-                "summary": "查询内置知识库文件",
+                "summary": "查询内置和教师知识库文件",
                 "parameters": [
                     {
                         "type": "string",
@@ -1548,7 +1548,7 @@ const docTemplate = `{
                 "tags": [
                     "admin-knowledge-bases"
                 ],
-                "summary": "查询内置知识库处理快照",
+                "summary": "查询内置和教师知识库处理快照",
                 "parameters": [
                     {
                         "type": "string",
@@ -1605,7 +1605,7 @@ const docTemplate = `{
                 "tags": [
                     "admin-knowledge-bases"
                 ],
-                "summary": "批量查询内置知识库文件处理状态",
+                "summary": "批量查询内置和教师知识库文件处理状态",
                 "parameters": [
                     {
                         "type": "string",
@@ -1699,14 +1699,14 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "仅允许读取仍与指定内置知识库关联的文件",
+                "description": "仅允许读取仍与指定内置和教师知识库关联的文件",
                 "produces": [
                     "application/octet-stream"
                 ],
                 "tags": [
                     "admin-knowledge-bases"
                 ],
-                "summary": "获取内置知识库文件内容",
+                "summary": "获取内置和教师知识库文件内容",
                 "parameters": [
                     {
                         "type": "string",
@@ -12268,6 +12268,80 @@ const docTemplate = `{
                 }
             }
         },
+        "/learning/question-bank": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Browse all authored questions, answers and explanations (teacher/admin only)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Question bank category",
+                        "name": "category",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Keywords in question, answer, explanation or identifier",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Preferred language (zh-CN or en-US)",
+                        "name": "locale",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number, starting at 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page (1–100, default 20)",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/QuestionBankResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/learning/quiz/chapters": {
             "get": {
                 "security": [
@@ -20921,6 +20995,7 @@ const docTemplate = `{
         "KnowledgeBaseResponse": {
             "type": "object",
             "required": [
+                "canManage",
                 "createdAt",
                 "description",
                 "enabled",
@@ -20935,6 +21010,9 @@ const docTemplate = `{
                 "updatedAt"
             ],
             "properties": {
+                "canManage": {
+                    "type": "boolean"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -24979,6 +25057,129 @@ const docTemplate = `{
                 },
                 "vendorName": {
                     "type": "string"
+                }
+            }
+        },
+        "QuestionBankCategoryResponse": {
+            "type": "object",
+            "required": [
+                "count",
+                "id"
+            ],
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "QuestionBankItemResponse": {
+            "type": "object",
+            "required": [
+                "category",
+                "explanation",
+                "formula",
+                "id",
+                "language",
+                "lessonUrl",
+                "parts",
+                "prompt",
+                "title"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "explanation": {
+                    "type": "string"
+                },
+                "formula": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "lessonUrl": {
+                    "type": "string"
+                },
+                "parts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QuestionBankPartResponse"
+                    }
+                },
+                "prompt": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "QuestionBankPartResponse": {
+            "type": "object",
+            "required": [
+                "answers",
+                "explanation",
+                "label",
+                "options"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "explanation": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "QuestionBankResponse": {
+            "type": "object",
+            "required": [
+                "categories",
+                "page",
+                "pageSize",
+                "questions",
+                "total"
+            ],
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QuestionBankCategoryResponse"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QuestionBankItemResponse"
+                    }
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },

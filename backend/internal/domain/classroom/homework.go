@@ -15,12 +15,13 @@ import (
 var homeworkBankJSON []byte
 
 type HomeworkQuestion struct {
-	ID       string
-	Kind     string
-	Prompt   string
-	Options  []string
-	Points   int
-	Accepted [][]string
+	ID          string
+	Kind        string
+	Prompt      string
+	Options     []string
+	Points      int
+	Accepted    [][]string
+	Explanation string
 }
 
 type HomeworkPaper struct {

@@ -5,13 +5,12 @@ import type { Feature } from "@deeix/core";
 // either (docs/ARCHITECTURE.md §4). Each id equals its route segment and its
 // sections/<id>/ component directory.
 //
-// This branch serves a student knowledge-base Q&A deployment, so the admin
-// surface is limited to accounts, upstreams, models and knowledge bases.
 export const ADMIN_SECTIONS = [
   { id: "users", label: "Accounts", href: "/users", feature: "multiUser" },
   { id: "upstreams", label: "Upstreams", href: "/upstreams" },
   { id: "models", label: "Models", href: "/models" },
   { id: "knowledge-bases", label: "Knowledge bases", href: "/knowledge-bases" },
+  { id: "question-bank", label: "Question bank", href: "/question-bank" },
 ] as const satisfies readonly { id: string; label: string; href: string; feature?: Feature }[];
 
 export type AdminSection = (typeof ADMIN_SECTIONS)[number]["id"];

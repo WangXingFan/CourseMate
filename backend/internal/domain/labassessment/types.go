@@ -27,11 +27,11 @@ type Field struct {
 }
 type Point struct{ X, Y float64 }
 type Paper struct {
-	TaskID, Title, Prompt, Formula string
-	Variant                        int
-	Parameters                     map[string]float64
-	Fields                         []Field
-	Reference                      []Point
+	TaskID, Title, Prompt, Formula, Explanation string
+	Variant                                     int
+	Parameters                                  map[string]float64
+	Fields                                      []Field
+	Reference                                   []Point
 }
 type FieldResult struct {
 	ID, Submitted, Expected, Explanation string

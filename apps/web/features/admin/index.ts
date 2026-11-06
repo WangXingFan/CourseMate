@@ -8,3 +8,4 @@ export { AdminKnowledgeBasesPage } from "@/features/admin/components/sections/kn
 export { AdminModelsPage } from "@/features/admin/components/sections/models/admin-models";
 export { AdminUpstreamsPage } from "@/features/admin/components/sections/upstreams/admin-upstreams";
 export { AdminUsersPage } from "@/features/admin/components/sections/users/admin-users";
+export { AdminQuestionBankPage } from "@/features/admin/components/sections/question-bank/admin-question-bank";

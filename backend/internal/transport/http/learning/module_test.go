@@ -175,7 +175,23 @@ func TestLearningValidationAndHistoryLimit(t *testing.T) {
 	}
 }
 
-func testRouter(t *testing.T) *gin.Engine {
+func TestProgressOmitsRetiredQuestionsWithoutReassigningAttempts(t *testing.T) {
+	router := testRouter(t,
+		models.LearningAttempt{UserID: 1, AttemptID: uuid.NewString(), QuestionID: "damping", Selected: 0},
+		models.LearningAttempt{UserID: 1, AttemptID: uuid.NewString(), QuestionID: "energy-signal", Selected: 0, Correct: true},
+	)
+	view := progress(t, router, 1)
+	if len(view.Recent) != 1 || view.Recent[0].QuestionID != "energy-signal" {
+		t.Fatalf("retired question reached current history: %+v", view.Recent)
+	}
+	for _, question := range view.Questions {
+		if question.ID == "damping" || (question.ID == "second-order-mode-decay" && question.Attempts != 0) {
+			t.Fatalf("retired attempts were exposed or reassigned: %+v", question)
+		}
+	}
+}
+
+func testRouter(t *testing.T, attempts ...models.LearningAttempt) *gin.Engine {
 	t.Helper()
 	gin.SetMode(gin.TestMode)
 	db, err := gorm.Open(sqlite.Open(filepath.Join(t.TempDir(), "learning.db")), &gorm.Config{})
@@ -200,6 +216,11 @@ func testRouter(t *testing.T) *gin.Engine {
 	}
 	if err := db.Create(&models.Classroom{ControlPlaneModel: models.ControlPlaneModel{ID: 1}, PublicID: "open-class", TeacherID: 9, Name: "Open class", Lab1Open: true, Lab2Open: true, Lab3Open: true}).Error; err != nil {
 		t.Fatal(err)
+	}
+	for _, attempt := range attempts {
+		if err := db.Create(&attempt).Error; err != nil {
+			t.Fatal(err)
+		}
 	}
 	router := gin.New()
 	group := router.Group("/api/v1", middleware.AuthMiddleware("learning-test", nil))
@@ -242,7 +263,7 @@ func progress(t *testing.T, router *gin.Engine, userID uint) LearningProgressRes
 	if err := json.Unmarshal(result.Body.Bytes(), &envelope); err != nil {
 		t.Fatal(err)
 	}
-	if len(envelope.Data.Questions) != 80 {
+	if len(envelope.Data.Questions) != 240 {
 		t.Fatalf("catalog: %+v", envelope.Data.Questions)
 	}
 	if envelope.Data.AccountID != userID {

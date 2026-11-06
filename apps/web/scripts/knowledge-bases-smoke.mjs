@@ -30,8 +30,8 @@ let files = Array.from({ length: 105 }, (_, i) => ({
   chunkCount: 2, canVectorize: false, vectorizationReason: "ready", createdAt: now, updatedAt: now,
 }));
 const originalCount = files.length, deletes = [], errors = [];
-let failFile = "file-1";
-const kb = () => ({ publicID: "signals", name: "信号与系统", description: "", scope: "builtin", enabled: true,
+let failFile = "file-1", scope = "builtin";
+const kb = () => ({ publicID: "signals", name: "信号与系统", description: "", scope, enabled: true, canManage: scope === "builtin" ? user.role === "superadmin" : user.role === "teacher",
   fileCount: files.length, readyFileCount: files.length, processingFileCount: 0, createdAt: now, updatedAt: now });
 const user = { id: 1, publicID: "qa-admin", username: "admin", displayName: "测试管理员", role: "superadmin",
   status: "active", locale: "zh-CN", timezone: "Asia/Shanghai", initialSecurityRequired: false,
@@ -44,6 +44,9 @@ try {
   await context.route("**/api/v1/**", async (route) => {
     const req = route.request(), url = new URL(req.url());
     let data = {};
+    if (url.pathname.endsWith("/files/read-only/content")) {
+      await route.fulfill({ contentType: "text/markdown; charset=utf-8", body: "# 教师共享讲义\n\n本班学生可以阅读这份资料。" }); return;
+    }
     const filePath = url.pathname.match(/\/(?:admin\/)?knowledge-bases\/signals\/files(?:\/(file-\d+))?$/);
     if (filePath) {
       if (req.method() === "DELETE") {
@@ -63,6 +66,7 @@ try {
     else if (url.pathname.endsWith("/auth/refresh")) data = { accessToken: "qa-admin", sessionID: "qa" };
     else if (url.pathname.endsWith("/me")) data = { user };
     else if (url.pathname.endsWith("/user/settings")) data = { settings: {} };
+    else if (url.pathname.endsWith("/admin/settings")) data = {};
     else if (url.pathname.endsWith("/capabilities")) data = { features: { knowledgeBases: true, classrooms: true } };
     else if (url.pathname.endsWith("/branding")) data = { title: "CourseMate", shortName: "CourseMate", description: "", logoURL: "", faviconURL: "/favicon.ico" };
     else if (url.pathname.endsWith("/version")) { await route.fulfill({ json: { version: "0.4.4-beta.3", buildID: "" } }); return; }
@@ -114,19 +118,35 @@ try {
   await dialog.getByText("知识库中还没有文件", { exact: true }).waitFor();
   assert.equal(files.length, 0, "all loaded files removed across the 100-file boundary");
   files = [{ fileID: "read-only", fileName: "只读教材.md", mimeType: "text/markdown", fileCategory: "text", sizeBytes: 2048, processingReady: true, embedStatus: "ready", chunkCount: 2 }];
-  user.role = "student";
-  await page.goto(`${base}/knowledge-bases`);
-  try {
-    await page.getByText("信号与系统", { exact: true }).first().click();
-  } catch (error) {
-    console.error("Read-only page:", page.url(), errors, await page.locator("body").innerText());
-    throw error;
+  for (const role of ["teacher", "student", "superadmin"]) {
+    user.role = role;
+    scope = "user";
+    await page.setViewportSize({ width: 1440, height: 950 });
+    await page.goto(`${base}/${role === "superadmin" ? "admin/" : ""}knowledge-bases`);
+    if (role === "superadmin") {
+      await page.getByRole("row").filter({ hasText: "信号与系统" }).click();
+    } else {
+      await page.getByText("信号与系统", { exact: true }).first().click();
+    }
+    await page.getByText("只读教材.md", { exact: true }).waitFor();
+    assert.equal(await page.getByText("加载文件策略失败", { exact: true }).count(), 0);
+    assert.equal(await page.getByRole("checkbox", { name: /^选择文件/ }).count(), role === "teacher" ? 1 : 0, `${role}: only the teacher can modify shared files`);
+    assert.equal(await page.getByRole("button", { name: "添加文件", exact: true }).count(), role === "teacher" ? 1 : 0);
+    if (role !== "teacher") {
+      await page.getByText("教师知识库", { exact: true }).waitFor();
+      assert.equal(await page.getByRole("button", { name: "移除所选", exact: true }).count(), 0);
+      for (const width of [1440, 390]) for (const theme of ["light", "dark"]) {
+        await page.setViewportSize({ width, height: 950 });
+        await page.evaluate((value) => { document.documentElement.classList.toggle("dark", value === "dark"); document.documentElement.style.colorScheme = value; }, theme);
+        await page.screenshot({ path: join(artifacts, `teacher-library-${role}-${width}-${theme}.png`), animations: "disabled" });
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+      }
+    }
+    await page.getByText("只读教材.md", { exact: true }).click();
+    await page.getByText("本班学生可以阅读这份资料。", { exact: true }).waitFor();
   }
-  await page.getByText("只读教材.md", { exact: true }).waitFor();
-  assert.equal(await page.getByRole("checkbox", { name: /选择文件|全选已加载文件|^全选$/ }).count(), 0, "shared knowledge base stays read-only for students");
-  assert.equal(await page.getByRole("button", { name: "移除所选", exact: true }).count(), 0);
   assert.deepEqual(errors, []);
-  console.log("PASS: ready-file selection, confirmation, partial failure/retry, pagination, 103-file removal, read-only scope and four visual layouts");
+  console.log("PASS: ready-file selection, confirmation, partial failure/retry, pagination, 103-file removal, teacher ownership, student/admin read-only access, file previews and responsive light/dark layouts");
 } finally {
   await browser?.close();
   await new Promise((done) => server.close(done));

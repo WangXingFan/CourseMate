@@ -87,6 +87,7 @@ export function NavMain({
               (knowledgeBaseEnabled || item.id !== "knowledgeBases") &&
               (item.id !== "classrooms" || canSeeClassrooms) &&
               (item.id !== "analytics" || canSeeClassrooms) &&
+              (item.id !== "questionBank" || canSeeClassrooms) &&
               (item.id !== "rollCall" || sessionUser?.role === "teacher") &&
               (item.id !== "exports" || sessionUser?.role === "teacher") &&
               (item.id !== "activities" || canSeeActivities) &&

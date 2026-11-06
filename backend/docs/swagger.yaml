@@ -4004,6 +4004,8 @@ definitions:
     type: object
   KnowledgeBaseResponse:
     properties:
+      canManage:
+        type: boolean
       createdAt:
         type: string
       description:
@@ -4032,6 +4034,7 @@ definitions:
       updatedAt:
         type: string
     required:
+    - canManage
     - createdAt
     - description
     - enabled
@@ -6848,6 +6851,92 @@ definitions:
     - vendor
     - vendorIcon
     - vendorName
+    type: object
+  QuestionBankCategoryResponse:
+    properties:
+      count:
+        type: integer
+      id:
+        type: string
+    required:
+    - count
+    - id
+    type: object
+  QuestionBankItemResponse:
+    properties:
+      category:
+        type: string
+      explanation:
+        type: string
+      formula:
+        type: string
+      id:
+        type: string
+      language:
+        type: string
+      lessonUrl:
+        type: string
+      parts:
+        items:
+          $ref: '#/definitions/QuestionBankPartResponse'
+        type: array
+      prompt:
+        type: string
+      title:
+        type: string
+    required:
+    - category
+    - explanation
+    - formula
+    - id
+    - language
+    - lessonUrl
+    - parts
+    - prompt
+    - title
+    type: object
+  QuestionBankPartResponse:
+    properties:
+      answers:
+        items:
+          type: string
+        type: array
+      explanation:
+        type: string
+      label:
+        type: string
+      options:
+        items:
+          type: string
+        type: array
+    required:
+    - answers
+    - explanation
+    - label
+    - options
+    type: object
+  QuestionBankResponse:
+    properties:
+      categories:
+        items:
+          $ref: '#/definitions/QuestionBankCategoryResponse'
+        type: array
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      questions:
+        items:
+          $ref: '#/definitions/QuestionBankItemResponse'
+        type: array
+      total:
+        type: integer
+    required:
+    - categories
+    - page
+    - pageSize
+    - questions
+    - total
     type: object
   QuizAnswer:
     properties:
@@ -10041,7 +10130,7 @@ paths:
             $ref: '#/definitions/KnowledgeBasePageResponseDoc'
       security:
       - BearerAuth: []
-      summary: 查询内置知识库
+      summary: 查询内置和教师知识库
       tags:
       - admin-knowledge-bases
     post:
@@ -10098,7 +10187,7 @@ paths:
             $ref: '#/definitions/KnowledgeBaseResponseDoc'
       security:
       - BearerAuth: []
-      summary: 查询内置知识库详情
+      summary: 查询内置和教师知识库详情
       tags:
       - admin-knowledge-bases
     patch:
@@ -10190,7 +10279,7 @@ paths:
             $ref: '#/definitions/KnowledgeBaseFilePageResponseDoc'
       security:
       - BearerAuth: []
-      summary: 查询内置知识库文件
+      summary: 查询内置和教师知识库文件
       tags:
       - admin-knowledge-bases
     post:
@@ -10241,7 +10330,7 @@ paths:
       - admin-knowledge-bases
   /admin/knowledge-bases/{id}/files/{file_id}/content:
     get:
-      description: 仅允许读取仍与指定内置知识库关联的文件
+      description: 仅允许读取仍与指定内置和教师知识库关联的文件
       parameters:
       - description: 知识库ID
         in: path
@@ -10274,7 +10363,7 @@ paths:
             $ref: '#/definitions/KnowledgebaseErrorDoc'
       security:
       - BearerAuth: []
-      summary: 获取内置知识库文件内容
+      summary: 获取内置和教师知识库文件内容
       tags:
       - admin-knowledge-bases
   /admin/knowledge-bases/{id}/files/processing/snapshot:
@@ -10310,7 +10399,7 @@ paths:
             $ref: '#/definitions/KnowledgebaseErrorDoc'
       security:
       - BearerAuth: []
-      summary: 查询内置知识库处理快照
+      summary: 查询内置和教师知识库处理快照
       tags:
       - admin-knowledge-bases
   /admin/knowledge-bases/{id}/files/processing/statuses:
@@ -10352,7 +10441,7 @@ paths:
             $ref: '#/definitions/KnowledgebaseErrorDoc'
       security:
       - BearerAuth: []
-      summary: 批量查询内置知识库文件处理状态
+      summary: 批量查询内置和教师知识库文件处理状态
       tags:
       - admin-knowledge-bases
   /admin/knowledge-bases/files:
@@ -17212,6 +17301,54 @@ paths:
       security:
       - BearerAuth: []
       summary: Read personal practice, diagnosis, and spaced-review progress
+      tags:
+      - learning
+  /learning/question-bank:
+    get:
+      parameters:
+      - description: Question bank category
+        in: query
+        name: category
+        type: string
+      - description: Keywords in question, answer, explanation or identifier
+        in: query
+        name: q
+        type: string
+      - description: Preferred language (zh-CN or en-US)
+        in: query
+        name: locale
+        type: string
+      - description: Page number, starting at 1
+        in: query
+        name: page
+        type: integer
+      - description: Items per page (1–100, default 20)
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/QuestionBankResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Browse all authored questions, answers and explanations (teacher/admin
+        only)
       tags:
       - learning
   /learning/quiz/chapters:

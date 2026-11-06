@@ -152,8 +152,8 @@ export function useKnowledgeBasePage(mode: KnowledgeBaseMode) {
   const selectedProcessingFileCount = selected?.processingFileCount ?? 0;
 
   const selectableItems = React.useMemo(
-    () => items.filter((item) => mode === "admin" || item.scope === "user"),
-    [items, mode],
+    () => items.filter((item) => item.canManage),
+    [items],
   );
 
   React.useEffect(() => {
@@ -803,7 +803,7 @@ export function useKnowledgeBasePage(mode: KnowledgeBaseMode) {
   }, [addingFiles, deletingPlatformFileID, mode, resolveErrorMessage, t, uploadingFiles]);
 
   const removeFiles = React.useCallback(async (fileIDs: string[]) => {
-    if (!selected || removingFileID || vectorizingFileIDs.length > 0 || (mode === "user" && selected.scope !== "user")) return;
+    if (!selected || removingFileID || vectorizingFileIDs.length > 0 || !selected.canManage) return;
     const targets = Array.from(new Set(fileIDs));
     if (targets.length === 0) return;
     const knowledgeBaseID = selected.publicID;
@@ -851,7 +851,7 @@ export function useKnowledgeBasePage(mode: KnowledgeBaseMode) {
   }, [filesPage, loadItems, mode, removingFileID, replaceFileList, selected, t, vectorizingFileIDs.length]);
 
   const submitVectorization = React.useCallback(async (fileIDs: string[], clearSelection: boolean) => {
-    if (!selected || removingFileID || vectorizingFileIDs.length > 0 || (mode === "user" && selected.scope !== "user")) return;
+    if (!selected || removingFileID || vectorizingFileIDs.length > 0 || !selected.canManage) return;
     const normalizedFileIDs = Array.from(new Set(fileIDs.map((fileID) => fileID.trim()).filter(Boolean)));
     if (normalizedFileIDs.length === 0) return;
     if (normalizedFileIDs.length > FILE_ACTION_LIMIT) {
@@ -1037,7 +1037,7 @@ export function useKnowledgeBasePage(mode: KnowledgeBaseMode) {
   ]);
 
   const toggleBuiltinEnabled = React.useCallback(async (enabled: boolean) => {
-    if (mode !== "admin" || !selected || toggling) return;
+    if (mode !== "admin" || !selected?.canManage || toggling) return;
     setToggling(true);
     try {
       const token = await requireAccessToken();
@@ -1065,6 +1065,7 @@ export function useKnowledgeBasePage(mode: KnowledgeBaseMode) {
   return {
     list: {
       items,
+      selectableCount: selectableItems.length,
       loading,
       loadingMore: itemsLoadingMore,
       hasMore: items.length < itemsTotal,

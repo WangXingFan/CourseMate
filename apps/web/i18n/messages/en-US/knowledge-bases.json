@@ -1,6 +1,6 @@
 {
   "title": "Knowledge bases",
-  "adminTitle": "Built-in knowledge bases",
+  "adminTitle": "Teaching knowledge bases",
   "adminDefaultDescription": "Built-in knowledge available to every user",
   "featureToggle": {
     "label": "Enable knowledge bases",
@@ -48,6 +48,7 @@
   "empty": "No knowledge bases",
   "emptyDescription": "Create one, then add content from your existing files.",
   "builtin": "Built-in",
+  "teacher": "Teacher knowledge base",
   "personal": "Personal",
   "enabled": "Enabled",
   "disabled": "Disabled",

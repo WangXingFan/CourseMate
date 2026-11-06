@@ -12,6 +12,7 @@ import (
 type KnowledgeBaseResponse struct {
 	PublicID            string    `json:"publicID"`
 	Scope               string    `json:"scope" enums:"builtin,user"`
+	CanManage           bool      `json:"canManage"`
 	Name                string    `json:"name"`
 	Description         string    `json:"description"`
 	Enabled             bool      `json:"enabled"`
@@ -215,19 +216,20 @@ type ErrorDoc struct {
 	ErrorMsg string `json:"errorMsg"`
 }
 
-func toKnowledgeBaseResponse(item domainknowledgebase.KnowledgeBase) KnowledgeBaseResponse {
+func toKnowledgeBaseResponse(item domainknowledgebase.KnowledgeBase, userID uint, admin bool) KnowledgeBaseResponse {
 	return KnowledgeBaseResponse{
 		PublicID: item.PublicID, Scope: item.Scope, Name: item.Name, Description: item.Description,
-		Enabled: item.Enabled, SortOrder: item.SortOrder, Revision: item.Revision,
+		CanManage: (admin && item.Scope == domainknowledgebase.ScopeBuiltin) || (!admin && item.Scope == domainknowledgebase.ScopeUser && item.OwnerUserID == userID),
+		Enabled:   item.Enabled, SortOrder: item.SortOrder, Revision: item.Revision,
 		FileCount: item.FileCount, ReadyFileCount: item.ReadyFileCount, ProcessingFileCount: item.ProcessingFileCount,
 		CreatedAt: item.CreatedAt, UpdatedAt: item.UpdatedAt,
 	}
 }
 
-func toKnowledgeBaseResponses(items []domainknowledgebase.KnowledgeBase) []KnowledgeBaseResponse {
+func toKnowledgeBaseResponses(items []domainknowledgebase.KnowledgeBase, userID uint, admin bool) []KnowledgeBaseResponse {
 	results := make([]KnowledgeBaseResponse, 0, len(items))
 	for _, item := range items {
-		results = append(results, toKnowledgeBaseResponse(item))
+		results = append(results, toKnowledgeBaseResponse(item, userID, admin))
 	}
 	return results
 }

@@ -78,13 +78,10 @@ function LessonContent({ data, preview }: { data: LearningCourseLessonData; prev
     <p className="text-xs text-muted-foreground">{data.lesson.chapter}</p>
     <h2 className="mt-2 mb-6 font-display text-2xl font-normal text-foreground"><span className="mr-3 font-mono text-lg text-muted-foreground">{data.lesson.number}</span>{" "}{data.lesson.title}</h2>
     {preview ? <LessonVideos lessonId={data.lesson.id} showActions /> :
-    <div className="space-y-5">
-      <LessonVideos lessonId={data.lesson.id} />
       <section className="min-w-0 rounded-lg border border-border bg-card p-5 md:p-6">
         <button type="button" aria-expanded={reading} aria-controls="lesson-reading" onClick={() => setReading((value) => !value)} className="flex w-full items-center justify-between gap-3 rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35"><span className="flex items-center gap-2 font-display text-xl text-foreground"><BookOpen className="size-4 text-primary" strokeWidth={1.6} aria-hidden />{t("notes")}</span><span className="text-sm text-muted-foreground">{reading ? t("collapse") : t("expand")}</span></button>
         {reading && <div id="lesson-reading" lang="zh-CN" className="mt-5 min-w-0 overflow-x-auto text-sm leading-7"><StreamdownRender content={data.markdown} /></div>}
-      </section>
-    </div>}
+      </section>}
   </>;
 }
 

@@ -1,6 +1,6 @@
 {
   "title": "知识库",
-  "adminTitle": "内置知识库",
+  "adminTitle": "教学知识库",
   "adminDefaultDescription": "面向所有用户提供的内置知识内容",
   "featureToggle": {
     "label": "启用知识库",
@@ -48,6 +48,7 @@
   "empty": "暂无知识库",
   "emptyDescription": "创建知识库后，从已有文件中选择内容即可使用。",
   "builtin": "内置",
+  "teacher": "教师知识库",
   "personal": "个人",
   "enabled": "已启用",
   "disabled": "已停用",

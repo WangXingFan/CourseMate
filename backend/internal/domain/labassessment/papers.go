@@ -94,7 +94,9 @@ func PaperFor(task string, v int) (Paper, error) {
 		harmonic := 3.
 		p.Parameters = map[string]float64{"K": k, "f0": f, "k": harmonic}
 		p.Prompt = fmt.Sprintf("幅度 ±1、基频 %.3g Hz 的方波，叠加至最大奇次谐波 K=%.0f。求下列量，指定谐波序号 k=3。", f, k)
-		add(integer("count", "实际正弦项数", 4, (k+1)/2))
+		count := integer("count", "实际正弦项数", 4, (k+1)/2)
+		count.Explanation = "只取 1、3、…、K 这些正奇数，共 (K+1)/2 项。"
+		add(count)
 		add(number("highest", "最高频率", "Hz", 4, k*f, "最高频率为 Kf₀。"))
 		add(number("amplitude", "k=3 的单边正弦幅度", "", 4, 4/(math.Pi*harmonic), "奇次正弦幅度为 4/(πk)。"))
 		add(number("period", "基波周期", "s", 3, 1/f, "T₀=1/f₀。"))
@@ -114,7 +116,9 @@ func PaperFor(task string, v int) (Paper, error) {
 		keep, noise := pick(v, 8, 10, 12), pick(v, 48, 50, 52)
 		p.Parameters = map[string]float64{"keep": keep, "noise": noise}
 		p.Prompt = fmt.Sprintf("保留 %.0f Hz：R≥0.95；抑制 %.0f Hz：R≤0.05。使用 H(s)=(s²+ω₀²)/((s+α)²+ω₀²)，ω₀=2πf₀。选择最低阶、中心频率及 0<α≤80 s⁻¹，并按你填写的 f₀、α 计算两个幅度比。", keep, noise)
-		add(integer("order", "最低阶数", 3, 2))
+		order := integer("order", "最低阶数", 3, 2)
+		order.Explanation = "实系数系统在非零频率陷波需要一对共轭零点 ±jω₀，最低阶为二阶。"
+		add(order)
 		add(number("center", "陷波中心 f₀", "Hz", 3, noise, "零点对准干扰频率。"))
 		f := number("alpha", "满足双指标的 α", "s⁻¹", 4, 10, "α>0，并按未舍入的幅度比核对两个不等式。")
 		f.Kind = "alpha"
@@ -181,7 +185,9 @@ func PaperFor(task string, v int) (Paper, error) {
 	}
 	for i, c := range Concepts[task] {
 		q := c[v%2]
-		add(choice(fmt.Sprintf("C%d", i+1), q.Prompt, float64(i+2), q.Correct, q.Others, v*17+i+9))
+		field := choice(fmt.Sprintf("C%d", i+1), q.Prompt, float64(i+2), q.Correct, q.Others, v*17+i+9)
+		field.Explanation = q.Explanation
+		add(field)
 	}
 	return p, nil
 }

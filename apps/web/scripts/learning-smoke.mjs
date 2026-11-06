@@ -25,9 +25,14 @@ await new Promise((done) => server.listen(0, "127.0.0.1", done));
 const base = `http://127.0.0.1:${server.address().port}`;
 const bank = JSON.parse(await readFile("backend/internal/domain/learning/content/quick-questions.json", "utf8"));
 const catalog = bank.questions.map(({id,answer,topic,lesson}) => ({id,answer,topic,lesson}));
-assert.equal(catalog.length, 80);
+assert.equal(catalog.length, 240);
+const reviewBase = bank.questions.find((q) => q.id === "ext-routh-stable-bound-1");
+assert.ok(reviewBase);
+const reviewVariant = reviewBase.variants[0];
+const wrongOption = (reviewBase.answer+1)%4;
+const choice = `${String.fromCharCode(65+reviewVariant.answer)}. ${reviewVariant.zh.options[reviewVariant.answer]}`;
 const now = new Date().toISOString();
-const wrong = { id: "c5dadce1-ce3e-42fd-95ae-c70461b32f46", questionId: "energy-signal", answer: 0, selected: 1, correct: false, mode: "quiz", variantId: "", reviewStage: 0, nextReviewAt: new Date(Date.now() - 86400000).toISOString(), createdAt: now };
+const wrong = { id: "c5dadce1-ce3e-42fd-95ae-c70461b32f46", questionId: reviewBase.id, answer: reviewBase.answer, selected: wrongOption, correct: false, mode: "quiz", variantId: "", reviewStage: 0, nextReviewAt: new Date(Date.now() - 86400000).toISOString(), createdAt: now };
 const user = { id: 101, publicID: "qa-student", username: "student101", displayName: "学习测试", role: "teacher", status: "active", locale: "zh-CN", timezone: "Asia/Shanghai", initialSecurityRequired: false, initialUsernameRequired: false, mustResetPassword: false, onboardingCompletedAt: now, appearancePreferences: "", profilePreferences: "", identityProviders: [], email: "", phone: "", passwordEnabled: true };
 let savedReview = null;
 let failReviewResponse = true;
@@ -57,14 +62,15 @@ try {
       lessonRequests.push(request.postDataJSON());
       await route.fulfill({ status: 403, json: { errorMsg: "answer course questions through a teacher-published classroom quiz", errorCode: "learning.teacher_assigned" } }); return;
     } else if (url.pathname.endsWith("/learning/progress")) {
-      data = { accountId: user.id, questions: catalog.map((q) => ({ ...q, attempts: q.id === "energy-signal" ? (savedReview ? 2 : 1) : 0, correctCount: q.id === "energy-signal" && savedReview ? 1 : 0, latest: q.id === "energy-signal" ? savedReview ?? wrong : null, latestWrong: q.id === "energy-signal" ? wrong : null, misconception: q.id === "energy-signal" ? "energy-signal-power" : "", suggestedVariantId: q.id === "energy-signal" ? "energy-signal-v1" : "", reviewStage: savedReview && q.id === "energy-signal" ? 1 : 0, nextReviewAt: q.id === "energy-signal" ? (savedReview ?? wrong).nextReviewAt : null, reviewDue: q.id === "energy-signal" && !savedReview })), recent: savedReview ? [savedReview, wrong] : [wrong] };
+      data = { accountId: user.id, questions: catalog.map((q) => ({ ...q, attempts: q.id === reviewBase.id ? (savedReview ? 2 : 1) : 0, correctCount: q.id === reviewBase.id && savedReview ? 1 : 0, latest: q.id === reviewBase.id ? savedReview ?? wrong : null, latestWrong: q.id === reviewBase.id ? wrong : null, misconception: q.id === reviewBase.id ? reviewBase.misconceptions[wrongOption] : "", suggestedVariantId: q.id === reviewBase.id ? reviewVariant.id : "", reviewStage: savedReview && q.id === reviewBase.id ? 1 : 0, nextReviewAt: q.id === reviewBase.id ? (savedReview ?? wrong).nextReviewAt : null, reviewDue: q.id === reviewBase.id && !savedReview })), recent: savedReview ? [savedReview, wrong] : [wrong] };
     } else if (url.pathname.includes("/learning/variants/")) {
-      data = { id: "energy-signal-v1", baseQuestionId: "energy-signal", prompt: "x(t)=2e^(−t)u(t) 的总能量是多少？", options: ["2", "4", "∞", "0"], lesson: "/learn/experiments/signal-basics" };
+      data = { id: reviewVariant.id, baseQuestionId: reviewBase.id, prompt: reviewVariant.zh.prompt, options: reviewVariant.zh.options, lesson: reviewBase.lesson };
     } else if (url.pathname.endsWith("/learning/reviews")) {
       const body = request.postDataJSON(); reviewRequests.push(body);
-      savedReview ??= { ...wrong, id: body.id, mode: "review", variantId: body.variantId, selected: body.selected, correct: true, reviewStage: 1, nextReviewAt: new Date(Date.now() + 3 * 86400000).toISOString() };
+      assert.equal(body.baseQuestionId,reviewBase.id); assert.equal(body.variantId,reviewVariant.id); assert.equal(body.selected,reviewVariant.answer);
+      savedReview ??= { ...wrong, id: body.id, mode: "review", variantId: body.variantId, selected: body.selected, answer: reviewVariant.answer, correct: true, reviewStage: 1, nextReviewAt: new Date(Date.now() + 3 * 86400000).toISOString() };
       if (failReviewResponse) { failReviewResponse = false; await route.abort("connectionfailed"); return; }
-      data = { attempt: savedReview, explanation: "E=∫₀∞4e^(−2t)dt=2。" };
+      data = { attempt: savedReview, explanation: reviewVariant.zh.explanation };
     } else if (url.pathname.endsWith("/learning/tutor")) {
       const body = request.postDataJSON(); tutorRequests.push(body);
       assert.ok(!Object.hasOwn(body.parameters, "answerId"));
@@ -99,10 +105,10 @@ try {
   await page.getByText("误区诊断", { exact: true }).waitFor();
   await page.locator("#review-filter").selectOption("due");
   await page.getByRole("button", { name: "变式复习", exact: true }).click();
-  await page.getByRole("radio", { name: "A. 2", exact: true }).check();
+  await page.getByRole("radio", { name: choice, exact: true }).check();
   await page.getByRole("button", { name: "提交答案", exact: true }).click();
   await page.getByRole("button", { name: "重试原提交", exact: true }).waitFor();
-  assert.equal(await page.getByRole("radio", { name: "B. 4", exact: true }).isDisabled(), true);
+  assert.equal(await page.getByRole("radio").first().isDisabled(), true);
   await page.getByRole("button", { name: "重试原提交", exact: true }).click();
   await page.getByText("当前复习阶段：1/5", { exact: true }).waitFor();
   assert.equal(reviewRequests.length, 2);
@@ -115,9 +121,9 @@ try {
   await page.setViewportSize({ width: 1360, height: 950 });
   await screenshot("diagnosis-desktop");
   await page.getByRole("button", { name: "最近作答", exact: true }).click();
-  await page.getByText("变式 energy-signal-v1 · 所选选项 A", { exact: true }).waitFor();
+  await page.getByText(`变式 ${reviewVariant.id} · 所选选项 ${String.fromCharCode(65+reviewVariant.answer)}`, { exact: true }).waitFor();
   await page.getByRole("button", { name: "变式复习", exact: true }).click();
-  await page.getByRole("heading", { name: "x(t)=2e^(−t)u(t) 的总能量是多少？", exact: true }).waitFor();
+  await page.getByRole("heading", { name: reviewVariant.zh.prompt, exact: true }).waitFor();
 
   await page.goto(`${base}/learn/knowledge?lesson=ss-1-1`);
   await page.getByRole("heading", { name: "1.1 信号的分类与基本量", exact: true }).waitFor();

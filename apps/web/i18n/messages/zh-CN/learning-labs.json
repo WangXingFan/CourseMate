@@ -589,18 +589,6 @@
         "thought": "你可能把二阶系统的共振直觉用到了一阶系统。",
         "correction": "固定增益的一阶低通截止频率与 τ 成反比，不存在先升后降的关系。"
       },
-      "damping-more-overshoot": {
-        "thought": "你可能把阻尼增强理解为振荡更剧烈。",
-        "correction": "阻尼消耗振荡能量；在欠阻尼范围用超调公式核对变化方向。"
-      },
-      "damping-no-effect": {
-        "thought": "你可能只考虑自然频率，忽略阻尼比对包络的作用。",
-        "correction": "自然频率与阻尼比作用不同；改变 ζ 会改变超调量和衰减速度。"
-      },
-      "damping-infinite": {
-        "thought": "你可能把有限欠阻尼参数变化误判为失稳。",
-        "correction": "正阻尼比 0.3 与 0.7 都对应稳定的标准二阶系统；用有限超调公式比较。"
-      },
       "rhp-stable": {
         "thought": "你可能忽略了极点实部为正对应的增长项。",
         "correction": "因果系统的右半平面极点产生增长响应；检查 ROC 是否包含虚轴。"
@@ -1359,15 +1347,15 @@
       },
       "absolute-impulse-integral-option-0": {
         "thought": "选择“0”与题设条件不符。",
-        "correction": "h 非负，绝对积分为 3/2=1.5<∞，该系统 BIBO 稳定。"
+        "correction": "h 非负，绝对积分为 3/2=1.5'<'∞，该系统 BIBO 稳定。"
       },
       "absolute-impulse-integral-option-2": {
         "thought": "选择“1”与题设条件不符。",
-        "correction": "h 非负，绝对积分为 3/2=1.5<∞，该系统 BIBO 稳定。"
+        "correction": "h 非负，绝对积分为 3/2=1.5'<'∞，该系统 BIBO 稳定。"
       },
       "absolute-impulse-integral-option-3": {
         "thought": "选择“-1”与题设条件不符。",
-        "correction": "h 非负，绝对积分为 3/2=1.5<∞，该系统 BIBO 稳定。"
+        "correction": "h 非负，绝对积分为 3/2=1.5'<'∞，该系统 BIBO 稳定。"
       },
       "amplitude-decibels-option-0": {
         "thought": "选择“0 dB”与题设条件不符。",
@@ -1452,6 +1440,1938 @@
       "hidden-unstable-mode-option-3": {
         "thought": "选择“只需检查所有零点”与题设条件不符。",
         "correction": "代数对消只描述输入输出关系，内部渐近稳定仍需检查完整状态矩阵。"
+      },
+      "second-order-mode-decay-option-0": {
+        "thought": "选择“1.648721”与题设条件不符。",
+        "correction": "共轭根产生 e^(−2t)(Ccos3t+Dsin3t)，包络比 e^(−2×0.25)≈0.606531。"
+      },
+      "second-order-mode-decay-option-2": {
+        "thought": "选择“0.393469”与题设条件不符。",
+        "correction": "共轭根产生 e^(−2t)(Ccos3t+Dsin3t)，包络比 e^(−2×0.25)≈0.606531。"
+      },
+      "second-order-mode-decay-option-3": {
+        "thought": "选择“0.472367”与题设条件不符。",
+        "correction": "共轭根产生 e^(−2t)(Ccos3t+Dsin3t)，包络比 e^(−2×0.25)≈0.606531。"
+      },
+      "ext-dc-sine-power-1-option-1": {
+        "thought": "选择“8”与题设条件不符。",
+        "correction": "常数与余弦的交叉项平均为零，P=D²+A²/2。代入得 5.5。"
+      },
+      "ext-dc-sine-power-1-option-2": {
+        "thought": "选择“10”与题设条件不符。",
+        "correction": "常数与余弦的交叉项平均为零，P=D²+A²/2。代入得 5.5。"
+      },
+      "ext-dc-sine-power-1-option-3": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "常数与余弦的交叉项平均为零，P=D²+A²/2。代入得 5.5。"
+      },
+      "ext-dc-sine-power-2-option-0": {
+        "thought": "选择“22”与题设条件不符。",
+        "correction": "常数与余弦的交叉项平均为零，P=D²+A²/2。代入得 34。"
+      },
+      "ext-dc-sine-power-2-option-1": {
+        "thought": "选择“50”与题设条件不符。",
+        "correction": "常数与余弦的交叉项平均为零，P=D²+A²/2。代入得 34。"
+      },
+      "ext-dc-sine-power-2-option-2": {
+        "thought": "选择“52”与题设条件不符。",
+        "correction": "常数与余弦的交叉项平均为零，P=D²+A²/2。代入得 34。"
+      },
+      "ext-two-tone-power-1-option-0": {
+        "thought": "选择“18”与题设条件不符。",
+        "correction": "不同整数次谐波在共同周期内正交，P=(A²+B²)/2。代入得 10。"
+      },
+      "ext-two-tone-power-1-option-2": {
+        "thought": "选择“20”与题设条件不符。",
+        "correction": "不同整数次谐波在共同周期内正交，P=(A²+B²)/2。代入得 10。"
+      },
+      "ext-two-tone-power-1-option-3": {
+        "thought": "选择“3”与题设条件不符。",
+        "correction": "不同整数次谐波在共同周期内正交，P=(A²+B²)/2。代入得 10。"
+      },
+      "ext-two-tone-power-2-option-1": {
+        "thought": "选择“72”与题设条件不符。",
+        "correction": "不同整数次谐波在共同周期内正交，P=(A²+B²)/2。代入得 37。"
+      },
+      "ext-two-tone-power-2-option-2": {
+        "thought": "选择“74”与题设条件不符。",
+        "correction": "不同整数次谐波在共同周期内正交，P=(A²+B²)/2。代入得 37。"
+      },
+      "ext-two-tone-power-2-option-3": {
+        "thought": "选择“6”与题设条件不符。",
+        "correction": "不同整数次谐波在共同周期内正交，P=(A²+B²)/2。代入得 37。"
+      },
+      "ext-duty-power-1-option-0": {
+        "thought": "选择“0.5”与题设条件不符。",
+        "correction": "周期功率是一个周期内的平方积分除以周期：P=A²τ/T。代入得 1。"
+      },
+      "ext-duty-power-1-option-1": {
+        "thought": "选择“4”与题设条件不符。",
+        "correction": "周期功率是一个周期内的平方积分除以周期：P=A²τ/T。代入得 1。"
+      },
+      "ext-duty-power-1-option-3": {
+        "thought": "选择“16”与题设条件不符。",
+        "correction": "周期功率是一个周期内的平方积分除以周期：P=A²τ/T。代入得 1。"
+      },
+      "ext-duty-power-2-option-0": {
+        "thought": "选择“1.538462”与题设条件不符。",
+        "correction": "周期功率是一个周期内的平方积分除以周期：P=A²τ/T。代入得 7.692308。"
+      },
+      "ext-duty-power-2-option-2": {
+        "thought": "选择“25”与题设条件不符。",
+        "correction": "周期功率是一个周期内的平方积分除以周期：P=A²τ/T。代入得 7.692308。"
+      },
+      "ext-duty-power-2-option-3": {
+        "thought": "选择“81.25”与题设条件不符。",
+        "correction": "周期功率是一个周期内的平方积分除以周期：P=A²τ/T。代入得 7.692308。"
+      },
+      "ext-pulse-amplitude-1-option-0": {
+        "thought": "选择“4”与题设条件不符。",
+        "correction": "E=A²T，取正幅度 A=√(E/T)。代入得 2。"
+      },
+      "ext-pulse-amplitude-1-option-1": {
+        "thought": "选择“12”与题设条件不符。",
+        "correction": "E=A²T，取正幅度 A=√(E/T)。代入得 2。"
+      },
+      "ext-pulse-amplitude-1-option-2": {
+        "thought": "选择“3.464102”与题设条件不符。",
+        "correction": "E=A²T，取正幅度 A=√(E/T)。代入得 2。"
+      },
+      "ext-pulse-amplitude-2-option-0": {
+        "thought": "选择“25”与题设条件不符。",
+        "correction": "E=A²T，取正幅度 A=√(E/T)。代入得 5。"
+      },
+      "ext-pulse-amplitude-2-option-1": {
+        "thought": "选择“150”与题设条件不符。",
+        "correction": "E=A²T，取正幅度 A=√(E/T)。代入得 5。"
+      },
+      "ext-pulse-amplitude-2-option-3": {
+        "thought": "选择“12.247449”与题设条件不符。",
+        "correction": "E=A²T，取正幅度 A=√(E/T)。代入得 5。"
+      },
+      "ext-triangle-energy-1-option-1": {
+        "thought": "选择“12”与题设条件不符。",
+        "correction": "利用偶对称，E=2A²∫₀ᵀ(1−t/T)²dt=2A²T/3。代入得 8。"
+      },
+      "ext-triangle-energy-1-option-2": {
+        "thought": "选择“24”与题设条件不符。",
+        "correction": "利用偶对称，E=2A²∫₀ᵀ(1−t/T)²dt=2A²T/3。代入得 8。"
+      },
+      "ext-triangle-energy-1-option-3": {
+        "thought": "选择“4”与题设条件不符。",
+        "correction": "利用偶对称，E=2A²∫₀ᵀ(1−t/T)²dt=2A²T/3。代入得 8。"
+      },
+      "ext-triangle-energy-2-option-0": {
+        "thought": "选择“150”与题设条件不符。",
+        "correction": "利用偶对称，E=2A²∫₀ᵀ(1−t/T)²dt=2A²T/3。代入得 100。"
+      },
+      "ext-triangle-energy-2-option-1": {
+        "thought": "选择“300”与题设条件不符。",
+        "correction": "利用偶对称，E=2A²∫₀ᵀ(1−t/T)²dt=2A²T/3。代入得 100。"
+      },
+      "ext-triangle-energy-2-option-2": {
+        "thought": "选择“50”与题设条件不符。",
+        "correction": "利用偶对称，E=2A²∫₀ᵀ(1−t/T)²dt=2A²T/3。代入得 100。"
+      },
+      "ext-ramp-energy-1-option-0": {
+        "thought": "选择“18”与题设条件不符。",
+        "correction": "能量积分的是幅度平方：E=∫₀ᵀk²t²dt=k²T³/3。代入得 36。"
+      },
+      "ext-ramp-energy-1-option-2": {
+        "thought": "选择“9”与题设条件不符。",
+        "correction": "能量积分的是幅度平方：E=∫₀ᵀk²t²dt=k²T³/3。代入得 36。"
+      },
+      "ext-ramp-energy-1-option-3": {
+        "thought": "选择“108”与题设条件不符。",
+        "correction": "能量积分的是幅度平方：E=∫₀ᵀk²t²dt=k²T³/3。代入得 36。"
+      },
+      "ext-ramp-energy-2-option-1": {
+        "thought": "选择“450”与题设条件不符。",
+        "correction": "能量积分的是幅度平方：E=∫₀ᵀk²t²dt=k²T³/3。代入得 1800。"
+      },
+      "ext-ramp-energy-2-option-2": {
+        "thought": "选择“90”与题设条件不符。",
+        "correction": "能量积分的是幅度平方：E=∫₀ᵀk²t²dt=k²T³/3。代入得 1800。"
+      },
+      "ext-ramp-energy-2-option-3": {
+        "thought": "选择“5400”与题设条件不符。",
+        "correction": "能量积分的是幅度平方：E=∫₀ᵀk²t²dt=k²T³/3。代入得 1800。"
+      },
+      "ext-bilateral-exp-energy-1-option-0": {
+        "thought": "选择“0.666667”与题设条件不符。",
+        "correction": "正负时间各贡献 A²/(2a)，故 E=A²/a。代入得 1.333333。"
+      },
+      "ext-bilateral-exp-energy-1-option-1": {
+        "thought": "选择“2.666667”与题设条件不符。",
+        "correction": "正负时间各贡献 A²/(2a)，故 E=A²/a。代入得 1.333333。"
+      },
+      "ext-bilateral-exp-energy-1-option-3": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "正负时间各贡献 A²/(2a)，故 E=A²/a。代入得 1.333333。"
+      },
+      "ext-bilateral-exp-energy-2-option-0": {
+        "thought": "选择“2.083333”与题设条件不符。",
+        "correction": "正负时间各贡献 A²/(2a)，故 E=A²/a。代入得 4.166667。"
+      },
+      "ext-bilateral-exp-energy-2-option-2": {
+        "thought": "选择“8.333333”与题设条件不符。",
+        "correction": "正负时间各贡献 A²/(2a)，故 E=A²/a。代入得 4.166667。"
+      },
+      "ext-bilateral-exp-energy-2-option-3": {
+        "thought": "选择“0.833333”与题设条件不符。",
+        "correction": "正负时间各贡献 A²/(2a)，故 E=A²/a。代入得 4.166667。"
+      },
+      "ext-geometric-energy-1-option-0": {
+        "thought": "选择“5”与题设条件不符。",
+        "correction": "平方后公比为 r²，等比求和 E=A²/(1−r²)。代入得 4.166667。"
+      },
+      "ext-geometric-energy-1-option-1": {
+        "thought": "选择“2.083333”与题设条件不符。",
+        "correction": "平方后公比为 r²，等比求和 E=A²/(1−r²)。代入得 4.166667。"
+      },
+      "ext-geometric-energy-1-option-2": {
+        "thought": "选择“4”与题设条件不符。",
+        "correction": "平方后公比为 r²，等比求和 E=A²/(1−r²)。代入得 4.166667。"
+      },
+      "ext-geometric-energy-2-option-0": {
+        "thought": "选择“50”与题设条件不符。",
+        "correction": "平方后公比为 r²，等比求和 E=A²/(1−r²)。代入得 33.333333。"
+      },
+      "ext-geometric-energy-2-option-1": {
+        "thought": "选择“6.666667”与题设条件不符。",
+        "correction": "平方后公比为 r²，等比求和 E=A²/(1−r²)。代入得 33.333333。"
+      },
+      "ext-geometric-energy-2-option-3": {
+        "thought": "选择“25”与题设条件不符。",
+        "correction": "平方后公比为 r²，等比求和 E=A²/(1−r²)。代入得 33.333333。"
+      },
+      "ext-finite-sequence-energy-1-option-1": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "离散能量为各样本绝对值平方之和，不是样本和的平方。代入得 14。"
+      },
+      "ext-finite-sequence-energy-1-option-2": {
+        "thought": "选择“4”与题设条件不符。",
+        "correction": "离散能量为各样本绝对值平方之和，不是样本和的平方。代入得 14。"
+      },
+      "ext-finite-sequence-energy-1-option-3": {
+        "thought": "选择“6”与题设条件不符。",
+        "correction": "离散能量为各样本绝对值平方之和，不是样本和的平方。代入得 14。"
+      },
+      "ext-finite-sequence-energy-2-option-0": {
+        "thought": "选择“5”与题设条件不符。",
+        "correction": "离散能量为各样本绝对值平方之和，不是样本和的平方。代入得 77。"
+      },
+      "ext-finite-sequence-energy-2-option-1": {
+        "thought": "选择“25”与题设条件不符。",
+        "correction": "离散能量为各样本绝对值平方之和，不是样本和的平方。代入得 77。"
+      },
+      "ext-finite-sequence-energy-2-option-2": {
+        "thought": "选择“15”与题设条件不符。",
+        "correction": "离散能量为各样本绝对值平方之和，不是样本和的平方。代入得 77。"
+      },
+      "ext-even-component-1-option-0": {
+        "thought": "选择“3.5”与题设条件不符。",
+        "correction": "偶分量定义为 xₑ(t)=[x(t)+x(−t)]/2。代入得 1.5。"
+      },
+      "ext-even-component-1-option-2": {
+        "thought": "选择“3”与题设条件不符。",
+        "correction": "偶分量定义为 xₑ(t)=[x(t)+x(−t)]/2。代入得 1.5。"
+      },
+      "ext-even-component-1-option-3": {
+        "thought": "选择“7”与题设条件不符。",
+        "correction": "偶分量定义为 xₑ(t)=[x(t)+x(−t)]/2。代入得 1.5。"
+      },
+      "ext-even-component-2-option-1": {
+        "thought": "选择“8”与题设条件不符。",
+        "correction": "偶分量定义为 xₑ(t)=[x(t)+x(−t)]/2。代入得 3。"
+      },
+      "ext-even-component-2-option-2": {
+        "thought": "选择“6”与题设条件不符。",
+        "correction": "偶分量定义为 xₑ(t)=[x(t)+x(−t)]/2。代入得 3。"
+      },
+      "ext-even-component-2-option-3": {
+        "thought": "选择“16”与题设条件不符。",
+        "correction": "偶分量定义为 xₑ(t)=[x(t)+x(−t)]/2。代入得 3。"
+      },
+      "ext-odd-component-1-option-0": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "奇分量定义为 xₒ(t)=[x(t)−x(−t)]/2。代入得 3。"
+      },
+      "ext-odd-component-1-option-1": {
+        "thought": "选择“6”与题设条件不符。",
+        "correction": "奇分量定义为 xₒ(t)=[x(t)−x(−t)]/2。代入得 3。"
+      },
+      "ext-odd-component-1-option-3": {
+        "thought": "选择“-6”与题设条件不符。",
+        "correction": "奇分量定义为 xₒ(t)=[x(t)−x(−t)]/2。代入得 3。"
+      },
+      "ext-odd-component-2-option-0": {
+        "thought": "选择“8”与题设条件不符。",
+        "correction": "奇分量定义为 xₒ(t)=[x(t)−x(−t)]/2。代入得 6。"
+      },
+      "ext-odd-component-2-option-2": {
+        "thought": "选择“12”与题设条件不符。",
+        "correction": "奇分量定义为 xₒ(t)=[x(t)−x(−t)]/2。代入得 6。"
+      },
+      "ext-odd-component-2-option-3": {
+        "thought": "选择“-12”与题设条件不符。",
+        "correction": "奇分量定义为 xₒ(t)=[x(t)−x(−t)]/2。代入得 6。"
+      },
+      "ext-reversed-support-1-option-0": {
+        "thought": "选择“1 s”与题设条件不符。",
+        "correction": "解 L≤b−at≤R（a>0）得 (b−R)/a≤t≤(b−L)/a，反转后左右端点交换。代入得 -1 s。"
+      },
+      "ext-reversed-support-1-option-1": {
+        "thought": "选择“-2 s”与题设条件不符。",
+        "correction": "解 L≤b−at≤R（a>0）得 (b−R)/a≤t≤(b−L)/a，反转后左右端点交换。代入得 -1 s。"
+      },
+      "ext-reversed-support-1-option-2": {
+        "thought": "选择“4 s”与题设条件不符。",
+        "correction": "解 L≤b−at≤R（a>0）得 (b−R)/a≤t≤(b−L)/a，反转后左右端点交换。代入得 -1 s。"
+      },
+      "ext-reversed-support-2-option-0": {
+        "thought": "选择“0.4 s”与题设条件不符。",
+        "correction": "解 L≤b−at≤R（a>0）得 (b−R)/a≤t≤(b−L)/a，反转后左右端点交换。代入得 -0.4 s。"
+      },
+      "ext-reversed-support-2-option-1": {
+        "thought": "选择“-2 s”与题设条件不符。",
+        "correction": "解 L≤b−at≤R（a>0）得 (b−R)/a≤t≤(b−L)/a，反转后左右端点交换。代入得 -0.4 s。"
+      },
+      "ext-reversed-support-2-option-3": {
+        "thought": "选择“10 s”与题设条件不符。",
+        "correction": "解 L≤b−at≤R（a>0）得 (b−R)/a≤t≤(b−L)/a，反转后左右端点交换。代入得 -0.4 s。"
+      },
+      "ext-scaled-signal-energy-1-option-1": {
+        "thought": "选择“1.5”与题设条件不符。",
+        "correction": "幅度乘 k 使能量乘 k²，时间缩放使能量除以 |a|，反转不改变能量。代入得 3。"
+      },
+      "ext-scaled-signal-energy-1-option-2": {
+        "thought": "选择“48”与题设条件不符。",
+        "correction": "幅度乘 k 使能量乘 k²，时间缩放使能量除以 |a|，反转不改变能量。代入得 3。"
+      },
+      "ext-scaled-signal-energy-1-option-3": {
+        "thought": "选择“0.75”与题设条件不符。",
+        "correction": "幅度乘 k 使能量乘 k²，时间缩放使能量除以 |a|，反转不改变能量。代入得 3。"
+      },
+      "ext-scaled-signal-energy-2-option-0": {
+        "thought": "选择“4.285714”与题设条件不符。",
+        "correction": "幅度乘 k 使能量乘 k²，时间缩放使能量除以 |a|，反转不改变能量。代入得 21.428571。"
+      },
+      "ext-scaled-signal-energy-2-option-1": {
+        "thought": "选择“1050”与题设条件不符。",
+        "correction": "幅度乘 k 使能量乘 k²，时间缩放使能量除以 |a|，反转不改变能量。代入得 21.428571。"
+      },
+      "ext-scaled-signal-energy-2-option-2": {
+        "thought": "选择“0.857143”与题设条件不符。",
+        "correction": "幅度乘 k 使能量乘 k²，时间缩放使能量除以 |a|，反转不改变能量。代入得 21.428571。"
+      },
+      "ext-commensurate-period-1-option-0": {
+        "thought": "选择“0.5 s”与题设条件不符。",
+        "correction": "两项非零，基本频率为两个整数频率的最大公约数，T₀=1/gcd(f₁,f₂)。代入得 1 s。"
+      },
+      "ext-commensurate-period-1-option-2": {
+        "thought": "选择“0.333333 s”与题设条件不符。",
+        "correction": "两项非零，基本频率为两个整数频率的最大公约数，T₀=1/gcd(f₁,f₂)。代入得 1 s。"
+      },
+      "ext-commensurate-period-1-option-3": {
+        "thought": "选择“0.2 s”与题设条件不符。",
+        "correction": "两项非零，基本频率为两个整数频率的最大公约数，T₀=1/gcd(f₁,f₂)。代入得 1 s。"
+      },
+      "ext-commensurate-period-2-option-1": {
+        "thought": "选择“0.125 s”与题设条件不符。",
+        "correction": "两项非零，基本频率为两个整数频率的最大公约数，T₀=1/gcd(f₁,f₂)。代入得 0.25 s。"
+      },
+      "ext-commensurate-period-2-option-2": {
+        "thought": "选择“0.083333 s”与题设条件不符。",
+        "correction": "两项非零，基本频率为两个整数频率的最大公约数，T₀=1/gcd(f₁,f₂)。代入得 0.25 s。"
+      },
+      "ext-commensurate-period-2-option-3": {
+        "thought": "选择“0.05 s”与题设条件不符。",
+        "correction": "两项非零，基本频率为两个整数频率的最大公约数，T₀=1/gcd(f₁,f₂)。代入得 0.25 s。"
+      },
+      "ext-discrete-period-1-option-0": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "周期须满足 pN/q 为整数，故 N=q/gcd(p,q)；本题分子分母互质。代入得 5。"
+      },
+      "ext-discrete-period-1-option-1": {
+        "thought": "选择“2.5”与题设条件不符。",
+        "correction": "周期须满足 pN/q 为整数，故 N=q/gcd(p,q)；本题分子分母互质。代入得 5。"
+      },
+      "ext-discrete-period-1-option-3": {
+        "thought": "选择“10”与题设条件不符。",
+        "correction": "周期须满足 pN/q 为整数，故 N=q/gcd(p,q)；本题分子分母互质。代入得 5。"
+      },
+      "ext-discrete-period-2-option-0": {
+        "thought": "选择“5”与题设条件不符。",
+        "correction": "周期须满足 pN/q 为整数，故 N=q/gcd(p,q)；本题分子分母互质。代入得 12。"
+      },
+      "ext-discrete-period-2-option-2": {
+        "thought": "选择“2.4”与题设条件不符。",
+        "correction": "周期须满足 pN/q 为整数，故 N=q/gcd(p,q)；本题分子分母互质。代入得 12。"
+      },
+      "ext-discrete-period-2-option-3": {
+        "thought": "选择“24”与题设条件不符。",
+        "correction": "周期须满足 pN/q 为整数，故 N=q/gcd(p,q)；本题分子分母互质。代入得 12。"
+      },
+      "ext-affine-impulse-area-1-option-0": {
+        "thought": "选择“-8”与题设条件不符。",
+        "correction": "δ(at−b) 的面积为 1/|a|，平移不改变面积，外部系数仍需乘入。代入得 2。"
+      },
+      "ext-affine-impulse-area-1-option-1": {
+        "thought": "选择“-2”与题设条件不符。",
+        "correction": "δ(at−b) 的面积为 1/|a|，平移不改变面积，外部系数仍需乘入。代入得 2。"
+      },
+      "ext-affine-impulse-area-1-option-2": {
+        "thought": "选择“8”与题设条件不符。",
+        "correction": "δ(at−b) 的面积为 1/|a|，平移不改变面积，外部系数仍需乘入。代入得 2。"
+      },
+      "ext-affine-impulse-area-2-option-0": {
+        "thought": "选择“-35”与题设条件不符。",
+        "correction": "δ(at−b) 的面积为 1/|a|，平移不改变面积，外部系数仍需乘入。代入得 1.4。"
+      },
+      "ext-affine-impulse-area-2-option-1": {
+        "thought": "选择“-1.4”与题设条件不符。",
+        "correction": "δ(at−b) 的面积为 1/|a|，平移不改变面积，外部系数仍需乘入。代入得 1.4。"
+      },
+      "ext-affine-impulse-area-2-option-3": {
+        "thought": "选择“35”与题设条件不符。",
+        "correction": "δ(at−b) 的面积为 1/|a|，平移不改变面积，外部系数仍需乘入。代入得 1.4。"
+      },
+      "ext-affine-impulse-sift-1-option-1": {
+        "thought": "选择“7”与题设条件不符。",
+        "correction": "冲激位于 t=b/a，还要乘尺度权重 1/|a|，结果为 (cb/a+d)/|a|。代入得 3.5。"
+      },
+      "ext-affine-impulse-sift-1-option-2": {
+        "thought": "选择“6.5”与题设条件不符。",
+        "correction": "冲激位于 t=b/a，还要乘尺度权重 1/|a|，结果为 (cb/a+d)/|a|。代入得 3.5。"
+      },
+      "ext-affine-impulse-sift-1-option-3": {
+        "thought": "选择“1.25”与题设条件不符。",
+        "correction": "冲激位于 t=b/a，还要乘尺度权重 1/|a|，结果为 (cb/a+d)/|a|。代入得 3.5。"
+      },
+      "ext-affine-impulse-sift-2-option-0": {
+        "thought": "选择“16”与题设条件不符。",
+        "correction": "冲激位于 t=b/a，还要乘尺度权重 1/|a|，结果为 (cb/a+d)/|a|。代入得 3.2。"
+      },
+      "ext-affine-impulse-sift-2-option-1": {
+        "thought": "选择“12.8”与题设条件不符。",
+        "correction": "冲激位于 t=b/a，还要乘尺度权重 1/|a|，结果为 (cb/a+d)/|a|。代入得 3.2。"
+      },
+      "ext-affine-impulse-sift-2-option-2": {
+        "thought": "选择“1.4”与题设条件不符。",
+        "correction": "冲激位于 t=b/a，还要乘尺度权重 1/|a|，结果为 (cb/a+d)/|a|。代入得 3.2。"
+      },
+      "ext-step-window-area-1-option-0": {
+        "thought": "选择“12”与题设条件不符。",
+        "correction": "两个阶跃之差形成宽 R−L、高 A 的矩形，面积为 A(R−L)。代入得 8。"
+      },
+      "ext-step-window-area-1-option-2": {
+        "thought": "选择“4”与题设条件不符。",
+        "correction": "两个阶跃之差形成宽 R−L、高 A 的矩形，面积为 A(R−L)。代入得 8。"
+      },
+      "ext-step-window-area-1-option-3": {
+        "thought": "选择“16”与题设条件不符。",
+        "correction": "两个阶跃之差形成宽 R−L、高 A 的矩形，面积为 A(R−L)。代入得 8。"
+      },
+      "ext-step-window-area-2-option-1": {
+        "thought": "选择“90”与题设条件不符。",
+        "correction": "两个阶跃之差形成宽 R−L、高 A 的矩形，面积为 A(R−L)。代入得 50。"
+      },
+      "ext-step-window-area-2-option-2": {
+        "thought": "选择“10”与题设条件不符。",
+        "correction": "两个阶跃之差形成宽 R−L、高 A 的矩形，面积为 A(R−L)。代入得 50。"
+      },
+      "ext-step-window-area-2-option-3": {
+        "thought": "选择“250”与题设条件不符。",
+        "correction": "两个阶跃之差形成宽 R−L、高 A 的矩形，面积为 A(R−L)。代入得 50。"
+      },
+      "ext-differentiator-amplitude-1-option-0": {
+        "thought": "选择“0.75”与题设条件不符。",
+        "correction": "对正弦求导得 Aωcos(ωt)，幅度为 Aω；此结论只针对题给正弦输入。代入得 12。"
+      },
+      "ext-differentiator-amplitude-1-option-1": {
+        "thought": "选择“3”与题设条件不符。",
+        "correction": "对正弦求导得 Aωcos(ωt)，幅度为 Aω；此结论只针对题给正弦输入。代入得 12。"
+      },
+      "ext-differentiator-amplitude-1-option-3": {
+        "thought": "选择“4”与题设条件不符。",
+        "correction": "对正弦求导得 Aωcos(ωt)，幅度为 Aω；此结论只针对题给正弦输入。代入得 12。"
+      },
+      "ext-differentiator-amplitude-2-option-0": {
+        "thought": "选择“0.857143”与题设条件不符。",
+        "correction": "对正弦求导得 Aωcos(ωt)，幅度为 Aω；此结论只针对题给正弦输入。代入得 42。"
+      },
+      "ext-differentiator-amplitude-2-option-2": {
+        "thought": "选择“6”与题设条件不符。",
+        "correction": "对正弦求导得 Aωcos(ωt)，幅度为 Aω；此结论只针对题给正弦输入。代入得 42。"
+      },
+      "ext-differentiator-amplitude-2-option-3": {
+        "thought": "选择“7”与题设条件不符。",
+        "correction": "对正弦求导得 Aωcos(ωt)，幅度为 Aω；此结论只针对题给正弦输入。代入得 42。"
+      },
+      "ext-difference-equation-order-1-option-0": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "差分方程阶数是未知输出序列最高序号与最低序号之差。代入得 3。"
+      },
+      "ext-difference-equation-order-1-option-1": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "差分方程阶数是未知输出序列最高序号与最低序号之差。代入得 3。"
+      },
+      "ext-difference-equation-order-1-option-2": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "差分方程阶数是未知输出序列最高序号与最低序号之差。代入得 3。"
+      },
+      "ext-difference-equation-order-2-option-0": {
+        "thought": "选择“4”与题设条件不符。",
+        "correction": "差分方程阶数是未知输出序列最高序号与最低序号之差。代入得 9。"
+      },
+      "ext-difference-equation-order-2-option-1": {
+        "thought": "选择“5”与题设条件不符。",
+        "correction": "差分方程阶数是未知输出序列最高序号与最低序号之差。代入得 9。"
+      },
+      "ext-difference-equation-order-2-option-3": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "差分方程阶数是未知输出序列最高序号与最低序号之差。代入得 9。"
+      },
+      "ext-unequal-exponential-convolution-1-option-1": {
+        "thought": "选择“0.548812”与题设条件不符。",
+        "correction": "对 0≤τ≤t 积分，(x*h)(t)=[e^(−at)−e^(−bt)]/(b−a)，a≠b。代入得 0.148411。"
+      },
+      "ext-unequal-exponential-convolution-1-option-2": {
+        "thought": "选择“1.489051”与题设条件不符。",
+        "correction": "对 0≤τ≤t 积分，(x*h)(t)=[e^(−at)−e^(−bt)]/(b−a)，a≠b。代入得 0.148411。"
+      },
+      "ext-unequal-exponential-convolution-1-option-3": {
+        "thought": "选择“0.163746”与题设条件不符。",
+        "correction": "对 0≤τ≤t 积分，(x*h)(t)=[e^(−at)−e^(−bt)]/(b−a)，a≠b。代入得 0.148411。"
+      },
+      "ext-unequal-exponential-convolution-2-option-0": {
+        "thought": "选择“0.000747”与题设条件不符。",
+        "correction": "对 0≤τ≤t 积分，(x*h)(t)=[e^(−at)−e^(−bt)]/(b−a)，a≠b。代入得 0.022447。"
+      },
+      "ext-unequal-exponential-convolution-2-option-1": {
+        "thought": "选择“0.059078”与题设条件不符。",
+        "correction": "对 0≤τ≤t 积分，(x*h)(t)=[e^(−at)−e^(−bt)]/(b−a)，a≠b。代入得 0.022447。"
+      },
+      "ext-unequal-exponential-convolution-2-option-2": {
+        "thought": "选择“0.03261”与题设条件不符。",
+        "correction": "对 0≤τ≤t 积分，(x*h)(t)=[e^(−at)−e^(−bt)]/(b−a)，a≠b。代入得 0.022447。"
+      },
+      "ext-first-order-step-sample-1-option-0": {
+        "thought": "选择“1.637462”与题设条件不符。",
+        "correction": "阶跃响应是 h 的积分，y(t)=(K/a)[1−e^(−at)]（t≥0）。代入得 0.362538。"
+      },
+      "ext-first-order-step-sample-1-option-2": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "阶跃响应是 h 的积分，y(t)=(K/a)[1−e^(−at)]（t≥0）。代入得 0.362538。"
+      },
+      "ext-first-order-step-sample-1-option-3": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "阶跃响应是 h 的积分，y(t)=(K/a)[1−e^(−at)]（t≥0）。代入得 0.362538。"
+      },
+      "ext-first-order-step-sample-2-option-1": {
+        "thought": "选择“4.323324”与题设条件不符。",
+        "correction": "阶跃响应是 h 的积分，y(t)=(K/a)[1−e^(−at)]（t≥0）。代入得 1.080831。"
+      },
+      "ext-first-order-step-sample-2-option-2": {
+        "thought": "选择“0.169169”与题设条件不符。",
+        "correction": "阶跃响应是 h 的积分，y(t)=(K/a)[1−e^(−at)]（t≥0）。代入得 1.080831。"
+      },
+      "ext-first-order-step-sample-2-option-3": {
+        "thought": "选择“1.25”与题设条件不符。",
+        "correction": "阶跃响应是 h 的积分，y(t)=(K/a)[1−e^(−at)]（t≥0）。代入得 1.080831。"
+      },
+      "ext-natural-response-sample-1-option-0": {
+        "thought": "选择“0.543808”与题设条件不符。",
+        "correction": "一阶齐次方程的解为 y(t)=y(0⁺)e^(−at)，由初值确定系数。代入得 2.456192。"
+      },
+      "ext-natural-response-sample-1-option-1": {
+        "thought": "选择“3.664208”与题设条件不符。",
+        "correction": "一阶齐次方程的解为 y(t)=y(0⁺)e^(−at)，由初值确定系数。代入得 2.456192。"
+      },
+      "ext-natural-response-sample-1-option-3": {
+        "thought": "选择“0.818731”与题设条件不符。",
+        "correction": "一阶齐次方程的解为 y(t)=y(0⁺)e^(−at)，由初值确定系数。代入得 2.456192。"
+      },
+      "ext-natural-response-sample-2-option-0": {
+        "thought": "选择“5.187988”与题设条件不符。",
+        "correction": "一阶齐次方程的解为 y(t)=y(0⁺)e^(−at)，由初值确定系数。代入得 0.812012。"
+      },
+      "ext-natural-response-sample-2-option-2": {
+        "thought": "选择“44.334337”与题设条件不符。",
+        "correction": "一阶齐次方程的解为 y(t)=y(0⁺)e^(−at)，由初值确定系数。代入得 0.812012。"
+      },
+      "ext-natural-response-sample-2-option-3": {
+        "thought": "选择“0.135335”与题设条件不符。",
+        "correction": "一阶齐次方程的解为 y(t)=y(0⁺)e^(−at)，由初值确定系数。代入得 0.812012。"
+      },
+      "ext-total-response-sample-1-option-0": {
+        "thought": "选择“0.271904”与题设条件不符。",
+        "correction": "全响应为稳态值加暂态：y(t)=B/a+[y(0⁺)−B/a]e^(−at)。代入得 3.546827。"
+      },
+      "ext-total-response-sample-1-option-1": {
+        "thought": "选择“3.274923”与题设条件不符。",
+        "correction": "全响应为稳态值加暂态：y(t)=B/a+[y(0⁺)−B/a]e^(−at)。代入得 3.546827。"
+      },
+      "ext-total-response-sample-1-option-2": {
+        "thought": "选择“1.5”与题设条件不符。",
+        "correction": "全响应为稳态值加暂态：y(t)=B/a+[y(0⁺)−B/a]e^(−at)。代入得 3.546827。"
+      },
+      "ext-total-response-sample-2-option-0": {
+        "thought": "选择“1.556396”与题设条件不符。",
+        "correction": "全响应为稳态值加暂态：y(t)=B/a+[y(0⁺)−B/a]e^(−at)。代入得 2.503743。"
+      },
+      "ext-total-response-sample-2-option-1": {
+        "thought": "选择“0.947347”与题设条件不符。",
+        "correction": "全响应为稳态值加暂态：y(t)=B/a+[y(0⁺)−B/a]e^(−at)。代入得 2.503743。"
+      },
+      "ext-total-response-sample-2-option-3": {
+        "thought": "选择“1.8”与题设条件不符。",
+        "correction": "全响应为稳态值加暂态：y(t)=B/a+[y(0⁺)−B/a]e^(−at)。代入得 2.503743。"
+      },
+      "ext-pulse-response-after-end-1-option-1": {
+        "thought": "选择“0.32968”与题设条件不符。",
+        "correction": "脉冲输入是两个错位阶跃之差；在 t=2T，y=(1−e^(−aT))e^(−aT)。代入得 0.148411。"
+      },
+      "ext-pulse-response-after-end-1-option-2": {
+        "thought": "选择“0.818731”与题设条件不符。",
+        "correction": "脉冲输入是两个错位阶跃之差；在 t=2T，y=(1−e^(−aT))e^(−aT)。代入得 0.148411。"
+      },
+      "ext-pulse-response-after-end-1-option-3": {
+        "thought": "选择“0.181269”与题设条件不符。",
+        "correction": "脉冲输入是两个错位阶跃之差；在 t=2T，y=(1−e^(−aT))e^(−aT)。代入得 0.148411。"
+      },
+      "ext-pulse-response-after-end-2-option-0": {
+        "thought": "选择“0.981684”与题设条件不符。",
+        "correction": "脉冲输入是两个错位阶跃之差；在 t=2T，y=(1−e^(−aT))e^(−aT)。代入得 0.11702。"
+      },
+      "ext-pulse-response-after-end-2-option-1": {
+        "thought": "选择“0.135335”与题设条件不符。",
+        "correction": "脉冲输入是两个错位阶跃之差；在 t=2T，y=(1−e^(−aT))e^(−aT)。代入得 0.11702。"
+      },
+      "ext-pulse-response-after-end-2-option-2": {
+        "thought": "选择“0.864665”与题设条件不符。",
+        "correction": "脉冲输入是两个错位阶跃之差；在 t=2T，y=(1−e^(−aT))e^(−aT)。代入得 0.11702。"
+      },
+      "ext-rectangle-convolution-sample-1-option-0": {
+        "thought": "选择“48”与题设条件不符。",
+        "correction": "重叠长度为 max(0,min(T₁,t)−max(0,t−T₂))，再乘两个幅度 AB。代入得 18。"
+      },
+      "ext-rectangle-convolution-sample-1-option-2": {
+        "thought": "选择“3”与题设条件不符。",
+        "correction": "重叠长度为 max(0,min(T₁,t)−max(0,t−T₂))，再乘两个幅度 AB。代入得 18。"
+      },
+      "ext-rectangle-convolution-sample-1-option-3": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "重叠长度为 max(0,min(T₁,t)−max(0,t−T₂))，再乘两个幅度 AB。代入得 18。"
+      },
+      "ext-rectangle-convolution-sample-2-option-1": {
+        "thought": "选择“180”与题设条件不符。",
+        "correction": "重叠长度为 max(0,min(T₁,t)−max(0,t−T₂))，再乘两个幅度 AB。代入得 90。"
+      },
+      "ext-rectangle-convolution-sample-2-option-2": {
+        "thought": "选择“420”与题设条件不符。",
+        "correction": "重叠长度为 max(0,min(T₁,t)−max(0,t−T₂))，再乘两个幅度 AB。代入得 90。"
+      },
+      "ext-rectangle-convolution-sample-2-option-3": {
+        "thought": "选择“6”与题设条件不符。",
+        "correction": "重叠长度为 max(0,min(T₁,t)−max(0,t−T₂))，再乘两个幅度 AB。代入得 90。"
+      },
+      "ext-shifted-convolution-end-1-option-0": {
+        "thought": "选择“3 s”与题设条件不符。",
+        "correction": "两个非负矩形的卷积支撑为 [L₁+L₂,R₁+R₂]，右端点是两右端点相加。代入得 8 s。"
+      },
+      "ext-shifted-convolution-end-1-option-1": {
+        "thought": "选择“5 s”与题设条件不符。",
+        "correction": "两个非负矩形的卷积支撑为 [L₁+L₂,R₁+R₂]，右端点是两右端点相加。代入得 8 s。"
+      },
+      "ext-shifted-convolution-end-1-option-3": {
+        "thought": "选择“-2 s”与题设条件不符。",
+        "correction": "两个非负矩形的卷积支撑为 [L₁+L₂,R₁+R₂]，右端点是两右端点相加。代入得 8 s。"
+      },
+      "ext-shifted-convolution-end-2-option-0": {
+        "thought": "选择“9 s”与题设条件不符。",
+        "correction": "两个非负矩形的卷积支撑为 [L₁+L₂,R₁+R₂]，右端点是两右端点相加。代入得 14 s。"
+      },
+      "ext-shifted-convolution-end-2-option-2": {
+        "thought": "选择“8 s”与题设条件不符。",
+        "correction": "两个非负矩形的卷积支撑为 [L₁+L₂,R₁+R₂]，右端点是两右端点相加。代入得 14 s。"
+      },
+      "ext-shifted-convolution-end-2-option-3": {
+        "thought": "选择“5 s”与题设条件不符。",
+        "correction": "两个非负矩形的卷积支撑为 [L₁+L₂,R₁+R₂]，右端点是两右端点相加。代入得 14 s。"
+      },
+      "ext-convolution-total-area-1-option-0": {
+        "thought": "选择“2.75”与题设条件不符。",
+        "correction": "绝对可积信号的卷积面积等于两信号面积之积：(A/α)(B/β)。代入得 1.875。"
+      },
+      "ext-convolution-total-area-1-option-1": {
+        "thought": "选择“2.5”与题设条件不符。",
+        "correction": "绝对可积信号的卷积面积等于两信号面积之积：(A/α)(B/β)。代入得 1.875。"
+      },
+      "ext-convolution-total-area-1-option-2": {
+        "thought": "选择“15”与题设条件不符。",
+        "correction": "绝对可积信号的卷积面积等于两信号面积之积：(A/α)(B/β)。代入得 1.875。"
+      },
+      "ext-convolution-total-area-2-option-0": {
+        "thought": "选择“2.342857”与题设条件不符。",
+        "correction": "绝对可积信号的卷积面积等于两信号面积之积：(A/α)(B/β)。代入得 1.371429。"
+      },
+      "ext-convolution-total-area-2-option-1": {
+        "thought": "选择“4”与题设条件不符。",
+        "correction": "绝对可积信号的卷积面积等于两信号面积之积：(A/α)(B/β)。代入得 1.371429。"
+      },
+      "ext-convolution-total-area-2-option-3": {
+        "thought": "选择“48”与题设条件不符。",
+        "correction": "绝对可积信号的卷积面积等于两信号面积之积：(A/α)(B/β)。代入得 1.371429。"
+      },
+      "ext-discrete-convolution-middle-1-option-1": {
+        "thought": "选择“13”与题设条件不符。",
+        "correction": "由 y[n]=Σₖx[k]h[n−k]，y[1]=x[0]h[1]+x[1]h[0]。代入得 11。"
+      },
+      "ext-discrete-convolution-middle-1-option-2": {
+        "thought": "选择“3”与题设条件不符。",
+        "correction": "由 y[n]=Σₖx[k]h[n−k]，y[1]=x[0]h[1]+x[1]h[0]。代入得 11。"
+      },
+      "ext-discrete-convolution-middle-1-option-3": {
+        "thought": "选择“10”与题设条件不符。",
+        "correction": "由 y[n]=Σₖx[k]h[n−k]，y[1]=x[0]h[1]+x[1]h[0]。代入得 11。"
+      },
+      "ext-discrete-convolution-middle-2-option-0": {
+        "thought": "选择“64”与题设条件不符。",
+        "correction": "由 y[n]=Σₖx[k]h[n−k]，y[1]=x[0]h[1]+x[1]h[0]。代入得 62。"
+      },
+      "ext-discrete-convolution-middle-2-option-1": {
+        "thought": "选择“24”与题设条件不符。",
+        "correction": "由 y[n]=Σₖx[k]h[n−k]，y[1]=x[0]h[1]+x[1]h[0]。代入得 62。"
+      },
+      "ext-discrete-convolution-middle-2-option-2": {
+        "thought": "选择“40”与题设条件不符。",
+        "correction": "由 y[n]=Σₖx[k]h[n−k]，y[1]=x[0]h[1]+x[1]h[0]。代入得 62。"
+      },
+      "ext-ramp-step-convolution-1-option-0": {
+        "thought": "选择“6”与题设条件不符。",
+        "correction": "与单位阶跃卷积相当于积分：y(t)=∫₀ᵗAτ dτ=At²/2（t≥0）。代入得 9。"
+      },
+      "ext-ramp-step-convolution-1-option-2": {
+        "thought": "选择“18”与题设条件不符。",
+        "correction": "与单位阶跃卷积相当于积分：y(t)=∫₀ᵗAτ dτ=At²/2（t≥0）。代入得 9。"
+      },
+      "ext-ramp-step-convolution-1-option-3": {
+        "thought": "选择“4.5”与题设条件不符。",
+        "correction": "与单位阶跃卷积相当于积分：y(t)=∫₀ᵗAτ dτ=At²/2（t≥0）。代入得 9。"
+      },
+      "ext-ramp-step-convolution-2-option-1": {
+        "thought": "选择“30”与题设条件不符。",
+        "correction": "与单位阶跃卷积相当于积分：y(t)=∫₀ᵗAτ dτ=At²/2（t≥0）。代入得 90。"
+      },
+      "ext-ramp-step-convolution-2-option-2": {
+        "thought": "选择“180”与题设条件不符。",
+        "correction": "与单位阶跃卷积相当于积分：y(t)=∫₀ᵗAτ dτ=At²/2（t≥0）。代入得 90。"
+      },
+      "ext-ramp-step-convolution-2-option-3": {
+        "thought": "选择“18”与题设条件不符。",
+        "correction": "与单位阶跃卷积相当于积分：y(t)=∫₀ᵗAτ dτ=At²/2（t≥0）。代入得 90。"
+      },
+      "ext-two-impulse-response-1-option-0": {
+        "thought": "选择“4.093654”与题设条件不符。",
+        "correction": "冲激卷积只产生移位与增益：y(t)=Ah(t)+Bh(t−T)，在 t=2T 代入。代入得 4.351974。"
+      },
+      "ext-two-impulse-response-1-option-1": {
+        "thought": "选择“1.637462”与题设条件不符。",
+        "correction": "冲激卷积只产生移位与增益：y(t)=Ah(t)+Bh(t−T)，在 t=2T 代入。代入得 4.351974。"
+      },
+      "ext-two-impulse-response-1-option-3": {
+        "thought": "选择“2.714512”与题设条件不符。",
+        "correction": "冲激卷积只产生移位与增益：y(t)=Ah(t)+Bh(t−T)，在 t=2T 代入。代入得 4.351974。"
+      },
+      "ext-two-impulse-response-2-option-0": {
+        "thought": "选择“0.448384”与题设条件不符。",
+        "correction": "冲激卷积只产生移位与增益：y(t)=Ah(t)+Bh(t−T)，在 t=2T 代入。代入得 1.41519。"
+      },
+      "ext-two-impulse-response-2-option-2": {
+        "thought": "选择“0.203811”与题设条件不符。",
+        "correction": "冲激卷积只产生移位与增益：y(t)=Ah(t)+Bh(t−T)，在 t=2T 代入。代入得 1.41519。"
+      },
+      "ext-two-impulse-response-2-option-3": {
+        "thought": "选择“1.211379”与题设条件不符。",
+        "correction": "冲激卷积只产生移位与增益：y(t)=Ah(t)+Bh(t−T)，在 t=2T 代入。代入得 1.41519。"
+      },
+      "ext-repeated-pole-step-final-1-option-0": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "阶跃终值等于冲激响应面积，∫₀∞Kt e^(−at)dt=K/a²。代入得 1。"
+      },
+      "ext-repeated-pole-step-final-1-option-1": {
+        "thought": "选择“8”与题设条件不符。",
+        "correction": "阶跃终值等于冲激响应面积，∫₀∞Kt e^(−at)dt=K/a²。代入得 1。"
+      },
+      "ext-repeated-pole-step-final-1-option-2": {
+        "thought": "选择“0.5”与题设条件不符。",
+        "correction": "阶跃终值等于冲激响应面积，∫₀∞Kt e^(−at)dt=K/a²。代入得 1。"
+      },
+      "ext-repeated-pole-step-final-2-option-0": {
+        "thought": "选择“1.4”与题设条件不符。",
+        "correction": "阶跃终值等于冲激响应面积，∫₀∞Kt e^(−at)dt=K/a²。代入得 0.28。"
+      },
+      "ext-repeated-pole-step-final-2-option-1": {
+        "thought": "选择“35”与题设条件不符。",
+        "correction": "阶跃终值等于冲激响应面积，∫₀∞Kt e^(−at)dt=K/a²。代入得 0.28。"
+      },
+      "ext-repeated-pole-step-final-2-option-3": {
+        "thought": "选择“0.2”与题设条件不符。",
+        "correction": "阶跃终值等于冲激响应面积，∫₀∞Kt e^(−at)dt=K/a²。代入得 0.28。"
+      },
+      "ext-second-order-impulse-jump-1-option-1": {
+        "thought": "选择“7”与题设条件不符。",
+        "correction": "在冲激两侧积分，m[y′(0⁺)−y′(0⁻)]=J；初始静止，故 y′(0⁺)=J/m。代入得 3.5。"
+      },
+      "ext-second-order-impulse-jump-1-option-2": {
+        "thought": "选择“2.333333”与题设条件不符。",
+        "correction": "在冲激两侧积分，m[y′(0⁺)−y′(0⁻)]=J；初始静止，故 y′(0⁺)=J/m。代入得 3.5。"
+      },
+      "ext-second-order-impulse-jump-1-option-3": {
+        "thought": "选择“0.285714”与题设条件不符。",
+        "correction": "在冲激两侧积分，m[y′(0⁺)−y′(0⁻)]=J；初始静止，故 y′(0⁺)=J/m。代入得 3.5。"
+      },
+      "ext-second-order-impulse-jump-2-option-0": {
+        "thought": "选择“16”与题设条件不符。",
+        "correction": "在冲激两侧积分，m[y′(0⁺)−y′(0⁻)]=J；初始静止，故 y′(0⁺)=J/m。代入得 3.2。"
+      },
+      "ext-second-order-impulse-jump-2-option-1": {
+        "thought": "选择“2.666667”与题设条件不符。",
+        "correction": "在冲激两侧积分，m[y′(0⁺)−y′(0⁻)]=J；初始静止，故 y′(0⁺)=J/m。代入得 3.2。"
+      },
+      "ext-second-order-impulse-jump-2-option-2": {
+        "thought": "选择“0.3125”与题设条件不符。",
+        "correction": "在冲激两侧积分，m[y′(0⁺)−y′(0⁻)]=J；初始静止，故 y′(0⁺)=J/m。代入得 3.2。"
+      },
+      "ext-first-order-initial-slope-1-option-0": {
+        "thought": "选择“5”与题设条件不符。",
+        "correction": "把右侧初值直接代入微分方程：y′(0⁺)=B−ay(0⁺)。代入得 1。"
+      },
+      "ext-first-order-initial-slope-1-option-2": {
+        "thought": "选择“1.5”与题设条件不符。",
+        "correction": "把右侧初值直接代入微分方程：y′(0⁺)=B−ay(0⁺)。代入得 1。"
+      },
+      "ext-first-order-initial-slope-1-option-3": {
+        "thought": "选择“-2”与题设条件不符。",
+        "correction": "把右侧初值直接代入微分方程：y′(0⁺)=B−ay(0⁺)。代入得 1。"
+      },
+      "ext-first-order-initial-slope-2-option-1": {
+        "thought": "选择“26”与题设条件不符。",
+        "correction": "把右侧初值直接代入微分方程：y′(0⁺)=B−ay(0⁺)。代入得 -14。"
+      },
+      "ext-first-order-initial-slope-2-option-2": {
+        "thought": "选择“1.2”与题设条件不符。",
+        "correction": "把右侧初值直接代入微分方程：y′(0⁺)=B−ay(0⁺)。代入得 -14。"
+      },
+      "ext-first-order-initial-slope-2-option-3": {
+        "thought": "选择“-20”与题设条件不符。",
+        "correction": "把右侧初值直接代入微分方程：y′(0⁺)=B−ay(0⁺)。代入得 -14。"
+      },
+      "ext-complex-root-frequency-1-option-0": {
+        "thought": "选择“2 rad/s”与题设条件不符。",
+        "correction": "共轭根 α±jβ 对应 e^(αt)(Ccosβt+Dsinβt)，角频率是虚部的绝对值 |β|。代入得 4 rad/s。"
+      },
+      "ext-complex-root-frequency-1-option-1": {
+        "thought": "选择“20 rad/s”与题设条件不符。",
+        "correction": "共轭根 α±jβ 对应 e^(αt)(Ccosβt+Dsinβt)，角频率是虚部的绝对值 |β|。代入得 4 rad/s。"
+      },
+      "ext-complex-root-frequency-1-option-3": {
+        "thought": "选择“8 rad/s”与题设条件不符。",
+        "correction": "共轭根 α±jβ 对应 e^(αt)(Ccosβt+Dsinβt)，角频率是虚部的绝对值 |β|。代入得 4 rad/s。"
+      },
+      "ext-complex-root-frequency-2-option-0": {
+        "thought": "选择“5 rad/s”与题设条件不符。",
+        "correction": "共轭根 α±jβ 对应 e^(αt)(Ccosβt+Dsinβt)，角频率是虚部的绝对值 |β|。代入得 7 rad/s。"
+      },
+      "ext-complex-root-frequency-2-option-2": {
+        "thought": "选择“74 rad/s”与题设条件不符。",
+        "correction": "共轭根 α±jβ 对应 e^(αt)(Ccosβt+Dsinβt)，角频率是虚部的绝对值 |β|。代入得 7 rad/s。"
+      },
+      "ext-complex-root-frequency-2-option-3": {
+        "thought": "选择“14 rad/s”与题设条件不符。",
+        "correction": "共轭根 α±jβ 对应 e^(αt)(Ccosβt+Dsinβt)，角频率是虚部的绝对值 |β|。代入得 7 rad/s。"
+      },
+      "ext-complex-root-envelope-1-option-0": {
+        "thought": "选择“0.67032”与题设条件不符。",
+        "correction": "特征根的实部控制振幅包络，包络比为 e^(−at)，虚部只控制振荡频率。代入得 0.818731。"
+      },
+      "ext-complex-root-envelope-1-option-1": {
+        "thought": "选择“1.221403”与题设条件不符。",
+        "correction": "特征根的实部控制振幅包络，包络比为 e^(−at)，虚部只控制振荡频率。代入得 0.818731。"
+      },
+      "ext-complex-root-envelope-1-option-2": {
+        "thought": "选择“0.181269”与题设条件不符。",
+        "correction": "特征根的实部控制振幅包络，包络比为 e^(−at)，虚部只控制振荡频率。代入得 0.818731。"
+      },
+      "ext-complex-root-envelope-2-option-0": {
+        "thought": "选择“0.06081”与题设条件不符。",
+        "correction": "特征根的实部控制振幅包络，包络比为 e^(−at)，虚部只控制振荡频率。代入得 0.135335。"
+      },
+      "ext-complex-root-envelope-2-option-1": {
+        "thought": "选择“7.389056”与题设条件不符。",
+        "correction": "特征根的实部控制振幅包络，包络比为 e^(−at)，虚部只控制振荡频率。代入得 0.135335。"
+      },
+      "ext-complex-root-envelope-2-option-3": {
+        "thought": "选择“0.864665”与题设条件不符。",
+        "correction": "特征根的实部控制振幅包络，包络比为 e^(−at)，虚部只控制振荡频率。代入得 0.135335。"
+      },
+      "ext-second-order-step-gain-1-option-1": {
+        "thought": "选择“1.333333”与题设条件不符。",
+        "correction": "二阶分母各系数为正，极点在左半平面；阶跃终值为直流增益 H(0)=K/c。代入得 0.666667。"
+      },
+      "ext-second-order-step-gain-1-option-2": {
+        "thought": "选择“1.5”与题设条件不符。",
+        "correction": "二阶分母各系数为正，极点在左半平面；阶跃终值为直流增益 H(0)=K/c。代入得 0.666667。"
+      },
+      "ext-second-order-step-gain-1-option-3": {
+        "thought": "选择“4”与题设条件不符。",
+        "correction": "二阶分母各系数为正，极点在左半平面；阶跃终值为直流增益 H(0)=K/c。代入得 0.666667。"
+      },
+      "ext-second-order-step-gain-2-option-0": {
+        "thought": "选择“1.166667”与题设条件不符。",
+        "correction": "二阶分母各系数为正，极点在左半平面；阶跃终值为直流增益 H(0)=K/c。代入得 0.777778。"
+      },
+      "ext-second-order-step-gain-2-option-1": {
+        "thought": "选择“1.285714”与题设条件不符。",
+        "correction": "二阶分母各系数为正，极点在左半平面；阶跃终值为直流增益 H(0)=K/c。代入得 0.777778。"
+      },
+      "ext-second-order-step-gain-2-option-2": {
+        "thought": "选择“7”与题设条件不符。",
+        "correction": "二阶分母各系数为正，极点在左半平面；阶跃终值为直流增益 H(0)=K/c。代入得 0.777778。"
+      },
+      "ext-critical-pole-1-option-0": {
+        "thought": "选择“2 s⁻¹”与题设条件不符。",
+        "correction": "特征多项式是 (s+a)²，重根为 s=−a。代入得 -2 s⁻¹。"
+      },
+      "ext-critical-pole-1-option-2": {
+        "thought": "选择“-4 s⁻¹”与题设条件不符。",
+        "correction": "特征多项式是 (s+a)²，重根为 s=−a。代入得 -2 s⁻¹。"
+      },
+      "ext-critical-pole-1-option-3": {
+        "thought": "选择“0 s⁻¹”与题设条件不符。",
+        "correction": "特征多项式是 (s+a)²，重根为 s=−a。代入得 -2 s⁻¹。"
+      },
+      "ext-critical-pole-2-option-1": {
+        "thought": "选择“5 s⁻¹”与题设条件不符。",
+        "correction": "特征多项式是 (s+a)²，重根为 s=−a。代入得 -5 s⁻¹。"
+      },
+      "ext-critical-pole-2-option-2": {
+        "thought": "选择“-10 s⁻¹”与题设条件不符。",
+        "correction": "特征多项式是 (s+a)²，重根为 s=−a。代入得 -5 s⁻¹。"
+      },
+      "ext-critical-pole-2-option-3": {
+        "thought": "选择“-25 s⁻¹”与题设条件不符。",
+        "correction": "特征多项式是 (s+a)²，重根为 s=−a。代入得 -5 s⁻¹。"
+      },
+      "ext-rectangle-autocorrelation-1-option-0": {
+        "thought": "选择“6”与题设条件不符。",
+        "correction": "矩形自相关为 A²max(T−|τ|,0)，由两个矩形的重叠长度得到。代入得 12。"
+      },
+      "ext-rectangle-autocorrelation-1-option-1": {
+        "thought": "选择“20”与题设条件不符。",
+        "correction": "矩形自相关为 A²max(T−|τ|,0)，由两个矩形的重叠长度得到。代入得 12。"
+      },
+      "ext-rectangle-autocorrelation-1-option-3": {
+        "thought": "选择“28”与题设条件不符。",
+        "correction": "矩形自相关为 A²max(T−|τ|,0)，由两个矩形的重叠长度得到。代入得 12。"
+      },
+      "ext-rectangle-autocorrelation-2-option-0": {
+        "thought": "选择“15”与题设条件不符。",
+        "correction": "矩形自相关为 A²max(T−|τ|,0)，由两个矩形的重叠长度得到。代入得 75。"
+      },
+      "ext-rectangle-autocorrelation-2-option-2": {
+        "thought": "选择“200”与题设条件不符。",
+        "correction": "矩形自相关为 A²max(T−|τ|,0)，由两个矩形的重叠长度得到。代入得 75。"
+      },
+      "ext-rectangle-autocorrelation-2-option-3": {
+        "thought": "选择“325”与题设条件不符。",
+        "correction": "矩形自相关为 A²max(T−|τ|,0)，由两个矩形的重叠长度得到。代入得 75。"
+      },
+      "ext-crosscorrelation-peak-1-option-0": {
+        "thought": "选择“3 s”与题设条件不符。",
+        "correction": "最大值对应完全重叠：y(t−τ)=p(t−τ−b) 与 p(t−a) 对齐，故 τ=a−b。代入得 -3 s。"
+      },
+      "ext-crosscorrelation-peak-1-option-1": {
+        "thought": "选择“5 s”与题设条件不符。",
+        "correction": "最大值对应完全重叠：y(t−τ)=p(t−τ−b) 与 p(t−a) 对齐，故 τ=a−b。代入得 -3 s。"
+      },
+      "ext-crosscorrelation-peak-1-option-2": {
+        "thought": "选择“4 s”与题设条件不符。",
+        "correction": "最大值对应完全重叠：y(t−τ)=p(t−τ−b) 与 p(t−a) 对齐，故 τ=a−b。代入得 -3 s。"
+      },
+      "ext-crosscorrelation-peak-2-option-0": {
+        "thought": "选择“9 s”与题设条件不符。",
+        "correction": "最大值对应完全重叠：y(t−τ)=p(t−τ−b) 与 p(t−a) 对齐，故 τ=a−b。代入得 -9 s。"
+      },
+      "ext-crosscorrelation-peak-2-option-1": {
+        "thought": "选择“17 s”与题设条件不符。",
+        "correction": "最大值对应完全重叠：y(t−τ)=p(t−τ−b) 与 p(t−a) 对齐，故 τ=a−b。代入得 -9 s。"
+      },
+      "ext-crosscorrelation-peak-2-option-3": {
+        "thought": "选择“13 s”与题设条件不符。",
+        "correction": "最大值对应完全重叠：y(t−τ)=p(t−τ−b) 与 p(t−a) 对齐，故 τ=a−b。代入得 -9 s。"
+      },
+      "ext-period-ms-frequency-1-option-1": {
+        "thought": "选择“0.333333 Hz”与题设条件不符。",
+        "correction": "先将毫秒换算成秒，再用 f₀=1/T₀，即 f₀=1000/T₀(ms)。代入得 333.333333 Hz。"
+      },
+      "ext-period-ms-frequency-1-option-2": {
+        "thought": "选择“0.003 Hz”与题设条件不符。",
+        "correction": "先将毫秒换算成秒，再用 f₀=1/T₀，即 f₀=1000/T₀(ms)。代入得 333.333333 Hz。"
+      },
+      "ext-period-ms-frequency-1-option-3": {
+        "thought": "选择“0.666667 Hz”与题设条件不符。",
+        "correction": "先将毫秒换算成秒，再用 f₀=1/T₀，即 f₀=1000/T₀(ms)。代入得 333.333333 Hz。"
+      },
+      "ext-period-ms-frequency-2-option-0": {
+        "thought": "选择“0.111111 Hz”与题设条件不符。",
+        "correction": "先将毫秒换算成秒，再用 f₀=1/T₀，即 f₀=1000/T₀(ms)。代入得 111.111111 Hz。"
+      },
+      "ext-period-ms-frequency-2-option-1": {
+        "thought": "选择“0.009 Hz”与题设条件不符。",
+        "correction": "先将毫秒换算成秒，再用 f₀=1/T₀，即 f₀=1000/T₀(ms)。代入得 111.111111 Hz。"
+      },
+      "ext-period-ms-frequency-2-option-2": {
+        "thought": "选择“0.222222 Hz”与题设条件不符。",
+        "correction": "先将毫秒换算成秒，再用 f₀=1/T₀，即 f₀=1000/T₀(ms)。代入得 111.111111 Hz。"
+      },
+      "ext-sine-series-imaginary-1-option-0": {
+        "thought": "选择“1.5”与题设条件不符。",
+        "correction": "sin(ω₀t)=(e^(jω₀t)−e^(−jω₀t))/(2j)，因此 C₁=A/(2j)=−jA/2。代入得 -1.5。"
+      },
+      "ext-sine-series-imaginary-1-option-2": {
+        "thought": "选择“-3”与题设条件不符。",
+        "correction": "sin(ω₀t)=(e^(jω₀t)−e^(−jω₀t))/(2j)，因此 C₁=A/(2j)=−jA/2。代入得 -1.5。"
+      },
+      "ext-sine-series-imaginary-1-option-3": {
+        "thought": "选择“3”与题设条件不符。",
+        "correction": "sin(ω₀t)=(e^(jω₀t)−e^(−jω₀t))/(2j)，因此 C₁=A/(2j)=−jA/2。代入得 -1.5。"
+      },
+      "ext-sine-series-imaginary-2-option-1": {
+        "thought": "选择“3”与题设条件不符。",
+        "correction": "sin(ω₀t)=(e^(jω₀t)−e^(−jω₀t))/(2j)，因此 C₁=A/(2j)=−jA/2。代入得 -3。"
+      },
+      "ext-sine-series-imaginary-2-option-2": {
+        "thought": "选择“-6”与题设条件不符。",
+        "correction": "sin(ω₀t)=(e^(jω₀t)−e^(−jω₀t))/(2j)，因此 C₁=A/(2j)=−jA/2。代入得 -3。"
+      },
+      "ext-sine-series-imaginary-2-option-3": {
+        "thought": "选择“6”与题设条件不符。",
+        "correction": "sin(ω₀t)=(e^(jω₀t)−e^(−jω₀t))/(2j)，因此 C₁=A/(2j)=−jA/2。代入得 -3。"
+      },
+      "ext-cosine-series-real-1-option-0": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "正频率系数为 C₁=(A/2)e^(jφ)，实部为 (A/2)cosφ；相位角按度换算。代入得 0.5。"
+      },
+      "ext-cosine-series-real-1-option-1": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "正频率系数为 C₁=(A/2)e^(jφ)，实部为 (A/2)cosφ；相位角按度换算。代入得 0.5。"
+      },
+      "ext-cosine-series-real-1-option-3": {
+        "thought": "选择“-2”与题设条件不符。",
+        "correction": "正频率系数为 C₁=(A/2)e^(jφ)，实部为 (A/2)cosφ；相位角按度换算。代入得 0.5。"
+      },
+      "ext-cosine-series-real-2-option-0": {
+        "thought": "选择“-2.5”与题设条件不符。",
+        "correction": "正频率系数为 C₁=(A/2)e^(jφ)，实部为 (A/2)cosφ；相位角按度换算。代入得 -1.25。"
+      },
+      "ext-cosine-series-real-2-option-2": {
+        "thought": "选择“5”与题设条件不符。",
+        "correction": "正频率系数为 C₁=(A/2)e^(jφ)，实部为 (A/2)cosφ；相位角按度换算。代入得 -1.25。"
+      },
+      "ext-cosine-series-real-2-option-3": {
+        "thought": "选择“-5”与题设条件不符。",
+        "correction": "正频率系数为 C₁=(A/2)e^(jφ)，实部为 (A/2)cosφ；相位角按度换算。代入得 -1.25。"
+      },
+      "ext-series-parseval-power-1-option-0": {
+        "thought": "选择“14”与题设条件不符。",
+        "correction": "帕塞瓦尔关系 P=Σ|Cₖ|²；正负频率各贡献一次，P=C₀²+2(Re(C₁)²+Im(C₁)²)。代入得 27。"
+      },
+      "ext-series-parseval-power-1-option-1": {
+        "thought": "选择“11”与题设条件不符。",
+        "correction": "帕塞瓦尔关系 P=Σ|Cₖ|²；正负频率各贡献一次，P=C₀²+2(Re(C₁)²+Im(C₁)²)。代入得 27。"
+      },
+      "ext-series-parseval-power-1-option-2": {
+        "thought": "选择“25”与题设条件不符。",
+        "correction": "帕塞瓦尔关系 P=Σ|Cₖ|²；正负频率各贡献一次，P=C₀²+2(Re(C₁)²+Im(C₁)²)。代入得 27。"
+      },
+      "ext-series-parseval-power-2-option-0": {
+        "thought": "选择“77”与题设条件不符。",
+        "correction": "帕塞瓦尔关系 P=Σ|Cₖ|²；正负频率各贡献一次，P=C₀²+2(Re(C₁)²+Im(C₁)²)。代入得 138。"
+      },
+      "ext-series-parseval-power-2-option-1": {
+        "thought": "选择“26”与题设条件不符。",
+        "correction": "帕塞瓦尔关系 P=Σ|Cₖ|²；正负频率各贡献一次，P=C₀²+2(Re(C₁)²+Im(C₁)²)。代入得 138。"
+      },
+      "ext-series-parseval-power-2-option-3": {
+        "thought": "选择“196”与题设条件不符。",
+        "correction": "帕塞瓦尔关系 P=Σ|Cₖ|²；正负频率各贡献一次，P=C₀²+2(Re(C₁)²+Im(C₁)²)。代入得 138。"
+      },
+      "ext-derivative-spectrum-1-option-1": {
+        "thought": "选择“1.333333”与题设条件不符。",
+        "correction": "时域微分对应 Y(ω)=jωX(ω)，幅度为 |ω|·|X(ω)|。代入得 12。"
+      },
+      "ext-derivative-spectrum-1-option-2": {
+        "thought": "选择“0.75”与题设条件不符。",
+        "correction": "时域微分对应 Y(ω)=jωX(ω)，幅度为 |ω|·|X(ω)|。代入得 12。"
+      },
+      "ext-derivative-spectrum-1-option-3": {
+        "thought": "选择“4”与题设条件不符。",
+        "correction": "时域微分对应 Y(ω)=jωX(ω)，幅度为 |ω|·|X(ω)|。代入得 12。"
+      },
+      "ext-derivative-spectrum-2-option-0": {
+        "thought": "选择“1.166667”与题设条件不符。",
+        "correction": "时域微分对应 Y(ω)=jωX(ω)，幅度为 |ω|·|X(ω)|。代入得 42。"
+      },
+      "ext-derivative-spectrum-2-option-1": {
+        "thought": "选择“0.857143”与题设条件不符。",
+        "correction": "时域微分对应 Y(ω)=jωX(ω)，幅度为 |ω|·|X(ω)|。代入得 42。"
+      },
+      "ext-derivative-spectrum-2-option-2": {
+        "thought": "选择“7”与题设条件不符。",
+        "correction": "时域微分对应 Y(ω)=jωX(ω)，幅度为 |ω|·|X(ω)|。代入得 42。"
+      },
+      "ext-scaled-transform-area-1-option-0": {
+        "thought": "选择“30”与题设条件不符。",
+        "correction": "零频值是面积，幅度因子只乘一次：Y(0)=kX(0)/|a|，不同于能量中的 k²。代入得 7.5。"
+      },
+      "ext-scaled-transform-area-1-option-2": {
+        "thought": "选择“22.5”与题设条件不符。",
+        "correction": "零频值是面积，幅度因子只乘一次：Y(0)=kX(0)/|a|，不同于能量中的 k²。代入得 7.5。"
+      },
+      "ext-scaled-transform-area-1-option-3": {
+        "thought": "选择“2.5”与题设条件不符。",
+        "correction": "零频值是面积，幅度因子只乘一次：Y(0)=kX(0)/|a|，不同于能量中的 k²。代入得 7.5。"
+      },
+      "ext-scaled-transform-area-2-option-1": {
+        "thought": "选择“240”与题设条件不符。",
+        "correction": "零频值是面积，幅度因子只乘一次：Y(0)=kX(0)/|a|，不同于能量中的 k²。代入得 9.6。"
+      },
+      "ext-scaled-transform-area-2-option-2": {
+        "thought": "选择“57.6”与题设条件不符。",
+        "correction": "零频值是面积，幅度因子只乘一次：Y(0)=kX(0)/|a|，不同于能量中的 k²。代入得 9.6。"
+      },
+      "ext-scaled-transform-area-2-option-3": {
+        "thought": "选择“1.6”与题设条件不符。",
+        "correction": "零频值是面积，幅度因子只乘一次：Y(0)=kX(0)/|a|，不同于能量中的 k²。代入得 9.6。"
+      },
+      "ext-exponential-spectrum-magnitude-1-option-0": {
+        "thought": "选择“0.285714”与题设条件不符。",
+        "correction": "X(ω)=A/(a+jω)，分母模为 √(a²+ω²)，故 |X|=A/√(a²+ω²)。代入得 0.4。"
+      },
+      "ext-exponential-spectrum-magnitude-1-option-1": {
+        "thought": "选择“0.666667”与题设条件不符。",
+        "correction": "X(ω)=A/(a+jω)，分母模为 √(a²+ω²)，故 |X|=A/√(a²+ω²)。代入得 0.4。"
+      },
+      "ext-exponential-spectrum-magnitude-1-option-3": {
+        "thought": "选择“0.5”与题设条件不符。",
+        "correction": "X(ω)=A/(a+jω)，分母模为 √(a²+ω²)，故 |X|=A/√(a²+ω²)。代入得 0.4。"
+      },
+      "ext-exponential-spectrum-magnitude-2-option-0": {
+        "thought": "选择“0.294118”与题设条件不符。",
+        "correction": "X(ω)=A/(a+jω)，分母模为 √(a²+ω²)，故 |X|=A/√(a²+ω²)。代入得 0.384615。"
+      },
+      "ext-exponential-spectrum-magnitude-2-option-2": {
+        "thought": "选择“0.416667”与题设条件不符。",
+        "correction": "X(ω)=A/(a+jω)，分母模为 √(a²+ω²)，故 |X|=A/√(a²+ω²)。代入得 0.384615。"
+      },
+      "ext-exponential-spectrum-magnitude-2-option-3": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "X(ω)=A/(a+jω)，分母模为 √(a²+ω²)，故 |X|=A/√(a²+ω²)。代入得 0.384615。"
+      },
+      "ext-bilateral-exponential-dc-1-option-0": {
+        "thought": "选择“0.666667”与题设条件不符。",
+        "correction": "X(0) 等于信号面积；两侧各为 A/a，总面积为 2A/a。代入得 1.333333。"
+      },
+      "ext-bilateral-exponential-dc-1-option-1": {
+        "thought": "选择“12”与题设条件不符。",
+        "correction": "X(0) 等于信号面积；两侧各为 A/a，总面积为 2A/a。代入得 1.333333。"
+      },
+      "ext-bilateral-exponential-dc-1-option-2": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "X(0) 等于信号面积；两侧各为 A/a，总面积为 2A/a。代入得 1.333333。"
+      },
+      "ext-bilateral-exponential-dc-2-option-0": {
+        "thought": "选择“0.833333”与题设条件不符。",
+        "correction": "X(0) 等于信号面积；两侧各为 A/a，总面积为 2A/a。代入得 1.666667。"
+      },
+      "ext-bilateral-exponential-dc-2-option-1": {
+        "thought": "选择“4.166667”与题设条件不符。",
+        "correction": "X(0) 等于信号面积；两侧各为 A/a，总面积为 2A/a。代入得 1.666667。"
+      },
+      "ext-bilateral-exponential-dc-2-option-3": {
+        "thought": "选择“60”与题设条件不符。",
+        "correction": "X(0) 等于信号面积；两侧各为 A/a，总面积为 2A/a。代入得 1.666667。"
+      },
+      "ext-rectangle-spectrum-sample-1-option-1": {
+        "thought": "选择“4”与题设条件不符。",
+        "correction": "对称矩形变换为 X(ω)=2A sin(ωT/2)/ω；代入 ω=π/T 得 2AT/π。代入得 2.546479。"
+      },
+      "ext-rectangle-spectrum-sample-1-option-2": {
+        "thought": "选择“1.27324”与题设条件不符。",
+        "correction": "对称矩形变换为 X(ω)=2A sin(ωT/2)/ω；代入 ω=π/T 得 2AT/π。代入得 2.546479。"
+      },
+      "ext-rectangle-spectrum-sample-1-option-3": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "对称矩形变换为 X(ω)=2A sin(ωT/2)/ω；代入 ω=π/T 得 2AT/π。代入得 2.546479。"
+      },
+      "ext-rectangle-spectrum-sample-2-option-0": {
+        "thought": "选择“40”与题设条件不符。",
+        "correction": "对称矩形变换为 X(ω)=2A sin(ωT/2)/ω；代入 ω=π/T 得 2AT/π。代入得 25.464791。"
+      },
+      "ext-rectangle-spectrum-sample-2-option-1": {
+        "thought": "选择“12.732395”与题设条件不符。",
+        "correction": "对称矩形变换为 X(ω)=2A sin(ωT/2)/ω；代入 ω=π/T 得 2AT/π。代入得 25.464791。"
+      },
+      "ext-rectangle-spectrum-sample-2-option-2": {
+        "thought": "选择“3.183099”与题设条件不符。",
+        "correction": "对称矩形变换为 X(ω)=2A sin(ωT/2)/ω；代入 ω=π/T 得 2AT/π。代入得 25.464791。"
+      },
+      "ext-delay-phase-degrees-1-option-0": {
+        "thought": "选择“36°”与题设条件不符。",
+        "correction": "延时的频率响应为 e^(−j2πfT)，相位为 −360fT 度，本题不折叠到主值区间。代入得 -36°。"
+      },
+      "ext-delay-phase-degrees-1-option-2": {
+        "thought": "选择“-0.1°”与题设条件不符。",
+        "correction": "延时的频率响应为 e^(−j2πfT)，相位为 −360fT 度，本题不折叠到主值区间。代入得 -36°。"
+      },
+      "ext-delay-phase-degrees-1-option-3": {
+        "thought": "选择“-36000°”与题设条件不符。",
+        "correction": "延时的频率响应为 e^(−j2πfT)，相位为 −360fT 度，本题不折叠到主值区间。代入得 -36°。"
+      },
+      "ext-delay-phase-degrees-2-option-1": {
+        "thought": "选择“360°”与题设条件不符。",
+        "correction": "延时的频率响应为 e^(−j2πfT)，相位为 −360fT 度，本题不折叠到主值区间。代入得 -360°。"
+      },
+      "ext-delay-phase-degrees-2-option-2": {
+        "thought": "选择“-1°”与题设条件不符。",
+        "correction": "延时的频率响应为 e^(−j2πfT)，相位为 −360fT 度，本题不折叠到主值区间。代入得 -360°。"
+      },
+      "ext-delay-phase-degrees-2-option-3": {
+        "thought": "选择“-360000°”与题设条件不符。",
+        "correction": "延时的频率响应为 e^(−j2πfT)，相位为 −360fT 度，本题不折叠到主值区间。代入得 -360°。"
+      },
+      "ext-delay-difference-notch-1-option-0": {
+        "thought": "选择“250 Hz”与题设条件不符。",
+        "correction": "H(f)=1−e^(−j2πfT)，零点满足 fT 为整数；首个正频率为 1/T。代入得 500 Hz。"
+      },
+      "ext-delay-difference-notch-1-option-1": {
+        "thought": "选择“0.5 Hz”与题设条件不符。",
+        "correction": "H(f)=1−e^(−j2πfT)，零点满足 fT 为整数；首个正频率为 1/T。代入得 500 Hz。"
+      },
+      "ext-delay-difference-notch-1-option-3": {
+        "thought": "选择“0.002 Hz”与题设条件不符。",
+        "correction": "H(f)=1−e^(−j2πfT)，零点满足 fT 为整数；首个正频率为 1/T。代入得 500 Hz。"
+      },
+      "ext-delay-difference-notch-2-option-0": {
+        "thought": "选择“100 Hz”与题设条件不符。",
+        "correction": "H(f)=1−e^(−j2πfT)，零点满足 fT 为整数；首个正频率为 1/T。代入得 200 Hz。"
+      },
+      "ext-delay-difference-notch-2-option-2": {
+        "thought": "选择“0.2 Hz”与题设条件不符。",
+        "correction": "H(f)=1−e^(−j2πfT)，零点满足 fT 为整数；首个正频率为 1/T。代入得 200 Hz。"
+      },
+      "ext-delay-difference-notch-2-option-3": {
+        "thought": "选择“0.005 Hz”与题设条件不符。",
+        "correction": "H(f)=1−e^(−j2πfT)，零点满足 fT 为整数；首个正频率为 1/T。代入得 200 Hz。"
+      },
+      "ext-ideal-lowpass-output-power-1-option-0": {
+        "thought": "选择“6”与题设条件不符。",
+        "correction": "只保留低频分量，输出幅度为 GA，正弦平均功率为 (GA)²/2。代入得 18。"
+      },
+      "ext-ideal-lowpass-output-power-1-option-1": {
+        "thought": "选择“90”与题设条件不符。",
+        "correction": "只保留低频分量，输出幅度为 GA，正弦平均功率为 (GA)²/2。代入得 18。"
+      },
+      "ext-ideal-lowpass-output-power-1-option-2": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "只保留低频分量，输出幅度为 GA，正弦平均功率为 (GA)²/2。代入得 18。"
+      },
+      "ext-ideal-lowpass-output-power-2-option-0": {
+        "thought": "选择“75”与题设条件不符。",
+        "correction": "只保留低频分量，输出幅度为 GA，正弦平均功率为 (GA)²/2。代入得 450。"
+      },
+      "ext-ideal-lowpass-output-power-2-option-1": {
+        "thought": "选择“1332”与题设条件不符。",
+        "correction": "只保留低频分量，输出幅度为 GA，正弦平均功率为 (GA)²/2。代入得 450。"
+      },
+      "ext-ideal-lowpass-output-power-2-option-3": {
+        "thought": "选择“12.5”与题设条件不符。",
+        "correction": "只保留低频分量，输出幅度为 GA，正弦平均功率为 (GA)²/2。代入得 450。"
+      },
+      "ext-lowpass-sinusoid-amplitude-1-option-1": {
+        "thought": "选择“6”与题设条件不符。",
+        "correction": "输出幅度为输入幅度乘 |H(jω)|：AK/√(1+(ωτ)²)。代入得 5.57086。"
+      },
+      "ext-lowpass-sinusoid-amplitude-1-option-2": {
+        "thought": "选择“4.285714”与题设条件不符。",
+        "correction": "输出幅度为输入幅度乘 |H(jω)|：AK/√(1+(ωτ)²)。代入得 5.57086。"
+      },
+      "ext-lowpass-sinusoid-amplitude-1-option-3": {
+        "thought": "选择“2.78543”与题设条件不符。",
+        "correction": "输出幅度为输入幅度乘 |H(jω)|：AK/√(1+(ωτ)²)。代入得 5.57086。"
+      },
+      "ext-lowpass-sinusoid-amplitude-2-option-0": {
+        "thought": "选择“30”与题设条件不符。",
+        "correction": "输出幅度为输入幅度乘 |H(jω)|：AK/√(1+(ωτ)²)。代入得 10.090092。"
+      },
+      "ext-lowpass-sinusoid-amplitude-2-option-1": {
+        "thought": "选择“7.894737”与题设条件不符。",
+        "correction": "输出幅度为输入幅度乘 |H(jω)|：AK/√(1+(ωτ)²)。代入得 10.090092。"
+      },
+      "ext-lowpass-sinusoid-amplitude-2-option-2": {
+        "thought": "选择“2.018018”与题设条件不符。",
+        "correction": "输出幅度为输入幅度乘 |H(jω)|：AK/√(1+(ωτ)²)。代入得 10.090092。"
+      },
+      "ext-highpass-sinusoid-amplitude-1-option-0": {
+        "thought": "选择“1.2”与题设条件不符。",
+        "correction": "|H(jω)|=|ω|/√(a²+ω²)，再乘输入幅度。代入得 1.6。"
+      },
+      "ext-highpass-sinusoid-amplitude-1-option-2": {
+        "thought": "选择“1.142857”与题设条件不符。",
+        "correction": "|H(jω)|=|ω|/√(a²+ω²)，再乘输入幅度。代入得 1.6。"
+      },
+      "ext-highpass-sinusoid-amplitude-1-option-3": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "|H(jω)|=|ω|/√(a²+ω²)，再乘输入幅度。代入得 1.6。"
+      },
+      "ext-highpass-sinusoid-amplitude-2-option-1": {
+        "thought": "选择“4.615385”与题设条件不符。",
+        "correction": "|H(jω)|=|ω|/√(a²+ω²)，再乘输入幅度。代入得 1.923077。"
+      },
+      "ext-highpass-sinusoid-amplitude-2-option-2": {
+        "thought": "选择“1.470588”与题设条件不符。",
+        "correction": "|H(jω)|=|ω|/√(a²+ω²)，再乘输入幅度。代入得 1.923077。"
+      },
+      "ext-highpass-sinusoid-amplitude-2-option-3": {
+        "thought": "选择“5”与题设条件不符。",
+        "correction": "|H(jω)|=|ω|/√(a²+ω²)，再乘输入幅度。代入得 1.923077。"
+      },
+      "ext-multiple-zone-alias-1-option-0": {
+        "thought": "选择“180 Hz”与题设条件不符。",
+        "correction": "采样后相差整数倍 fs 的频率等价，实余弦还可折叠负频率：fa=|f−round(f/fs)fs|。代入得 30 Hz。"
+      },
+      "ext-multiple-zone-alias-1-option-1": {
+        "thought": "选择“930 Hz”与题设条件不符。",
+        "correction": "采样后相差整数倍 fs 的频率等价，实余弦还可折叠负频率：fa=|f−round(f/fs)fs|。代入得 30 Hz。"
+      },
+      "ext-multiple-zone-alias-1-option-3": {
+        "thought": "选择“630 Hz”与题设条件不符。",
+        "correction": "采样后相差整数倍 fs 的频率等价，实余弦还可折叠负频率：fa=|f−round(f/fs)fs|。代入得 30 Hz。"
+      },
+      "ext-multiple-zone-alias-2-option-0": {
+        "thought": "选择“420 Hz”与题设条件不符。",
+        "correction": "采样后相差整数倍 fs 的频率等价，实余弦还可折叠负频率：fa=|f−round(f/fs)fs|。代入得 120 Hz。"
+      },
+      "ext-multiple-zone-alias-2-option-2": {
+        "thought": "选择“3720 Hz”与题设条件不符。",
+        "correction": "采样后相差整数倍 fs 的频率等价，实余弦还可折叠负频率：fa=|f−round(f/fs)fs|。代入得 120 Hz。"
+      },
+      "ext-multiple-zone-alias-2-option-3": {
+        "thought": "选择“3120 Hz”与题设条件不符。",
+        "correction": "采样后相差整数倍 fs 的频率等价，实余弦还可折叠负频率：fa=|f−round(f/fs)fs|。代入得 120 Hz。"
+      },
+      "ext-normalized-cycles-1-option-0": {
+        "thought": "选择“20 cycles/sample”与题设条件不符。",
+        "correction": "每个样本间隔内经历 f/fs 个周期；若用 rad/sample 才需再乘 2π。代入得 0.05 cycles/sample。"
+      },
+      "ext-normalized-cycles-1-option-1": {
+        "thought": "选择“0.1 cycles/sample”与题设条件不符。",
+        "correction": "每个样本间隔内经历 f/fs 个周期；若用 rad/sample 才需再乘 2π。代入得 0.05 cycles/sample。"
+      },
+      "ext-normalized-cycles-1-option-2": {
+        "thought": "选择“0.025 cycles/sample”与题设条件不符。",
+        "correction": "每个样本间隔内经历 f/fs 个周期；若用 rad/sample 才需再乘 2π。代入得 0.05 cycles/sample。"
+      },
+      "ext-normalized-cycles-2-option-0": {
+        "thought": "选择“12.5 cycles/sample”与题设条件不符。",
+        "correction": "每个样本间隔内经历 f/fs 个周期；若用 rad/sample 才需再乘 2π。代入得 0.08 cycles/sample。"
+      },
+      "ext-normalized-cycles-2-option-1": {
+        "thought": "选择“0.16 cycles/sample”与题设条件不符。",
+        "correction": "每个样本间隔内经历 f/fs 个周期；若用 rad/sample 才需再乘 2π。代入得 0.08 cycles/sample。"
+      },
+      "ext-normalized-cycles-2-option-3": {
+        "thought": "选择“0.04 cycles/sample”与题设条件不符。",
+        "correction": "每个样本间隔内经历 f/fs 个周期；若用 rad/sample 才需再乘 2π。代入得 0.08 cycles/sample。"
+      },
+      "ext-finite-record-samples-1-option-1": {
+        "thought": "选择“41”与题设条件不符。",
+        "correction": "采样时刻为 n/fs，本题 fsT 为整数且不含右端点，n=0,…,fsT−1，共 fsT 个。代入得 40。"
+      },
+      "ext-finite-record-samples-1-option-2": {
+        "thought": "选择“39”与题设条件不符。",
+        "correction": "采样时刻为 n/fs，本题 fsT 为整数且不含右端点，n=0,…,fsT−1，共 fsT 个。代入得 40。"
+      },
+      "ext-finite-record-samples-1-option-3": {
+        "thought": "选择“4000”与题设条件不符。",
+        "correction": "采样时刻为 n/fs，本题 fsT 为整数且不含右端点，n=0,…,fsT−1，共 fsT 个。代入得 40。"
+      },
+      "ext-finite-record-samples-2-option-0": {
+        "thought": "选择“401”与题设条件不符。",
+        "correction": "采样时刻为 n/fs，本题 fsT 为整数且不含右端点，n=0,…,fsT−1，共 fsT 个。代入得 400。"
+      },
+      "ext-finite-record-samples-2-option-1": {
+        "thought": "选择“399”与题设条件不符。",
+        "correction": "采样时刻为 n/fs，本题 fsT 为整数且不含右端点，n=0,…,fsT−1，共 fsT 个。代入得 400。"
+      },
+      "ext-finite-record-samples-2-option-2": {
+        "thought": "选择“2500”与题设条件不符。",
+        "correction": "采样时刻为 n/fs，本题 fsT 为整数且不含右端点，n=0,…,fsT−1，共 fsT 个。代入得 400。"
+      },
+      "ext-dft-coherent-cosine-1-option-0": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "相干采样且频点不是直流或奈奎斯特点，余弦能量分布在两个频点，每个 DFT 幅值为 AN/2。代入得 32。"
+      },
+      "ext-dft-coherent-cosine-1-option-2": {
+        "thought": "选择“64”与题设条件不符。",
+        "correction": "相干采样且频点不是直流或奈奎斯特点，余弦能量分布在两个频点，每个 DFT 幅值为 AN/2。代入得 32。"
+      },
+      "ext-dft-coherent-cosine-1-option-3": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "相干采样且频点不是直流或奈奎斯特点，余弦能量分布在两个频点，每个 DFT 幅值为 AN/2。代入得 32。"
+      },
+      "ext-dft-coherent-cosine-2-option-1": {
+        "thought": "选择“2.5”与题设条件不符。",
+        "correction": "相干采样且频点不是直流或奈奎斯特点，余弦能量分布在两个频点，每个 DFT 幅值为 AN/2。代入得 200。"
+      },
+      "ext-dft-coherent-cosine-2-option-2": {
+        "thought": "选择“400”与题设条件不符。",
+        "correction": "相干采样且频点不是直流或奈奎斯特点，余弦能量分布在两个频点，每个 DFT 幅值为 AN/2。代入得 200。"
+      },
+      "ext-dft-coherent-cosine-2-option-3": {
+        "thought": "选择“5”与题设条件不符。",
+        "correction": "相干采样且频点不是直流或奈奎斯特点，余弦能量分布在两个频点，每个 DFT 幅值为 AN/2。代入得 200。"
+      },
+      "ext-am-sideband-amplitude-1-option-0": {
+        "thought": "选择“0.3”与题设条件不符。",
+        "correction": "利用 cosαcosβ=[cos(α+β)+cos(α−β)]/2，每个边带幅度为 Acμ/2。代入得 0.15。"
+      },
+      "ext-am-sideband-amplitude-1-option-1": {
+        "thought": "选择“1.5”与题设条件不符。",
+        "correction": "利用 cosαcosβ=[cos(α+β)+cos(α−β)]/2，每个边带幅度为 Acμ/2。代入得 0.15。"
+      },
+      "ext-am-sideband-amplitude-1-option-3": {
+        "thought": "选择“3.3”与题设条件不符。",
+        "correction": "利用 cosαcosβ=[cos(α+β)+cos(α−β)]/2，每个边带幅度为 Acμ/2。代入得 0.15。"
+      },
+      "ext-am-sideband-amplitude-2-option-0": {
+        "thought": "选择“2.4”与题设条件不符。",
+        "correction": "利用 cosαcosβ=[cos(α+β)+cos(α−β)]/2，每个边带幅度为 Acμ/2。代入得 1.2。"
+      },
+      "ext-am-sideband-amplitude-2-option-2": {
+        "thought": "选择“3”与题设条件不符。",
+        "correction": "利用 cosαcosβ=[cos(α+β)+cos(α−β)]/2，每个边带幅度为 Acμ/2。代入得 1.2。"
+      },
+      "ext-am-sideband-amplitude-2-option-3": {
+        "thought": "选择“8.4”与题设条件不符。",
+        "correction": "利用 cosαcosβ=[cos(α+β)+cos(α−β)]/2，每个边带幅度为 Acμ/2。代入得 1.2。"
+      },
+      "ext-mixer-difference-frequency-1-option-0": {
+        "thought": "选择“195 kHz”与题设条件不符。",
+        "correction": "两余弦乘积产生和频与差频，低通保留 |fRF−fLO|。代入得 25 kHz。"
+      },
+      "ext-mixer-difference-frequency-1-option-1": {
+        "thought": "选择“110 kHz”与题设条件不符。",
+        "correction": "两余弦乘积产生和频与差频，低通保留 |fRF−fLO|。代入得 25 kHz。"
+      },
+      "ext-mixer-difference-frequency-1-option-2": {
+        "thought": "选择“85 kHz”与题设条件不符。",
+        "correction": "两余弦乘积产生和频与差频，低通保留 |fRF−fLO|。代入得 25 kHz。"
+      },
+      "ext-mixer-difference-frequency-2-option-0": {
+        "thought": "选择“240 kHz”与题设条件不符。",
+        "correction": "两余弦乘积产生和频与差频，低通保留 |fRF−fLO|。代入得 40 kHz。"
+      },
+      "ext-mixer-difference-frequency-2-option-1": {
+        "thought": "选择“140 kHz”与题设条件不符。",
+        "correction": "两余弦乘积产生和频与差频，低通保留 |fRF−fLO|。代入得 40 kHz。"
+      },
+      "ext-mixer-difference-frequency-2-option-3": {
+        "thought": "选择“100 kHz”与题设条件不符。",
+        "correction": "两余弦乘积产生和频与差频，低通保留 |fRF−fLO|。代入得 40 kHz。"
+      },
+      "ext-laplace-exponential-value-1-option-1": {
+        "thought": "选择“1.5”与题设条件不符。",
+        "correction": "X(s)=A/(s+a)，给定 s 在 Re(s)>−a 的收敛域内。代入得 0.5。"
+      },
+      "ext-laplace-exponential-value-1-option-2": {
+        "thought": "选择“0.083333”与题设条件不符。",
+        "correction": "X(s)=A/(s+a)，给定 s 在 Re(s)>−a 的收敛域内。代入得 0.5。"
+      },
+      "ext-laplace-exponential-value-1-option-3": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "X(s)=A/(s+a)，给定 s 在 Re(s)>−a 的收敛域内。代入得 0.5。"
+      },
+      "ext-laplace-exponential-value-2-option-0": {
+        "thought": "选择“3”与题设条件不符。",
+        "correction": "X(s)=A/(s+a)，给定 s 在 Re(s)>−a 的收敛域内。代入得 0.5。"
+      },
+      "ext-laplace-exponential-value-2-option-1": {
+        "thought": "选择“1.2”与题设条件不符。",
+        "correction": "X(s)=A/(s+a)，给定 s 在 Re(s)>−a 的收敛域内。代入得 0.5。"
+      },
+      "ext-laplace-exponential-value-2-option-2": {
+        "thought": "选择“0.041667”与题设条件不符。",
+        "correction": "X(s)=A/(s+a)，给定 s 在 Re(s)>−a 的收敛域内。代入得 0.5。"
+      },
+      "ext-laplace-polynomial-value-1-option-0": {
+        "thought": "选择“0.5”与题设条件不符。",
+        "correction": "L[tⁿu(t)]=n!/s^(n+1)，注意分子是阶乘，Re(s)>0。代入得 0.25。"
+      },
+      "ext-laplace-polynomial-value-1-option-2": {
+        "thought": "选择“4”与题设条件不符。",
+        "correction": "L[tⁿu(t)]=n!/s^(n+1)，注意分子是阶乘，Re(s)>0。代入得 0.25。"
+      },
+      "ext-laplace-polynomial-value-1-option-3": {
+        "thought": "选择“0”与题设条件不符。",
+        "correction": "L[tⁿu(t)]=n!/s^(n+1)，注意分子是阶乘，Re(s)>0。代入得 0.25。"
+      },
+      "ext-laplace-polynomial-value-2-option-1": {
+        "thought": "选择“0.03125”与题设条件不符。",
+        "correction": "L[tⁿu(t)]=n!/s^(n+1)，注意分子是阶乘，Re(s)>0。代入得 0.75。"
+      },
+      "ext-laplace-polynomial-value-2-option-2": {
+        "thought": "选择“0.25”与题设条件不符。",
+        "correction": "L[tⁿu(t)]=n!/s^(n+1)，注意分子是阶乘，Re(s)>0。代入得 0.75。"
+      },
+      "ext-laplace-polynomial-value-2-option-3": {
+        "thought": "选择“32”与题设条件不符。",
+        "correction": "L[tⁿu(t)]=n!/s^(n+1)，注意分子是阶乘，Re(s)>0。代入得 0.75。"
+      },
+      "ext-delayed-step-transform-1-option-0": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "延迟 T 的阶跃变换为 Ae^(−sT)/s，延迟因子不能遗漏。代入得 0.818731。"
+      },
+      "ext-delayed-step-transform-1-option-1": {
+        "thought": "选择“1.221403”与题设条件不符。",
+        "correction": "延迟 T 的阶跃变换为 Ae^(−sT)/s，延迟因子不能遗漏。代入得 0.818731。"
+      },
+      "ext-delayed-step-transform-1-option-3": {
+        "thought": "选择“1.637462”与题设条件不符。",
+        "correction": "延迟 T 的阶跃变换为 Ae^(−sT)/s，延迟因子不能遗漏。代入得 0.818731。"
+      },
+      "ext-delayed-step-transform-2-option-0": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "延迟 T 的阶跃变换为 Ae^(−sT)/s，延迟因子不能遗漏。代入得 0.135335。"
+      },
+      "ext-delayed-step-transform-2-option-2": {
+        "thought": "选择“7.389056”与题设条件不符。",
+        "correction": "延迟 T 的阶跃变换为 Ae^(−sT)/s，延迟因子不能遗漏。代入得 0.135335。"
+      },
+      "ext-delayed-step-transform-2-option-3": {
+        "thought": "选择“0.676676”与题设条件不符。",
+        "correction": "延迟 T 的阶跃变换为 Ae^(−sT)/s，延迟因子不能遗漏。代入得 0.135335。"
+      },
+      "ext-shifted-roc-boundary-1-option-0": {
+        "thought": "选择“-2”与题设条件不符。",
+        "correction": "合并指数得到 e^((c−a)t)u(t)，或将原 ROC 右移 c，边界为 c−a。代入得 3。"
+      },
+      "ext-shifted-roc-boundary-1-option-1": {
+        "thought": "选择“-5”与题设条件不符。",
+        "correction": "合并指数得到 e^((c−a)t)u(t)，或将原 ROC 右移 c，边界为 c−a。代入得 3。"
+      },
+      "ext-shifted-roc-boundary-1-option-2": {
+        "thought": "选择“-7”与题设条件不符。",
+        "correction": "合并指数得到 e^((c−a)t)u(t)，或将原 ROC 右移 c，边界为 c−a。代入得 3。"
+      },
+      "ext-shifted-roc-boundary-2-option-0": {
+        "thought": "选择“-5”与题设条件不符。",
+        "correction": "合并指数得到 e^((c−a)t)u(t)，或将原 ROC 右移 c，边界为 c−a。代入得 6。"
+      },
+      "ext-shifted-roc-boundary-2-option-1": {
+        "thought": "选择“-11”与题设条件不符。",
+        "correction": "合并指数得到 e^((c−a)t)u(t)，或将原 ROC 右移 c，边界为 c−a。代入得 6。"
+      },
+      "ext-shifted-roc-boundary-2-option-3": {
+        "thought": "选择“-16”与题设条件不符。",
+        "correction": "合并指数得到 e^((c−a)t)u(t)，或将原 ROC 右移 c，边界为 c−a。代入得 6。"
+      },
+      "ext-unilateral-second-derivative-1-option-1": {
+        "thought": "选择“16”与题设条件不符。",
+        "correction": "二阶微分要减去两个初始项：L[f″]=s²F(s)−sf(0⁻)−f′(0⁻)。代入得 11。"
+      },
+      "ext-unilateral-second-derivative-1-option-2": {
+        "thought": "选择“21”与题设条件不符。",
+        "correction": "二阶微分要减去两个初始项：L[f″]=s²F(s)−sf(0⁻)−f′(0⁻)。代入得 11。"
+      },
+      "ext-unilateral-second-derivative-1-option-3": {
+        "thought": "选择“7”与题设条件不符。",
+        "correction": "二阶微分要减去两个初始项：L[f″]=s²F(s)−sf(0⁻)−f′(0⁻)。代入得 11。"
+      },
+      "ext-unilateral-second-derivative-2-option-0": {
+        "thought": "选择“175”与题设条件不符。",
+        "correction": "二阶微分要减去两个初始项：L[f″]=s²F(s)−sf(0⁻)−f′(0⁻)。代入得 149。"
+      },
+      "ext-unilateral-second-derivative-2-option-1": {
+        "thought": "选择“201”与题设条件不符。",
+        "correction": "二阶微分要减去两个初始项：L[f″]=s²F(s)−sf(0⁻)−f′(0⁻)。代入得 149。"
+      },
+      "ext-unilateral-second-derivative-2-option-2": {
+        "thought": "选择“31”与题设条件不符。",
+        "correction": "二阶微分要减去两个初始项：L[f″]=s²F(s)−sf(0⁻)−f′(0⁻)。代入得 149。"
+      },
+      "ext-time-weighted-transform-1-option-0": {
+        "thought": "选择“0.5”与题设条件不符。",
+        "correction": "时域乘 t 对应 −dX/ds。X=A/(s+a)，所以 Y=A/(s+a)²。代入得 0.083333。"
+      },
+      "ext-time-weighted-transform-1-option-2": {
+        "thought": "选择“-0.083333”与题设条件不符。",
+        "correction": "时域乘 t 对应 −dX/ds。X=A/(s+a)，所以 Y=A/(s+a)²。代入得 0.083333。"
+      },
+      "ext-time-weighted-transform-1-option-3": {
+        "thought": "选择“0.166667”与题设条件不符。",
+        "correction": "时域乘 t 对应 −dX/ds。X=A/(s+a)，所以 Y=A/(s+a)²。代入得 0.083333。"
+      },
+      "ext-time-weighted-transform-2-option-1": {
+        "thought": "选择“0.5”与题设条件不符。",
+        "correction": "时域乘 t 对应 −dX/ds。X=A/(s+a)，所以 Y=A/(s+a)²。代入得 0.041667。"
+      },
+      "ext-time-weighted-transform-2-option-2": {
+        "thought": "选择“-0.041667”与题设条件不符。",
+        "correction": "时域乘 t 对应 −dX/ds。X=A/(s+a)，所以 Y=A/(s+a)²。代入得 0.041667。"
+      },
+      "ext-time-weighted-transform-2-option-3": {
+        "thought": "选择“0.111111”与题设条件不符。",
+        "correction": "时域乘 t 对应 −dX/ds。X=A/(s+a)，所以 Y=A/(s+a)²。代入得 0.041667。"
+      },
+      "ext-integrated-transform-1-option-0": {
+        "thought": "选择“0.5”与题设条件不符。",
+        "correction": "零初始积分对应 Y(s)=X(s)/s=A/[s(s+a)]。代入得 0.125。"
+      },
+      "ext-integrated-transform-1-option-1": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "零初始积分对应 Y(s)=X(s)/s=A/[s(s+a)]。代入得 0.125。"
+      },
+      "ext-integrated-transform-1-option-3": {
+        "thought": "选择“0.083333”与题设条件不符。",
+        "correction": "零初始积分对应 Y(s)=X(s)/s=A/[s(s+a)]。代入得 0.125。"
+      },
+      "ext-integrated-transform-2-option-0": {
+        "thought": "选择“0.5”与题设条件不符。",
+        "correction": "零初始积分对应 Y(s)=X(s)/s=A/[s(s+a)]。代入得 0.071429。"
+      },
+      "ext-integrated-transform-2-option-2": {
+        "thought": "选择“3.5”与题设条件不符。",
+        "correction": "零初始积分对应 Y(s)=X(s)/s=A/[s(s+a)]。代入得 0.071429。"
+      },
+      "ext-integrated-transform-2-option-3": {
+        "thought": "选择“0.041667”与题设条件不符。",
+        "correction": "零初始积分对应 Y(s)=X(s)/s=A/[s(s+a)]。代入得 0.071429。"
+      },
+      "ext-rational-initial-value-1-option-0": {
+        "thought": "选择“0.1”与题设条件不符。",
+        "correction": "初值定理 f(0⁺)=lim(s→∞)sF(s)，由最高次项的系数得到分子的一次项系数。代入得 3。"
+      },
+      "ext-rational-initial-value-1-option-1": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "初值定理 f(0⁺)=lim(s→∞)sF(s)，由最高次项的系数得到分子的一次项系数。代入得 3。"
+      },
+      "ext-rational-initial-value-1-option-2": {
+        "thought": "选择“5”与题设条件不符。",
+        "correction": "初值定理 f(0⁺)=lim(s→∞)sF(s)，由最高次项的系数得到分子的一次项系数。代入得 3。"
+      },
+      "ext-rational-initial-value-2-option-0": {
+        "thought": "选择“0.089286”与题设条件不符。",
+        "correction": "初值定理 f(0⁺)=lim(s→∞)sF(s)，由最高次项的系数得到分子的一次项系数。代入得 6。"
+      },
+      "ext-rational-initial-value-2-option-1": {
+        "thought": "选择“5”与题设条件不符。",
+        "correction": "初值定理 f(0⁺)=lim(s→∞)sF(s)，由最高次项的系数得到分子的一次项系数。代入得 6。"
+      },
+      "ext-rational-initial-value-2-option-3": {
+        "thought": "选择“11”与题设条件不符。",
+        "correction": "初值定理 f(0⁺)=lim(s→∞)sF(s)，由最高次项的系数得到分子的一次项系数。代入得 6。"
+      },
+      "ext-two-pole-final-value-1-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "sF 的极点均严格在左半平面，终值定理适用：lim(t→∞)f(t)=lim(s→0)sF(s)=K/(ab)。代入得 0.833333。"
+      },
+      "ext-two-pole-final-value-1-option-2": {
+        "thought": "选择“2.5”与题设条件不符。",
+        "correction": "sF 的极点均严格在左半平面，终值定理适用：lim(t→∞)f(t)=lim(s→0)sF(s)=K/(ab)。代入得 0.833333。"
+      },
+      "ext-two-pole-final-value-1-option-3": {
+        "thought": "选择“1.666667”与题设条件不符。",
+        "correction": "sF 的极点均严格在左半平面，终值定理适用：lim(t→∞)f(t)=lim(s→0)sF(s)=K/(ab)。代入得 0.833333。"
+      },
+      "ext-two-pole-final-value-2-option-0": {
+        "thought": "选择“0.727273”与题设条件不符。",
+        "correction": "sF 的极点均严格在左半平面，终值定理适用：lim(t→∞)f(t)=lim(s→0)sF(s)=K/(ab)。代入得 0.266667。"
+      },
+      "ext-two-pole-final-value-2-option-1": {
+        "thought": "选择“1.6”与题设条件不符。",
+        "correction": "sF 的极点均严格在左半平面，终值定理适用：lim(t→∞)f(t)=lim(s→0)sF(s)=K/(ab)。代入得 0.266667。"
+      },
+      "ext-two-pole-final-value-2-option-2": {
+        "thought": "选择“1.333333”与题设条件不符。",
+        "correction": "sF 的极点均严格在左半平面，终值定理适用：lim(t→∞)f(t)=lim(s→0)sF(s)=K/(ab)。代入得 0.266667。"
+      },
+      "ext-inverse-damped-sine-1-option-0": {
+        "thought": "选择“4”与题设条件不符。",
+        "correction": "L[e^(−at)sin(ωt)u(t)]=ω/[(s+a)²+ω²]，分子匹配要求 A=K/ω。代入得 1.333333。"
+      },
+      "ext-inverse-damped-sine-1-option-2": {
+        "thought": "选择“12”与题设条件不符。",
+        "correction": "L[e^(−at)sin(ωt)u(t)]=ω/[(s+a)²+ω²]，分子匹配要求 A=K/ω。代入得 1.333333。"
+      },
+      "ext-inverse-damped-sine-1-option-3": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "L[e^(−at)sin(ωt)u(t)]=ω/[(s+a)²+ω²]，分子匹配要求 A=K/ω。代入得 1.333333。"
+      },
+      "ext-inverse-damped-sine-2-option-1": {
+        "thought": "选择“7”与题设条件不符。",
+        "correction": "L[e^(−at)sin(ωt)u(t)]=ω/[(s+a)²+ω²]，分子匹配要求 A=K/ω。代入得 1.166667。"
+      },
+      "ext-inverse-damped-sine-2-option-2": {
+        "thought": "选择“42”与题设条件不符。",
+        "correction": "L[e^(−at)sin(ωt)u(t)]=ω/[(s+a)²+ω²]，分子匹配要求 A=K/ω。代入得 1.166667。"
+      },
+      "ext-inverse-damped-sine-2-option-3": {
+        "thought": "选择“1.4”与题设条件不符。",
+        "correction": "L[e^(−at)sin(ωt)u(t)]=ω/[(s+a)²+ω²]，分子匹配要求 A=K/ω。代入得 1.166667。"
+      },
+      "ext-numerator-residue-1-option-0": {
+        "thought": "选择“3”与题设条件不符。",
+        "correction": "单极点留数为 lim(s→−a)(s+a)F(s)=K(z−a)/(b−a)。代入得 4。"
+      },
+      "ext-numerator-residue-1-option-1": {
+        "thought": "选择“1”与题设条件不符。",
+        "correction": "单极点留数为 lim(s→−a)(s+a)F(s)=K(z−a)/(b−a)。代入得 4。"
+      },
+      "ext-numerator-residue-1-option-3": {
+        "thought": "选择“-2”与题设条件不符。",
+        "correction": "单极点留数为 lim(s→−a)(s+a)F(s)=K(z−a)/(b−a)。代入得 4。"
+      },
+      "ext-numerator-residue-2-option-0": {
+        "thought": "选择“6”与题设条件不符。",
+        "correction": "单极点留数为 lim(s→−a)(s+a)F(s)=K(z−a)/(b−a)。代入得 10。"
+      },
+      "ext-numerator-residue-2-option-2": {
+        "thought": "选择“2.5”与题设条件不符。",
+        "correction": "单极点留数为 lim(s→−a)(s+a)F(s)=K(z−a)/(b−a)。代入得 10。"
+      },
+      "ext-numerator-residue-2-option-3": {
+        "thought": "选择“-5”与题设条件不符。",
+        "correction": "单极点留数为 lim(s→−a)(s+a)F(s)=K(z−a)/(b−a)。代入得 10。"
+      },
+      "ext-direct-impulse-coefficient-1-option-0": {
+        "thought": "选择“3”与题设条件不符。",
+        "correction": "分子分母同阶，先长除；商为最高次项系数比 b/a，对应冲激直接项。代入得 1.5。"
+      },
+      "ext-direct-impulse-coefficient-1-option-1": {
+        "thought": "选择“1.25”与题设条件不符。",
+        "correction": "分子分母同阶，先长除；商为最高次项系数比 b/a，对应冲激直接项。代入得 1.5。"
+      },
+      "ext-direct-impulse-coefficient-1-option-2": {
+        "thought": "选择“0.666667”与题设条件不符。",
+        "correction": "分子分母同阶，先长除；商为最高次项系数比 b/a，对应冲激直接项。代入得 1.5。"
+      },
+      "ext-direct-impulse-coefficient-2-option-0": {
+        "thought": "选择“6”与题设条件不符。",
+        "correction": "分子分母同阶，先长除；商为最高次项系数比 b/a，对应冲激直接项。代入得 1.2。"
+      },
+      "ext-direct-impulse-coefficient-2-option-1": {
+        "thought": "选择“1.142857”与题设条件不符。",
+        "correction": "分子分母同阶，先长除；商为最高次项系数比 b/a，对应冲激直接项。代入得 1.2。"
+      },
+      "ext-direct-impulse-coefficient-2-option-3": {
+        "thought": "选择“0.833333”与题设条件不符。",
+        "correction": "分子分母同阶，先长除；商为最高次项系数比 b/a，对应冲激直接项。代入得 1.2。"
+      },
+      "ext-capacitor-initial-current-term-1-option-1": {
+        "thought": "选择“0.3”与题设条件不符。",
+        "correction": "由 i=C dv/dt，单边变换得到 I=sCV−Cv(0⁻)，初始项为负号。代入得 -0.3。"
+      },
+      "ext-capacitor-initial-current-term-1-option-2": {
+        "thought": "选择“-30”与题设条件不符。",
+        "correction": "由 i=C dv/dt，单边变换得到 I=sCV−Cv(0⁻)，初始项为负号。代入得 -0.3。"
+      },
+      "ext-capacitor-initial-current-term-1-option-3": {
+        "thought": "选择“30”与题设条件不符。",
+        "correction": "由 i=C dv/dt，单边变换得到 I=sCV−Cv(0⁻)，初始项为负号。代入得 -0.3。"
+      },
+      "ext-capacitor-initial-current-term-2-option-0": {
+        "thought": "选择“2.4”与题设条件不符。",
+        "correction": "由 i=C dv/dt，单边变换得到 I=sCV−Cv(0⁻)，初始项为负号。代入得 -2.4。"
+      },
+      "ext-capacitor-initial-current-term-2-option-1": {
+        "thought": "选择“-15”与题设条件不符。",
+        "correction": "由 i=C dv/dt，单边变换得到 I=sCV−Cv(0⁻)，初始项为负号。代入得 -2.4。"
+      },
+      "ext-capacitor-initial-current-term-2-option-2": {
+        "thought": "选择“15”与题设条件不符。",
+        "correction": "由 i=C dv/dt，单边变换得到 I=sCV−Cv(0⁻)，初始项为负号。代入得 -2.4。"
+      },
+      "ext-inductor-s-impedance-1-option-0": {
+        "thought": "选择“0.666667 Ω”与题设条件不符。",
+        "correction": "零初始状态下电感满足 V(s)=sLI(s)，故 ZL(s)=sL。代入得 6 Ω。"
+      },
+      "ext-inductor-s-impedance-1-option-2": {
+        "thought": "选择“1.5 Ω”与题设条件不符。",
+        "correction": "零初始状态下电感满足 V(s)=sLI(s)，故 ZL(s)=sL。代入得 6 Ω。"
+      },
+      "ext-inductor-s-impedance-1-option-3": {
+        "thought": "选择“0.166667 Ω”与题设条件不符。",
+        "correction": "零初始状态下电感满足 V(s)=sLI(s)，故 ZL(s)=sL。代入得 6 Ω。"
+      },
+      "ext-inductor-s-impedance-2-option-1": {
+        "thought": "选择“0.833333 Ω”与题设条件不符。",
+        "correction": "零初始状态下电感满足 V(s)=sLI(s)，故 ZL(s)=sL。代入得 30 Ω。"
+      },
+      "ext-inductor-s-impedance-2-option-2": {
+        "thought": "选择“1.2 Ω”与题设条件不符。",
+        "correction": "零初始状态下电感满足 V(s)=sLI(s)，故 ZL(s)=sL。代入得 30 Ω。"
+      },
+      "ext-inductor-s-impedance-2-option-3": {
+        "thought": "选择“0.033333 Ω”与题设条件不符。",
+        "correction": "零初始状态下电感满足 V(s)=sLI(s)，故 ZL(s)=sL。代入得 30 Ω。"
+      },
+      "ext-routh-stable-bound-1-option-0": {
+        "thought": "选择“7”与题设条件不符。",
+        "correction": "三阶劳斯首列为 1、a、(ab−k)/a、k。严格稳定要求全为正，故 0'<k<'ab；等号不稳定。代入得 12。"
+      },
+      "ext-routh-stable-bound-1-option-1": {
+        "thought": "选择“1.333333”与题设条件不符。",
+        "correction": "三阶劳斯首列为 1、a、(ab−k)/a、k。严格稳定要求全为正，故 0'<k<'ab；等号不稳定。代入得 12。"
+      },
+      "ext-routh-stable-bound-1-option-3": {
+        "thought": "选择“0.75”与题设条件不符。",
+        "correction": "三阶劳斯首列为 1、a、(ab−k)/a、k。严格稳定要求全为正，故 0'<k<'ab；等号不稳定。代入得 12。"
+      },
+      "ext-routh-stable-bound-2-option-0": {
+        "thought": "选择“13”与题设条件不符。",
+        "correction": "三阶劳斯首列为 1、a、(ab−k)/a、k。严格稳定要求全为正，故 0'<k<'ab；等号不稳定。代入得 42。"
+      },
+      "ext-routh-stable-bound-2-option-2": {
+        "thought": "选择“1.166667”与题设条件不符。",
+        "correction": "三阶劳斯首列为 1、a、(ab−k)/a、k。严格稳定要求全为正，故 0'<k<'ab；等号不稳定。代入得 42。"
+      },
+      "ext-routh-stable-bound-2-option-3": {
+        "thought": "选择“0.857143”与题设条件不符。",
+        "correction": "三阶劳斯首列为 1、a、(ab−k)/a、k。严格稳定要求全为正，故 0'<k<'ab；等号不稳定。代入得 42。"
+      },
+      "ext-routh-first-column-1-option-0": {
+        "thought": "选择“4.666667”与题设条件不符。",
+        "correction": "前两行为 [1,b]、[a,c]，第三行首项为 (ab−c)/a。代入得 3.333333。"
+      },
+      "ext-routh-first-column-1-option-1": {
+        "thought": "选择“10”与题设条件不符。",
+        "correction": "前两行为 [1,b]、[a,c]，第三行首项为 (ab−c)/a。代入得 3.333333。"
+      },
+      "ext-routh-first-column-1-option-2": {
+        "thought": "选择“0.666667”与题设条件不符。",
+        "correction": "前两行为 [1,b]、[a,c]，第三行首项为 (ab−c)/a。代入得 3.333333。"
+      },
+      "ext-routh-first-column-2-option-0": {
+        "thought": "选择“7.833333”与题设条件不符。",
+        "correction": "前两行为 [1,b]、[a,c]，第三行首项为 (ab−c)/a。代入得 6.166667。"
+      },
+      "ext-routh-first-column-2-option-1": {
+        "thought": "选择“37”与题设条件不符。",
+        "correction": "前两行为 [1,b]、[a,c]，第三行首项为 (ab−c)/a。代入得 6.166667。"
+      },
+      "ext-routh-first-column-2-option-3": {
+        "thought": "选择“0.833333”与题设条件不符。",
+        "correction": "前两行为 [1,b]、[a,c]，第三行首项为 (ab−c)/a。代入得 6.166667。"
+      },
+      "ext-negative-feedback-gain-1-option-1": {
+        "thought": "选择“2.5”与题设条件不符。",
+        "correction": "联立 y=G(r−Hy)，得 (1+GH)y=Gr，所以 T=G/(1+GH)。代入得 1.666667。"
+      },
+      "ext-negative-feedback-gain-1-option-2": {
+        "thought": "选择“0.2”与题设条件不符。",
+        "correction": "联立 y=G(r−Hy)，得 (1+GH)y=Gr，所以 T=G/(1+GH)。代入得 1.666667。"
+      },
+      "ext-negative-feedback-gain-1-option-3": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "联立 y=G(r−Hy)，得 (1+GH)y=Gr，所以 T=G/(1+GH)。代入得 1.666667。"
+      },
+      "ext-negative-feedback-gain-2-option-0": {
+        "thought": "选择“-5”与题设条件不符。",
+        "correction": "联立 y=G(r−Hy)，得 (1+GH)y=Gr，所以 T=G/(1+GH)。代入得 1.666667。"
+      },
+      "ext-negative-feedback-gain-2-option-1": {
+        "thought": "选择“2”与题设条件不符。",
+        "correction": "联立 y=G(r−Hy)，得 (1+GH)y=Gr，所以 T=G/(1+GH)。代入得 1.666667。"
+      },
+      "ext-negative-feedback-gain-2-option-2": {
+        "thought": "选择“5”与题设条件不符。",
+        "correction": "联立 y=G(r−Hy)，得 (1+GH)y=Gr，所以 T=G/(1+GH)。代入得 1.666667。"
+      },
+      "ext-mason-touching-loops-1-option-0": {
+        "thought": "选择“1.14”与题设条件不符。",
+        "correction": "接触回路不能形成乘积项，只有 Δ=1−L₁−L₂；回路增益保留各自符号。代入得 1.15。"
+      },
+      "ext-mason-touching-loops-1-option-2": {
+        "thought": "选择“0.85”与题设条件不符。",
+        "correction": "接触回路不能形成乘积项，只有 Δ=1−L₁−L₂；回路增益保留各自符号。代入得 1.15。"
+      },
+      "ext-mason-touching-loops-1-option-3": {
+        "thought": "选择“-0.01”与题设条件不符。",
+        "correction": "接触回路不能形成乘积项，只有 Δ=1−L₁−L₂；回路增益保留各自符号。代入得 1.15。"
+      },
+      "ext-mason-touching-loops-2-option-1": {
+        "thought": "选择“1.2”与题设条件不符。",
+        "correction": "接触回路不能形成乘积项，只有 Δ=1−L₁−L₂；回路增益保留各自符号。代入得 1.3。"
+      },
+      "ext-mason-touching-loops-2-option-2": {
+        "thought": "选择“0.7”与题设条件不符。",
+        "correction": "接触回路不能形成乘积项，只有 Δ=1−L₁−L₂；回路增益保留各自符号。代入得 1.3。"
+      },
+      "ext-mason-touching-loops-2-option-3": {
+        "thought": "选择“-0.1”与题设条件不符。",
+        "correction": "接触回路不能形成乘积项，只有 Δ=1−L₁−L₂；回路增益保留各自符号。代入得 1.3。"
+      },
+      "ext-cascade-dc-gain-1-option-0": {
+        "thought": "选择“2.75”与题设条件不符。",
+        "correction": "级联系统函数相乘，H(0)=H₁(0)H₂(0)=K₁K₂/(ab)。代入得 1.875。"
+      },
+      "ext-cascade-dc-gain-1-option-1": {
+        "thought": "选择“2.5”与题设条件不符。",
+        "correction": "级联系统函数相乘，H(0)=H₁(0)H₂(0)=K₁K₂/(ab)。代入得 1.875。"
+      },
+      "ext-cascade-dc-gain-1-option-3": {
+        "thought": "选择“15”与题设条件不符。",
+        "correction": "级联系统函数相乘，H(0)=H₁(0)H₂(0)=K₁K₂/(ab)。代入得 1.875。"
+      },
+      "ext-cascade-dc-gain-2-option-0": {
+        "thought": "选择“2.342857”与题设条件不符。",
+        "correction": "级联系统函数相乘，H(0)=H₁(0)H₂(0)=K₁K₂/(ab)。代入得 1.371429。"
+      },
+      "ext-cascade-dc-gain-2-option-2": {
+        "thought": "选择“4”与题设条件不符。",
+        "correction": "级联系统函数相乘，H(0)=H₁(0)H₂(0)=K₁K₂/(ab)。代入得 1.371429。"
+      },
+      "ext-cascade-dc-gain-2-option-3": {
+        "thought": "选择“48”与题设条件不符。",
+        "correction": "级联系统函数相乘，H(0)=H₁(0)H₂(0)=K₁K₂/(ab)。代入得 1.371429。"
+      },
+      "ext-scalar-state-dc-gain-1-option-0": {
+        "thought": "选择“6”与题设条件不符。",
+        "correction": "H(s)=C(sI−A)⁻¹B+D=CB/(s+a)+D，令 s=0，保留直接通路 D。代入得 7。"
+      },
+      "ext-scalar-state-dc-gain-1-option-1": {
+        "thought": "选择“-5”与题设条件不符。",
+        "correction": "H(s)=C(sI−A)⁻¹B+D=CB/(s+a)+D，令 s=0，保留直接通路 D。代入得 7。"
+      },
+      "ext-scalar-state-dc-gain-1-option-2": {
+        "thought": "选择“2.5”与题设条件不符。",
+        "correction": "H(s)=C(sI−A)⁻¹B+D=CB/(s+a)+D，令 s=0，保留直接通路 D。代入得 7。"
+      },
+      "ext-scalar-state-dc-gain-2-option-0": {
+        "thought": "选择“8.4”与题设条件不符。",
+        "correction": "H(s)=C(sI−A)⁻¹B+D=CB/(s+a)+D，令 s=0，保留直接通路 D。代入得 12.4。"
+      },
+      "ext-scalar-state-dc-gain-2-option-1": {
+        "thought": "选择“-4.4”与题设条件不符。",
+        "correction": "H(s)=C(sI−A)⁻¹B+D=CB/(s+a)+D，令 s=0，保留直接通路 D。代入得 12.4。"
+      },
+      "ext-scalar-state-dc-gain-2-option-3": {
+        "thought": "选择“5.2”与题设条件不符。",
+        "correction": "H(s)=C(sI−A)⁻¹B+D=CB/(s+a)+D，令 s=0，保留直接通路 D。代入得 12.4。"
       }
     },
     "reviewFilter": "复习状态",
@@ -1576,14 +3496,6 @@
         "option4": "先升后降",
         "explain": "ωc=1/τ，fc=1/(2πτ)，因此 τ 越大截止频率越低。"
       },
-      "damping": {
-        "prompt": "标准无零点二阶低通 H(s)=ωn²/(s²+2ζωns+ωn²)，ωn>0。零状态单位阶跃下，ζ 从 0.3 增至 0.7，超调量如何变化？",
-        "option1": "增大",
-        "option2": "减小",
-        "option3": "不变",
-        "option4": "变为无穷大",
-        "explain": "0<ζ<1 时 Mp=e^(−πζ/√(1−ζ²))，随 ζ 增大而减小。该结论使用题设标准二阶形式。"
-      },
       "right-half-plane": {
         "prompt": "因果、适当有理且已约分的连续 LTI 系统，若 H(s) 有右半平面极点，其 BIBO 稳定性如何？",
         "option1": "稳定",
@@ -1609,7 +3521,7 @@
         "explain": "单虚轴共轭极点对应等幅正弦模态；这里描述该对极点的分量，不代表含其他极点时的完整响应。"
       },
       "finite-energy-power": {
-        "prompt": "已知非零信号总能量 E=3<∞，按双边时间平均定义，其平均功率是多少？",
+        "prompt": "已知非零信号总能量 E=3'<'∞，按双边时间平均定义，其平均功率是多少？",
         "option1": "1",
         "option2": "0",
         "option3": "-1",
@@ -2017,7 +3929,7 @@
         "explain": "积分收敛要求 Re(s+2)>0，所以 b=−2，边界不含。"
       },
       "laplace-left-roc": {
-        "prompt": "X(s)=1/(s+2)，ROC 为 Re(s)<−2。其双边逆变换是什么？",
+        "prompt": "X(s)=1/(s+2)，ROC 为 Re(s)'<'−2。其双边逆变换是什么？",
         "option1": "e^(−2t)u(t)",
         "option2": "−e^(−2t)u(−t)",
         "option3": "δ(t)",
@@ -2094,7 +4006,7 @@
         "option2": "1.5",
         "option3": "1",
         "option4": "-1",
-        "explain": "h 非负，绝对积分为 3/2=1.5<∞，该系统 BIBO 稳定。"
+        "explain": "h 非负，绝对积分为 3/2=1.5'<'∞，该系统 BIBO 稳定。"
       },
       "amplitude-decibels": {
         "prompt": "幅值增益 |H|=10，用 20log10|H| 表示为多少 dB？",
@@ -2151,6 +4063,1294 @@
         "option3": "能，只要输入为零",
         "option4": "只需检查所有零点",
         "explain": "代数对消只描述输入输出关系，内部渐近稳定仍需检查完整状态矩阵。"
+      },
+      "second-order-mode-decay": {
+        "prompt": "非零自由响应对应特征根 −2±j3。0.25 s 后的振幅包络是初始包络的多少倍？（选最接近值。）",
+        "option1": "1.648721",
+        "option2": "0.606531",
+        "option3": "0.393469",
+        "option4": "0.472367",
+        "explain": "共轭根产生 e^(−2t)(Ccos3t+Dsin3t)，包络比 e^(−2×0.25)≈0.606531。"
+      },
+      "ext-dc-sine-power-1": {
+        "prompt": "连续信号 x(t)=1+3cos(2t) 的平均功率是多少？",
+        "option1": "5.5",
+        "option2": "8",
+        "option3": "10",
+        "option4": "0",
+        "explain": "常数与余弦的交叉项平均为零，P=D²+A²/2。代入得 5.5。"
+      },
+      "ext-dc-sine-power-2": {
+        "prompt": "连续信号 x(t)=4+6cos(5t) 的平均功率是多少？",
+        "option1": "22",
+        "option2": "50",
+        "option3": "52",
+        "option4": "34",
+        "explain": "常数与余弦的交叉项平均为零，P=D²+A²/2。代入得 34。"
+      },
+      "ext-two-tone-power-1": {
+        "prompt": "x(t)=2cos(2π·3t)+4sin(2π·6t)，平均功率是多少？",
+        "option1": "18",
+        "option2": "10",
+        "option3": "20",
+        "option4": "3",
+        "explain": "不同整数次谐波在共同周期内正交，P=(A²+B²)/2。代入得 10。"
+      },
+      "ext-two-tone-power-2": {
+        "prompt": "x(t)=5cos(2π·6t)+7sin(2π·12t)，平均功率是多少？",
+        "option1": "37",
+        "option2": "72",
+        "option3": "74",
+        "option4": "6",
+        "explain": "不同整数次谐波在共同周期内正交，P=(A²+B²)/2。代入得 37。"
+      },
+      "ext-duty-power-1": {
+        "prompt": "周期矩形脉冲每周期前 1 s 为 2，其余为 0，周期 4 s。平均功率是多少？",
+        "option1": "0.5",
+        "option2": "4",
+        "option3": "1",
+        "option4": "16",
+        "explain": "周期功率是一个周期内的平方积分除以周期：P=A²τ/T。代入得 1。"
+      },
+      "ext-duty-power-2": {
+        "prompt": "周期矩形脉冲每周期前 4 s 为 5，其余为 0，周期 13 s。平均功率是多少？（选最接近值。）",
+        "option1": "1.538462",
+        "option2": "7.692308",
+        "option3": "25",
+        "option4": "81.25",
+        "explain": "周期功率是一个周期内的平方积分除以周期：P=A²τ/T。代入得 7.692308。"
+      },
+      "ext-pulse-amplitude-1": {
+        "prompt": "单个矩形脉冲宽 3 s、总能量 12，幅度 A>0。A 是多少？",
+        "option1": "4",
+        "option2": "12",
+        "option3": "3.464102",
+        "option4": "2",
+        "explain": "E=A²T，取正幅度 A=√(E/T)。代入得 2。"
+      },
+      "ext-pulse-amplitude-2": {
+        "prompt": "单个矩形脉冲宽 6 s、总能量 150，幅度 A>0。A 是多少？",
+        "option1": "25",
+        "option2": "150",
+        "option3": "5",
+        "option4": "12.247449",
+        "explain": "E=A²T，取正幅度 A=√(E/T)。代入得 5。"
+      },
+      "ext-triangle-energy-1": {
+        "prompt": "x(t)=2(1−|t|/3)（|t|≤3），其余为零。总能量是多少？",
+        "option1": "8",
+        "option2": "12",
+        "option3": "24",
+        "option4": "4",
+        "explain": "利用偶对称，E=2A²∫₀ᵀ(1−t/T)²dt=2A²T/3。代入得 8。"
+      },
+      "ext-triangle-energy-2": {
+        "prompt": "x(t)=5(1−|t|/6)（|t|≤6），其余为零。总能量是多少？",
+        "option1": "150",
+        "option2": "300",
+        "option3": "50",
+        "option4": "100",
+        "explain": "利用偶对称，E=2A²∫₀ᵀ(1−t/T)²dt=2A²T/3。代入得 100。"
+      },
+      "ext-ramp-energy-1": {
+        "prompt": "x(t)=2t（0≤t≤3），区间外为零。总能量是多少？",
+        "option1": "18",
+        "option2": "36",
+        "option3": "9",
+        "option4": "108",
+        "explain": "能量积分的是幅度平方：E=∫₀ᵀk²t²dt=k²T³/3。代入得 36。"
+      },
+      "ext-ramp-energy-2": {
+        "prompt": "x(t)=5t（0≤t≤6），区间外为零。总能量是多少？",
+        "option1": "1800",
+        "option2": "450",
+        "option3": "90",
+        "option4": "5400",
+        "explain": "能量积分的是幅度平方：E=∫₀ᵀk²t²dt=k²T³/3。代入得 1800。"
+      },
+      "ext-bilateral-exp-energy-1": {
+        "prompt": "双边信号 x(t)=2e^(−3|t|) 的总能量是多少？（选最接近值。）",
+        "option1": "0.666667",
+        "option2": "2.666667",
+        "option3": "1.333333",
+        "option4": "0",
+        "explain": "正负时间各贡献 A²/(2a)，故 E=A²/a。代入得 1.333333。"
+      },
+      "ext-bilateral-exp-energy-2": {
+        "prompt": "双边信号 x(t)=5e^(−6|t|) 的总能量是多少？（选最接近值。）",
+        "option1": "2.083333",
+        "option2": "4.166667",
+        "option3": "8.333333",
+        "option4": "0.833333",
+        "explain": "正负时间各贡献 A²/(2a)，故 E=A²/a。代入得 4.166667。"
+      },
+      "ext-geometric-energy-1": {
+        "prompt": "离散信号 x[n]=2·(0.2)^n u[n]（u[n]=1 当 n≥0），能量 Σ|x[n]|² 是多少？（选最接近值。）",
+        "option1": "5",
+        "option2": "2.083333",
+        "option3": "4",
+        "option4": "4.166667",
+        "explain": "平方后公比为 r²，等比求和 E=A²/(1−r²)。代入得 4.166667。"
+      },
+      "ext-geometric-energy-2": {
+        "prompt": "离散信号 x[n]=5·(0.5)^n u[n]（u[n]=1 当 n≥0），能量 Σ|x[n]|² 是多少？（选最接近值。）",
+        "option1": "50",
+        "option2": "6.666667",
+        "option3": "33.333333",
+        "option4": "25",
+        "explain": "平方后公比为 r²，等比求和 E=A²/(1−r²)。代入得 33.333333。"
+      },
+      "ext-finite-sequence-energy-1": {
+        "prompt": "离散信号仅三个非零样本，值为 1、-2、3。总能量是多少？",
+        "option1": "14",
+        "option2": "2",
+        "option3": "4",
+        "option4": "6",
+        "explain": "离散能量为各样本绝对值平方之和，不是样本和的平方。代入得 14。"
+      },
+      "ext-finite-sequence-energy-2": {
+        "prompt": "离散信号仅三个非零样本，值为 4、-5、6。总能量是多少？",
+        "option1": "5",
+        "option2": "25",
+        "option3": "15",
+        "option4": "77",
+        "explain": "离散能量为各样本绝对值平方之和，不是样本和的平方。代入得 77。"
+      },
+      "ext-even-component-1": {
+        "prompt": "已知 x(1)=5、x(−1)=-2，偶分量 xₑ(1) 是多少？",
+        "option1": "3.5",
+        "option2": "1.5",
+        "option3": "3",
+        "option4": "7",
+        "explain": "偶分量定义为 xₑ(t)=[x(t)+x(−t)]/2。代入得 1.5。"
+      },
+      "ext-even-component-2": {
+        "prompt": "已知 x(4)=11、x(−4)=-5，偶分量 xₑ(4) 是多少？",
+        "option1": "3",
+        "option2": "8",
+        "option3": "6",
+        "option4": "16",
+        "explain": "偶分量定义为 xₑ(t)=[x(t)+x(−t)]/2。代入得 3。"
+      },
+      "ext-odd-component-1": {
+        "prompt": "已知 x(2)=5、x(−2)=-1，奇分量 xₒ(2) 是多少？",
+        "option1": "2",
+        "option2": "6",
+        "option3": "3",
+        "option4": "-6",
+        "explain": "奇分量定义为 xₒ(t)=[x(t)−x(−t)]/2。代入得 3。"
+      },
+      "ext-odd-component-2": {
+        "prompt": "已知 x(5)=14、x(−5)=2，奇分量 xₒ(5) 是多少？",
+        "option1": "8",
+        "option2": "6",
+        "option3": "12",
+        "option4": "-12",
+        "explain": "奇分量定义为 xₒ(t)=[x(t)−x(−t)]/2。代入得 6。"
+      },
+      "ext-reversed-support-1": {
+        "prompt": "x(t) 的支撑为 [1,5] s，y(t)=x(3−2t)。y 的支撑左端点是多少？",
+        "option1": "1 s",
+        "option2": "-2 s",
+        "option3": "4 s",
+        "option4": "-1 s",
+        "explain": "解 L≤b−at≤R（a>0）得 (b−R)/a≤t≤(b−L)/a，反转后左右端点交换。代入得 -1 s。"
+      },
+      "ext-reversed-support-2": {
+        "prompt": "x(t) 的支撑为 [4,8] s，y(t)=x(6−5t)。y 的支撑左端点是多少？",
+        "option1": "0.4 s",
+        "option2": "-2 s",
+        "option3": "-0.4 s",
+        "option4": "10 s",
+        "explain": "解 L≤b−at≤R（a>0）得 (b−R)/a≤t≤(b−L)/a，反转后左右端点交换。代入得 -0.4 s。"
+      },
+      "ext-scaled-signal-energy-1": {
+        "prompt": "x(t) 能量为 3，y(t)=2x(−4t)。y(t) 的能量是多少？",
+        "option1": "3",
+        "option2": "1.5",
+        "option3": "48",
+        "option4": "0.75",
+        "explain": "幅度乘 k 使能量乘 k²，时间缩放使能量除以 |a|，反转不改变能量。代入得 3。"
+      },
+      "ext-scaled-signal-energy-2": {
+        "prompt": "x(t) 能量为 6，y(t)=5x(−7t)。y(t) 的能量是多少？（选最接近值。）",
+        "option1": "4.285714",
+        "option2": "1050",
+        "option3": "0.857143",
+        "option4": "21.428571",
+        "explain": "幅度乘 k 使能量乘 k²，时间缩放使能量除以 |a|，反转不改变能量。代入得 21.428571。"
+      },
+      "ext-commensurate-period-1": {
+        "prompt": "x(t)=cos(2π·2t)+cos(2π·3t)，基本周期是多少？",
+        "option1": "0.5 s",
+        "option2": "1 s",
+        "option3": "0.333333 s",
+        "option4": "0.2 s",
+        "explain": "两项非零，基本频率为两个整数频率的最大公约数，T₀=1/gcd(f₁,f₂)。代入得 1 s。"
+      },
+      "ext-commensurate-period-2": {
+        "prompt": "x(t)=cos(2π·8t)+cos(2π·12t)，基本周期是多少？",
+        "option1": "0.25 s",
+        "option2": "0.125 s",
+        "option3": "0.083333 s",
+        "option4": "0.05 s",
+        "explain": "两项非零，基本频率为两个整数频率的最大公约数，T₀=1/gcd(f₁,f₂)。代入得 0.25 s。"
+      },
+      "ext-discrete-period-1": {
+        "prompt": "x[n]=cos(2π·2n/5)，最小正整数周期 N 是多少？",
+        "option1": "2",
+        "option2": "2.5",
+        "option3": "5",
+        "option4": "10",
+        "explain": "周期须满足 pN/q 为整数，故 N=q/gcd(p,q)；本题分子分母互质。代入得 5。"
+      },
+      "ext-discrete-period-2": {
+        "prompt": "x[n]=cos(2π·5n/12)，最小正整数周期 N 是多少？",
+        "option1": "5",
+        "option2": "12",
+        "option3": "2.4",
+        "option4": "24",
+        "explain": "周期须满足 pN/q 为整数，故 N=q/gcd(p,q)；本题分子分母互质。代入得 12。"
+      },
+      "ext-affine-impulse-area-1": {
+        "prompt": "积分 ∫₋∞∞ 4δ(-2t−1)dt 等于多少？",
+        "option1": "-8",
+        "option2": "-2",
+        "option3": "8",
+        "option4": "2",
+        "explain": "δ(at−b) 的面积为 1/|a|，平移不改变面积，外部系数仍需乘入。代入得 2。"
+      },
+      "ext-affine-impulse-area-2": {
+        "prompt": "积分 ∫₋∞∞ 7δ(-5t−4)dt 等于多少？",
+        "option1": "-35",
+        "option2": "-1.4",
+        "option3": "1.4",
+        "option4": "35",
+        "explain": "δ(at−b) 的面积为 1/|a|，平移不改变面积，外部系数仍需乘入。代入得 1.4。"
+      },
+      "ext-affine-impulse-sift-1": {
+        "prompt": "积分 ∫₋∞∞ (3t+1)δ(2t−4)dt 等于多少？",
+        "option1": "3.5",
+        "option2": "7",
+        "option3": "6.5",
+        "option4": "1.25",
+        "explain": "冲激位于 t=b/a，还要乘尺度权重 1/|a|，结果为 (cb/a+d)/|a|。代入得 3.5。"
+      },
+      "ext-affine-impulse-sift-2": {
+        "prompt": "积分 ∫₋∞∞ (6t+4)δ(5t−10)dt 等于多少？",
+        "option1": "16",
+        "option2": "12.8",
+        "option3": "1.4",
+        "option4": "3.2",
+        "explain": "冲激位于 t=b/a，还要乘尺度权重 1/|a|，结果为 (cb/a+d)/|a|。代入得 3.2。"
+      },
+      "ext-step-window-area-1": {
+        "prompt": "x(t)=2[u(t−1)−u(t−5)]，全时间积分（面积）是多少？",
+        "option1": "12",
+        "option2": "8",
+        "option3": "4",
+        "option4": "16",
+        "explain": "两个阶跃之差形成宽 R−L、高 A 的矩形，面积为 A(R−L)。代入得 8。"
+      },
+      "ext-step-window-area-2": {
+        "prompt": "x(t)=5[u(t−4)−u(t−14)]，全时间积分（面积）是多少？",
+        "option1": "50",
+        "option2": "90",
+        "option3": "10",
+        "option4": "250",
+        "explain": "两个阶跃之差形成宽 R−L、高 A 的矩形，面积为 A(R−L)。代入得 50。"
+      },
+      "ext-differentiator-amplitude-1": {
+        "prompt": "理想微分器 y(t)=dx(t)/dt，输入 x(t)=3sin(4t)。输出正弦分量的幅度是多少？",
+        "option1": "0.75",
+        "option2": "3",
+        "option3": "12",
+        "option4": "4",
+        "explain": "对正弦求导得 Aωcos(ωt)，幅度为 Aω；此结论只针对题给正弦输入。代入得 12。"
+      },
+      "ext-differentiator-amplitude-2": {
+        "prompt": "理想微分器 y(t)=dx(t)/dt，输入 x(t)=6sin(7t)。输出正弦分量的幅度是多少？",
+        "option1": "0.857143",
+        "option2": "42",
+        "option3": "6",
+        "option4": "7",
+        "explain": "对正弦求导得 Aωcos(ωt)，幅度为 Aω；此结论只针对题给正弦输入。代入得 42。"
+      },
+      "ext-difference-equation-order-1": {
+        "prompt": "差分方程 y[k+1]+2y[k−2]=x[k] 中，输出序列最高与最低序号都具有非零系数。方程阶数是多少？",
+        "option1": "1",
+        "option2": "2",
+        "option3": "0",
+        "option4": "3",
+        "explain": "差分方程阶数是未知输出序列最高序号与最低序号之差。代入得 3。"
+      },
+      "ext-difference-equation-order-2": {
+        "prompt": "差分方程 y[k+4]+2y[k−5]=x[k] 中，输出序列最高与最低序号都具有非零系数。方程阶数是多少？",
+        "option1": "4",
+        "option2": "5",
+        "option3": "9",
+        "option4": "1",
+        "explain": "差分方程阶数是未知输出序列最高序号与最低序号之差。代入得 9。"
+      },
+      "ext-unequal-exponential-convolution-1": {
+        "prompt": "x(t)=e^(−1t)u(t)，h(t)=e^(−2t)u(t)。卷积 (x*h)(0.2) 是多少？（选最接近值。）",
+        "option1": "0.148411",
+        "option2": "0.548812",
+        "option3": "1.489051",
+        "option4": "0.163746",
+        "explain": "对 0≤τ≤t 积分，(x*h)(t)=[e^(−at)−e^(−bt)]/(b−a)，a≠b。代入得 0.148411。"
+      },
+      "ext-unequal-exponential-convolution-2": {
+        "prompt": "x(t)=e^(−4t)u(t)，h(t)=e^(−5t)u(t)。卷积 (x*h)(0.8) 是多少？（选最接近值。）",
+        "option1": "0.000747",
+        "option2": "0.059078",
+        "option3": "0.03261",
+        "option4": "0.022447",
+        "explain": "对 0≤τ≤t 积分，(x*h)(t)=[e^(−at)−e^(−bt)]/(b−a)，a≠b。代入得 0.022447。"
+      },
+      "ext-first-order-step-sample-1": {
+        "prompt": "因果 LTI 系统 h(t)=2e^(−1t)u(t)，零初始状态下输入 u(t)。y(0.2) 是多少？（选最接近值。）",
+        "option1": "1.637462",
+        "option2": "0.362538",
+        "option3": "2",
+        "option4": "0",
+        "explain": "阶跃响应是 h 的积分，y(t)=(K/a)[1−e^(−at)]（t≥0）。代入得 0.362538。"
+      },
+      "ext-first-order-step-sample-2": {
+        "prompt": "因果 LTI 系统 h(t)=5e^(−4t)u(t)，零初始状态下输入 u(t)。y(0.5) 是多少？（选最接近值。）",
+        "option1": "1.080831",
+        "option2": "4.323324",
+        "option3": "0.169169",
+        "option4": "1.25",
+        "explain": "阶跃响应是 h 的积分，y(t)=(K/a)[1−e^(−at)]（t≥0）。代入得 1.080831。"
+      },
+      "ext-natural-response-sample-1": {
+        "prompt": "t≥0 时 y′+2y=0，y(0⁺)=3。y(0.1) 是多少？（选最接近值。）",
+        "option1": "0.543808",
+        "option2": "3.664208",
+        "option3": "2.456192",
+        "option4": "0.818731",
+        "explain": "一阶齐次方程的解为 y(t)=y(0⁺)e^(−at)，由初值确定系数。代入得 2.456192。"
+      },
+      "ext-natural-response-sample-2": {
+        "prompt": "t≥0 时 y′+5y=0，y(0⁺)=6。y(0.4) 是多少？（选最接近值。）",
+        "option1": "5.187988",
+        "option2": "0.812012",
+        "option3": "44.334337",
+        "option4": "0.135335",
+        "explain": "一阶齐次方程的解为 y(t)=y(0⁺)e^(−at)，由初值确定系数。代入得 0.812012。"
+      },
+      "ext-total-response-sample-1": {
+        "prompt": "t≥0 时 y′+2y=3，y(0⁺)=4。全响应 y(0.1) 是多少？（选最接近值。）",
+        "option1": "0.271904",
+        "option2": "3.274923",
+        "option3": "1.5",
+        "option4": "3.546827",
+        "explain": "全响应为稳态值加暂态：y(t)=B/a+[y(0⁺)−B/a]e^(−at)。代入得 3.546827。"
+      },
+      "ext-total-response-sample-2": {
+        "prompt": "t≥0 时 y′+5y=9，y(0⁺)=7。全响应 y(0.4) 是多少？（选最接近值。）",
+        "option1": "1.556396",
+        "option2": "0.947347",
+        "option3": "2.503743",
+        "option4": "1.8",
+        "explain": "全响应为稳态值加暂态：y(t)=B/a+[y(0⁺)−B/a]e^(−at)。代入得 2.503743。"
+      },
+      "ext-pulse-response-after-end-1": {
+        "prompt": "零状态系统 h(t)=2e^(−2t)u(t)，输入 u(t)−u(t−0.1)。y(0.2) 是多少？（选最接近值。）",
+        "option1": "0.148411",
+        "option2": "0.32968",
+        "option3": "0.818731",
+        "option4": "0.181269",
+        "explain": "脉冲输入是两个错位阶跃之差；在 t=2T，y=(1−e^(−aT))e^(−aT)。代入得 0.148411。"
+      },
+      "ext-pulse-response-after-end-2": {
+        "prompt": "零状态系统 h(t)=5e^(−5t)u(t)，输入 u(t)−u(t−0.4)。y(0.8) 是多少？（选最接近值。）",
+        "option1": "0.981684",
+        "option2": "0.135335",
+        "option3": "0.864665",
+        "option4": "0.11702",
+        "explain": "脉冲输入是两个错位阶跃之差；在 t=2T，y=(1−e^(−aT))e^(−aT)。代入得 0.11702。"
+      },
+      "ext-rectangle-convolution-sample-1": {
+        "prompt": "x(t) 在 [0,3] 为 2，h(t) 在 [0,5] 为 3，两者区间外均为零。(x*h)(5) 是多少？",
+        "option1": "48",
+        "option2": "18",
+        "option3": "3",
+        "option4": "0",
+        "explain": "重叠长度为 max(0,min(T₁,t)−max(0,t−T₂))，再乘两个幅度 AB。代入得 18。"
+      },
+      "ext-rectangle-convolution-sample-2": {
+        "prompt": "x(t) 在 [0,6] 为 5，h(t) 在 [0,8] 为 6，两者区间外均为零。(x*h)(11) 是多少？",
+        "option1": "90",
+        "option2": "180",
+        "option3": "420",
+        "option4": "6",
+        "explain": "重叠长度为 max(0,min(T₁,t)−max(0,t−T₂))，再乘两个幅度 AB。代入得 90。"
+      },
+      "ext-shifted-convolution-end-1": {
+        "prompt": "两个矩形信号分别在 [1,3] s 和 [2,5] s 内恒为 1，外部为零。卷积支撑的右端点是多少？",
+        "option1": "3 s",
+        "option2": "5 s",
+        "option3": "8 s",
+        "option4": "-2 s",
+        "explain": "两个非负矩形的卷积支撑为 [L₁+L₂,R₁+R₂]，右端点是两右端点相加。代入得 8 s。"
+      },
+      "ext-shifted-convolution-end-2": {
+        "prompt": "两个矩形信号分别在 [4,6] s 和 [5,8] s 内恒为 1，外部为零。卷积支撑的右端点是多少？",
+        "option1": "9 s",
+        "option2": "14 s",
+        "option3": "8 s",
+        "option4": "5 s",
+        "explain": "两个非负矩形的卷积支撑为 [L₁+L₂,R₁+R₂]，右端点是两右端点相加。代入得 14 s。"
+      },
+      "ext-convolution-total-area-1": {
+        "prompt": "x(t)=3e^(−2t)u(t)，h(t)=5e^(−4t)u(t)。∫₋∞∞(x*h)(t)dt 是多少？",
+        "option1": "2.75",
+        "option2": "2.5",
+        "option3": "15",
+        "option4": "1.875",
+        "explain": "绝对可积信号的卷积面积等于两信号面积之积：(A/α)(B/β)。代入得 1.875。"
+      },
+      "ext-convolution-total-area-2": {
+        "prompt": "x(t)=6e^(−5t)u(t)，h(t)=8e^(−7t)u(t)。∫₋∞∞(x*h)(t)dt 是多少？（选最接近值。）",
+        "option1": "2.342857",
+        "option2": "4",
+        "option3": "1.371429",
+        "option4": "48",
+        "explain": "绝对可积信号的卷积面积等于两信号面积之积：(A/α)(B/β)。代入得 1.371429。"
+      },
+      "ext-discrete-convolution-middle-1": {
+        "prompt": "x[0]=1, x[1]=2, h[0]=3, h[1]=5，其余样本均为零。线性卷积 y[1] 是多少？",
+        "option1": "11",
+        "option2": "13",
+        "option3": "3",
+        "option4": "10",
+        "explain": "由 y[n]=Σₖx[k]h[n−k]，y[1]=x[0]h[1]+x[1]h[0]。代入得 11。"
+      },
+      "ext-discrete-convolution-middle-2": {
+        "prompt": "x[0]=4, x[1]=5, h[0]=6, h[1]=8，其余样本均为零。线性卷积 y[1] 是多少？",
+        "option1": "64",
+        "option2": "24",
+        "option3": "40",
+        "option4": "62",
+        "explain": "由 y[n]=Σₖx[k]h[n−k]，y[1]=x[0]h[1]+x[1]h[0]。代入得 62。"
+      },
+      "ext-ramp-step-convolution-1": {
+        "prompt": "x(t)=2t u(t)，h(t)=u(t)。连续卷积 y(3) 是多少？",
+        "option1": "6",
+        "option2": "9",
+        "option3": "18",
+        "option4": "4.5",
+        "explain": "与单位阶跃卷积相当于积分：y(t)=∫₀ᵗAτ dτ=At²/2（t≥0）。代入得 9。"
+      },
+      "ext-ramp-step-convolution-2": {
+        "prompt": "x(t)=5t u(t)，h(t)=u(t)。连续卷积 y(6) 是多少？",
+        "option1": "90",
+        "option2": "30",
+        "option3": "180",
+        "option4": "18",
+        "explain": "与单位阶跃卷积相当于积分：y(t)=∫₀ᵗAτ dτ=At²/2（t≥0）。代入得 90。"
+      },
+      "ext-two-impulse-response-1": {
+        "prompt": "零状态系统 h(t)=e^(−1t)u(t)，输入 2δ(t)+3δ(t−0.1)。y(0.2) 是多少？（选最接近值。）",
+        "option1": "4.093654",
+        "option2": "1.637462",
+        "option3": "4.351974",
+        "option4": "2.714512",
+        "explain": "冲激卷积只产生移位与增益：y(t)=Ah(t)+Bh(t−T)，在 t=2T 代入。代入得 4.351974。"
+      },
+      "ext-two-impulse-response-2": {
+        "prompt": "零状态系统 h(t)=e^(−4t)u(t)，输入 5δ(t)+6δ(t−0.4)。y(0.8) 是多少？（选最接近值。）",
+        "option1": "0.448384",
+        "option2": "1.41519",
+        "option3": "0.203811",
+        "option4": "1.211379",
+        "explain": "冲激卷积只产生移位与增益：y(t)=Ah(t)+Bh(t−T)，在 t=2T 代入。代入得 1.41519。"
+      },
+      "ext-repeated-pole-step-final-1": {
+        "prompt": "稳定因果系统 h(t)=4t e^(−2t)u(t)，单位阶跃零状态响应的终值是多少？",
+        "option1": "2",
+        "option2": "8",
+        "option3": "0.5",
+        "option4": "1",
+        "explain": "阶跃终值等于冲激响应面积，∫₀∞Kt e^(−at)dt=K/a²。代入得 1。"
+      },
+      "ext-repeated-pole-step-final-2": {
+        "prompt": "稳定因果系统 h(t)=7t e^(−5t)u(t)，单位阶跃零状态响应的终值是多少？",
+        "option1": "1.4",
+        "option2": "35",
+        "option3": "0.28",
+        "option4": "0.2",
+        "explain": "阶跃终值等于冲激响应面积，∫₀∞Kt e^(−at)dt=K/a²。代入得 0.28。"
+      },
+      "ext-second-order-impulse-jump-1": {
+        "prompt": "系统 2y″+3y′+y=7δ(t)，初始静止，y 在 0 处连续。y′(0⁺) 是多少？",
+        "option1": "3.5",
+        "option2": "7",
+        "option3": "2.333333",
+        "option4": "0.285714",
+        "explain": "在冲激两侧积分，m[y′(0⁺)−y′(0⁻)]=J；初始静止，故 y′(0⁺)=J/m。代入得 3.5。"
+      },
+      "ext-second-order-impulse-jump-2": {
+        "prompt": "系统 5y″+6y′+y=16δ(t)，初始静止，y 在 0 处连续。y′(0⁺) 是多少？",
+        "option1": "16",
+        "option2": "2.666667",
+        "option3": "0.3125",
+        "option4": "3.2",
+        "explain": "在冲激两侧积分，m[y′(0⁺)−y′(0⁻)]=J；初始静止，故 y′(0⁺)=J/m。代入得 3.2。"
+      },
+      "ext-first-order-initial-slope-1": {
+        "prompt": "t>0 时 y′+2y=3，y(0⁺)=1。右侧初始斜率 y′(0⁺) 是多少？",
+        "option1": "5",
+        "option2": "1",
+        "option3": "1.5",
+        "option4": "-2",
+        "explain": "把右侧初值直接代入微分方程：y′(0⁺)=B−ay(0⁺)。代入得 1。"
+      },
+      "ext-first-order-initial-slope-2": {
+        "prompt": "t>0 时 y′+5y=6，y(0⁺)=4。右侧初始斜率 y′(0⁺) 是多少？",
+        "option1": "-14",
+        "option2": "26",
+        "option3": "1.2",
+        "option4": "-20",
+        "explain": "把右侧初值直接代入微分方程：y′(0⁺)=B−ay(0⁺)。代入得 -14。"
+      },
+      "ext-complex-root-frequency-1": {
+        "prompt": "齐次方程 y″+4y′+20y=0 的特征根为 −2±j4。非零自由响应的振荡角频率是多少？",
+        "option1": "2 rad/s",
+        "option2": "20 rad/s",
+        "option3": "4 rad/s",
+        "option4": "8 rad/s",
+        "explain": "共轭根 α±jβ 对应 e^(αt)(Ccosβt+Dsinβt)，角频率是虚部的绝对值 |β|。代入得 4 rad/s。"
+      },
+      "ext-complex-root-frequency-2": {
+        "prompt": "齐次方程 y″+10y′+74y=0 的特征根为 −5±j7。非零自由响应的振荡角频率是多少？",
+        "option1": "5 rad/s",
+        "option2": "7 rad/s",
+        "option3": "74 rad/s",
+        "option4": "14 rad/s",
+        "explain": "共轭根 α±jβ 对应 e^(αt)(Ccosβt+Dsinβt)，角频率是虚部的绝对值 |β|。代入得 7 rad/s。"
+      },
+      "ext-complex-root-envelope-1": {
+        "prompt": "非零自由响应由特征根 −2±j4 产生。t=0.1 s 时振幅包络与 t=0 时的比值是多少？（选最接近值。）",
+        "option1": "0.67032",
+        "option2": "1.221403",
+        "option3": "0.181269",
+        "option4": "0.818731",
+        "explain": "特征根的实部控制振幅包络，包络比为 e^(−at)，虚部只控制振荡频率。代入得 0.818731。"
+      },
+      "ext-complex-root-envelope-2": {
+        "prompt": "非零自由响应由特征根 −5±j7 产生。t=0.4 s 时振幅包络与 t=0 时的比值是多少？（选最接近值。）",
+        "option1": "0.06081",
+        "option2": "7.389056",
+        "option3": "0.135335",
+        "option4": "0.864665",
+        "explain": "特征根的实部控制振幅包络，包络比为 e^(−at)，虚部只控制振荡频率。代入得 0.135335。"
+      },
+      "ext-second-order-step-gain-1": {
+        "prompt": "稳定因果系统 H(s)=4/(s²+3s+6)，初始静止。单位阶跃输出的终值是多少？（选最接近值。）",
+        "option1": "0.666667",
+        "option2": "1.333333",
+        "option3": "1.5",
+        "option4": "4",
+        "explain": "二阶分母各系数为正，极点在左半平面；阶跃终值为直流增益 H(0)=K/c。代入得 0.666667。"
+      },
+      "ext-second-order-step-gain-2": {
+        "prompt": "稳定因果系统 H(s)=7/(s²+6s+9)，初始静止。单位阶跃输出的终值是多少？（选最接近值。）",
+        "option1": "1.166667",
+        "option2": "1.285714",
+        "option3": "7",
+        "option4": "0.777778",
+        "explain": "二阶分母各系数为正，极点在左半平面；阶跃终值为直流增益 H(0)=K/c。代入得 0.777778。"
+      },
+      "ext-critical-pole-1": {
+        "prompt": "特征方程 s²+4s+4=0，其重根是多少？",
+        "option1": "2 s⁻¹",
+        "option2": "-2 s⁻¹",
+        "option3": "-4 s⁻¹",
+        "option4": "0 s⁻¹",
+        "explain": "特征多项式是 (s+a)²，重根为 s=−a。代入得 -2 s⁻¹。"
+      },
+      "ext-critical-pole-2": {
+        "prompt": "特征方程 s²+10s+25=0，其重根是多少？",
+        "option1": "-5 s⁻¹",
+        "option2": "5 s⁻¹",
+        "option3": "-10 s⁻¹",
+        "option4": "-25 s⁻¹",
+        "explain": "特征多项式是 (s+a)²，重根为 s=−a。代入得 -5 s⁻¹。"
+      },
+      "ext-rectangle-autocorrelation-1": {
+        "prompt": "实信号 x(t) 在 [0,5] 为 2，其余为零。按 Rxx(τ)=∫x(t)x(t−τ)dt，Rxx(-2) 是多少？",
+        "option1": "6",
+        "option2": "20",
+        "option3": "12",
+        "option4": "28",
+        "explain": "矩形自相关为 A²max(T−|τ|,0)，由两个矩形的重叠长度得到。代入得 12。"
+      },
+      "ext-rectangle-autocorrelation-2": {
+        "prompt": "实信号 x(t) 在 [0,8] 为 5，其余为零。按 Rxx(τ)=∫x(t)x(t−τ)dt，Rxx(-5) 是多少？",
+        "option1": "15",
+        "option2": "75",
+        "option3": "200",
+        "option4": "325",
+        "explain": "矩形自相关为 A²max(T−|τ|,0)，由两个矩形的重叠长度得到。代入得 75。"
+      },
+      "ext-crosscorrelation-peak-1": {
+        "prompt": "p(t) 是 [0,1] 上的单位矩形，x(t)=p(t−1)，y(t)=p(t−4)。Rxy(τ)=∫x(t)y(t−τ)dt 在哪个 τ 达到最大？",
+        "option1": "3 s",
+        "option2": "5 s",
+        "option3": "4 s",
+        "option4": "-3 s",
+        "explain": "最大值对应完全重叠：y(t−τ)=p(t−τ−b) 与 p(t−a) 对齐，故 τ=a−b。代入得 -3 s。"
+      },
+      "ext-crosscorrelation-peak-2": {
+        "prompt": "p(t) 是 [0,1] 上的单位矩形，x(t)=p(t−4)，y(t)=p(t−13)。Rxy(τ)=∫x(t)y(t−τ)dt 在哪个 τ 达到最大？",
+        "option1": "9 s",
+        "option2": "17 s",
+        "option3": "-9 s",
+        "option4": "13 s",
+        "explain": "最大值对应完全重叠：y(t−τ)=p(t−τ−b) 与 p(t−a) 对齐，故 τ=a−b。代入得 -9 s。"
+      },
+      "ext-period-ms-frequency-1": {
+        "prompt": "周期信号基本周期 T₀=3 ms，基频 f₀ 是多少 Hz？（选最接近值。）",
+        "option1": "333.333333 Hz",
+        "option2": "0.333333 Hz",
+        "option3": "0.003 Hz",
+        "option4": "0.666667 Hz",
+        "explain": "先将毫秒换算成秒，再用 f₀=1/T₀，即 f₀=1000/T₀(ms)。代入得 333.333333 Hz。"
+      },
+      "ext-period-ms-frequency-2": {
+        "prompt": "周期信号基本周期 T₀=9 ms，基频 f₀ 是多少 Hz？（选最接近值。）",
+        "option1": "0.111111 Hz",
+        "option2": "0.009 Hz",
+        "option3": "0.222222 Hz",
+        "option4": "111.111111 Hz",
+        "explain": "先将毫秒换算成秒，再用 f₀=1/T₀，即 f₀=1000/T₀(ms)。代入得 111.111111 Hz。"
+      },
+      "ext-sine-series-imaginary-1": {
+        "prompt": "采用 x(t)=ΣCₖe^(jkω₀t)。x(t)=3sin(2t)，ω₀=2。C₁ 的虚部是多少？",
+        "option1": "1.5",
+        "option2": "-1.5",
+        "option3": "-3",
+        "option4": "3",
+        "explain": "sin(ω₀t)=(e^(jω₀t)−e^(−jω₀t))/(2j)，因此 C₁=A/(2j)=−jA/2。代入得 -1.5。"
+      },
+      "ext-sine-series-imaginary-2": {
+        "prompt": "采用 x(t)=ΣCₖe^(jkω₀t)。x(t)=6sin(5t)，ω₀=5。C₁ 的虚部是多少？",
+        "option1": "-3",
+        "option2": "3",
+        "option3": "-6",
+        "option4": "6",
+        "explain": "sin(ω₀t)=(e^(jω₀t)−e^(−jω₀t))/(2j)，因此 C₁=A/(2j)=−jA/2。代入得 -3。"
+      },
+      "ext-cosine-series-real-1": {
+        "prompt": "采用 x(t)=ΣCₖe^(jkt)。x(t)=2cos(t+60°)，C₁ 的实部是多少？",
+        "option1": "1",
+        "option2": "2",
+        "option3": "0.5",
+        "option4": "-2",
+        "explain": "正频率系数为 C₁=(A/2)e^(jφ)，实部为 (A/2)cosφ；相位角按度换算。代入得 0.5。"
+      },
+      "ext-cosine-series-real-2": {
+        "prompt": "采用 x(t)=ΣCₖe^(jkt)。x(t)=5cos(t+240°)，C₁ 的实部是多少？",
+        "option1": "-2.5",
+        "option2": "-1.25",
+        "option3": "5",
+        "option4": "-5",
+        "explain": "正频率系数为 C₁=(A/2)e^(jφ)，实部为 (A/2)cosφ；相位角按度换算。代入得 -1.25。"
+      },
+      "ext-series-parseval-power-1": {
+        "prompt": "指数傅里叶级数仅 C₀=1、C₁=2+j3、C₋₁=2−j3 非零。信号平均功率是多少？",
+        "option1": "14",
+        "option2": "11",
+        "option3": "25",
+        "option4": "27",
+        "explain": "帕塞瓦尔关系 P=Σ|Cₖ|²；正负频率各贡献一次，P=C₀²+2(Re(C₁)²+Im(C₁)²)。代入得 27。"
+      },
+      "ext-series-parseval-power-2": {
+        "prompt": "指数傅里叶级数仅 C₀=4、C₁=5+j6、C₋₁=5−j6 非零。信号平均功率是多少？",
+        "option1": "77",
+        "option2": "26",
+        "option3": "138",
+        "option4": "196",
+        "explain": "帕塞瓦尔关系 P=Σ|Cₖ|²；正负频率各贡献一次，P=C₀²+2(Re(C₁)²+Im(C₁)²)。代入得 138。"
+      },
+      "ext-derivative-spectrum-1": {
+        "prompt": "采用 X(ω)=∫x(t)e^(−jωt)dt，x 满足微分性质条件。已知 |X(3)|=4。y=dx/dt，则 |Y(3)| 是多少？",
+        "option1": "12",
+        "option2": "1.333333",
+        "option3": "0.75",
+        "option4": "4",
+        "explain": "时域微分对应 Y(ω)=jωX(ω)，幅度为 |ω|·|X(ω)|。代入得 12。"
+      },
+      "ext-derivative-spectrum-2": {
+        "prompt": "采用 X(ω)=∫x(t)e^(−jωt)dt，x 满足微分性质条件。已知 |X(6)|=7。y=dx/dt，则 |Y(6)| 是多少？",
+        "option1": "1.166667",
+        "option2": "0.857143",
+        "option3": "7",
+        "option4": "42",
+        "explain": "时域微分对应 Y(ω)=jωX(ω)，幅度为 |ω|·|X(ω)|。代入得 42。"
+      },
+      "ext-scaled-transform-area-1": {
+        "prompt": "可积信号 x(t) 满足 ∫x(t)dt=5。y(t)=3x(−2t)，采用 Y(ω)=∫y(t)e^(−jωt)dt。Y(0) 是多少？",
+        "option1": "30",
+        "option2": "7.5",
+        "option3": "22.5",
+        "option4": "2.5",
+        "explain": "零频值是面积，幅度因子只乘一次：Y(0)=kX(0)/|a|，不同于能量中的 k²。代入得 7.5。"
+      },
+      "ext-scaled-transform-area-2": {
+        "prompt": "可积信号 x(t) 满足 ∫x(t)dt=8。y(t)=6x(−5t)，采用 Y(ω)=∫y(t)e^(−jωt)dt。Y(0) 是多少？",
+        "option1": "9.6",
+        "option2": "240",
+        "option3": "57.6",
+        "option4": "1.6",
+        "explain": "零频值是面积，幅度因子只乘一次：Y(0)=kX(0)/|a|，不同于能量中的 k²。代入得 9.6。"
+      },
+      "ext-exponential-spectrum-magnitude-1": {
+        "prompt": "x(t)=2e^(−3t)u(t)，X(ω)=∫x(t)e^(−jωt)dt。|X(4)| 是多少？",
+        "option1": "0.285714",
+        "option2": "0.666667",
+        "option3": "0.4",
+        "option4": "0.5",
+        "explain": "X(ω)=A/(a+jω)，分母模为 √(a²+ω²)，故 |X|=A/√(a²+ω²)。代入得 0.4。"
+      },
+      "ext-exponential-spectrum-magnitude-2": {
+        "prompt": "x(t)=5e^(−12t)u(t)，X(ω)=∫x(t)e^(−jωt)dt。|X(5)| 是多少？（选最接近值。）",
+        "option1": "0.294118",
+        "option2": "0.384615",
+        "option3": "0.416667",
+        "option4": "1",
+        "explain": "X(ω)=A/(a+jω)，分母模为 √(a²+ω²)，故 |X|=A/√(a²+ω²)。代入得 0.384615。"
+      },
+      "ext-bilateral-exponential-dc-1": {
+        "prompt": "x(t)=2e^(−3|t|)，X(ω)=∫x(t)e^(−jωt)dt。X(0) 是多少？（选最接近值。）",
+        "option1": "0.666667",
+        "option2": "12",
+        "option3": "0",
+        "option4": "1.333333",
+        "explain": "X(0) 等于信号面积；两侧各为 A/a，总面积为 2A/a。代入得 1.333333。"
+      },
+      "ext-bilateral-exponential-dc-2": {
+        "prompt": "x(t)=5e^(−6|t|)，X(ω)=∫x(t)e^(−jωt)dt。X(0) 是多少？（选最接近值。）",
+        "option1": "0.833333",
+        "option2": "4.166667",
+        "option3": "1.666667",
+        "option4": "60",
+        "explain": "X(0) 等于信号面积；两侧各为 A/a，总面积为 2A/a。代入得 1.666667。"
+      },
+      "ext-rectangle-spectrum-sample-1": {
+        "prompt": "x(t) 在 |t|≤2/2 内为 2，外部为零。X(ω)=∫x(t)e^(−jωt)dt，X(π/2) 是多少？（选最接近值。）",
+        "option1": "2.546479",
+        "option2": "4",
+        "option3": "1.27324",
+        "option4": "0",
+        "explain": "对称矩形变换为 X(ω)=2A sin(ωT/2)/ω；代入 ω=π/T 得 2AT/π。代入得 2.546479。"
+      },
+      "ext-rectangle-spectrum-sample-2": {
+        "prompt": "x(t) 在 |t|≤8/2 内为 5，外部为零。X(ω)=∫x(t)e^(−jωt)dt，X(π/8) 是多少？（选最接近值。）",
+        "option1": "40",
+        "option2": "12.732395",
+        "option3": "3.183099",
+        "option4": "25.464791",
+        "explain": "对称矩形变换为 X(ω)=2A sin(ωT/2)/ω；代入 ω=π/T 得 2AT/π。代入得 25.464791。"
+      },
+      "ext-delay-phase-degrees-1": {
+        "prompt": "纯延时系统 y(t)=x(t−5/1000)，时间单位 s。在 20 Hz 处，按 φ(f)=−360fT 的未折叠相位是多少度？",
+        "option1": "36°",
+        "option2": "-36°",
+        "option3": "-0.1°",
+        "option4": "-36000°",
+        "explain": "延时的频率响应为 e^(−j2πfT)，相位为 −360fT 度，本题不折叠到主值区间。代入得 -36°。"
+      },
+      "ext-delay-phase-degrees-2": {
+        "prompt": "纯延时系统 y(t)=x(t−20/1000)，时间单位 s。在 50 Hz 处，按 φ(f)=−360fT 的未折叠相位是多少度？",
+        "option1": "-360°",
+        "option2": "360°",
+        "option3": "-1°",
+        "option4": "-360000°",
+        "explain": "延时的频率响应为 e^(−j2πfT)，相位为 −360fT 度，本题不折叠到主值区间。代入得 -360°。"
+      },
+      "ext-delay-difference-notch-1": {
+        "prompt": "系统 y(t)=x(t)−x(t−2/1000)，时间单位 s。除直流外，幅频响应的第一个正频率零点是多少 Hz？",
+        "option1": "250 Hz",
+        "option2": "0.5 Hz",
+        "option3": "500 Hz",
+        "option4": "0.002 Hz",
+        "explain": "H(f)=1−e^(−j2πfT)，零点满足 fT 为整数；首个正频率为 1/T。代入得 500 Hz。"
+      },
+      "ext-delay-difference-notch-2": {
+        "prompt": "系统 y(t)=x(t)−x(t−5/1000)，时间单位 s。除直流外，幅频响应的第一个正频率零点是多少 Hz？",
+        "option1": "100 Hz",
+        "option2": "200 Hz",
+        "option3": "0.2 Hz",
+        "option4": "0.005 Hz",
+        "explain": "H(f)=1−e^(−j2πfT)，零点满足 fT 为整数；首个正频率为 1/T。代入得 200 Hz。"
+      },
+      "ext-ideal-lowpass-output-power-1": {
+        "prompt": "理想低通在 |f|'<'20 Hz 时 H(f)=3，其余为零。输入 2cos(2π·10t)+4cos(2π·30t)，稳态输出功率是多少？",
+        "option1": "6",
+        "option2": "90",
+        "option3": "2",
+        "option4": "18",
+        "explain": "只保留低频分量，输出幅度为 GA，正弦平均功率为 (GA)²/2。代入得 18。"
+      },
+      "ext-ideal-lowpass-output-power-2": {
+        "prompt": "理想低通在 |f|'<'80 Hz 时 H(f)=6，其余为零。输入 5cos(2π·40t)+7cos(2π·120t)，稳态输出功率是多少？",
+        "option1": "75",
+        "option2": "1332",
+        "option3": "450",
+        "option4": "12.5",
+        "explain": "只保留低频分量，输出幅度为 GA，正弦平均功率为 (GA)²/2。代入得 450。"
+      },
+      "ext-lowpass-sinusoid-amplitude-1": {
+        "prompt": "稳定一阶低通 H(jω)=2/(1+jω·0.1)，输入 3cos(4t)。稳态输出幅度是多少？（选最接近值。）",
+        "option1": "5.57086",
+        "option2": "6",
+        "option3": "4.285714",
+        "option4": "2.78543",
+        "explain": "输出幅度为输入幅度乘 |H(jω)|：AK/√(1+(ωτ)²)。代入得 5.57086。"
+      },
+      "ext-lowpass-sinusoid-amplitude-2": {
+        "prompt": "稳定一阶低通 H(jω)=5/(1+jω·0.4)，输入 6cos(7t)。稳态输出幅度是多少？（选最接近值。）",
+        "option1": "30",
+        "option2": "7.894737",
+        "option3": "2.018018",
+        "option4": "10.090092",
+        "explain": "输出幅度为输入幅度乘 |H(jω)|：AK/√(1+(ωτ)²)。代入得 10.090092。"
+      },
+      "ext-highpass-sinusoid-amplitude-1": {
+        "prompt": "稳定高通 H(jω)=jω/(3+jω)，输入 2cos(4t)。稳态输出幅度是多少？",
+        "option1": "1.2",
+        "option2": "1.6",
+        "option3": "1.142857",
+        "option4": "2",
+        "explain": "|H(jω)|=|ω|/√(a²+ω²)，再乘输入幅度。代入得 1.6。"
+      },
+      "ext-highpass-sinusoid-amplitude-2": {
+        "prompt": "稳定高通 H(jω)=jω/(12+jω)，输入 5cos(5t)。稳态输出幅度是多少？（选最接近值。）",
+        "option1": "1.923077",
+        "option2": "4.615385",
+        "option3": "1.470588",
+        "option4": "5",
+        "explain": "|H(jω)|=|ω|/√(a²+ω²)，再乘输入幅度。代入得 1.923077。"
+      },
+      "ext-multiple-zone-alias-1": {
+        "prompt": "频率 930 Hz 的实余弦按 fs=300 Hz 采样，折叠到 [0,150] Hz 后的频率是多少？",
+        "option1": "180 Hz",
+        "option2": "930 Hz",
+        "option3": "30 Hz",
+        "option4": "630 Hz",
+        "explain": "采样后相差整数倍 fs 的频率等价，实余弦还可折叠负频率：fa=|f−round(f/fs)fs|。代入得 30 Hz。"
+      },
+      "ext-multiple-zone-alias-2": {
+        "prompt": "频率 3720 Hz 的实余弦按 fs=600 Hz 采样，折叠到 [0,300] Hz 后的频率是多少？",
+        "option1": "420 Hz",
+        "option2": "120 Hz",
+        "option3": "3720 Hz",
+        "option4": "3120 Hz",
+        "explain": "采样后相差整数倍 fs 的频率等价，实余弦还可折叠负频率：fa=|f−round(f/fs)fs|。代入得 120 Hz。"
+      },
+      "ext-normalized-cycles-1": {
+        "prompt": "模拟正弦频率 100 Hz，采样率 2000 Hz。归一化频率是多少周期/样本（不是 rad/sample）？",
+        "option1": "20 cycles/sample",
+        "option2": "0.1 cycles/sample",
+        "option3": "0.025 cycles/sample",
+        "option4": "0.05 cycles/sample",
+        "explain": "每个样本间隔内经历 f/fs 个周期；若用 rad/sample 才需再乘 2π。代入得 0.05 cycles/sample。"
+      },
+      "ext-normalized-cycles-2": {
+        "prompt": "模拟正弦频率 400 Hz，采样率 5000 Hz。归一化频率是多少周期/样本（不是 rad/sample）？",
+        "option1": "12.5 cycles/sample",
+        "option2": "0.16 cycles/sample",
+        "option3": "0.08 cycles/sample",
+        "option4": "0.04 cycles/sample",
+        "explain": "每个样本间隔内经历 f/fs 个周期；若用 rad/sample 才需再乘 2π。代入得 0.08 cycles/sample。"
+      },
+      "ext-finite-record-samples-1": {
+        "prompt": "从 t=0 开始以 400 Hz 采样，仅保留 0≤t'<'0.1 s 的样本。样本数 N 是多少？",
+        "option1": "40",
+        "option2": "41",
+        "option3": "39",
+        "option4": "4000",
+        "explain": "采样时刻为 n/fs，本题 fsT 为整数且不含右端点，n=0,…,fsT−1，共 fsT 个。代入得 40。"
+      },
+      "ext-finite-record-samples-2": {
+        "prompt": "从 t=0 开始以 1000 Hz 采样，仅保留 0≤t'<'0.4 s 的样本。样本数 N 是多少？",
+        "option1": "401",
+        "option2": "399",
+        "option3": "2500",
+        "option4": "400",
+        "explain": "采样时刻为 n/fs，本题 fsT 为整数且不含右端点，n=0,…,fsT−1，共 fsT 个。代入得 400。"
+      },
+      "ext-dft-coherent-cosine-1": {
+        "prompt": "x[n]=2cos(2π·3n/32)，n=0,…,31。采用未归一化 DFT：X[k]=Σx[n]e^(−j2πkn/32)，|X[3]| 是多少？",
+        "option1": "1",
+        "option2": "32",
+        "option3": "64",
+        "option4": "2",
+        "explain": "相干采样且频点不是直流或奈奎斯特点，余弦能量分布在两个频点，每个 DFT 幅值为 AN/2。代入得 32。"
+      },
+      "ext-dft-coherent-cosine-2": {
+        "prompt": "x[n]=5cos(2π·6n/80)，n=0,…,79。采用未归一化 DFT：X[k]=Σx[n]e^(−j2πkn/80)，|X[6]| 是多少？",
+        "option1": "200",
+        "option2": "2.5",
+        "option3": "400",
+        "option4": "5",
+        "explain": "相干采样且频点不是直流或奈奎斯特点，余弦能量分布在两个频点，每个 DFT 幅值为 AN/2。代入得 200。"
+      },
+      "ext-am-sideband-amplitude-1": {
+        "prompt": "AM 信号 s(t)=3[1+0.1cos(2π·100t)]cos(2π·1000t)。上边带余弦分量的幅度是多少？",
+        "option1": "0.3",
+        "option2": "1.5",
+        "option3": "0.15",
+        "option4": "3.3",
+        "explain": "利用 cosαcosβ=[cos(α+β)+cos(α−β)]/2，每个边带幅度为 Acμ/2。代入得 0.15。"
+      },
+      "ext-am-sideband-amplitude-2": {
+        "prompt": "AM 信号 s(t)=6[1+0.4cos(2π·400t)]cos(2π·4000t)。上边带余弦分量的幅度是多少？",
+        "option1": "2.4",
+        "option2": "1.2",
+        "option3": "3",
+        "option4": "8.4",
+        "explain": "利用 cosαcosβ=[cos(α+β)+cos(α−β)]/2，每个边带幅度为 Acμ/2。代入得 1.2。"
+      },
+      "ext-mixer-difference-frequency-1": {
+        "prompt": "110 kHz 余弦与 85 kHz 本振余弦相乘。理想低通只保留差频项，输出频率是多少？",
+        "option1": "195 kHz",
+        "option2": "110 kHz",
+        "option3": "85 kHz",
+        "option4": "25 kHz",
+        "explain": "两余弦乘积产生和频与差频，低通保留 |fRF−fLO|。代入得 25 kHz。"
+      },
+      "ext-mixer-difference-frequency-2": {
+        "prompt": "140 kHz 余弦与 100 kHz 本振余弦相乘。理想低通只保留差频项，输出频率是多少？",
+        "option1": "240 kHz",
+        "option2": "140 kHz",
+        "option3": "40 kHz",
+        "option4": "100 kHz",
+        "explain": "两余弦乘积产生和频与差频，低通保留 |fRF−fLO|。代入得 40 kHz。"
+      },
+      "ext-laplace-exponential-value-1": {
+        "prompt": "x(t)=3e^(−2t)u(t)，求单边拉氏变换 X(4)。",
+        "option1": "0.5",
+        "option2": "1.5",
+        "option3": "0.083333",
+        "option4": "0",
+        "explain": "X(s)=A/(s+a)，给定 s 在 Re(s)>−a 的收敛域内。代入得 0.5。"
+      },
+      "ext-laplace-exponential-value-2": {
+        "prompt": "x(t)=6e^(−5t)u(t)，求单边拉氏变换 X(7)。",
+        "option1": "3",
+        "option2": "1.2",
+        "option3": "0.041667",
+        "option4": "0.5",
+        "explain": "X(s)=A/(s+a)，给定 s 在 Re(s)>−a 的收敛域内。代入得 0.5。"
+      },
+      "ext-laplace-polynomial-value-1": {
+        "prompt": "x(t)=t^1u(t)，求单边拉氏变换 X(2)。",
+        "option1": "0.5",
+        "option2": "0.25",
+        "option3": "4",
+        "option4": "0",
+        "explain": "L[tⁿu(t)]=n!/s^(n+1)，注意分子是阶乘，Re(s)>0。代入得 0.25。"
+      },
+      "ext-laplace-polynomial-value-2": {
+        "prompt": "x(t)=t^4u(t)，求单边拉氏变换 X(2)。",
+        "option1": "0.75",
+        "option2": "0.03125",
+        "option3": "0.25",
+        "option4": "32",
+        "explain": "L[tⁿu(t)]=n!/s^(n+1)，注意分子是阶乘，Re(s)>0。代入得 0.75。"
+      },
+      "ext-delayed-step-transform-1": {
+        "prompt": "x(t)=2u(t−0.1)，求单边拉氏变换 X(2)。（选最接近值。）",
+        "option1": "1",
+        "option2": "1.221403",
+        "option3": "0.818731",
+        "option4": "1.637462",
+        "explain": "延迟 T 的阶跃变换为 Ae^(−sT)/s，延迟因子不能遗漏。代入得 0.818731。"
+      },
+      "ext-delayed-step-transform-2": {
+        "prompt": "x(t)=5u(t−0.4)，求单边拉氏变换 X(5)。（选最接近值。）",
+        "option1": "1",
+        "option2": "0.135335",
+        "option3": "7.389056",
+        "option4": "0.676676",
+        "explain": "延迟 T 的阶跃变换为 Ae^(−sT)/s，延迟因子不能遗漏。代入得 0.135335。"
+      },
+      "ext-shifted-roc-boundary-1": {
+        "prompt": "x(t)=e^(5t)e^(−2t)u(t)。双边拉氏收敛域为 Re(s)>b，b 是多少？",
+        "option1": "-2",
+        "option2": "-5",
+        "option3": "-7",
+        "option4": "3",
+        "explain": "合并指数得到 e^((c−a)t)u(t)，或将原 ROC 右移 c，边界为 c−a。代入得 3。"
+      },
+      "ext-shifted-roc-boundary-2": {
+        "prompt": "x(t)=e^(11t)e^(−5t)u(t)。双边拉氏收敛域为 Re(s)>b，b 是多少？",
+        "option1": "-5",
+        "option2": "-11",
+        "option3": "6",
+        "option4": "-16",
+        "explain": "合并指数得到 e^((c−a)t)u(t)，或将原 ROC 右移 c，边界为 c−a。代入得 6。"
+      },
+      "ext-unilateral-second-derivative-1": {
+        "prompt": "采用从 0⁻ 开始的单边变换。F(2)=4，f(0⁻)=1，f′(0⁻)=3。L[f″] 在 s=2 处等于多少？",
+        "option1": "11",
+        "option2": "16",
+        "option3": "21",
+        "option4": "7",
+        "explain": "二阶微分要减去两个初始项：L[f″]=s²F(s)−sf(0⁻)−f′(0⁻)。代入得 11。"
+      },
+      "ext-unilateral-second-derivative-2": {
+        "prompt": "采用从 0⁻ 开始的单边变换。F(5)=7，f(0⁻)=4，f′(0⁻)=6。L[f″] 在 s=5 处等于多少？",
+        "option1": "175",
+        "option2": "201",
+        "option3": "31",
+        "option4": "149",
+        "explain": "二阶微分要减去两个初始项：L[f″]=s²F(s)−sf(0⁻)−f′(0⁻)。代入得 149。"
+      },
+      "ext-time-weighted-transform-1": {
+        "prompt": "x(t)=3e^(−2t)u(t)，y(t)=t x(t)。单边拉氏变换 Y(4) 是多少？（选最接近值。）",
+        "option1": "0.5",
+        "option2": "0.083333",
+        "option3": "-0.083333",
+        "option4": "0.166667",
+        "explain": "时域乘 t 对应 −dX/ds。X=A/(s+a)，所以 Y=A/(s+a)²。代入得 0.083333。"
+      },
+      "ext-time-weighted-transform-2": {
+        "prompt": "x(t)=6e^(−5t)u(t)，y(t)=t x(t)。单边拉氏变换 Y(7) 是多少？（选最接近值。）",
+        "option1": "0.041667",
+        "option2": "0.5",
+        "option3": "-0.041667",
+        "option4": "0.111111",
+        "explain": "时域乘 t 对应 −dX/ds。X=A/(s+a)，所以 Y=A/(s+a)²。代入得 0.041667。"
+      },
+      "ext-integrated-transform-1": {
+        "prompt": "x(t)=3e^(−2t)u(t)，y(t)=∫₀⁻ᵗx(τ)dτ。单边拉氏变换 Y(4) 是多少？",
+        "option1": "0.5",
+        "option2": "2",
+        "option3": "0.125",
+        "option4": "0.083333",
+        "explain": "零初始积分对应 Y(s)=X(s)/s=A/[s(s+a)]。代入得 0.125。"
+      },
+      "ext-integrated-transform-2": {
+        "prompt": "x(t)=6e^(−5t)u(t)，y(t)=∫₀⁻ᵗx(τ)dτ。单边拉氏变换 Y(7) 是多少？（选最接近值。）",
+        "option1": "0.5",
+        "option2": "0.071429",
+        "option3": "3.5",
+        "option4": "0.041667",
+        "explain": "零初始积分对应 Y(s)=X(s)/s=A/[s(s+a)]。代入得 0.071429。"
+      },
+      "ext-rational-initial-value-1": {
+        "prompt": "因果 F(s)=(3s+2)/[(s+4)(s+5)]，f 不含冲激。f(0⁺) 是多少？",
+        "option1": "0.1",
+        "option2": "2",
+        "option3": "5",
+        "option4": "3",
+        "explain": "初值定理 f(0⁺)=lim(s→∞)sF(s)，由最高次项的系数得到分子的一次项系数。代入得 3。"
+      },
+      "ext-rational-initial-value-2": {
+        "prompt": "因果 F(s)=(6s+5)/[(s+7)(s+8)]，f 不含冲激。f(0⁺) 是多少？",
+        "option1": "0.089286",
+        "option2": "5",
+        "option3": "6",
+        "option4": "11",
+        "explain": "初值定理 f(0⁺)=lim(s→∞)sF(s)，由最高次项的系数得到分子的一次项系数。代入得 6。"
+      },
+      "ext-two-pole-final-value-1": {
+        "prompt": "因果 F(s)=5/[s(s+2)(s+3)]。f(t) 的终值是多少？（选最接近值。）",
+        "option1": "0.833333",
+        "option2": "1",
+        "option3": "2.5",
+        "option4": "1.666667",
+        "explain": "sF 的极点均严格在左半平面，终值定理适用：lim(t→∞)f(t)=lim(s→0)sF(s)=K/(ab)。代入得 0.833333。"
+      },
+      "ext-two-pole-final-value-2": {
+        "prompt": "因果 F(s)=8/[s(s+5)(s+6)]。f(t) 的终值是多少？（选最接近值。）",
+        "option1": "0.727273",
+        "option2": "1.6",
+        "option3": "1.333333",
+        "option4": "0.266667",
+        "explain": "sF 的极点均严格在左半平面，终值定理适用：lim(t→∞)f(t)=lim(s→0)sF(s)=K/(ab)。代入得 0.266667。"
+      },
+      "ext-inverse-damped-sine-1": {
+        "prompt": "因果 F(s)=4/[(s+2)²+9]，f(t)=A e^(−2t)sin(3t)u(t)。A 是多少？（选最接近值。）",
+        "option1": "4",
+        "option2": "1.333333",
+        "option3": "12",
+        "option4": "2",
+        "explain": "L[e^(−at)sin(ωt)u(t)]=ω/[(s+a)²+ω²]，分子匹配要求 A=K/ω。代入得 1.333333。"
+      },
+      "ext-inverse-damped-sine-2": {
+        "prompt": "因果 F(s)=7/[(s+5)²+36]，f(t)=A e^(−5t)sin(6t)u(t)。A 是多少？（选最接近值。）",
+        "option1": "1.166667",
+        "option2": "7",
+        "option3": "42",
+        "option4": "1.4",
+        "explain": "L[e^(−at)sin(ωt)u(t)]=ω/[(s+a)²+ω²]，分子匹配要求 A=K/ω。代入得 1.166667。"
+      },
+      "ext-numerator-residue-1": {
+        "prompt": "F(s)=2(s+5)/[(s+1)(s+3)]。部分分式中 1/(s+1) 的系数是多少？",
+        "option1": "3",
+        "option2": "1",
+        "option3": "4",
+        "option4": "-2",
+        "explain": "单极点留数为 lim(s→−a)(s+a)F(s)=K(z−a)/(b−a)。代入得 4。"
+      },
+      "ext-numerator-residue-2": {
+        "prompt": "F(s)=5(s+8)/[(s+4)(s+6)]。部分分式中 1/(s+4) 的系数是多少？",
+        "option1": "6",
+        "option2": "10",
+        "option3": "2.5",
+        "option4": "-5",
+        "explain": "单极点留数为 lim(s→−a)(s+a)F(s)=K(z−a)/(b−a)。代入得 10。"
+      },
+      "ext-direct-impulse-coefficient-1": {
+        "prompt": "因果系统 H(s)=(3s+5)/(2s+4)。冲激响应中 δ(t) 的系数是多少？",
+        "option1": "3",
+        "option2": "1.25",
+        "option3": "0.666667",
+        "option4": "1.5",
+        "explain": "分子分母同阶，先长除；商为最高次项系数比 b/a，对应冲激直接项。代入得 1.5。"
+      },
+      "ext-direct-impulse-coefficient-2": {
+        "prompt": "因果系统 H(s)=(6s+8)/(5s+7)。冲激响应中 δ(t) 的系数是多少？",
+        "option1": "6",
+        "option2": "1.142857",
+        "option3": "1.2",
+        "option4": "0.833333",
+        "explain": "分子分母同阶，先长除；商为最高次项系数比 b/a，对应冲激直接项。代入得 1.2。"
+      },
+      "ext-capacitor-initial-current-term-1": {
+        "prompt": "被动参考方向电容 C=0.1 F，v(0⁻)=3 V。单边变换 I(s)=sCV(s)+q，常数项 q 的数值是多少？",
+        "option1": "-0.3",
+        "option2": "0.3",
+        "option3": "-30",
+        "option4": "30",
+        "explain": "由 i=C dv/dt，单边变换得到 I=sCV−Cv(0⁻)，初始项为负号。代入得 -0.3。"
+      },
+      "ext-capacitor-initial-current-term-2": {
+        "prompt": "被动参考方向电容 C=0.4 F，v(0⁻)=6 V。单边变换 I(s)=sCV(s)+q，常数项 q 的数值是多少？",
+        "option1": "2.4",
+        "option2": "-15",
+        "option3": "15",
+        "option4": "-2.4",
+        "explain": "由 i=C dv/dt，单边变换得到 I=sCV−Cv(0⁻)，初始项为负号。代入得 -2.4。"
+      },
+      "ext-inductor-s-impedance-1": {
+        "prompt": "零初始电流的理想电感 L=2 H，在 s=3 s⁻¹ 处的 s 域阻抗是多少？",
+        "option1": "0.666667 Ω",
+        "option2": "6 Ω",
+        "option3": "1.5 Ω",
+        "option4": "0.166667 Ω",
+        "explain": "零初始状态下电感满足 V(s)=sLI(s)，故 ZL(s)=sL。代入得 6 Ω。"
+      },
+      "ext-inductor-s-impedance-2": {
+        "prompt": "零初始电流的理想电感 L=5 H，在 s=6 s⁻¹ 处的 s 域阻抗是多少？",
+        "option1": "30 Ω",
+        "option2": "0.833333 Ω",
+        "option3": "1.2 Ω",
+        "option4": "0.033333 Ω",
+        "explain": "零初始状态下电感满足 V(s)=sLI(s)，故 ZL(s)=sL。代入得 30 Ω。"
+      },
+      "ext-routh-stable-bound-1": {
+        "prompt": "因果系统 H(s)=1/(s³+3s²+4s+k)，k>0。BIBO 稳定区间为 0'<k<'K，严格上界 K 是多少？",
+        "option1": "7",
+        "option2": "1.333333",
+        "option3": "12",
+        "option4": "0.75",
+        "explain": "三阶劳斯首列为 1、a、(ab−k)/a、k。严格稳定要求全为正，故 0'<k<'ab；等号不稳定。代入得 12。"
+      },
+      "ext-routh-stable-bound-2": {
+        "prompt": "因果系统 H(s)=1/(s³+6s²+7s+k)，k>0。BIBO 稳定区间为 0'<k<'K，严格上界 K 是多少？",
+        "option1": "13",
+        "option2": "42",
+        "option3": "1.166667",
+        "option4": "0.857143",
+        "explain": "三阶劳斯首列为 1、a、(ab−k)/a、k。严格稳定要求全为正，故 0'<k<'ab；等号不稳定。代入得 42。"
+      },
+      "ext-routh-first-column-1": {
+        "prompt": "多项式 D(s)=s³+3s²+4s+2。按标准劳斯表计算，s¹ 行首列元素是多少？（选最接近值。）",
+        "option1": "4.666667",
+        "option2": "10",
+        "option3": "0.666667",
+        "option4": "3.333333",
+        "explain": "前两行为 [1,b]、[a,c]，第三行首项为 (ab−c)/a。代入得 3.333333。"
+      },
+      "ext-routh-first-column-2": {
+        "prompt": "多项式 D(s)=s³+6s²+7s+5。按标准劳斯表计算，s¹ 行首列元素是多少？（选最接近值。）",
+        "option1": "7.833333",
+        "option2": "37",
+        "option3": "6.166667",
+        "option4": "0.833333",
+        "explain": "前两行为 [1,b]、[a,c]，第三行首项为 (ab−c)/a。代入得 6.166667。"
+      },
+      "ext-negative-feedback-gain-1": {
+        "prompt": "静态负反馈框图满足 e=r−0.1y，y=2e。闭环增益 y/r 是多少？（选最接近值。）",
+        "option1": "1.666667",
+        "option2": "2.5",
+        "option3": "0.2",
+        "option4": "2",
+        "explain": "联立 y=G(r−Hy)，得 (1+GH)y=Gr，所以 T=G/(1+GH)。代入得 1.666667。"
+      },
+      "ext-negative-feedback-gain-2": {
+        "prompt": "静态负反馈框图满足 e=r−0.4y，y=5e。闭环增益 y/r 是多少？（选最接近值。）",
+        "option1": "-5",
+        "option2": "2",
+        "option3": "5",
+        "option4": "1.666667",
+        "explain": "联立 y=G(r−Hy)，得 (1+GH)y=Gr，所以 T=G/(1+GH)。代入得 1.666667。"
+      },
+      "ext-mason-touching-loops-1": {
+        "prompt": "信号流图恰有两个回路 L₁=0.05、L₂=-0.2，两回路共享节点。梅森特征式 Δ 是多少？",
+        "option1": "1.14",
+        "option2": "1.15",
+        "option3": "0.85",
+        "option4": "-0.01",
+        "explain": "接触回路不能形成乘积项，只有 Δ=1−L₁−L₂；回路增益保留各自符号。代入得 1.15。"
+      },
+      "ext-mason-touching-loops-2": {
+        "prompt": "信号流图恰有两个回路 L₁=0.2、L₂=-0.5，两回路共享节点。梅森特征式 Δ 是多少？",
+        "option1": "1.3",
+        "option2": "1.2",
+        "option3": "0.7",
+        "option4": "-0.1",
+        "explain": "接触回路不能形成乘积项，只有 Δ=1−L₁−L₂；回路增益保留各自符号。代入得 1.3。"
+      },
+      "ext-cascade-dc-gain-1": {
+        "prompt": "两个稳定系统 H₁(s)=3/(s+2)、H₂(s)=5/(s+4) 级联，总直流增益是多少？",
+        "option1": "2.75",
+        "option2": "2.5",
+        "option3": "1.875",
+        "option4": "15",
+        "explain": "级联系统函数相乘，H(0)=H₁(0)H₂(0)=K₁K₂/(ab)。代入得 1.875。"
+      },
+      "ext-cascade-dc-gain-2": {
+        "prompt": "两个稳定系统 H₁(s)=6/(s+5)、H₂(s)=8/(s+7) 级联，总直流增益是多少？（选最接近值。）",
+        "option1": "2.342857",
+        "option2": "1.371429",
+        "option3": "4",
+        "option4": "48",
+        "explain": "级联系统函数相乘，H(0)=H₁(0)H₂(0)=K₁K₂/(ab)。代入得 1.371429。"
+      },
+      "ext-scalar-state-dc-gain-1": {
+        "prompt": "零初始状态的标量模型 x′=−2x+3u，y=4x+1u，其传递函数 H(s) 的直流增益 H(0) 是多少？",
+        "option1": "6",
+        "option2": "-5",
+        "option3": "2.5",
+        "option4": "7",
+        "explain": "H(s)=C(sI−A)⁻¹B+D=CB/(s+a)+D，令 s=0，保留直接通路 D。代入得 7。"
+      },
+      "ext-scalar-state-dc-gain-2": {
+        "prompt": "零初始状态的标量模型 x′=−5x+6u，y=7x+4u，其传递函数 H(s) 的直流增益 H(0) 是多少？",
+        "option1": "8.4",
+        "option2": "-4.4",
+        "option3": "12.4",
+        "option4": "5.2",
+        "explain": "H(s)=C(sI−A)⁻¹B+D=CB/(s+a)+D，令 s=0，保留直接通路 D。代入得 12.4。"
       }
     },
     "chooseChapter": "选择章节",
@@ -2243,5 +5443,43 @@
     "next": "下次复习：{date}",
     "completed": "本轮复习已完成，已退出到期队列。",
     "close": "返回错题本"
+  },
+  "questionBank": {
+    "title": "题库",
+    "total": "共 {count} 题",
+    "category": "题库分类",
+    "all": "全部题目",
+    "search": "关键词搜索",
+    "searchPlaceholder": "搜索题干、答案、解析或题目编号",
+    "clear": "清除关键词",
+    "results": "找到 {count} 道题目",
+    "page": "第 {page} / {pages} 页",
+    "loading": "正在加载题库…",
+    "loadFailed": "题库加载失败",
+    "retry": "重新加载",
+    "empty": "没有找到匹配的题目",
+    "reset": "清除筛选",
+    "pagination": "题库分页",
+    "previous": "上一页",
+    "next": "下一页",
+    "showAnswer": "查看答案与解析",
+    "hideAnswer": "收起答案与解析",
+    "answer": "参考答案",
+    "explanation": "解析",
+    "handout": "对应讲义",
+    "accessDenied": "仅教师和管理员可以查看题库",
+    "categories": {
+      "quick": "快问快答",
+      "review": "错题复习变式",
+      "preview": "课前预习题",
+      "in_class": "课中练习题",
+      "after_class": "课后巩固题",
+      "preview_retest": "预习复测题",
+      "in_class_retest": "课中复测题",
+      "homework": "作业题",
+      "lab_concept": "实验概念题",
+      "lab_calculation": "实验计算变式",
+      "lab_checkpoint": "实验检查点"
+    }
   }
 }

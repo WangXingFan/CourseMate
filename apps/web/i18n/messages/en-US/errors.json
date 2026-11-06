@@ -17,7 +17,8 @@
   "learning": {
     "invalidAttempt": "Invalid practice answer. Please reopen the quiz.",
     "attemptConflict": "This answer ID was already used for another answer. Please reopen the quiz.",
-    "teacher_assigned": "Answer through a class activity published by your teacher."
+    "teacher_assigned": "Answer through a class activity published by your teacher.",
+    "question_bank_forbidden": "The question bank is available to teachers and administrators"
   },
   "classroom": {
     "forbidden": "Only teacher accounts can manage classes.",

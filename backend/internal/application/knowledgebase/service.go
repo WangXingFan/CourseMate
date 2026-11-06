@@ -174,7 +174,7 @@ type PatchInput struct {
 	SortOrder   *int
 }
 
-// ListVisible 查询当前用户可使用的内置和个人知识库。
+// ListVisible 查询当前用户可使用的内置、个人和任课教师知识库。
 func (s *Service) ListVisible(ctx context.Context, userID uint, input ListInput) ([]domainknowledgebase.KnowledgeBase, int64, error) {
 	if userID == 0 {
 		return nil, 0, ErrInvalidKnowledgeBase
@@ -204,15 +204,15 @@ func (s *Service) ListMine(ctx context.Context, userID uint, input ListInput) ([
 	}, offset, limit)
 }
 
-// ListAdminBuiltin 查询管理员内置知识库。
-func (s *Service) ListAdminBuiltin(ctx context.Context, input ListInput) ([]domainknowledgebase.KnowledgeBase, int64, error) {
+// ListAdmin 查询平台内置和教师知识库。
+func (s *Service) ListAdmin(ctx context.Context, input ListInput) ([]domainknowledgebase.KnowledgeBase, int64, error) {
 	offset, limit := pagination.Offset(input.Page, input.PageSize)
 	publicIDs := normalizePublicIDs(input.IDs, maxKnowledgeBasesPerRequest)
 	if len(input.IDs) > 0 && len(publicIDs) == 0 {
 		return []domainknowledgebase.KnowledgeBase{}, 0, nil
 	}
 	return s.repo.ListKnowledgeBases(ctx, repository.KnowledgeBaseListFilter{
-		Query: strings.TrimSpace(input.Query), Sort: strings.TrimSpace(input.Sort), PublicIDs: publicIDs, Scope: domainknowledgebase.ScopeBuiltin, Enabled: input.Enabled,
+		Query: strings.TrimSpace(input.Query), Sort: strings.TrimSpace(input.Sort), PublicIDs: publicIDs, AdminVisible: true, Enabled: input.Enabled,
 	}, offset, limit)
 }
 
@@ -221,26 +221,12 @@ func (s *Service) GetVisible(ctx context.Context, userID uint, publicID string) 
 	if userID == 0 {
 		return nil, ErrInvalidKnowledgeBase
 	}
-	item, err := s.get(ctx, publicID)
-	if err != nil {
-		return nil, err
-	}
-	if !isVisibleToUser(item, userID) {
-		return nil, ErrKnowledgeBaseNotFound
-	}
-	return item, nil
+	return s.get(ctx, publicID, repository.KnowledgeBaseListFilter{VisibleUserID: &userID})
 }
 
-// GetAdmin 查询管理员可管理的内置知识库。
+// GetAdmin 查询管理员可查看的内置和教师知识库。
 func (s *Service) GetAdmin(ctx context.Context, publicID string) (*domainknowledgebase.KnowledgeBase, error) {
-	item, err := s.get(ctx, publicID)
-	if err != nil {
-		return nil, err
-	}
-	if item.Scope != domainknowledgebase.ScopeBuiltin {
-		return nil, ErrKnowledgeBaseNotFound
-	}
-	return item, nil
+	return s.get(ctx, publicID, repository.KnowledgeBaseListFilter{AdminVisible: true})
 }
 
 // CreateUser 创建个人知识库。
@@ -275,7 +261,7 @@ func (s *Service) UpdateUser(ctx context.Context, userID uint, publicID string, 
 	if userID == 0 || input.Enabled != nil {
 		return nil, ErrInvalidKnowledgeBase
 	}
-	item, err := s.get(ctx, publicID)
+	item, err := s.get(ctx, publicID, repository.KnowledgeBaseListFilter{})
 	if err != nil {
 		return nil, err
 	}
@@ -290,7 +276,7 @@ func (s *Service) UpdateBuiltin(ctx context.Context, actorUserID uint, publicID 
 	if actorUserID == 0 {
 		return nil, ErrInvalidKnowledgeBase
 	}
-	item, err := s.get(ctx, publicID)
+	item, err := s.get(ctx, publicID, repository.KnowledgeBaseListFilter{})
 	if err != nil {
 		return nil, err
 	}
@@ -305,7 +291,7 @@ func (s *Service) DeleteUser(ctx context.Context, userID uint, publicID string, 
 	if userID == 0 {
 		return DeleteResult{}, ErrInvalidKnowledgeBase
 	}
-	item, err := s.get(ctx, publicID)
+	item, err := s.get(ctx, publicID, repository.KnowledgeBaseListFilter{})
 	if err != nil {
 		return DeleteResult{}, err
 	}
@@ -317,7 +303,7 @@ func (s *Service) DeleteUser(ctx context.Context, userID uint, publicID string, 
 
 // DeleteBuiltin 删除内置知识库，并可选清理不再被引用的文件。
 func (s *Service) DeleteBuiltin(ctx context.Context, publicID string, deleteFiles bool) (DeleteResult, error) {
-	item, err := s.get(ctx, publicID)
+	item, err := s.get(ctx, publicID, repository.KnowledgeBaseListFilter{})
 	if err != nil {
 		return DeleteResult{}, err
 	}
@@ -368,14 +354,11 @@ func (s *Service) ListVisibleFiles(ctx context.Context, userID uint, publicID st
 	return s.repo.ListKnowledgeBaseFiles(ctx, item.ID, offset, limit)
 }
 
-// ListAdminFiles 查询管理员内置知识库文件。
+// ListAdminFiles 查询管理员可查看的知识库文件。
 func (s *Service) ListAdminFiles(ctx context.Context, publicID string, page int, pageSize int) ([]domainconversation.FileObject, int64, error) {
-	item, err := s.get(ctx, publicID)
+	item, err := s.get(ctx, publicID, repository.KnowledgeBaseListFilter{AdminVisible: true})
 	if err != nil {
 		return nil, 0, err
-	}
-	if item.Scope != domainknowledgebase.ScopeBuiltin {
-		return nil, 0, ErrKnowledgeBaseNotFound
 	}
 	offset, limit := pagination.Offset(page, pageSize)
 	return s.repo.ListKnowledgeBaseFiles(ctx, item.ID, offset, limit)
@@ -386,12 +369,9 @@ func (s *Service) GetVisibleFileProcessingStatuses(ctx context.Context, userID u
 	if userID == 0 {
 		return nil, ErrInvalidKnowledgeBase
 	}
-	item, err := s.getForAccess(ctx, publicID)
+	item, err := s.getForAccess(ctx, publicID, repository.KnowledgeBaseListFilter{VisibleUserID: &userID})
 	if err != nil {
 		return nil, err
-	}
-	if !isVisibleToUser(item, userID) {
-		return nil, ErrKnowledgeBaseNotFound
 	}
 	return s.getFileProcessingStatuses(ctx, item.ID, fileIDs)
 }
@@ -401,36 +381,27 @@ func (s *Service) GetVisibleFileProcessingSnapshot(ctx context.Context, userID u
 	if userID == 0 {
 		return nil, nil, ErrInvalidKnowledgeBase
 	}
-	item, err := s.getForAccess(ctx, publicID)
+	item, err := s.getForAccess(ctx, publicID, repository.KnowledgeBaseListFilter{VisibleUserID: &userID})
 	if err != nil {
 		return nil, nil, err
-	}
-	if !isVisibleToUser(item, userID) {
-		return nil, nil, ErrKnowledgeBaseNotFound
 	}
 	return s.getFileProcessingSnapshot(ctx, item, fileIDs)
 }
 
-// GetAdminFileProcessingStatuses 批量查询内置知识库内的文件处理状态。
+// GetAdminFileProcessingStatuses 批量查询管理员可查看的知识库文件处理状态。
 func (s *Service) GetAdminFileProcessingStatuses(ctx context.Context, publicID string, fileIDs []string) ([]domainconversation.FileObject, error) {
-	item, err := s.getForAccess(ctx, publicID)
+	item, err := s.getForAccess(ctx, publicID, repository.KnowledgeBaseListFilter{AdminVisible: true})
 	if err != nil {
 		return nil, err
-	}
-	if item.Scope != domainknowledgebase.ScopeBuiltin {
-		return nil, ErrKnowledgeBaseNotFound
 	}
 	return s.getFileProcessingStatuses(ctx, item.ID, fileIDs)
 }
 
-// GetAdminFileProcessingSnapshot 查询内置知识库的处理状态快照。
+// GetAdminFileProcessingSnapshot 查询管理员可查看的知识库处理状态快照。
 func (s *Service) GetAdminFileProcessingSnapshot(ctx context.Context, publicID string, fileIDs []string) (*domainknowledgebase.KnowledgeBase, []domainconversation.FileObject, error) {
-	item, err := s.getForAccess(ctx, publicID)
+	item, err := s.getForAccess(ctx, publicID, repository.KnowledgeBaseListFilter{AdminVisible: true})
 	if err != nil {
 		return nil, nil, err
-	}
-	if item.Scope != domainknowledgebase.ScopeBuiltin {
-		return nil, nil, ErrKnowledgeBaseNotFound
 	}
 	return s.getFileProcessingSnapshot(ctx, item, fileIDs)
 }
@@ -476,7 +447,7 @@ func (s *Service) ListAvailableUserFiles(ctx context.Context, userID uint, publi
 	if userID == 0 {
 		return nil, 0, ErrInvalidKnowledgeBase
 	}
-	item, err := s.get(ctx, publicID)
+	item, err := s.get(ctx, publicID, repository.KnowledgeBaseListFilter{})
 	if err != nil {
 		return nil, 0, err
 	}
@@ -492,7 +463,7 @@ func (s *Service) ListAvailableAdminFiles(ctx context.Context, actorUserID uint,
 	if actorUserID == 0 {
 		return nil, 0, ErrInvalidKnowledgeBase
 	}
-	item, err := s.get(ctx, publicID)
+	item, err := s.get(ctx, publicID, repository.KnowledgeBaseListFilter{})
 	if err != nil {
 		return nil, 0, err
 	}
@@ -560,14 +531,11 @@ func (s *Service) OpenVisibleFileContent(ctx context.Context, userID uint, publi
 	return s.openFileContent(ctx, item.ID, fileID)
 }
 
-// OpenAdminFileContent 打开内置知识库中仍有关联的文件内容。
+// OpenAdminFileContent 打开管理员可查看的知识库中仍有关联的文件内容。
 func (s *Service) OpenAdminFileContent(ctx context.Context, publicID string, fileID string) (*appupload.FileContentResult, error) {
-	item, err := s.get(ctx, publicID)
+	item, err := s.get(ctx, publicID, repository.KnowledgeBaseListFilter{AdminVisible: true})
 	if err != nil {
 		return nil, err
-	}
-	if item.Scope != domainknowledgebase.ScopeBuiltin {
-		return nil, ErrKnowledgeBaseNotFound
 	}
 	return s.openFileContent(ctx, item.ID, fileID)
 }
@@ -592,7 +560,7 @@ func (s *Service) AddUserFiles(ctx context.Context, userID uint, publicID string
 	if userID == 0 {
 		return ErrInvalidKnowledgeBase
 	}
-	item, err := s.get(ctx, publicID)
+	item, err := s.get(ctx, publicID, repository.KnowledgeBaseListFilter{})
 	if err != nil {
 		return err
 	}
@@ -607,7 +575,7 @@ func (s *Service) AddBuiltinFiles(ctx context.Context, actorUserID uint, publicI
 	if actorUserID == 0 {
 		return ErrInvalidKnowledgeBase
 	}
-	item, err := s.get(ctx, publicID)
+	item, err := s.get(ctx, publicID, repository.KnowledgeBaseListFilter{})
 	if err != nil {
 		return err
 	}
@@ -622,7 +590,7 @@ func (s *Service) RemoveUserFile(ctx context.Context, userID uint, publicID stri
 	if userID == 0 {
 		return ErrInvalidKnowledgeBase
 	}
-	item, err := s.get(ctx, publicID)
+	item, err := s.get(ctx, publicID, repository.KnowledgeBaseListFilter{})
 	if err != nil {
 		return err
 	}
@@ -634,7 +602,7 @@ func (s *Service) RemoveUserFile(ctx context.Context, userID uint, publicID stri
 
 // RemoveBuiltinFile 将文件移出内置知识库。
 func (s *Service) RemoveBuiltinFile(ctx context.Context, publicID string, fileID string) error {
-	item, err := s.get(ctx, publicID)
+	item, err := s.get(ctx, publicID, repository.KnowledgeBaseListFilter{})
 	if err != nil {
 		return err
 	}
@@ -661,30 +629,26 @@ func (s *Service) ResolveFiles(ctx context.Context, userID uint, publicIDs []str
 	return bases, files, nil
 }
 
-func (s *Service) get(ctx context.Context, publicID string) (*domainknowledgebase.KnowledgeBase, error) {
+func (s *Service) get(ctx context.Context, publicID string, filter repository.KnowledgeBaseListFilter) (*domainknowledgebase.KnowledgeBase, error) {
 	if strings.TrimSpace(publicID) == "" {
 		return nil, ErrInvalidKnowledgeBase
 	}
-	item, err := s.repo.GetKnowledgeBaseByPublicID(ctx, strings.TrimSpace(publicID))
+	item, err := s.repo.GetKnowledgeBaseByPublicID(ctx, strings.TrimSpace(publicID), filter)
 	if err != nil {
 		return nil, mapRepositoryError(err)
 	}
 	return item, nil
 }
 
-func (s *Service) getForAccess(ctx context.Context, publicID string) (*domainknowledgebase.KnowledgeBase, error) {
+func (s *Service) getForAccess(ctx context.Context, publicID string, filter repository.KnowledgeBaseListFilter) (*domainknowledgebase.KnowledgeBase, error) {
 	if strings.TrimSpace(publicID) == "" {
 		return nil, ErrInvalidKnowledgeBase
 	}
-	item, err := s.repo.GetKnowledgeBaseAccessByPublicID(ctx, strings.TrimSpace(publicID))
+	item, err := s.repo.GetKnowledgeBaseAccessByPublicID(ctx, strings.TrimSpace(publicID), filter)
 	if err != nil {
 		return nil, mapRepositoryError(err)
 	}
 	return item, nil
-}
-
-func isVisibleToUser(item *domainknowledgebase.KnowledgeBase, userID uint) bool {
-	return item != nil && item.Enabled && (item.Scope == domainknowledgebase.ScopeBuiltin || (item.Scope == domainknowledgebase.ScopeUser && item.OwnerUserID == userID))
 }
 
 func (s *Service) create(ctx context.Context, item *domainknowledgebase.KnowledgeBase) (*domainknowledgebase.KnowledgeBase, error) {

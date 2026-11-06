@@ -13,6 +13,7 @@ type bankQuestion struct {
 	ZH       VariantText
 	EN       VariantText
 	Variants []Variant
+	Sources  []string
 }
 
 var questionBank = func() struct {

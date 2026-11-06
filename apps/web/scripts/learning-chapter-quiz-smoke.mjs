@@ -25,7 +25,8 @@ const artifacts = resolve(".cache/chapter-quiz-smoke");
 await mkdir(artifacts, { recursive: true });
 const bank = JSON.parse(await readFile("backend/internal/domain/learning/content/quick-questions.json", "utf8"));
 const chapters = ["1", "2", "3", "4"].map((id) => ({ id, roundSize: 10, questionIds: bank.questions.filter((q) => q.chapterID === id).map((q) => q.id) }));
-const messages = JSON.parse(await readFile("apps/web/i18n/messages/zh-CN/learning-labs.json", "utf8"));
+const authored = new Map(bank.questions.map((q) => [q.id,q.zh]));
+assert.ok(chapters.every((chapter) => chapter.questionIds.length === 60));
 const correct = new Map(bank.questions.map((q) => [q.id, q.answer]));
 const user = { id: 101, publicID: "quiz-qa-student", username: "qa101", displayName: "答题测试", role: "student", status: "active", locale: "zh-CN", timezone: "Asia/Shanghai", initialSecurityRequired: false, initialUsernameRequired: false, mustResetPassword: false, onboardingCompletedAt: new Date().toISOString(), appearancePreferences: "", profilePreferences: "", identityProviders: [], email: "", phone: "", passwordEnabled: true };
 let round;
@@ -46,7 +47,7 @@ await context.route("**/api/v1/**", async (route) => {
   } else if (path.endsWith("/learning/quiz/rounds")) {
     const body = req.postDataJSON();
     assert.ok(chapters.some((c) => c.id === body.chapterId));
-    if (!round || round.id !== body.id) round = { id: body.id, chapterId: body.chapterId, questionIds: chapters.find((c) => c.id === body.chapterId).questionIds.slice(0,10), answers: [], startedAt: new Date().toISOString(), deadlineAt: new Date(Date.now() + 90000).toISOString(), finishedAt: null, elapsedMs: 0, score: 0, correctCount: 0, bestStreak: 0 };
+    if (!round || round.id !== body.id) round = { id: body.id, chapterId: body.chapterId, questionIds: chapters.find((c) => c.id === body.chapterId).questionIds.filter((id) => id.startsWith("ext-")).slice(-12,-2), answers: [], startedAt: new Date().toISOString(), deadlineAt: new Date(Date.now() + 90000).toISOString(), finishedAt: null, elapsedMs: 0, score: 0, correctCount: 0, bestStreak: 0 };
     data = { round, serverTime: new Date().toISOString() };
   } else if (path.includes("/learning/quiz/rounds/") && path.endsWith("/answers")) {
     const body = req.postDataJSON(); answerRequests.push(body);
@@ -100,7 +101,7 @@ try {
   for (let i = 1; i < 10; i++) {
     await page.getByRole("button", { name: "下一题", exact: true }).click();
     const id = round.questionIds[i];
-    await page.getByText(messages.quiz.questions[id].prompt, { exact: true }).waitFor();
+    await page.getByText(authored.get(id).prompt, { exact: true }).waitFor();
     await page.getByRole("button", { name: new RegExp(`^${String.fromCharCode(65 + correct.get(id))} `) }).click();
     await page.getByRole("button", { name: i === 9 ? "查看结果" : "下一题", exact: true }).waitFor();
   }
@@ -116,6 +117,16 @@ try {
   await page.setViewportSize({ width: 390, height: 844 });
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
   await page.screenshot({ path: resolve(artifacts, "chapter-leaderboard-mobile.png") });
+  const [mobileStartResponse] = await Promise.all([
+    page.waitForResponse((response) => new URL(response.url()).pathname.endsWith("/learning/quiz/rounds") && response.request().method() === "POST"),
+    page.getByRole("button", { name: "开始答题", exact: true }).click(),
+  ]);
+  assert.equal(mobileStartResponse.status(), 200);
+  assert.equal(round.chapterId,"4");
+  assert.ok(round.questionIds[0].startsWith("ext-routh-stable-bound-"));
+  await page.getByText(authored.get(round.questionIds[0]).prompt,{exact:true}).waitFor();
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+  await page.screenshot({ path: resolve(artifacts,"expanded-question-mobile.png") });
   await page.goto(`${base}/activities`);
   await page.getByRole("heading", { name: "课堂活动加载失败", exact: true }).waitFor();
   assert.equal(await page.getByText("还没有加入班级", { exact: true }).count(), 0);

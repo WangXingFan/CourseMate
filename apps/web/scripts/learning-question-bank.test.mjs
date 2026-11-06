@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import katex from "katex";
 import { createTranslator } from "next-intl";
+import { expansionCalculations } from "./learning-expansion-calculations.mjs";
 
 const content = new URL("../../../backend/internal/domain/learning/content/", import.meta.url);
 const bank = JSON.parse(readFileSync(new URL("quick-questions.json", content), "utf8"));
@@ -12,6 +13,7 @@ const pairs = JSON.parse(readFileSync(new URL("paired-questions.json", content),
 // Evaluate the mathematical relationship separately from option construction.
 // No expression supplied by content is executed.
 const calculations = {
+  ...expansionCalculations,
   "finite-power": () => 0,
   "cosine-power": (a) => a ** 2 / 2,
   "rectangle-energy": (a, t) => a ** 2 * t,
@@ -58,7 +60,7 @@ function close(actual, expected, label) {
   assert.ok(Number.isFinite(actual) && Math.abs(actual - expected) <= 1e-6 * Math.max(1, Math.abs(expected)), `${label}: ${actual} != ${expected}`);
 }
 
-test("80 chapter questions, 160 matched variants, bilingual text and grading use the same catalog", () => {
+test("240 chapter questions, 480 matched variants, bilingual text and grading use the same catalog", () => {
   const seen = new Set();
   const variantIDs = new Set();
   const chapterCount = new Map();
@@ -94,9 +96,9 @@ test("80 chapter questions, 160 matched variants, bilingual text and grading use
       }
     }
   }
-  assert.equal(seen.size, 80); assert.equal(variantIDs.size, 160);
-  assert.deepEqual([...chapterCount.values()], [20, 20, 20, 20]);
-  assert.ok(checked > 350, `${checked} bilingual numerical checks`);
+  assert.equal(seen.size, 240); assert.equal(variantIDs.size, 480);
+  assert.deepEqual([...chapterCount.values()], [60, 60, 60, 60]);
+  assert.ok(checked > 1310, `${checked} bilingual numerical checks`);
   for (const [language, locale] of [["zh", "zh-CN"], ["en", "en-US"]]) {
     const messages = JSON.parse(readFileSync(new URL(`../i18n/messages/${locale}/learning-labs.json`, import.meta.url), "utf8"));
     const t = createTranslator({ locale, messages, onError(error) { throw error; } });
@@ -110,20 +112,56 @@ test("80 chapter questions, 160 matched variants, bilingual text and grading use
   }
 });
 
-test("original grading indices stay compatible and ambiguous assumptions are explicit", () => {
-  const original = { "energy-signal": 0, "convolution-shift": 2, "step-response": 1, aliasing: 3, nyquist: 0, "square-wave": 1, "pulse-spectrum": 2, "time-constant": 0, damping: 1, "right-half-plane": 3, "am-bandwidth": 2, "imaginary-axis": 0 };
+test("retained grading indices stay compatible and ambiguous assumptions are explicit", () => {
+  const original = { "energy-signal": 0, "convolution-shift": 2, "step-response": 1, aliasing: 3, nyquist: 0, "square-wave": 1, "pulse-spectrum": 2, "time-constant": 0, "right-half-plane": 3, "am-bandwidth": 2, "imaginary-axis": 0 };
   for (const [id, answer] of Object.entries(original)) assert.equal(bank.questions.find((q) => q.id === id)?.answer, answer, id);
-  for (const [id, required] of [["nyquist", "阈值"], ["square-wave", "50%"], ["am-bandwidth", "双边带"], ["imaginary-axis", "单极点"], ["damping", "无零点"], ["time-constant", "低通"]]) assert.ok(bank.questions.find((q) => q.id === id).zh.prompt.includes(required), id);
+  for (const [id, required] of [["nyquist", "阈值"], ["square-wave", "50%"], ["am-bandwidth", "双边带"], ["imaginary-axis", "单极点"], ["time-constant", "低通"]]) assert.ok(bank.questions.find((q) => q.id === id).zh.prompt.includes(required), id);
   const expectedOriginalVariants = {
     "energy-signal": ["2", "4.5"], "convolution-shift": ["y(t−2)", "y(t−3)"],
     "step-response": ["95.0%", "99.3%"], aliasing: ["100 Hz", "100 Hz"], nyquist: ["800 Hz", "1000 Hz"],
     "square-wave": ["奇次谐波", "1/3"], "pulse-spectrum": ["变为两倍", "6"], "time-constant": ["达到相同比例所需时间加倍", "0.25 s"],
-    damping: ["减小", "临界阻尼"], "right-half-plane": ["指数增长", "稳定"], "am-bandwidth": ["8 kHz", "97–103 kHz"], "imaginary-axis": ["持续等幅振荡", "不稳定"],
+    "right-half-plane": ["指数增长", "稳定"], "am-bandwidth": ["8 kHz", "97–103 kHz"], "imaginary-axis": ["持续等幅振荡", "不稳定"],
   };
   for (const [id, expected] of Object.entries(expectedOriginalVariants)) {
     const q = bank.questions.find((q) => q.id === id);
     q.variants.forEach((v,i) => { assert.equal(v.zh.options[v.answer], expected[i], v.id); });
   }
+});
+
+test("all 480 additions and 3 scope replacements have independent answer checks and all 720 items cite handouts", () => {
+  const prompts = { zh: new Set(), en: new Set() };
+  const answers = [0,0,0,0];
+  let additions = 0, replacements = 0;
+  assert.equal(Object.keys(expansionCalculations).length,80);
+  for (const q of bank.questions) for (const item of [q,...q.variants]) {
+    assert.ok(item.sources?.length, `${item.id}: missing handout`);
+    for (const id of item.sources) {
+      assert.match(id,/^ss-(?:[1235]|[ab])-\d+$/);
+      const handout=readFileSync(new URL(`../../../content/signals/knowledge-base/${id}.md`,import.meta.url),"utf8");
+      assert.ok(handout.includes(`知识点ID：${id}`),`${item.id}: invalid handout ${id}`);
+    }
+    const added=q.id.startsWith("ext-"), replaced=q.id==="second-order-mode-decay";
+    if (added) { additions++; answers[item.answer]++; }
+    if (replaced) replacements++;
+    if (added || replaced) {
+      assert.ok(expansionCalculations[item.check?.kind],`${item.id}: missing independent calculation`);
+      for (const language of ["zh","en"]) {
+        const text=item[language];
+        assert.ok(!prompts[language].has(text.prompt),`${item.id}: duplicate prompt`);
+        prompts[language].add(text.prompt);
+        assert.doesNotMatch(`${text.prompt} ${text.explanation}`,/NaN|Infinity|undefined/);
+        for (const option of text.options) {
+          assert.ok(option.endsWith(item.check.unit),item.id);
+          assert.ok(Number.isFinite(Number(item.check.unit ? option.slice(0,-item.check.unit.length) : option)),item.id);
+        }
+      }
+      assert.deepEqual(item.zh.options,item.en.options,item.id);
+    }
+  }
+  assert.equal(additions,480);
+  assert.equal(replacements,3);
+  assert.deepEqual(answers,[120,120,120,120]);
+  assert.ok(!bank.questions.some((q)=>q.id==="damping"));
 });
 
 // Every numerical key in the original 156 is checked against an independently

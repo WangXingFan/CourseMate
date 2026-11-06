@@ -1755,6 +1755,7 @@ export interface KnowledgeBasePageResponseDoc {
 }
 
 export interface KnowledgeBaseResponse {
+  canManage: boolean;
   createdAt: string;
   description: string;
   enabled: boolean;
@@ -3016,6 +3017,38 @@ export interface PublicModelResponse {
   vendor: string;
   vendorIcon: string;
   vendorName: string;
+}
+
+export interface QuestionBankCategoryResponse {
+  count: number;
+  id: string;
+}
+
+export interface QuestionBankItemResponse {
+  category: string;
+  explanation: string;
+  formula: string;
+  id: string;
+  language: string;
+  lessonUrl: string;
+  parts: QuestionBankPartResponse[];
+  prompt: string;
+  title: string;
+}
+
+export interface QuestionBankPartResponse {
+  answers: string[];
+  explanation: string;
+  label: string;
+  options: string[];
+}
+
+export interface QuestionBankResponse {
+  categories: QuestionBankCategoryResponse[];
+  page: number;
+  pageSize: number;
+  questions: QuestionBankItemResponse[];
+  total: number;
 }
 
 export interface QuizAnswer {
@@ -4529,7 +4562,7 @@ export namespace Admin {
    * No description
    * @tags admin-knowledge-bases
    * @name KnowledgeBasesList
-   * @summary 查询内置知识库
+   * @summary 查询内置和教师知识库
    * @request GET:/admin/knowledge-bases
    * @secure
    */
@@ -4673,7 +4706,7 @@ export namespace Admin {
    * No description
    * @tags admin-knowledge-bases
    * @name KnowledgeBasesDetail
-   * @summary 查询内置知识库详情
+   * @summary 查询内置和教师知识库详情
    * @request GET:/admin/knowledge-bases/{id}
    * @secure
    */
@@ -4759,7 +4792,7 @@ export namespace Admin {
    * No description
    * @tags admin-knowledge-bases
    * @name KnowledgeBasesFilesList2
-   * @summary 查询内置知识库文件
+   * @summary 查询内置和教师知识库文件
    * @request GET:/admin/knowledge-bases/{id}/files
    * @originalName knowledgeBasesFilesList
    * @duplicate
@@ -4806,7 +4839,7 @@ export namespace Admin {
    * No description
    * @tags admin-knowledge-bases
    * @name KnowledgeBasesFilesProcessingSnapshotCreate
-   * @summary 查询内置知识库处理快照
+   * @summary 查询内置和教师知识库处理快照
    * @request POST:/admin/knowledge-bases/{id}/files/processing/snapshot
    * @secure
    */
@@ -4825,7 +4858,7 @@ export namespace Admin {
    * No description
    * @tags admin-knowledge-bases
    * @name KnowledgeBasesFilesProcessingStatusesCreate
-   * @summary 批量查询内置知识库文件处理状态
+   * @summary 批量查询内置和教师知识库文件处理状态
    * @request POST:/admin/knowledge-bases/{id}/files/processing/statuses
    * @secure
    */
@@ -4864,10 +4897,10 @@ export namespace Admin {
   }
 
   /**
-   * @description 仅允许读取仍与指定内置知识库关联的文件
+   * @description 仅允许读取仍与指定内置和教师知识库关联的文件
    * @tags admin-knowledge-bases
    * @name KnowledgeBasesFilesContentList2
-   * @summary 获取内置知识库文件内容
+   * @summary 获取内置和教师知识库文件内容
    * @request GET:/admin/knowledge-bases/{id}/files/{file_id}/content
    * @originalName knowledgeBasesFilesContentList
    * @duplicate
@@ -8780,6 +8813,33 @@ export namespace Learning {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = LearningProgressResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name QuestionBankList
+   * @summary Browse all authored questions, answers and explanations (teacher/admin only)
+   * @request GET:/learning/question-bank
+   * @secure
+   */
+  export namespace QuestionBankList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Question bank category */
+      category?: string;
+      /** Preferred language (zh-CN or en-US) */
+      locale?: string;
+      /** Page number, starting at 1 */
+      page?: number;
+      /** Items per page (1–100, default 20) */
+      pageSize?: number;
+      /** Keywords in question, answer, explanation or identifier */
+      q?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = QuestionBankResponse;
   }
 
   /**

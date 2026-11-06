@@ -5,7 +5,7 @@ import { Search } from "@/components/animate-ui/icons/search";
 import { Sparkles } from "@/components/animate-ui/icons/sparkles";
 import { PlusIcon } from "@/components/ui/plus";
 import type { NavigationItem } from "@/features/shell/types/navigation";
-import { BarChart3, ClipboardList, Download, FlaskConical, Shuffle } from "lucide-react";
+import { BarChart3, ClipboardList, Download, FlaskConical, LibraryBig, Shuffle, Video } from "lucide-react";
 
 export const NAVIGATION_ITEMS = [
   {
@@ -35,6 +35,13 @@ export const NAVIGATION_ITEMS = [
     kind: "link",
     href: "/knowledge-bases",
     icon: BookOpen,
+    group: "secondary",
+  },
+  {
+    id: "coursePreview",
+    kind: "link",
+    href: "/learn/preview",
+    icon: Video,
     group: "secondary",
   },
   {
@@ -80,6 +87,7 @@ export const NAVIGATION_ITEMS = [
     group: "secondary",
   },
   { id: "homeworks", kind: "link", href: "/homeworks", icon: ClipboardList, group: "secondary" },
+  { id: "questionBank", kind: "link", href: "/question-bank", icon: LibraryBig, group: "secondary" },
   { id: "analytics", kind: "link", href: "/analytics", icon: BarChart3, group: "secondary" },
   { id: "exports", kind: "link", href: "/exports", icon: Download, group: "secondary" },
 ] as const satisfies readonly NavigationItem[];

@@ -20,6 +20,7 @@ type Module struct{ service *app.Service }
 func NewModule(service *app.Service) *Module { return &Module{service: service} }
 
 func (m *Module) RegisterRoutes(group *gin.RouterGroup) {
+	group.GET("/learning/question-bank", m.QuestionBank)
 	group.GET("/learning/quiz/chapters", m.QuizCatalog)
 	group.GET("/learning/quiz/leaderboard", m.QuizLeaderboard)
 	group.POST("/learning/quiz/rounds", m.StartQuiz)
@@ -86,6 +87,10 @@ func (m *Module) Progress(c *gin.Context) {
 		view.Questions = append(view.Questions, entry)
 	}
 	for _, attempt := range progress.Recent {
+		// Retired questions remain stored, but have no current prompt or review.
+		if domain.FindQuestion(attempt.QuestionID) == nil {
+			continue
+		}
 		view.Recent = append(view.Recent, toResponse(attempt))
 	}
 	c.Header("Cache-Control", "no-store")

@@ -19,6 +19,9 @@ func TestRepositoryVisibilityResolutionAndDeletion(t *testing.T) {
 		t.Fatalf("open sqlite: %v", err)
 	}
 	if err = db.AutoMigrate(
+		&models.User{},
+		&models.Classroom{},
+		&models.ClassroomStudent{},
 		&models.KnowledgeBase{},
 		&models.KnowledgeBaseFile{},
 		&models.FileObject{},
