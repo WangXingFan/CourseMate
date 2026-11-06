@@ -339,6 +339,15 @@
     "code": "六位签到码",
     "expires": "{seconds} 秒后更新",
     "refreshing": "正在更新签到码…",
+    "projection": {
+      "open": "投屏显示",
+      "exit": "退出投屏",
+      "present": "已签到",
+      "absent": "未签到",
+      "emptyPresent": "暂无已签到人员",
+      "emptyAbsent": "暂无未签到人员",
+      "ended": "签到已结束"
+    },
     "scanUnavailable": "当前账号不在这场签到的应到名单中，或场次已不存在。",
     "noOpen": "当前没有进行中的签到",
     "history": "历史考勤（{count}）",

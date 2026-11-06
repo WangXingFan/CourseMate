@@ -339,6 +339,15 @@
     "code": "Six-digit check-in code",
     "expires": "Refreshes in {seconds}s",
     "refreshing": "Refreshing code…",
+    "projection": {
+      "open": "Project attendance",
+      "exit": "Exit projection",
+      "present": "Checked in",
+      "absent": "Not checked in",
+      "emptyPresent": "No students have checked in yet",
+      "emptyAbsent": "No students awaiting check-in",
+      "ended": "Attendance has ended"
+    },
     "scanUnavailable": "This account is not on the expected roster, or the session no longer exists.",
     "noOpen": "No attendance session is currently open",
     "history": "Attendance history ({count})",

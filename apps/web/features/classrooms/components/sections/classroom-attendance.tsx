@@ -3,11 +3,10 @@
 import type {
   AttendanceCorrectionRequest,
   AttendanceRecordResponse,
-  AttendanceReportResponse,
 } from "@deeix/api-contract";
 import { Download, RefreshCw } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -23,7 +22,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { useClassroomAttendance } from "@/features/classrooms/hooks/use-classroom-attendance";
-import { createQRCodeDataURL } from "@/shared/lib/qr-code";
+import { AttendanceCode } from "./classroom-attendance-code";
+import { AttendanceProjection } from "./classroom-attendance-projection";
 
 export function ClassroomAttendance({
   accessToken,
@@ -201,6 +201,7 @@ export function ClassroomAttendance({
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
+                  <AttendanceProjection report={report} />
                   <Button variant="outline" onClick={download}>
                     <Download className="size-4" />
                     {t("export")}
@@ -264,41 +265,6 @@ export function ClassroomAttendance({
         </>
       )}
     </section>
-  );
-}
-
-function AttendanceCode({ report }: { report: AttendanceReportResponse }) {
-  const t = useTranslations("classrooms.attendance");
-  const [remaining, setRemaining] = useState(0);
-  const [origin, setOrigin] = useState("");
-  useEffect(() => {
-    if (/^https?:$/.test(window.location.protocol)) setOrigin(window.location.origin);
-  }, []);
-  useEffect(() => {
-    const expires = report.codeExpiresAt
-      ? Date.parse(report.codeExpiresAt) - Date.parse(report.serverTime)
-      : 0;
-    const received = Date.now();
-    const tick = () => setRemaining(Math.max(0, Math.ceil((expires - (Date.now() - received)) / 1000)));
-    tick();
-    const timer = setInterval(tick, 250);
-    return () => clearInterval(timer);
-  }, [report]);
-  const url = origin
-    ? `${origin}/activities?attendance=${encodeURIComponent(report.session.id)}&code=${report.code}`
-    : "";
-  const qr = url && remaining > 0 ? createQRCodeDataURL(url) : "";
-  return (
-    <div className="flex flex-wrap items-center justify-center gap-8 rounded-lg border border-border p-6 md:gap-12 md:p-8">
-      {qr && <img src={qr} alt={t("qr")} width={212} height={212} className="size-52" />}
-      <div className="space-y-3 text-center">
-        <p className="text-sm">{t("code")}</p>
-        <p className="font-mono text-5xl tabular-nums">{remaining > 0 ? report.code : "------"}</p>
-        <p className="text-sm text-muted-foreground" aria-live="off">
-          {remaining > 0 ? t("expires", { seconds: remaining }) : t("refreshing")}
-        </p>
-      </div>
-    </div>
   );
 }
 
