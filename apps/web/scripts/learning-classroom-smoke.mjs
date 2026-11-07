@@ -239,10 +239,12 @@ try {
   await student.locator("main > header").getByRole("button", { name: "刷新", exact: true }).click();
   await student.getByRole("heading", { name: "卷积课前预习", exact: true }).waitFor();
   const article = student.locator("article");
-  await article.getByRole("button").nth((quiz.questions[0].answer+1)%quiz.questions[0].options.length).click();
+  const options = article.locator(".grid > button");
+  assert.equal(await options.count(), quiz.questions[0].options.length);
+  await options.nth((quiz.questions[0].answer+1)%quiz.questions[0].options.length).click();
   await article.getByRole("button", { name: "提交答案", exact: true }).click();
   await student.getByText("得分 0/1", { exact: true }).waitFor();
-  assert.ok(await article.getByRole("button").first().isDisabled());
+  assert.ok(await options.first().isDisabled());
   assert.ok(await student.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), "mobile overflow");
   await student.screenshot({ path: join(artifacts, "student-published-answer-mobile.png") });
   await teacher.getByRole("button", { name: "截止", exact: true }).click();
