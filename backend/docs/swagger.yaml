@@ -1,5 +1,106 @@
 basePath: /api/v1
 definitions:
+  AIActivityReport:
+    properties:
+      classroomId:
+        type: string
+      endDate:
+        type: string
+      generatedAt:
+        type: string
+      startDate:
+        type: string
+      students:
+        items:
+          $ref: '#/definitions/AIActivityStudent'
+        type: array
+      version:
+        type: string
+    required:
+    - classroomId
+    - endDate
+    - generatedAt
+    - startDate
+    - students
+    - version
+    type: object
+  AIActivityResponse:
+    properties:
+      report:
+        allOf:
+        - $ref: '#/definitions/AIActivityReport'
+        x-nullable: true
+    required:
+    - report
+    type: object
+  AIActivityStudent:
+    properties:
+      activeDays:
+        type: integer
+      activeWeeks:
+        type: integer
+      expectedWeeks:
+        type: integer
+      final:
+        type: number
+        x-nullable: true
+      name:
+        type: string
+      studentId:
+        type: string
+      username:
+        type: string
+      validRounds:
+        type: integer
+      weeks:
+        items:
+          $ref: '#/definitions/AIActivityWeek'
+        type: array
+    required:
+    - activeDays
+    - activeWeeks
+    - expectedWeeks
+    - final
+    - name
+    - studentId
+    - username
+    - validRounds
+    - weeks
+    type: object
+  AIActivityWeek:
+    properties:
+      activeDays:
+        type: integer
+      countedRounds:
+        type: integer
+      dayScore:
+        type: integer
+      endDate:
+        type: string
+      roundScore:
+        type: integer
+      score:
+        type: integer
+      startDate:
+        type: string
+      status:
+        enum:
+        - closed
+        - provisional
+        type: string
+      validRounds:
+        type: integer
+    required:
+    - activeDays
+    - countedRounds
+    - dayScore
+    - endDate
+    - roundScore
+    - score
+    - startDate
+    - status
+    - validRounds
+    type: object
   ActiveMessageGenerationEventResponse:
     properties:
       conversationPublicID:
@@ -1131,6 +1232,10 @@ definitions:
     type: object
   ClassroomExportRequest:
     properties:
+      aiActivityEndDate:
+        type: string
+      aiActivityStartDate:
+        type: string
       courseID:
         enum:
         - L1
@@ -1146,8 +1251,12 @@ definitions:
         - homeworks
         - labs
         - attendance
+        - performance
+        - ai_activity
         - summary
         - reports
+        type: string
+      performanceRecordId:
         type: string
       weights:
         additionalProperties:
@@ -1159,6 +1268,7 @@ definitions:
     - filenameTemplate
     - includeOngoing
     - kind
+    - performanceRecordId
     - weights
     type: object
   ClassroomListResponse:
@@ -3120,6 +3230,24 @@ definitions:
     - file
     - quota
     - reused
+    type: object
+  FinalizePerformance:
+    properties:
+      corrections:
+        items:
+          $ref: '#/definitions/PerformanceCorrection'
+        type: array
+      fingerprint:
+        type: string
+      options:
+        $ref: '#/definitions/PerformanceOptions'
+      title:
+        type: string
+    required:
+    - corrections
+    - fingerprint
+    - options
+    - title
     type: object
   GetConversationRunStatusesRequest:
     properties:
@@ -6560,6 +6688,288 @@ definitions:
         minLength: 3
         type: string
     required:
+    - username
+    type: object
+  PerformanceActivity:
+    properties:
+      closedAt:
+        type: string
+      id:
+        type: string
+      phase:
+        type: string
+      sourceQuizId:
+        type: string
+      title:
+        type: string
+    required:
+    - closedAt
+    - id
+    - phase
+    - sourceQuizId
+    - title
+    type: object
+  PerformanceCorrection:
+    properties:
+      reason:
+        type: string
+      score:
+        type: number
+      studentId:
+        type: string
+    required:
+    - reason
+    - score
+    - studentId
+    type: object
+  PerformanceEvidence:
+    properties:
+      closedAt:
+        type: string
+      conceptId:
+        type: string
+      outcome:
+        type: string
+      phase:
+        type: string
+      points:
+        type: integer
+      questionId:
+        type: string
+      quizId:
+        type: string
+      sourceQuizId:
+        type: string
+      submitted:
+        type: boolean
+      title:
+        type: string
+      total:
+        type: integer
+    required:
+    - closedAt
+    - conceptId
+    - outcome
+    - phase
+    - points
+    - questionId
+    - quizId
+    - sourceQuizId
+    - submitted
+    - title
+    - total
+    type: object
+  PerformanceOptions:
+    properties:
+      endAt:
+        type: string
+        x-nullable: true
+      quizIds:
+        items:
+          type: string
+        type: array
+      startAt:
+        type: string
+        x-nullable: true
+    required:
+    - endAt
+    - quizIds
+    - startAt
+    type: object
+  PerformanceRecord:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      report:
+        $ref: '#/definitions/PerformanceReport'
+      title:
+        type: string
+    required:
+    - createdAt
+    - id
+    - report
+    - title
+    type: object
+  PerformanceRecordItem:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      title:
+        type: string
+    required:
+    - createdAt
+    - id
+    - title
+    type: object
+  PerformanceRecordListResponse:
+    properties:
+      records:
+        items:
+          $ref: '#/definitions/PerformanceRecordItem'
+        type: array
+    required:
+    - records
+    type: object
+  PerformanceRecordResponse:
+    properties:
+      record:
+        allOf:
+        - $ref: '#/definitions/PerformanceRecord'
+        x-nullable: true
+    required:
+    - record
+    type: object
+  PerformanceReport:
+    properties:
+      activities:
+        items:
+          $ref: '#/definitions/PerformanceActivity'
+        type: array
+      classroomId:
+        type: string
+      conversion:
+        type: string
+      deviation:
+        type: number
+      eligible:
+        type: integer
+      fingerprint:
+        type: string
+      mean:
+        type: number
+      options:
+        $ref: '#/definitions/PerformanceOptions'
+      students:
+        items:
+          $ref: '#/definitions/PerformanceStudent'
+        type: array
+      version:
+        type: string
+    required:
+    - activities
+    - classroomId
+    - conversion
+    - deviation
+    - eligible
+    - fingerprint
+    - mean
+    - options
+    - students
+    - version
+    type: object
+  PerformanceResponse:
+    properties:
+      report:
+        $ref: '#/definitions/PerformanceReport'
+    required:
+    - report
+    type: object
+  PerformanceStage:
+    properties:
+      completed:
+        type: integer
+      expected:
+        type: integer
+      participation:
+        type: number
+      phase:
+        type: string
+      quality:
+        type: number
+    required:
+    - completed
+    - expected
+    - participation
+    - phase
+    - quality
+    type: object
+  PerformanceStudent:
+    properties:
+      activeWeeks:
+        type: integer
+      consistency:
+        type: number
+      converted:
+        type: number
+        x-nullable: true
+      evidence:
+        items:
+          $ref: '#/definitions/PerformanceEvidence'
+        type: array
+      expectedWeeks:
+        type: integer
+      final:
+        type: number
+        x-nullable: true
+      growth:
+        type: number
+        x-nullable: true
+      improved:
+        type: integer
+      missingPairs:
+        type: integer
+      name:
+        type: string
+      pairs:
+        type: integer
+      participation:
+        type: number
+      quality:
+        type: number
+      rank:
+        type: number
+        x-nullable: true
+      raw:
+        type: number
+        x-nullable: true
+      reason:
+        type: string
+      regressed:
+        type: integer
+      retained:
+        type: integer
+      stages:
+        items:
+          $ref: '#/definitions/PerformanceStage'
+        type: array
+      status:
+        type: string
+      studentId:
+        type: string
+      unresolved:
+        type: integer
+      userId:
+        type: integer
+      username:
+        type: string
+    required:
+    - activeWeeks
+    - consistency
+    - converted
+    - evidence
+    - expectedWeeks
+    - final
+    - growth
+    - improved
+    - missingPairs
+    - name
+    - pairs
+    - participation
+    - quality
+    - rank
+    - raw
+    - reason
+    - regressed
+    - retained
+    - stages
+    - status
+    - studentId
+    - unresolved
+    - userId
     - username
     type: object
   PermissionGroupDataResponse:
@@ -14524,6 +14934,46 @@ paths:
       summary: 更新班级
       tags:
       - classrooms
+  /classrooms/{id}/ai-activity:
+    get:
+      parameters:
+      - description: Owned classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Inclusive Beijing date YYYY-MM-DD; defaults to class creation
+        in: query
+        name: startDate
+        type: string
+      - description: Inclusive Beijing date YYYY-MM-DD; defaults to today
+        in: query
+        name: endDate
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AIActivityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Read classroom AI usage activity scores and weekly counts
+      tags:
+      - classrooms
   /classrooms/{id}/attendance:
     get:
       parameters:
@@ -14820,6 +15270,147 @@ paths:
       security:
       - BearerAuth: []
       summary: Read the classroom's knowledge gaps and student summaries
+      tags:
+      - classrooms
+  /classrooms/{id}/performance/preview:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Owned classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Activity IDs and inclusive start / exclusive end (RFC3339); omit
+          for all closed activities
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/PerformanceOptions'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/PerformanceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Preview classroom performance from closed activities
+      tags:
+      - classrooms
+  /classrooms/{id}/performance/records:
+    get:
+      parameters:
+      - description: Owned classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/PerformanceRecordListResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: List published classroom performance records
+      tags:
+      - classrooms
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Owned classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Preview fingerprint, scope, title and justified corrections
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/FinalizePerformance'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/PerformanceRecordResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Save and publish an immutable classroom performance record
+      tags:
+      - classrooms
+  /classrooms/{id}/performance/records/{record_id}:
+    get:
+      parameters:
+      - description: Owned classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Record ID
+        in: path
+        name: record_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/PerformanceRecordResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Read a published classroom performance record
       tags:
       - classrooms
   /classrooms/{id}/quiz-lessons:
@@ -18876,6 +19467,24 @@ paths:
       summary: 查询模型 options 透传策略
       tags:
       - settings
+  /student/ai-activity:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AIActivityResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Read only the current student's cumulative AI usage activity
+      tags:
+      - classrooms
   /student/attendance:
     get:
       produces:
@@ -18930,6 +19539,24 @@ paths:
       security:
       - BearerAuth: []
       summary: 学生查看本班作业与个人成绩，不返回参考答案
+      tags:
+      - classrooms
+  /student/performance:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/PerformanceRecordResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Read the current student's latest published classroom performance
       tags:
       - classrooms
   /student/quizzes:

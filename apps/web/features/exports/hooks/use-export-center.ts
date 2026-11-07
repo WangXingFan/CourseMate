@@ -6,9 +6,10 @@ import { useLocalizedErrorMessage } from "@/i18n/use-localized-error";
 import type { ClassroomDTO } from "@/shared/api/classroom-types";
 import { listClassrooms } from "@/shared/api/classrooms";
 import { exportClassroom, type ClassroomExportRequest } from "@/shared/api/exports";
+import { listPerformanceRecords, type PerformanceRecordItem } from "@/shared/api/classroom-performance";
 import { downloadBlob } from "@/shared/lib/export-download";
 
-export const EXPORT_ITEMS = ["homeworks", "labs", "attendance"] as const;
+export const EXPORT_ITEMS = ["homeworks", "labs", "attendance", "performance", "ai_activity"] as const;
 export const REPORT_COURSES = [{ id: "L1", fileLabel: "实验一" }, { id: "L2", fileLabel: "实验二" }, { id: "L3", fileLabel: "实验三" }] as const;
 type ScoreItem = typeof EXPORT_ITEMS[number];
 export type ExportKind = ScoreItem | "summary" | "reports";
@@ -24,8 +25,27 @@ export function useExportCenter(accessToken: string) {
   const [done, setDone] = useState("");
   const [revision, setRevision] = useState(0);
   const [includeOngoing, setIncludeOngoing] = useState(false);
-  const [weights, setWeights] = useState<Record<ScoreItem, string>>({ homeworks: "40", labs: "40", attendance: "20" });
-  const [selected, setSelected] = useState<Record<ScoreItem, boolean>>({ homeworks: true, labs: true, attendance: true });
+  const [weights, setWeights] = useState<Record<ScoreItem, string>>({ homeworks: "40", labs: "40", attendance: "20", performance: "20", ai_activity: "10" });
+  const [selected, setSelected] = useState<Record<ScoreItem, boolean>>({ homeworks: true, labs: true, attendance: true, performance: false, ai_activity: false });
+  const [aiActivityStartDate, setAIActivityStartDate] = useState("");
+  const [aiActivityEndDate, setAIActivityEndDate] = useState("");
+  const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Shanghai" }).format(new Date());
+  const validAIDates = !(aiActivityStartDate && aiActivityEndDate && aiActivityStartDate > aiActivityEndDate) && aiActivityStartDate <= today && aiActivityEndDate <= today;
+  const [records, setRecords] = useState<PerformanceRecordItem[]>([]);
+  const [performanceRecordID, setPerformanceRecordID] = useState("");
+  const [recordsLoading, setRecordsLoading] = useState(false);
+  const [recordsError, setRecordsError] = useState("");
+  useEffect(() => {
+    const controller = new AbortController();
+    setRecords([]); setPerformanceRecordID(""); setRecordsError("");
+    if (!classroomID) return () => controller.abort();
+    setRecordsLoading(true);
+    void listPerformanceRecords(accessToken, classroomID, controller.signal).then((data) => {
+      if (!controller.signal.aborted) setRecords(data.records);
+    }).catch((error: unknown) => { if (!controller.signal.aborted) setRecordsError(resolveError(error)); })
+      .finally(() => { if (!controller.signal.aborted) setRecordsLoading(false); });
+    return () => controller.abort();
+  }, [accessToken, classroomID, revision, resolveError]);
   const [template, setTemplate] = useState("{班级}_{学号}_{姓名}_{实验}");
   const [courseID, setCourseID] = useState("L1");
   const course = REPORT_COURSES.find((item) => item.id === courseID) ?? REPORT_COURSES[0];
@@ -51,9 +71,10 @@ export function useExportCenter(accessToken: string) {
 
   const download = async (kind: ExportKind) => {
     if (!classroom || active.current || kind === "summary" && !validWeights || kind === "reports" && !validTemplate) return;
+    if ((kind === "ai_activity" || kind === "summary" && selected.ai_activity) && !validAIDates) return;
     const controller = new AbortController(); active.current = controller;
     setPending(kind); setError(""); setDone("");
-    const options: ClassroomExportRequest = { kind, includeOngoing, filenameTemplate: template, courseID: course.id, weights: Object.fromEntries(EXPORT_ITEMS.filter((key) => selected[key]).map((key) => [key, Number(weights[key])])) };
+    const options: ClassroomExportRequest = { kind, performanceRecordId: performanceRecordID, aiActivityStartDate, aiActivityEndDate, includeOngoing, filenameTemplate: template, courseID: course.id, weights: Object.fromEntries(EXPORT_ITEMS.filter((key) => selected[key]).map((key) => [key, Number(weights[key])])) };
     try {
       const blob = await exportClassroom(accessToken, classroom.id, options, controller.signal);
       if (controller.signal.aborted) return;
@@ -63,5 +84,5 @@ export function useExportCenter(accessToken: string) {
     } catch (error) { if (!controller.signal.aborted) setError(resolveError(error)); }
     finally { if (!controller.signal.aborted) setPending(null); active.current = null; }
   };
-  return { classrooms, classroom, classroomID, setClassroomID, loading, error, pending, done, includeOngoing, setIncludeOngoing, weights, setWeights, selected, setSelected, template, setTemplate, courseID, setCourseID, total, validWeights, validTemplate, preview, download, refresh: () => setRevision((value) => value + 1) };
+  return { aiActivityStartDate, setAIActivityStartDate, aiActivityEndDate, setAIActivityEndDate, validAIDates, today, records, performanceRecordID, setPerformanceRecordID, recordsLoading, recordsError, classrooms, classroom, classroomID, setClassroomID, loading, error, pending, done, includeOngoing, setIncludeOngoing, weights, setWeights, selected, setSelected, template, setTemplate, courseID, setCourseID, total, validWeights, validTemplate, preview, download, refresh: () => setRevision((value) => value + 1) };
 }

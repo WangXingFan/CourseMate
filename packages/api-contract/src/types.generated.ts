@@ -11,6 +11,43 @@
  * ---------------------------------------------------------------
  */
 
+export interface AIActivityReport {
+  classroomId: string;
+  endDate: string;
+  generatedAt: string;
+  startDate: string;
+  students: AIActivityStudent[];
+  version: string;
+}
+
+export interface AIActivityResponse {
+  report?: AIActivityReport | null;
+}
+
+export interface AIActivityStudent {
+  activeDays: number;
+  activeWeeks: number;
+  expectedWeeks: number;
+  final?: number | null;
+  name: string;
+  studentId: string;
+  username: string;
+  validRounds: number;
+  weeks: AIActivityWeek[];
+}
+
+export interface AIActivityWeek {
+  activeDays: number;
+  countedRounds: number;
+  dayScore: number;
+  endDate: string;
+  roundScore: number;
+  score: number;
+  startDate: string;
+  status: "closed" | "provisional";
+  validRounds: number;
+}
+
 export interface ActiveMessageGenerationEventResponse {
   conversationPublicID?: string;
   runID?: string;
@@ -477,10 +514,20 @@ export interface ClassroomExperimentRequest {
 }
 
 export interface ClassroomExportRequest {
+  aiActivityEndDate?: string;
+  aiActivityStartDate?: string;
   courseID: "L1" | "L2" | "L3";
   filenameTemplate: string;
   includeOngoing: boolean;
-  kind: "homeworks" | "labs" | "attendance" | "summary" | "reports";
+  kind:
+    | "homeworks"
+    | "labs"
+    | "attendance"
+    | "performance"
+    | "ai_activity"
+    | "summary"
+    | "reports";
+  performanceRecordId: string;
   weights: Record<string, number>;
 }
 
@@ -1371,6 +1418,13 @@ export interface FileUploadResponse {
   file: FileObjectResponse;
   quota: StorageQuotaResponse;
   reused: boolean;
+}
+
+export interface FinalizePerformance {
+  corrections: PerformanceCorrection[];
+  fingerprint: string;
+  options: PerformanceOptions;
+  title: string;
 }
 
 export interface GetConversationRunStatusesRequest {
@@ -2865,6 +2919,113 @@ export interface PatchUsernameRequest {
    * @minLength 3
    * @maxLength 16
    */
+  username: string;
+}
+
+export interface PerformanceActivity {
+  closedAt: string;
+  id: string;
+  phase: string;
+  sourceQuizId: string;
+  title: string;
+}
+
+export interface PerformanceCorrection {
+  reason: string;
+  score: number;
+  studentId: string;
+}
+
+export interface PerformanceEvidence {
+  closedAt: string;
+  conceptId: string;
+  outcome: string;
+  phase: string;
+  points: number;
+  questionId: string;
+  quizId: string;
+  sourceQuizId: string;
+  submitted: boolean;
+  title: string;
+  total: number;
+}
+
+export interface PerformanceOptions {
+  endAt?: string | null;
+  quizIds: string[];
+  startAt?: string | null;
+}
+
+export interface PerformanceRecord {
+  createdAt: string;
+  id: string;
+  report: PerformanceReport;
+  title: string;
+}
+
+export interface PerformanceRecordItem {
+  createdAt: string;
+  id: string;
+  title: string;
+}
+
+export interface PerformanceRecordListResponse {
+  records: PerformanceRecordItem[];
+}
+
+export interface PerformanceRecordResponse {
+  record?: PerformanceRecord | null;
+}
+
+export interface PerformanceReport {
+  activities: PerformanceActivity[];
+  classroomId: string;
+  conversion: string;
+  deviation: number;
+  eligible: number;
+  fingerprint: string;
+  mean: number;
+  options: PerformanceOptions;
+  students: PerformanceStudent[];
+  version: string;
+}
+
+export interface PerformanceResponse {
+  report: PerformanceReport;
+}
+
+export interface PerformanceStage {
+  completed: number;
+  expected: number;
+  participation: number;
+  phase: string;
+  quality: number;
+}
+
+export interface PerformanceStudent {
+  activeWeeks: number;
+  consistency: number;
+  converted?: number | null;
+  evidence: PerformanceEvidence[];
+  expectedWeeks: number;
+  final?: number | null;
+  growth?: number | null;
+  improved: number;
+  missingPairs: number;
+  name: string;
+  pairs: number;
+  participation: number;
+  quality: number;
+  rank?: number | null;
+  raw?: number | null;
+  reason: string;
+  regressed: number;
+  retained: number;
+  stages: PerformanceStage[];
+  status: string;
+  studentId: string;
+  unresolved: number;
+  userId: number;
   username: string;
 }
 
@@ -7146,6 +7307,30 @@ export namespace Classrooms {
 
   /**
    * No description
+   * @tags classrooms
+   * @name AiActivityList
+   * @summary Read classroom AI usage activity scores and weekly counts
+   * @request GET:/classrooms/{id}/ai-activity
+   * @secure
+   */
+  export namespace AiActivityList {
+    export type RequestParams = {
+      /** Owned classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** Inclusive Beijing date YYYY-MM-DD; defaults to today */
+      endDate?: string;
+      /** Inclusive Beijing date YYYY-MM-DD; defaults to class creation */
+      startDate?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AIActivityResponse;
+  }
+
+  /**
+   * No description
    * @tags attendance
    * @name AttendanceList
    * @summary List attendance sessions in my classroom
@@ -7339,6 +7524,84 @@ export namespace Classrooms {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = ClassroomMasteryResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name PerformancePreviewCreate
+   * @summary Preview classroom performance from closed activities
+   * @request POST:/classrooms/{id}/performance/preview
+   * @secure
+   */
+  export namespace PerformancePreviewCreate {
+    export type RequestParams = {
+      /** Owned classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = PerformanceOptions;
+    export type RequestHeaders = {};
+    export type ResponseBody = PerformanceResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name PerformanceRecordsList
+   * @summary List published classroom performance records
+   * @request GET:/classrooms/{id}/performance/records
+   * @secure
+   */
+  export namespace PerformanceRecordsList {
+    export type RequestParams = {
+      /** Owned classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = PerformanceRecordListResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name PerformanceRecordsCreate
+   * @summary Save and publish an immutable classroom performance record
+   * @request POST:/classrooms/{id}/performance/records
+   * @secure
+   */
+  export namespace PerformanceRecordsCreate {
+    export type RequestParams = {
+      /** Owned classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = FinalizePerformance;
+    export type RequestHeaders = {};
+    export type ResponseBody = PerformanceRecordResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name PerformanceRecordsDetail
+   * @summary Read a published classroom performance record
+   * @request GET:/classrooms/{id}/performance/records/{record_id}
+   * @secure
+   */
+  export namespace PerformanceRecordsDetail {
+    export type RequestParams = {
+      /** Owned classroom ID */
+      id: string;
+      /** Record ID */
+      recordId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = PerformanceRecordResponse;
   }
 
   /**
@@ -9705,6 +9968,22 @@ export namespace Settings {
 export namespace Student {
   /**
    * No description
+   * @tags classrooms
+   * @name AiActivityList
+   * @summary Read only the current student's cumulative AI usage activity
+   * @request GET:/student/ai-activity
+   * @secure
+   */
+  export namespace AiActivityList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = AIActivityResponse;
+  }
+
+  /**
+   * No description
    * @tags attendance
    * @name AttendanceList
    * @summary Read my attendance sessions and my own records only
@@ -9752,6 +10031,22 @@ export namespace Student {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = StudentHomeworksResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name PerformanceList
+   * @summary Read the current student's latest published classroom performance
+   * @request GET:/student/performance
+   * @secure
+   */
+  export namespace PerformanceList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = PerformanceRecordResponse;
   }
 
   /**

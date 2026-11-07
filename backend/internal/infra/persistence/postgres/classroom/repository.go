@@ -144,6 +144,9 @@ func (r *Repo) DeleteClassroom(ctx context.Context, publicID string, teacherID u
 		if err := tx.Where("classroom_id = ?", item.ID).Delete(&models.ClassroomStudent{}).Error; err != nil {
 			return err
 		}
+		if err := tx.Where("classroom_id = ?", item.ID).Delete(&models.ClassroomPerformanceRecord{}).Error; err != nil {
+			return err
+		}
 		quizIDs := make([]uint, 0)
 		if err := tx.Model(&models.ClassroomQuiz{}).
 			Where("classroom_id = ?", item.ID).
@@ -535,7 +538,7 @@ func (r *Repo) ListClassroomStudents(ctx context.Context, classroomID uint) ([]d
 	items := make([]domain.Student, 0)
 	err := r.db.WithContext(ctx).
 		Table("classroom_students AS members").
-		Select("users.id, users.public_id, users.username, COALESCE(NULLIF(users.display_name, ''), users.username) AS display_name").
+		Select("users.id, users.public_id, users.username, members.created_at AS joined_at, COALESCE(NULLIF(users.display_name, ''), users.username) AS display_name").
 		Joins("JOIN identity_users AS users ON users.id = members.student_id AND users.deleted_at IS NULL").
 		Where("members.classroom_id = ? AND users.role = ?", classroomID, domainuser.RoleStudent).
 		Order("users.username ASC").

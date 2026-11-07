@@ -30,6 +30,7 @@ func TestClassroomRepositoryLifecycleAndGlobalStudentMembership(t *testing.T) {
 		&models.ClassroomStudent{},
 		&models.ClassroomQuiz{},
 		&models.ClassroomQuizSubmission{},
+		&models.ClassroomPerformanceRecord{},
 		&models.ClassroomHomework{},
 		&models.ClassroomHomeworkSubmission{},
 	); err != nil {

@@ -21,6 +21,7 @@ type Student struct {
 	PublicID    string
 	Username    string
 	DisplayName string
+	JoinedAt    time.Time
 }
 
 const (

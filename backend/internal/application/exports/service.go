@@ -7,6 +7,7 @@ import (
 	"math"
 	"time"
 
+	classroomapp "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/application/classroom"
 	attendance "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/attendance"
 	class "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/classroom"
 	lab "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/labassessment"
@@ -31,11 +32,13 @@ func NewService(c repository.ClassroomRepository, l repository.LabAssessmentRepo
 }
 
 type Options struct {
-	Kind             string
-	IncludeOngoing   bool
-	Weights          map[string]float64
-	FilenameTemplate string
-	CourseID         string
+	AIActivity          class.AIActivityOptions
+	PerformanceRecordID string
+	Kind                string
+	IncludeOngoing      bool
+	Weights             map[string]float64
+	FilenameTemplate    string
+	CourseID            string
 }
 type File struct {
 	Name, ContentType string
@@ -54,17 +57,20 @@ type attendanceData struct {
 	records map[uint]attendance.Record
 }
 type dataset struct {
-	class      class.Classroom
-	students   []class.Student
-	homeworks  []homeworkData
-	labs       []labData
-	attendance []attendanceData
-	now        time.Time
+	aiActivity       *class.AIActivityReport
+	performance      *class.PerformanceReport
+	performanceTitle string
+	class            class.Classroom
+	students         []class.Student
+	homeworks        []homeworkData
+	labs             []labData
+	attendance       []attendanceData
+	now              time.Time
 }
 
 func (o Options) validate() error {
 	switch o.Kind {
-	case "homeworks", "labs", "attendance":
+	case "homeworks", "labs", "attendance", "performance", "ai_activity":
 		return nil
 	case "reports":
 		if len(lab.TaskIDs(o.CourseID)) == 0 {
@@ -77,7 +83,7 @@ func (o Options) validate() error {
 	}
 	var total float64
 	for k, w := range o.Weights {
-		if (k != "homeworks" && k != "labs" && k != "attendance") || math.IsNaN(w) || math.IsInf(w, 0) || w <= 0 || w > 100 {
+		if (k != "homeworks" && k != "labs" && k != "attendance" && k != "performance" && k != "ai_activity") || math.IsNaN(w) || math.IsInf(w, 0) || w <= 0 || w > 100 {
 			return ErrInvalid
 		}
 		total += w
@@ -110,6 +116,30 @@ func (s *Service) Export(ctx context.Context, actor uint, id string, o Options) 
 	if err != nil {
 		return nil, err
 	}
+	if o.Kind == "performance" || o.Kind == "summary" && o.Weights["performance"] > 0 {
+		service := classroomapp.NewService(s.classes, s.users)
+		if o.PerformanceRecordID != "" {
+			record, readErr := service.PerformanceRecord(ctx, actor, id, o.PerformanceRecordID)
+			if errors.Is(readErr, classroomapp.ErrNotFound) {
+				return nil, ErrNotFound
+			}
+			if readErr != nil {
+				return nil, readErr
+			}
+			d.performance, d.performanceTitle = &record.Report, record.Title
+			// A saved assessment retains its roster, including students who later left.
+			d.students = []class.Student{}
+			for _, row := range record.Report.Students {
+				d.students = append(d.students, class.Student{ID: row.UserID, PublicID: row.StudentID, Username: row.Username, DisplayName: row.Name})
+			}
+		} else {
+			d.performance, err = service.Performance(ctx, actor, id, class.PerformanceOptions{})
+			if err != nil {
+				return nil, err
+			}
+			d.performanceTitle = "当前累计预览（未定稿）"
+		}
+	}
 	if err = s.collect(ctx, &d, o); err != nil {
 		return nil, fmt.Errorf("export classroom %s: %w", id, err)
 	}
@@ -121,6 +151,16 @@ func (s *Service) Export(ctx context.Context, actor uint, id string, o Options) 
 
 func (s *Service) collect(ctx context.Context, d *dataset, o Options) error {
 	needed := func(k string) bool { return o.Kind == k || o.Kind == "summary" && o.Weights[k] > 0 }
+	if needed("ai_activity") {
+		var err error
+		d.aiActivity, err = classroomapp.NewService(s.classes, s.users).AIActivity(ctx, d.class.TeacherID, d.class.PublicID, o.AIActivity)
+		if errors.Is(err, classroomapp.ErrInvalid) {
+			return ErrInvalid
+		}
+		if err != nil {
+			return err
+		}
+	}
 	if needed("homeworks") {
 		items, err := s.classes.ListHomeworks(ctx, d.class.ID)
 		if err != nil {
@@ -229,6 +269,24 @@ func (d dataset) attendanceScore(id uint) attendanceScore {
 func (d dataset) score(id uint, kind string) (float64, bool) {
 	var total float64
 	switch kind {
+	case "ai_activity":
+		if d.aiActivity != nil {
+			for _, row := range d.aiActivity.Students {
+				if row.UserID == id && row.Final != nil {
+					return *row.Final, true
+				}
+			}
+		}
+		return 0, false
+	case "performance":
+		if d.performance != nil {
+			for _, row := range d.performance.Students {
+				if row.UserID == id && row.Final != nil {
+					return *row.Final, true
+				}
+			}
+		}
+		return 0, false
 	case "homeworks":
 		if len(d.homeworks) == 0 {
 			return 0, false

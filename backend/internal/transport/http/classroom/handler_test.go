@@ -33,13 +33,14 @@ func (u handlerTestUsers) GetByID(_ context.Context, id uint) (*domainuser.User,
 
 type handlerTestRepository struct {
 	repository.ClassroomRepository
-	classrooms  []domainclassroom.Classroom
-	createInput domainclassroom.Classroom
-	quizzes     []domainclassroom.Quiz
-	submissions []domainclassroom.QuizSubmission
-	memberships map[uint]uint
-	addCalls    []handlerTestAddCall
-	addErr      error
+	classrooms         []domainclassroom.Classroom
+	createInput        domainclassroom.Classroom
+	quizzes            []domainclassroom.Quiz
+	submissions        []domainclassroom.QuizSubmission
+	memberships        map[uint]uint
+	addCalls           []handlerTestAddCall
+	addErr             error
+	performanceRecords []domainclassroom.PerformanceRecord
 }
 
 type handlerTestAddCall struct {
@@ -93,8 +94,8 @@ func (r *handlerTestRepository) DeleteClassroom(context.Context, string, uint) e
 
 func (r *handlerTestRepository) ListClassroomStudents(context.Context, uint) ([]domainclassroom.Student, error) {
 	return []domainclassroom.Student{
-		{PublicID: "student_4", Username: "student_one", DisplayName: "Student One"},
-		{PublicID: "student_6", Username: "student_two", DisplayName: "Student Two"},
+		{ID: 4, PublicID: "student_4", Username: "student_one", DisplayName: "Student One"},
+		{ID: 6, PublicID: "student_6", Username: "student_two", DisplayName: "Student Two"},
 	}, nil
 }
 

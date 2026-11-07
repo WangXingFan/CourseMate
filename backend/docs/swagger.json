@@ -7883,6 +7883,69 @@
                 }
             }
         },
+        "/classrooms/{id}/ai-activity": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "Read classroom AI usage activity scores and weekly counts",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Owned classroom ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Inclusive Beijing date YYYY-MM-DD; defaults to class creation",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Inclusive Beijing date YYYY-MM-DD; defaults to today",
+                        "name": "endDate",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/AIActivityResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/classrooms/{id}/attendance": {
             "get": {
                 "security": [
@@ -8341,6 +8404,227 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/classrooms/{id}/performance/preview": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "Preview classroom performance from closed activities",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Owned classroom ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Activity IDs and inclusive start / exclusive end (RFC3339); omit for all closed activities",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/PerformanceOptions"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/PerformanceResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/classrooms/{id}/performance/records": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "List published classroom performance records",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Owned classroom ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/PerformanceRecordListResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "Save and publish an immutable classroom performance record",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Owned classroom ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Preview fingerprint, scope, title and justified corrections",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/FinalizePerformance"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/PerformanceRecordResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/classrooms/{id}/performance/records/{record_id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "Read a published classroom performance record",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Owned classroom ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Record ID",
+                        "name": "record_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/PerformanceRecordResponse"
                         }
                     },
                     "403": {
@@ -14751,6 +15035,36 @@
                 }
             }
         },
+        "/student/ai-activity": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "Read only the current student's cumulative AI usage activity",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/AIActivityResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/student/attendance": {
             "get": {
                 "security": [
@@ -14839,6 +15153,36 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/StudentHomeworksResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/student/performance": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "Read the current student's latest published classroom performance",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/PerformanceRecordResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
                         }
                     }
                 }
@@ -15350,6 +15694,150 @@
         }
     },
     "definitions": {
+        "AIActivityReport": {
+            "type": "object",
+            "required": [
+                "classroomId",
+                "endDate",
+                "generatedAt",
+                "startDate",
+                "students",
+                "version"
+            ],
+            "properties": {
+                "classroomId": {
+                    "type": "string"
+                },
+                "endDate": {
+                    "type": "string"
+                },
+                "generatedAt": {
+                    "type": "string"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "students": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AIActivityStudent"
+                    }
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "AIActivityResponse": {
+            "type": "object",
+            "required": [
+                "report"
+            ],
+            "properties": {
+                "report": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/AIActivityReport"
+                        }
+                    ],
+                    "x-nullable": true
+                }
+            }
+        },
+        "AIActivityStudent": {
+            "type": "object",
+            "required": [
+                "activeDays",
+                "activeWeeks",
+                "expectedWeeks",
+                "final",
+                "name",
+                "studentId",
+                "username",
+                "validRounds",
+                "weeks"
+            ],
+            "properties": {
+                "activeDays": {
+                    "type": "integer"
+                },
+                "activeWeeks": {
+                    "type": "integer"
+                },
+                "expectedWeeks": {
+                    "type": "integer"
+                },
+                "final": {
+                    "type": "number",
+                    "x-nullable": true
+                },
+                "name": {
+                    "type": "string"
+                },
+                "studentId": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "validRounds": {
+                    "type": "integer"
+                },
+                "weeks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AIActivityWeek"
+                    }
+                }
+            }
+        },
+        "AIActivityWeek": {
+            "type": "object",
+            "required": [
+                "activeDays",
+                "countedRounds",
+                "dayScore",
+                "endDate",
+                "roundScore",
+                "score",
+                "startDate",
+                "status",
+                "validRounds"
+            ],
+            "properties": {
+                "activeDays": {
+                    "type": "integer"
+                },
+                "countedRounds": {
+                    "type": "integer"
+                },
+                "dayScore": {
+                    "type": "integer"
+                },
+                "endDate": {
+                    "type": "string"
+                },
+                "roundScore": {
+                    "type": "integer"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "closed",
+                        "provisional"
+                    ]
+                },
+                "validRounds": {
+                    "type": "integer"
+                }
+            }
+        },
         "ActiveMessageGenerationEventResponse": {
             "type": "object",
             "required": [
@@ -16930,9 +17418,16 @@
                 "filenameTemplate",
                 "includeOngoing",
                 "kind",
+                "performanceRecordId",
                 "weights"
             ],
             "properties": {
+                "aiActivityEndDate": {
+                    "type": "string"
+                },
+                "aiActivityStartDate": {
+                    "type": "string"
+                },
                 "courseID": {
                     "type": "string",
                     "enum": [
@@ -16953,9 +17448,14 @@
                         "homeworks",
                         "labs",
                         "attendance",
+                        "performance",
+                        "ai_activity",
                         "summary",
                         "reports"
                     ]
+                },
+                "performanceRecordId": {
+                    "type": "string"
                 },
                 "weights": {
                     "type": "object",
@@ -19762,6 +20262,32 @@
                 },
                 "reused": {
                     "type": "boolean"
+                }
+            }
+        },
+        "FinalizePerformance": {
+            "type": "object",
+            "required": [
+                "corrections",
+                "fingerprint",
+                "options",
+                "title"
+            ],
+            "properties": {
+                "corrections": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PerformanceCorrection"
+                    }
+                },
+                "fingerprint": {
+                    "type": "string"
+                },
+                "options": {
+                    "$ref": "#/definitions/PerformanceOptions"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },
@@ -24695,6 +25221,404 @@
                     "type": "string",
                     "maxLength": 16,
                     "minLength": 3
+                }
+            }
+        },
+        "PerformanceActivity": {
+            "type": "object",
+            "required": [
+                "closedAt",
+                "id",
+                "phase",
+                "sourceQuizId",
+                "title"
+            ],
+            "properties": {
+                "closedAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "phase": {
+                    "type": "string"
+                },
+                "sourceQuizId": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "PerformanceCorrection": {
+            "type": "object",
+            "required": [
+                "reason",
+                "score",
+                "studentId"
+            ],
+            "properties": {
+                "reason": {
+                    "type": "string"
+                },
+                "score": {
+                    "type": "number"
+                },
+                "studentId": {
+                    "type": "string"
+                }
+            }
+        },
+        "PerformanceEvidence": {
+            "type": "object",
+            "required": [
+                "closedAt",
+                "conceptId",
+                "outcome",
+                "phase",
+                "points",
+                "questionId",
+                "quizId",
+                "sourceQuizId",
+                "submitted",
+                "title",
+                "total"
+            ],
+            "properties": {
+                "closedAt": {
+                    "type": "string"
+                },
+                "conceptId": {
+                    "type": "string"
+                },
+                "outcome": {
+                    "type": "string"
+                },
+                "phase": {
+                    "type": "string"
+                },
+                "points": {
+                    "type": "integer"
+                },
+                "questionId": {
+                    "type": "string"
+                },
+                "quizId": {
+                    "type": "string"
+                },
+                "sourceQuizId": {
+                    "type": "string"
+                },
+                "submitted": {
+                    "type": "boolean"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "PerformanceOptions": {
+            "type": "object",
+            "required": [
+                "endAt",
+                "quizIds",
+                "startAt"
+            ],
+            "properties": {
+                "endAt": {
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "quizIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "startAt": {
+                    "type": "string",
+                    "x-nullable": true
+                }
+            }
+        },
+        "PerformanceRecord": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "id",
+                "report",
+                "title"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "report": {
+                    "$ref": "#/definitions/PerformanceReport"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "PerformanceRecordItem": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "id",
+                "title"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "PerformanceRecordListResponse": {
+            "type": "object",
+            "required": [
+                "records"
+            ],
+            "properties": {
+                "records": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PerformanceRecordItem"
+                    }
+                }
+            }
+        },
+        "PerformanceRecordResponse": {
+            "type": "object",
+            "required": [
+                "record"
+            ],
+            "properties": {
+                "record": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PerformanceRecord"
+                        }
+                    ],
+                    "x-nullable": true
+                }
+            }
+        },
+        "PerformanceReport": {
+            "type": "object",
+            "required": [
+                "activities",
+                "classroomId",
+                "conversion",
+                "deviation",
+                "eligible",
+                "fingerprint",
+                "mean",
+                "options",
+                "students",
+                "version"
+            ],
+            "properties": {
+                "activities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PerformanceActivity"
+                    }
+                },
+                "classroomId": {
+                    "type": "string"
+                },
+                "conversion": {
+                    "type": "string"
+                },
+                "deviation": {
+                    "type": "number"
+                },
+                "eligible": {
+                    "type": "integer"
+                },
+                "fingerprint": {
+                    "type": "string"
+                },
+                "mean": {
+                    "type": "number"
+                },
+                "options": {
+                    "$ref": "#/definitions/PerformanceOptions"
+                },
+                "students": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PerformanceStudent"
+                    }
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "PerformanceResponse": {
+            "type": "object",
+            "required": [
+                "report"
+            ],
+            "properties": {
+                "report": {
+                    "$ref": "#/definitions/PerformanceReport"
+                }
+            }
+        },
+        "PerformanceStage": {
+            "type": "object",
+            "required": [
+                "completed",
+                "expected",
+                "participation",
+                "phase",
+                "quality"
+            ],
+            "properties": {
+                "completed": {
+                    "type": "integer"
+                },
+                "expected": {
+                    "type": "integer"
+                },
+                "participation": {
+                    "type": "number"
+                },
+                "phase": {
+                    "type": "string"
+                },
+                "quality": {
+                    "type": "number"
+                }
+            }
+        },
+        "PerformanceStudent": {
+            "type": "object",
+            "required": [
+                "activeWeeks",
+                "consistency",
+                "converted",
+                "evidence",
+                "expectedWeeks",
+                "final",
+                "growth",
+                "improved",
+                "missingPairs",
+                "name",
+                "pairs",
+                "participation",
+                "quality",
+                "rank",
+                "raw",
+                "reason",
+                "regressed",
+                "retained",
+                "stages",
+                "status",
+                "studentId",
+                "unresolved",
+                "userId",
+                "username"
+            ],
+            "properties": {
+                "activeWeeks": {
+                    "type": "integer"
+                },
+                "consistency": {
+                    "type": "number"
+                },
+                "converted": {
+                    "type": "number",
+                    "x-nullable": true
+                },
+                "evidence": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PerformanceEvidence"
+                    }
+                },
+                "expectedWeeks": {
+                    "type": "integer"
+                },
+                "final": {
+                    "type": "number",
+                    "x-nullable": true
+                },
+                "growth": {
+                    "type": "number",
+                    "x-nullable": true
+                },
+                "improved": {
+                    "type": "integer"
+                },
+                "missingPairs": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pairs": {
+                    "type": "integer"
+                },
+                "participation": {
+                    "type": "number"
+                },
+                "quality": {
+                    "type": "number"
+                },
+                "rank": {
+                    "type": "number",
+                    "x-nullable": true
+                },
+                "raw": {
+                    "type": "number",
+                    "x-nullable": true
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "regressed": {
+                    "type": "integer"
+                },
+                "retained": {
+                    "type": "integer"
+                },
+                "stages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PerformanceStage"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                },
+                "studentId": {
+                    "type": "string"
+                },
+                "unresolved": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },

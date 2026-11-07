@@ -7,7 +7,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-var titles = map[string]string{"homeworks": "作业成绩", "labs": "实验成绩", "attendance": "签到考勤", "summary": "综合成绩", "reports": "实验报告"}
+var titles = map[string]string{"homeworks": "作业成绩", "labs": "实验成绩", "attendance": "签到考勤", "summary": "综合成绩", "reports": "实验报告", "performance": "课堂成绩", "ai_activity": "AI活跃度"}
 var courseNames = map[string]string{"L1": "信号与系统的时域分析", "L2": "信号与系统的频域分析", "L3": "信号与系统的复频域分析"}
 var beijing = time.FixedZone("Asia/Shanghai", 8*60*60)
 
@@ -25,7 +25,7 @@ func workbook(d dataset, o Options) (*File, error) {
 	if o.Kind == "summary" {
 		header := []any{"学号", "姓名"}
 		keys := []string{}
-		for _, key := range []string{"homeworks", "labs", "attendance"} {
+		for _, key := range []string{"homeworks", "labs", "attendance", "performance", "ai_activity"} {
 			if o.Weights[key] > 0 {
 				keys = append(keys, key)
 				header = append(header, titles[key]+"（百分制）", titles[key]+"权重（%）", titles[key]+"加权分")
@@ -56,7 +56,7 @@ func workbook(d dataset, o Options) (*File, error) {
 		}
 		sheets = append(sheets, sheet{"综合成绩", rows})
 	}
-	for _, key := range []string{"homeworks", "labs", "attendance"} {
+	for _, key := range []string{"homeworks", "labs", "attendance", "performance", "ai_activity"} {
 		if o.Kind == key || o.Kind == "summary" && o.Weights[key] > 0 {
 			sheets = append(sheets, detailSheets(d, key)...)
 		}
@@ -65,12 +65,21 @@ func workbook(d dataset, o Options) (*File, error) {
 	if o.IncludeOngoing {
 		mode = "已开始的作业和实验（包含进行中，当前成绩）"
 	}
+	aiScope := "未选择"
+	if d.aiActivity != nil {
+		aiScope = d.aiActivity.StartDate + " 至 " + d.aiActivity.EndDate + "；规则版本 " + d.aiActivity.Version
+	}
 	sheets = append(sheets, sheet{"导出说明", [][]any{
-		{"项目", "规则"}, {"班级", d.class.Name}, {"导出时间（北京时间）", date(d.now)}, {"范围", "当前班级名单；累计记录；" + mode},
+		{"项目", "规则"}, {"班级", d.class.Name}, {"导出时间（北京时间）", date(d.now)}, {"范围", "当前名单（选择课堂成绩定稿时使用定稿名单）；累计记录；" + mode},
 		{"作业成绩", "每份作业转换为百分制后等权平均；未提交计 0 分。"},
 		{"实验成绩", "每个实验满分 100；四任务各 25 分，沿用服务端评分和教师更正，各实验等权平均；未得分任务计 0 分。"},
 		{"验收完成", "四个任务均提交正式验收才标记完成；不以练习保存或得分代替完成状态。"},
 		{"考勤成绩", "max(0, 100 − 迟到次数 × 10 − 缺勤次数 × 20)；正常到课、请假不扣分。仅统计已结束签到；不在该场应到名单的学生不扣分。"},
+		{"课堂成绩", "答题质量50%、任务参与20%、订正与保持20%、持续参与10%；阶段权重30%/40%/30%。仅已截止活动；同分同成绩，未参与计零，未布置维度重分配。有效参评不少于10人且非全员同分时按班内百分位映射到中心80、标准差8的目标正态分布。"},
+		{"课堂成绩来源", d.performanceTitle},
+		{"AI活跃度", "北京时间周一至周日；每周活跃天数×30（最多60分）＋有效问答×10（每天最多2轮、每周最多4轮）。按原问题去重，重试、编辑和重新生成只计一次；成功非空回复才有效，自动标题、复制历史和失败请求不计。仅统计入班后，已结束周未使用计0；无适用周显示暂无评价。"},
+		{"AI活跃度范围", "按所选起止日期；入班当周仅统计入班后。当前周及结束日期未完整覆盖的末周为临时统计，不计入最终平均分。累计天数、问答数和活跃周数仅含已结束考核周；分数表示平台内使用活跃度，不代表学习质量。"},
+		{"AI活跃度统计日期", aiScope},
 		{"综合成绩", "各项百分制成绩 × 对应权重之和；权重合计 100%；最终结果保留两位小数，中间计算不提前舍入。"},
 		{"缺少数据", "所选项目无考核，或学生无应到签到记录时，最终成绩留空；不会自动重新分配权重。"},
 	}})
@@ -123,6 +132,12 @@ func workbook(d dataset, o Options) (*File, error) {
 }
 
 func detailSheets(d dataset, kind string) []sheet {
+	if kind == "ai_activity" {
+		return aiActivitySheets(d)
+	}
+	if kind == "performance" {
+		return performanceSheets(d)
+	}
 	header := []any{"学号", "姓名", "平均分（百分制）"}
 	if kind == "attendance" {
 		header = []any{"学号", "姓名", "应到次数", "正常到课", "迟到", "缺勤", "请假", "考勤分"}

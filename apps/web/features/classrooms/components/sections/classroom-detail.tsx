@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { CenteredEmptyState } from "@/components/ui/empty-state";
 import { Spinner } from "@/components/ui/spinner";
 import { ClassroomActivitiesSection } from "@/features/classrooms/components/sections/classroom-activities";
+import { ClassroomPerformance } from "@/features/classrooms/components/sections/classroom-performance";
+import { ClassroomAIActivity } from "@/features/classrooms/components/sections/classroom-ai-activity";
 import { ClassroomMastery } from "@/features/classrooms/components/sections/classroom-mastery";
 import { ClassroomAttendance } from "@/features/classrooms/components/sections/classroom-attendance";
 import { ClassroomHomeworks } from "@/features/classrooms/components/sections/classroom-homeworks";
@@ -135,6 +137,8 @@ export function ClassroomDetail({
                   <BarChart3 className="size-4" strokeWidth={1.6} />
                   {activitiesT("tabActivities")}
                 </TabButton>
+                <TabButton active={tab === "performance"} onClick={() => setTab("performance")}>{t("performance.title")}</TabButton>
+                <TabButton active={tab === "ai_activity"} onClick={() => setTab("ai_activity")}>{t("aiActivity.title")}</TabButton>
                 <TabButton active={tab === "mastery"} onClick={() => setTab("mastery")}>{t("masteryTab")}</TabButton>
                 <TabButton active={tab === "homeworks"} onClick={() => setTab("homeworks")}>{t("homework.tab")}</TabButton>
                 <TabButton active={tab === "attendance"} onClick={() => setTab("attendance")}>{t("attendance.title")}</TabButton>
@@ -164,7 +168,11 @@ export function ClassroomDetail({
             </div>
           )}
 
-          {canManage && tab === "attendance" ? (
+          {canManage && tab === "ai_activity" ? (
+            <ClassroomAIActivity key={`${accessToken}:${selected.id}`} accessToken={accessToken} classroomID={selected.id} />
+          ) : canManage && tab === "performance" ? (
+            <ClassroomPerformance key={`${accessToken}:${selected.id}`} accessToken={accessToken} classroomID={selected.id} />
+          ) : canManage && tab === "attendance" ? (
             <ClassroomAttendance key={`${accessToken}:${selected.id}`} accessToken={accessToken} classroomID={selected.id} />
           ) : canManage && tab === "homeworks" ? (
             <ClassroomHomeworks key={`${accessToken}:${selected.id}`} accessToken={accessToken} classroomID={selected.id} />

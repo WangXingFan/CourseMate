@@ -2,11 +2,16 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	domain "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/classroom"
 )
 
 type ClassroomRepository interface {
+	ListAIActivityEvents(context.Context, []uint, time.Time) ([]domain.AIActivityEvent, error)
+	SavePerformanceRecord(context.Context, domain.PerformanceRecord) error
+	ListPerformanceRecords(context.Context, uint) ([]domain.PerformanceRecord, error)
+	GetPerformanceRecord(context.Context, uint, string) (*domain.PerformanceRecord, error)
 	ListClassrooms(context.Context, uint, bool) ([]domain.Classroom, error)
 	CreateClassroom(context.Context, domain.Classroom) (*domain.Classroom, error)
 	GetClassroom(context.Context, string) (*domain.Classroom, error)
