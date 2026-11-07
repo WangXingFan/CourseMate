@@ -2,6 +2,7 @@ package exports
 
 import (
 	"fmt"
+	class "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/classroom"
 	"time"
 
 	"github.com/xuri/excelize/v2"
@@ -71,6 +72,8 @@ func workbook(d dataset, o Options) (*File, error) {
 	}
 	sheets = append(sheets, sheet{"导出说明", [][]any{
 		{"项目", "规则"}, {"班级", d.class.Name}, {"导出时间（北京时间）", date(d.now)}, {"范围", "当前名单（选择课堂成绩定稿时使用定稿名单）；累计记录；" + mode},
+		{"综合成绩定稿", d.recordTitle}, {"综合成绩规则版本", class.GradeVersion},
+		{"适用任务", "入班前已截止的作业和已结束的实验不计入平均分，已有本人作答记录则保留；无适用任务留空。无截止及关闭时间的旧实验沿用原口径。定稿文件保留本次名单、成绩、权重和明细。"},
 		{"作业成绩", "每份作业转换为百分制后等权平均；未提交计 0 分。"},
 		{"实验成绩", "每个实验满分 100；四任务各 25 分，沿用服务端评分和教师更正，各实验等权平均；未得分任务计 0 分。"},
 		{"验收完成", "四个任务均提交正式验收才标记完成；不以练习保存或得分代替完成状态。"},
@@ -163,6 +166,10 @@ func detailSheets(d dataset, kind string) []sheet {
 		for _, h := range d.homeworks {
 			for _, st := range d.students {
 				sub, ok := h.submissions[st.ID]
+				if !ok && !h.item.AppliesTo(st.JoinedAt) {
+					rows = append(rows, []any{st.Username, st.DisplayName, h.item.Title, date(h.item.StartsAt), date(h.item.Deadline), "", h.item.Total(), "", "不适用（入班前已截止）", "", h.item.PublicID})
+					continue
+				}
 				status, submitted, score := "未提交", "", 0.0
 				if ok {
 					status, submitted = "已提交", date(sub.SubmittedAt)
@@ -178,6 +185,10 @@ func detailSheets(d dataset, kind string) []sheet {
 		for _, l := range d.labs {
 			for _, st := range d.students {
 				state := l.states[st.ID]
+				if len(state.Tasks) == 0 && !l.item.AppliesTo(st.JoinedAt) {
+					rows = append(rows, []any{st.Username, st.DisplayName, l.item.CourseID + " " + courseNames[l.item.CourseID], "", "", "不适用（入班前已结束）", "", "", "", "", "已结束", l.item.ID})
+					continue
+				}
 				score, completed := labScore(state, l.item.CourseID)
 				status := "未完成"
 				if completed == 4 {

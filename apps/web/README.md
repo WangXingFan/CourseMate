@@ -18,6 +18,14 @@
 应用构建只使用这份样式；组件生成 CLI 不作为工作区依赖安装，避免引入其 MCP、
 HTTP 服务与文件匹配依赖。`@shadcn/react` 运行时组件继续独立使用。
 
+## 默认入口与学习任务
+
+登录后默认进入 `/dashboard`。学生看到「我的学习」，汇总课堂签到、课堂活动、作业、正式实验验收和到期复习；教师转到班级页，其他角色转到聊天页。任务独立加载，部分接口失败会保留其他已加载任务，并支持手动刷新、回到窗口时刷新和可见页面每分钟刷新。
+
+作业和课堂活动草稿使用当前浏览器存储，按服务器、用户公开 ID 和任务隔离，不保存访问令牌。教师在 `/exports` 预览并保存综合成绩定稿，历史下载使用保存时的原始 Excel。规则见 [班级导出中心](../../docs/classroom-exports.md)。
+
+浏览器回归脚本：`apps/web/scripts/learning-dashboard-smoke.mjs`；与其他学习 smoke 一样，从仓库根目录运行，使用 `PLAYWRIGHT_PACKAGE_JSON` 指向已安装的 Playwright，截图保存在 `.cache/dashboard-smoke`。
+
 ## 目录结构
 
 ```text

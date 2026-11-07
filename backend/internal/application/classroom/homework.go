@@ -72,11 +72,25 @@ func (s *Service) StudentHomeworks(ctx context.Context, actor uint) (*domain.Cla
 	if err != nil {
 		return nil, nil, err
 	}
+	roster, err := s.repo.ListClassroomStudents(ctx, classroom.ID)
+	if err != nil {
+		return nil, nil, err
+	}
+	var joinedAt time.Time
+	for _, student := range roster {
+		if student.ID == actor {
+			joinedAt = student.JoinedAt
+			break
+		}
+	}
 	views := make([]StudentHomework, 0, len(items))
 	for _, item := range items {
 		subs, err := s.repo.ListHomeworkSubmissions(ctx, item.ID, actor)
 		if err != nil {
 			return nil, nil, err
+		}
+		if len(subs) == 0 && !item.AppliesTo(joinedAt) {
+			continue
 		}
 		item.Questions = studentHomeworkQuestions(item)
 		view := StudentHomework{Homework: item}
@@ -178,5 +192,15 @@ func (s *Service) HomeworkReport(ctx context.Context, actor uint, id string) (*H
 		return nil, err
 	}
 	item.SubmissionCount = int64(len(subs))
-	return &HomeworkReport{Homework: *item, Students: students, Submissions: subs}, nil
+	submitted := map[uint]bool{}
+	for _, sub := range subs {
+		submitted[sub.StudentID] = true
+	}
+	eligible := students[:0]
+	for _, student := range students {
+		if item.AppliesTo(student.JoinedAt) || submitted[student.ID] {
+			eligible = append(eligible, student)
+		}
+	}
+	return &HomeworkReport{Homework: *item, Students: eligible, Submissions: subs}, nil
 }

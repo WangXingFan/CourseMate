@@ -93,7 +93,8 @@
     "homeworks": "My homework",
     "analytics": "Analytics",
     "exports": "Export center",
-    "questionBank": "Question bank"
+    "questionBank": "Question bank",
+    "dashboard": "My learning"
   },
   "time": {
     "todayTime": "{time}",

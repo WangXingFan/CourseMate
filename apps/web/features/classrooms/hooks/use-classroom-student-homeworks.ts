@@ -5,8 +5,9 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useLocalizedErrorMessage } from "@/i18n/use-localized-error";
 import { listStudentHomeworks, submitHomework, type HomeworkResponse, type StudentHomeworksResponse } from "@/shared/api/homeworks";
+import { useClassroomAnswerDrafts } from "./use-classroom-answer-drafts";
 
-export function useClassroomStudentHomeworks(accessToken: string) {
+export function useClassroomStudentHomeworks(accessToken: string, owner: string) {
   const t = useTranslations("classrooms.homework");
   const resolveError = useLocalizedErrorMessage();
   const [data, setData] = useState<StudentHomeworksResponse>();
@@ -17,6 +18,7 @@ export function useClassroomStudentHomeworks(accessToken: string) {
   const [revision, setRevision] = useState(0);
   const [now, setNow] = useState(Date.now);
   const offset = useRef(0), busy = useRef(false);
+  const { draftStatus, readDraft, writeDraft, clearDraft } = useClassroomAnswerDrafts(owner, "homework");
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now() + offset.current), 1000);
     return () => window.clearInterval(timer);
@@ -27,15 +29,23 @@ export function useClassroomStudentHomeworks(accessToken: string) {
       if (controller.signal.aborted) return;
       offset.current = new Date(next.serverTime).getTime() - Date.now();
       setNow(Date.now() + offset.current); setData(next);
+      const drafts = new Map(next.items.map((item) => {
+        if (item.submission || item.status === "closed") { clearDraft(item.id); return [item.id, undefined] as const; }
+        return [item.id, readDraft(item.id)] as const;
+      }));
       setAnswers((current) => {
         const merged = { ...current };
-        for (const item of next.items) if (item.questions.length) merged[item.id] = item.submission?.answers ?? current[item.id] ?? item.questions.map((q) => Array.from({ length: q.blankCount }, () => ""));
+        for (const item of next.items) if (item.questions.length) {
+          const draft = drafts.get(item.id);
+          const saved = draft?.kind === "homework" && draft.answers.length === item.questions.length && draft.answers.every((row, i) => row.length === item.questions[i].blankCount) ? draft.answers : undefined;
+          merged[item.id] = item.submission?.answers ?? current[item.id] ?? saved ?? item.questions.map((q) => Array.from({ length: q.blankCount }, () => ""));
+        }
         return merged;
       });
     }).catch((cause: unknown) => { if (!controller.signal.aborted) setError(resolveError(cause)); })
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
-  }, [accessToken, revision, resolveError]);
+  }, [accessToken, revision, resolveError, readDraft, clearDraft]);
   useEffect(() => {
     const future = data?.items.filter((item) => item.status === "scheduled").map((item) => new Date(item.startsAt).getTime());
     if (!future?.length) return;
@@ -44,7 +54,9 @@ export function useClassroomStudentHomeworks(accessToken: string) {
     return () => window.clearTimeout(timer);
   }, [data]);
   function setAnswer(id: string, question: number, blank: number, value: string) {
-    setAnswers((current) => ({ ...current, [id]: (current[id] ?? []).map((row, i) => i === question ? row.map((answer, j) => j === blank ? value : answer) : row) }));
+    const next = (answers[id] ?? []).map((row, i) => i === question ? row.map((answer, j) => j === blank ? value : answer) : row);
+    setAnswers((current) => ({ ...current, [id]: next }));
+    writeDraft(id, { kind: "homework", answers: next });
   }
   async function submit(item: HomeworkResponse) {
     if (busy.current) return false;
@@ -53,10 +65,11 @@ export function useClassroomStudentHomeworks(accessToken: string) {
     busy.current = true; setPending(item.id);
     try {
       const submission = await submitHomework(accessToken, item.id, selected);
+      clearDraft(item.id);
       setData((current) => current && ({ ...current, items: current.items.map((entry) => entry.id === item.id ? { ...entry, submission } : entry) }));
       toast.success(t("graded", { score: submission.score, total: item.total })); return true;
     } catch (cause) { toast.error(resolveError(cause)); setRevision((v) => v + 1); return false; }
     finally { busy.current = false; setPending(""); }
   }
-  return { data, error, loading, pending, answers, now, setAnswer, submit, refresh: () => setRevision((v) => v + 1) };
+  return { data, error, loading, pending, answers, now, draftStatus, setAnswer, submit, refresh: () => setRevision((v) => v + 1) };
 }

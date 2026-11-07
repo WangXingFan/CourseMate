@@ -5,9 +5,10 @@ import { Search } from "@/components/animate-ui/icons/search";
 import { Sparkles } from "@/components/animate-ui/icons/sparkles";
 import { PlusIcon } from "@/components/ui/plus";
 import type { NavigationItem } from "@/features/shell/types/navigation";
-import { BarChart3, ClipboardList, Download, FlaskConical, LibraryBig, Shuffle, Video } from "lucide-react";
+import { House, BarChart3, ClipboardList, Download, FlaskConical, LibraryBig, Shuffle, Video } from "lucide-react";
 
 export const NAVIGATION_ITEMS = [
+  { id: "dashboard", kind: "link", href: "/dashboard", icon: House, group: "secondary" },
   {
     id: "newChat",
     kind: "command",

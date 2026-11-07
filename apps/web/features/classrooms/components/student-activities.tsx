@@ -6,6 +6,7 @@ import { StudentAIActivity } from "@/features/classrooms/components/student-ai-a
 
 import { ArrowRight, CheckCircle2, ClipboardList, LockKeyhole, RefreshCw } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
@@ -52,13 +53,17 @@ export function StudentActivitiesEntry() {
     );
   }
 
-  return <StudentActivities key={user.publicID} accessToken={accessToken} />;
+  return <StudentActivities key={user.publicID} accessToken={accessToken} owner={user.publicID} />;
 }
 
-function StudentActivities({ accessToken }: { accessToken: string }) {
+function StudentActivities({ accessToken, owner }: { accessToken: string; owner: string }) {
   const t = useTranslations("classrooms.activities.student");
   const locale = useLocale();
-  const model = useClassroomStudentActivities(accessToken);
+  const model = useClassroomStudentActivities(accessToken, owner);
+  const drafts = useTranslations("classrooms.drafts");
+  useEffect(() => {
+    if (model.data) document.getElementById(window.location.hash.slice(1))?.scrollIntoView();
+  }, [model.data]);
 
   if (model.loading) {
     return (
@@ -106,6 +111,7 @@ function StudentActivities({ accessToken }: { accessToken: string }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 md:px-8">
         <div className="mx-auto w-full max-w-4xl">
+          {model.draftStatus && <p role="status" className="mb-4 text-sm">{drafts(model.draftStatus)}</p>}
           <StudentAttendance accessToken={accessToken} />
           <StudentPerformance accessToken={accessToken} />
           <StudentAIActivity accessToken={accessToken} />
@@ -164,7 +170,7 @@ function QuizCard({
   const scoreTotal = quiz.questions.reduce((sum, q) => sum + Math.max(1, q.fields.length), 0);
 
   return (
-    <article className="rounded-lg border border-border/60 bg-card">
+    <article id={`quiz-${quiz.id}`} className="scroll-mt-4 rounded-lg border border-border/60 bg-card">
       <header className="flex flex-wrap items-start justify-between gap-2 border-b border-border/40 px-4 py-3">
         <div>
           <div className="flex flex-wrap items-center gap-1.5">

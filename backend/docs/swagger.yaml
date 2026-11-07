@@ -3292,6 +3292,130 @@ definitions:
     required:
     - fileIDs
     type: object
+  GradeComponentResponse:
+    properties:
+      kind:
+        type: string
+      score:
+        type: number
+        x-nullable: true
+    required:
+    - kind
+    - score
+    type: object
+  GradeFinalizeRequest:
+    properties:
+      fingerprint:
+        type: string
+      options:
+        $ref: '#/definitions/ClassroomExportRequest'
+      title:
+        maxLength: 120
+        type: string
+    required:
+    - fingerprint
+    - options
+    - title
+    type: object
+  GradePreviewResponse:
+    properties:
+      aiEndDate:
+        type: string
+      aiStartDate:
+        type: string
+      classroomId:
+        type: string
+      classroomName:
+        type: string
+      fingerprint:
+        type: string
+      generatedAt:
+        type: string
+      performanceRecordId:
+        type: string
+      students:
+        items:
+          $ref: '#/definitions/GradeStudentResponse'
+        type: array
+      version:
+        type: string
+      weights:
+        additionalProperties:
+          format: float64
+          type: number
+        type: object
+    required:
+    - aiEndDate
+    - aiStartDate
+    - classroomId
+    - classroomName
+    - fingerprint
+    - generatedAt
+    - performanceRecordId
+    - students
+    - version
+    - weights
+    type: object
+  GradeRecordInfoResponse:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      title:
+        type: string
+    required:
+    - createdAt
+    - id
+    - title
+    type: object
+  GradeRecordListResponse:
+    properties:
+      records:
+        items:
+          $ref: '#/definitions/GradeRecordInfoResponse'
+        type: array
+    required:
+    - records
+    type: object
+  GradeRecordResponse:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      report:
+        $ref: '#/definitions/GradePreviewResponse'
+      title:
+        type: string
+    required:
+    - createdAt
+    - id
+    - report
+    - title
+    type: object
+  GradeStudentResponse:
+    properties:
+      components:
+        items:
+          $ref: '#/definitions/GradeComponentResponse'
+        type: array
+      final:
+        type: number
+        x-nullable: true
+      name:
+        type: string
+      studentId:
+        type: string
+      username:
+        type: string
+    required:
+    - components
+    - final
+    - name
+    - studentId
+    - username
+    type: object
   GroupModelsResponse:
     properties:
       modelIDs:
@@ -15112,6 +15236,223 @@ paths:
       security:
       - BearerAuth: []
       summary: Export classroom scores as XLSX or individual PDF reports in a ZIP
+      tags:
+      - exports
+  /classrooms/{id}/grade-preview:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Owned classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Summary settings, excluding ongoing assignments
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/ClassroomExportRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/GradePreviewResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Preview a final classroom grade sheet
+      tags:
+      - exports
+  /classrooms/{id}/grade-records:
+    get:
+      parameters:
+      - description: Owned classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/GradeRecordListResponse'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: List finalized classroom grade sheets
+      tags:
+      - exports
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Owned classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Preview fingerprint and finalization settings
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/GradeFinalizeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/GradeRecordResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Save an immutable classroom grade sheet and its evidence workbook
+      tags:
+      - exports
+  /classrooms/{id}/grade-records/{record_id}:
+    get:
+      parameters:
+      - description: Owned classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Grade record ID
+        in: path
+        name: record_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/GradeRecordResponse'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Read a finalized classroom grade sheet
+      tags:
+      - exports
+  /classrooms/{id}/grade-records/{record_id}/export:
+    get:
+      parameters:
+      - description: Owned classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Grade record ID
+        in: path
+        name: record_id
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Download the original finalized grade workbook
       tags:
       - exports
   /classrooms/{id}/homework-bank:

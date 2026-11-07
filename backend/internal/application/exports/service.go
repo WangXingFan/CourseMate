@@ -57,6 +57,7 @@ type attendanceData struct {
 	records map[uint]attendance.Record
 }
 type dataset struct {
+	recordTitle      string
 	aiActivity       *class.AIActivityReport
 	performance      *class.PerformanceReport
 	performanceTitle string
@@ -93,7 +94,7 @@ func (o Options) validate() error {
 	}
 	return nil
 }
-func (s *Service) Export(ctx context.Context, actor uint, id string, o Options) (*File, error) {
+func (s *Service) ownedClassroom(ctx context.Context, actor uint, id string) (*class.Classroom, error) {
 	u, err := s.users.GetByID(ctx, actor)
 	if err != nil {
 		return nil, err
@@ -105,6 +106,14 @@ func (s *Service) Export(ctx context.Context, actor uint, id string, o Options) 
 	if errors.Is(err, repository.ErrNotFound) {
 		return nil, ErrNotFound
 	}
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (s *Service) loadDataset(ctx context.Context, actor uint, id string, o Options) (*dataset, error) {
+	c, err := s.ownedClassroom(ctx, actor, id)
 	if err != nil {
 		return nil, err
 	}
@@ -128,9 +137,16 @@ func (s *Service) Export(ctx context.Context, actor uint, id string, o Options) 
 			}
 			d.performance, d.performanceTitle = &record.Report, record.Title
 			// A saved assessment retains its roster, including students who later left.
+			joined := map[uint]time.Time{}
+			for _, st := range d.students {
+				joined[st.ID] = st.JoinedAt
+			}
 			d.students = []class.Student{}
 			for _, row := range record.Report.Students {
-				d.students = append(d.students, class.Student{ID: row.UserID, PublicID: row.StudentID, Username: row.Username, DisplayName: row.Name})
+				if !row.JoinedAt.IsZero() {
+					joined[row.UserID] = row.JoinedAt
+				}
+				d.students = append(d.students, class.Student{ID: row.UserID, PublicID: row.StudentID, Username: row.Username, DisplayName: row.Name, JoinedAt: joined[row.UserID]})
 			}
 		} else {
 			d.performance, err = service.Performance(ctx, actor, id, class.PerformanceOptions{})
@@ -143,10 +159,18 @@ func (s *Service) Export(ctx context.Context, actor uint, id string, o Options) 
 	if err = s.collect(ctx, &d, o); err != nil {
 		return nil, fmt.Errorf("export classroom %s: %w", id, err)
 	}
-	if o.Kind == "reports" {
-		return s.reports(ctx, d, o)
+	return &d, nil
+}
+
+func (s *Service) Export(ctx context.Context, actor uint, id string, o Options) (*File, error) {
+	d, err := s.loadDataset(ctx, actor, id, o)
+	if err != nil {
+		return nil, err
 	}
-	return workbook(d, o)
+	if o.Kind == "reports" {
+		return s.reports(ctx, *d, o)
+	}
+	return workbook(*d, o)
 }
 
 func (s *Service) collect(ctx context.Context, d *dataset, o Options) error {
@@ -268,6 +292,13 @@ func (d dataset) attendanceScore(id uint) attendanceScore {
 }
 func (d dataset) score(id uint, kind string) (float64, bool) {
 	var total float64
+	var joinedAt time.Time
+	for _, st := range d.students {
+		if st.ID == id {
+			joinedAt = st.JoinedAt
+			break
+		}
+	}
 	switch kind {
 	case "ai_activity":
 		if d.aiActivity != nil {
@@ -288,24 +319,34 @@ func (d dataset) score(id uint, kind string) (float64, bool) {
 		}
 		return 0, false
 	case "homeworks":
-		if len(d.homeworks) == 0 {
-			return 0, false
-		}
+		count := 0
 		for _, h := range d.homeworks {
+			if _, submitted := h.submissions[id]; !submitted && !h.item.AppliesTo(joinedAt) {
+				continue
+			}
 			if h.item.Total() > 0 {
 				total += float64(h.submissions[id].Score) / float64(h.item.Total()) * 100
+				count++
 			}
 		}
-		return total / float64(len(d.homeworks)), true
-	case "labs":
-		if len(d.labs) == 0 {
+		if count == 0 {
 			return 0, false
 		}
+		return total / float64(count), true
+	case "labs":
+		count := 0
 		for _, l := range d.labs {
+			if len(l.states[id].Tasks) == 0 && !l.item.AppliesTo(joinedAt) {
+				continue
+			}
 			value, _ := labScore(l.states[id], l.item.CourseID)
 			total += value
+			count++
 		}
-		return total / float64(len(d.labs)), true
+		if count == 0 {
+			return 0, false
+		}
+		return total / float64(count), true
 	case "attendance":
 		a := d.attendanceScore(id)
 		return a.score(), a.count() > 0

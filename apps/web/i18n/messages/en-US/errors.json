@@ -426,6 +426,7 @@
   "exports": {
     "invalid": "Invalid export settings. Check the weights or filename template.",
     "forbidden": "Only teachers can export their own classroom data.",
-    "not_found": "Classroom not found or not owned by this teacher."
+    "not_found": "Classroom not found or not owned by this teacher.",
+    "stale_preview": "Scores or the roster changed. Refresh the preview before finalizing."
   }
 }

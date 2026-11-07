@@ -15,8 +15,15 @@ import (
 
 type Module struct{ service *app.Service }
 
-func NewModule(s *app.Service) *Module              { return &Module{s} }
-func (m *Module) RegisterRoutes(g *gin.RouterGroup) { g.POST("/classrooms/:id/exports", m.Export) }
+func NewModule(s *app.Service) *Module { return &Module{s} }
+func (m *Module) RegisterRoutes(g *gin.RouterGroup) {
+	g.POST("/classrooms/:id/exports", m.Export)
+	g.POST("/classrooms/:id/grade-preview", m.GradePreview)
+	g.GET("/classrooms/:id/grade-records", m.GradeRecords)
+	g.POST("/classrooms/:id/grade-records", m.FinalizeGrades)
+	g.GET("/classrooms/:id/grade-records/:record_id", m.GradeRecord)
+	g.GET("/classrooms/:id/grade-records/:record_id/export", m.ExportGradeRecord)
+}
 
 type ClassroomExportRequest struct {
 	Kind                string             `json:"kind" binding:"required" enums:"homeworks,labs,attendance,performance,ai_activity,summary,reports"`
@@ -27,6 +34,10 @@ type ClassroomExportRequest struct {
 	Weights             map[string]float64 `json:"weights"`
 	FilenameTemplate    string             `json:"filenameTemplate"`
 	CourseID            string             `json:"courseID" enums:"L1,L2,L3"`
+}
+
+func (in ClassroomExportRequest) options() app.Options {
+	return app.Options{Kind: in.Kind, IncludeOngoing: in.IncludeOngoing, Weights: in.Weights, FilenameTemplate: in.FilenameTemplate, CourseID: in.CourseID, PerformanceRecordID: in.PerformanceRecordID, AIActivity: domain.AIActivityOptions{StartDate: in.AIActivityStartDate, EndDate: in.AIActivityEndDate}}
 }
 
 // Export godoc

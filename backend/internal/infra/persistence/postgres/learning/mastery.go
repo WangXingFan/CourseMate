@@ -58,13 +58,13 @@ func (r *Repo) MasteryEvidence(ctx context.Context, users []uint, classroomID ui
 		result = append(result, domain.MasteryEvidence{UserID: row.UserID, ConceptID: "lesson:" + lesson.ID, QuestionID: "course:" + item.QuestionID, Source: "course", Prompt: prompt, Correct: item.Score == item.Total, At: row.CreatedAt})
 	}
 	var submissions []struct {
-		ID                 uint
-		StudentID          uint
-		Questions, Answers string
-		CreatedAt          time.Time
+		ID                               uint
+		StudentID                        uint
+		Questions, Answers, FieldAnswers string
+		CreatedAt                        time.Time
 	}
 	query := r.db.WithContext(ctx).Table("classroom_quiz_submissions AS submissions").
-		Select("submissions.id, submissions.student_id, quizzes.questions, submissions.answers, submissions.created_at").
+		Select("submissions.id, submissions.student_id, quizzes.questions, submissions.answers, submissions.field_answers, submissions.created_at").
 		Joins("JOIN classroom_quizzes AS quizzes ON quizzes.id = submissions.quiz_id").
 		Scopes(masteryPeriodScope("submissions.created_at", period)).
 		Where("submissions.student_id IN ? AND quizzes.status = ?", users, "closed")
@@ -86,11 +86,20 @@ func (r *Repo) MasteryEvidence(ctx context.Context, users []uint, classroomID ui
 		if len(questions) != len(answers) {
 			return nil, fmt.Errorf("mastery quiz submission %d: answer count mismatch", row.ID)
 		}
+		var fields map[string]map[string]string
+		if err := json.Unmarshal([]byte(row.FieldAnswers), &fields); err != nil {
+			return nil, fmt.Errorf("mastery quiz submission %d fields: %w", row.ID, err)
+		}
+		submission := classdomain.QuizSubmission{Answers: answers, FieldAnswers: fields}
 		for i, q := range questions {
 			if domain.FindCourseLesson(q.LessonID) == nil {
 				continue
 			}
-			result = append(result, domain.MasteryEvidence{UserID: row.StudentID, ConceptID: "lesson:" + q.LessonID, QuestionID: "course:" + q.ID, Source: "classroom", Prompt: q.Prompt, Correct: answers[i] == q.Answer, At: row.CreatedAt})
+			score, total, valid := classdomain.QuizAnswerScore(submission, i, q)
+			if !valid {
+				return nil, fmt.Errorf("mastery quiz submission %d question %s: invalid answer", row.ID, q.ID)
+			}
+			result = append(result, domain.MasteryEvidence{UserID: row.StudentID, ConceptID: "lesson:" + q.LessonID, QuestionID: "course:" + q.ID, Source: "classroom", Prompt: q.Prompt, Correct: score == total, At: row.CreatedAt})
 		}
 	}
 	return result, nil

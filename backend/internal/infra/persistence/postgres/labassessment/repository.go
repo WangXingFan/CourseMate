@@ -17,7 +17,7 @@ type Repo struct{ db *gorm.DB }
 
 func NewRepo(db *gorm.DB) *Repo { return &Repo{db} }
 func assignment(row models.LabAssessment) domain.Assignment {
-	return domain.Assignment{ID: row.ID, ClassroomID: row.ClassroomID, CourseID: row.CourseID, Version: row.Version, TeacherID: row.TeacherID, Open: row.Open, StartsAt: row.StartsAt, Deadline: row.Deadline, CreatedAt: row.CreatedAt}
+	return domain.Assignment{ID: row.ID, ClassroomID: row.ClassroomID, CourseID: row.CourseID, Version: row.Version, TeacherID: row.TeacherID, Open: row.Open, StartsAt: row.StartsAt, Deadline: row.Deadline, ClosedAt: row.ClosedAt, CreatedAt: row.CreatedAt}
 }
 func (r *Repo) Create(ctx context.Context, a domain.Assignment) error {
 	row := models.LabAssessment{ID: a.ID, ClassroomID: a.ClassroomID, CourseID: a.CourseID, Version: a.Version, TeacherID: a.TeacherID, Open: a.Open, StartsAt: a.StartsAt, Deadline: a.Deadline, CreatedAt: a.CreatedAt}
@@ -48,7 +48,12 @@ func (r *Repo) Get(ctx context.Context, id string) (domain.Assignment, error) {
 	return assignment(row), err
 }
 func (r *Repo) SetOpen(ctx context.Context, id string, open bool) error {
-	return r.db.WithContext(ctx).Model(&models.LabAssessment{}).Where("id = ?", id).Update("open", open).Error
+	var closedAt *time.Time
+	if !open {
+		now := time.Now().UTC()
+		closedAt = &now
+	}
+	return r.db.WithContext(ctx).Model(&models.LabAssessment{}).Where("id = ? AND open <> ?", id, open).Updates(map[string]any{"open": open, "closed_at": closedAt}).Error
 }
 func decode(row models.LabAssessmentState) (domain.State, error) {
 	s := domain.State{AssignmentID: row.AssignmentID, UserID: row.UserID, Tasks: map[string]*domain.TaskState{}}

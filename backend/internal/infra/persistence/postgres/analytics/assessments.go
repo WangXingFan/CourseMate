@@ -15,6 +15,19 @@ import (
 const studentCountSQL = "(SELECT COUNT(*) FROM classroom_students m JOIN identity_users u ON u.id = m.student_id AND u.deleted_at IS NULL AND u.role = 'student' WHERE m.classroom_id = c.id)"
 const currentStudentsSQL = "JOIN identity_users u ON u.id = m.student_id AND u.deleted_at IS NULL AND u.role = 'student'"
 
+func (r *Repo) timestampSQL(column string) string {
+	if r.db.Dialector.Name() == "sqlite" {
+		return "julianday(" + column + ")"
+	}
+	return column
+}
+
+// Actual submissions remain evidence after re-enrollment; otherwise the task
+// must still have been available when the student joined the current roster.
+func (r *Repo) assessmentStudentsSQL(end, evidence string) string {
+	return "(SELECT COUNT(*) FROM classroom_students m JOIN identity_users u ON u.id = m.student_id AND u.deleted_at IS NULL AND u.role = 'student' WHERE m.classroom_id = c.id AND (" + end + " IS NULL OR " + r.timestampSQL("m.created_at") + " < " + r.timestampSQL(end) + " OR EXISTS (" + evidence + ")))"
+}
+
 // SQLite stores timestamps as text; normalize offsets for existing assignments.
 func (r *Repo) started(query *gorm.DB, column string) *gorm.DB {
 	if r.db.Dialector.Name() == "sqlite" {
@@ -42,7 +55,8 @@ func (r *Repo) homeworkStats(ctx context.Context, f domain.Filter) ([]domain.Ass
 	var assignments []assessmentRow
 	query := r.db.WithContext(ctx).Table("classroom_homeworks h").Joins("JOIN classrooms c ON c.id = h.classroom_id").Where("c.id IN (?)", r.classes(ctx, f))
 	query = r.started(query, "h.starts_at")
-	if err := query.Select("h.public_id AS id, c.public_id AS classroom_id, c.name AS classroom_name, h.bank_id AS item_key, h.title, " + studentCountSQL + " AS expected").Order("c.id, h.id").Scan(&assignments).Error; err != nil {
+	count := r.assessmentStudentsSQL("h.deadline", "SELECT 1 FROM classroom_homework_submissions e WHERE e.homework_id = h.id AND e.student_id = m.student_id")
+	if err := query.Select("h.public_id AS id, c.public_id AS classroom_id, c.name AS classroom_name, h.bank_id AS item_key, h.title, " + count + " AS expected").Order("c.id, h.id").Scan(&assignments).Error; err != nil {
 		return nil, err
 	}
 	items := assessmentRows(assignments)
@@ -76,7 +90,9 @@ func (r *Repo) labStats(ctx context.Context, f domain.Filter) ([]domain.Assessme
 	var assignments []assessmentRow
 	query := r.db.WithContext(ctx).Table("classroom_lab_assessments a").Joins("JOIN classrooms c ON c.public_id = a.classroom_id").Where("c.id IN (?)", r.classes(ctx, f))
 	query = r.started(query, "a.starts_at")
-	if err := query.Select("a.id, c.public_id AS classroom_id, c.name AS classroom_name, a.course_id AS item_key, a.course_id AS title, " + studentCountSQL + " AS expected").Order("c.id, a.course_id").Scan(&assignments).Error; err != nil {
+	end := "CASE WHEN a.open = false AND a.closed_at IS NOT NULL AND (a.deadline IS NULL OR " + r.timestampSQL("a.closed_at") + " < " + r.timestampSQL("a.deadline") + ") THEN a.closed_at ELSE a.deadline END"
+	count := r.assessmentStudentsSQL(end, "SELECT 1 FROM classroom_lab_assessment_states e WHERE e.assignment_id = a.id AND e.user_id = m.student_id")
+	if err := query.Select("a.id, c.public_id AS classroom_id, c.name AS classroom_name, a.course_id AS item_key, a.course_id AS title, " + count + " AS expected").Order("c.id, a.course_id").Scan(&assignments).Error; err != nil {
 		return nil, err
 	}
 	items := assessmentRows(assignments)

@@ -8,6 +8,9 @@ import (
 )
 
 type ClassroomRepository interface {
+	SaveGradeRecord(context.Context, domain.GradeRecord) error
+	ListGradeRecords(context.Context, uint) ([]domain.GradeRecord, error)
+	GetGradeRecord(context.Context, uint, string) (*domain.GradeRecord, error)
 	ListAIActivityEvents(context.Context, []uint, time.Time) ([]domain.AIActivityEvent, error)
 	SavePerformanceRecord(context.Context, domain.PerformanceRecord) error
 	ListPerformanceRecords(context.Context, uint) ([]domain.PerformanceRecord, error)

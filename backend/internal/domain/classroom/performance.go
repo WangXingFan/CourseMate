@@ -39,6 +39,7 @@ type PerformanceEvidence struct {
 }
 
 type PerformanceStudent struct {
+	JoinedAt      time.Time
 	UserID        uint
 	StudentID     string
 	Username      string
@@ -114,7 +115,7 @@ func BuildPerformance(classroomID string, roster []Student, inputs []Performance
 		}
 	}
 	for _, st := range roster {
-		row := PerformanceStudent{UserID: st.ID, StudentID: st.PublicID, Username: st.Username, Name: st.DisplayName, Status: "no_data", Stages: []PerformanceStage{}, Evidence: []PerformanceEvidence{}}
+		row := PerformanceStudent{JoinedAt: st.JoinedAt, UserID: st.ID, StudentID: st.PublicID, Username: st.Username, Name: st.DisplayName, Status: "no_data", Stages: []PerformanceStage{}, Evidence: []PerformanceEvidence{}}
 		stages := map[string]*PerformanceStage{}
 		for _, phase := range []string{QuizPhasePreClass, QuizPhaseInClass, QuizPhaseAfterClass} {
 			stages[phase] = &PerformanceStage{Phase: phase}

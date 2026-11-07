@@ -569,5 +569,55 @@
     "noData": "Not assessed",
     "noStudents": "No students in this class",
     "studentScope": "Current cumulative score · {weeks} completed assessment weeks"
+  },
+  "drafts": {
+    "saved": "Draft saved in this browser",
+    "restored": "Draft restored from this browser",
+    "unavailable": "Draft storage is unavailable. Keep this page open and submit your answers."
+  },
+  "dashboard": {
+    "profileError": "Unable to load your account. Please try again.",
+    "title": "My learning",
+    "tasks": "To do",
+    "refresh": "Refresh",
+    "loading": "Syncing tasks",
+    "empty": "No tasks to complete right now",
+    "unavailable": "Some tasks could not be loaded. Please try again.",
+    "startsAt": "Opens {time}",
+    "deadline": "Due {time}",
+    "labTitle": "Lab {course} · Assessment",
+    "reviewCount": "{count} questions due for review",
+    "resources": "Learning resources",
+    "knowledge": "Course notes",
+    "preview": "Before class",
+    "experiments": "Experiments",
+    "mastery": "Knowledge mastery",
+    "chat": "AI assistant",
+    "kinds": {
+      "attendance": "Attendance",
+      "quiz": "Class activity",
+      "homework": "Homework",
+      "lab": "Lab assessment",
+      "review": "Spaced review"
+    }
+  },
+  "gradeRecords": {
+    "title": "Finalized grade sheets",
+    "preview": "Preview and finalize",
+    "ongoing": "Finalization includes completed assessments only. Turn off “Include ongoing” first.",
+    "saved": "Grade sheet finalized",
+    "history": "Saved grade sheets",
+    "refresh": "Refresh",
+    "loading": "Loading saved grade sheets",
+    "empty": "No finalized grade sheets",
+    "download": "Download snapshot",
+    "confirmation": "This saves the current roster, weights, scores, and assessment evidence. The record cannot be edited; later adjustments require a new record.",
+    "student": "Student",
+    "final": "Final score",
+    "noData": "No applicable assessment",
+    "recordTitle": "Record title",
+    "close": "Close",
+    "refreshPreview": "Refresh preview",
+    "finalize": "Confirm finalization"
   }
 }

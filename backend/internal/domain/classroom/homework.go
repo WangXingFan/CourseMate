@@ -64,6 +64,11 @@ func (h Homework) Status(now time.Time) string {
 	return "open"
 }
 
+// AppliesTo excludes assignments that ended before the current enrollment.
+func (h Homework) AppliesTo(joinedAt time.Time) bool {
+	return joinedAt.IsZero() || h.Deadline.After(joinedAt)
+}
+
 func (h Homework) Total() int {
 	total := 0
 	for _, q := range h.Questions {

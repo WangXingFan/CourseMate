@@ -94,6 +94,52 @@ func TestExportAuthorizationAndWeights(t *testing.T) {
 	}
 }
 
+func TestEnrollmentEligibilityAndPriorEvidence(t *testing.T) {
+	joined := time.Date(2026, 11, 5, 12, 0, 0, 0, time.UTC)
+	before, after := joined.Add(-time.Hour), joined.Add(time.Hour)
+	for _, tc := range []struct {
+		name               string
+		deadline, closedAt *time.Time
+		open, eligible     bool
+	}{
+		{"deadline before joining", &before, nil, true, false},
+		{"deadline at joining", &joined, nil, true, false},
+		{"available after joining", &after, nil, true, true},
+		{"manual closure before joining", &after, &before, false, false},
+		{"closure at joining", nil, &joined, false, false},
+		{"deadline before later closure", &before, &after, false, false},
+		{"reopened", &after, &before, true, true},
+		{"legacy unknown closure", nil, nil, false, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			a := lab.Assignment{CourseID: "L1", Deadline: tc.deadline, ClosedAt: tc.closedAt, Open: tc.open}
+			if a.AppliesTo(joined) != tc.eligible {
+				t.Fatal("incorrect lab eligibility")
+			}
+			d := dataset{students: []class.Student{{ID: 1, JoinedAt: joined}}, labs: []labData{{item: a, states: map[uint]lab.State{}}}}
+			if _, ok := d.score(1, "labs"); ok != tc.eligible {
+				t.Fatal("incorrect lab denominator")
+			}
+			d.labs[0].states[1] = lab.State{Tasks: map[string]*lab.TaskState{"L1-1": {Correction: &lab.Correction{Score: 23}}}}
+			if value, ok := d.score(1, "labs"); !ok || value != 23 {
+				t.Fatalf("prior lab evidence lost: %v %v", value, ok)
+			}
+		})
+	}
+	d := dataset{students: []class.Student{{ID: 1, JoinedAt: joined}}, homeworks: []homeworkData{{item: class.Homework{Deadline: joined, Questions: []class.HomeworkQuestion{{Points: 100}}}, submissions: map[uint]class.HomeworkSubmission{}}}}
+	if _, ok := d.score(1, "homeworks"); ok {
+		t.Fatal("deadline at joining counted as missing submission")
+	}
+	d.homeworks[0].submissions[1] = class.HomeworkSubmission{Score: 80}
+	if value, ok := d.score(1, "homeworks"); !ok || value != 80 {
+		t.Fatal("prior homework evidence lost")
+	}
+	d.homeworks = append(d.homeworks, homeworkData{item: class.Homework{Deadline: after, Questions: []class.HomeworkQuestion{{Points: 100}}}})
+	if value, ok := d.score(1, "homeworks"); !ok || value != 40 {
+		t.Fatal("eligible missing submission was not zero")
+	}
+}
+
 func TestSummaryScoringAndAttendanceRoster(t *testing.T) {
 	now := time.Date(2026, 11, 5, 12, 0, 0, 0, time.UTC)
 	before, after := now.Add(-time.Hour), now.Add(time.Hour)

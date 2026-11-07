@@ -23,7 +23,7 @@ type NavigationCommandItem = NavigationItemBase & {
 };
 
 type NavigationLinkItem = NavigationItemBase & {
-  id: "recent" | "knowledgeBases" | "coursePreview" | "courseKnowledge" | "classrooms" | "rollCall" | "activities" | "homeworks" | "questionBank" | "learning" | "experiments" | "analytics" | "exports";
+  id: "dashboard" | "recent" | "knowledgeBases" | "coursePreview" | "courseKnowledge" | "classrooms" | "rollCall" | "activities" | "homeworks" | "questionBank" | "learning" | "experiments" | "analytics" | "exports";
   kind: "link";
   href: string;
 };

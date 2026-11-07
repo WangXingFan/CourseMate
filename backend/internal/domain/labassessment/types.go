@@ -86,6 +86,7 @@ type Assignment struct {
 	Open                               bool
 	StartsAt                           time.Time
 	Deadline                           *time.Time
+	ClosedAt                           *time.Time
 	CreatedAt                          time.Time
 }
 
@@ -94,6 +95,16 @@ func (a Assignment) Active(now time.Time) bool {
 }
 func (a Assignment) Final(now time.Time) bool {
 	return !a.Open || a.Deadline != nil && !now.Before(*a.Deadline)
+}
+func (a Assignment) AppliesTo(joinedAt time.Time) bool {
+	if joinedAt.IsZero() {
+		return true
+	}
+	end := a.Deadline
+	if !a.Open && a.ClosedAt != nil && (end == nil || a.ClosedAt.Before(*end)) {
+		end = a.ClosedAt
+	}
+	return end == nil || end.After(joinedAt)
 }
 func TaskIDs(course string) []string {
 	if course != "L1" && course != "L2" && course != "L3" {

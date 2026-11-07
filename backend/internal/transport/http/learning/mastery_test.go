@@ -64,7 +64,7 @@ func TestMasterySourcesAndClassroomIsolation(t *testing.T) {
 		if i == 2 {
 			classID = 2
 		}
-		questions, _ := json.Marshal([]classdomain.QuizQuestion{{ID: "snapshot-" + state + string(rune('a'+i)), LessonID: lesson.ID, Prompt: "snapshot prompt", Answer: 1}})
+		questions, _ := json.Marshal([]classdomain.QuizQuestion{{ID: "snapshot-" + state + string(rune('a'+i)), LessonID: lesson.ID, Prompt: "snapshot prompt", Options: []string{"wrong", "correct"}, Answer: 1}})
 		save(&models.ClassroomQuiz{ControlPlaneModel: models.ControlPlaneModel{ID: uint(i + 1)}, PublicID: uuid.NewString(), ClassroomID: classID, TeacherID: classID, Title: "Quiz", Status: state, Questions: string(questions)})
 		save(&models.ClassroomQuizSubmission{QuizID: uint(i + 1), StudentID: 3, Answers: "[0]", Score: 100, CreatedAt: now.Add(2 * time.Minute)})
 	}

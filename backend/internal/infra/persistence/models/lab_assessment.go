@@ -11,6 +11,7 @@ type LabAssessment struct {
 	Open        bool   `gorm:"not null"`
 	StartsAt    time.Time
 	Deadline    *time.Time
+	ClosedAt    *time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

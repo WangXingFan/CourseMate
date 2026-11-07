@@ -1456,6 +1456,56 @@ export interface GetKnowledgeBaseFileProcessingStatusesRequest {
   fileIDs: string[];
 }
 
+export interface GradeComponentResponse {
+  kind: string;
+  score?: number | null;
+}
+
+export interface GradeFinalizeRequest {
+  fingerprint: string;
+  options: ClassroomExportRequest;
+  /** @maxLength 120 */
+  title: string;
+}
+
+export interface GradePreviewResponse {
+  aiEndDate: string;
+  aiStartDate: string;
+  classroomId: string;
+  classroomName: string;
+  fingerprint: string;
+  generatedAt: string;
+  performanceRecordId: string;
+  students: GradeStudentResponse[];
+  version: string;
+  weights: Record<string, number>;
+}
+
+export interface GradeRecordInfoResponse {
+  createdAt: string;
+  id: string;
+  title: string;
+}
+
+export interface GradeRecordListResponse {
+  records: GradeRecordInfoResponse[];
+}
+
+export interface GradeRecordResponse {
+  createdAt: string;
+  id: string;
+  report: GradePreviewResponse;
+  title: string;
+}
+
+export interface GradeStudentResponse {
+  components: GradeComponentResponse[];
+  final?: number | null;
+  name: string;
+  studentId: string;
+  username: string;
+}
+
 export interface GroupModelsResponse {
   modelIDs: number[];
   rules: PermissionGroupModelRuleResponse[];
@@ -7403,6 +7453,113 @@ export namespace Classrooms {
     };
     export type RequestQuery = {};
     export type RequestBody = ClassroomExportRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = Blob;
+  }
+
+  /**
+   * No description
+   * @tags exports
+   * @name GradePreviewCreate
+   * @summary Preview a final classroom grade sheet
+   * @request POST:/classrooms/{id}/grade-preview
+   * @secure
+   */
+  export namespace GradePreviewCreate {
+    export type RequestParams = {
+      /** Owned classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ClassroomExportRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope & {
+      data?: GradePreviewResponse;
+    };
+  }
+
+  /**
+   * No description
+   * @tags exports
+   * @name GradeRecordsList
+   * @summary List finalized classroom grade sheets
+   * @request GET:/classrooms/{id}/grade-records
+   * @secure
+   */
+  export namespace GradeRecordsList {
+    export type RequestParams = {
+      /** Owned classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope & {
+      data?: GradeRecordListResponse;
+    };
+  }
+
+  /**
+   * No description
+   * @tags exports
+   * @name GradeRecordsCreate
+   * @summary Save an immutable classroom grade sheet and its evidence workbook
+   * @request POST:/classrooms/{id}/grade-records
+   * @secure
+   */
+  export namespace GradeRecordsCreate {
+    export type RequestParams = {
+      /** Owned classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = GradeFinalizeRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope & {
+      data?: GradeRecordResponse;
+    };
+  }
+
+  /**
+   * No description
+   * @tags exports
+   * @name GradeRecordsDetail
+   * @summary Read a finalized classroom grade sheet
+   * @request GET:/classrooms/{id}/grade-records/{record_id}
+   * @secure
+   */
+  export namespace GradeRecordsDetail {
+    export type RequestParams = {
+      /** Owned classroom ID */
+      id: string;
+      /** Grade record ID */
+      recordId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope & {
+      data?: GradeRecordResponse;
+    };
+  }
+
+  /**
+   * No description
+   * @tags exports
+   * @name GradeRecordsExportList
+   * @summary Download the original finalized grade workbook
+   * @request GET:/classrooms/{id}/grade-records/{record_id}/export
+   * @secure
+   */
+  export namespace GradeRecordsExportList {
+    export type RequestParams = {
+      /** Owned classroom ID */
+      id: string;
+      /** Grade record ID */
+      recordId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = Blob;
   }

@@ -188,4 +188,21 @@ func TestUsagePermissionsAndAggregation(t *testing.T) {
 	if got := get(1, ""); got.Homeworks[0].Expected != 1 || got.Homeworks[0].Completed != 0 || got.Labs[0].Started != 1 || got.Labs[0].Completed != 0 || got.Lessons[0].Answered != 0 {
 		t.Fatalf("current roster results: %+v", got)
 	}
+	// A task closed before enrollment is excluded unless personal evidence exists.
+	cutoff := now.Add(-2 * time.Hour)
+	if err := db.Model(&models.ClassroomHomework{}).Where("public_id = ?", "h").Update("deadline", cutoff).Error; err != nil {
+		t.Fatal(err)
+	}
+	if err := db.Model(&models.LabAssessment{}).Where("id = ?", "lab").Update("closed_at", cutoff).Error; err != nil {
+		t.Fatal(err)
+	}
+	if got := get(1, ""); got.Homeworks[0].Expected != 0 || got.Labs[0].Expected != 1 {
+		t.Fatalf("late enrollment: %+v %+v", got.Homeworks, got.Labs)
+	}
+	if err := db.Model(&models.ClassroomStudent{}).Where("student_id = ?", 3).Updates(map[string]any{"classroom_id": 1, "created_at": now}).Error; err != nil {
+		t.Fatal(err)
+	}
+	if got := get(1, ""); got.Homeworks[0].Expected != 1 || got.Homeworks[0].Completed != 1 || got.Labs[0].Expected != 2 {
+		t.Fatalf("returning student evidence: %+v %+v", got.Homeworks, got.Labs)
+	}
 }

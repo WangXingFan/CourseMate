@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { EXPORT_ITEMS, REPORT_COURSES, useExportCenter, type ExportKind } from "@/features/exports/hooks/use-export-center";
+import { GradeRecords } from "./sections/grade-records";
 import { useAuthSession } from "@/shared/auth/auth-session-context";
 
 export function ExportCenter() {
@@ -50,6 +51,7 @@ function ExportWorkspace({ accessToken }: { accessToken: string }) {
         <div className="mt-5 flex flex-wrap items-center justify-between gap-4"><p className="text-sm">{t("attendanceFormula")}</p>{downloadButton("summary", !m.validWeights)}</div>
         {!m.validWeights && <p role="status" className="mt-3 text-sm text-destructive">{t("invalidWeights")}</p>}
       </section>
+      <GradeRecords accessToken={accessToken} classroomID={m.classroomID} options={m.summaryOptions} disabled={disabled || !m.validWeights || (m.selected.ai_activity && !m.validAIDates) || (m.selected.performance && (m.recordsLoading || !!m.recordsError))} />
       <section aria-labelledby="export-reports" className="space-y-5 border-t border-border py-7"><div className="flex flex-wrap items-center justify-between gap-4"><h2 id="export-reports" className="font-display text-2xl font-normal">{t("items.reports")}</h2>{downloadButton("reports", !m.validTemplate)}</div>
         <label className="grid gap-2 text-sm"><span>{t("course")}</span><select className="h-9 w-full rounded-md border border-input bg-background px-3" value={m.courseID} disabled={!!m.pending} onChange={(event) => m.setCourseID(event.target.value)}>{REPORT_COURSES.map((item) => <option key={item.id} value={item.id}>{t(`courses.${item.id}`)}</option>)}</select></label>
         <label className="grid gap-2 text-sm"><span>{t("filename")}</span><Input value={m.template} maxLength={120} disabled={!!m.pending} onChange={(event) => m.setTemplate(event.target.value)} /></label>

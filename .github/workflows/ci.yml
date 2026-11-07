@@ -191,6 +191,10 @@ jobs:
         env:
           PLAYWRIGHT_PACKAGE_JSON: ${{ runner.temp }}/learning-browser/node_modules/playwright/package.json
         run: node apps/web/scripts/learning-chapter-quiz-smoke.mjs
+      - name: Learning dashboard, answer drafts and grade records UI smoke
+        env:
+          PLAYWRIGHT_PACKAGE_JSON: ${{ runner.temp }}/learning-browser/node_modules/playwright/package.json
+        run: node apps/web/scripts/learning-dashboard-smoke.mjs
       - name: Virtual lab UI smoke (accounts, persistence and teacher guide)
         env:
           PLAYWRIGHT_PACKAGE_JSON: ${{ runner.temp }}/learning-browser/node_modules/playwright/package.json
@@ -212,6 +216,7 @@ jobs:
             .cache/learning-p0-smoke
             .cache/classroom-preview-smoke
             .cache/chapter-quiz-smoke
+            .cache/dashboard-smoke
           if-no-files-found: ignore
       - name: Upload experiment and interactive output screenshots
         if: always()

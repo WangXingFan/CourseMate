@@ -3,7 +3,7 @@
 import { ArrowLeft, ArrowRight, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -17,15 +17,21 @@ export function StudentHomeworksEntry() {
   const t = useTranslations("classrooms.homework");
   if (userStatus === "loading") return <div className="m-auto"><Spinner className="size-5" /></div>;
   if (user?.role !== "student") return <main className="m-auto"><Button asChild variant="outline"><Link href="/classrooms">{t("teacherLink")}<ArrowRight className="size-4" /></Link></Button></main>;
-  return <StudentHomeworks key={user.publicID} accessToken={accessToken} />;
+  return <StudentHomeworks key={user.publicID} accessToken={accessToken} owner={user.publicID} />;
 }
 
-function StudentHomeworks({ accessToken }: { accessToken: string }) {
+function StudentHomeworks({ accessToken, owner }: { accessToken: string; owner: string }) {
   const t = useTranslations("classrooms.homework");
   const locale = useLocale();
-  const model = useClassroomStudentHomeworks(accessToken);
+  const model = useClassroomStudentHomeworks(accessToken, owner);
+  const drafts = useTranslations("classrooms.drafts");
   const [selectedID, setSelectedID] = useState("");
   const [confirming, setConfirming] = useState(false);
+  useEffect(() => {
+    const sync = () => setSelectedID(window.location.hash.slice(1));
+    sync(); window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
   const selected = model.data?.items.find((item) => item.id === selectedID);
   const canAnswer = !!selected && !selected.submission && model.now >= new Date(selected.startsAt).getTime() && model.now < new Date(selected.deadline).getTime() && selected.questions.length > 0;
   const date = (value: string) => new Date(value).toLocaleString(locale, { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
@@ -37,6 +43,7 @@ function StudentHomeworks({ accessToken }: { accessToken: string }) {
       {model.loading ? <Spinner className="size-5" /> : selected ? <>
         <Button variant="ghost" className="mb-6" onClick={() => setSelectedID("")}><ArrowLeft className="size-4" />{t("back")}</Button>
         <div className="mb-6 border-b border-border pb-6"><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="font-display text-2xl font-normal">{selected.title}</h2>{selected.submission ? <span role="status" className="border-l-2 border-primary pl-3 font-mono text-lg">{t("graded", { score: selected.submission.score, total: selected.total })}</span> : <span className="text-sm">{t("progress", { count: answered, total: selected.questionCount })}</span>}</div><p className="mt-4 text-sm">{t("deadline")}：{date(selected.deadline)}</p>{selected.submission && <p className="mt-2 text-sm">{t("submittedAt")}：{date(selected.submission.submittedAt)}</p>}</div>
+        {canAnswer && model.draftStatus && <p role="status" className="mb-4 text-sm">{drafts(model.draftStatus)}</p>}
         <HomeworkQuestions questions={selected.questions} answers={model.answers[selected.id]} submission={selected.submission} disabled={!canAnswer || !!model.pending} onAnswer={(question, blank, value) => model.setAnswer(selected.id, question, blank, value)} />
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border py-6"><p className="text-sm text-muted-foreground">{t(selected.submission ? "locked" : canAnswer ? "submitOnce" : "closed")}</p>{canAnswer && <Button disabled={!!model.pending || answered !== selected.questionCount} onClick={() => setConfirming(true)}>{t("submit")}</Button>}</div>
       </> : model.data?.items.length ? <div className="divide-y divide-border border-y border-border">{model.data.items.map((item) => {

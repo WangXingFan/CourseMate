@@ -336,6 +336,20 @@ func (s *Service) Report(ctx context.Context, actor uint, id string) (Report, er
 		return r, err
 	}
 	r.States, err = s.repo.States(ctx, id)
+	if err != nil {
+		return r, err
+	}
+	participated := map[uint]bool{}
+	for _, state := range r.States {
+		participated[state.UserID] = len(state.Tasks) > 0
+	}
+	eligible := r.Students[:0]
+	for _, student := range r.Students {
+		if a.AppliesTo(student.JoinedAt) || participated[student.ID] {
+			eligible = append(eligible, student)
+		}
+	}
+	r.Students = eligible
 	return r, err
 }
 func (s *Service) Preview(ctx context.Context, actor uint, id, task string) (domain.Paper, error) {

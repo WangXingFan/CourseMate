@@ -91,7 +91,7 @@ function StudentAttendanceCard({
   const { session, record } = item;
   const canCheckIn = session.open && !record.checkedAt && !record.corrections.length;
   return (
-    <article className="space-y-4 rounded-lg border border-border p-5">
+    <article id={`attendance-${session.id}`} ref={(node) => { if (node && window.location.hash === `#attendance-${session.id}`) node.scrollIntoView(); }} className="scroll-mt-4 space-y-4 rounded-lg border border-border p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="font-display text-xl font-normal">{session.title}</h3>
         <span className="text-sm">{t(canCheckIn ? "pending" : `statuses.${record.status}`)}</span>
