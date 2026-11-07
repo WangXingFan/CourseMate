@@ -87,7 +87,7 @@ try {
   page = await context.newPage();
   page.setDefaultTimeout(20000);
   page.on("pageerror", (error) => errors.push(error.message));
-  async function screenshot(name) { await page.screenshot({ path: join(artifacts, `${name}.png`) }); }
+  async function screenshot(name) { await page.screenshot({ path: join(artifacts, `${name}.png`), animations: "disabled" }); }
   async function noOverflow() { assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), "horizontal page overflow"); }
 
   await page.goto(`${base}/learn/workbench`);
@@ -122,8 +122,22 @@ try {
   await screenshot("diagnosis-desktop");
   await page.getByRole("button", { name: "最近作答", exact: true }).click();
   await page.getByText(`变式 ${reviewVariant.id} · 所选选项 ${String.fromCharCode(65+reviewVariant.answer)}`, { exact: true }).waitFor();
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 950 });
+    for (const dark of [false, true]) {
+      await page.evaluate((value) => document.documentElement.classList.toggle("dark", value), dark);
+      await noOverflow(); await screenshot(`history-${width}-${dark ? "dark" : "light"}`);
+    }
+  }
+  await page.evaluate(() => document.documentElement.classList.remove("dark"));
+  await page.setViewportSize({ width: 1360, height: 950 });
   await page.getByRole("button", { name: "变式复习", exact: true }).click();
-  await page.getByRole("heading", { name: reviewVariant.zh.prompt, exact: true }).waitFor();
+  const reviewPrompt = page.getByRole("heading", { level: 3, name: /严格上界 K 是多少？/ });
+  await reviewPrompt.waitFor();
+  await reviewPrompt.locator(".katex").first().waitFor();
+  assert.deepEqual(await reviewPrompt.locator(".katex annotation").allTextContents(), [
+    "H(s)=\\frac{1}{s^{3}+4s^{2}+5s+k}", "k>0", "0<k<K",
+  ]);
 
   await page.goto(`${base}/learn/knowledge?lesson=ss-1-1`);
   await page.getByRole("heading", { name: "1.1 信号的分类与基本量", exact: true }).waitFor();
