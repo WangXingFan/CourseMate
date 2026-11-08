@@ -85,6 +85,9 @@ func (s *Service) StudentHomeworks(ctx context.Context, actor uint) (*domain.Cla
 	}
 	views := make([]StudentHomework, 0, len(items))
 	for _, item := range items {
+		if item.Withdrawn {
+			continue
+		}
 		subs, err := s.repo.ListHomeworkSubmissions(ctx, item.ID, actor)
 		if err != nil {
 			return nil, nil, err
@@ -92,7 +95,9 @@ func (s *Service) StudentHomeworks(ctx context.Context, actor uint) (*domain.Cla
 		if len(subs) == 0 && !item.AppliesTo(joinedAt) {
 			continue
 		}
-		item.Questions = studentHomeworkQuestions(item)
+		if item.FeedbackAt == nil {
+			item.Questions = studentHomeworkQuestions(item)
+		}
 		view := StudentHomework{Homework: item}
 		if len(subs) > 0 {
 			view.Submission = &subs[0]
@@ -110,6 +115,7 @@ func studentHomeworkQuestions(item domain.Homework) []domain.HomeworkQuestion {
 		questions[i] = q
 		// Keep the blank count without keeping any answer text.
 		questions[i].Accepted = make([][]string, len(q.Accepted))
+		questions[i].Explanation = ""
 	}
 	return questions
 }
@@ -132,13 +138,20 @@ func (s *Service) studentHomework(ctx context.Context, actor uint, id string) (*
 	return item, nil
 }
 
-func (s *Service) SubmitHomework(ctx context.Context, actor uint, id string, answers [][]string) (*domain.HomeworkSubmission, error) {
+func (s *Service) SubmitHomework(ctx context.Context, actor uint, id string, answers [][]string, confirmBlank ...bool) (*domain.HomeworkSubmission, error) {
 	item, err := s.studentHomework(ctx, actor, id)
 	if err != nil {
 		return nil, err
 	}
 	if item.Status(time.Now()) != "open" {
 		return nil, ErrHomeworkWindow
+	}
+	for _, row := range answers {
+		for _, answer := range row {
+			if strings.TrimSpace(answer) == "" && (len(confirmBlank) == 0 || !confirmBlank[0]) {
+				return nil, ErrHomeworkAnswers
+			}
+		}
 	}
 	results, score, valid := domain.GradeHomework(item.Questions, answers)
 	if !valid {
@@ -161,6 +174,55 @@ func (s *Service) SubmitHomework(ctx context.Context, actor uint, id string, ans
 		return nil, err
 	}
 	return &subs[0], nil
+}
+
+func (s *Service) ManageHomework(ctx context.Context, actor uint, id, action string, deadline time.Time, reason string) error {
+	item, err := s.ownedHomework(ctx, actor, id)
+	if err != nil {
+		return err
+	}
+	reason = strings.TrimSpace(reason)
+	if reason == "" || len([]rune(reason)) > 500 {
+		return ErrHomeworkInvalid
+	}
+	err = s.repo.ManageHomework(ctx, item.ID, actor, action, deadline.UTC(), reason)
+	if errors.Is(err, repository.ErrInvalidInput) {
+		return ErrHomeworkInvalid
+	}
+	return err
+}
+
+func (s *Service) CorrectHomework(ctx context.Context, actor uint, id, studentID string, score int, reason string) error {
+	item, err := s.ownedHomework(ctx, actor, id)
+	if err != nil {
+		return err
+	}
+	reason = strings.TrimSpace(reason)
+	if score < 0 || score > item.Total() || reason == "" || len([]rune(reason)) > 500 {
+		return ErrHomeworkInvalid
+	}
+	err = s.repo.CorrectHomework(ctx, item.ID, actor, studentID, score, reason)
+	if errors.Is(err, repository.ErrNotFound) {
+		return ErrHomeworkNotFound
+	}
+	return err
+}
+
+func (s *Service) ownedHomework(ctx context.Context, actor uint, id string) (*domain.Homework, error) {
+	if err := s.teacher(ctx, actor); err != nil {
+		return nil, err
+	}
+	item, err := s.repo.GetHomework(ctx, id)
+	if errors.Is(err, repository.ErrNotFound) {
+		return nil, ErrHomeworkNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+	if item.TeacherID != actor {
+		return nil, ErrHomeworkNotFound
+	}
+	return item, nil
 }
 
 type HomeworkReport struct {

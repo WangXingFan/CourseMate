@@ -22,3 +22,5 @@ export { VirtualLabGuide } from "./components/experiments/virtual-lab-guide";
 export { PythonLabResources } from "./components/experiments/python-lab-resources";
 export { LearningLabAssessment } from "./components/experiments/learning-lab-assessment";
 export { LabAssessmentPaper, LabAssessmentResult } from "./components/experiments/lab-assessment-paper";
+export { ContinueLearning } from "./components/shared/continue-learning";
+export { RecommendedPractice } from "./components/shared/recommended-practice";

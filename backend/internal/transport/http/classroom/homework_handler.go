@@ -83,7 +83,7 @@ func (h *Handler) Homeworks(c *gin.Context) {
 }
 
 // StudentHomeworks godoc
-// @Summary 学生查看本班作业与个人成绩，不返回参考答案
+// @Summary 学生查看本班作业与个人成绩，教师发布解析后开放参考答案
 // @Tags classrooms
 // @Produce json
 // @Security BearerAuth
@@ -124,7 +124,7 @@ func (h *Handler) SubmitHomework(c *gin.Context) {
 		response.InvalidRequestBody(c, err)
 		return
 	}
-	sub, err := h.service.SubmitHomework(c.Request.Context(), middleware.MustUserID(c), c.Param("id"), req.Answers)
+	sub, err := h.service.SubmitHomework(c.Request.Context(), middleware.MustUserID(c), c.Param("id"), req.Answers, req.ConfirmBlank)
 	if err != nil {
 		h.writeError(c, err)
 		return

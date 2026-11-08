@@ -965,6 +965,15 @@ export interface ConversationUpdateResponseDoc {
   errorMsg: string;
 }
 
+export interface CopyQuizRequest {
+  /** @maxLength 64 */
+  classroomId: string;
+  /** @maxItems 500 */
+  studentIds: string[];
+  /** @maxLength 120 */
+  title: string;
+}
+
 export interface CreateClassroomRequest {
   /** @example "计算机基础课程行政班" */
   description: string;
@@ -1529,9 +1538,41 @@ export interface HomeworkBankResponse {
   papers: HomeworkPaperResponse[];
 }
 
+export interface HomeworkChangeResponse {
+  action: string;
+  at: string;
+  deadline: string;
+  previousDeadline: string;
+  reason: string;
+}
+
+export interface HomeworkCorrectRequest {
+  /** @maxLength 500 */
+  reason: string;
+  /**
+   * @min 0
+   * @max 1000
+   */
+  score: number;
+}
+
+export interface HomeworkCorrectionResponse {
+  at: string;
+  before: number;
+  reason: string;
+  score: number;
+}
+
 export interface HomeworkListResponse {
   items: HomeworkResponse[];
   serverTime: string;
+}
+
+export interface HomeworkManageRequest {
+  action: "extend" | "withdraw" | "release";
+  deadline?: string;
+  /** @maxLength 500 */
+  reason: string;
 }
 
 export interface HomeworkPaperResponse {
@@ -1551,6 +1592,7 @@ export interface HomeworkPublishRequest {
 export interface HomeworkQuestionResponse {
   accepted?: string[][];
   blankCount: number;
+  explanation?: string;
   id: string;
   kind: string;
   options: string[];
@@ -1566,7 +1608,9 @@ export interface HomeworkReportResponse {
 
 export interface HomeworkResponse {
   bankId: string;
+  changes: HomeworkChangeResponse[];
   deadline: string;
+  feedbackReleased: boolean;
   id: string;
   questionCount: number;
   questions: HomeworkQuestionResponse[];
@@ -1587,6 +1631,8 @@ export interface HomeworkResultResponse {
 
 export interface HomeworkSubmissionResponse {
   answers: string[][];
+  corrections: HomeworkCorrectionResponse[];
+  originalScore: number;
   results: HomeworkResultResponse[];
   score: number;
   studentId: string;
@@ -1601,6 +1647,7 @@ export interface HomeworkSubmitRequest {
    * @minItems 1
    */
   answers: string[][];
+  confirmBlank: boolean;
 }
 
 export interface IdentityProviderDeleteResponse {
@@ -1901,7 +1948,9 @@ export interface LabAssignmentResponse {
   courseId: string;
   deadline?: string | null;
   id: string;
+  inProgress?: boolean;
   open: boolean;
+  pendingTaskId?: string;
   startsAt: string;
   version: string;
 }
@@ -2059,6 +2108,46 @@ export interface LearningAttemptResponse {
   variantId: string;
 }
 
+export interface LearningCorrectionField {
+  id: string;
+  label: string;
+  unit: string;
+}
+
+export interface LearningCorrectionResponse {
+  at: string;
+  conceptId: string;
+  fields: LearningCorrectionField[];
+  formula: string;
+  id: string;
+  lessonId: string;
+  nextReviewAt?: string | null;
+  options: string[];
+  originHref: string;
+  originalAnswers: Record<string, string>;
+  prompt: string;
+  reviewDue: boolean;
+  reviewStage: number;
+  source: string;
+  title: string;
+}
+
+export interface LearningCorrectionResultResponse {
+  attempt: LearningLessonAttemptResponse;
+  nextReviewAt?: string | null;
+  reviewStage: number;
+}
+
+export interface LearningCorrectionSubmitRequest {
+  answers: Record<string, string>;
+  correctionId: string;
+  id: string;
+}
+
+export interface LearningCorrectionsResponse {
+  items: LearningCorrectionResponse[];
+}
+
 export interface LearningCourseField {
   id: string;
   label: string;
@@ -2100,6 +2189,15 @@ export interface LearningCourseResponse {
   sourceName: string;
   title: string;
   version: string;
+}
+
+export interface LearningCourseSearchResponse {
+  items: LearningCourseSearchResult[];
+}
+
+export interface LearningCourseSearchResult {
+  id: string;
+  snippet: string;
 }
 
 export interface LearningLessonAttemptRequest {
@@ -3411,10 +3509,12 @@ export interface QuizResponse {
   id: string;
   openedAt: string;
   phase: string;
+  purpose: string;
   questions: QuizQuestionResponse[];
   sourceQuizId: string;
   status: string;
   submissionCount: number;
+  targetCount: number;
   title: string;
 }
 
@@ -3469,6 +3569,27 @@ export interface QuizSubmissionResultResponse {
 export interface RefreshTokenResponseDoc {
   data: LoginResponse;
   errorMsg: string;
+}
+
+export interface RemediationBankResponse {
+  questions: QuizQuestionResponse[];
+}
+
+export interface RemediationRequest {
+  /** @maxLength 64 */
+  conceptId: string;
+  /**
+   * @maxItems 10
+   * @minItems 1
+   */
+  questionIds: string[];
+  /**
+   * @maxItems 500
+   * @minItems 1
+   */
+  studentIds: string[];
+  /** @maxLength 120 */
+  title: string;
 }
 
 export interface RenameConversationRequest {
@@ -3703,6 +3824,7 @@ export interface StudentQuizResponse {
   id: string;
   openedAt: string;
   phase: string;
+  purpose: string;
   questions: StudentQuizQuestionResponse[];
   score: number;
   sourceQuizId: string;
@@ -7846,6 +7968,47 @@ export namespace Classrooms {
   }
 
   /**
+   * No description
+   * @tags classrooms
+   * @name RemediationBankList
+   * @summary 教师预览知识点巩固题及解析
+   * @request GET:/classrooms/{id}/remediation-bank
+   * @secure
+   */
+  export namespace RemediationBankList {
+    export type RequestParams = {
+      /** 班级 ID */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** 知识点 ID */
+      conceptId: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = RemediationBankResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name RemediationsCreate
+   * @summary 为指定学生创建巩固任务草稿
+   * @request POST:/classrooms/{id}/remediations
+   * @secure
+   */
+  export namespace RemediationsCreate {
+    export type RequestParams = {
+      /** 班级 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = RemediationRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = QuizDataResponse;
+  }
+
+  /**
    * @description 教师查询自己的班级成员，管理员可查看全部班级成员。
    * @tags classrooms
    * @name StudentsList
@@ -8642,6 +8805,25 @@ export namespace Homeworks {
   /**
    * No description
    * @tags classrooms
+   * @name ManageCreate
+   * @summary 延期、撤回无提交的作业，或截止后发布解析
+   * @request POST:/homeworks/{id}/manage
+   * @secure
+   */
+  export namespace ManageCreate {
+    export type RequestParams = {
+      /** 作业 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = HomeworkManageRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
    * @name ReportList
    * @summary 教师查看作业成绩与逐题提交记录
    * @request GET:/homeworks/{id}/report
@@ -8656,6 +8838,27 @@ export namespace Homeworks {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = HomeworkReportResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name StudentsCorrectionsCreate
+   * @summary 教师更正作业分数，保留原始答卷与历次更正
+   * @request POST:/homeworks/{id}/students/{student_id}/corrections
+   * @secure
+   */
+  export namespace StudentsCorrectionsCreate {
+    export type RequestParams = {
+      /** 作业 ID */
+      id: string;
+      /** 学生 ID */
+      studentId: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = HomeworkCorrectRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
   }
 
   /**
@@ -9066,6 +9269,38 @@ export namespace Learning {
   /**
    * No description
    * @tags learning
+   * @name CorrectionAttemptsCreate
+   * @summary 订正并安排间隔复习，不改变正式成绩
+   * @request POST:/learning/correction-attempts
+   * @secure
+   */
+  export namespace CorrectionAttemptsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = LearningCorrectionSubmitRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningCorrectionResultResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name CorrectionsList
+   * @summary 学生查看已开放订正的作业、课堂测验与自主练习错题
+   * @request GET:/learning/corrections
+   * @secure
+   */
+  export namespace CorrectionsList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningCorrectionsResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
    * @name CourseList
    * @summary Read the course catalog; standalone practice is limited to teaching previews
    * @request GET:/learning/course
@@ -9077,6 +9312,25 @@ export namespace Learning {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = LearningCourseResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name CourseSearchList
+   * @summary 搜索课程标题与讲义正文，不包含评分答案
+   * @request GET:/learning/course/search
+   * @secure
+   */
+  export namespace CourseSearchList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** 关键词 */
+      q: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningCourseSearchResponse;
   }
 
   /**
@@ -10024,6 +10278,25 @@ export namespace Quizzes {
   }
 
   /**
+   * No description
+   * @tags classrooms
+   * @name CopyCreate
+   * @summary 将题目快照复制到本人其他班级，生成独立草稿
+   * @request POST:/quizzes/{id}/copy
+   * @secure
+   */
+  export namespace CopyCreate {
+    export type RequestParams = {
+      /** 活动 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = CopyQuizRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = QuizDataResponse;
+  }
+
+  /**
    * @description 每份预习测或课中练习最多关联一份复测，重复请求返回同一份；题目使用创建预习测或课中练习时保存的变式快照。
    * @tags classrooms
    * @name FollowupCreate
@@ -10239,7 +10512,7 @@ export namespace Student {
    * No description
    * @tags classrooms
    * @name HomeworksList
-   * @summary 学生查看本班作业与个人成绩，不返回参考答案
+   * @summary 学生查看本班作业与个人成绩，教师发布解析后开放参考答案
    * @request GET:/student/homeworks
    * @secure
    */

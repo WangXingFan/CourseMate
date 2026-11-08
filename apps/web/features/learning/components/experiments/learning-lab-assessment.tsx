@@ -32,6 +32,7 @@ function AssessmentWorkspace({ accessToken, accountID }: { accessToken: string; 
   const model = useLearningLabAssessment(accessToken, course);
   const task = model.data?.tasks.find((item) => item.id === taskID);
   const active = !!model.data?.assignment.active;
+  const scheduled = !!model.data?.assignment.open && Date.parse(model.data.assignment.startsAt) > Date.now();
   const latest = task?.attempts.at(-1);
   const unfinished = latest && !latest.submittedAt;
   return <LessonShell title={t("title")}>
@@ -44,7 +45,7 @@ function AssessmentWorkspace({ accessToken, accountID }: { accessToken: string; 
     {model.loading ? <Spinner /> : !model.data ? <p className="text-sm">{t("unpublished")}</p> : <>
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-y border-border py-5">
         <p className="text-sm">{t("courseScore")} <span className="ml-3 font-display text-3xl">{model.data.total}<span className="text-lg text-muted-foreground"> /100</span></span></p>
-        <div className="space-y-1 text-sm text-muted-foreground"><p>{t(active ? "open" : "closed")}</p><p>{t("startsAt")} {new Date(model.data.assignment.startsAt).toLocaleString()}</p><p>{t("deadline")} {model.data.assignment.deadline ? new Date(model.data.assignment.deadline).toLocaleString() : t("noDeadline")}</p></div>
+        <div className="space-y-1 text-sm text-muted-foreground"><p>{t(scheduled ? "scheduled" : active ? "open" : "closed")}</p><p>{t("startsAt")} {new Date(model.data.assignment.startsAt).toLocaleString()}</p><p>{t("deadline")} {model.data.assignment.deadline ? new Date(model.data.assignment.deadline).toLocaleString() : t("noDeadline")}</p></div>
       </div>
       <nav className="mb-7 grid gap-2 sm:grid-cols-2" aria-label={t("task")}>{model.data.tasks.map((item) => <a key={item.id} href={`#${item.id}`} aria-current={taskID === item.id ? "page" : undefined} className={`flex items-center justify-between gap-3 border-b border-border px-3 py-4 text-sm ${taskID === item.id ? "bg-accent shadow-[inset_2px_0_0_var(--primary)]" : "hover:bg-accent/50"}`}><span>{item.id} · {item.title}</span><span className="shrink-0 font-mono">{item.total}/25</span></a>)}</nav>
       {task && <section key={`${model.data.assignment.id}:${taskID}`} className="space-y-7">

@@ -19,7 +19,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestHomeworkHTTPWithDatabase(t *testing.T) {
+type homeworkRequest func(uint, string, string, any, int) *httptest.ResponseRecorder
+
+func homeworkHTTPFixture(t *testing.T) (*gorm.DB, homeworkRequest) {
+	t.Helper()
 	db, err := gorm.Open(sqlite.Open(filepath.Join(t.TempDir(), "homework.db")), &gorm.Config{})
 	if err != nil {
 		t.Fatal(err)
@@ -73,6 +76,11 @@ func TestHomeworkHTTPWithDatabase(t *testing.T) {
 		}
 		return r
 	}
+	return db, request
+}
+
+func TestHomeworkHTTPWithDatabase(t *testing.T) {
+	db, request := homeworkHTTPFixture(t)
 	request(4, "GET", "/classrooms/class/homework-bank", nil, 403)
 	request(2, "GET", "/classrooms/class/homework-bank", nil, 404)
 	request(1, "GET", "/classrooms/class/homework-bank", nil, 200)

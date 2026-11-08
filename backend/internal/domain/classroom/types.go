@@ -73,23 +73,37 @@ type QuizLesson struct {
 }
 
 type Quiz struct {
-	ID              uint
-	PublicID        string
-	ClassroomID     uint
-	TeacherID       uint
-	Title           string
-	SourceQuizID    string
-	Phase           string
-	Status          string
-	Questions       []QuizQuestion
-	CreatedAt       time.Time
-	OpenedAt        *time.Time
-	ClosedAt        *time.Time
-	SubmissionCount int64
-	Submitted       bool
-	Score           int
-	FieldAnswers    map[string]map[string]string
-	Answers         []int
+	Purpose          string
+	TargetStudentIDs []uint
+	ID               uint
+	PublicID         string
+	ClassroomID      uint
+	TeacherID        uint
+	Title            string
+	SourceQuizID     string
+	Phase            string
+	Status           string
+	Questions        []QuizQuestion
+	CreatedAt        time.Time
+	OpenedAt         *time.Time
+	ClosedAt         *time.Time
+	SubmissionCount  int64
+	Submitted        bool
+	Score            int
+	FieldAnswers     map[string]map[string]string
+	Answers          []int
+}
+
+func (q Quiz) AssignedTo(studentID uint) bool {
+	if q.Purpose != "remediation" {
+		return true
+	}
+	for _, id := range q.TargetStudentIDs {
+		if id == studentID {
+			return true
+		}
+	}
+	return false
 }
 
 type QuizSubmission struct {

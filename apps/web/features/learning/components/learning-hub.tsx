@@ -8,6 +8,7 @@ import { useRef, useState } from "react";
 
 import { LEARNING_TOPICS, type LearningTopic } from "@/features/learning/model/learning-topics";
 import { cn } from "@/lib/utils";
+import { ContinueLearning } from "./shared/continue-learning";
 
 type LearningPath = "concepts" | "practice" | "tools";
 
@@ -50,6 +51,7 @@ export function LearningHub() {
             </Link>
           </div>
 
+          <ContinueLearning />
           <div role="tablist" aria-label={t("hub.paths.label")} className="flex gap-5 sm:gap-8">
             {PATHS.map((path) => {
               const Icon = path.icon;

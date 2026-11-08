@@ -55,6 +55,8 @@ export type ClassroomQuizQuestionDTO = {
 };
 
 export type ClassroomQuizDTO = {
+  purpose: string;
+  targetCount: number;
   id: string;
   title: string;
   sourceQuizId: string;
@@ -123,6 +125,7 @@ export type StudentClassroomQuizQuestionDTO = {
 };
 
 export type StudentClassroomQuizDTO = {
+  purpose: string;
   sourceQuizId: string;
   fieldAnswers: Record<string, Record<string, string>> | null;
   id: string;

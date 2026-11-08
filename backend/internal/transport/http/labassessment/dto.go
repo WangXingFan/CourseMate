@@ -6,14 +6,16 @@ import (
 )
 
 type LabAssignmentResponse struct {
-	ID          string     `json:"id"`
-	ClassroomID string     `json:"classroomId"`
-	CourseID    string     `json:"courseId"`
-	Version     string     `json:"version"`
-	Open        bool       `json:"open"`
-	Active      bool       `json:"active"`
-	StartsAt    time.Time  `json:"startsAt"`
-	Deadline    *time.Time `json:"deadline" extensions:"x-nullable"`
+	PendingTaskID string     `json:"pendingTaskId,omitempty"`
+	InProgress    bool       `json:"inProgress,omitempty"`
+	ID            string     `json:"id"`
+	ClassroomID   string     `json:"classroomId"`
+	CourseID      string     `json:"courseId"`
+	Version       string     `json:"version"`
+	Open          bool       `json:"open"`
+	Active        bool       `json:"active"`
+	StartsAt      time.Time  `json:"startsAt"`
+	Deadline      *time.Time `json:"deadline" extensions:"x-nullable"`
 }
 type LabAssignmentsResponse struct {
 	Items []LabAssignmentResponse `json:"items"`

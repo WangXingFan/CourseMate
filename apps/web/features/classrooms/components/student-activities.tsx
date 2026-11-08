@@ -166,6 +166,7 @@ function QuizCard({
 }) {
   const t = useTranslations("classrooms.activities");
   const studentT = useTranslations("classrooms.activities.student");
+  const continuityT = useTranslations("classrooms.continuity");
   const total = quiz.questions.length;
   const scoreTotal = quiz.questions.reduce((sum, q) => sum + Math.max(1, q.fields.length), 0);
 
@@ -176,7 +177,7 @@ function QuizCard({
           <div className="flex flex-wrap items-center gap-1.5">
             <h2 className="font-display text-xl font-normal text-foreground">{quiz.title}</h2>
             <Badge variant="outline" className="rounded-md text-xs font-normal">
-              {t(quiz.sourceQuizId ? "followupLabel" : `phase.${quiz.phase}`)}
+              {quiz.purpose === "remediation" ? continuityT("remediationLabel") : t(quiz.sourceQuizId ? "followupLabel" : `phase.${quiz.phase}`)}
             </Badge>
             <Badge variant="outline" className="rounded-md text-xs font-normal">
               {t(`status.${quiz.status}`)}

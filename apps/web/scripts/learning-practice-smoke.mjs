@@ -37,7 +37,7 @@ func main() {
  gin.SetMode(gin.TestMode)
  db, err := gorm.Open(sqlite.Open(os.Args[1]), &gorm.Config{})
  if err != nil { panic(err) }
- if err = db.AutoMigrate(&models.LearningAttempt{}, &models.LearningLessonAttempt{}, &models.ClassroomQuiz{}, &models.ClassroomQuizSubmission{}); err != nil { panic(err) }
+ if err = db.AutoMigrate(&models.LearningAttempt{}, &models.LearningLessonAttempt{}, &models.ClassroomQuiz{}, &models.ClassroomQuizSubmission{}, &models.ClassroomHomework{}, &models.ClassroomHomeworkSubmission{}); err != nil { panic(err) }
  service := app.NewService(repo.NewRepo(db))
  q := domain.FindPracticeBank("topic:time-constant", "zh-CN").Questions[0]
  if _, err = service.SubmitPractice(context.Background(), 1, uuid.NewString(), "topic:time-constant", q.ID, "zh-CN", map[string]string{"choice":strconv.Itoa((q.Answer+1)%4)}); err != nil { panic(err) }
@@ -94,6 +94,7 @@ try {
     let data;
     if (url.pathname.endsWith("/auth/refresh")) data = { accessToken: "practice-qa", sessionID: "practice-qa" };
     else if (url.pathname.endsWith("/me")) data = { user };
+    else if (url.pathname.endsWith("/models")) data = [];
     else if (url.pathname.endsWith("/capabilities")) data = { features: { knowledgeBases: true, classrooms: true } };
     else if (url.pathname.endsWith("/branding")) data = { title: "CourseMate", shortName: "CourseMate", logoURL: "", faviconURL: "/favicon.ico" };
     else if (url.pathname.endsWith("/version")) { await route.fulfill({ json: { version: "0.4.4-beta.3", buildID: "" } }); return; }
@@ -125,6 +126,7 @@ try {
     }
     await current().getByText(correct ? "回答正确" : "回答有误", { exact: true }).waitFor();
   }
+  if (!process.env.CONTINUITY_ONLY) {
   await page.goto(`${base}/learn/mastery`);
   const concept = page.locator('[data-mastery-concept="topic:time-constant"]');
   await concept.getByText("需要巩固", { exact: true }).waitFor();
@@ -181,9 +183,49 @@ try {
   await page.getByRole("button", { name: "重新提交", exact: true }).click();
   await current().getByText("回答正确", { exact: true }).waitFor();
   await screenshots("numeric");
+  }
+  // Corrections retain mistakes after a later successful independent practice.
+  await page.goto(`${base}/learn/progress?source=practice`);
+  await page.getByRole("heading", { name: "订正与间隔复习", exact: true }).waitFor();
+  assert.equal(await page.getByLabel("题目来源").inputValue(), "practice");
+  await page.getByRole("button", { name: "开始订正", exact: true }).first().click();
+  const correction = page.getByRole("dialog");
+  await correction.getByRole("radio").first().check();
+  await correction.getByRole("button", { name: "提交订正", exact: true }).click();
+  await correction.getByRole("button", { name: "向 AI 提问", exact: true }).waitFor();
+  await screenshots("correction");
+  await correction.getByRole("button", { name: "关闭", exact: true }).first().click();
+  await page.goto(`${base}/learn/knowledge?lesson=ss-2-5`);
+  await page.locator("#lesson-reading").waitFor();
+  await page.getByRole("button", { name: "收藏讲义", exact: true }).click();
+  await page.getByRole("button", { name: "取消收藏", exact: true }).waitFor();
+  assert.equal(await page.getByRole("link", { name: "相关实验", exact: true }).getAttribute("href"), "/learn/experiments/workspace#task/L1-4");
+  await page.locator("#lesson-reading").evaluate((node) => { for (let element=node; element; element=element.parentElement) if (getComputedStyle(element).overflowY === "auto" && element.scrollHeight > element.clientHeight) {element.scrollTop=450;break;} });
+  await page.waitForFunction(() => Object.keys(localStorage).some((key) => key.startsWith("coursemate.reading.v1:") && JSON.parse(localStorage.getItem(key)).positions["ss-2-5"] >= 400));
+  await page.reload();
+  await page.locator("#lesson-reading").waitFor();
+  await page.waitForFunction(() => { for (let element=document.querySelector("#lesson-reading"); element; element=element.parentElement) if (getComputedStyle(element).overflowY === "auto" && element.scrollTop > 300) return true; return false; });
+  await page.getByPlaceholder("搜索讲义标题或正文").fill("卷积");
+  await page.getByText("正在加载…", { exact: true }).waitFor({state:"hidden"});
+  await page.getByRole("navigation", {name:"小节目录"}).getByRole("link").first().waitFor();
+  await page.getByRole("button", { name:"仅看收藏", exact:true }).click();
+  assert.equal(await page.getByRole("navigation", {name:"小节目录"}).getByRole("link").count(),1);
+  await screenshots("reading");
+  await page.evaluate(() => localStorage.setItem("deeix-chat:chat-composer:v2:practice-qa",JSON.stringify({__new__:{draft:"原有草稿",attachments:[],updatedAt:new Date().toISOString()}})));
+  await page.getByRole("button", {name:"向 AI 提问",exact:true}).click();
+  const help=page.getByRole("dialog");
+  await help.getByRole("textbox").fill("请结合卷积解释这段内容");
+  await help.getByRole("button", {name:"带入聊天继续提问",exact:true}).click();
+  await page.waitForURL("**/chat?learning=*");
+  await page.getByRole("link", {name:/卷积/}).last().waitFor();
+  assert.ok(await page.locator("textarea").evaluateAll((items)=>items.some((item)=>item.value.includes("请结合卷积解释这段内容"))));
+  assert.ok(await page.locator("textarea").evaluateAll((items)=>items.some((item)=>item.value.includes("原有草稿"))));
+  assert.equal(await page.evaluate(()=>Object.keys(sessionStorage).filter((key)=>key.startsWith("coursemate.learning-help:")).length),0);
+  await screenshots("learning-chat");
   assert.deepEqual(errors, []);
-  console.log("PASS: 80 banks, mastery entry/update, mixed questions, 10-question round, saved-response retry, mistake replay, persisted filters, numeric validation and fraction grading, mobile/desktop/light/dark.");
+  console.log(process.env.CONTINUITY_ONLY ? "PASS: corrections, source filter, bookmarks, reading position, body search, related experiment, AI handoff and existing draft preservation; mobile/desktop/light/dark." : "PASS: practice bank flows, corrections, reading continuity and AI handoff; mobile/desktop/light/dark.");
 } catch (error) {
+  console.error(errors);
   if (page) await page.screenshot({ path: join(artifacts, "failure.png") });
   throw error;
 } finally {

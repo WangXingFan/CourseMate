@@ -89,19 +89,23 @@ type LessonFieldResult struct {
 }
 
 type LessonAttempt struct {
-	ID          string
-	UserID      uint
-	Version     string
-	ConceptID   string
-	LessonID    string
-	QuestionID  string
-	Stage       string
-	Answers     map[string]string
-	Score       int
-	Total       int
-	Results     []LessonFieldResult
-	Explanation string
-	CreatedAt   time.Time
+	EvidenceID   string
+	ReviewStage  int
+	NextReviewAt *time.Time
+	SourceAt     time.Time
+	ID           string
+	UserID       uint
+	Version      string
+	ConceptID    string
+	LessonID     string
+	QuestionID   string
+	Stage        string
+	Answers      map[string]string
+	Score        int
+	Total        int
+	Results      []LessonFieldResult
+	Explanation  string
+	CreatedAt    time.Time
 }
 
 // ParseCourseNumber accepts decimal/scientific numbers and one numeric fraction.

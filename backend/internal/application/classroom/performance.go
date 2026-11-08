@@ -55,6 +55,9 @@ func (s *Service) Performance(ctx context.Context, actor uint, id string, option
 	inputs := []domain.PerformanceInput{}
 	now := time.Now()
 	for _, q := range quizzes {
+		if q.Purpose == "remediation" {
+			continue
+		}
 		if len(selected) > 0 && !selected[q.PublicID] {
 			continue
 		}

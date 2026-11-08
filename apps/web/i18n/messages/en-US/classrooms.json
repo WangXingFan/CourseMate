@@ -400,7 +400,8 @@
     "status": {
       "scheduled": "Not started",
       "open": "Open",
-      "closed": "Closed"
+      "closed": "Closed",
+      "withdrawn": "Withdrawn"
     },
     "kind": {
       "single": "Single choice",
@@ -599,7 +600,20 @@
       "homework": "Homework",
       "lab": "Lab assessment",
       "review": "Spaced review"
-    }
+    },
+    "notJoined": "You have not joined a class yet. Ask your teacher to add your account.",
+    "joinClass": "View class status",
+    "selfStudy": "You can read lessons or practise independently.",
+    "unassigned": "Your teacher has not assigned learning tasks yet. Explore the resources to get started.",
+    "states": {
+      "all": "All tasks",
+      "open": "To do",
+      "scheduled": "Not started",
+      "inProgress": "In progress",
+      "overdue": "Overdue, not submitted"
+    },
+    "filter": "Task status",
+    "filteredEmpty": "No tasks have this status."
   },
   "gradeRecords": {
     "title": "Finalized grade sheets",
@@ -619,5 +633,46 @@
     "close": "Close",
     "refreshPreview": "Refresh preview",
     "finalize": "Confirm finalization"
+  },
+  "continuity": {
+    "correct": "Correct score",
+    "extend": "Extend deadline",
+    "withdraw": "Withdraw homework",
+    "release": "Release answers and explanations",
+    "released": "Feedback released",
+    "changes": "Operation history",
+    "newDeadline": "New deadline",
+    "score": "Corrected score",
+    "reason": "Reason (kept in the history)",
+    "confirm": "Confirm",
+    "extendConsequence": "Students who have not submitted can continue until the new deadline. Existing submissions and scores are preserved. Deadlines cannot be extended after feedback is released.",
+    "withdrawConsequence": "Only homework with no submissions can be withdrawn. It will be removed from student tasks and grade calculations; the teacher can still view its history.",
+    "releaseConsequence": "Students will be able to view answers, explanations and correct their mistakes. This cannot be undone, and submissions cannot be reopened afterward.",
+    "correctConsequence": "This updates the official score and future exports. Original answers, automatic grading and every correction reason are retained.",
+    "originalScore": "Original automatic score: {score}",
+    "blankConfirmation": "{count} questions are not fully answered. Blank parts receive 0 points. Submissions cannot be edited. Continue?",
+    "corrections": "Go to corrections and review",
+    "feedbackPending": "Answers and explanations will be available when the teacher releases feedback. You can then correct mistakes in the review area.",
+    "readOnlyDraft": "The deadline has passed. Your unsubmitted draft is preserved on this device for reference and is currently read-only.",
+    "remediationTitle": "{title} · Follow-up practice",
+    "remediate": "Assign follow-up practice",
+    "remediationLabel": "Targeted practice",
+    "loading": "Loading…",
+    "remediationPublished": "The task is available to the selected students in Class Activities. View its report or close the task there.",
+    "remediationResults": "Refresh results",
+    "resultCounts": "Submitted: {submitted}/{total}",
+    "notSubmitted": "Not submitted",
+    "taskTitle": "Task title",
+    "recipients": "Selected students ({count})",
+    "pickQuestions": "Select questions ({count}/10)",
+    "answer": "Preview answers and explanations",
+    "retry": "Reload",
+    "retryPublish": "Retry publishing the saved draft",
+    "publishRemediation": "Publish to selected students",
+    "copyTask": "Copy activity",
+    "copySaved": "Saved as an independent draft in the target class. Open its Class Activities page to review and publish it.",
+    "targetClass": "Target class",
+    "selectClass": "Select a class",
+    "copyDraft": "Copy as draft"
   }
 }

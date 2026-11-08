@@ -36,8 +36,12 @@ const homework = { id: "homework", title: "时域分析作业", status: "open", 
   { id: "option", kind: "choice", prompt: "选择结果", points: 50, blankCount: 1, options: ["A 项", "B 项"] },
 ] };
 const attendance = { session: { id: "attendance", title: "今日课堂签到", startsAt: before, endsAt: after, open: true, lateAfterMinutes: 5, closedAt: null }, record: { status: "absent", checkedAt: null, corrections: [], studentId: "student-a" } };
-const assignment = { id: "lab", courseId: "L1", active: true, open: true, startsAt: before, deadline: after };
+const assignment = { pendingTaskId: "L1-1", inProgress: false, id: "lab", courseId: "L1", active: true, open: true, startsAt: before, deadline: after };
 const tasks = [{ id: "L1-1", attempts: [], checkpoints: [] }];
+const targetClass = {...classroom,id:"class-target",name:"信号与系统 · 二班"};
+const roster = [{id:"student-a",username:"001",displayName:"示例学生",joinedAt:before}];
+const consolidation = {id:"consolidation",title:"信号分类 · 巩固练习",purpose:"remediation",targetCount:1,phase:"after_class",status:"draft",sourceQuizId:"",submissionCount:0,createdAt:now,openedAt:null,closedAt:null,questions:[{id:"concept-q",prompt:"选择正确的信号分类",options:["周期","非周期"],answer:0,fields:[],formula:"",explanation:"按是否重复分类",conceptId:"lesson:ss-1-1",conceptTitle:"信号分类",lessonId:"ss-1-1"}]};
+let remediationCreated=false,copyCreated=false;
 let studentID = "student-a";
 let reviewFailure = false;
 let fingerprint = "a".repeat(64);
@@ -73,10 +77,21 @@ async function session(role, locale = "zh-CN") {
     else if (path.endsWith("/student/ai-activity")) data = { report: null };
     else if (path.endsWith("/learning/lab-assessments")) data = { items: [assignment] };
     else if (path.endsWith("/learning/lab-assessments/lab")) data = { assignment, tasks };
+    else if (path.endsWith("/learning/corrections")) data = { items: [] };
+    else if (path.endsWith("/learning/mastery")) data = { concepts: [], counts: {}, weeks: [] };
     else if (path.endsWith("/learning/progress")) {
       if (reviewFailure) { await route.fulfill({ status: 503, json: { errorMsg: "复习服务暂时不可用", data: null } }); return; }
       data = { questions: [{ reviewDue: true }, { reviewDue: false }] };
-    } else if (path.endsWith("/classrooms")) data = { classrooms: [classroom] };
+    } else if (path.endsWith("/classrooms")) data = { classrooms: [classroom,targetClass] };
+    else if (path.endsWith("/classrooms/class/students")) data = {students:roster};
+    else if (path.endsWith("/classrooms/class-target/students")) data = {students:[{...roster[0],id:"target-student"}]};
+    else if (path.endsWith("/classrooms/class/mastery")) data = {classroomId:"class",concepts:[{concept:{id:"lesson:ss-1-1",title:"信号分类",kind:"lesson",topic:"",chapter:"",evidence:[],status:"weak"},assessed:1,weak:1,secure:0,developing:0}],students:[{id:"student-a",name:"示例学生",username:"001",weakConceptIds:["lesson:ss-1-1"],counts:{assessed:1,weak:1,secure:0,developing:0,unassessed:0}}]};
+    else if (path.endsWith("/classrooms/class/remediation-bank")) data = {questions:consolidation.questions};
+    else if (path.endsWith("/classrooms/class/remediations")) {const body=request.postDataJSON();assert.deepEqual(body.studentIds,["student-a"]);assert.deepEqual(body.questionIds,["concept-q"]); remediationCreated=true;data={quiz:consolidation};}
+    else if (path.endsWith("/quizzes/consolidation/open")) {consolidation.status="open";data={updated:true};}
+    else if (path.endsWith("/quizzes/consolidation/submissions")) data={quiz:consolidation,students:roster,submissions:[{studentId:"student-a",score:1}],missing:[],statistics:{studentCount:1,submissionCount:1,averageScore:1,questions:[]}};
+    else if (path.endsWith("/classrooms/class/quizzes")) data={quizzes:remediationCreated?[consolidation]:[]};
+    else if (path.endsWith("/quizzes/consolidation/copy")) {const body=request.postDataJSON();assert.equal(body.classroomId,"class-target");assert.deepEqual(body.studentIds,["target-student"]);copyCreated=true;data={quiz:{...consolidation,id:"copied",status:"draft"}};}
     else if (path.endsWith("/performance/records")) data = { records: [] };
     else if (path.endsWith("/grade-preview")) {
       const options = request.postDataJSON();
@@ -110,6 +125,7 @@ const draftKeys = (page) => page.evaluate(() => Object.keys(localStorage).filter
 
 try {
   browser = await chromium.launch({ headless: true, ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}) });
+  if (!process.env.TEACHER_CONTINUITY_ONLY) {
   const student = await session("student");
   await student.goto(`${base}/dashboard`);
   await student.getByRole("heading", { name: "我的学习", exact: true }).waitFor();
@@ -139,6 +155,13 @@ try {
   await answer.waitFor();
   assert.equal(await answer.inputValue(), "2");
   assert.equal(await student.locator('main input[type=radio]').first().isChecked(), true);
+  homework.deadline = before; homework.status = "closed";
+  await student.reload();
+  await answer.waitFor();
+  assert.equal(await answer.inputValue(), "2", "deadline discarded the draft");
+  assert.equal(await answer.isDisabled(), true);
+  await student.getByText(/已截止，未提交的本机草稿保留/).waitFor();
+  homework.deadline = after; homework.status = "open";
   studentID = "student-b";
   await student.reload();
   await answer.waitFor();
@@ -185,9 +208,35 @@ try {
   await student.getByText("正在同步任务", { exact: true }).waitFor({ state: "hidden" });
   assert.equal(await student.locator("main ol > li").count(), 4);
 
+  }
   const teacher = await session("teacher");
   await teacher.goto(`${base}/dashboard`);
   await teacher.waitForURL("**/classrooms");
+  await teacher.getByRole("button", {name:/信号与系统 · 一班/}).click();
+  await teacher.getByRole("button", {name:"知识掌握",exact:true}).click();
+  await teacher.getByRole("button", {name:"选题并布置巩固",exact:true}).click();
+  const remediation=teacher.getByRole("dialog");
+  await remediation.getByText("选择正确的信号分类",{exact:true}).waitFor();
+  assert.equal(await remediation.getByRole("checkbox").count(),2);
+  await screenshot(teacher,"remediation-desktop");
+  await teacher.setViewportSize({width:390,height:844});
+  await screenshot(teacher,"remediation-mobile");
+  await remediation.getByRole("button",{name:"发布给所选学生",exact:true}).click();
+  await remediation.getByText(/巩固任务已发布到所选学生/).waitFor();
+  await remediation.getByRole("button",{name:"刷新完成情况",exact:true}).click();
+  await remediation.getByText("已提交 1/1 人",{exact:true}).waitFor();
+  await teacher.keyboard.press("Escape");
+  await teacher.setViewportSize({width:1360,height:950});
+  await teacher.getByRole("button",{name:"课堂活动",exact:true}).click();
+  await teacher.getByRole("button",{name:"复制活动",exact:true}).click();
+  const copying=teacher.getByRole("dialog");
+  await copying.getByLabel("目标班级").selectOption("class-target");
+  await copying.getByRole("checkbox").waitFor();
+  await copying.getByRole("button",{name:"复制为草稿",exact:true}).click();
+  await copying.getByText(/已复制为目标班级的独立草稿/).waitFor();
+  assert.equal(copyCreated,true);
+  await teacher.keyboard.press("Escape");
+  if (!process.env.TEACHER_CONTINUITY_ONLY) {
   await teacher.goto(`${base}/exports`);
   await teacher.getByRole("button", { name: "预览并定稿", exact: true }).click();
   const dialog = teacher.getByRole("dialog");
@@ -220,8 +269,9 @@ try {
   await english.goto(`${base}/dashboard`);
   await english.getByRole("heading", { name: "My learning", exact: true }).waitFor();
   await screenshot(english, "dashboard-english");
+  }
   assert.deepEqual(errors, []);
-  console.log("Dashboard, draft restoration/isolation/submission and grade records smoke passed.");
+  console.log(process.env.TEACHER_CONTINUITY_ONLY ? "PASS: teacher remediation selection, recipients, publication, results and cross-class copying; mobile/desktop." : "PASS: dashboard, read-only drafts, account isolation, submission, remediation, cross-class copying and grade records.");
 } catch (error) {
   for (const [i, context] of (browser?.contexts() ?? []).entries()) {
     for (const page of context.pages()) await page.screenshot({ path: join(artifacts, `failure-${i}.png`) }).catch(() => {});

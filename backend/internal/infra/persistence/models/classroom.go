@@ -27,6 +27,8 @@ func (ClassroomStudent) TableName() string { return "classroom_students" }
 // ClassroomQuiz stores the question set as JSON so a quiz is immutable once
 // published. Answers remain server-side; student responses store option indices.
 type ClassroomQuiz struct {
+	Purpose          string `gorm:"size:24;not null;default:''"`
+	TargetStudentIDs string `gorm:"type:text;not null;default:'[]'"`
 	ControlPlaneModel
 	PublicID     string  `gorm:"size:32;not null;uniqueIndex"`
 	ClassroomID  uint    `gorm:"not null;index"`

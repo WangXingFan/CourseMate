@@ -274,6 +274,7 @@ func toQuizResponse(item domainclassroom.Quiz) QuizResponse {
 		})
 	}
 	return QuizResponse{
+		Purpose: item.Purpose, TargetCount: len(item.TargetStudentIDs),
 		ID:              item.PublicID,
 		SourceQuizID:    item.SourceQuizID,
 		Title:           item.Title,
@@ -302,6 +303,7 @@ func toStudentQuizResponse(item domainclassroom.Quiz) StudentQuizResponse {
 		})
 	}
 	return StudentQuizResponse{
+		Purpose:      item.Purpose,
 		SourceQuizID: item.SourceQuizID, FieldAnswers: item.FieldAnswers,
 		ID:        item.PublicID,
 		Title:     item.Title,

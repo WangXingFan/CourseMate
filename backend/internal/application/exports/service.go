@@ -191,7 +191,7 @@ func (s *Service) collect(ctx context.Context, d *dataset, o Options) error {
 			return err
 		}
 		for _, item := range items {
-			if item.StartsAt.After(d.now) || !o.IncludeOngoing && item.Deadline.After(d.now) {
+			if item.Withdrawn || item.StartsAt.After(d.now) || !o.IncludeOngoing && item.Deadline.After(d.now) {
 				continue
 			}
 			subs, err := s.classes.ListHomeworkSubmissions(ctx, item.ID, 0)

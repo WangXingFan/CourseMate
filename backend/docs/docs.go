@@ -9189,6 +9189,91 @@ const docTemplate = `{
                 }
             }
         },
+        "/classrooms/{id}/remediation-bank": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "教师预览知识点巩固题及解析",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "班级 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "知识点 ID",
+                        "name": "conceptId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/RemediationBankResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/classrooms/{id}/remediations": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "为指定学生创建巩固任务草稿",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "班级 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "题目与学生",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/RemediationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/QuizDataResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/classrooms/{id}/students": {
             "get": {
                 "security": [
@@ -11526,6 +11611,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/homeworks/{id}/manage": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "延期、撤回无提交的作业，或截止后发布解析",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "作业 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "操作及原因",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/HomeworkManageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/homeworks/{id}/report": {
             "get": {
                 "security": [
@@ -11554,6 +11684,58 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/HomeworkReportResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/homeworks/{id}/students/{student_id}/corrections": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "教师更正作业分数，保留原始答卷与历次更正",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "作业 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "学生 ID",
+                        "name": "student_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "分数及原因",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/HomeworkCorrectRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
                         }
                     }
                 }
@@ -12463,6 +12645,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/learning/correction-attempts": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "订正并安排间隔复习，不改变正式成绩",
+                "parameters": [
+                    {
+                        "description": "错题与答案",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LearningCorrectionSubmitRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningCorrectionResultResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/corrections": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "学生查看已开放订正的作业、课堂测验与自主练习错题",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningCorrectionsResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/learning/course": {
             "get": {
                 "security": [
@@ -12494,6 +12738,39 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/course/search": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "搜索课程标题与讲义正文，不包含评分答案",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningCourseSearchResponse"
                         }
                     }
                 }
@@ -15159,6 +15436,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/quizzes/{id}/copy": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "将题目快照复制到本人其他班级，生成独立草稿",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "活动 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "目标班级与标题",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CopyQuizRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/QuizDataResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/quizzes/{id}/followup": {
             "post": {
                 "security": [
@@ -15630,7 +15952,7 @@ const docTemplate = `{
                 "tags": [
                     "classrooms"
                 ],
-                "summary": "学生查看本班作业与个人成绩，不返回参考答案",
+                "summary": "学生查看本班作业与个人成绩，教师发布解析后开放参考答案",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -19476,6 +19798,31 @@ const docTemplate = `{
                 }
             }
         },
+        "CopyQuizRequest": {
+            "type": "object",
+            "required": [
+                "classroomId",
+                "studentIds",
+                "title"
+            ],
+            "properties": {
+                "classroomId": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "studentIds": {
+                    "type": "array",
+                    "maxItems": 500,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 120
+                }
+            }
+        },
         "CreateClassroomRequest": {
             "type": "object",
             "required": [
@@ -21093,6 +21440,74 @@ const docTemplate = `{
                 }
             }
         },
+        "HomeworkChangeResponse": {
+            "type": "object",
+            "required": [
+                "action",
+                "at",
+                "deadline",
+                "previousDeadline",
+                "reason"
+            ],
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "at": {
+                    "type": "string"
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "previousDeadline": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                }
+            }
+        },
+        "HomeworkCorrectRequest": {
+            "type": "object",
+            "required": [
+                "reason",
+                "score"
+            ],
+            "properties": {
+                "reason": {
+                    "type": "string",
+                    "maxLength": 500
+                },
+                "score": {
+                    "type": "integer",
+                    "maximum": 1000,
+                    "minimum": 0
+                }
+            }
+        },
+        "HomeworkCorrectionResponse": {
+            "type": "object",
+            "required": [
+                "at",
+                "before",
+                "reason",
+                "score"
+            ],
+            "properties": {
+                "at": {
+                    "type": "string"
+                },
+                "before": {
+                    "type": "integer"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "score": {
+                    "type": "integer"
+                }
+            }
+        },
         "HomeworkListResponse": {
             "type": "object",
             "required": [
@@ -21108,6 +21523,30 @@ const docTemplate = `{
                 },
                 "serverTime": {
                     "type": "string"
+                }
+            }
+        },
+        "HomeworkManageRequest": {
+            "type": "object",
+            "required": [
+                "action",
+                "reason"
+            ],
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "enum": [
+                        "extend",
+                        "withdraw",
+                        "release"
+                    ]
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string",
+                    "maxLength": 500
                 }
             }
         },
@@ -21180,6 +21619,9 @@ const docTemplate = `{
                 "blankCount": {
                     "type": "integer"
                 },
+                "explanation": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -21229,7 +21671,9 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "bankId",
+                "changes",
                 "deadline",
+                "feedbackReleased",
                 "id",
                 "questionCount",
                 "questions",
@@ -21244,8 +21688,17 @@ const docTemplate = `{
                 "bankId": {
                     "type": "string"
                 },
+                "changes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HomeworkChangeResponse"
+                    }
+                },
                 "deadline": {
                     "type": "string"
+                },
+                "feedbackReleased": {
+                    "type": "boolean"
                 },
                 "id": {
                     "type": "string"
@@ -21314,6 +21767,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "answers",
+                "corrections",
+                "originalScore",
                 "results",
                 "score",
                 "studentId",
@@ -21330,6 +21785,15 @@ const docTemplate = `{
                             "type": "string"
                         }
                     }
+                },
+                "corrections": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HomeworkCorrectionResponse"
+                    }
+                },
+                "originalScore": {
+                    "type": "integer"
                 },
                 "results": {
                     "type": "array",
@@ -21357,7 +21821,8 @@ const docTemplate = `{
         "HomeworkSubmitRequest": {
             "type": "object",
             "required": [
-                "answers"
+                "answers",
+                "confirmBlank"
             ],
             "properties": {
                 "answers": {
@@ -21370,6 +21835,9 @@ const docTemplate = `{
                             "type": "string"
                         }
                     }
+                },
+                "confirmBlank": {
+                    "type": "boolean"
                 }
             }
         },
@@ -22389,8 +22857,14 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "inProgress": {
+                    "type": "boolean"
+                },
                 "open": {
                     "type": "boolean"
+                },
+                "pendingTaskId": {
+                    "type": "string"
                 },
                 "startsAt": {
                     "type": "string"
@@ -22933,6 +23407,158 @@ const docTemplate = `{
                 }
             }
         },
+        "LearningCorrectionField": {
+            "type": "object",
+            "required": [
+                "id",
+                "label",
+                "unit"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningCorrectionResponse": {
+            "type": "object",
+            "required": [
+                "at",
+                "conceptId",
+                "fields",
+                "formula",
+                "id",
+                "lessonId",
+                "nextReviewAt",
+                "options",
+                "originHref",
+                "originalAnswers",
+                "prompt",
+                "reviewDue",
+                "reviewStage",
+                "source",
+                "title"
+            ],
+            "properties": {
+                "at": {
+                    "type": "string"
+                },
+                "conceptId": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningCorrectionField"
+                    }
+                },
+                "formula": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lessonId": {
+                    "type": "string"
+                },
+                "nextReviewAt": {
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "originHref": {
+                    "type": "string"
+                },
+                "originalAnswers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "prompt": {
+                    "type": "string"
+                },
+                "reviewDue": {
+                    "type": "boolean"
+                },
+                "reviewStage": {
+                    "type": "integer"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningCorrectionResultResponse": {
+            "type": "object",
+            "required": [
+                "attempt",
+                "nextReviewAt",
+                "reviewStage"
+            ],
+            "properties": {
+                "attempt": {
+                    "$ref": "#/definitions/LearningLessonAttemptResponse"
+                },
+                "nextReviewAt": {
+                    "type": "string",
+                    "x-nullable": true
+                },
+                "reviewStage": {
+                    "type": "integer"
+                }
+            }
+        },
+        "LearningCorrectionSubmitRequest": {
+            "type": "object",
+            "required": [
+                "answers",
+                "correctionId",
+                "id"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "correctionId": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningCorrectionsResponse": {
+            "type": "object",
+            "required": [
+                "items"
+            ],
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningCorrectionResponse"
+                    }
+                }
+            }
+        },
         "LearningCourseField": {
             "type": "object",
             "required": [
@@ -23091,6 +23717,35 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningCourseSearchResponse": {
+            "type": "object",
+            "required": [
+                "items"
+            ],
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningCourseSearchResult"
+                    }
+                }
+            }
+        },
+        "LearningCourseSearchResult": {
+            "type": "object",
+            "required": [
+                "id",
+                "snippet"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "snippet": {
                     "type": "string"
                 }
             }
@@ -27373,10 +28028,12 @@ const docTemplate = `{
                 "id",
                 "openedAt",
                 "phase",
+                "purpose",
                 "questions",
                 "sourceQuizId",
                 "status",
                 "submissionCount",
+                "targetCount",
                 "title"
             ],
             "properties": {
@@ -27395,6 +28052,9 @@ const docTemplate = `{
                 "phase": {
                     "type": "string"
                 },
+                "purpose": {
+                    "type": "string"
+                },
                 "questions": {
                     "type": "array",
                     "items": {
@@ -27408,6 +28068,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "submissionCount": {
+                    "type": "integer"
+                },
+                "targetCount": {
                     "type": "integer"
                 },
                 "title": {
@@ -27616,6 +28279,55 @@ const docTemplate = `{
                 },
                 "errorMsg": {
                     "type": "string"
+                }
+            }
+        },
+        "RemediationBankResponse": {
+            "type": "object",
+            "required": [
+                "questions"
+            ],
+            "properties": {
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/QuizQuestionResponse"
+                    }
+                }
+            }
+        },
+        "RemediationRequest": {
+            "type": "object",
+            "required": [
+                "conceptId",
+                "questionIds",
+                "studentIds",
+                "title"
+            ],
+            "properties": {
+                "conceptId": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "questionIds": {
+                    "type": "array",
+                    "maxItems": 10,
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "studentIds": {
+                    "type": "array",
+                    "maxItems": 500,
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 120
                 }
             }
         },
@@ -28319,6 +29031,7 @@ const docTemplate = `{
                 "id",
                 "openedAt",
                 "phase",
+                "purpose",
                 "questions",
                 "score",
                 "sourceQuizId",
@@ -28349,6 +29062,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phase": {
+                    "type": "string"
+                },
+                "purpose": {
                     "type": "string"
                 },
                 "questions": {

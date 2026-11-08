@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { LessonShell, Readout } from "@/features/learning/components/shared/lesson-shell";
+import { LearningHelp } from "@/features/learning/components/shared/learning-help";
 import { useLearningMastery } from "@/features/learning/hooks/use-learning-mastery";
 import { useLearningPractice } from "@/features/learning/hooks/use-learning-practice";
 import { cn } from "@/lib/utils";
@@ -59,6 +60,7 @@ function PracticeCatalog() {
 }
 
 function PracticeBank({ concept }: { concept: string }) {
+  const c = useTranslations("learning.continuity");
   const t = useTranslations("learning.practiceBank");
   const m = useTranslations("learning.mastery");
   const topics = useTranslations("learningLabs.progress.topics");
@@ -71,6 +73,8 @@ function PracticeBank({ concept }: { concept: string }) {
     <div className="mb-8 flex flex-wrap items-center gap-3">
       <Button asChild variant="ghost"><Link href="/learn/practice"><ArrowLeft className="size-4" aria-hidden />{t("title")}</Link></Button>
       <Button asChild variant="outline"><Link href="/learn/mastery">{m("title")}</Link></Button>
+      {question && result && <LearningHelp title={title} context={`${question.prompt}\n${question.formula}\n${question.options?.join("\n") ?? ""}\n${JSON.stringify(model.answers)}\n${result.explanation}`} returnHref={`/learn/practice?concept=${encodeURIComponent(concept)}`} />}
+      {result && <Button asChild variant="ghost"><Link href="/learn/progress?source=practice">{c("corrections")}</Link></Button>}
       {data && <Button asChild variant="ghost"><Link href={data.reviewHref}>{m("review")}</Link></Button>}
     </div>
     {model.loadError ? <ErrorNotice error={model.loadError} retry={model.reload} /> : model.loading ? <Loading /> : data && <>

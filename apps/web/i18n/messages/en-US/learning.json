@@ -1000,7 +1000,8 @@
     "resetWorkbench": "Reset parameters",
     "plotView": "Plot views",
     "poleZeroView": "Poles and zeros",
-    "teacherManagement": "Manage experiments"
+    "teacherManagement": "Manage experiments",
+    "scheduled": "Not started yet"
   },
   "teacherExperiments": {
     "classroom": "Classroom",
@@ -1087,5 +1088,58 @@
     "finish": "Finish practice",
     "next": "Next question",
     "loading": "Loading topic questions…"
+  },
+  "continuity": {
+    "corrections": "Corrections and spaced review",
+    "source": "Question source",
+    "sources": {
+      "all": "All sources",
+      "practice": "Independent practice",
+      "course": "Course exercises",
+      "classroom": "Class activities",
+      "homework": "Homework"
+    },
+    "reviewState": "Review status",
+    "filters": {
+      "active": "To consolidate",
+      "due": "Due for review",
+      "done": "Review complete",
+      "all": "All statuses"
+    },
+    "refresh": "Refresh",
+    "loading": "Loading…",
+    "emptyCorrections": "No questions match these filters. Mistakes appear after class activities close or homework feedback is released.",
+    "stage": "Review progress {stage}/5",
+    "due": "Review due",
+    "correct": "Correct this answer",
+    "original": "Original task",
+    "notes": "Review notes",
+    "practice": "Topic practice",
+    "close": "Close",
+    "originalAnswer": "Original answer",
+    "blank": "Unanswered",
+    "retry": "Retry",
+    "submit": "Submit correction",
+    "correctAnswer": "Correct answer",
+    "expected": "Expected answer",
+    "quickReview": "Quick quiz review",
+    "ask": "Ask AI",
+    "explain": "Explain this concept and give an example.",
+    "checkThinking": "Check my reasoning and suggest which step to examine first.",
+    "explainPlot": "Explain how the parameters affect the plots and measurements.",
+    "question": "Your question",
+    "includedContext": "View the learning context included",
+    "continueChat": "Continue in chat",
+    "helpPrompt": "I am studying “{title}”.\n\nLearning context and my current answer:\n{context}\n\nMy question: {question}\nHelp me understand this material. Start with the key idea, then explain step by step.",
+    "storageFailed": "Unable to save learning data on this device. Check browser storage permissions and try again.",
+    "resume": "Continue reading",
+    "searchBody": "Search lesson titles or text",
+    "allLessons": "All lessons",
+    "bookmarks": "Bookmarks only",
+    "bookmark": "Bookmark lesson",
+    "unbookmark": "Remove bookmark",
+    "experiments": "Related experiment",
+    "recommendations": "Recommended practice",
+    "explorePractice": "Choose a topic to start practising"
   }
 }

@@ -2337,6 +2337,24 @@ definitions:
     - data
     - errorMsg
     type: object
+  CopyQuizRequest:
+    properties:
+      classroomId:
+        maxLength: 64
+        type: string
+      studentIds:
+        items:
+          type: string
+        maxItems: 500
+        type: array
+      title:
+        maxLength: 120
+        type: string
+    required:
+    - classroomId
+    - studentIds
+    - title
+    type: object
   CreateClassroomRequest:
     properties:
       description:
@@ -3468,6 +3486,54 @@ definitions:
     required:
     - papers
     type: object
+  HomeworkChangeResponse:
+    properties:
+      action:
+        type: string
+      at:
+        type: string
+      deadline:
+        type: string
+      previousDeadline:
+        type: string
+      reason:
+        type: string
+    required:
+    - action
+    - at
+    - deadline
+    - previousDeadline
+    - reason
+    type: object
+  HomeworkCorrectRequest:
+    properties:
+      reason:
+        maxLength: 500
+        type: string
+      score:
+        maximum: 1000
+        minimum: 0
+        type: integer
+    required:
+    - reason
+    - score
+    type: object
+  HomeworkCorrectionResponse:
+    properties:
+      at:
+        type: string
+      before:
+        type: integer
+      reason:
+        type: string
+      score:
+        type: integer
+    required:
+    - at
+    - before
+    - reason
+    - score
+    type: object
   HomeworkListResponse:
     properties:
       items:
@@ -3479,6 +3545,23 @@ definitions:
     required:
     - items
     - serverTime
+    type: object
+  HomeworkManageRequest:
+    properties:
+      action:
+        enum:
+        - extend
+        - withdraw
+        - release
+        type: string
+      deadline:
+        type: string
+      reason:
+        maxLength: 500
+        type: string
+    required:
+    - action
+    - reason
     type: object
   HomeworkPaperResponse:
     properties:
@@ -3522,6 +3605,8 @@ definitions:
         type: array
       blankCount:
         type: integer
+      explanation:
+        type: string
       id:
         type: string
       kind:
@@ -3563,8 +3648,14 @@ definitions:
     properties:
       bankId:
         type: string
+      changes:
+        items:
+          $ref: '#/definitions/HomeworkChangeResponse'
+        type: array
       deadline:
         type: string
+      feedbackReleased:
+        type: boolean
       id:
         type: string
       questionCount:
@@ -3589,7 +3680,9 @@ definitions:
         type: integer
     required:
     - bankId
+    - changes
     - deadline
+    - feedbackReleased
     - id
     - questionCount
     - questions
@@ -3626,6 +3719,12 @@ definitions:
             type: string
           type: array
         type: array
+      corrections:
+        items:
+          $ref: '#/definitions/HomeworkCorrectionResponse'
+        type: array
+      originalScore:
+        type: integer
       results:
         items:
           $ref: '#/definitions/HomeworkResultResponse'
@@ -3642,6 +3741,8 @@ definitions:
         type: string
     required:
     - answers
+    - corrections
+    - originalScore
     - results
     - score
     - studentId
@@ -3659,8 +3760,11 @@ definitions:
         maxItems: 40
         minItems: 1
         type: array
+      confirmBlank:
+        type: boolean
     required:
     - answers
+    - confirmBlank
     type: object
   IdentityProviderDeleteResponse:
     properties:
@@ -4360,8 +4464,12 @@ definitions:
         x-nullable: true
       id:
         type: string
+      inProgress:
+        type: boolean
       open:
         type: boolean
+      pendingTaskId:
+        type: string
       startsAt:
         type: string
       version:
@@ -4744,6 +4852,113 @@ definitions:
     - selected
     - variantId
     type: object
+  LearningCorrectionField:
+    properties:
+      id:
+        type: string
+      label:
+        type: string
+      unit:
+        type: string
+    required:
+    - id
+    - label
+    - unit
+    type: object
+  LearningCorrectionResponse:
+    properties:
+      at:
+        type: string
+      conceptId:
+        type: string
+      fields:
+        items:
+          $ref: '#/definitions/LearningCorrectionField'
+        type: array
+      formula:
+        type: string
+      id:
+        type: string
+      lessonId:
+        type: string
+      nextReviewAt:
+        type: string
+        x-nullable: true
+      options:
+        items:
+          type: string
+        type: array
+      originHref:
+        type: string
+      originalAnswers:
+        additionalProperties:
+          type: string
+        type: object
+      prompt:
+        type: string
+      reviewDue:
+        type: boolean
+      reviewStage:
+        type: integer
+      source:
+        type: string
+      title:
+        type: string
+    required:
+    - at
+    - conceptId
+    - fields
+    - formula
+    - id
+    - lessonId
+    - nextReviewAt
+    - options
+    - originHref
+    - originalAnswers
+    - prompt
+    - reviewDue
+    - reviewStage
+    - source
+    - title
+    type: object
+  LearningCorrectionResultResponse:
+    properties:
+      attempt:
+        $ref: '#/definitions/LearningLessonAttemptResponse'
+      nextReviewAt:
+        type: string
+        x-nullable: true
+      reviewStage:
+        type: integer
+    required:
+    - attempt
+    - nextReviewAt
+    - reviewStage
+    type: object
+  LearningCorrectionSubmitRequest:
+    properties:
+      answers:
+        additionalProperties:
+          type: string
+        type: object
+      correctionId:
+        type: string
+      id:
+        type: string
+    required:
+    - answers
+    - correctionId
+    - id
+    type: object
+  LearningCorrectionsResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/LearningCorrectionResponse'
+        type: array
+    required:
+    - items
+    type: object
   LearningCourseField:
     properties:
       id:
@@ -4857,6 +5072,25 @@ definitions:
     - sourceName
     - title
     - version
+    type: object
+  LearningCourseSearchResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/LearningCourseSearchResult'
+        type: array
+    required:
+    - items
+    type: object
+  LearningCourseSearchResult:
+    properties:
+      id:
+        type: string
+      snippet:
+        type: string
+    required:
+    - id
+    - snippet
     type: object
   LearningLessonAttemptRequest:
     properties:
@@ -7867,6 +8101,8 @@ definitions:
         type: string
       phase:
         type: string
+      purpose:
+        type: string
       questions:
         items:
           $ref: '#/definitions/QuizQuestionResponse'
@@ -7877,6 +8113,8 @@ definitions:
         type: string
       submissionCount:
         type: integer
+      targetCount:
+        type: integer
       title:
         type: string
     required:
@@ -7885,10 +8123,12 @@ definitions:
     - id
     - openedAt
     - phase
+    - purpose
     - questions
     - sourceQuizId
     - status
     - submissionCount
+    - targetCount
     - title
     type: object
   QuizRound:
@@ -8034,6 +8274,41 @@ definitions:
     required:
     - data
     - errorMsg
+    type: object
+  RemediationBankResponse:
+    properties:
+      questions:
+        items:
+          $ref: '#/definitions/QuizQuestionResponse'
+        type: array
+    required:
+    - questions
+    type: object
+  RemediationRequest:
+    properties:
+      conceptId:
+        maxLength: 64
+        type: string
+      questionIds:
+        items:
+          type: string
+        maxItems: 10
+        minItems: 1
+        type: array
+      studentIds:
+        items:
+          type: string
+        maxItems: 500
+        minItems: 1
+        type: array
+      title:
+        maxLength: 120
+        type: string
+    required:
+    - conceptId
+    - questionIds
+    - studentIds
+    - title
     type: object
   RenameConversationRequest:
     properties:
@@ -8533,6 +8808,8 @@ definitions:
         type: string
       phase:
         type: string
+      purpose:
+        type: string
       questions:
         items:
           $ref: '#/definitions/StudentQuizQuestionResponse'
@@ -8553,6 +8830,7 @@ definitions:
     - id
     - openedAt
     - phase
+    - purpose
     - questions
     - score
     - sourceQuizId
@@ -15934,6 +16212,59 @@ paths:
       summary: 创建班级小测
       tags:
       - classrooms
+  /classrooms/{id}/remediation-bank:
+    get:
+      parameters:
+      - description: 班级 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 知识点 ID
+        in: query
+        name: conceptId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/RemediationBankResponse'
+      security:
+      - BearerAuth: []
+      summary: 教师预览知识点巩固题及解析
+      tags:
+      - classrooms
+  /classrooms/{id}/remediations:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 班级 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 题目与学生
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/RemediationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/QuizDataResponse'
+      security:
+      - BearerAuth: []
+      summary: 为指定学生创建巩固任务草稿
+      tags:
+      - classrooms
   /classrooms/{id}/students:
     get:
       description: 教师查询自己的班级成员，管理员可查看全部班级成员。
@@ -17430,6 +17761,34 @@ paths:
       summary: 批量查询文件处理状态
       tags:
       - chat
+  /homeworks/{id}/manage:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 作业 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 操作及原因
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/HomeworkManageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 延期、撤回无提交的作业，或截止后发布解析
+      tags:
+      - classrooms
   /homeworks/{id}/report:
     get:
       parameters:
@@ -17448,6 +17807,39 @@ paths:
       security:
       - BearerAuth: []
       summary: 教师查看作业成绩与逐题提交记录
+      tags:
+      - classrooms
+  /homeworks/{id}/students/{student_id}/corrections:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 作业 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 学生 ID
+        in: path
+        name: student_id
+        required: true
+        type: string
+      - description: 分数及原因
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/HomeworkCorrectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 教师更正作业分数，保留原始答卷与历次更正
       tags:
       - classrooms
   /homeworks/{id}/submissions:
@@ -18018,6 +18410,43 @@ paths:
         ID
       tags:
       - learning
+  /learning/correction-attempts:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 错题与答案
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/LearningCorrectionSubmitRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningCorrectionResultResponse'
+      security:
+      - BearerAuth: []
+      summary: 订正并安排间隔复习，不改变正式成绩
+      tags:
+      - learning
+  /learning/corrections:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningCorrectionsResponse'
+      security:
+      - BearerAuth: []
+      summary: 学生查看已开放订正的作业、课堂测验与自主练习错题
+      tags:
+      - learning
   /learning/course:
     get:
       produces:
@@ -18039,6 +18468,26 @@ paths:
       - BearerAuth: []
       summary: Read the course catalog; standalone practice is limited to teaching
         previews
+      tags:
+      - learning
+  /learning/course/search:
+    get:
+      parameters:
+      - description: 关键词
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningCourseSearchResponse'
+      security:
+      - BearerAuth: []
+      summary: 搜索课程标题与讲义正文，不包含评分答案
       tags:
       - learning
   /learning/lab-assessments:
@@ -19720,6 +20169,34 @@ paths:
       summary: 截止班级小测
       tags:
       - classrooms
+  /quizzes/{id}/copy:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 活动 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 目标班级与标题
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/CopyQuizRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/QuizDataResponse'
+      security:
+      - BearerAuth: []
+      summary: 将题目快照复制到本人其他班级，生成独立草稿
+      tags:
+      - classrooms
   /quizzes/{id}/followup:
     post:
       description: 每份预习测或课中练习最多关联一份复测，重复请求返回同一份；题目使用创建预习测或课中练习时保存的变式快照。
@@ -20016,7 +20493,7 @@ paths:
             $ref: '#/definitions/StudentHomeworksResponse'
       security:
       - BearerAuth: []
-      summary: 学生查看本班作业与个人成绩，不返回参考答案
+      summary: 学生查看本班作业与个人成绩，教师发布解析后开放参考答案
       tags:
       - classrooms
   /student/performance:

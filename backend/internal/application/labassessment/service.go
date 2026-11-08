@@ -95,6 +95,31 @@ func (s *Service) StudentList(ctx context.Context, actor uint) ([]domain.Assignm
 	}
 	return s.repo.List(ctx, c.PublicID)
 }
+
+// StudentPendingTask reads progress without revealing answers or forfeiting attempts.
+func (s *Service) StudentPendingTask(ctx context.Context, actor uint, id string) (string, bool, error) {
+	a, _, err := s.student(ctx, actor, id)
+	if err != nil {
+		return "", false, err
+	}
+	state, err := s.repo.ReadState(ctx, id, actor)
+	if err != nil {
+		return "", false, err
+	}
+	pending, inProgress := "", false
+	for _, taskID := range domain.TaskIDs(a.CourseID) {
+		task := state.Tasks[taskID]
+		if task != nil && (len(task.Attempts) > 0 || len(task.Checkpoints) > 0) {
+			inProgress = true
+		}
+		if task == nil || len(task.Attempts) == 0 || task.Attempts[len(task.Attempts)-1].SubmittedAt == nil || !task.Checkpoints["O1"].Passed || !task.Checkpoints["O2"].Passed {
+			if pending == "" {
+				pending = taskID
+			}
+		}
+	}
+	return pending, inProgress, nil
+}
 func (s *Service) Publish(ctx context.Context, actor uint, classID, course string, start time.Time, deadline *time.Time) (domain.Assignment, error) {
 	a := domain.Assignment{}
 	if _, err := s.owned(ctx, actor, classID); err != nil {

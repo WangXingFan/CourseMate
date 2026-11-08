@@ -46,8 +46,8 @@ func TestHomeworkBankAndGrading(t *testing.T) {
 	if !valid || score != 5 {
 		t.Fatalf("partial credit = %d, %v", score, valid)
 	}
-	if _, _, valid := GradeHomework([]HomeworkQuestion{q}, [][]string{{"4", ""}}); valid {
-		t.Fatal("blank accepted")
+	if results, score, valid := GradeHomework([]HomeworkQuestion{q}, [][]string{{"4个单位", ""}}); !valid || score != 5 || results[0].Correct[1] {
+		t.Fatal("unanswered blank must earn zero without discarding answered credit")
 	}
 }
 

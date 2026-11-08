@@ -59,7 +59,15 @@ func (m *Module) list(c *gin.Context, student bool) {
 	}
 	v := LabAssignmentsResponse{Items: []LabAssignmentResponse{}}
 	for _, a := range items {
-		v.Items = append(v.Items, assignmentView(a))
+		view := assignmentView(a)
+		if student {
+			view.PendingTaskID, view.InProgress, err = m.service.StudentPendingTask(c.Request.Context(), middleware.MustUserID(c), a.ID)
+			if err != nil {
+				fail(c, err)
+				return
+			}
+		}
+		v.Items = append(v.Items, view)
 	}
 	success(c, v)
 }

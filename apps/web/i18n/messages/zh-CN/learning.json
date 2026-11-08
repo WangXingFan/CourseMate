@@ -1000,7 +1000,8 @@
     "resetWorkbench": "重置参数",
     "plotView": "图形视图",
     "poleZeroView": "零极点图",
-    "teacherManagement": "进入实验管理"
+    "teacherManagement": "进入实验管理",
+    "scheduled": "尚未开始"
   },
   "teacherExperiments": {
     "classroom": "班级",
@@ -1087,5 +1088,58 @@
     "finish": "完成练习",
     "next": "下一题",
     "loading": "正在加载专题题库…"
+  },
+  "continuity": {
+    "corrections": "订正与间隔复习",
+    "source": "题目来源",
+    "sources": {
+      "all": "全部来源",
+      "practice": "自主练习",
+      "course": "课程练习",
+      "classroom": "课堂活动",
+      "homework": "作业"
+    },
+    "reviewState": "复习状态",
+    "filters": {
+      "active": "待巩固",
+      "due": "到期复习",
+      "done": "已完成复习",
+      "all": "全部状态"
+    },
+    "refresh": "刷新",
+    "loading": "正在加载…",
+    "emptyCorrections": "当前筛选下没有待订正的题目。课堂活动结束、作业解析发布后，错题会出现在这里。",
+    "stage": "复习进度 {stage}/5",
+    "due": "已到复习时间",
+    "correct": "开始订正",
+    "original": "查看原任务",
+    "notes": "回看讲义",
+    "practice": "专项练习",
+    "close": "关闭",
+    "originalAnswer": "原作答",
+    "blank": "未作答",
+    "retry": "重试",
+    "submit": "提交订正",
+    "correctAnswer": "回答正确",
+    "expected": "参考答案",
+    "quickReview": "快问快答复习",
+    "ask": "向 AI 提问",
+    "explain": "请解释这个知识点，并举一个例子。",
+    "checkThinking": "请检查我的思路，提示我应该先检查哪一步。",
+    "explainPlot": "请结合参数解释图像和测量结果的变化。",
+    "question": "你的问题",
+    "includedContext": "查看随问题附带的学习内容",
+    "continueChat": "带入聊天继续提问",
+    "helpPrompt": "我正在学习「{title}」。\n\n学习内容与当前作答：\n{context}\n\n我的问题：{question}\n请结合上述内容帮助我理解，先指出关键思路，再分步解释。",
+    "storageFailed": "无法保存本机学习记录，请检查浏览器存储权限后重试。",
+    "resume": "继续上次阅读",
+    "searchBody": "搜索讲义标题或正文",
+    "allLessons": "全部讲义",
+    "bookmarks": "仅看收藏",
+    "bookmark": "收藏讲义",
+    "unbookmark": "取消收藏",
+    "experiments": "相关实验",
+    "recommendations": "推荐巩固",
+    "explorePractice": "选择一个专题开始练习"
   }
 }

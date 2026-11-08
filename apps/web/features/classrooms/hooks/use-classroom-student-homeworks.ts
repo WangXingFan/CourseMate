@@ -30,7 +30,7 @@ export function useClassroomStudentHomeworks(accessToken: string, owner: string)
       offset.current = new Date(next.serverTime).getTime() - Date.now();
       setNow(Date.now() + offset.current); setData(next);
       const drafts = new Map(next.items.map((item) => {
-        if (item.submission || item.status === "closed") { clearDraft(item.id); return [item.id, undefined] as const; }
+        if (item.submission) { clearDraft(item.id); return [item.id, undefined] as const; }
         return [item.id, readDraft(item.id)] as const;
       }));
       setAnswers((current) => {
@@ -58,13 +58,13 @@ export function useClassroomStudentHomeworks(accessToken: string, owner: string)
     setAnswers((current) => ({ ...current, [id]: next }));
     writeDraft(id, { kind: "homework", answers: next });
   }
-  async function submit(item: HomeworkResponse) {
+  async function submit(item: HomeworkResponse, confirmBlank = false) {
     if (busy.current) return false;
     const selected = answers[item.id] ?? [];
-    if (selected.length !== item.questionCount || selected.some((row) => row.some((value) => !value.trim()))) { toast.error(t("answerAll")); return false; }
+    if (selected.length !== item.questionCount || !confirmBlank && selected.some((row) => row.some((value) => !value.trim()))) { toast.error(t("answerAll")); return false; }
     busy.current = true; setPending(item.id);
     try {
-      const submission = await submitHomework(accessToken, item.id, selected);
+      const submission = await submitHomework(accessToken, item.id, selected, confirmBlank);
       clearDraft(item.id);
       setData((current) => current && ({ ...current, items: current.items.map((entry) => entry.id === item.id ? { ...entry, submission } : entry) }));
       toast.success(t("graded", { score: submission.score, total: item.total })); return true;

@@ -40,4 +40,6 @@ type ClassroomRepository interface {
 	GetHomework(context.Context, string) (*domain.Homework, error)
 	ListHomeworkSubmissions(context.Context, uint, uint) ([]domain.HomeworkSubmission, error)
 	CreateHomeworkSubmission(context.Context, domain.HomeworkSubmission) error
+	ManageHomework(context.Context, uint, uint, string, time.Time, string) error
+	CorrectHomework(context.Context, uint, uint, string, int, string) error
 }

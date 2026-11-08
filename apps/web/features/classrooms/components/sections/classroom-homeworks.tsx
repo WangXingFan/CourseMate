@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { HomeworkManagement } from "@/features/classrooms/components/shared/homework-management";
 import { HomeworkQuestions } from "@/features/classrooms/components/shared/homework-questions";
 import { useClassroomHomeworks } from "@/features/classrooms/hooks/use-classroom-homeworks";
 import type { HomeworkPaperResponse } from "@/shared/api/homeworks";
@@ -44,7 +45,7 @@ export function ClassroomHomeworks({ accessToken, classroomID }: { accessToken: 
       {model.items.length === 0 ? <p className="py-8 text-sm text-muted-foreground">{t("empty")}</p> : <div className="space-y-3">{model.items.map((item) => <article key={item.id} className="rounded-lg border border-border p-4">
         <div className="flex flex-wrap items-center gap-3"><h4 className="font-display text-xl font-normal">{item.title}</h4><Badge variant="outline">{t(`status.${item.status}`)}</Badge><span className="ml-auto text-sm">{t("submissionCount", { count: item.submissionCount })}</span></div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><div className="space-y-1 text-sm"><p>{t("startsAt")}：{date(item.startsAt)}</p><p>{t("deadline")}：{date(item.deadline)}</p></div><Button variant="ghost" onClick={() => { setStudentID(""); model.selectReport(item.id); }}>{t("report")}<ArrowRight className="size-4" strokeWidth={1.6} /></Button></div>
-      </article>)}</div>}
+      <HomeworkManagement accessToken={accessToken} item={item} onSaved={model.refresh} /></article>)}</div>}
     </>}
     <Dialog open={!!paper} onOpenChange={(open) => { if (!open && !model.pending) setPaper(undefined); }}>
       <DialogContent aria-describedby={undefined} className="flex max-h-[90dvh] flex-col overflow-hidden sm:max-w-3xl">
@@ -63,6 +64,7 @@ export function ClassroomHomeworks({ accessToken, classroomID }: { accessToken: 
           {model.reportLoading ? <Spinner className="size-5" /> : submission && report ? <>
             <Button className="mb-4" variant="ghost" onClick={() => setStudentID("")}><ArrowLeft className="size-4" />{t("back")}</Button>
             <div className="mb-6 flex flex-wrap justify-between gap-3 text-base"><span>{submission.studentName} · {submission.username}</span><span className="font-mono">{t("graded", { score: submission.score, total: report.homework.total })}</span></div>
+            <HomeworkManagement accessToken={accessToken} item={report.homework} submission={submission} onSaved={model.refresh} />
             <HomeworkQuestions questions={report.homework.questions} answers={submission.answers} submission={submission} disabled showKey />
           </> : report ? <div className="divide-y divide-border">
             <p className="pb-4 text-sm">{t("reportCount", { submitted: report.submissions.length, total: report.students.length })}</p>

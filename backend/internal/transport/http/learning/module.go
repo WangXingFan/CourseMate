@@ -33,6 +33,7 @@ func (m *Module) RegisterRoutes(group *gin.RouterGroup) {
 	group.PUT("/learning/virtual-lab", m.SaveVirtualLab)
 	group.GET("/learning/virtual-lab/guide", m.VirtualLabGuide)
 	group.GET("/learning/course", m.Course)
+	group.GET("/learning/course/search", m.SearchCourse)
 	group.GET("/learning/lessons/:id", m.CourseLesson)
 	group.POST("/learning/lesson-attempts", m.SubmitLesson)
 	group.GET("/learning/progress", m.Progress)
@@ -41,6 +42,8 @@ func (m *Module) RegisterRoutes(group *gin.RouterGroup) {
 	group.POST("/learning/reviews", m.SubmitReview)
 	group.GET("/learning/variants/:id", m.Variant)
 	group.POST("/learning/tutor", m.Tutor)
+	group.GET("/learning/corrections", m.Corrections)
+	group.POST("/learning/correction-attempts", m.SubmitCorrection)
 }
 
 // Progress godoc

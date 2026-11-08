@@ -10,6 +10,8 @@ import {
   Users,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
+import { CopyTaskDialog } from "@/features/classrooms/components/shared/copy-task-dialog";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,6 +51,7 @@ export function ClassroomActivities({ model }: { model: ClassroomActivitiesModel
   const t = useTranslations("classrooms.activities");
   const locale = useLocale();
   const { list, createDialog, actions } = model;
+  const [copying, setCopying] = useState<ClassroomQuizDTO>();
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -86,6 +89,7 @@ export function ClassroomActivities({ model }: { model: ClassroomActivitiesModel
                 onPublish={() => actions.publish(quiz)}
                 onClose={() => actions.close(quiz)}
                 onReport={() => void actions.openReport(quiz)}
+                onCopy={() => setCopying(quiz)}
                 locale={locale}
               />
             ))}
@@ -106,6 +110,7 @@ export function ClassroomActivities({ model }: { model: ClassroomActivitiesModel
 
       <QuizEditorDialog model={model} />
       <QuizReportDialog model={model} />
+      {copying && <CopyTaskDialog accessToken={model.context.accessToken} quiz={copying} onClose={() => { setCopying(undefined); list.refresh(); }} />}
     </div>
   );
 }
@@ -116,6 +121,7 @@ function QuizRow({
   onPublish,
   onClose,
   onReport,
+  onCopy,
   onFollowup,
   followup,
   locale,
@@ -125,11 +131,13 @@ function QuizRow({
   onPublish: () => void;
   onClose: () => void;
   onReport: () => void;
+  onCopy: () => void;
   onFollowup: () => void;
   followup?: ClassroomQuizDTO;
   locale: string;
 }) {
   const t = useTranslations("classrooms.activities");
+  const c = useTranslations("classrooms.continuity");
 
   return (
     <div className="rounded-lg border border-border/50 bg-card px-3 py-2.5">
@@ -138,7 +146,7 @@ function QuizRow({
           <div className="flex flex-wrap items-center gap-1.5">
             <p className="truncate text-sm font-medium text-foreground">{quiz.title}</p>
             <Badge variant="outline" className="h-5 rounded-md px-1.5 text-xs font-normal">
-              {t(quiz.sourceQuizId ? "followupLabel" : `phase.${quiz.phase}`)}
+              {quiz.purpose === "remediation" ? c("remediationLabel") : t(quiz.sourceQuizId ? "followupLabel" : `phase.${quiz.phase}`)}
             </Badge>
             <Badge
               variant={quiz.status === "open" ? "default" : "secondary"}
@@ -160,6 +168,7 @@ function QuizRow({
           </div>
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-1">
+          <Button type="button" size="sm" variant="ghost" onClick={onCopy}>{c("copyTask")}</Button>
           {(quiz.status === "draft" || quiz.status === "closed") && !followup ? (
             <Button type="button" size="sm" className="h-9 px-2" disabled={busy} onClick={onPublish}>
               {busy ? <Spinner className="size-4" /> : null}
