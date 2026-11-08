@@ -55,6 +55,8 @@ def main():
     source = Path(sys.argv[1])
     assets = ROOT / 'apps/web/public/learning/homework'
     assets.mkdir(parents=True, exist_ok=True)
+    pdf_assets = ROOT / 'backend/internal/application/exports/homework-images'
+    pdf_assets.mkdir(parents=True, exist_ok=True)
     bank = []
     formula_count = diagram_count = 0
     for number in range(1, 5):
@@ -73,6 +75,7 @@ def main():
             else:
                 data = base64.b64decode(img['src'].split(',', 1)[1])
                 (assets / f'{label}.png').write_bytes(data)
+                (pdf_assets / f'{label}.png').write_bytes(data)
                 img.replace_with(f'\n\n![波形图 {label}](/learning/homework/{label}.png)\n\n')
                 diagram_count += 1
         sections = re.split(r'<h6[^>]*>', str(soup))[1:]

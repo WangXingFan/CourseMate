@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { AIActivityWeeks } from "@/features/classrooms/components/shared/ai-activity-weeks";
+import { AIActivityBonusRules } from "@/features/classrooms/components/shared/ai-activity-bonus-rules";
 import { useClassroomAIActivity } from "@/features/classrooms/hooks/use-classroom-ai-activity";
 
 export function ClassroomAIActivity({ accessToken, classroomID }: { accessToken: string; classroomID: string }) {
@@ -19,6 +20,7 @@ export function ClassroomAIActivity({ accessToken, classroomID }: { accessToken:
       <div className="flex gap-2"><Button variant="outline" disabled={!m.report || m.pending || m.loading} onClick={() => void m.download(t("title"))}>{m.pending ? <Spinner className="size-4" /> : <Download aria-hidden className="size-4" />}{t("export")}</Button><Button variant="ghost" aria-label={t("refresh")} disabled={m.loading || m.pending} onClick={m.refresh}><RefreshCw aria-hidden className="size-4" /></Button></div>
     </div>
     <p className="border-l-2 border-primary pl-4 text-sm leading-relaxed">{t("formula")}</p>
+    <AIActivityBonusRules />
     <form className="my-6 flex flex-wrap items-end gap-4" onSubmit={(event) => { event.preventDefault(); if (!invalid) m.apply(); }}>
       <label className="grid min-w-0 flex-1 gap-2 text-sm"><span>{t("startDate")}</span><Input type="date" value={m.startDate} max={m.endDate || today} disabled={m.pending} onChange={(e) => m.setStartDate(e.target.value)} /></label>
       <label className="grid min-w-0 flex-1 gap-2 text-sm"><span>{t("endDate")}</span><Input type="date" value={m.endDate} min={m.startDate} max={today} disabled={m.pending} onChange={(e) => m.setEndDate(e.target.value)} /></label>

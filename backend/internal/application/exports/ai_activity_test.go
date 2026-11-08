@@ -56,7 +56,7 @@ func TestAIActivityExportAndOptionalSummaryWeight(t *testing.T) {
 	start := time.Date(2026, 10, 19, 0, 0, 0, 0, class.AIActivityLocation)
 	end := start.AddDate(0, 0, 7)
 	students := []class.Student{{ID: 1, Username: "001", DisplayName: "学生", JoinedAt: start}, {ID: 2, Username: "002", JoinedAt: end}}
-	report := class.BuildAIActivity("c", students, []class.AIActivityEvent{{UserID: 1, RootMessageID: 1, QuestionAt: start, At: start}}, start, end, end)
+	report := class.BuildAIActivity("c", students, []class.AIActivityEvent{{UserID: 1, RootMessageID: 1, QuestionAt: start, At: start, LearningSource: "correction"}}, start, end, end)
 	d := dataset{class: class.Classroom{Name: "班级"}, students: students, aiActivity: report, now: end}
 	for _, kind := range []string{"ai_activity", "summary"} {
 		o := Options{Kind: kind, Weights: map[string]float64{"ai_activity": 100}}
@@ -72,16 +72,16 @@ func TestAIActivityExportAndOptionalSummaryWeight(t *testing.T) {
 			t.Fatal(err)
 		}
 		rows, err := f.GetRows("AI活跃度")
-		if err != nil || rows[1][0] != "001" || rows[1][6] != "40" || rows[2][7] != "暂无评价" {
+		if err != nil || rows[1][0] != "001" || rows[1][6] != "50" || rows[2][7] != "暂无评价" {
 			t.Fatalf("summary rows: %+v %v", rows, err)
 		}
 		weeks, err := f.GetRows("AI活跃度周明细")
-		if err != nil || len(weeks) != 2 || weeks[1][10] != "40" {
+		if err != nil || len(weeks) != 2 || weeks[1][10] != "50" || weeks[1][11] != "40" || weeks[1][14] != "1" || weeks[1][17] != "10" || weeks[1][18] != "10" {
 			t.Fatalf("weeks: %+v %v", weeks, err)
 		}
 		if kind == "summary" {
 			rows, err = f.GetRows("综合成绩")
-			if err != nil || rows[1][5] != "40" || rows[2][5] != "" {
+			if err != nil || rows[1][5] != "50" || rows[2][5] != "" {
 				t.Fatalf("weighted scores: %+v %v", rows, err)
 			}
 		}

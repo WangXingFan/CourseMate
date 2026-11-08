@@ -121,6 +121,7 @@ type AttachmentInput struct {
 
 // SendMessageInput 定义消息发送请求。
 type SendMessageInput struct {
+	LearningSource          string
 	UserID                  uint
 	ConversationID          uint
 	RequestID               string

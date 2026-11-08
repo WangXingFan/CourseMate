@@ -39,6 +39,7 @@ type Options struct {
 	Weights             map[string]float64
 	FilenameTemplate    string
 	CourseID            string
+	HomeworkID          string
 }
 type File struct {
 	Name, ContentType string
@@ -75,6 +76,11 @@ func (o Options) validate() error {
 		return nil
 	case "reports":
 		if len(lab.TaskIDs(o.CourseID)) == 0 {
+			return ErrInvalid
+		}
+		return nil
+	case "homework_reports":
+		if o.HomeworkID == "" {
 			return ErrInvalid
 		}
 		return nil
@@ -170,10 +176,16 @@ func (s *Service) Export(ctx context.Context, actor uint, id string, o Options) 
 	if o.Kind == "reports" {
 		return s.reports(ctx, *d, o)
 	}
+	if o.Kind == "homework_reports" {
+		return homeworkReports(ctx, *d, o)
+	}
 	return workbook(*d, o)
 }
 
 func (s *Service) collect(ctx context.Context, d *dataset, o Options) error {
+	if o.Kind == "homework_reports" {
+		return s.collectHomeworkReport(ctx, d, o.HomeworkID)
+	}
 	needed := func(k string) bool { return o.Kind == k || o.Kind == "summary" && o.Weights[k] > 0 }
 	if needed("ai_activity") {
 		var err error

@@ -18,6 +18,10 @@
 
 入班前已截止、且没有本人提交的作业不再出现在学生作业列表，也不计入教师应交人数和综合成绩平均分。已有提交保留，方便离班后重新加入的学生查阅成绩。
 
+## 按班级下载答卷
+
+教师进入「导出中心」，选择班级，在「学生作业答卷」选择具体发布的作业并点击「打包下载 PDF」。每位学生一份答卷，包含题目、配图、原始作答、逐题评分、正式总分和教师改分记录；未提交单独标注，已退班学生的历史提交也保留。重复发布的同名作业按开始时间区分。支持自定义文件名，所有 PDF 打包为一个 ZIP；详细范围见[班级导出中心](classroom-exports.md)。
+
 ## 数据与接口
 
 - 作业库：`backend/internal/domain/classroom/content/homework-bank.json`，编译进后端。答案不会打包到前端静态资源。
@@ -26,6 +30,7 @@
 - 教师接口：`GET /classrooms/{id}/homework-bank`、`GET/POST /classrooms/{id}/homeworks`、`GET /homeworks/{id}/report`。
 - 学生接口：`GET /student/homeworks`、`POST /homeworks/{id}/submissions`。
 - 管理接口：`POST /homeworks/{id}/manage`、`POST /homeworks/{id}/students/{student_id}/corrections`。留空提交须传 `confirmBlank: true`。
+- 答卷导出：`POST /classrooms/{id}/exports`，传 `kind: "homework_reports"` 和具体发布记录的 `homeworkId`。
 
 重新构建并重启后端会自动建表，四份作业库随程序生效；前端需部署新构建输出。发布操作由任课教师选择班级和时间后完成。
 

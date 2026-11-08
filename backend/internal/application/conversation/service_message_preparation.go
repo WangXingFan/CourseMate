@@ -109,6 +109,7 @@ func (s *Service) createMessagePair(
 
 	attachmentsJSON := []byte(marshalAttachmentSnapshots(resolvedAttachments))
 	userMessage := &model.Message{
+		LearningSource:  input.LearningSource,
 		ConversationID:  input.ConversationID,
 		UserID:          input.UserID,
 		PublicID:        normalizePublicID(uuid.NewString()),

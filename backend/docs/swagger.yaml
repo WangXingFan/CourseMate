@@ -71,12 +71,28 @@ definitions:
     properties:
       activeDays:
         type: integer
+      baseScore:
+        type: integer
+      bonusScore:
+        type: integer
+      consecutiveWeeks:
+        type: integer
+      continuityScore:
+        type: integer
       countedRounds:
         type: integer
       dayScore:
         type: integer
       endDate:
         type: string
+      followupRounds:
+        type: integer
+      followupScore:
+        type: integer
+      learningRounds:
+        type: integer
+      learningScore:
+        type: integer
       roundScore:
         type: integer
       score:
@@ -92,9 +108,17 @@ definitions:
         type: integer
     required:
     - activeDays
+    - baseScore
+    - bonusScore
+    - consecutiveWeeks
+    - continuityScore
     - countedRounds
     - dayScore
     - endDate
+    - followupRounds
+    - followupScore
+    - learningRounds
+    - learningScore
     - roundScore
     - score
     - startDate
@@ -1244,6 +1268,9 @@ definitions:
         type: string
       filenameTemplate:
         type: string
+      homeworkId:
+        maxLength: 64
+        type: string
       includeOngoing:
         type: boolean
       kind:
@@ -1255,6 +1282,7 @@ definitions:
         - ai_activity
         - summary
         - reports
+        - homework_reports
         type: string
       performanceRecordId:
         type: string
@@ -8550,6 +8578,13 @@ definitions:
           type: string
         maxItems: 8
         type: array
+      learningSource:
+        enum:
+        - lesson
+        - practice
+        - correction
+        - experiment
+        type: string
       model:
         maxLength: 128
         type: string

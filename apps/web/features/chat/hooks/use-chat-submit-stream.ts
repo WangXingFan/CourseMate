@@ -10,6 +10,7 @@ import type {
   ConversationDTO,
   ConversationOptions,
   MessageDTO,
+  SendMessageRequest,
 } from "@/shared/api/conversation-types";
 
 export function useChatSubmitStream({
@@ -20,6 +21,7 @@ export function useChatSubmitStream({
   selectedKnowledgeBaseIDs,
   uiComponentIDs,
   htmlVisualPromptEnabled,
+  learningSource,
   options,
   draft,
   attachments,
@@ -63,6 +65,7 @@ export function useChatSubmitStream({
   selectedKnowledgeBaseIDs: string[];
   uiComponentIDs: number[];
   htmlVisualPromptEnabled: boolean;
+  learningSource?: SendMessageRequest["learningSource"];
   options: ConversationOptions;
   draft: string;
   attachments: PendingAttachment[];
@@ -111,6 +114,7 @@ export function useChatSubmitStream({
     selectedKnowledgeBaseIDs,
     uiComponentIDs,
     htmlVisualPromptEnabled,
+    learningSource,
     options,
     draft,
     attachments,

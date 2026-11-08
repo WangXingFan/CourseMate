@@ -38,9 +38,17 @@ export interface AIActivityStudent {
 
 export interface AIActivityWeek {
   activeDays: number;
+  baseScore: number;
+  bonusScore: number;
+  consecutiveWeeks: number;
+  continuityScore: number;
   countedRounds: number;
   dayScore: number;
   endDate: string;
+  followupRounds: number;
+  followupScore: number;
+  learningRounds: number;
+  learningScore: number;
   roundScore: number;
   score: number;
   startDate: string;
@@ -518,6 +526,8 @@ export interface ClassroomExportRequest {
   aiActivityStartDate?: string;
   courseID: "L1" | "L2" | "L3";
   filenameTemplate: string;
+  /** @maxLength 64 */
+  homeworkId?: string;
   includeOngoing: boolean;
   kind:
     | "homeworks"
@@ -526,7 +536,8 @@ export interface ClassroomExportRequest {
     | "performance"
     | "ai_activity"
     | "summary"
-    | "reports";
+    | "reports"
+    | "homework_reports";
   performanceRecordId: string;
   weights: Record<string, number>;
 }
@@ -3696,6 +3707,7 @@ export interface SendMessageRequest {
   htmlVisualPrompt?: boolean;
   /** @maxItems 8 */
   knowledgeBaseIDs: string[];
+  learningSource?: "lesson" | "practice" | "correction" | "experiment";
   /** @maxLength 128 */
   model?: string;
   options?: Record<string, any>;

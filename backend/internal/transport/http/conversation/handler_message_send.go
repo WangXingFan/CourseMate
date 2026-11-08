@@ -76,6 +76,7 @@ func (h *Handler) parseSendMessageInput(c *gin.Context) (appconversation.SendMes
 	}
 
 	input := appconversation.SendMessageInput{
+		LearningSource:          req.LearningSource,
 		UserID:                  userID,
 		ConversationID:          conversation.ID,
 		RequestID:               middleware.MustRequestID(c),

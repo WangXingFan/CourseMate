@@ -47,6 +47,15 @@ let reviewFailure = false;
 let fingerprint = "a".repeat(64);
 const records = [];
 const workbook = Buffer.from("PK-grade-snapshot-browser-fixture");
+const homeworkZip = Buffer.from("PK-homework-papers-browser-fixture");
+const homeworkExports = [];
+let homeworkLoadFailure = false;
+const exportedHomeworks = [
+  { ...homework, id: "paper-1", title: "作业一", submissionCount: 1 },
+  { ...homework, id: "paper-2", title: "作业一", startsAt: new Date(Date.now() - 7200000).toISOString(), status: "closed", submissionCount: 2 },
+  { ...homework, id: "scheduled-paper", status: "scheduled" },
+  { ...homework, id: "withdrawn-paper", status: "withdrawn" },
+];
 const errors = [];
 let browser;
 
@@ -84,6 +93,14 @@ async function session(role, locale = "zh-CN") {
       data = { questions: [{ reviewDue: true }, { reviewDue: false }] };
     } else if (path.endsWith("/classrooms")) data = { classrooms: [classroom,targetClass] };
     else if (path.endsWith("/classrooms/class/students")) data = {students:roster};
+    else if (path.endsWith("/classrooms/class/homeworks")) {
+      if (homeworkLoadFailure) { await route.fulfill({ status: 503, json: { errorMsg: "作业列表暂时不可用", data: null } }); return; }
+      data = { items: exportedHomeworks, serverTime: now };
+    } else if (path.endsWith("/classrooms/class-target/homeworks")) data = { items: [], serverTime: now };
+    else if (path.endsWith("/classrooms/class/exports")) {
+      homeworkExports.push(request.postDataJSON());
+      await route.fulfill({ contentType: "application/zip", body: homeworkZip }); return;
+    }
     else if (path.endsWith("/classrooms/class-target/students")) data = {students:[{...roster[0],id:"target-student"}]};
     else if (path.endsWith("/classrooms/class/mastery")) data = {classroomId:"class",concepts:[{concept:{id:"lesson:ss-1-1",title:"信号分类",kind:"lesson",topic:"",chapter:"",evidence:[],status:"weak"},assessed:1,weak:1,secure:0,developing:0}],students:[{id:"student-a",name:"示例学生",username:"001",weakConceptIds:["lesson:ss-1-1"],counts:{assessed:1,weak:1,secure:0,developing:0,unassessed:0}}]};
     else if (path.endsWith("/classrooms/class/remediation-bank")) data = {questions:consolidation.questions};
@@ -125,7 +142,7 @@ const draftKeys = (page) => page.evaluate(() => Object.keys(localStorage).filter
 
 try {
   browser = await chromium.launch({ headless: true, ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}) });
-  if (!process.env.TEACHER_CONTINUITY_ONLY) {
+  if (!process.env.TEACHER_CONTINUITY_ONLY && !process.env.HOMEWORK_EXPORT_ONLY) {
   const student = await session("student");
   await student.goto(`${base}/dashboard`);
   await student.getByRole("heading", { name: "我的学习", exact: true }).waitFor();
@@ -210,6 +227,7 @@ try {
 
   }
   const teacher = await session("teacher");
+  if (!process.env.HOMEWORK_EXPORT_ONLY) {
   await teacher.goto(`${base}/dashboard`);
   await teacher.waitForURL("**/classrooms");
   await teacher.getByRole("button", {name:/信号与系统 · 一班/}).click();
@@ -236,7 +254,52 @@ try {
   await copying.getByText(/已复制为目标班级的独立草稿/).waitFor();
   assert.equal(copyCreated,true);
   await teacher.keyboard.press("Escape");
+  }
   if (!process.env.TEACHER_CONTINUITY_ONLY) {
+    await teacher.goto(`${base}/exports`);
+    const section = teacher.getByRole("region", { name: "学生作业答卷", exact: true });
+    const choice = section.getByRole("combobox");
+    await section.getByText("已提交 1 份答卷", { exact: true }).waitFor();
+    assert.equal(await choice.locator("option").count(), 2, "scheduled or withdrawn homework was offered");
+    await choice.selectOption("paper-2");
+    await section.getByText("已提交 2 份答卷", { exact: true }).waitFor();
+    for (const width of [1440, 390]) for (const colorScheme of ["light", "dark"]) {
+      await teacher.setViewportSize({ width, height: 950 });
+      await teacher.emulateMedia({ colorScheme });
+      await section.scrollIntoViewIfNeeded();
+      await screenshot(teacher, `homework-export-${width}-${colorScheme}`);
+    }
+    const downloadButton = section.getByRole("button", { name: "打包下载 PDF", exact: true });
+    const filename = section.getByRole("textbox");
+    await filename.fill("{实验}");
+    assert.equal(await downloadButton.isDisabled(), true);
+    await filename.fill("{班级}_{学号}_{姓名}_{作业}");
+    const downloading = teacher.waitForEvent("download");
+    await downloadButton.click();
+    const download = await downloading;
+    assert.ok(download.suggestedFilename().endsWith(".zip"));
+    assert.ok(download.suggestedFilename().includes("作业一"));
+    assert.deepEqual(await readFile(await download.path()), homeworkZip);
+    assert.equal(homeworkExports.at(-1).kind, "homework_reports");
+    assert.equal(homeworkExports.at(-1).homeworkId, "paper-2");
+    assert.equal(homeworkExports.at(-1).includeOngoing, false);
+    await teacher.getByRole("combobox", { name: "选择班级", exact: true }).selectOption("class-target");
+    await choice.getByText("本班暂无已开始的作业", { exact: true }).waitFor({ state: "attached" });
+    assert.equal(await downloadButton.isDisabled(), true);
+    homeworkLoadFailure = true;
+    await teacher.getByRole("combobox", { name: "选择班级", exact: true }).selectOption("class");
+    await section.getByRole("alert").waitFor();
+    assert.equal(await downloadButton.isDisabled(), true);
+    homeworkLoadFailure = false;
+    await teacher.getByRole("button", { name: "刷新班级", exact: true }).click();
+    await choice.locator('option[value="paper-1"]').waitFor({ state: "attached" });
+    await section.getByRole("alert").waitFor({ state: "hidden" });
+    assert.equal(await downloadButton.isEnabled(), true);
+    const englishTeacher = await session("teacher", "en-US");
+    await englishTeacher.goto(`${base}/exports`);
+    await englishTeacher.getByRole("heading", { name: "Student homework papers", exact: true }).waitFor();
+  }
+  if (!process.env.TEACHER_CONTINUITY_ONLY && !process.env.HOMEWORK_EXPORT_ONLY) {
   await teacher.goto(`${base}/exports`);
   await teacher.getByRole("button", { name: "预览并定稿", exact: true }).click();
   const dialog = teacher.getByRole("dialog");
@@ -271,7 +334,7 @@ try {
   await screenshot(english, "dashboard-english");
   }
   assert.deepEqual(errors, []);
-  console.log(process.env.TEACHER_CONTINUITY_ONLY ? "PASS: teacher remediation selection, recipients, publication, results and cross-class copying; mobile/desktop." : "PASS: dashboard, read-only drafts, account isolation, submission, remediation, cross-class copying and grade records.");
+  console.log(process.env.HOMEWORK_EXPORT_ONLY ? "PASS: homework selection, ZIP download, classroom isolation, errors, filename validation, bilingual UI and mobile/desktop light/dark layouts." : process.env.TEACHER_CONTINUITY_ONLY ? "PASS: teacher remediation selection, recipients, publication, results and cross-class copying; mobile/desktop." : "PASS: dashboard, read-only drafts, account isolation, submission, remediation, cross-class copying, homework exports and grade records.");
 } catch (error) {
   for (const [i, context] of (browser?.contexts() ?? []).entries()) {
     for (const page of context.pages()) await page.screenshot({ path: join(artifacts, `failure-${i}.png`) }).catch(() => {});

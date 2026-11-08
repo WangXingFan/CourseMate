@@ -16600,9 +16600,17 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "activeDays",
+                "baseScore",
+                "bonusScore",
+                "consecutiveWeeks",
+                "continuityScore",
                 "countedRounds",
                 "dayScore",
                 "endDate",
+                "followupRounds",
+                "followupScore",
+                "learningRounds",
+                "learningScore",
                 "roundScore",
                 "score",
                 "startDate",
@@ -16613,6 +16621,18 @@ const docTemplate = `{
                 "activeDays": {
                     "type": "integer"
                 },
+                "baseScore": {
+                    "type": "integer"
+                },
+                "bonusScore": {
+                    "type": "integer"
+                },
+                "consecutiveWeeks": {
+                    "type": "integer"
+                },
+                "continuityScore": {
+                    "type": "integer"
+                },
                 "countedRounds": {
                     "type": "integer"
                 },
@@ -16621,6 +16641,18 @@ const docTemplate = `{
                 },
                 "endDate": {
                     "type": "string"
+                },
+                "followupRounds": {
+                    "type": "integer"
+                },
+                "followupScore": {
+                    "type": "integer"
+                },
+                "learningRounds": {
+                    "type": "integer"
+                },
+                "learningScore": {
+                    "type": "integer"
                 },
                 "roundScore": {
                     "type": "integer"
@@ -18244,6 +18276,10 @@ const docTemplate = `{
                 "filenameTemplate": {
                     "type": "string"
                 },
+                "homeworkId": {
+                    "type": "string",
+                    "maxLength": 64
+                },
                 "includeOngoing": {
                     "type": "boolean"
                 },
@@ -18256,7 +18292,8 @@ const docTemplate = `{
                         "performance",
                         "ai_activity",
                         "summary",
-                        "reports"
+                        "reports",
+                        "homework_reports"
                     ]
                 },
                 "performanceRecordId": {
@@ -28676,6 +28713,15 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "learningSource": {
+                    "type": "string",
+                    "enum": [
+                        "lesson",
+                        "practice",
+                        "correction",
+                        "experiment"
+                    ]
                 },
                 "model": {
                     "type": "string",

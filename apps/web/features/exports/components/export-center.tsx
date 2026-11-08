@@ -1,7 +1,7 @@
 "use client";
 
 import { Download, Info, RefreshCw } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
@@ -21,13 +21,14 @@ export function ExportCenter() {
 function ExportWorkspace({ accessToken }: { accessToken: string }) {
   const t = useTranslations("classrooms.exports");
   const aiT = useTranslations("classrooms.aiActivity");
+  const format = useFormatter();
   const m = useExportCenter(accessToken);
   const disabled = m.loading || !!m.pending || !m.classroom;
-  const downloadButton = (kind: ExportKind, invalid = false) => <Button variant={kind === "summary" ? "default" : "outline"} disabled={disabled || invalid || ((kind === "ai_activity" || kind === "summary" && m.selected.ai_activity) && !m.validAIDates) || ((kind === "performance" || kind === "summary" && m.selected.performance) && (m.recordsLoading || !!m.recordsError))} onClick={() => void m.download(kind)}>{m.pending === kind ? <Spinner className="size-4" /> : <Download aria-hidden className="size-4" strokeWidth={1.6} />}{m.pending === kind ? t("preparing") : t(kind === "reports" ? "downloadZip" : "downloadExcel")}</Button>;
+  const downloadButton = (kind: ExportKind, invalid = false) => <Button variant={kind === "summary" ? "default" : "outline"} disabled={disabled || invalid || ((kind === "ai_activity" || kind === "summary" && m.selected.ai_activity) && !m.validAIDates) || ((kind === "performance" || kind === "summary" && m.selected.performance) && (m.recordsLoading || !!m.recordsError))} onClick={() => void m.download(kind)}>{m.pending === kind ? <Spinner className="size-4" /> : <Download aria-hidden className="size-4" strokeWidth={1.6} />}{m.pending === kind ? t("preparing") : t(kind === "reports" || kind === "homework_reports" ? "downloadZip" : "downloadExcel")}</Button>;
   return <main className="flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-background">
     <header className="shrink-0 border-b border-border px-5 py-6 pb-8 md:px-8"><div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4">
       <h1 className="font-display text-3xl font-normal tracking-[-0.015em] md:text-4xl">{t("title")}</h1>
-      <div className="flex gap-2"><Dialog><DialogTrigger asChild><Button variant="ghost"><Info aria-hidden className="size-4" strokeWidth={1.6} />{t("rules")}</Button></DialogTrigger><DialogContent className="max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>{t("rules")}</DialogTitle><DialogDescription>{t("scope")}</DialogDescription></DialogHeader><div className="space-y-4 text-sm leading-relaxed">{["homeworks", "labs", "attendance", "performance", "ai_activity", "summary", "reports"].map((key) => <p key={key}>{t(`rulesText.${key}`)}</p>)}</div></DialogContent></Dialog><Button variant="outline" disabled={m.loading || !!m.pending} onClick={m.refresh} aria-label={t("refresh")}><RefreshCw aria-hidden className="size-4" strokeWidth={1.6} /></Button></div>
+      <div className="flex gap-2"><Dialog><DialogTrigger asChild><Button variant="ghost"><Info aria-hidden className="size-4" strokeWidth={1.6} />{t("rules")}</Button></DialogTrigger><DialogContent className="max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>{t("rules")}</DialogTitle><DialogDescription>{t("scope")}</DialogDescription></DialogHeader><div className="space-y-4 text-sm leading-relaxed">{["homeworks", "labs", "attendance", "performance", "ai_activity", "summary", "homework_reports", "reports"].map((key) => <p key={key}>{t(`rulesText.${key}`)}</p>)}</div></DialogContent></Dialog><Button variant="outline" disabled={m.loading || !!m.pending} onClick={m.refresh} aria-label={t("refresh")}><RefreshCw aria-hidden className="size-4" strokeWidth={1.6} /></Button></div>
     </div></header>
     <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6 md:px-8"><div className="mx-auto max-w-5xl space-y-8">
       <div className="flex flex-wrap items-end gap-5"><label className="grid min-w-0 flex-1 gap-2 text-sm"><span>{t("classroom")}</span><select className="h-9 w-full min-w-0 rounded-md border border-input bg-background px-3" value={m.classroomID} disabled={m.loading || !!m.pending} onChange={(event) => m.setClassroomID(event.target.value)}>{!m.classrooms.length && <option value="">{t(m.loading ? "loading" : "noClasses")}</option>}{m.classrooms.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>{m.classroom && <div className="border-l-2 border-primary px-4 py-1"><span className="font-mono text-xl">{m.classroom.studentCount}</span><span className="ml-2 text-sm">{t("students")}</span></div>}</div>
@@ -52,6 +53,19 @@ function ExportWorkspace({ accessToken }: { accessToken: string }) {
         {!m.validWeights && <p role="status" className="mt-3 text-sm text-destructive">{t("invalidWeights")}</p>}
       </section>
       <GradeRecords accessToken={accessToken} classroomID={m.classroomID} options={m.summaryOptions} disabled={disabled || !m.validWeights || (m.selected.ai_activity && !m.validAIDates) || (m.selected.performance && (m.recordsLoading || !!m.recordsError))} />
+      <section aria-labelledby="export-homework-reports" className="space-y-5 border-t border-border py-7">
+        <div className="flex flex-wrap items-center justify-between gap-4"><h2 id="export-homework-reports" className="font-display text-2xl font-normal">{t("items.homework_reports")}</h2>{downloadButton("homework_reports", !m.homework || m.homeworkLoading || !!m.homeworkError || !m.validHomeworkTemplate)}</div>
+        <label className="grid min-w-0 gap-2 text-sm"><span>{t("homework")}</span><select className="h-9 w-full min-w-0 rounded-md border border-input bg-background px-3" value={m.homework?.id ?? ""} disabled={disabled || m.homeworkLoading || !!m.homeworkError || !m.homeworks.length} onChange={(event) => m.setHomeworkID(event.target.value)}>
+          {!m.homeworks.length && <option value="">{t(m.homeworkLoading ? "loading" : "noHomeworks")}</option>}
+          {m.homeworks.map((item) => <option key={item.id} value={item.id}>{t("homeworkOption", { title: item.title, date: format.dateTime(new Date(item.startsAt), { dateStyle: "short", timeStyle: "short", timeZone: "Asia/Shanghai" }), status: t(`homeworkStatus.${item.status}`) })}</option>)}
+        </select></label>
+        {m.homeworkError && <p role="alert" className="text-sm text-destructive">{m.homeworkError}</p>}
+        {m.homework && <p className="text-sm">{t("homeworkSubmissions", { count: m.homework.submissionCount })}</p>}
+        <label className="grid gap-2 text-sm"><span>{t("filename")}</span><Input value={m.homeworkTemplate} maxLength={120} disabled={!!m.pending} onChange={(event) => m.setHomeworkTemplate(event.target.value)} /></label>
+        <div role="group" className="flex flex-wrap gap-2" aria-label={t("tokens")}>{["班级", "学号", "姓名", "作业", "日期"].map((token) => <Button key={token} variant="ghost" size="sm" disabled={!!m.pending} onClick={() => m.setHomeworkTemplate((value) => `${value}{${token}}`)}>{`{${token}}`}</Button>)}</div>
+        <dl className="grid gap-2 text-sm"><dt>{t("preview")}</dt><dd className="break-all border-l-2 border-primary pl-4 font-mono">{m.homeworkPreview}</dd></dl>
+        {!m.validHomeworkTemplate && <p role="status" className="text-sm text-destructive">{t("invalidHomeworkTemplate")}</p>}
+      </section>
       <section aria-labelledby="export-reports" className="space-y-5 border-t border-border py-7"><div className="flex flex-wrap items-center justify-between gap-4"><h2 id="export-reports" className="font-display text-2xl font-normal">{t("items.reports")}</h2>{downloadButton("reports", !m.validTemplate)}</div>
         <label className="grid gap-2 text-sm"><span>{t("course")}</span><select className="h-9 w-full rounded-md border border-input bg-background px-3" value={m.courseID} disabled={!!m.pending} onChange={(event) => m.setCourseID(event.target.value)}>{REPORT_COURSES.map((item) => <option key={item.id} value={item.id}>{t(`courses.${item.id}`)}</option>)}</select></label>
         <label className="grid gap-2 text-sm"><span>{t("filename")}</span><Input value={m.template} maxLength={120} disabled={!!m.pending} onChange={(event) => m.setTemplate(event.target.value)} /></label>

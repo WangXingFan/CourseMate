@@ -54,6 +54,7 @@ type GetConversationRunStatusesRequest struct {
 
 // SendMessageRequest 发送消息请求。
 type SendMessageRequest struct {
+	LearningSource          string         `json:"learningSource,omitempty" binding:"omitempty,oneof=lesson practice correction experiment" enums:"lesson,practice,correction,experiment"`
 	ContentType             string         `json:"contentType" binding:"required,oneof=text markdown image file mixed"`
 	Content                 string         `json:"content" binding:"required"`
 	Model                   string         `json:"model,omitempty" binding:"omitempty,max=128"`

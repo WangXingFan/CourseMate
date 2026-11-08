@@ -62,6 +62,7 @@ import type {
   MessageDTO,
   SendMessageResult,
   StreamMessageEvent,
+  SendMessageRequest,
 } from "@/shared/api/conversation-types";
 import { ApiError } from "@/shared/api/http-client";
 import { resolveAccessToken } from "@/shared/auth/resolve-access-token";
@@ -75,6 +76,7 @@ export function useChatMessageSubmit({
   selectedKnowledgeBaseIDs,
   uiComponentIDs,
   htmlVisualPromptEnabled,
+  learningSource,
   options,
   draft,
   attachments,
@@ -125,6 +127,7 @@ export function useChatMessageSubmit({
   selectedKnowledgeBaseIDs: string[];
   uiComponentIDs: number[];
   htmlVisualPromptEnabled: boolean;
+  learningSource?: SendMessageRequest["learningSource"];
   options: ConversationOptions;
   draft: string;
   attachments: PendingAttachment[];
@@ -523,6 +526,7 @@ export function useChatMessageSubmit({
           exchangeKey,
           clientRunID,
           content: payloadContent,
+          learningSource: plan.branchReason === "default" && !resolvedParentPublicID ? learningSource : undefined,
           options: plan.sanitizedOptions,
           effectiveAttachments,
           platformModelName,
@@ -753,6 +757,7 @@ export function useChatMessageSubmit({
       flushStreamTextNow,
       flushUpstreamThinkNow,
       htmlVisualPromptEnabled,
+      learningSource,
       maxFilesPerMessage,
       onConversationCreated,
       onConversationRunDetached,

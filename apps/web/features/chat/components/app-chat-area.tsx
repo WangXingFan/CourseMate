@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { learningHandoffSource } from "@/shared/lib/learning-handoff";
 import { useChatLearningHandoff } from "@/features/chat/hooks/use-chat-learning-handoff";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -311,6 +312,7 @@ export function AppChatArea() {
     selectedPlatformModelName,
     selectedKnowledgeBaseIDs,
     uiComponentIDs: effectiveUIComponentIDs,
+    learningSource: learningHandoffSource(learningContext, draft),
     htmlVisualPromptEnabled: htmlVisualPrompt.enabled,
     options: modelOptionPolicyDisabled ? EMPTY_CONVERSATION_OPTIONS : options,
     draft,
