@@ -60,7 +60,7 @@ function ConceptRow({ item, title, readOnly }: { item: MasteryConcept; title: st
       <div className="min-w-0 flex-1"><h3 className="font-display text-xl font-normal leading-7">{title}</h3><div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm"><span className={cn("font-medium", item.status === "weak" ? "text-destructive" : "text-foreground")}>{t(`status.${item.status}`)}</span><span className="text-muted-foreground">{item.questions ? t("sample", { correct: item.correct, total: item.questions }) : t("noEvidence")}</span></div></div>
       {!readOnly && <div className="flex flex-wrap gap-2">
         <Button asChild variant="ghost" size="sm"><Link href={item.reviewHref}>{t("review")}</Link></Button>
-        <Button asChild variant="outline" size="sm"><Link href={item.practiceHref}>{t(item.kind === "course" ? "activities" : "practice")}</Link></Button>
+        <Button asChild variant="outline" size="sm"><Link href={item.practiceHref}>{t("practice")}</Link></Button>
         {item.experimentHref && <Button asChild variant="ghost" size="sm"><Link href={item.experimentHref}>{t("experiment")}</Link></Button>}
       </div>}
     </div>

@@ -1,6 +1,7 @@
 package learning
 
 import (
+	"net/url"
 	"sort"
 	"strings"
 	"time"
@@ -46,7 +47,7 @@ func masteryCatalog() []MasteryConcept {
 	for _, lesson := range PracticeCourseLessons() {
 		chapterID, _, _ := strings.Cut(lesson.Number, ".")
 		chapterTitles[chapterID] = lesson.Chapter
-		items = append(items, MasteryConcept{ID: "lesson:" + lesson.ID, Kind: "course", Title: lesson.Number + " · " + lesson.Title, Chapter: lesson.Chapter, LessonID: lesson.ID, ReviewHref: "/learn/knowledge?lesson=" + lesson.ID, PracticeHref: "/activities"})
+		items = append(items, MasteryConcept{ID: "lesson:" + lesson.ID, Kind: "course", Title: lesson.Number + " · " + lesson.Title, Chapter: lesson.Chapter, LessonID: lesson.ID, ReviewHref: "/learn/knowledge?lesson=" + lesson.ID})
 	}
 	seen := map[string]bool{}
 	for _, q := range Questions() {
@@ -54,12 +55,15 @@ func masteryCatalog() []MasteryConcept {
 			continue
 		}
 		seen[q.Topic] = true
-		concept := MasteryConcept{ID: "topic:" + q.Topic, Kind: "practice", Topic: q.Topic, Chapter: chapterTitles[q.ChapterID], ReviewHref: "/learn/knowledge", PracticeHref: "/learn/quiz?topic=" + q.Topic, ExperimentHref: q.Lesson}
+		concept := MasteryConcept{ID: "topic:" + q.Topic, Kind: "practice", Topic: q.Topic, Chapter: chapterTitles[q.ChapterID], ReviewHref: "/learn/knowledge", ExperimentHref: q.Lesson}
 		if lesson := FindCourseLesson(masteryTopicLessons[q.Topic]); lesson != nil {
 			concept.LessonID = lesson.ID
 			concept.ReviewHref += "?lesson=" + lesson.ID
 		}
 		items = append(items, concept)
+	}
+	for i := range items {
+		items[i].PracticeHref = "/learn/practice?concept=" + url.QueryEscape(items[i].ID)
 	}
 	return items
 }
@@ -139,14 +143,6 @@ func BuildMastery(evidence []MasteryEvidence, now time.Time, period MasteryPerio
 			concept.Status = "secure"
 		}
 		concept.Evidence = concept.Evidence[:min(5, len(concept.Evidence))]
-		if concept.Kind == "practice" && concept.Status != "secure" {
-			question := concept.Evidence[0].QuestionID
-			if base, ok := strings.CutPrefix(question, "practice:"); ok {
-				if FindQuestion(base) != nil {
-					concept.PracticeHref = "/learn/quiz?question=" + base
-				}
-			}
-		}
 	}
 	profile.Counts = CountMastery(profile.Concepts)
 	return profile

@@ -12922,6 +12922,125 @@
                 }
             }
         },
+        "/learning/practice-attempts": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Grade and save a topic practice answer and update mastery evidence",
+                "parameters": [
+                    {
+                        "description": "Topic practice answer",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/LearningPracticeAnswerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningLessonAttemptResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/learning/practice-bank": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "learning"
+                ],
+                "summary": "Read a personal topic practice bank without answer keys",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Mastery concept ID",
+                        "name": "conceptId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "zh-CN or en-US",
+                        "name": "locale",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/LearningPracticeBankResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/learning/progress": {
             "get": {
                 "security": [
@@ -23240,6 +23359,94 @@
                     "type": "integer"
                 },
                 "start": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningPracticeAnswerRequest": {
+            "type": "object",
+            "required": [
+                "answers",
+                "conceptId",
+                "id",
+                "locale",
+                "questionId"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "conceptId": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "id": {
+                    "type": "string"
+                },
+                "locale": {
+                    "type": "string",
+                    "enum": [
+                        "zh-CN",
+                        "en-US"
+                    ]
+                },
+                "questionId": {
+                    "type": "string",
+                    "maxLength": 96
+                }
+            }
+        },
+        "LearningPracticeBankResponse": {
+            "type": "object",
+            "required": [
+                "conceptId",
+                "progress",
+                "questions",
+                "reviewHref",
+                "title",
+                "topic"
+            ],
+            "properties": {
+                "conceptId": {
+                    "type": "string"
+                },
+                "progress": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningPracticeProgress"
+                    }
+                },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LearningCourseQuestion"
+                    }
+                },
+                "reviewHref": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "topic": {
+                    "type": "string"
+                }
+            }
+        },
+        "LearningPracticeProgress": {
+            "type": "object",
+            "required": [
+                "correct",
+                "questionId"
+            ],
+            "properties": {
+                "correct": {
+                    "type": "boolean"
+                },
+                "questionId": {
                     "type": "string"
                 }
             }

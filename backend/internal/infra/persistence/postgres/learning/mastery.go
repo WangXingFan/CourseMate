@@ -36,13 +36,30 @@ func (r *Repo) MasteryEvidence(ctx context.Context, users []uint, classroomID ui
 		result = append(result, domain.MasteryEvidence{UserID: item.UserID, ConceptID: "topic:" + question.Topic, QuestionID: "practice:" + questionID, Source: source, Prompt: prompt, Correct: item.Correct, At: item.CreatedAt})
 	}
 	var lessons []models.LearningLessonAttempt
-	if err := r.db.WithContext(ctx).Scopes(masteryPeriodScope("created_at", period)).Where("user_id IN ? AND version = ?", users, domain.CourseCatalog().Version).Order("created_at ASC, id ASC").Find(&lessons).Error; err != nil {
+	if err := r.db.WithContext(ctx).Scopes(masteryPeriodScope("created_at", period)).Where("user_id IN ? AND version IN ?", users, []string{domain.CourseCatalog().Version, domain.PracticeBankVersion}).Order("created_at ASC, id ASC").Find(&lessons).Error; err != nil {
 		return nil, err
 	}
+	practiceBanks := map[string]*domain.PracticeBank{}
 	for _, row := range lessons {
 		item, err := decodeLessonAttempt(row)
 		if err != nil {
 			return nil, fmt.Errorf("mastery lesson attempt %d: %w", row.ID, err)
+		}
+		if row.Version == domain.PracticeBankVersion {
+			bank, found := practiceBanks[item.ConceptID]
+			if !found {
+				bank = domain.FindPracticeBank(item.ConceptID, "zh-CN")
+				practiceBanks[item.ConceptID] = bank
+			}
+			if bank != nil && item.Total > 0 {
+				for _, q := range bank.Questions {
+					if q.ID == item.QuestionID {
+						result = append(result, domain.MasteryEvidence{UserID: row.UserID, ConceptID: item.ConceptID, QuestionID: "practice:" + q.CanonicalID, Source: "practice", Prompt: q.Prompt, Correct: item.Score == item.Total, At: row.CreatedAt})
+						break
+					}
+				}
+			}
+			continue
 		}
 		lesson := domain.FindCourseLesson(item.LessonID)
 		if lesson == nil || item.Total <= 0 {

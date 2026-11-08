@@ -14,7 +14,7 @@ export function LearningMastery() {
   const model = useLearningMastery();
   return <LessonShell title={t("title")}>
     <div className="mb-6 flex flex-wrap justify-between gap-3">
-      <Button asChild variant="outline"><Link href="/learn/progress">{t("history")}</Link></Button>
+      <div className="flex flex-wrap gap-3"><Button asChild><Link href="/learn/practice">{t("practiceBanks")}</Link></Button><Button asChild variant="outline"><Link href="/learn/progress">{t("history")}</Link></Button></div>
       <Button variant="ghost" onClick={model.refresh}>{t("refresh")}</Button>
     </div>
     <MasteryPeriodFilter period={model.period} onChange={model.setPeriod} />

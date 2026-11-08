@@ -5054,6 +5054,68 @@ definitions:
     - correct
     - start
     type: object
+  LearningPracticeAnswerRequest:
+    properties:
+      answers:
+        additionalProperties:
+          type: string
+        type: object
+      conceptId:
+        maxLength: 64
+        type: string
+      id:
+        type: string
+      locale:
+        enum:
+        - zh-CN
+        - en-US
+        type: string
+      questionId:
+        maxLength: 96
+        type: string
+    required:
+    - answers
+    - conceptId
+    - id
+    - locale
+    - questionId
+    type: object
+  LearningPracticeBankResponse:
+    properties:
+      conceptId:
+        type: string
+      progress:
+        items:
+          $ref: '#/definitions/LearningPracticeProgress'
+        type: array
+      questions:
+        items:
+          $ref: '#/definitions/LearningCourseQuestion'
+        type: array
+      reviewHref:
+        type: string
+      title:
+        type: string
+      topic:
+        type: string
+    required:
+    - conceptId
+    - progress
+    - questions
+    - reviewHref
+    - title
+    - topic
+    type: object
+  LearningPracticeProgress:
+    properties:
+      correct:
+        type: boolean
+      questionId:
+        type: string
+    required:
+    - correct
+    - questionId
+    type: object
   LearningProgressResponse:
     properties:
       accountId:
@@ -18248,6 +18310,81 @@ paths:
       security:
       - BearerAuth: []
       summary: Read personal knowledge mastery from graded evidence
+      tags:
+      - learning
+  /learning/practice-attempts:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Topic practice answer
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/LearningPracticeAnswerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningLessonAttemptResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Grade and save a topic practice answer and update mastery evidence
+      tags:
+      - learning
+  /learning/practice-bank:
+    get:
+      parameters:
+      - description: Mastery concept ID
+        in: query
+        name: conceptId
+        required: true
+        type: string
+      - description: zh-CN or en-US
+        in: query
+        name: locale
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LearningPracticeBankResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Read a personal topic practice bank without answer keys
       tags:
       - learning
   /learning/progress:

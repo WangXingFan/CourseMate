@@ -203,7 +203,7 @@ func testRouter(t *testing.T, attempts ...models.LearningAttempt) *gin.Engine {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = sqlDB.Close() })
-	if err := db.AutoMigrate(&models.LearningAttempt{}, &models.LearningLessonAttempt{}, &models.LearningVirtualLab{}, &models.LearningQuizRound{}, &models.User{}, &models.Classroom{}, &models.ClassroomStudent{}); err != nil {
+	if err := db.AutoMigrate(&models.LearningAttempt{}, &models.LearningLessonAttempt{}, &models.LearningVirtualLab{}, &models.LearningQuizRound{}, &models.User{}, &models.Classroom{}, &models.ClassroomStudent{}, &models.ClassroomQuiz{}, &models.ClassroomQuizSubmission{}); err != nil {
 		t.Fatal(err)
 	}
 	for _, id := range []uint{1, 2, 999} {

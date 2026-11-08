@@ -2178,6 +2178,30 @@ export interface LearningMasteryWeekResponse {
   start: string;
 }
 
+export interface LearningPracticeAnswerRequest {
+  answers: Record<string, string>;
+  /** @maxLength 64 */
+  conceptId: string;
+  id: string;
+  locale: "zh-CN" | "en-US";
+  /** @maxLength 96 */
+  questionId: string;
+}
+
+export interface LearningPracticeBankResponse {
+  conceptId: string;
+  progress: LearningPracticeProgress[];
+  questions: LearningCourseQuestion[];
+  reviewHref: string;
+  title: string;
+  topic: string;
+}
+
+export interface LearningPracticeProgress {
+  correct: boolean;
+  questionId: string;
+}
+
 export interface LearningProgressResponse {
   accountId: number;
   questions: LearningQuestionResponse[];
@@ -9232,6 +9256,43 @@ export namespace Learning {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = LearningMasteryResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name PracticeAttemptsCreate
+   * @summary Grade and save a topic practice answer and update mastery evidence
+   * @request POST:/learning/practice-attempts
+   * @secure
+   */
+  export namespace PracticeAttemptsCreate {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = LearningPracticeAnswerRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningLessonAttemptResponse;
+  }
+
+  /**
+   * No description
+   * @tags learning
+   * @name PracticeBankList
+   * @summary Read a personal topic practice bank without answer keys
+   * @request GET:/learning/practice-bank
+   * @secure
+   */
+  export namespace PracticeBankList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Mastery concept ID */
+      conceptId: string;
+      /** zh-CN or en-US */
+      locale?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = LearningPracticeBankResponse;
   }
 
   /**

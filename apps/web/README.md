@@ -144,6 +144,8 @@ Next.js 的 route group（`(app)`、`(auth)`、`(project)`、`(shell)`）只用�
 | `/learn/experiments/{signal-basics,time-domain,frequency-domain,s-domain}` | 兼容旧链接，挂载对应的完整实验 |
 | `/learn/quiz` | 按四章选择的 90 秒快问快答；按章展示学生最佳成绩，得分降序、同分用时升序 |
 | `/learn/progress` | 账号学习记录、按知识点筛选的错题本与不限时重练 |
+| `/learn/mastery` | 知识掌握情况、薄弱项与对应专题刷题入口 |
+| `/learn/practice` | 专题题库；支持按薄弱项筛选、全部 / 未练 / 错题练习，以及每轮 10 / 20 / 全部题目 |
 | `/learn/workbench` | 自定义信号、时间变换、组合运算与数值卷积 |
 | `/settings/general` | 通用偏好 |
 | `/settings/chat` | 对话偏好 |
@@ -171,6 +173,10 @@ Next.js 的 route group（`(app)`、`(auth)`、`(project)`、`(shell)`）只用�
 学习闭环 P0 已新增四实验助教、信号工作台、误区诊断与间隔复习。使用说明、API、数据兼容、验证和回滚见 [P0 交付记录](../../docs/LEARNING-P0-DELIVERY.zh-CN.md)。UI 与数值回归在 GitHub Actions 的 Web 任务执行。
 
 学习记录目前覆盖快问快答和错题重练；每次作答单独保存，后端校验答案并按账号和作答 UUID 去重。最近作答展示 40 条，累计统计保留全部记录。答错后再答对的题目保留错题历史，并显示最近作答状态。未完成保存的请求暂存于当前标签页的 sessionStorage，按服务器与账号隔离，重新进入页面后补传。
+
+专题题库覆盖知识掌握页的 52 个课程知识点和 28 个练习专题，每个题库至少 10 道不同题目。题目来自已有公开练习及变式，另在 `backend/internal/domain/learning/content/practice-supplements.json` 补充 33 道双语计算题；章节总结和附录按对应知识内容复用题目。进入题库使用 `/learn/practice?concept=lesson:ss-2-8` 或 `?concept=topic:time-constant`。GET `/api/v1/learning/practice-bank` 只返回题目与个人最近答题状态，POST `/api/v1/learning/practice-attempts` 在服务端判题并返回答案、解析。
+
+专项记录复用课程练习存储，以独立版本 `topic-practice-v1` 隔离，直接反馈到所选知识点的掌握情况；不计入限时挑战排名或正式课堂成绩，也不向学生开放教师题库。相同原题通过不同练习入口作答时，在同一专题中只计作一道掌握证据。提交失败可在当前页面重试；保存成功的题目状态支持刷新后继续筛选未练题和错题。浏览器回归：`apps/web/scripts/learning-practice-smoke.mjs`，使用临时 SQLite 后端验证实际判题、保存、重试与掌握更新；环境参数与其他 smoke 脚本相同。
 
 题目 ID、正确选项、知识点和关联实验由后端 `domain/learning` 提供；中英文题干和解析位于 `learning-labs.json`。改变题意或正确选项时必须使用新的题目 ID，避免旧学习记录被重新解释。
 

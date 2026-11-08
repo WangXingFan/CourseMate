@@ -92,6 +92,7 @@ type LessonAttempt struct {
 	ID          string
 	UserID      uint
 	Version     string
+	ConceptID   string
 	LessonID    string
 	QuestionID  string
 	Stage       string

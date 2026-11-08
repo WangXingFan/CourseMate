@@ -11,6 +11,7 @@ export { ExperimentHub } from "@/features/learning/components/experiments/experi
 export { LearningQuiz } from "@/features/learning/components/quiz/learning-quiz";
 export { LearningProgress } from "@/features/learning/components/learning-progress";
 export { LearningMastery } from "@/features/learning/components/learning-mastery";
+export { LearningPractice } from "@/features/learning/components/learning-practice";
 export { MasteryProfile } from "@/features/learning/components/mastery-profile";
 export { MasteryPeriodFilter } from "@/features/learning/components/shared/mastery-period-filter";
 export { SignalWorkbench } from "@/features/learning/components/workbench/signal-workbench";

@@ -1,0 +1,563 @@
+[
+  {
+    "id": "supp-rc-product",
+    "topic": "time-constant",
+    "lessons": [
+      "ss-5-10"
+    ],
+    "expected": 0.02,
+    "unit": "s",
+    "zh": {
+      "prompt": "一阶 RC 低通电路中，R=4 kΩ、C=5 μF，时间常数是多少秒？",
+      "explanation": "τ=RC=4000×5×10⁻⁶=0.02 s。"
+    },
+    "en": {
+      "prompt": "For a first-order RC low-pass circuit with R=4 kΩ and C=5 μF, find the time constant in seconds.",
+      "explanation": "τ=RC=4000×5×10⁻⁶=0.02 s."
+    }
+  },
+  {
+    "id": "supp-decay-time",
+    "topic": "time-constant",
+    "lessons": [
+      "ss-5-10"
+    ],
+    "expected": 0.25,
+    "unit": "s",
+    "zh": {
+      "prompt": "一阶系统自然响应为 3e^(−4t)，时间常数是多少秒？",
+      "explanation": "由 e^(−t/τ)=e^(−4t)，可得 τ=1/4=0.25 s。"
+    },
+    "en": {
+      "prompt": "A first-order natural response is 3e^(−4t). Find its time constant in seconds.",
+      "explanation": "Matching e^(−t/τ) with e^(−4t) gives τ=1/4=0.25 s."
+    }
+  },
+  {
+    "id": "supp-step-three-tau",
+    "topic": "time-constant",
+    "lessons": [
+      "ss-5-10"
+    ],
+    "expected": 3,
+    "unit": "s",
+    "zh": {
+      "prompt": "单位阶跃响应为 1−e^(−t)。达到 1−e^(−3) 时经过多少秒？",
+      "explanation": "比较指数，t=3 s，即三个时间常数。"
+    },
+    "en": {
+      "prompt": "The unit-step response is 1−e^(−t). How many seconds are needed to reach 1−e^(−3)?",
+      "explanation": "Equating the exponents gives t=3 s, or three time constants."
+    }
+  },
+  {
+    "id": "supp-tau-capacitance",
+    "topic": "time-constant",
+    "lessons": [
+      "ss-5-10"
+    ],
+    "expected": 4,
+    "unit": "μF",
+    "zh": {
+      "prompt": "RC 电路要求时间常数为 0.008 s，R=2 kΩ，C 应为多少 μF？",
+      "explanation": "C=τ/R=0.008/2000=4×10⁻⁶ F=4 μF。"
+    },
+    "en": {
+      "prompt": "An RC circuit needs a time constant of 0.008 s with R=2 kΩ. Find C in μF.",
+      "explanation": "C=τ/R=0.008/2000=4×10⁻⁶ F=4 μF."
+    }
+  },
+  {
+    "id": "supp-model-coefficient",
+    "topic": "system-model",
+    "lessons": [
+      "ss-1-5"
+    ],
+    "expected": 5,
+    "unit": "",
+    "zh": {
+      "prompt": "零初始条件下，y″+5y′+6y=2x。系统函数分母写为 s²+as+6，a 是多少？",
+      "explanation": "微分对应乘以 s，分母为 s²+5s+6，因此 a=5。"
+    },
+    "en": {
+      "prompt": "With zero initial conditions, y″+5y′+6y=2x. The transfer-function denominator is s²+as+6. Find a.",
+      "explanation": "Differentiation multiplies by s, giving s²+5s+6, so a=5."
+    }
+  },
+  {
+    "id": "supp-spectral-rectangle",
+    "topic": "spectral-energy",
+    "lessons": [
+      "ss-3-10"
+    ],
+    "expected": 12,
+    "unit": "",
+    "zh": {
+      "prompt": "采用角频率傅里叶变换，|X(jω)|² 在 −3π≤ω≤3π 内为 4，其余为 0。信号能量是多少？",
+      "explanation": "E=(1/2π)×4×6π=12。"
+    },
+    "en": {
+      "prompt": "Using the angular-frequency Fourier transform, |X(jω)|² is 4 on −3π≤ω≤3π and zero elsewhere. Find the energy.",
+      "explanation": "E=(1/2π)×4×6π=12."
+    }
+  },
+  {
+    "id": "supp-spectral-inverse",
+    "topic": "spectral-energy",
+    "lessons": [
+      "ss-3-10"
+    ],
+    "expected": 10,
+    "unit": "",
+    "zh": {
+      "prompt": "采用角频率傅里叶变换，信号能量 E=5。若 ∫|X(jω)|²dω=kπ，求 k。",
+      "explanation": "由帕塞瓦尔关系，积分为 2πE=10π，所以 k=10。"
+    },
+    "en": {
+      "prompt": "Under the angular-frequency Fourier convention, E=5 and ∫|X(jω)|²dω=kπ. Find k.",
+      "explanation": "Parseval gives the integral as 2πE=10π, hence k=10."
+    }
+  },
+  {
+    "id": "supp-spectral-gain",
+    "topic": "spectral-energy",
+    "lessons": [
+      "ss-3-10"
+    ],
+    "expected": 36,
+    "unit": "",
+    "zh": {
+      "prompt": "已知能量信号 x(t) 的能量为 4，y(t)=3x(t) 的能量是多少？",
+      "explanation": "能量随幅度平方缩放，E_y=3²×4=36。"
+    },
+    "en": {
+      "prompt": "An energy signal x(t) has energy 4. Find the energy of y(t)=3x(t).",
+      "explanation": "Energy scales with squared amplitude: E_y=3²×4=36."
+    }
+  },
+  {
+    "id": "supp-spectral-scaling",
+    "topic": "spectral-energy",
+    "lessons": [
+      "ss-3-10"
+    ],
+    "expected": 3,
+    "unit": "",
+    "zh": {
+      "prompt": "已知 x(t) 的能量为 12，y(t)=x(4t) 的能量是多少？",
+      "explanation": "令 u=4t，积分变量带来 1/4，E_y=12/4=3。"
+    },
+    "en": {
+      "prompt": "The energy of x(t) is 12. Find the energy of y(t)=x(4t).",
+      "explanation": "Substitute u=4t: E_y=12/4=3."
+    }
+  },
+  {
+    "id": "supp-spectral-cosine",
+    "topic": "spectral-energy",
+    "lessons": [
+      "ss-3-10"
+    ],
+    "expected": 8,
+    "unit": "",
+    "zh": {
+      "prompt": "周期信号 x(t)=4cos(2t) 的平均功率是多少？",
+      "explanation": "余弦平方的周期均值为 1/2，P=4²/2=8。"
+    },
+    "en": {
+      "prompt": "Find the average power of x(t)=4cos(2t).",
+      "explanation": "The period average of cos² is 1/2, so P=4²/2=8."
+    }
+  },
+  {
+    "id": "supp-spectral-dc",
+    "topic": "spectral-energy",
+    "lessons": [
+      "ss-3-10"
+    ],
+    "expected": 6,
+    "unit": "",
+    "zh": {
+      "prompt": "周期信号 x(t)=2+2cos(t) 的平均功率是多少？",
+      "explanation": "直流与余弦正交，P=2²+2²/2=6。"
+    },
+    "en": {
+      "prompt": "Find the average power of x(t)=2+2cos(t).",
+      "explanation": "The DC and cosine terms are orthogonal: P=2²+2²/2=6."
+    }
+  },
+  {
+    "id": "supp-spectral-coefficients",
+    "topic": "spectral-energy",
+    "lessons": [
+      "ss-3-10"
+    ],
+    "expected": 9,
+    "unit": "",
+    "zh": {
+      "prompt": "周期信号仅有三个非零复傅里叶系数：c₀=1，c₁=c₋₁=2。平均功率是多少？",
+      "explanation": "周期信号帕塞瓦尔关系给出 P=Σ|c_k|²=1+4+4=9。"
+    },
+    "en": {
+      "prompt": "A periodic signal has only three nonzero complex Fourier coefficients: c₀=1 and c₁=c₋₁=2. Find its average power.",
+      "explanation": "Periodic Parseval gives P=Σ|c_k|²=1+4+4=9."
+    }
+  },
+  {
+    "id": "supp-operator-linear",
+    "topic": "",
+    "lessons": [
+      "ss-2-8"
+    ],
+    "expected": 2,
+    "unit": "",
+    "zh": {
+      "prompt": "令 D=d/dt。(D+4)e^(−2t) 可写成同一指数函数乘以系数 k，求 k。",
+      "explanation": "指数函数 e^(λt) 是微分算子的特征函数，将 D 替换为 λ，得 k=−2+4=2。"
+    },
+    "en": {
+      "prompt": "Let D=d/dt. Write (D+4)e^(−2t) as k times the same exponential. Find k.",
+      "explanation": "For e^(λt), replace D with λ: k=−2+4=2."
+    }
+  },
+  {
+    "id": "supp-operator-compose",
+    "topic": "",
+    "lessons": [
+      "ss-2-8"
+    ],
+    "expected": 15,
+    "unit": "",
+    "zh": {
+      "prompt": "令 D=d/dt。(D+1)(D+3)e^(2t) 可写成同一指数函数乘以系数 k，求 k。",
+      "explanation": "指数函数 e^(λt) 是微分算子的特征函数，将 D 替换为 λ，得 k=(2+1)(2+3)=15。"
+    },
+    "en": {
+      "prompt": "Let D=d/dt. Write (D+1)(D+3)e^(2t) as k times the same exponential. Find k.",
+      "explanation": "For e^(λt), replace D with λ: k=(2+1)(2+3)=15."
+    }
+  },
+  {
+    "id": "supp-operator-quadratic",
+    "topic": "",
+    "lessons": [
+      "ss-2-8"
+    ],
+    "expected": 6,
+    "unit": "",
+    "zh": {
+      "prompt": "令 D=d/dt。(D²+3D+2)e^(−4t) 可写成同一指数函数乘以系数 k，求 k。",
+      "explanation": "指数函数 e^(λt) 是微分算子的特征函数，将 D 替换为 λ，得 k=(−4)²+3(−4)+2=6。"
+    },
+    "en": {
+      "prompt": "Let D=d/dt. Write (D²+3D+2)e^(−4t) as k times the same exponential. Find k.",
+      "explanation": "For e^(λt), replace D with λ: k=(−4)²+3(−4)+2=6."
+    }
+  },
+  {
+    "id": "supp-operator-annihilate",
+    "topic": "",
+    "lessons": [
+      "ss-2-8"
+    ],
+    "expected": 0,
+    "unit": "",
+    "zh": {
+      "prompt": "令 D=d/dt。(D−3)e^(3t) 可写成同一指数函数乘以系数 k，求 k。",
+      "explanation": "指数函数 e^(λt) 是微分算子的特征函数，将 D 替换为 λ，得 k=3−3=0。"
+    },
+    "en": {
+      "prompt": "Let D=d/dt. Write (D−3)e^(3t) as k times the same exponential. Find k.",
+      "explanation": "For e^(λt), replace D with λ: k=3−3=0."
+    }
+  },
+  {
+    "id": "supp-operator-second",
+    "topic": "",
+    "lessons": [
+      "ss-2-8"
+    ],
+    "expected": 9,
+    "unit": "",
+    "zh": {
+      "prompt": "令 D=d/dt。D²e^(−3t) 可写成同一指数函数乘以系数 k，求 k。",
+      "explanation": "指数函数 e^(λt) 是微分算子的特征函数，将 D 替换为 λ，得 k=(−3)²=9。"
+    },
+    "en": {
+      "prompt": "Let D=d/dt. Write D²e^(−3t) as k times the same exponential. Find k.",
+      "explanation": "For e^(λt), replace D with λ: k=(−3)²=9."
+    }
+  },
+  {
+    "id": "supp-operator-third",
+    "topic": "",
+    "lessons": [
+      "ss-2-8"
+    ],
+    "expected": 8,
+    "unit": "",
+    "zh": {
+      "prompt": "令 D=d/dt。D³e^(2t) 可写成同一指数函数乘以系数 k，求 k。",
+      "explanation": "指数函数 e^(λt) 是微分算子的特征函数，将 D 替换为 λ，得 k=2³=8。"
+    },
+    "en": {
+      "prompt": "Let D=d/dt. Write D³e^(2t) as k times the same exponential. Find k.",
+      "explanation": "For e^(λt), replace D with λ: k=2³=8."
+    }
+  },
+  {
+    "id": "supp-operator-gain",
+    "topic": "",
+    "lessons": [
+      "ss-2-8"
+    ],
+    "expected": 7,
+    "unit": "",
+    "zh": {
+      "prompt": "令 D=d/dt。(2D+1)e^(3t) 可写成同一指数函数乘以系数 k，求 k。",
+      "explanation": "指数函数 e^(λt) 是微分算子的特征函数，将 D 替换为 λ，得 k=2×3+1=7。"
+    },
+    "en": {
+      "prompt": "Let D=d/dt. Write (2D+1)e^(3t) as k times the same exponential. Find k.",
+      "explanation": "For e^(λt), replace D with λ: k=2×3+1=7."
+    }
+  },
+  {
+    "id": "supp-operator-difference",
+    "topic": "",
+    "lessons": [
+      "ss-2-8"
+    ],
+    "expected": 5,
+    "unit": "",
+    "zh": {
+      "prompt": "令 D=d/dt。(D²−4)e^(3t) 可写成同一指数函数乘以系数 k，求 k。",
+      "explanation": "指数函数 e^(λt) 是微分算子的特征函数，将 D 替换为 λ，得 k=3²−4=5。"
+    },
+    "en": {
+      "prompt": "Let D=d/dt. Write (D²−4)e^(3t) as k times the same exponential. Find k.",
+      "explanation": "For e^(λt), replace D with λ: k=3²−4=5."
+    }
+  },
+  {
+    "id": "supp-operator-polynomial",
+    "topic": "",
+    "lessons": [
+      "ss-2-8"
+    ],
+    "expected": 7,
+    "unit": "",
+    "zh": {
+      "prompt": "令 D=d/dt。若 x(t)=t²+3t，则在 t=1 时 (D²+D)x(t) 为多少？",
+      "explanation": "Dx=2t+3，D²x=2，在 t=1 时结果为 2+5=7。"
+    },
+    "en": {
+      "prompt": "Let D=d/dt and x(t)=t²+3t. Evaluate (D²+D)x(t) at t=1.",
+      "explanation": "Dx=2t+3 and D²x=2, giving 2+5=7 at t=1."
+    }
+  },
+  {
+    "id": "supp-operator-expand",
+    "topic": "",
+    "lessons": [
+      "ss-2-8"
+    ],
+    "expected": 8,
+    "unit": "",
+    "zh": {
+      "prompt": "展开算子 (D+3)(D+5)=D²+aD+15，求 a。",
+      "explanation": "同类项合并得到 a=3+5=8。"
+    },
+    "en": {
+      "prompt": "Expand (D+3)(D+5)=D²+aD+15. Find a.",
+      "explanation": "Collecting the D terms gives a=3+5=8."
+    }
+  },
+  {
+    "id": "supp-periodic-dc-weight",
+    "topic": "",
+    "lessons": [
+      "ss-3-6"
+    ],
+    "expected": 6,
+    "unit": "",
+    "zh": {
+      "prompt": "采用 X(jω)=∫x(t)e^(−jωt)dt，x(t)=3 的变换为 kπδ(ω)，求 k。",
+      "explanation": "常数 1 的变换为 2πδ(ω)，所以 k=3×2=6。"
+    },
+    "en": {
+      "prompt": "With X(jω)=∫x(t)e^(−jωt)dt, the transform of x(t)=3 is kπδ(ω). Find k.",
+      "explanation": "The transform of 1 is 2πδ(ω), so k=3×2=6."
+    }
+  },
+  {
+    "id": "supp-periodic-cosine-weight",
+    "topic": "",
+    "lessons": [
+      "ss-3-6"
+    ],
+    "expected": 4,
+    "unit": "",
+    "zh": {
+      "prompt": "采用角频率傅里叶变换，x(t)=4cos(5t) 在 ω=5 的冲激项为 kπδ(ω−5)，求 k。",
+      "explanation": "cos(ω₀t) 对应 π[δ(ω−ω₀)+δ(ω+ω₀)]，所以 k=4。"
+    },
+    "en": {
+      "prompt": "Using the angular-frequency convention, x(t)=4cos(5t) has the term kπδ(ω−5). Find k.",
+      "explanation": "cos(ω₀t) transforms to π[δ(ω−ω₀)+δ(ω+ω₀)], hence k=4."
+    }
+  },
+  {
+    "id": "supp-periodic-harmonic-location",
+    "topic": "",
+    "lessons": [
+      "ss-3-6"
+    ],
+    "expected": 12,
+    "unit": "",
+    "zh": {
+      "prompt": "周期信号的基波角频率为 3 rad/s。第 4 次正谐波的谱线位于多少 rad/s？",
+      "explanation": "ω₄=4ω₀=4×3=12 rad/s。"
+    },
+    "en": {
+      "prompt": "The fundamental angular frequency is 3 rad/s. Locate the fourth positive harmonic in rad/s.",
+      "explanation": "ω₄=4ω₀=4×3=12 rad/s."
+    }
+  },
+  {
+    "id": "supp-periodic-coefficient-weight",
+    "topic": "",
+    "lessons": [
+      "ss-3-6"
+    ],
+    "expected": 5,
+    "unit": "",
+    "zh": {
+      "prompt": "采用角频率傅里叶变换，复傅里叶系数 c₂=2.5，对应冲激权重为 kπ，求 k。",
+      "explanation": "周期信号变换为 2πΣc_nδ(ω−nω₀)，所以 k=2×2.5=5。"
+    },
+    "en": {
+      "prompt": "Under the angular-frequency convention, c₂=2.5 gives an impulse weight of kπ. Find k.",
+      "explanation": "The transform is 2πΣc_nδ(ω−nω₀), hence k=2×2.5=5."
+    }
+  },
+  {
+    "id": "supp-periodic-inverse-weight",
+    "topic": "",
+    "lessons": [
+      "ss-3-6"
+    ],
+    "expected": 3,
+    "unit": "",
+    "zh": {
+      "prompt": "采用角频率傅里叶变换，某谱线权重为 6π，对应的复傅里叶系数是多少？",
+      "explanation": "c_n=6π/(2π)=3。"
+    },
+    "en": {
+      "prompt": "Under the angular-frequency convention, a spectral impulse has weight 6π. Find its complex Fourier coefficient.",
+      "explanation": "c_n=6π/(2π)=3."
+    }
+  },
+  {
+    "id": "supp-periodic-impulse-train",
+    "topic": "",
+    "lessons": [
+      "ss-3-6"
+    ],
+    "expected": 4,
+    "unit": "",
+    "zh": {
+      "prompt": "冲激串 Σδ(t−nT) 的周期 T=0.5 s。其频域冲激串每条谱线权重为 kπ，求 k。",
+      "explanation": "冲激串变换的权重为 2π/T=4π，因此 k=4。"
+    },
+    "en": {
+      "prompt": "An impulse train Σδ(t−nT) has period T=0.5 s. Each spectral impulse has weight kπ. Find k.",
+      "explanation": "The impulse weight is 2π/T=4π, hence k=4."
+    }
+  },
+  {
+    "id": "supp-periodic-line-count",
+    "topic": "",
+    "lessons": [
+      "ss-3-6"
+    ],
+    "expected": 5,
+    "unit": "",
+    "zh": {
+      "prompt": "信号 x(t)=1+2cos(t)+3cos(2t) 的傅里叶变换共有多少条非零冲激谱线？",
+      "explanation": "直流在 0，一阶余弦在 ±1，二阶余弦在 ±2，共 5 条。"
+    },
+    "en": {
+      "prompt": "How many nonzero impulse lines are in the Fourier transform of x(t)=1+2cos(t)+3cos(2t)?",
+      "explanation": "DC is at 0, with two lines at ±1 and two at ±2: five lines."
+    }
+  },
+  {
+    "id": "supp-state-trace",
+    "topic": "",
+    "lessons": [
+      "ss-b-9"
+    ],
+    "expected": -5,
+    "unit": "",
+    "zh": {
+      "prompt": "状态矩阵 A=[[-2,1],[0,-3]]，两个特征值之和是多少？",
+      "explanation": "特征值之和等于迹，−2−3=−5。"
+    },
+    "en": {
+      "prompt": "For A=[[-2,1],[0,-3]], find the sum of the eigenvalues.",
+      "explanation": "The sum is the trace: −2−3=−5."
+    }
+  },
+  {
+    "id": "supp-state-determinant",
+    "topic": "",
+    "lessons": [
+      "ss-b-9"
+    ],
+    "expected": 6,
+    "unit": "",
+    "zh": {
+      "prompt": "状态矩阵 A=[[-2,1],[0,-3]]，两个特征值之积是多少？",
+      "explanation": "特征值之积等于行列式，(−2)(−3)−0=6。"
+    },
+    "en": {
+      "prompt": "For A=[[-2,1],[0,-3]], find the product of the eigenvalues.",
+      "explanation": "The product is the determinant: (−2)(−3)−0=6."
+    }
+  },
+  {
+    "id": "supp-state-output",
+    "topic": "",
+    "lessons": [
+      "ss-b-9"
+    ],
+    "expected": 11,
+    "unit": "",
+    "zh": {
+      "prompt": "状态空间系统 y=Cz，C=[2,3]、z(0)=[1,3]ᵀ，y(0) 是多少？",
+      "explanation": "y(0)=2×1+3×3=11。"
+    },
+    "en": {
+      "prompt": "For y=Cz with C=[2,3] and z(0)=[1,3]ᵀ, find y(0).",
+      "explanation": "y(0)=2×1+3×3=11."
+    }
+  },
+  {
+    "id": "supp-state-derivative",
+    "topic": "",
+    "lessons": [
+      "ss-b-9"
+    ],
+    "expected": -1,
+    "unit": "",
+    "zh": {
+      "prompt": "状态方程 z₁′=−2z₁+z₂+u，z₁(0)=2、z₂(0)=1、u(0)=2，z₁′(0) 是多少？",
+      "explanation": "代入初值得 −2×2+1+2=−1。"
+    },
+    "en": {
+      "prompt": "Given z₁′=−2z₁+z₂+u, z₁(0)=2, z₂(0)=1, and u(0)=2, find z₁′(0).",
+      "explanation": "Substitute the initial values: −2×2+1+2=−1."
+    }
+  }
+]
