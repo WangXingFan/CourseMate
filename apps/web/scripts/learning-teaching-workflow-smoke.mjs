@@ -138,7 +138,13 @@ async function screenshots(page, stage) {
     await page.setViewportSize({ width, height: 950 });
     await page.evaluate((value) => document.documentElement.classList.toggle("dark", value), dark);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${stage} overflow`);
-    await page.screenshot({ path: join(artifacts, `${stage}-${width}-${dark ? "dark" : "light"}.png`), animations: "disabled" });
+    console.log(`Screenshot: ${stage}, ${width}px, ${dark ? "dark" : "light"}`);
+    // Freeze CSS directly: Playwright's animation fast-forwarding stalls on
+    // formula-heavy pages when switching themes, even with reduced motion.
+    await page.screenshot({
+      path: join(artifacts, `${stage}-${width}-${dark ? "dark" : "light"}.png`),
+      style: "*, *::before, *::after { animation: none !important; transition: none !important; }",
+    });
   }
   await page.setViewportSize({ width: 1440, height: 950 });
 }
