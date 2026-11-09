@@ -38,6 +38,9 @@ let savedReview = null;
 let failReviewResponse = true;
 const reviewRequests = [];
 const course = JSON.parse(await readFile("backend/internal/domain/learning/content/course.json", "utf8"));
+const searchLesson = course.lessons.find((lesson) => lesson.id === "ss-2-5");
+assert.ok(searchLesson, "search fixture lesson is missing from the course catalog");
+const courseSearchRequests = [];
 const lessonRequests = [];
 function summary(lesson) {
   return { id: lesson.id, number: lesson.number, title: lesson.title, chapter: lesson.chapter, completedStages: 0, masteredStages: 0 };
@@ -54,6 +57,10 @@ try {
     let data = {};
     if (url.pathname.endsWith("/learning/course")) {
       data = { canPractice: true, id: course.id, version: course.version, title: course.title, language: course.language, sourceName: course.sourceName, lessons: course.lessons.map(summary) };
+    } else if (url.pathname.endsWith("/learning/course/search")) {
+      const query = url.searchParams.get("q");
+      courseSearchRequests.push(query);
+      data = { items: query === searchLesson.title ? [{ id: searchLesson.id, snippet: searchLesson.title }] : [] };
     } else if (url.pathname.includes("/learning/lessons/")) {
       const lesson = course.lessons.find((item) => item.id === url.pathname.split("/").at(-1));
       assert.ok(lesson);
@@ -61,6 +68,8 @@ try {
     } else if (url.pathname.endsWith("/learning/lesson-attempts")) {
       lessonRequests.push(request.postDataJSON());
       await route.fulfill({ status: 403, json: { errorMsg: "answer course questions through a teacher-published classroom quiz", errorCode: "learning.teacher_assigned" } }); return;
+    } else if (url.pathname.endsWith("/learning/corrections")) {
+      data = { items: [] };
     } else if (url.pathname.endsWith("/learning/progress")) {
       data = { accountId: user.id, questions: catalog.map((q) => ({ ...q, attempts: q.id === reviewBase.id ? (savedReview ? 2 : 1) : 0, correctCount: q.id === reviewBase.id && savedReview ? 1 : 0, latest: q.id === reviewBase.id ? savedReview ?? wrong : null, latestWrong: q.id === reviewBase.id ? wrong : null, misconception: q.id === reviewBase.id ? reviewBase.misconceptions[wrongOption] : "", suggestedVariantId: q.id === reviewBase.id ? reviewVariant.id : "", reviewStage: savedReview && q.id === reviewBase.id ? 1 : 0, nextReviewAt: q.id === reviewBase.id ? (savedReview ?? wrong).nextReviewAt : null, reviewDue: q.id === reviewBase.id && !savedReview })), recent: savedReview ? [savedReview, wrong] : [wrong] };
     } else if (url.pathname.includes("/learning/variants/")) {
@@ -157,11 +166,9 @@ try {
   await noOverflow();
   await page.locator("#lesson-reading").scrollIntoViewIfNeeded(); await screenshot("knowledge-reading-mobile");
   const catalogNavigation = page.getByRole("navigation", { name: "小节目录", exact: true });
-  const searchLesson = course.lessons.find((lesson) => lesson.id === "ss-2-5");
-  assert.ok(searchLesson, "search fixture lesson is missing from the course catalog");
   await page.locator("#knowledge-search").fill(searchLesson.title);
   await catalogNavigation.getByRole("link", { name: `${searchLesson.number} ${searchLesson.title}`, exact: false }).waitFor();
-  assert.equal(await catalogNavigation.getByRole("link").count(), course.lessons.filter((lesson) => `${lesson.number} ${lesson.title} ${lesson.chapter}`.includes(searchLesson.title)).length);
+  assert.equal(await catalogNavigation.getByRole("link").count(), 1);
   await page.locator("#knowledge-search").fill("不存在的小节-smoke");
   await catalogNavigation.getByText("没有匹配的小节", { exact: true }).waitFor();
   assert.equal(await catalogNavigation.getByRole("link").count(), 0);
@@ -169,10 +176,12 @@ try {
   await catalogNavigation.getByRole("link").first().waitFor();
   assert.equal(await catalogNavigation.getByRole("link").count(), course.lessons.length);
   await screenshot("knowledge-search-mobile");
+  assert.deepEqual(courseSearchRequests, [searchLesson.title, "不存在的小节-smoke"]);
   assert.deepEqual(lessonRequests, [], "knowledge reading must not submit course exercises");
   assert.deepEqual(errors, []);
   console.log("PASS: workbench desktop/mobile, diagnosis, due filter, immutable review retry, scheduling display, history mode labels, knowledge reading and catalog search without exercise submission");
 } catch (error) {
+  if (errors.length) console.error("Browser errors:", errors);
   if (page) await page.screenshot({ path: join(artifacts, "failure.png") }).catch(() => {});
   throw error;
 } finally {
