@@ -19,6 +19,9 @@ func (r *Repo) ExtendHomeworkDeadline(ctx context.Context, id string, actor uint
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("public_id = ? AND teacher_id = ?", id, actor).First(&row).Error; err != nil {
 			return err
 		}
+		if row.Withdrawn || row.FeedbackAt != nil {
+			return repository.ErrInvalidInput
+		}
 		item, err := homeworkFromRow(row)
 		if err != nil {
 			return err

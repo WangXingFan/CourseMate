@@ -19,7 +19,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestHomeworkHTTPWithDatabase(t *testing.T) {
+type homeworkRequest func(uint, string, string, any, int) *httptest.ResponseRecorder
+
+func homeworkHTTPFixture(t *testing.T) (*gorm.DB, homeworkRequest) {
+	t.Helper()
 	db, err := gorm.Open(sqlite.Open(filepath.Join(t.TempDir(), "homework.db")), &gorm.Config{})
 	if err != nil {
 		t.Fatal(err)
@@ -73,6 +76,11 @@ func TestHomeworkHTTPWithDatabase(t *testing.T) {
 		}
 		return r
 	}
+	return db, request
+}
+
+func TestHomeworkHTTPWithDatabase(t *testing.T) {
+	db, request := homeworkHTTPFixture(t)
 	request(4, "GET", "/classrooms/class/homework-bank", nil, 403)
 	request(2, "GET", "/classrooms/class/homework-bank", nil, 404)
 	request(1, "GET", "/classrooms/class/homework-bank", nil, 200)
@@ -163,6 +171,11 @@ func TestHomeworkHTTPWithDatabase(t *testing.T) {
 			}
 		}
 	}
+	// Released feedback cannot be reopened through the deadline endpoint.
+	releasedID := data.Data.Items[0].ID
+	request(1, "POST", "/homeworks/"+releasedID+"/manage", HomeworkManageRequest{Action: "release", Reason: "Review available"}, 200)
+	request(1, "PATCH", "/homeworks/"+releasedID+"/deadline", HomeworkDeadlineRequest{Deadline: now.Add(3 * time.Hour), Reason: "Reopen"}, 400)
+	request(1, "PATCH", "/homeworks/"+releasedID+"/deadline", HomeworkDeadlineRequest{Deadline: now.Add(3 * time.Hour), StudentID: "student", Reason: "Makeup"}, 400)
 	// A personal makeup window never opens the assignment for other students.
 	paper := domain.HomeworkBank()[0]
 	created := request(1, "POST", "/classrooms/class/homeworks", HomeworkPublishRequest{BankID: paper.ID, StartsAt: now.Add(-time.Hour), Deadline: now.Add(time.Hour)}, 200)
@@ -188,6 +201,7 @@ func TestHomeworkHTTPWithDatabase(t *testing.T) {
 	request(1, "PATCH", "/homeworks/"+id+"/deadline", invalid, 400)
 	request(1, "PATCH", "/homeworks/"+id+"/deadline", change, 200)
 	request(1, "PATCH", "/homeworks/"+id+"/deadline", change, 400)
+	request(1, "POST", "/homeworks/"+id+"/manage", HomeworkManageRequest{Action: "release", Reason: "Review available"}, 400)
 	answers := make([][]string, len(paper.Questions))
 	for i, q := range paper.Questions {
 		for _, a := range q.Accepted {

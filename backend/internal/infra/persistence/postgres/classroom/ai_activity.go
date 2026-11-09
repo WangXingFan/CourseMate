@@ -21,11 +21,13 @@ func (r *Repo) ListAIActivityEvents(ctx context.Context, users []uint, end time.
 		UserID, ConversationID uint
 		RunID, BranchReason    string
 		SourceMessageID        *uint
+		ParentMessageID        *uint
+		LearningSource         string
 		HasContent             bool
 	}
 	var questions []question
 	if err := r.db.WithContext(ctx).Unscoped().Model(&models.Message{}).
-		Select("id, created_at, deleted_at, user_id, conversation_id, run_id, branch_reason, source_message_id, TRIM(content) <> '' AS has_content").
+		Select("id, created_at, deleted_at, user_id, conversation_id, run_id, branch_reason, source_message_id, parent_message_id, learning_source, TRIM(content) <> '' AS has_content").
 		Where("user_id IN ? AND role = ? AND created_at < ?", users, "user", end).Find(&questions).Error; err != nil {
 		return nil, err
 	}
@@ -42,6 +44,7 @@ func (r *Repo) ListAIActivityEvents(ctx context.Context, users []uint, end time.
 		Order("created_at, id").Find(&replies).Error; err != nil {
 		return nil, err
 	}
+	replyRoots := map[uint]question{}
 	for _, reply := range replies {
 		q, ok := byRun[reply.RunID]
 		// Assistant regeneration reuses the user message with a new run ID.
@@ -63,7 +66,16 @@ func (r *Repo) ListAIActivityEvents(ctx context.Context, users []uint, end time.
 		if root.RunID == "" {
 			continue
 		}
-		events = append(events, domain.AIActivityEvent{UserID: q.UserID, RootMessageID: root.ID, QuestionAt: root.CreatedAt, At: reply.CreatedAt})
+		replyRoots[reply.ID] = root
+		event := domain.AIActivityEvent{UserID: q.UserID, RootMessageID: root.ID, QuestionAt: root.CreatedAt, At: reply.CreatedAt, LearningSource: root.LearningSource}
+		// Only a new question replying to a successful answer qualifies as a follow-up.
+		// Use the original question's parent so retries and edits cannot add evidence.
+		if root.ParentMessageID != nil {
+			if parent, ok := replyRoots[*root.ParentMessageID]; ok && parent.UserID == root.UserID && parent.ConversationID == root.ConversationID && parent.ID < root.ID {
+				event.FollowupToRootMessageID = parent.ID
+			}
+		}
+		events = append(events, event)
 	}
 	return events, nil
 }

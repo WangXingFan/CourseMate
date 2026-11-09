@@ -72,17 +72,21 @@ func safeName(raw string) string {
 var courseLabels = map[string]string{"L1": "实验一", "L2": "实验二", "L3": "实验三"}
 
 func reportName(template string, d dataset, st class.Student, courseID string) (string, error) {
+	return pdfReportName(template, d, st, "实验", courseLabels[courseID])
+}
+
+func pdfReportName(template string, d dataset, st class.Student, field, label string) (string, error) {
 	if template == "" {
-		template = "{班级}_{学号}_{姓名}_{实验}"
+		template = "{班级}_{学号}_{姓名}_{" + field + "}"
 	}
 	if len([]rune(template)) > 120 {
 		return "", ErrInvalid
 	}
-	remaining := strings.NewReplacer("{班级}", "", "{学号}", "", "{姓名}", "", "{日期}", "", "{实验}", "").Replace(template)
+	remaining := strings.NewReplacer("{班级}", "", "{学号}", "", "{姓名}", "", "{日期}", "", "{"+field+"}", "").Replace(template)
 	if strings.ContainsAny(remaining, "{}") {
 		return "", ErrInvalid
 	}
-	name := strings.NewReplacer("{班级}", d.class.Name, "{学号}", st.Username, "{姓名}", st.DisplayName, "{日期}", d.now.In(beijing).Format("2006-01-02"), "{实验}", courseLabels[courseID]).Replace(template)
+	name := strings.NewReplacer("{班级}", d.class.Name, "{学号}", st.Username, "{姓名}", st.DisplayName, "{日期}", d.now.In(beijing).Format("2006-01-02"), "{"+field+"}", label).Replace(template)
 	return safeName(strings.TrimSuffix(name, ".pdf")), nil
 }
 

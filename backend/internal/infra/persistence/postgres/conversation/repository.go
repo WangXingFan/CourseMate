@@ -3447,6 +3447,7 @@ func toUserDomain(item models.User) domainuser.User {
 
 func toMessageDomain(item models.Message) domainconversation.Message {
 	return domainconversation.Message{
+		LearningSource:           item.LearningSource,
 		ID:                       item.ID,
 		ConversationID:           item.ConversationID,
 		UserID:                   item.UserID,
@@ -3497,6 +3498,7 @@ func toMessageModel(item *domainconversation.Message) models.Message {
 		return models.Message{}
 	}
 	return models.Message{
+		LearningSource:           item.LearningSource,
 		ConversationID:           item.ConversationID,
 		UserID:                   item.UserID,
 		PublicID:                 item.PublicID,

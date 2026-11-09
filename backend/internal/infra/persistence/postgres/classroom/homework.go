@@ -29,6 +29,10 @@ func (r *Repo) CreateHomework(ctx context.Context, input domain.Homework) (*doma
 
 func homeworkFromRow(row models.ClassroomHomework) (domain.Homework, error) {
 	item := domain.Homework{ID: row.ID, PublicID: row.PublicID, ClassroomID: row.ClassroomID, TeacherID: row.TeacherID, BankID: row.BankID, Title: row.Title, StartsAt: row.StartsAt, Deadline: row.Deadline, CreatedAt: row.CreatedAt}
+	item.Withdrawn, item.FeedbackAt = row.Withdrawn, row.FeedbackAt
+	if err := json.Unmarshal([]byte(row.Changes), &item.Changes); err != nil {
+		return item, err
+	}
 	err := json.Unmarshal([]byte(row.Questions), &item.Questions)
 	if err == nil && row.DeadlineChanges != "" {
 		err = json.Unmarshal([]byte(row.DeadlineChanges), &item.DeadlineChanges)
@@ -97,6 +101,9 @@ func (r *Repo) ListHomeworkSubmissions(ctx context.Context, homeworkID, studentI
 		if err := json.Unmarshal([]byte(row.Results), &item.Results); err != nil {
 			return nil, err
 		}
+		if err := json.Unmarshal([]byte(row.Corrections), &item.Corrections); err != nil {
+			return nil, err
+		}
 		items = append(items, item)
 	}
 	return items, nil
@@ -121,7 +128,7 @@ func (r *Repo) CreateHomeworkSubmission(ctx context.Context, input domain.Homewo
 		if err != nil {
 			return err
 		}
-		if now.Before(homework.StartsAt) || !now.Before(item.StudentDeadline(input.StudentID)) {
+		if homework.Withdrawn || homework.FeedbackAt != nil || now.Before(homework.StartsAt) || !now.Before(item.StudentDeadline(input.StudentID)) {
 			return repository.ErrInvalidInput
 		}
 		var membership models.ClassroomStudent
@@ -134,4 +141,83 @@ func (r *Repo) CreateHomeworkSubmission(ctx context.Context, input domain.Homewo
 		return repository.ErrConflict
 	}
 	return dberror.Translate(err)
+}
+
+func (r *Repo) ManageHomework(ctx context.Context, id, actor uint, action string, deadline time.Time, reason string) error {
+	return dberror.Translate(r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		var row models.ClassroomHomework
+		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("id = ? AND teacher_id = ?", id, actor).First(&row).Error; err != nil {
+			return err
+		}
+		if row.Withdrawn {
+			return repository.ErrInvalidInput
+		}
+		now := time.Now().UTC()
+		updates := map[string]any{}
+		switch action {
+		case "extend":
+			if row.FeedbackAt != nil || !deadline.After(row.Deadline) || !deadline.After(now) {
+				return repository.ErrInvalidInput
+			}
+			updates["deadline"] = deadline
+		case "withdraw":
+			var count int64
+			if err := tx.Model(&models.ClassroomHomeworkSubmission{}).Where("homework_id = ?", id).Count(&count).Error; err != nil {
+				return err
+			}
+			if count != 0 || row.FeedbackAt != nil {
+				return repository.ErrInvalidInput
+			}
+			updates["withdrawn"] = true
+		case "release":
+			item, err := homeworkFromRow(row)
+			if err != nil {
+				return err
+			}
+			if now.Before(item.EndsAt()) {
+				return repository.ErrInvalidInput
+			}
+			if row.FeedbackAt != nil {
+				return nil
+			}
+			updates["feedback_at"] = now
+		default:
+			return repository.ErrInvalidInput
+		}
+		var changes []domain.HomeworkChange
+		if err := json.Unmarshal([]byte(row.Changes), &changes); err != nil {
+			return err
+		}
+		changes = append(changes, domain.HomeworkChange{Action: action, Actor: actor, Reason: reason, At: now, PreviousDeadline: row.Deadline, Deadline: deadline})
+		encoded, err := json.Marshal(changes)
+		if err != nil {
+			return err
+		}
+		updates["changes"] = string(encoded)
+		return tx.Model(&row).Updates(updates).Error
+	}))
+}
+
+func (r *Repo) CorrectHomework(ctx context.Context, id, actor uint, studentID string, score int, reason string) error {
+	return dberror.Translate(r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		var homework models.ClassroomHomework
+		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("id = ? AND teacher_id = ?", id, actor).First(&homework).Error; err != nil {
+			return err
+		}
+		var row models.ClassroomHomeworkSubmission
+		user := tx.Model(&models.User{}).Select("id").Where("public_id = ?", studentID)
+		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("homework_id = ? AND student_id IN (?)", id, user).First(&row).Error; err != nil {
+			return err
+		}
+		var corrections []domain.HomeworkCorrection
+		if err := json.Unmarshal([]byte(row.Corrections), &corrections); err != nil {
+			return err
+		}
+		corrections = append(corrections, domain.HomeworkCorrection{Before: row.Score, Score: score, Reason: reason, Actor: actor, At: time.Now().UTC()})
+		encoded, err := json.Marshal(corrections)
+		if err != nil {
+			return err
+		}
+		return tx.Model(&row).Updates(map[string]any{"score": score, "corrections": string(encoded)}).Error
+	}))
 }

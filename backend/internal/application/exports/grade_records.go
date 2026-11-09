@@ -49,7 +49,7 @@ func (s *Service) gradeDataset(ctx context.Context, actor uint, id string, o Opt
 		r.Students = append(r.Students, row)
 	}
 	// Hash the exact inputs, not volatile generation timestamps or XLSX metadata.
-	inputs := []any{domain.GradeVersion, o, d.class, d.students, d.performance}
+	inputs := []any{domain.GradeVersion, o, d.class, d.profile, d.students, d.performance}
 	if d.aiActivity != nil {
 		activity := *d.aiActivity
 		activity.GeneratedAt = time.Time{}

@@ -8,6 +8,7 @@ import type {
   ConversationDTO,
   ConversationOptions,
   MessageDTO,
+  SendMessageRequest,
 } from "@/shared/api/conversation-types";
 
 function selectPendingExchangesByScope(
@@ -92,6 +93,7 @@ export function useChatRuntime({
   selectedKnowledgeBaseIDs,
   uiComponentIDs,
   htmlVisualPromptEnabled,
+  learningSource,
   options,
   draft,
   attachments,
@@ -126,6 +128,7 @@ export function useChatRuntime({
   selectedKnowledgeBaseIDs: string[];
   uiComponentIDs: number[];
   htmlVisualPromptEnabled: boolean;
+  learningSource?: SendMessageRequest["learningSource"];
   options: ConversationOptions;
   draft: string;
   attachments: PendingAttachment[];
@@ -202,6 +205,7 @@ export function useChatRuntime({
     selectedKnowledgeBaseIDs,
     uiComponentIDs,
     htmlVisualPromptEnabled,
+    learningSource,
     options,
     draft,
     attachments,

@@ -13,6 +13,8 @@ type ClassroomRepository interface {
 	GetPracticeAssignment(context.Context, string) (*domain.PracticeAssignment, error)
 	ListPracticeSubmissions(context.Context, uint, uint) ([]domain.PracticeSubmission, error)
 	CreatePracticeSubmission(context.Context, domain.PracticeSubmission) error
+	GetExportProfile(context.Context, uint) (domain.ExportProfile, error)
+	SaveExportProfile(context.Context, uint, uint, domain.ExportProfile) error
 	SaveGradeRecord(context.Context, domain.GradeRecord) error
 	ListGradeRecords(context.Context, uint) ([]domain.GradeRecord, error)
 	GetGradeRecord(context.Context, uint, string) (*domain.GradeRecord, error)
@@ -46,4 +48,6 @@ type ClassroomRepository interface {
 	ListHomeworkSubmissions(context.Context, uint, uint) ([]domain.HomeworkSubmission, error)
 	CreateHomeworkSubmission(context.Context, domain.HomeworkSubmission) error
 	ExtendHomeworkDeadline(context.Context, string, uint, string, time.Time, string) error
+	ManageHomework(context.Context, uint, uint, string, time.Time, string) error
+	CorrectHomework(context.Context, uint, uint, string, int, string) error
 }

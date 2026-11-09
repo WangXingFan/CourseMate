@@ -57,3 +57,12 @@ func TestConversationLabelsRequestRejectsMissingOrOversizedValues(t *testing.T) 
 		})
 	}
 }
+
+func TestMessageLearningSourceAllowsOnlyKnownEntries(t *testing.T) {
+	for _, source := range []string{"", "lesson", "practice", "correction", "experiment", "unknown"} {
+		err := binding.Validator.ValidateStruct(SendMessageRequest{ContentType: "text", Content: "question", LearningSource: source})
+		if (err == nil) != (source != "unknown") {
+			t.Fatalf("source %q: %v", source, err)
+		}
+	}
+}

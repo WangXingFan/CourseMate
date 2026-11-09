@@ -400,7 +400,8 @@
     "status": {
       "scheduled": "Not started",
       "open": "Open",
-      "closed": "Closed"
+      "closed": "Closed",
+      "withdrawn": "Withdrawn"
     },
     "kind": {
       "single": "Single choice",
@@ -440,6 +441,7 @@
       "attendance": "Attendance",
       "summary": "Combined grades",
       "reports": "Student lab reports",
+      "homework_reports": "Student homework papers",
       "performance": "Classroom scores",
       "ai_activity": "AI usage activity"
     },
@@ -457,14 +459,25 @@
     "invalidTemplate": "Enter a template using only the five supported fields below.",
     "sampleClass": "Signals and systems",
     "sampleName": "Student",
+    "sampleHomework": "Homework 1",
+    "homework": "Select homework (start time in Beijing)",
+    "homeworkOption": "{title} · {date} · {status}",
+    "homeworkStatus": {
+      "open": "In progress",
+      "closed": "Closed"
+    },
+    "homeworkSubmissions": "{count} submitted papers",
+    "noHomeworks": "No homework has started in this classroom",
+    "invalidHomeworkTemplate": "Enter a filename template using only the classroom, student number, name, homework and date fields.",
     "rulesText": {
+      "homework_reports": "Homework papers: select a classroom and a specific published assignment to download one PDF per student in a ZIP. Papers include questions, diagrams, original answers, automatic question scores, the official total and teacher corrections. Missing submissions and assignments closed before enrollment are labeled separately. Submissions from former students are retained. Start times distinguish repeated assignments. Open assignments export their current records; scheduled and withdrawn assignments cannot be exported.",
       "homeworks": "Homework: includes closed assignments by default. Each is normalized to 100 points and averaged equally; missing submissions score zero. Include ongoing assignments to export current scores.",
       "labs": "Labs: includes closed assessments by default, averaged equally. Uses formal scores and teacher corrections; unearned points score zero. Completion requires a submitted formal attempt for all four tasks.",
       "attendance": "Attendance starts at 100, deducting 10 per late arrival and 20 per absence, with a floor of zero. Excused absences incur no deduction. Only ended sessions count; students outside a session roster are not penalized.",
       "summary": "Combined grades: selected weights must total 100%. Final scores sum each component multiplied by its weight, rounded to two decimal places. Missing assessment data leaves the final score blank; weights are never silently redistributed.",
       "reports": "Reports: select a classroom and a lab. Each student receives a PDF for that lab only, including completion status, saved predictions, parameters, answers, trials, derivations, conclusions and formal assessment scores. Details are added only for tasks with records. Filenames follow the template and are bundled as ZIP; invalid characters become underscores and duplicates receive a suffix.",
       "performance": "Classroom scores use four dimensions and class percentile conversion for closed activities only. Select a finalized record to retain its roster, scope and adjustments, or use the current cumulative preview. The summary applies the selected weight to the final classroom score.",
-      "ai_activity": "Weekly score = active days × 30 (up to 60) + valid rounds × 10 (up to 2 per day and 4 per week). The final score averages completed assessment weeks. A new question or follow-up counts after a successful, non-empty AI reply. Retries, edits and regenerations count once per original question. Automatic titles, copied history and failures are excluded. Only use after enrollment counts; unused assessment weeks score 0. Weeks run Monday–Sunday in Beijing time. The joining week includes only activity after enrollment. The current week and an incomplete final week are provisional and excluded from the average. Totals include completed assessment weeks only."
+      "ai_activity": "Weekly score = min(100, base score + bonuses). The base remains 30 points per active day (up to 60) plus 10 per valid round (at most 2 per day and 4 per week). The final score averages completed assessment weeks. A new question or follow-up counts after a successful, non-empty AI reply. Retries, edits and regenerations count once per original question. Automatic titles, copied history and failures are excluded. Only use after enrollment counts; unused assessment weeks score 0. Weeks run Monday–Sunday in Beijing time. The joining week includes only activity after enrollment. The current week and an incomplete final week are provisional and excluded from the average. Totals include completed assessment weeks only. Consistency: a valid exchange in both the previous and current week adds 10 points to this week. Longer streaks still earn at most 10 per week; an inactive week earns none. Follow-ups: ask a new question in reply to a successful AI answer in the same conversation and receive a successful, non-empty reply. Each earns 10 points, up to 20 per week. Edits, retries and regenerations do not count again. Learning-entry exchanges: send a question with its context from a lesson, practice, correction or experiment help entry and receive a successful, non-empty reply. Each earns 10 points, up to 20 per week. Opening the page or saving a draft earns nothing; untagged historical exchanges receive no retroactive credit for this category. These paths can be combined. The original criteria still suffice for full credit. Weekly scores stop at 100, and excess points never carry over. Category bonuses show earned points; applied bonuses show only the increase after the cap."
     },
     "course": "Select lab",
     "courses": {
@@ -475,7 +488,23 @@
     "performanceSource": "Classroom score source",
     "performanceLive": "Current cumulative preview (not finalized)",
     "aiActivityRange": "AI activity reporting period",
-    "aiActivityRangeHint": "Applies to the activity export and its score in combined transcripts. Blank dates default to class creation through today; only completed weeks enter the average."
+    "aiActivityRangeHint": "Applies to the activity export and its score in combined transcripts. Blank dates default to class creation through today; only completed weeks enter the average.",
+    "profile": {
+      "title": "Archive headers",
+      "academicTerm": "Academic term",
+      "courseCode": "Course code",
+      "courseName": "Course name",
+      "teacherName": "Teacher name",
+      "college": "College",
+      "teachingLocation": "Teaching room",
+      "save": "Save header information",
+      "saving": "Saving",
+      "saved": "Header information saved for this class",
+      "unsaved": "Header information has changed. Save before exporting.",
+      "incomplete": "Complete and save the header information before exporting.",
+      "loading": "Loading header information",
+      "retry": "Reload"
+    }
   },
   "performance": {
     "title": "Classroom scores",
@@ -555,7 +584,7 @@
   "aiActivity": {
     "title": "AI usage activity",
     "description": "A score out of 100 based on successful Q&A on this platform. It measures usage activity, not learning quality.",
-    "formula": "Weekly score = active days × 30 (up to 60) + valid rounds × 10 (up to 2 per day and 4 per week). The final score averages completed assessment weeks.",
+    "formula": "Weekly score = min(100, base score + bonuses). The base remains 30 points per active day (up to 60) plus 10 per valid round (at most 2 per day and 4 per week). The final score averages completed assessment weeks.",
     "validHint": "A new question or follow-up counts after a successful, non-empty AI reply. Retries, edits and regenerations count once per original question. Automatic titles, copied history and failures are excluded. Only use after enrollment counts; unused assessment weeks score 0.",
     "weekHint": "Weeks run Monday–Sunday in Beijing time. The joining week includes only activity after enrollment. The current week and an incomplete final week are provisional and excluded from the average. Totals include completed assessment weeks only.",
     "startDate": "Start date (blank: class creation)",
@@ -582,7 +611,21 @@
     "provisional": "Provisional",
     "noData": "Not assessed",
     "noStudents": "No students in this class",
-    "studentScope": "Current cumulative score · {weeks} completed assessment weeks"
+    "studentScope": "Current cumulative score · {weeks} completed assessment weeks",
+    "bonusOptions": "Optional ways to earn bonus points",
+    "continuityRule": "Consistency: a valid exchange in both the previous and current week adds 10 points to this week. Longer streaks still earn at most 10 per week; an inactive week earns none.",
+    "followupRule": "Follow-ups: ask a new question in reply to a successful AI answer in the same conversation and receive a successful, non-empty reply. Each earns 10 points, up to 20 per week. Edits, retries and regenerations do not count again.",
+    "learningRule": "Learning-entry exchanges: send a question with its context from a lesson, practice, correction or experiment help entry and receive a successful, non-empty reply. Each earns 10 points, up to 20 per week. Opening the page or saving a draft earns nothing; untagged historical exchanges receive no retroactive credit for this category.",
+    "capRule": "These paths can be combined. The original criteria still suffice for full credit. Weekly scores stop at 100, and excess points never carry over. Category bonuses show earned points; applied bonuses show only the increase after the cap.",
+    "baseScore": "Base score",
+    "bonusEvidence": "Bonus evidence",
+    "bonusScore": "Applied bonus",
+    "dayEvidence": "{count} active days: {score}/60",
+    "roundEvidence": "{count} valid · {counted} counted rounds: {score}/40",
+    "continuityEvidence": "{count} consecutive weeks: +{score}",
+    "followupEvidence": "{count} follow-ups: +{score}",
+    "learningEvidence": "{count} learning-entry rounds: +{score}",
+    "currentWeekScore": "This week {score}/100 · Base {base} + applied bonus {bonus} (provisional)"
   },
   "drafts": {
     "saved": "Draft saved in this browser",
@@ -614,7 +657,20 @@
       "lab": "Lab assessment",
       "review": "Spaced review",
       "practice": "Reinforcement practice"
-    }
+    },
+    "notJoined": "You have not joined a class yet. Ask your teacher to add your account.",
+    "joinClass": "View class status",
+    "selfStudy": "You can read lessons or practise independently.",
+    "unassigned": "Your teacher has not assigned learning tasks yet. Explore the resources to get started.",
+    "states": {
+      "all": "All tasks",
+      "open": "To do",
+      "scheduled": "Not started",
+      "inProgress": "In progress",
+      "overdue": "Overdue, not submitted"
+    },
+    "filter": "Task status",
+    "filteredEmpty": "No tasks have this status."
   },
   "gradeRecords": {
     "title": "Finalized grade sheets",
@@ -695,5 +751,46 @@
       "practice": "Reinforcement practice",
       "labs": "Lab assessments"
     }
+  },
+  "continuity": {
+    "correct": "Correct score",
+    "extend": "Extend deadline",
+    "withdraw": "Withdraw homework",
+    "release": "Release answers and explanations",
+    "released": "Feedback released",
+    "changes": "Operation history",
+    "newDeadline": "New deadline",
+    "score": "Corrected score",
+    "reason": "Reason (kept in the history)",
+    "confirm": "Confirm",
+    "extendConsequence": "Students who have not submitted can continue until the new deadline. Existing submissions and scores are preserved. Deadlines cannot be extended after feedback is released.",
+    "withdrawConsequence": "Only homework with no submissions can be withdrawn. It will be removed from student tasks and grade calculations; the teacher can still view its history.",
+    "releaseConsequence": "Students will be able to view answers, explanations and correct their mistakes. This cannot be undone, and submissions cannot be reopened afterward.",
+    "correctConsequence": "This updates the official score and future exports. Original answers, automatic grading and every correction reason are retained.",
+    "originalScore": "Original automatic score: {score}",
+    "blankConfirmation": "{count} questions are not fully answered. Blank parts receive 0 points. Submissions cannot be edited. Continue?",
+    "corrections": "Go to corrections and review",
+    "feedbackPending": "Answers and explanations will be available when the teacher releases feedback. You can then correct mistakes in the review area.",
+    "readOnlyDraft": "The deadline has passed. Your unsubmitted draft is preserved on this device for reference and is currently read-only.",
+    "remediationTitle": "{title} · Follow-up practice",
+    "remediate": "Assign follow-up practice",
+    "remediationLabel": "Targeted practice",
+    "loading": "Loading…",
+    "remediationPublished": "The task is available to the selected students in Class Activities. View its report or close the task there.",
+    "remediationResults": "Refresh results",
+    "resultCounts": "Submitted: {submitted}/{total}",
+    "notSubmitted": "Not submitted",
+    "taskTitle": "Task title",
+    "recipients": "Selected students ({count})",
+    "pickQuestions": "Select questions ({count}/10)",
+    "answer": "Preview answers and explanations",
+    "retry": "Reload",
+    "retryPublish": "Retry publishing the saved draft",
+    "publishRemediation": "Publish to selected students",
+    "copyTask": "Copy activity",
+    "copySaved": "Saved as an independent draft in the target class. Open its Class Activities page to review and publish it.",
+    "targetClass": "Target class",
+    "selectClass": "Select a class",
+    "copyDraft": "Copy as draft"
   }
 }

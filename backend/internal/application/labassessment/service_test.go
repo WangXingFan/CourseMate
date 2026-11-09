@@ -87,6 +87,35 @@ func TestSubmitWithSingleDatabaseConnection(t *testing.T) {
 	}
 }
 
+func TestDashboardProgressDoesNotForfeitAttempts(t *testing.T) {
+	s, _ := setup(t)
+	ctx := context.Background()
+	a, err := s.Publish(ctx, 1, "class", "L1", time.Time{}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = s.Start(ctx, 2, a.ID, "L1-1"); err != nil {
+		t.Fatal(err)
+	}
+	if err = s.SetOpen(ctx, 1, a.ID, false); err != nil {
+		t.Fatal(err)
+	}
+	task, progress, err := s.StudentPendingTask(ctx, 2, a.ID)
+	if err != nil || task != "L1-1" || !progress {
+		t.Fatalf("pending task: %s %v %v", task, progress, err)
+	}
+	if _, _, err = s.StudentPendingTask(ctx, 3, a.ID); err == nil {
+		t.Fatal("other class accessed progress")
+	}
+	if err = s.SetOpen(ctx, 1, a.ID, true); err != nil {
+		t.Fatal(err)
+	}
+	_, state, err := s.Read(ctx, 2, a.ID)
+	if err != nil || state.Task("L1-1").Explained {
+		t.Fatal("dashboard progress forfeited attempts")
+	}
+}
+
 func TestAssessmentLifecycle(t *testing.T) {
 	s, _ := setup(t)
 	ctx := context.Background()

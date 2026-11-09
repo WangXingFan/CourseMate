@@ -55,13 +55,23 @@ func TestAIActivitySuccessfulQuestionsRetriesEditsAndCopies(t *testing.T) {
 	retry := create(18, 1, "user", "r7", "success", "retry", &edit, nil)
 	create(19, 1, "assistant", "r7", "success", "retry", nil, &retry)
 	create(20, 1, "assistant", "copied-retry", "success", "retry", nil, &copy)
+	if err := db.Model(&models.Message{}).Where("id = ?", root).Update("learning_source", "correction").Error; err != nil {
+		t.Fatal(err)
+	}
+	if err := db.Model(&models.Message{}).Where("id = ?", failure).Update("parent_message_id", answer).Error; err != nil {
+		t.Fatal(err)
+	}
+	// Marking an edited copy as learning must not change the root's category.
+	if err := db.Model(&models.Message{}).Where("id = ?", edit).Update("learning_source", "lesson").Error; err != nil {
+		t.Fatal(err)
+	}
 	events, err := NewRepo(db).ListAIActivityEvents(context.Background(), []uint{1}, start.AddDate(0, 0, 7))
 	if err != nil {
 		t.Fatal(err)
 	}
 	report := domain.BuildAIActivity("c", []domain.Student{{ID: 1, JoinedAt: start}}, events, start, start.AddDate(0, 0, 7), start.AddDate(0, 0, 7))
 	row := report.Students[0]
-	if len(events) != 5 || row.ValidRounds != 2 || row.ActiveDays != 1 || *row.Final != 50 {
+	if len(events) != 5 || row.ValidRounds != 2 || row.ActiveDays != 1 || *row.Final != 70 || row.Weeks[0].LearningRounds != 1 || row.Weeks[0].FollowupRounds != 1 {
 		t.Fatalf("unexpected events/score: %+v %+v", events, row)
 	}
 }

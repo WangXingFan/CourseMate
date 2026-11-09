@@ -39,6 +39,7 @@ type Options struct {
 	Weights             map[string]float64
 	FilenameTemplate    string
 	CourseID            string
+	HomeworkID          string
 }
 type File struct {
 	Name, ContentType string
@@ -57,6 +58,7 @@ type attendanceData struct {
 	records map[uint]attendance.Record
 }
 type dataset struct {
+	profile          class.ExportProfile
 	recordTitle      string
 	aiActivity       *class.AIActivityReport
 	performance      *class.PerformanceReport
@@ -75,6 +77,11 @@ func (o Options) validate() error {
 		return nil
 	case "reports":
 		if len(lab.TaskIDs(o.CourseID)) == 0 {
+			return ErrInvalid
+		}
+		return nil
+	case "homework_reports":
+		if o.HomeworkID == "" {
 			return ErrInvalid
 		}
 		return nil
@@ -121,6 +128,15 @@ func (s *Service) loadDataset(ctx context.Context, actor uint, id string, o Opti
 		return nil, err
 	}
 	d := dataset{class: *c, now: s.now()}
+	if o.Kind != "reports" && o.Kind != "homework_reports" {
+		d.profile, err = s.classes.GetExportProfile(ctx, c.ID)
+		if err != nil {
+			return nil, err
+		}
+		if err := normalizeExportProfile(&d.profile); err != nil {
+			return nil, err
+		}
+	}
 	d.students, err = s.classes.ListClassroomStudents(ctx, c.ID)
 	if err != nil {
 		return nil, err
@@ -170,10 +186,16 @@ func (s *Service) Export(ctx context.Context, actor uint, id string, o Options) 
 	if o.Kind == "reports" {
 		return s.reports(ctx, *d, o)
 	}
+	if o.Kind == "homework_reports" {
+		return homeworkReports(ctx, *d, o)
+	}
 	return workbook(*d, o)
 }
 
 func (s *Service) collect(ctx context.Context, d *dataset, o Options) error {
+	if o.Kind == "homework_reports" {
+		return s.collectHomeworkReport(ctx, d, o.HomeworkID)
+	}
 	needed := func(k string) bool { return o.Kind == k || o.Kind == "summary" && o.Weights[k] > 0 }
 	if needed("ai_activity") {
 		var err error
@@ -191,7 +213,7 @@ func (s *Service) collect(ctx context.Context, d *dataset, o Options) error {
 			return err
 		}
 		for _, item := range items {
-			if item.StartsAt.After(d.now) || !o.IncludeOngoing && item.EndsAt().After(d.now) {
+			if item.Withdrawn || item.StartsAt.After(d.now) || !o.IncludeOngoing && item.EndsAt().After(d.now) {
 				continue
 			}
 			subs, err := s.classes.ListHomeworkSubmissions(ctx, item.ID, 0)

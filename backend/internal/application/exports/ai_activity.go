@@ -2,7 +2,7 @@ package exports
 
 func aiActivitySheets(d dataset) []sheet {
 	summary := [][]any{{"学号", "姓名", "活跃周数", "已结束考核周数", "活跃天数（已结束周）", "有效问答（已结束周）", "AI活跃度分", "状态", "开始日期", "结束日期"}}
-	weeks := [][]any{{"学号", "姓名", "周开始", "周结束", "状态", "活跃天数", "有效问答", "计分问答", "活跃天数分（60）", "问答分（40）", "周分（100）"}}
+	weeks := [][]any{{"学号", "姓名", "周开始", "周结束", "状态", "活跃天数", "有效问答", "计分问答", "活跃天数分（60）", "问答分（40）", "周分（100）", "基础分", "连续活跃周数", "有效追问", "学习入口问答", "持续学习加分（10）", "追问加分（20）", "学习入口加分（20）", "实际计入加分（封顶后）"}}
 	if d.aiActivity != nil {
 		for _, st := range d.aiActivity.Students {
 			var score any = ""
@@ -16,7 +16,7 @@ func aiActivitySheets(d dataset) []sheet {
 				if w.Status == "closed" {
 					status = "已结束"
 				}
-				weeks = append(weeks, []any{st.Username, st.Name, w.StartDate, w.EndDate, status, w.ActiveDays, w.ValidRounds, w.CountedRounds, w.DayScore, w.RoundScore, w.Score})
+				weeks = append(weeks, []any{st.Username, st.Name, w.StartDate, w.EndDate, status, w.ActiveDays, w.ValidRounds, w.CountedRounds, w.DayScore, w.RoundScore, w.Score, w.BaseScore, w.ConsecutiveWeeks, w.FollowupRounds, w.LearningRounds, w.ContinuityScore, w.FollowupScore, w.LearningScore, w.BonusScore})
 			}
 		}
 	}

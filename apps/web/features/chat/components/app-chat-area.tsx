@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { learningHandoffSource } from "@/shared/lib/learning-handoff";
+import { useChatLearningHandoff } from "@/features/chat/hooks/use-chat-learning-handoff";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import * as React from "react";
@@ -62,6 +65,8 @@ export function AppChatArea() {
   const searchParams = useSearchParams();
   const { user } = useAuthSession();
   const routeConversationID = searchParams.get("conversation_id")?.trim() || null;
+  const learningID = searchParams.get("learning") ?? "";
+  const [learningScope, setLearningScope] = React.useState("");
   const {
     detachConversationRun,
     finishConversationRun,
@@ -74,6 +79,13 @@ export function AppChatArea() {
     ignoredConversationID: string | null;
   } | null>(null);
   const previousNewConversationRevisionRef = React.useRef(newConversationRevision);
+
+  React.useEffect(() => {
+    if (!learningID || learningScope === learningID) return;
+    setLocallyCreatedConversationID(null);
+    setNewConversationOverride(null);
+    setLearningScope(learningID);
+  }, [learningID, learningScope]);
 
   React.useEffect(() => {
     if (previousNewConversationRevisionRef.current === newConversationRevision) {
@@ -98,7 +110,7 @@ export function AppChatArea() {
     );
   }, [routeConversationID]);
 
-  const resolvedRouteConversationID = routeConversationID ?? locallyCreatedConversationID;
+  const resolvedRouteConversationID = learningID && learningScope !== learningID ? null : routeConversationID ?? locallyCreatedConversationID;
   const conversationID =
     newConversationOverride && resolvedRouteConversationID === newConversationOverride.ignoredConversationID
       ? null
@@ -210,6 +222,7 @@ export function AppChatArea() {
     preserveDrafts: preserveConversationDrafts,
     storageScope: user?.publicID ?? "",
   });
+  const learningContext = useChatLearningHandoff(user?.publicID ?? "", chatPreferencesLoaded && learningScope === learningID && !routeConversationID ? learningID : "", setDraft);
   const selectionConversationKey = resolveConversationComposerKey(conversationID);
   const selectedModel = React.useMemo(
     () => modelOptions.find((item) => item.platformModelName === selectedPlatformModelName) ?? null,
@@ -299,6 +312,7 @@ export function AppChatArea() {
     selectedPlatformModelName,
     selectedKnowledgeBaseIDs,
     uiComponentIDs: effectiveUIComponentIDs,
+    learningSource: learningHandoffSource(learningContext, draft),
     htmlVisualPromptEnabled: htmlVisualPrompt.enabled,
     options: modelOptionPolicyDisabled ? EMPTY_CONVERSATION_OPTIONS : options,
     draft,
@@ -551,6 +565,7 @@ export function AppChatArea() {
       onDragLeave={onFileDragLeave}
       onDrop={onFileDrop}
     >
+      {learningContext && <Link href={learningContext.returnHref} className="shrink-0 border-b border-border px-5 py-3 text-sm hover:text-primary">← {learningContext.title}</Link>}
       {shouldUseCenteredComposer ? (
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <ChatEmptyState

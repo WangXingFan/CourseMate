@@ -57,6 +57,8 @@ func main(){
  repository:=repo.NewRepo(db)
  paper:=domain.HomeworkBank()[0]
  for _,item:=range []domain.Homework{{PublicID:"open-homework",ClassroomID:1,TeacherID:1,BankID:paper.ID,Title:"时域分析作业",Questions:paper.Questions,StartsAt:now.Add(-time.Hour),Deadline:now.Add(time.Hour)},{PublicID:"closed-homework",ClassroomID:1,TeacherID:1,BankID:paper.ID,Title:"缺课补交作业",Questions:paper.Questions,StartsAt:now.Add(-24*time.Hour),Deadline:now.Add(-time.Hour)}} {_,err:=repository.CreateHomework(context.Background(),item);must(err)}
+ withdrawn,err:=repository.CreateHomework(context.Background(),domain.Homework{PublicID:"withdrawn-homework",ClassroomID:1,TeacherID:1,BankID:paper.ID,Title:"已撤回作业",Questions:paper.Questions,StartsAt:now.Add(-time.Hour),Deadline:now.Add(time.Hour)});must(err)
+ must(repository.ManageHomework(context.Background(),withdrawn.ID,1,"withdraw",time.Time{},"取消布置"))
  learn:=learningapp.NewService(learningrepo.NewRepo(db))
  q:=learning.FindPracticeBank("topic:time-constant","zh-CN").Questions[0]
  for _,id:=range []uint{2,3}{_,err=learn.SubmitPractice(context.Background(),id,uuid.NewString(),"topic:time-constant",q.ID,"zh-CN",map[string]string{"choice":strconv.Itoa((q.Answer+1)%4)});must(err)}
@@ -109,6 +111,8 @@ async function session(id, locale = "zh-CN") {
     else if (path.endsWith("/student/performance")) data = { record: null };
     else if (path.endsWith("/student/ai-activity")) data = { report: null };
     else if (path.endsWith("/learning/progress")) data = { questions: [] };
+    else if (path.endsWith("/learning/corrections")) data = { items: [] };
+    else if (path.endsWith("/learning/mastery")) data = { concepts: [], counts: {}, weeks: [] };
     else if (/\/classrooms(?:\/|$)|\/homeworks\/|\/student\/(homeworks|practice-assignments|quizzes)|\/practice-assignments\//.test(path)) {
       const body = request.postData();
       const response = await fetch(apiBase + path + url.search, { method: request.method(), headers: { "X-Test-User-ID": String(id), "Content-Type": "application/json" }, ...(body ? { body } : {}) });
@@ -144,6 +148,7 @@ try {
   await teacher.goto(`${base}/classrooms`);
   await teacher.getByRole("button", { name: /信号与系统 · 一班/ }).click();
   await teacher.locator("[data-classroom-overview]").getByText("时域分析作业", { exact: true }).waitFor();
+  assert.equal(await teacher.locator("[data-classroom-overview]").getByText("已撤回作业", { exact: true }).count(), 0);
   await screenshots(teacher, "overview");
   await teacher.getByRole("button", { name: /信号与系统 · 二班/ }).click();
   await teacher.reload();
@@ -179,7 +184,7 @@ try {
   await student.getByText("个人补交期限", { exact: true }).waitFor();
   await other.goto(`${base}/dashboard`);
   await other.getByText("正在同步任务", { exact: true }).waitFor({ state: "hidden" });
-  assert.equal(await other.getByRole("link", { name: /缺课补交作业/ }).count(), 0);
+  await other.getByRole("link", { name: /缺课补交作业/ }).getByText("逾期未交", { exact: true }).waitFor();
   await teacher.getByRole("button", { name: /查看薄弱点/ }).click();
   await teacher.locator("[data-classroom-mastery]").getByRole("button", { name: /时间常数.*2/ }).click();
   await teacher.getByRole("button", { name: "布置巩固练习", exact: true }).click();

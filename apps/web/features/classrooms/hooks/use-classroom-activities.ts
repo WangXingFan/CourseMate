@@ -238,6 +238,7 @@ export function useClassroomActivities(accessToken: string, classroomID: string)
   }, [report]);
 
   return {
+    context: { accessToken, classroomID },
     list: { quizzes, loading, refresh },
     createDialog: {
       draft,

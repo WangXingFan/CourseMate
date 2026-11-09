@@ -45,4 +45,6 @@ Use the example configurations documented in `README.md`; never commit secrets o
 
 ## Agent Working Principles
 
+Develop and commit on `main` by default. Create or switch to another branch only when the user explicitly requests it.
+
 Avoid overengineering and excessive defensive code. Preserve traceable errors. Keep verification proportional to the change; do not repeatedly audit unchanged code or repeat completed checks after context recovery.

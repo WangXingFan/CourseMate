@@ -41,6 +41,9 @@ func HomeworkBank() []HomeworkPaper {
 }
 
 type Homework struct {
+	Withdrawn       bool
+	FeedbackAt      *time.Time
+	Changes         []HomeworkChange
 	ID              uint
 	PublicID        string
 	ClassroomID     uint
@@ -88,6 +91,9 @@ func (h Homework) EndsAt() time.Time {
 }
 
 func (h Homework) Status(now time.Time) string {
+	if h.Withdrawn {
+		return "withdrawn"
+	}
 	if now.Before(h.StartsAt) {
 		return "scheduled"
 	}
@@ -99,7 +105,7 @@ func (h Homework) Status(now time.Time) string {
 
 // AppliesTo excludes assignments that ended before the current enrollment.
 func (h Homework) AppliesTo(joinedAt time.Time) bool {
-	return joinedAt.IsZero() || h.Deadline.After(joinedAt)
+	return !h.Withdrawn && (joinedAt.IsZero() || h.Deadline.After(joinedAt))
 }
 
 func (h Homework) Total() int {
@@ -118,6 +124,7 @@ type HomeworkResult struct {
 }
 
 type HomeworkSubmission struct {
+	Corrections     []HomeworkCorrection
 	ID              uint
 	HomeworkID      uint
 	StudentID       uint
@@ -129,6 +136,23 @@ type HomeworkSubmission struct {
 	Score           int
 	SubmittedAt     time.Time
 	Makeup          bool
+}
+
+type HomeworkChange struct {
+	Action           string
+	Reason           string
+	Actor            uint
+	At               time.Time
+	PreviousDeadline time.Time
+	Deadline         time.Time
+}
+
+type HomeworkCorrection struct {
+	Before int
+	Score  int
+	Reason string
+	Actor  uint
+	At     time.Time
 }
 
 func normalizeHomeworkAnswer(value string) string {
@@ -156,7 +180,7 @@ func homeworkAnswerMatches(answer, expected string) bool {
 	return strings.ReplaceAll(a, "*", "") == strings.ReplaceAll(b, "*", "")
 }
 
-// GradeHomework returns false for malformed/incomplete submissions. Each blank
+// GradeHomework rejects malformed submissions; an unanswered blank earns zero. Each blank
 // receives an equal share of its question's points, as in the imported papers.
 func GradeHomework(questions []HomeworkQuestion, answers [][]string) ([]HomeworkResult, int, bool) {
 	if len(answers) != len(questions) {
@@ -171,8 +195,11 @@ func GradeHomework(questions []HomeworkQuestion, answers [][]string) ([]Homework
 		result := HomeworkResult{QuestionID: q.ID, Total: q.Points, Correct: make([]bool, len(q.Accepted))}
 		for blank, aliases := range q.Accepted {
 			answer := strings.TrimSpace(answers[i][blank])
-			if answer == "" || len(answer) > 200 {
+			if len(answer) > 200 {
 				return nil, 0, false
+			}
+			if answer == "" {
+				continue
 			}
 			if q.Kind != "blank" {
 				valid := false

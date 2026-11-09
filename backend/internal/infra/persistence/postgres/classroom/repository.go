@@ -219,6 +219,7 @@ func (r *Repo) CreateQuiz(ctx context.Context, input domain.Quiz) (*domain.Quiz,
 		sourceID = &input.SourceQuizID
 	}
 	record := models.ClassroomQuiz{
+		Purpose:      input.Purpose,
 		SourceQuizID: sourceID,
 		PublicID:     input.PublicID,
 		ClassroomID:  input.ClassroomID,
@@ -228,6 +229,11 @@ func (r *Repo) CreateQuiz(ctx context.Context, input domain.Quiz) (*domain.Quiz,
 		Status:       input.Status,
 		Questions:    string(encoded),
 	}
+	targets, err := json.Marshal(input.TargetStudentIDs)
+	if err != nil {
+		return nil, err
+	}
+	record.TargetStudentIDs = string(targets)
 	if err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if input.SourceQuizID != "" {
 			var parent models.ClassroomQuiz
@@ -420,6 +426,9 @@ func (r *Repo) ListStudentQuizzes(ctx context.Context, classroomID, studentID ui
 				return nil, err
 			}
 		}
+		if !item.AssignedTo(studentID) {
+			continue
+		}
 		items = append(items, *item)
 	}
 	return items, nil
@@ -512,6 +521,10 @@ func (r *Repo) ListQuizSubmissions(ctx context.Context, quizID uint) ([]domain.Q
 }
 
 func toDomainQuiz(record models.ClassroomQuiz, submissionCount int64) (*domain.Quiz, error) {
+	targets := []uint{}
+	if err := json.Unmarshal([]byte(record.TargetStudentIDs), &targets); err != nil {
+		return nil, err
+	}
 	questions := make([]domain.QuizQuestion, 0)
 	if err := json.Unmarshal([]byte(record.Questions), &questions); err != nil {
 		return nil, err
@@ -521,6 +534,7 @@ func toDomainQuiz(record models.ClassroomQuiz, submissionCount int64) (*domain.Q
 		sourceID = *record.SourceQuizID
 	}
 	return &domain.Quiz{
+		Purpose: record.Purpose, TargetStudentIDs: targets,
 		SourceQuizID:    sourceID,
 		ID:              record.ID,
 		PublicID:        record.PublicID,

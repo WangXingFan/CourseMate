@@ -1,11 +1,18 @@
-import type { ClassroomExportRequest } from "@deeix/api-contract";
+import type { ClassroomExportProfile, ClassroomExportRequest } from "@deeix/api-contract";
 import { authedFetch } from "@/shared/api/authed-client";
 import { authedRequest } from "@/shared/api/authed-client";
 import type { GradePreviewResponse, GradeRecordResponse, GradeRecordListResponse } from "@deeix/api-contract";
 import { pathParam } from "@/shared/api/http-client";
 
-export type { ClassroomExportRequest };
+export type { ClassroomExportProfile, ClassroomExportRequest };
 export type { GradePreviewResponse, GradeRecordResponse, GradeRecordInfoResponse } from "@deeix/api-contract";
+
+export function getExportProfile(accessToken: string, id: string, signal?: AbortSignal) {
+  return authedRequest<ClassroomExportProfile>(`/api/v1/classrooms/${pathParam(id)}/export-profile`, { accessToken, signal });
+}
+export function saveExportProfile(accessToken: string, id: string, profile: ClassroomExportProfile, signal?: AbortSignal) {
+  return authedRequest<ClassroomExportProfile>(`/api/v1/classrooms/${pathParam(id)}/export-profile`, { accessToken, method: "PUT", body: profile, signal });
+}
 
 export function previewGrades(accessToken: string, id: string, options: ClassroomExportRequest, signal?: AbortSignal) {
   return authedRequest<GradePreviewResponse>(`/api/v1/classrooms/${pathParam(id)}/grade-preview`, { accessToken, method: "POST", body: options, signal });

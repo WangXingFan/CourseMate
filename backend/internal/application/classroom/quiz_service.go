@@ -261,7 +261,7 @@ func (s *Service) SubmitQuiz(
 	if err != nil {
 		return nil, err
 	}
-	if quiz.ClassroomID != classroom.ID {
+	if quiz.ClassroomID != classroom.ID || !quiz.AssignedTo(actor) {
 		return nil, ErrQuizNotFound
 	}
 	if quiz.Status != domain.QuizStatusOpen {
@@ -305,6 +305,13 @@ func (s *Service) QuizReport(ctx context.Context, actor uint, publicID string) (
 	if err != nil {
 		return nil, err
 	}
+	assigned := students[:0]
+	for _, student := range students {
+		if quiz.AssignedTo(student.ID) {
+			assigned = append(assigned, student)
+		}
+	}
+	students = assigned
 	submissions, err := s.repo.ListQuizSubmissions(ctx, quiz.ID)
 	if err != nil {
 		return nil, err

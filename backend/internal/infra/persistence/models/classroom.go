@@ -4,13 +4,14 @@ import "time"
 
 type Classroom struct {
 	ControlPlaneModel
-	PublicID    string `gorm:"size:32;not null;uniqueIndex"`
-	TeacherID   uint   `gorm:"not null;index"`
-	Name        string `gorm:"size:80;not null"`
-	Description string `gorm:"size:255;not null;default:''"`
-	Lab1Open    bool   `gorm:"not null;default:false"`
-	Lab2Open    bool   `gorm:"not null;default:false"`
-	Lab3Open    bool   `gorm:"not null;default:false"`
+	PublicID      string `gorm:"size:32;not null;uniqueIndex"`
+	TeacherID     uint   `gorm:"not null;index"`
+	Name          string `gorm:"size:80;not null"`
+	Description   string `gorm:"size:255;not null;default:''"`
+	ExportProfile string `gorm:"type:text;not null;default:'{}'"`
+	Lab1Open      bool   `gorm:"not null;default:false"`
+	Lab2Open      bool   `gorm:"not null;default:false"`
+	Lab3Open      bool   `gorm:"not null;default:false"`
 }
 
 func (Classroom) TableName() string { return "classrooms" }
@@ -27,6 +28,8 @@ func (ClassroomStudent) TableName() string { return "classroom_students" }
 // ClassroomQuiz stores the question set as JSON so a quiz is immutable once
 // published. Answers remain server-side; student responses store option indices.
 type ClassroomQuiz struct {
+	Purpose          string `gorm:"size:24;not null;default:''"`
+	TargetStudentIDs string `gorm:"type:text;not null;default:'[]'"`
 	ControlPlaneModel
 	PublicID     string  `gorm:"size:32;not null;uniqueIndex"`
 	ClassroomID  uint    `gorm:"not null;index"`

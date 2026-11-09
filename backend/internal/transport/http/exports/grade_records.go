@@ -75,7 +75,7 @@ func recordView(r *domain.GradeRecord) GradeRecordResponse {
 }
 func gradeError(c *gin.Context, err error) {
 	switch {
-	case errors.Is(err, app.ErrInvalid):
+	case errors.Is(err, app.ErrInvalid), errors.Is(err, app.ErrProfileRequired):
 		response.ErrorFrom(c, 400, err)
 	case errors.Is(err, app.ErrForbidden):
 		response.ErrorFrom(c, 403, err)

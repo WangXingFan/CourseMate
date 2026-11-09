@@ -1,5 +1,6 @@
 "use client";
 
+import { CorrectionList } from "@/features/learning/components/sections/correction-list";
 import { QuestionContent } from "@/shared/components/question-content";
 
 import { ArrowRight, BookOpen, CheckCircle2, History, RotateCcw, XCircle } from "lucide-react";
@@ -18,6 +19,7 @@ import type { LearningQuestionDTO } from "@/shared/api/learning-types";
 
 export function LearningProgress() {
   const masteryT = useTranslations("learning.mastery");
+  const continuityT = useTranslations("learning.continuity");
   const t = useTranslations("learningLabs.progress");
   const q = useTranslations("learningLabs.quiz.questions");
   const format = useFormatter();
@@ -38,7 +40,9 @@ export function LearningProgress() {
 
   return (
     <LessonShell title={t("title")}>
+      <CorrectionList />
       <div className="space-y-4">
+        <h2 className="mt-8 font-display text-2xl font-normal">{continuityT("quickReview")}</h2>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <ProgressStatus model={model} />
           <Button asChild size="sm" variant="outline"><Link href="/learn/mastery">{masteryT("title")}</Link></Button>

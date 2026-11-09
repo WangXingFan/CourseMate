@@ -52,6 +52,7 @@ export function useChatRunStream({
       exchangeKey,
       clientRunID,
       content,
+      learningSource,
       options,
       effectiveAttachments,
       platformModelName,
@@ -69,6 +70,7 @@ export function useChatRunStream({
       exchangeKey: string;
       clientRunID: string;
       content: string;
+      learningSource?: SendMessageRequest["learningSource"];
       options: ConversationOptions;
       effectiveAttachments: PendingAttachment[];
       platformModelName: string;
@@ -200,6 +202,7 @@ export function useChatRunStream({
         branchReason,
         contentType: effectiveAttachments.length > 0 ? "mixed" : "text",
         content,
+        learningSource,
         knowledgeBaseIDs: selectedKnowledgeBaseIDs,
         htmlVisualPrompt: htmlVisualPromptEnabled || undefined,
         uiComponentIDs,

@@ -124,6 +124,7 @@ type Message struct {
 	ContentType              string
 	Content                  string
 	ReasoningContent         string
+	LearningSource           string
 	BranchReason             string
 	SourceMessageID          *uint
 	TokenUsage               int64

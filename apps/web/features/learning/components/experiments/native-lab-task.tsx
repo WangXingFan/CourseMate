@@ -12,6 +12,7 @@ import { exportLabPNG } from "@/features/learning/model/virtual-lab-native";
 import type { VirtualLabEngine } from "@/public/vendor/signal-lab/core.mjs";
 import { LAB_FLOWS, firstMissingLabStep, hasLabStepEvidence, labMeasurementAt, labPredictionDiffers, labStepTrials, labTrialPrediction, matchesLabStep, resumeLabStep, validLabObservation } from "@/features/learning/model/virtual-lab-flow";
 import { labAnswerFormulas, labObservationFormulas, labObservationPlotKey } from "@/features/learning/model/virtual-lab-presentation";
+import { LearningHelp } from "@/features/learning/components/shared/learning-help";
 import { NativeLabComparison } from "./native-lab-comparison";
 import { NativeLabAudio } from "./native-lab-audio";
 import { NativeLabGivens } from "./native-lab-givens";
@@ -149,7 +150,7 @@ export function NativeLabTask({ model, engine, taskID }: { model: NativeLabModel
         {courseTasks.map((id, index) => <option key={id} value={id}>{index + 1}. {engine.tasks[id].short || engine.tasks[id].title}</option>)}
       </select>
     </header>
-    <div className="flex justify-end"><Button asChild variant="outline"><a href={`/learn/experiments/assessment#${taskID}`}>{assessmentT("title")}</a></Button></div>
+    <div className="flex flex-wrap justify-end gap-3"><LearningHelp title={task.title} context={JSON.stringify({ task: taskID, parameters: record.params, prediction: record.predictionDraft || record.prediction, observation: observationText, analysis: record.analysis, readings: scene.metrics })} returnHref={`/learn/experiments/workspace#task/${taskID}`} /><Button asChild variant="outline"><a href={`/learn/experiments/assessment#${taskID}`}>{assessmentT("title")}</a></Button></div>
     <p className="text-base leading-7" data-lab-objective><span className="mr-2 font-medium">{f("objective")}</span>{f(`tasks.${taskID}.objective`)}</p>
     <nav aria-label={f("steps")} className="grid grid-cols-3 border-b border-border">
       {(["predict", "observe", "conclude"] as const).map((item, index) => <button type="button" key={item} data-phase={item} aria-current={phase === item ? "step" : undefined} disabled={item !== "predict" && !hasPrediction} onClick={() => go(item)} className={`flex min-h-12 items-center justify-center gap-2 border-b-2 px-2 py-3 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${phase === item ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}><span className="font-mono">0{index + 1}</span>{f(item)}</button>)}

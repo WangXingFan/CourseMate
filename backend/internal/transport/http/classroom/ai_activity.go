@@ -10,15 +10,23 @@ import (
 )
 
 type AIActivityWeek struct {
-	StartDate     string `json:"startDate"`
-	EndDate       string `json:"endDate"`
-	Status        string `json:"status" enums:"closed,provisional"`
-	ActiveDays    int    `json:"activeDays"`
-	ValidRounds   int    `json:"validRounds"`
-	CountedRounds int    `json:"countedRounds"`
-	DayScore      int    `json:"dayScore"`
-	RoundScore    int    `json:"roundScore"`
-	Score         int    `json:"score"`
+	StartDate        string `json:"startDate"`
+	EndDate          string `json:"endDate"`
+	Status           string `json:"status" enums:"closed,provisional"`
+	ActiveDays       int    `json:"activeDays"`
+	ValidRounds      int    `json:"validRounds"`
+	CountedRounds    int    `json:"countedRounds"`
+	DayScore         int    `json:"dayScore"`
+	RoundScore       int    `json:"roundScore"`
+	BaseScore        int    `json:"baseScore"`
+	ConsecutiveWeeks int    `json:"consecutiveWeeks"`
+	FollowupRounds   int    `json:"followupRounds"`
+	LearningRounds   int    `json:"learningRounds"`
+	ContinuityScore  int    `json:"continuityScore"`
+	FollowupScore    int    `json:"followupScore"`
+	LearningScore    int    `json:"learningScore"`
+	BonusScore       int    `json:"bonusScore"`
+	Score            int    `json:"score"`
 }
 
 type AIActivityStudent struct {
@@ -54,7 +62,7 @@ func aiActivityResponse(r *domain.AIActivityReport) AIActivityResponse {
 	for _, st := range r.Students {
 		row := AIActivityStudent{StudentID: st.StudentID, Username: st.Username, Name: st.Name, ExpectedWeeks: st.ExpectedWeeks, ActiveWeeks: st.ActiveWeeks, ActiveDays: st.ActiveDays, ValidRounds: st.ValidRounds, Final: st.Final, Weeks: []AIActivityWeek{}}
 		for _, w := range st.Weeks {
-			row.Weeks = append(row.Weeks, AIActivityWeek{StartDate: w.StartDate, EndDate: w.EndDate, Status: w.Status, ActiveDays: w.ActiveDays, ValidRounds: w.ValidRounds, CountedRounds: w.CountedRounds, DayScore: w.DayScore, RoundScore: w.RoundScore, Score: w.Score})
+			row.Weeks = append(row.Weeks, AIActivityWeek{StartDate: w.StartDate, EndDate: w.EndDate, Status: w.Status, ActiveDays: w.ActiveDays, ValidRounds: w.ValidRounds, CountedRounds: w.CountedRounds, DayScore: w.DayScore, RoundScore: w.RoundScore, BaseScore: w.BaseScore, ConsecutiveWeeks: w.ConsecutiveWeeks, FollowupRounds: w.FollowupRounds, LearningRounds: w.LearningRounds, ContinuityScore: w.ContinuityScore, FollowupScore: w.FollowupScore, LearningScore: w.LearningScore, BonusScore: w.BonusScore, Score: w.Score})
 		}
 		out.Students = append(out.Students, row)
 	}

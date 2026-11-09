@@ -8,14 +8,17 @@ import { MasteryPeriodFilter, MasteryProfile } from "@/features/learning";
 import { useClassroomMastery } from "@/features/classrooms/hooks/use-classroom-mastery";
 import { PracticePublishDialog } from "./practice-publish-dialog";
 import { cn } from "@/lib/utils";
+import { RemediationDialog } from "@/features/classrooms/components/shared/remediation-dialog";
 
 export function ClassroomMastery({ accessToken, classroomID }: { accessToken: string; classroomID: string }) {
   const t = useTranslations("learning.mastery");
   const practice = useTranslations("classrooms.practice");
   const [publishing, setPublishing] = useState(false);
+  const c = useTranslations("classrooms.continuity");
   const topics = useTranslations("learningLabs.progress.topics");
   const model = useClassroomMastery(accessToken, classroomID);
   const [conceptID, setConceptID] = useState("");
+  const [remediation, setRemediation] = useState<{ id: string; title: string }>();
   const selected = model.report?.students.find((student) => student.id === model.studentID);
   const weakConcepts = model.report?.concepts.filter((item) => item.weak > 0).sort((a, b) => b.weak - a.weak) ?? [];
   const visible = model.report?.students.filter((student) => !conceptID || student.weakConceptIds.includes(conceptID)) ?? [];
@@ -25,9 +28,10 @@ export function ClassroomMastery({ accessToken, classroomID }: { accessToken: st
     <MasteryPeriodFilter period={model.period} onChange={(period) => { setConceptID(""); model.setPeriod(period); }} />
     {model.error ? <p role="alert" className="text-sm text-destructive">{model.error}</p> : !model.report ? <div role="status" className="flex items-center gap-2 text-sm"><Spinner />{t("loading")}</div> : model.studentID ? (model.profileError ? <p role="alert" className="text-sm text-destructive">{model.profileError}</p> : model.profile ? <MasteryProfile key={model.studentID} profile={model.profile} readOnly /> : <div role="status" className="flex items-center gap-2 text-sm"><Spinner />{t("loading")}</div>) : <div className="space-y-8">
       <p className="text-sm leading-7">{t("classScope")}</p>
-      <section><h3 className="mb-4 font-display text-xl font-normal">{t("classWeak")}</h3><div className="divide-y divide-border border-y border-border">{weakConcepts.map((item) => <button type="button" key={item.concept.id} aria-pressed={conceptID === item.concept.id} onClick={() => setConceptID((id) => id === item.concept.id ? "" : item.concept.id)} className={cn("flex w-full flex-wrap items-center justify-between gap-3 px-3 py-4 text-left text-sm focus-visible:ring-2 focus-visible:ring-ring", conceptID === item.concept.id ? "bg-accent shadow-[inset_2px_0_0_var(--primary)]" : "hover:bg-muted")}><span className="font-display text-lg">{item.concept.title || topics(item.concept.topic)}</span><span>{t("weakStudents", { weak: item.weak, assessed: item.assessed })}</span></button>)}</div>{!weakConcepts.length && <p className="py-4 text-sm">{t("noClassWeak")}</p>}</section>
+      <section><h3 className="mb-4 font-display text-xl font-normal">{t("classWeak")}</h3><div className="divide-y divide-border border-y border-border">{weakConcepts.map((item) => <div key={item.concept.id} className="flex flex-wrap items-center gap-3 py-2"><button type="button" aria-pressed={conceptID === item.concept.id} onClick={() => setConceptID((id) => id === item.concept.id ? "" : item.concept.id)} className={cn("flex min-w-0 flex-1 flex-wrap items-center justify-between gap-3 px-3 py-4 text-left text-sm focus-visible:ring-2 focus-visible:ring-ring", conceptID === item.concept.id ? "bg-accent shadow-[inset_2px_0_0_var(--primary)]" : "hover:bg-muted")}><span className="font-display text-lg">{item.concept.title || topics(item.concept.topic)}</span><span>{t("weakStudents", { weak: item.weak, assessed: item.assessed })}</span></button><Button variant="outline" onClick={() => setRemediation({ id: item.concept.id, title: item.concept.title || topics(item.concept.topic) })}>{c("remediate")}</Button></div>)}</div>{!weakConcepts.length && <p className="py-4 text-sm">{t("noClassWeak")}</p>}</section>
       <section><div className="mb-4 flex flex-wrap items-center justify-between gap-3"><h3 className="font-display text-xl font-normal">{t("students", { count: visible.length })}</h3>{conceptID && <div className="flex flex-wrap gap-3"><Button onClick={() => setPublishing(true)} disabled={!visible.length}>{practice("publishTitle")}</Button><Button variant="ghost" onClick={() => setConceptID("")}>{t("clearFilter")}</Button></div>}</div><div className="divide-y divide-border border-y border-border">{visible.map((student) => <button type="button" key={student.id} onClick={() => model.selectStudent(student.id)} className="flex w-full flex-wrap items-center justify-between gap-3 px-3 py-4 text-left hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring" data-mastery-student={student.id}><span className="font-display text-lg">{student.name || student.username}</span><span className="text-sm">{student.counts.assessed ? t("studentCounts", { assessed: student.counts.assessed, weak: student.counts.weak, secure: student.counts.secure }) : t("status.unassessed")}</span></button>)}</div>{!model.report.students.length && <p className="py-4 text-sm">{t("noStudents")}</p>}</section>
     </div>}
     {publishing && concept && <PracticePublishDialog accessToken={accessToken} classroomID={classroomID} conceptID={conceptID} title={practice("defaultTitle", { concept: concept.title || topics(concept.topic) })} students={visible} onClose={() => setPublishing(false)} />}
+    {remediation && model.report && <RemediationDialog key={remediation.id} accessToken={accessToken} classroomID={classroomID} concept={remediation} students={model.report.students.map((student) => ({ id: student.id, name: student.name || student.username, weakConceptIds: student.weakConceptIds }))} onClose={() => setRemediation(undefined)} />}
   </div>;
 }

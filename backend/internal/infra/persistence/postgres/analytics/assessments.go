@@ -54,7 +54,7 @@ func assessmentRows(rows []assessmentRow) []domain.Assessment {
 func (r *Repo) homeworkStats(ctx context.Context, f domain.Filter) ([]domain.Assessment, error) {
 	var assignments []assessmentRow
 	query := r.db.WithContext(ctx).Table("classroom_homeworks h").Joins("JOIN classrooms c ON c.id = h.classroom_id").Where("c.id IN (?)", r.classes(ctx, f))
-	query = r.started(query, "h.starts_at")
+	query = r.started(query, "h.starts_at").Where("h.withdrawn = ?", false)
 	count := r.assessmentStudentsSQL("h.deadline", "SELECT 1 FROM classroom_homework_submissions e WHERE e.homework_id = h.id AND e.student_id = m.student_id")
 	if err := query.Select("h.public_id AS id, c.public_id AS classroom_id, c.name AS classroom_name, h.bank_id AS item_key, h.title, " + count + " AS expected").Order("c.id, h.id").Scan(&assignments).Error; err != nil {
 		return nil, err

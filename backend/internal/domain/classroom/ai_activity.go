@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const AIActivityVersion = "ai-activity-v1"
+const AIActivityVersion = "ai-activity-v2"
 
 var AIActivityLocation = time.FixedZone("Asia/Shanghai", 8*60*60)
 
@@ -18,22 +18,32 @@ type AIActivityOptions struct {
 // Events contain no chat content. At is the first successful attempt's start time;
 // QuestionAt is the original question's time, including across edit/retry branches.
 type AIActivityEvent struct {
-	UserID        uint
-	RootMessageID uint
-	QuestionAt    time.Time
-	At            time.Time
+	UserID                  uint
+	RootMessageID           uint
+	QuestionAt              time.Time
+	At                      time.Time
+	FollowupToRootMessageID uint
+	LearningSource          string
 }
 
 type AIActivityWeek struct {
-	StartDate     string
-	EndDate       string
-	Status        string
-	ActiveDays    int
-	ValidRounds   int
-	CountedRounds int
-	DayScore      int
-	RoundScore    int
-	Score         int
+	StartDate        string
+	EndDate          string
+	Status           string
+	ActiveDays       int
+	ValidRounds      int
+	CountedRounds    int
+	DayScore         int
+	RoundScore       int
+	BaseScore        int
+	ConsecutiveWeeks int
+	FollowupRounds   int
+	LearningRounds   int
+	ContinuityScore  int
+	FollowupScore    int
+	LearningScore    int
+	BonusScore       int
+	Score            int
 }
 
 type AIActivityStudent struct {
@@ -87,11 +97,26 @@ func BuildAIActivity(id string, roster []Student, events []AIActivityEvent, star
 			eligibleFrom = st.JoinedAt
 		}
 		days := map[string]int{}
+		followups, learningRounds := map[string]int{}, map[string]int{}
+		activeWeeks := map[string]bool{}
 		for _, e := range byStudent[st.ID] {
-			if e.QuestionAt.Before(st.JoinedAt) || e.At.Before(eligibleFrom) || !e.At.Before(end) || e.At.After(now) {
+			if e.QuestionAt.Before(st.JoinedAt) || !e.At.Before(end) || e.At.After(now) {
+				continue
+			}
+			week := aiActivityMonday(e.At).Format(time.DateOnly)
+			// Earlier eligible weeks establish continuity even for a later report range.
+			activeWeeks[week] = true
+			if e.At.Before(eligibleFrom) {
 				continue
 			}
 			days[e.At.In(AIActivityLocation).Format(time.DateOnly)]++
+			if prior, ok := first[e.FollowupToRootMessageID]; ok && prior.UserID == st.ID && !prior.QuestionAt.Before(st.JoinedAt) && !prior.At.After(e.QuestionAt) && prior.RootMessageID != e.RootMessageID {
+				followups[week]++
+			}
+			switch e.LearningSource {
+			case "lesson", "practice", "correction", "experiment":
+				learningRounds[week]++
+			}
 		}
 		total := 0
 		for week := aiActivityMonday(eligibleFrom); eligibleFrom.Before(end) && !eligibleFrom.After(now) && week.Before(end) && !week.After(now); week = week.AddDate(0, 0, 7) {
@@ -110,7 +135,20 @@ func BuildAIActivity(id string, roster []Student, events []AIActivityEvent, star
 			}
 			w.CountedRounds = min(w.CountedRounds, 4)
 			w.DayScore, w.RoundScore = min(w.ActiveDays, 2)*30, w.CountedRounds*10
-			w.Score = w.DayScore + w.RoundScore
+			w.BaseScore = w.DayScore + w.RoundScore
+			w.FollowupRounds, w.LearningRounds = followups[w.StartDate], learningRounds[w.StartDate]
+			if w.ActiveDays > 0 {
+				w.ConsecutiveWeeks = 1
+				for prior := week.AddDate(0, 0, -7); activeWeeks[prior.Format(time.DateOnly)]; prior = prior.AddDate(0, 0, -7) {
+					w.ConsecutiveWeeks++
+				}
+				if w.ConsecutiveWeeks >= 2 {
+					w.ContinuityScore = 10
+				}
+			}
+			w.FollowupScore, w.LearningScore = min(w.FollowupRounds, 2)*10, min(w.LearningRounds, 2)*10
+			w.BonusScore = min(100-w.BaseScore, w.ContinuityScore+w.FollowupScore+w.LearningScore)
+			w.Score = w.BaseScore + w.BonusScore
 			row.Weeks = append(row.Weeks, w)
 			if w.Status == "closed" {
 				row.ExpectedWeeks++

@@ -8,6 +8,7 @@ import (
 	domain "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/learning"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/models"
 	"gorm.io/gorm"
+	"strings"
 	"time"
 )
 
@@ -36,7 +37,7 @@ func (r *Repo) MasteryEvidence(ctx context.Context, users []uint, classroomID ui
 		result = append(result, domain.MasteryEvidence{UserID: item.UserID, ConceptID: "topic:" + question.Topic, QuestionID: "practice:" + questionID, Source: source, Prompt: prompt, Correct: item.Correct, At: item.CreatedAt})
 	}
 	var lessons []models.LearningLessonAttempt
-	if err := r.db.WithContext(ctx).Scopes(masteryPeriodScope("created_at", period)).Where("user_id IN ? AND version IN ?", users, []string{domain.CourseCatalog().Version, domain.PracticeBankVersion}).Order("created_at ASC, id ASC").Find(&lessons).Error; err != nil {
+	if err := r.db.WithContext(ctx).Scopes(masteryPeriodScope("created_at", period)).Where("user_id IN ? AND version IN ?", users, []string{domain.CourseCatalog().Version, domain.PracticeBankVersion, domain.CorrectionVersion}).Order("created_at ASC, id ASC").Find(&lessons).Error; err != nil {
 		return nil, err
 	}
 	practiceBanks := map[string]*domain.PracticeBank{}
@@ -44,6 +45,12 @@ func (r *Repo) MasteryEvidence(ctx context.Context, users []uint, classroomID ui
 		item, err := decodeLessonAttempt(row)
 		if err != nil {
 			return nil, fmt.Errorf("mastery lesson attempt %d: %w", row.ID, err)
+		}
+		if row.Version == domain.CorrectionVersion {
+			if item.ConceptID != "" && item.EvidenceID != "" {
+				result = append(result, domain.MasteryEvidence{UserID: row.UserID, ConceptID: item.ConceptID, QuestionID: item.EvidenceID, Source: "review", Correct: item.Score == item.Total, At: row.CreatedAt})
+			}
+			continue
 		}
 		if row.Version == domain.PracticeBankVersion {
 			bank, found := practiceBanks[item.ConceptID]
@@ -116,7 +123,11 @@ func (r *Repo) MasteryEvidence(ctx context.Context, users []uint, classroomID ui
 			if !valid {
 				return nil, fmt.Errorf("mastery quiz submission %d question %s: invalid answer", row.ID, q.ID)
 			}
-			result = append(result, domain.MasteryEvidence{UserID: row.StudentID, ConceptID: "lesson:" + q.LessonID, QuestionID: "course:" + q.ID, Source: "classroom", Prompt: q.Prompt, Correct: score == total, At: row.CreatedAt})
+			concept := "lesson:" + q.LessonID
+			if strings.HasPrefix(q.ConceptID, "topic:") || strings.HasPrefix(q.ConceptID, "lesson:") {
+				concept = q.ConceptID
+			}
+			result = append(result, domain.MasteryEvidence{UserID: row.StudentID, ConceptID: concept, QuestionID: "course:" + q.ID, Source: "classroom", Prompt: q.Prompt, Correct: score == total, At: row.CreatedAt})
 		}
 	}
 	return result, nil

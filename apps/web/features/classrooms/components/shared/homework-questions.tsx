@@ -43,6 +43,7 @@ export function HomeworkQuestions({ questions, answers, disabled = false, showKe
           })}
         </div>}
         {showKey && question.accepted && <div className="border-l-2 border-primary pl-3 text-sm"><QuestionContent content={`${t("answerKey")}: ${question.kind === "blank" ? question.accepted.map((values) => values[0]).join("；") : String.fromCharCode(65 + Number(question.accepted[0]?.[0]))}`} /></div>}
+        {showKey && question.explanation && <QuestionContent content={question.explanation} className="text-sm leading-7" />}
       </fieldset>;
     })}
   </div>;

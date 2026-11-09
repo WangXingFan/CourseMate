@@ -43,6 +43,8 @@ type QuizQuestionResponse struct {
 
 // QuizResponse is the teacher-facing quiz summary.
 type QuizResponse struct {
+	Purpose         string                 `json:"purpose"`
+	TargetCount     int                    `json:"targetCount"`
 	ID              string                 `json:"id"`
 	Title           string                 `json:"title"`
 	Phase           string                 `json:"phase"`
@@ -132,6 +134,7 @@ type StudentQuizQuestionResponse struct {
 
 // StudentQuizResponse is the student-facing quiz view.
 type StudentQuizResponse struct {
+	Purpose      string                        `json:"purpose"`
 	SourceQuizID string                        `json:"sourceQuizId"`
 	FieldAnswers map[string]map[string]string  `json:"fieldAnswers"`
 	ID           string                        `json:"id"`

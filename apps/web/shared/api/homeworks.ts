@@ -1,4 +1,4 @@
-import type { HomeworkBankResponse, HomeworkListResponse, HomeworkPublishRequest, HomeworkResponse, HomeworkReportResponse, HomeworkSubmissionResponse, StudentHomeworksResponse } from "@deeix/api-contract";
+import type { HomeworkBankResponse, HomeworkListResponse, HomeworkManageRequest, HomeworkCorrectRequest, HomeworkPublishRequest, HomeworkResponse, HomeworkReportResponse, HomeworkSubmissionResponse, StudentHomeworksResponse } from "@deeix/api-contract";
 import { authedRequest } from "@/shared/api/authed-client";
 import { pathParam } from "@/shared/api/http-client";
 import type { HomeworkDeadlineRequest } from "@deeix/api-contract";
@@ -24,6 +24,12 @@ export function getHomeworkReport(accessToken: string, id: string, signal?: Abor
 export function listStudentHomeworks(accessToken: string, signal?: AbortSignal): Promise<StudentHomeworksResponse> {
   return authedRequest("/api/v1/student/homeworks", { accessToken, signal });
 }
-export function submitHomework(accessToken: string, id: string, answers: string[][]): Promise<HomeworkSubmissionResponse> {
-  return authedRequest(`/api/v1/homeworks/${pathParam(id)}/submissions`, { accessToken, method: "POST", body: { answers } });
+export function submitHomework(accessToken: string, id: string, answers: string[][], confirmBlank = false): Promise<HomeworkSubmissionResponse> {
+  return authedRequest(`/api/v1/homeworks/${pathParam(id)}/submissions`, { accessToken, method: "POST", body: { answers, confirmBlank } });
+}
+export function manageHomework(accessToken: string, id: string, body: HomeworkManageRequest): Promise<unknown> {
+  return authedRequest(`/api/v1/homeworks/${pathParam(id)}/manage`, { accessToken, method: "POST", body });
+}
+export function correctHomework(accessToken: string, id: string, studentID: string, body: HomeworkCorrectRequest): Promise<unknown> {
+  return authedRequest(`/api/v1/homeworks/${pathParam(id)}/students/${pathParam(studentID)}/corrections`, { accessToken, method: "POST", body });
 }

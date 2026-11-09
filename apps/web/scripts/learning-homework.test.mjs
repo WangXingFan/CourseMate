@@ -12,7 +12,11 @@ test("imported homework formulas render and diagrams are local", () => {
     for (const question of paper.questions) for (const text of [question.prompt, ...question.options]) {
       assert.doesNotMatch(text, /https?:|data:image|�/);
       for (const [, math] of text.matchAll(/\$([^$]+)\$/g)) { katex.renderToString(math, { throwOnError: true }); formulas++; }
-      for (const [, path] of text.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)) assert.ok(existsSync(`public${path}`), path);
+      for (const [, path] of text.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)) {
+        assert.ok(existsSync(`public${path}`), path);
+        const pdfPath = `../../backend/internal/application/exports/homework-images/${path.split("/").at(-1)}`;
+        assert.deepEqual(readFileSync(pdfPath), readFileSync(`public${path}`), `PDF diagram differs from web: ${path}`);
+      }
     }
   }
   assert.ok(formulas >= 48);
