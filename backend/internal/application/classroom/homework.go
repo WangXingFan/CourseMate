@@ -61,6 +61,7 @@ func (s *Service) homeworkStudent(ctx context.Context, actor uint) (*domain.Clas
 type StudentHomework struct {
 	Homework   domain.Homework
 	Submission *domain.HomeworkSubmission
+	Makeup     bool
 }
 
 func (s *Service) StudentHomeworks(ctx context.Context, actor uint) (*domain.Classroom, []StudentHomework, error) {
@@ -94,6 +95,8 @@ func (s *Service) StudentHomeworks(ctx context.Context, actor uint) (*domain.Cla
 		}
 		item.Questions = studentHomeworkQuestions(item)
 		view := StudentHomework{Homework: item}
+		view.Homework.Deadline = item.StudentDeadline(actor)
+		view.Makeup = view.Homework.Deadline.After(item.Deadline)
 		if len(subs) > 0 {
 			view.Submission = &subs[0]
 		}
@@ -137,7 +140,8 @@ func (s *Service) SubmitHomework(ctx context.Context, actor uint, id string, ans
 	if err != nil {
 		return nil, err
 	}
-	if item.Status(time.Now()) != "open" {
+	now := time.Now()
+	if now.Before(item.StartsAt) || !now.Before(item.StudentDeadline(actor)) {
 		return nil, ErrHomeworkWindow
 	}
 	results, score, valid := domain.GradeHomework(item.Questions, answers)

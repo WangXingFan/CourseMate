@@ -38,10 +38,14 @@
     "notJoined": "你还没有加入班级，请联系任课教师。",
     "invalidQuizId": "小测 ID 无效。",
     "homeworkNotFound": "作业不存在，或不属于你的班级。",
-    "homeworkInvalid": "请选择有效作业，截止时间必须晚于开始时间和当前时间。",
+    "homeworkInvalid": "请检查作业与时间；延期时间须晚于原截止时间、开始时间和当前时间，并填写调整原因。",
     "homeworkWindow": "当前不在作业的答题时间内。",
     "homeworkSubmitted": "这份作业已经提交，不能重复提交。",
-    "homeworkAnswers": "请完成所有题目和填空后再提交。"
+    "homeworkAnswers": "请完成所有题目和填空后再提交。",
+    "practiceInvalid": "请填写名称、未来的截止时间，并选择 3–5 道题及至少一名学生。",
+    "practiceNotFound": "找不到该巩固练习，或你不在指定学生名单中。",
+    "practiceClosed": "该练习已截止。",
+    "practiceSubmitted": "已经提交，不能更改答案。"
   },
   "auth": {
     "accountLocked": "登录失败次数过多，该账号已被临时锁定，请稍后再试。",

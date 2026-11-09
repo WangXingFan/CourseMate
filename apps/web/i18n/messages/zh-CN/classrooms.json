@@ -406,7 +406,21 @@
       "single": "单选题",
       "blank": "填空题",
       "true_false": "判断题"
-    }
+    },
+    "extendDeadline": "延长截止时间",
+    "allowMakeup": "允许补交",
+    "newDeadline": "新截止时间",
+    "changeReason": "处理原因",
+    "confirmChange": "确认调整",
+    "deadlineSaved": "作业期限已更新",
+    "deadlineInvalid": "请填写未来的截止时间和处理原因",
+    "extendEffect": "延长全班截止时间，未提交学生可继续作答。已提交答卷和已定稿成绩保持不变。",
+    "makeupEffect": "仅为所选未提交学生开放补交。保留一次提交限制，补交会单独标记。",
+    "makeupSubmitted": "已补交",
+    "makeupWindow": "个人补交期限",
+    "changeHistory": "期限调整记录",
+    "wholeClass": "全班",
+    "makeupUntil": "个人补交最晚截止"
   },
   "exports": {
     "title": "导出中心",
@@ -598,7 +612,8 @@
       "quiz": "课堂活动",
       "homework": "课后作业",
       "lab": "实验验收",
-      "review": "间隔复习"
+      "review": "间隔复习",
+      "practice": "巩固练习"
     }
   },
   "gradeRecords": {
@@ -619,5 +634,66 @@
     "close": "关闭",
     "refreshPreview": "刷新预览",
     "finalize": "确认定稿"
+  },
+  "practice": {
+    "title": "巩固练习",
+    "publishTitle": "布置巩固练习",
+    "publishEffect": "将向所选学生发布 3–5 道练习。完成结果用于更新知识掌握，不计入课堂正式成绩；每人只能提交一次。",
+    "name": "练习名称",
+    "deadline": "截止时间",
+    "recipients": "指定学生（{count} 人）",
+    "selectedQuestions": "选择 3–5 道题（已选 {count} 道）",
+    "refresh": "刷新",
+    "cancel": "取消",
+    "publish": "发布练习",
+    "invalid": "请填写名称、未来的截止时间，并选择 3–5 道题及至少一名学生。",
+    "published": "巩固练习已发布",
+    "fromMastery": "从薄弱知识点布置",
+    "defaultTitle": "{concept} · 巩固练习",
+    "open": "进行中",
+    "closed": "已截止",
+    "completion": "已完成 {done}/{total} 人",
+    "baseline": "布置时掌握情况",
+    "score": "本次答对 {correct}/{total} 道",
+    "notSubmitted": "未提交",
+    "correct": "回答正确",
+    "incorrect": "需要继续巩固",
+    "answer": "学生作答",
+    "expected": "参考答案：",
+    "empty": "暂无已布置的巩固练习",
+    "submit": "确认提交",
+    "submitting": "正在提交",
+    "submitEffect": "提交后不可修改答案；结果用于更新知识掌握，不计入正式成绩。"
+  },
+  "overview": {
+    "title": "今日课堂",
+    "refresh": "刷新",
+    "lab": "实验{number} · 正式验收",
+    "practice": "巩固练习",
+    "labs": "实验管理",
+    "exports": "成绩导出与定稿",
+    "loading": "正在汇总课堂任务",
+    "dueSoon": "24 小时内截止",
+    "active": "正在进行",
+    "upcoming": "待开始与草稿",
+    "submitted": "已提交 {count} 人",
+    "open": "查看",
+    "empty": "暂无任务",
+    "partial": "已加载来源中暂无任务",
+    "scheduled": "待开始",
+    "draft": "草稿",
+    "actions": {
+      "attendance": "发起签到",
+      "activities": "课堂活动",
+      "homeworks": "发布作业",
+      "mastery": "查看薄弱点"
+    },
+    "kinds": {
+      "attendance": "课堂签到",
+      "activities": "课堂活动",
+      "homeworks": "课后作业",
+      "practice": "巩固练习",
+      "labs": "实验验收"
+    }
   }
 }

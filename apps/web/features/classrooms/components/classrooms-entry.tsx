@@ -30,5 +30,5 @@ export function ClassroomsEntry() {
     );
   }
 
-  return <AppClassrooms accessToken={accessToken} canManage={isTeacher} />;
+  return <AppClassrooms key={user.publicID} accessToken={accessToken} canManage={isTeacher} />;
 }

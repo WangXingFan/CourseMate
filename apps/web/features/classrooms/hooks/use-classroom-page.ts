@@ -19,11 +19,16 @@ import {
 } from "@/shared/api/classrooms";
 import type { ClassroomDTO, ClassroomStudentDTO, StudentCredentialDTO, StudentImportResultDTO } from "@/shared/api/classroom-types";
 
+import { useAuthSession } from "@/shared/auth/auth-session-context";
+import { resolveApiBaseURL } from "@/shared/api/http-client";
+
 const CLASSROOM_NAME_MAX_LENGTH = 80;
 const CLASSROOM_DESCRIPTION_MAX_LENGTH = 255;
 
 export function useClassroomPage(accessToken: string, canManage: boolean) {
   const t = useTranslations("classrooms");
+  const { user } = useAuthSession();
+  const selectionKey = user?.publicID ? `coursemate.classroom.v1:${JSON.stringify([resolveApiBaseURL(), user.publicID])}` : "";
   const resolveErrorMessage = useLocalizedErrorMessage();
   const [items, setItems] = React.useState<ClassroomDTO[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -71,9 +76,9 @@ export function useClassroomPage(accessToken: string, canManage: boolean) {
         if (cancelled) return;
         const nextItems = data.classrooms ?? [];
         setItems(nextItems);
-        setSelectedID((current) =>
-          current && nextItems.some((item) => item.id === current) ? current : (nextItems[0]?.id ?? ""),
-        );
+        let remembered = "";
+        try { if (selectionKey) remembered = localStorage.getItem(selectionKey) ?? ""; } catch { /* Classroom selection still works without browser storage. */ }
+        setSelectedID((current) => [current, remembered].find((id) => nextItems.some((item) => item.id === id)) ?? nextItems[0]?.id ?? "");
       } catch (error) {
         if (cancelled || controller.signal.aborted) return;
         toast.error(t("loadFailed"), { description: resolveErrorMessage(error) });
@@ -85,7 +90,7 @@ export function useClassroomPage(accessToken: string, canManage: boolean) {
       cancelled = true;
       controller.abort();
     };
-  }, [accessToken, reloadVersion, resolveErrorMessage, t]);
+  }, [accessToken, reloadVersion, resolveErrorMessage, selectionKey, t]);
 
   React.useEffect(() => {
     if (!selectedID) {
@@ -275,7 +280,8 @@ export function useClassroomPage(accessToken: string, canManage: boolean) {
   const selectClassroom = React.useCallback((id: string) => {
     setSelectedID(id);
     setMobileView("detail");
-  }, []);
+    try { if (selectionKey) localStorage.setItem(selectionKey, id); } catch { /* Selection remains usable when storage is unavailable. */ }
+  }, [selectionKey]);
 
   return {
     canManage,

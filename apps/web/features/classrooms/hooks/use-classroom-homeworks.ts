@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useLocalizedErrorMessage } from "@/i18n/use-localized-error";
-import { getHomeworkBank, getHomeworkReport, listHomeworks, publishHomework, type HomeworkPaperResponse, type HomeworkResponse, type HomeworkReportResponse } from "@/shared/api/homeworks";
+import { extendHomeworkDeadline, getHomeworkBank, getHomeworkReport, listHomeworks, publishHomework, type HomeworkPaperResponse, type HomeworkResponse, type HomeworkReportResponse } from "@/shared/api/homeworks";
 
 export function useClassroomHomeworks(accessToken: string, classroomID: string) {
   const t = useTranslations("classrooms.homework");
@@ -50,6 +50,17 @@ export function useClassroomHomeworks(accessToken: string, classroomID: string) 
     } catch (cause) { toast.error(resolveError(cause)); return false; }
     finally { busy.current = false; setPending(false); }
   }
-  return { papers, items, error, loading, pending, publish, report, reportID, reportLoading,
+  async function extend(id: string, deadline: string, reason: string, studentId: string) {
+    if (busy.current) return false;
+    const end = new Date(deadline);
+    if (!Number.isFinite(end.getTime()) || end.getTime() <= Date.now() || !reason.trim()) { toast.error(t("deadlineInvalid")); return false; }
+    busy.current = true; setPending(true);
+    try {
+      await extendHomeworkDeadline(accessToken, id, { deadline: end.toISOString(), reason: reason.trim(), studentId });
+      toast.success(t("deadlineSaved")); setRevision((v) => v + 1); return true;
+    } catch (cause) { toast.error(resolveError(cause)); return false; }
+    finally { busy.current = false; setPending(false); }
+  }
+  return { papers, items, error, loading, pending, publish, extend, report, reportID, reportLoading,
     selectReport: setReportID, refresh: () => setRevision((v) => v + 1) };
 }

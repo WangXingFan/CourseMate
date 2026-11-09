@@ -94,6 +94,36 @@ func TestExportAuthorizationAndWeights(t *testing.T) {
 	}
 }
 
+func TestMakeupWindowDefersHomeworkGradeFinalization(t *testing.T) {
+	now := time.Date(2026, 11, 9, 12, 0, 0, 0, time.UTC)
+	classes := fakeClasses{owner: 7, students: []class.Student{{ID: 1}}, homeworks: []class.Homework{{
+		ID: 1, StartsAt: now.Add(-2 * time.Hour), Deadline: now.Add(-time.Hour),
+		Questions:       []class.HomeworkQuestion{{Points: 100}},
+		DeadlineChanges: []class.HomeworkDeadlineChange{{StudentID: 1, Deadline: now.Add(time.Hour)}},
+	}}, submissions: []class.HomeworkSubmission{{StudentID: 1, Score: 80, Makeup: true}}}
+	s := NewService(classes, nil, nil, nil, fakeUsers{user.RoleTeacher})
+	s.now = func() time.Time { return now }
+	options := Options{Kind: "summary", Weights: map[string]float64{"homeworks": 100}}
+	preview, err := s.PreviewGrades(t.Context(), 7, "class", options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if preview.Students[0].Final != nil {
+		t.Fatal("unfinished makeup window entered final grade")
+	}
+	now = now.Add(time.Hour)
+	closed, err := s.PreviewGrades(t.Context(), 7, "class", options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if closed.Students[0].Final == nil || *closed.Students[0].Final != 80 {
+		t.Fatal("makeup grade missing after final deadline")
+	}
+	if closed.Fingerprint == preview.Fingerprint {
+		t.Fatal("deadline change left a stale preview valid")
+	}
+}
+
 func TestEnrollmentEligibilityAndPriorEvidence(t *testing.T) {
 	joined := time.Date(2026, 11, 5, 12, 0, 0, 0, time.UTC)
 	before, after := joined.Add(-time.Hour), joined.Add(time.Hour)

@@ -14,6 +14,8 @@ import { ClassroomAIActivity } from "@/features/classrooms/components/sections/c
 import { ClassroomMastery } from "@/features/classrooms/components/sections/classroom-mastery";
 import { ClassroomAttendance } from "@/features/classrooms/components/sections/classroom-attendance";
 import { ClassroomHomeworks } from "@/features/classrooms/components/sections/classroom-homeworks";
+import { ClassroomOverview } from "./classroom-overview";
+import { ClassroomPracticeAssignments } from "./classroom-practice-assignments";
 import type { ClassroomDetailTab } from "@/features/classrooms/types/classrooms";
 import { cn } from "@/lib/utils";
 import type { ClassroomDTO, ClassroomStudentDTO } from "@/shared/api/classroom-types";
@@ -54,7 +56,7 @@ export function ClassroomDetail({
   const t = useTranslations("classrooms");
   const activitiesT = useTranslations("classrooms.activities");
   const locale = useLocale();
-  const [tab, setTab] = React.useState<ClassroomDetailTab>("students");
+  const [tab, setTab] = React.useState<ClassroomDetailTab>("overview");
 
   return (
     <section
@@ -129,6 +131,7 @@ export function ClassroomDetail({
           {canManage ? (
             <div className="flex h-12 shrink-0 items-center justify-between gap-2 border-b border-border px-4 md:px-8">
               <div className="flex min-w-0 items-center gap-0.5 overflow-x-auto">
+                <TabButton active={tab === "overview"} onClick={() => setTab("overview")}>{t("overview.title")}</TabButton>
                 <TabButton active={tab === "students"} onClick={() => setTab("students")}>
                   <Users className="size-4" strokeWidth={1.6} />
                   {activitiesT("tabStudents")}
@@ -140,6 +143,7 @@ export function ClassroomDetail({
                 <TabButton active={tab === "performance"} onClick={() => setTab("performance")}>{t("performance.title")}</TabButton>
                 <TabButton active={tab === "ai_activity"} onClick={() => setTab("ai_activity")}>{t("aiActivity.title")}</TabButton>
                 <TabButton active={tab === "mastery"} onClick={() => setTab("mastery")}>{t("masteryTab")}</TabButton>
+                <TabButton active={tab === "practice"} onClick={() => setTab("practice")}>{t("practice.title")}</TabButton>
                 <TabButton active={tab === "homeworks"} onClick={() => setTab("homeworks")}>{t("homework.tab")}</TabButton>
                 <TabButton active={tab === "attendance"} onClick={() => setTab("attendance")}>{t("attendance.title")}</TabButton>
               </div>
@@ -168,7 +172,11 @@ export function ClassroomDetail({
             </div>
           )}
 
-          {canManage && tab === "ai_activity" ? (
+          {canManage && tab === "overview" ? (
+            <ClassroomOverview accessToken={accessToken} classroomID={selected.id} onNavigate={setTab} />
+          ) : canManage && tab === "practice" ? (
+            <ClassroomPracticeAssignments accessToken={accessToken} classroomID={selected.id} onCreate={() => setTab("mastery")} />
+          ) : canManage && tab === "ai_activity" ? (
             <ClassroomAIActivity key={`${accessToken}:${selected.id}`} accessToken={accessToken} classroomID={selected.id} />
           ) : canManage && tab === "performance" ? (
             <ClassroomPerformance key={`${accessToken}:${selected.id}`} accessToken={accessToken} classroomID={selected.id} />

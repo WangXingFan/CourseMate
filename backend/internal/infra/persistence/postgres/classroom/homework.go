@@ -3,6 +3,7 @@ package classroom
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	domain "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/classroom"
@@ -29,6 +30,12 @@ func (r *Repo) CreateHomework(ctx context.Context, input domain.Homework) (*doma
 func homeworkFromRow(row models.ClassroomHomework) (domain.Homework, error) {
 	item := domain.Homework{ID: row.ID, PublicID: row.PublicID, ClassroomID: row.ClassroomID, TeacherID: row.TeacherID, BankID: row.BankID, Title: row.Title, StartsAt: row.StartsAt, Deadline: row.Deadline, CreatedAt: row.CreatedAt}
 	err := json.Unmarshal([]byte(row.Questions), &item.Questions)
+	if err == nil && row.DeadlineChanges != "" {
+		err = json.Unmarshal([]byte(row.DeadlineChanges), &item.DeadlineChanges)
+	}
+	if err != nil {
+		return item, fmt.Errorf("decode homework %s: %w", row.PublicID, err)
+	}
 	return item, err
 }
 
@@ -83,7 +90,7 @@ func (r *Repo) ListHomeworkSubmissions(ctx context.Context, homeworkID, studentI
 	}
 	items := make([]domain.HomeworkSubmission, 0, len(rows))
 	for _, row := range rows {
-		item := domain.HomeworkSubmission{ID: row.ID, HomeworkID: row.HomeworkID, StudentID: row.StudentID, StudentPublicID: row.StudentPublicID, StudentName: row.StudentName, Username: row.Username, Score: row.Score, SubmittedAt: row.CreatedAt}
+		item := domain.HomeworkSubmission{ID: row.ID, HomeworkID: row.HomeworkID, StudentID: row.StudentID, StudentPublicID: row.StudentPublicID, StudentName: row.StudentName, Username: row.Username, Score: row.Score, SubmittedAt: row.CreatedAt, Makeup: row.Makeup}
 		if err := json.Unmarshal([]byte(row.Answers), &item.Answers); err != nil {
 			return nil, err
 		}
@@ -110,14 +117,18 @@ func (r *Repo) CreateHomeworkSubmission(ctx context.Context, input domain.Homewo
 			return err
 		}
 		now := time.Now().UTC()
-		if now.Before(homework.StartsAt) || !now.Before(homework.Deadline) {
+		item, err := homeworkFromRow(homework)
+		if err != nil {
+			return err
+		}
+		if now.Before(homework.StartsAt) || !now.Before(item.StudentDeadline(input.StudentID)) {
 			return repository.ErrInvalidInput
 		}
 		var membership models.ClassroomStudent
 		if err := tx.Where("classroom_id = ? AND student_id = ?", homework.ClassroomID, input.StudentID).First(&membership).Error; err != nil {
 			return err
 		}
-		return tx.Create(&models.ClassroomHomeworkSubmission{HomeworkID: input.HomeworkID, StudentID: input.StudentID, Answers: string(answers), Results: string(results), Score: input.Score, CreatedAt: now}).Error
+		return tx.Create(&models.ClassroomHomeworkSubmission{HomeworkID: input.HomeworkID, StudentID: input.StudentID, Answers: string(answers), Results: string(results), Score: input.Score, CreatedAt: now, Makeup: !now.Before(homework.Deadline)}).Error
 	})
 	if dberror.IsUniqueConstraint(err) {
 		return repository.ErrConflict

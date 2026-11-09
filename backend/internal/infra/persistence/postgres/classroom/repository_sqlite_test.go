@@ -33,6 +33,8 @@ func TestClassroomRepositoryLifecycleAndGlobalStudentMembership(t *testing.T) {
 		&models.ClassroomPerformanceRecord{},
 		&models.ClassroomHomework{},
 		&models.ClassroomHomeworkSubmission{},
+		&models.ClassroomPracticeAssignment{},
+		&models.ClassroomPracticeSubmission{},
 	); err != nil {
 		t.Fatalf("migrate: %v", err)
 	}
@@ -123,8 +125,21 @@ func TestClassroomRepositoryLifecycleAndGlobalStudentMembership(t *testing.T) {
 		t.Fatalf("ListQuizSubmissions() = %#v, %v", submissions, err)
 	}
 
+	practice := models.ClassroomPracticeAssignment{PublicID: "assigned", ClassroomID: first.ID, TeacherID: users[0].ID, Payload: "{}"}
+	if err = db.Create(&practice).Error; err != nil {
+		t.Fatal(err)
+	}
+	if err = db.Create(&models.ClassroomPracticeSubmission{AssignmentID: practice.ID, StudentID: users[2].ID, Payload: "{}"}).Error; err != nil {
+		t.Fatal(err)
+	}
 	if err = repo.DeleteClassroom(ctx, first.PublicID, users[0].ID); err != nil {
 		t.Fatalf("DeleteClassroom() error = %v", err)
+	}
+	for _, model := range []any{&models.ClassroomPracticeAssignment{}, &models.ClassroomPracticeSubmission{}} {
+		var count int64
+		if err = db.Model(model).Count(&count).Error; err != nil || count != 0 {
+			t.Fatalf("classroom deletion left practice records: count=%d, error=%v", count, err)
+		}
 	}
 	var membershipCount int64
 	if err = db.Model(&models.ClassroomStudent{}).Where("student_id = ?", users[2].ID).Count(&membershipCount).Error; err != nil {

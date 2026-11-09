@@ -8,6 +8,11 @@ import (
 )
 
 type ClassroomRepository interface {
+	CreatePracticeAssignment(context.Context, domain.PracticeAssignment) (*domain.PracticeAssignment, error)
+	ListPracticeAssignments(context.Context, uint) ([]domain.PracticeAssignment, error)
+	GetPracticeAssignment(context.Context, string) (*domain.PracticeAssignment, error)
+	ListPracticeSubmissions(context.Context, uint, uint) ([]domain.PracticeSubmission, error)
+	CreatePracticeSubmission(context.Context, domain.PracticeSubmission) error
 	SaveGradeRecord(context.Context, domain.GradeRecord) error
 	ListGradeRecords(context.Context, uint) ([]domain.GradeRecord, error)
 	GetGradeRecord(context.Context, uint, string) (*domain.GradeRecord, error)
@@ -40,4 +45,5 @@ type ClassroomRepository interface {
 	GetHomework(context.Context, string) (*domain.Homework, error)
 	ListHomeworkSubmissions(context.Context, uint, uint) ([]domain.HomeworkSubmission, error)
 	CreateHomeworkSubmission(context.Context, domain.HomeworkSubmission) error
+	ExtendHomeworkDeadline(context.Context, string, uint, string, time.Time, string) error
 }

@@ -52,6 +52,39 @@ type Homework struct {
 	Deadline        time.Time
 	CreatedAt       time.Time
 	SubmissionCount int64
+	DeadlineChanges []HomeworkDeadlineChange
+}
+
+type HomeworkDeadlineChange struct {
+	StudentID        uint
+	StudentPublicID  string
+	StudentName      string
+	ActorID          uint
+	PreviousDeadline time.Time
+	Deadline         time.Time
+	Reason           string
+	CreatedAt        time.Time
+}
+
+func (h Homework) StudentDeadline(studentID uint) time.Time {
+	deadline := h.Deadline
+	for _, change := range h.DeadlineChanges {
+		if change.StudentID == studentID && change.Deadline.After(deadline) {
+			deadline = change.Deadline
+		}
+	}
+	return deadline
+}
+
+// EndsAt includes approved makeup windows when finalizing current grades.
+func (h Homework) EndsAt() time.Time {
+	end := h.Deadline
+	for _, change := range h.DeadlineChanges {
+		if change.Deadline.After(end) {
+			end = change.Deadline
+		}
+	}
+	return end
 }
 
 func (h Homework) Status(now time.Time) string {
@@ -95,6 +128,7 @@ type HomeworkSubmission struct {
 	Results         []HomeworkResult
 	Score           int
 	SubmittedAt     time.Time
+	Makeup          bool
 }
 
 func normalizeHomeworkAnswer(value string) string {

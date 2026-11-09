@@ -406,7 +406,21 @@
       "single": "Single choice",
       "blank": "Fill in the blank",
       "true_false": "True or false"
-    }
+    },
+    "extendDeadline": "Extend deadline",
+    "allowMakeup": "Allow makeup",
+    "newDeadline": "New deadline",
+    "changeReason": "Reason",
+    "confirmChange": "Confirm change",
+    "deadlineSaved": "Homework deadline updated",
+    "deadlineInvalid": "Enter a future deadline and a reason",
+    "extendEffect": "Extend the class deadline so students can finish unsubmitted work. Existing submissions and finalized grades are preserved.",
+    "makeupEffect": "Allow only this student to submit once before the personal deadline. Submissions after the class deadline are marked as makeup.",
+    "makeupSubmitted": "Makeup submitted",
+    "makeupWindow": "Personal makeup deadline",
+    "changeHistory": "Deadline history",
+    "wholeClass": "Whole class",
+    "makeupUntil": "Latest individual deadline"
   },
   "exports": {
     "title": "Export center",
@@ -598,7 +612,8 @@
       "quiz": "Class activity",
       "homework": "Homework",
       "lab": "Lab assessment",
-      "review": "Spaced review"
+      "review": "Spaced review",
+      "practice": "Reinforcement practice"
     }
   },
   "gradeRecords": {
@@ -619,5 +634,66 @@
     "close": "Close",
     "refreshPreview": "Refresh preview",
     "finalize": "Confirm finalization"
+  },
+  "practice": {
+    "title": "Reinforcement practice",
+    "publishTitle": "Assign practice",
+    "publishEffect": "Assign 3–5 questions to the selected students. Results update concept mastery and do not count toward formal classroom grades. Each student can submit once.",
+    "name": "Assignment name",
+    "deadline": "Deadline",
+    "recipients": "Selected students ({count})",
+    "selectedQuestions": "Choose 3–5 questions ({count} selected)",
+    "refresh": "Refresh",
+    "cancel": "Cancel",
+    "publish": "Publish practice",
+    "invalid": "Enter a name and future deadline, then select 3–5 questions and at least one student.",
+    "published": "Practice assigned",
+    "fromMastery": "Assign from weak concepts",
+    "defaultTitle": "{concept} · Practice",
+    "open": "Open",
+    "closed": "Closed",
+    "completion": "Completed by {done}/{total} students",
+    "baseline": "Mastery when assigned",
+    "score": "Correct this time: {correct}/{total}",
+    "notSubmitted": "Not submitted",
+    "correct": "Correct",
+    "incorrect": "Needs more practice",
+    "answer": "Student answer",
+    "expected": "Expected answer:",
+    "empty": "No reinforcement practice assigned yet",
+    "submit": "Confirm submission",
+    "submitting": "Submitting",
+    "submitEffect": "Answers cannot be changed after submission. Results update mastery without affecting formal grades."
+  },
+  "overview": {
+    "title": "Today's classroom",
+    "refresh": "Refresh",
+    "lab": "Lab {number} · Assessment",
+    "practice": "Reinforcement practice",
+    "labs": "Manage labs",
+    "exports": "Export and finalize grades",
+    "loading": "Loading classroom tasks",
+    "dueSoon": "Due within 24 hours",
+    "active": "In progress",
+    "upcoming": "Scheduled and drafts",
+    "submitted": "{count} submitted",
+    "open": "View",
+    "empty": "No tasks",
+    "partial": "No tasks in the sources loaded",
+    "scheduled": "Scheduled",
+    "draft": "Draft",
+    "actions": {
+      "attendance": "Start attendance",
+      "activities": "Class activities",
+      "homeworks": "Publish homework",
+      "mastery": "Review weak concepts"
+    },
+    "kinds": {
+      "attendance": "Attendance",
+      "activities": "Class activities",
+      "homeworks": "Homework",
+      "practice": "Reinforcement practice",
+      "labs": "Lab assessments"
+    }
   }
 }

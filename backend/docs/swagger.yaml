@@ -418,6 +418,88 @@ definitions:
     - started
     - title
     type: object
+  AssignedPracticeField:
+    properties:
+      id:
+        type: string
+      label:
+        type: string
+      unit:
+        type: string
+    required:
+    - id
+    - label
+    - unit
+    type: object
+  AssignedPracticeQuestion:
+    properties:
+      fields:
+        items:
+          $ref: '#/definitions/AssignedPracticeField'
+        type: array
+      id:
+        type: string
+      options:
+        items:
+          type: string
+        type: array
+      prompt:
+        type: string
+    required:
+    - fields
+    - id
+    - options
+    - prompt
+    type: object
+  AssignedPracticeResult:
+    properties:
+      answers:
+        additionalProperties:
+          type: string
+        type: object
+      correct:
+        type: boolean
+      expected:
+        items:
+          type: string
+        type: array
+      explanation:
+        type: string
+      questionId:
+        type: string
+    required:
+    - answers
+    - correct
+    - expected
+    - explanation
+    - questionId
+    type: object
+  AssignedPracticeSubmissionResponse:
+    properties:
+      correct:
+        type: integer
+      results:
+        items:
+          $ref: '#/definitions/AssignedPracticeResult'
+        type: array
+      submittedAt:
+        type: string
+    required:
+    - correct
+    - results
+    - submittedAt
+    type: object
+  AssignedPracticeSubmitRequest:
+    properties:
+      answers:
+        additionalProperties:
+          additionalProperties:
+            type: string
+          type: object
+        type: object
+    required:
+    - answers
+    type: object
   AttendanceCheckInRequest:
     properties:
       code:
@@ -3468,6 +3550,43 @@ definitions:
     required:
     - papers
     type: object
+  HomeworkDeadlineChangeResponse:
+    properties:
+      createdAt:
+        type: string
+      deadline:
+        type: string
+      previousDeadline:
+        type: string
+      reason:
+        type: string
+      studentId:
+        type: string
+      studentName:
+        type: string
+    required:
+    - createdAt
+    - deadline
+    - previousDeadline
+    - reason
+    - studentId
+    - studentName
+    type: object
+  HomeworkDeadlineRequest:
+    properties:
+      deadline:
+        type: string
+      reason:
+        maxLength: 500
+        type: string
+      studentId:
+        maxLength: 64
+        type: string
+    required:
+    - deadline
+    - reason
+    - studentId
+    type: object
   HomeworkListResponse:
     properties:
       items:
@@ -3544,6 +3663,10 @@ definitions:
     type: object
   HomeworkReportResponse:
     properties:
+      deadlineChanges:
+        items:
+          $ref: '#/definitions/HomeworkDeadlineChangeResponse'
+        type: array
       homework:
         $ref: '#/definitions/HomeworkResponse'
       students:
@@ -3555,6 +3678,7 @@ definitions:
           $ref: '#/definitions/HomeworkSubmissionResponse'
         type: array
     required:
+    - deadlineChanges
     - homework
     - students
     - submissions
@@ -3565,8 +3689,12 @@ definitions:
         type: string
       deadline:
         type: string
+      endsAt:
+        type: string
       id:
         type: string
+      makeup:
+        type: boolean
       questionCount:
         type: integer
       questions:
@@ -3590,7 +3718,9 @@ definitions:
     required:
     - bankId
     - deadline
+    - endsAt
     - id
+    - makeup
     - questionCount
     - questions
     - startsAt
@@ -3626,6 +3756,8 @@ definitions:
             type: string
           type: array
         type: array
+      makeup:
+        type: boolean
       results:
         items:
           $ref: '#/definitions/HomeworkResultResponse'
@@ -3642,6 +3774,7 @@ definitions:
         type: string
     required:
     - answers
+    - makeup
     - results
     - score
     - studentId
@@ -7281,6 +7414,117 @@ definitions:
     required:
     - data
     - errorMsg
+    type: object
+  PracticeAssignmentResponse:
+    properties:
+      conceptId:
+        type: string
+      createdAt:
+        type: string
+      deadline:
+        type: string
+      id:
+        type: string
+      open:
+        type: boolean
+      questions:
+        items:
+          $ref: '#/definitions/AssignedPracticeQuestion'
+        type: array
+      students:
+        items:
+          $ref: '#/definitions/PracticeRecipientResponse'
+        type: array
+      submission:
+        allOf:
+        - $ref: '#/definitions/AssignedPracticeSubmissionResponse'
+        x-nullable: true
+      title:
+        type: string
+    required:
+    - conceptId
+    - createdAt
+    - deadline
+    - id
+    - open
+    - questions
+    - students
+    - submission
+    - title
+    type: object
+  PracticeAssignmentsResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/PracticeAssignmentResponse'
+        type: array
+      serverTime:
+        type: string
+    required:
+    - items
+    - serverTime
+    type: object
+  PracticeCandidatesResponse:
+    properties:
+      questions:
+        items:
+          $ref: '#/definitions/AssignedPracticeQuestion'
+        type: array
+    required:
+    - questions
+    type: object
+  PracticePublishRequest:
+    properties:
+      conceptId:
+        maxLength: 64
+        type: string
+      deadline:
+        type: string
+      locale:
+        enum:
+        - zh-CN
+        - en-US
+        type: string
+      questionIds:
+        items:
+          type: string
+        maxItems: 5
+        minItems: 3
+        type: array
+      studentIds:
+        items:
+          type: string
+        maxItems: 200
+        minItems: 1
+        type: array
+      title:
+        maxLength: 120
+        type: string
+    required:
+    - conceptId
+    - deadline
+    - locale
+    - questionIds
+    - studentIds
+    - title
+    type: object
+  PracticeRecipientResponse:
+    properties:
+      baselineStatus:
+        type: string
+      name:
+        type: string
+      studentId:
+        type: string
+      submission:
+        allOf:
+        - $ref: '#/definitions/AssignedPracticeSubmissionResponse'
+        x-nullable: true
+    required:
+    - baselineStatus
+    - name
+    - studentId
+    - submission
     type: object
   ProviderAuthBridgeExchangeRequest:
     properties:
@@ -15816,6 +16060,82 @@ paths:
       summary: Read a published classroom performance record
       tags:
       - classrooms
+  /classrooms/{id}/practice-assignments:
+    get:
+      parameters:
+      - description: 班级 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/PracticeAssignmentsResponse'
+      security:
+      - BearerAuth: []
+      summary: 教师查看巩固任务、发布时掌握状态及完成结果
+      tags:
+      - classrooms
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 班级 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 知识点、题目、学生和期限
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/PracticePublishRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/PracticeAssignmentResponse'
+      security:
+      - BearerAuth: []
+      summary: 给本班指定学生发布 3 至 5 道巩固练习
+      tags:
+      - classrooms
+  /classrooms/{id}/practice-candidates:
+    get:
+      parameters:
+      - description: 班级 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 知识点 ID
+        in: query
+        name: conceptId
+        required: true
+        type: string
+      - description: zh-CN or en-US
+        in: query
+        name: locale
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/PracticeCandidatesResponse'
+      security:
+      - BearerAuth: []
+      summary: 教师为薄弱知识点选择巩固题
+      tags:
+      - classrooms
   /classrooms/{id}/quiz-lessons:
     get:
       description: 教师按课前预习、课中练习或课后巩固选择习题，省略阶段时返回课前预习。
@@ -17430,6 +17750,50 @@ paths:
       summary: 批量查询文件处理状态
       tags:
       - chat
+  /homeworks/{id}/deadline:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: 作业 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 新期限、原因和可选学生 ID
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/HomeworkDeadlineRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Envelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: 延长全班作业期限或允许指定未提交学生补交，记录原因
+      tags:
+      - classrooms
   /homeworks/{id}/report:
     get:
       parameters:
@@ -19687,6 +20051,34 @@ paths:
       summary: 查询可用模型目录
       tags:
       - llm
+  /practice-assignments/{id}/submissions:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 巩固任务 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 按题目 ID 提交答案
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/AssignedPracticeSubmitRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AssignedPracticeSubmissionResponse'
+      security:
+      - BearerAuth: []
+      summary: 提交巩固练习并更新知识掌握证据，重复请求返回原结果
+      tags:
+      - classrooms
   /quizzes/{id}/close:
     post:
       description: 教师截止小测后，学生不能再提交答案。
@@ -20035,6 +20427,20 @@ paths:
       security:
       - BearerAuth: []
       summary: Read the current student's latest published classroom performance
+      tags:
+      - classrooms
+  /student/practice-assignments:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/PracticeAssignmentsResponse'
+      security:
+      - BearerAuth: []
+      summary: 学生仅查看分配给自己的巩固任务与本人结果
       tags:
       - classrooms
   /student/quizzes:

@@ -237,6 +237,12 @@ func (h *Handler) writeError(c *gin.Context, err error) {
 		return
 	}
 	switch {
+	case errors.Is(err, appclassroom.ErrPracticeInvalid):
+		response.ErrorFrom(c, http.StatusBadRequest, err)
+	case errors.Is(err, appclassroom.ErrPracticeNotFound):
+		response.ErrorFrom(c, http.StatusNotFound, err)
+	case errors.Is(err, appclassroom.ErrPracticeClosed), errors.Is(err, appclassroom.ErrPracticeSubmitted):
+		response.ErrorFrom(c, http.StatusConflict, err)
 	case errors.Is(err, appclassroom.ErrForbidden):
 		response.ErrorFrom(c, http.StatusForbidden, err)
 	case errors.Is(err, appclassroom.ErrNotFound):

@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { HomeworkQuestions } from "@/features/classrooms/components/shared/homework-questions";
 import { useClassroomHomeworks } from "@/features/classrooms/hooks/use-classroom-homeworks";
+import { HomeworkDeadlineDialog, type HomeworkDeadlineTarget } from "./homework-deadline-dialog";
 import type { HomeworkPaperResponse } from "@/shared/api/homeworks";
 
 export function ClassroomHomeworks({ accessToken, classroomID }: { accessToken: string; classroomID: string }) {
@@ -20,6 +21,7 @@ export function ClassroomHomeworks({ accessToken, classroomID }: { accessToken: 
   const [startsAt, setStartsAt] = useState("");
   const [deadline, setDeadline] = useState("");
   const [studentID, setStudentID] = useState("");
+  const [deadlineTarget, setDeadlineTarget] = useState<HomeworkDeadlineTarget>();
   const report = model.report;
   const submission = report?.submissions.find((item) => item.studentId === studentID);
   const date = (value: string) => new Date(value).toLocaleString(locale, { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
@@ -43,7 +45,7 @@ export function ClassroomHomeworks({ accessToken, classroomID }: { accessToken: 
       <h3 className="mb-4 mt-9 font-display text-2xl font-normal">{t("publishedList")}</h3>
       {model.items.length === 0 ? <p className="py-8 text-sm text-muted-foreground">{t("empty")}</p> : <div className="space-y-3">{model.items.map((item) => <article key={item.id} className="rounded-lg border border-border p-4">
         <div className="flex flex-wrap items-center gap-3"><h4 className="font-display text-xl font-normal">{item.title}</h4><Badge variant="outline">{t(`status.${item.status}`)}</Badge><span className="ml-auto text-sm">{t("submissionCount", { count: item.submissionCount })}</span></div>
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><div className="space-y-1 text-sm"><p>{t("startsAt")}：{date(item.startsAt)}</p><p>{t("deadline")}：{date(item.deadline)}</p></div><Button variant="ghost" onClick={() => { setStudentID(""); model.selectReport(item.id); }}>{t("report")}<ArrowRight className="size-4" strokeWidth={1.6} /></Button></div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><div className="space-y-1 text-sm"><p>{t("startsAt")}：{date(item.startsAt)}</p><p>{t("deadline")}：{date(item.deadline)}</p>{item.endsAt !== item.deadline && <p>{t("makeupUntil")}：{date(item.endsAt)}</p>}</div><Button variant="outline" onClick={() => setDeadlineTarget({ ...item, studentId: "" })}>{t("extendDeadline")}</Button><Button variant="ghost" onClick={() => { setStudentID(""); model.selectReport(item.id); }}>{t("report")}<ArrowRight className="size-4" strokeWidth={1.6} /></Button></div>
       </article>)}</div>}
     </>}
     <Dialog open={!!paper} onOpenChange={(open) => { if (!open && !model.pending) setPaper(undefined); }}>
@@ -66,10 +68,13 @@ export function ClassroomHomeworks({ accessToken, classroomID }: { accessToken: 
             <HomeworkQuestions questions={report.homework.questions} answers={submission.answers} submission={submission} disabled showKey />
           </> : report ? <div className="divide-y divide-border">
             <p className="pb-4 text-sm">{t("reportCount", { submitted: report.submissions.length, total: report.students.length })}</p>
-            {report.students.map((student) => { const sub = report.submissions.find((item) => item.studentId === student.id); return <div key={student.id} className="flex flex-wrap items-center gap-3 py-4"><div className="min-w-0 flex-1"><p className="font-display text-lg font-normal">{student.displayName || student.username}</p><p className="font-mono text-sm text-muted-foreground">{student.username}</p></div>{sub ? <><span className="font-mono text-base">{sub.score}/{report.homework.total}</span><Button variant="ghost" onClick={() => setStudentID(student.id)}>{t("viewAnswers")}<ArrowRight className="size-4" /></Button></> : <Badge variant="outline">{t("notSubmitted")}</Badge>}</div>; })}
+            {report.students.map((student) => { const sub = report.submissions.find((item) => item.studentId === student.id); return <div key={student.id} className="flex flex-wrap items-center gap-3 py-4"><div className="min-w-0 flex-1"><p className="font-display text-lg font-normal">{student.displayName || student.username}</p><p className="font-mono text-sm text-muted-foreground">{student.username}</p></div>{sub ? <>{sub.makeup && <Badge variant="outline">{t("makeupSubmitted")}</Badge>}<span className="font-mono text-base">{sub.score}/{report.homework.total}</span><Button variant="ghost" onClick={() => setStudentID(student.id)}>{t("viewAnswers")}<ArrowRight className="size-4" /></Button></> : <><Badge variant="outline">{t("notSubmitted")}</Badge><Button variant="outline" onClick={() => setDeadlineTarget({ id: report.homework.id, title: report.homework.title, deadline: report.deadlineChanges.filter((change) => change.studentId === student.id).reduce((end, change) => Date.parse(change.deadline) > Date.parse(end) ? change.deadline : end, report.homework.deadline), studentId: student.id, studentName: student.displayName || student.username })}>{t("allowMakeup")}</Button></>}</div>; })}
+            <h4 className="pt-6 font-display text-xl">{t("changeHistory")}</h4>
+            {report.deadlineChanges.map((change, index) => <div key={`${change.createdAt}:${index}`} className="space-y-2 py-4 text-sm"><p>{change.studentName || t("wholeClass")} · {date(change.createdAt)}</p><p>{date(change.previousDeadline)} → {date(change.deadline)}</p><p>{change.reason}</p></div>)}
           </div> : <p role="alert" className="text-sm text-destructive">{model.error}</p>}
         </div>
       </DialogContent>
     </Dialog>
+    {deadlineTarget && <HomeworkDeadlineDialog target={deadlineTarget} pending={model.pending} onClose={() => setDeadlineTarget(undefined)} onSave={model.extend} />}
   </div>;
 }

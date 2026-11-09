@@ -1,6 +1,11 @@
 import type { HomeworkBankResponse, HomeworkListResponse, HomeworkPublishRequest, HomeworkResponse, HomeworkReportResponse, HomeworkSubmissionResponse, StudentHomeworksResponse } from "@deeix/api-contract";
 import { authedRequest } from "@/shared/api/authed-client";
 import { pathParam } from "@/shared/api/http-client";
+import type { HomeworkDeadlineRequest } from "@deeix/api-contract";
+
+export function extendHomeworkDeadline(accessToken: string, id: string, body: HomeworkDeadlineRequest): Promise<void> {
+  return authedRequest(`/api/v1/homeworks/${pathParam(id)}/deadline`, { accessToken, method: "PATCH", body });
+}
 
 export type { HomeworkPaperResponse, HomeworkQuestionResponse, HomeworkResponse, HomeworkReportResponse, HomeworkSubmissionResponse, StudentHomeworksResponse } from "@deeix/api-contract";
 

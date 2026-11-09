@@ -163,4 +163,70 @@ func TestHomeworkHTTPWithDatabase(t *testing.T) {
 			}
 		}
 	}
+	// A personal makeup window never opens the assignment for other students.
+	paper := domain.HomeworkBank()[0]
+	created := request(1, "POST", "/classrooms/class/homeworks", HomeworkPublishRequest{BankID: paper.ID, StartsAt: now.Add(-time.Hour), Deadline: now.Add(time.Hour)}, 200)
+	var extra struct{ Data HomeworkResponse }
+	if err := json.Unmarshal(created.Body.Bytes(), &extra); err != nil {
+		t.Fatal(err)
+	}
+	id := extra.Data.ID
+	if err := db.Model(&models.ClassroomStudent{}).Where("student_id = ?", 3).Update("classroom_id", 1).Error; err != nil {
+		t.Fatal(err)
+	}
+	if err := db.Model(&models.ClassroomHomework{}).Where("public_id = ?", id).Update("deadline", time.Now().Add(-time.Second)).Error; err != nil {
+		t.Fatal(err)
+	}
+	if err := db.Model(&models.ClassroomStudent{}).Where("classroom_id = ?", 1).Update("created_at", now.Add(-2*time.Hour)).Error; err != nil {
+		t.Fatal(err)
+	}
+	change := HomeworkDeadlineRequest{Deadline: now.Add(3 * time.Hour), StudentID: "student", Reason: "Approved absence"}
+	request(4, "PATCH", "/homeworks/"+id+"/deadline", change, 403)
+	request(2, "PATCH", "/homeworks/"+id+"/deadline", change, 404)
+	invalid := change
+	invalid.Reason = "   "
+	request(1, "PATCH", "/homeworks/"+id+"/deadline", invalid, 400)
+	request(1, "PATCH", "/homeworks/"+id+"/deadline", change, 200)
+	request(1, "PATCH", "/homeworks/"+id+"/deadline", change, 400)
+	answers := make([][]string, len(paper.Questions))
+	for i, q := range paper.Questions {
+		for _, a := range q.Accepted {
+			answers[i] = append(answers[i], a[0])
+		}
+	}
+	request(3, "POST", "/homeworks/"+id+"/submissions", HomeworkSubmitRequest{Answers: answers}, 409)
+	list = request(4, "GET", "/student/homeworks", nil, 200)
+	if err := json.Unmarshal(list.Body.Bytes(), &data); err != nil {
+		t.Fatal(err)
+	}
+	found := false
+	for _, item := range data.Data.Items {
+		if item.ID == id {
+			found = item.Makeup && item.Status == "open" && item.Deadline.Equal(change.Deadline)
+		}
+	}
+	if !found {
+		t.Fatal("personal deadline missing from student task")
+	}
+	var made struct{ Data HomeworkSubmissionResponse }
+	if err := json.Unmarshal(request(4, "POST", "/homeworks/"+id+"/submissions", HomeworkSubmitRequest{Answers: answers}, 200).Body.Bytes(), &made); err != nil {
+		t.Fatal(err)
+	}
+	if !made.Data.Makeup || made.Data.Score != 100 {
+		t.Fatal("makeup not recorded")
+	}
+	request(4, "POST", "/homeworks/"+id+"/submissions", HomeworkSubmitRequest{Answers: answers}, 409)
+	change.Deadline = now.Add(4 * time.Hour)
+	request(1, "PATCH", "/homeworks/"+id+"/deadline", change, 409)
+	change.StudentID = ""
+	request(1, "PATCH", "/homeworks/"+id+"/deadline", change, 200)
+	request(3, "POST", "/homeworks/"+id+"/submissions", HomeworkSubmitRequest{Answers: answers}, 200)
+	var history struct{ Data HomeworkReportResponse }
+	if err := json.Unmarshal(request(1, "GET", "/homeworks/"+id+"/report", nil, 200).Body.Bytes(), &history); err != nil {
+		t.Fatal(err)
+	}
+	if len(history.Data.DeadlineChanges) != 2 || len(history.Data.Submissions) != 2 || !history.Data.Submissions[0].Makeup {
+		t.Fatal("deadline audit or original submission changed")
+	}
+
 }

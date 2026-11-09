@@ -4,14 +4,15 @@ import "time"
 
 type ClassroomHomework struct {
 	ControlPlaneModel
-	PublicID    string    `gorm:"size:32;not null;uniqueIndex"`
-	ClassroomID uint      `gorm:"not null;index"`
-	TeacherID   uint      `gorm:"not null;index"`
-	BankID      string    `gorm:"size:64;not null"`
-	Title       string    `gorm:"size:120;not null"`
-	Questions   string    `gorm:"type:text;not null"`
-	StartsAt    time.Time `gorm:"not null"`
-	Deadline    time.Time `gorm:"not null"`
+	PublicID        string    `gorm:"size:32;not null;uniqueIndex"`
+	ClassroomID     uint      `gorm:"not null;index"`
+	TeacherID       uint      `gorm:"not null;index"`
+	BankID          string    `gorm:"size:64;not null"`
+	Title           string    `gorm:"size:120;not null"`
+	Questions       string    `gorm:"type:text;not null"`
+	StartsAt        time.Time `gorm:"not null"`
+	Deadline        time.Time `gorm:"not null"`
+	DeadlineChanges string    `gorm:"type:text;not null;default:'[]'"`
 }
 
 func (ClassroomHomework) TableName() string { return "classroom_homeworks" }
@@ -23,6 +24,7 @@ type ClassroomHomeworkSubmission struct {
 	Answers    string `gorm:"type:text;not null"`
 	Results    string `gorm:"type:text;not null"`
 	Score      int    `gorm:"not null"`
+	Makeup     bool   `gorm:"not null;default:false"`
 	CreatedAt  time.Time
 }
 

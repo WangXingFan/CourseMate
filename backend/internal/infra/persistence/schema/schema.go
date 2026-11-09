@@ -23,6 +23,8 @@ func Models() []any {
 		&models.AttendanceRecord{},
 		&models.ClassroomHomework{},
 		&models.ClassroomHomeworkSubmission{},
+		&models.ClassroomPracticeAssignment{},
+		&models.ClassroomPracticeSubmission{},
 		&models.LearningAttempt{},
 		&models.LearningQuizRound{},
 		&models.LearningLessonAttempt{},

@@ -13,6 +13,19 @@ type HomeworkPublishRequest struct {
 type HomeworkSubmitRequest struct {
 	Answers [][]string `json:"answers" binding:"required,min=1,max=40,dive,min=1,max=10,dive,required,max=200"`
 }
+type HomeworkDeadlineRequest struct {
+	Deadline  time.Time `json:"deadline" binding:"required"`
+	Reason    string    `json:"reason" binding:"required,max=500"`
+	StudentID string    `json:"studentId" binding:"omitempty,max=64"`
+}
+type HomeworkDeadlineChangeResponse struct {
+	StudentID        string    `json:"studentId"`
+	StudentName      string    `json:"studentName"`
+	PreviousDeadline time.Time `json:"previousDeadline"`
+	Deadline         time.Time `json:"deadline"`
+	Reason           string    `json:"reason"`
+	CreatedAt        time.Time `json:"createdAt"`
+}
 type HomeworkQuestionResponse struct {
 	ID         string     `json:"id"`
 	Kind       string     `json:"kind"`
@@ -38,6 +51,7 @@ type HomeworkResultResponse struct {
 	Correct    []bool `json:"correct"`
 }
 type HomeworkSubmissionResponse struct {
+	Makeup      bool                     `json:"makeup"`
 	StudentID   string                   `json:"studentId"`
 	StudentName string                   `json:"studentName"`
 	Username    string                   `json:"username"`
@@ -47,6 +61,8 @@ type HomeworkSubmissionResponse struct {
 	SubmittedAt time.Time                `json:"submittedAt"`
 }
 type HomeworkResponse struct {
+	EndsAt          time.Time                   `json:"endsAt"`
+	Makeup          bool                        `json:"makeup"`
 	ID              string                      `json:"id"`
 	BankID          string                      `json:"bankId"`
 	Title           string                      `json:"title"`
@@ -69,9 +85,10 @@ type StudentHomeworksResponse struct {
 	ServerTime time.Time          `json:"serverTime"`
 }
 type HomeworkReportResponse struct {
-	Homework    HomeworkResponse             `json:"homework"`
-	Students    []StudentResponse            `json:"students"`
-	Submissions []HomeworkSubmissionResponse `json:"submissions"`
+	DeadlineChanges []HomeworkDeadlineChangeResponse `json:"deadlineChanges"`
+	Homework        HomeworkResponse                 `json:"homework"`
+	Students        []StudentResponse                `json:"students"`
+	Submissions     []HomeworkSubmissionResponse     `json:"submissions"`
 }
 
 func homeworkQuestions(questions []domain.HomeworkQuestion, teacher bool) []HomeworkQuestionResponse {
@@ -91,7 +108,11 @@ func homeworkView(item domain.Homework, teacher bool, now time.Time) HomeworkRes
 	if !teacher && item.Status(now) == "scheduled" {
 		questions = []HomeworkQuestionResponse{}
 	}
-	return HomeworkResponse{ID: item.PublicID, BankID: item.BankID, Title: item.Title, StartsAt: item.StartsAt, Deadline: item.Deadline, Status: item.Status(now), QuestionCount: len(item.Questions), Total: item.Total(), Questions: questions, SubmissionCount: item.SubmissionCount}
+	endsAt := item.Deadline
+	if teacher {
+		endsAt = item.EndsAt()
+	}
+	return HomeworkResponse{EndsAt: endsAt, ID: item.PublicID, BankID: item.BankID, Title: item.Title, StartsAt: item.StartsAt, Deadline: item.Deadline, Status: item.Status(now), QuestionCount: len(item.Questions), Total: item.Total(), Questions: questions, SubmissionCount: item.SubmissionCount}
 }
 
 func homeworkSubmissionView(sub domain.HomeworkSubmission) HomeworkSubmissionResponse {
@@ -99,5 +120,5 @@ func homeworkSubmissionView(sub domain.HomeworkSubmission) HomeworkSubmissionRes
 	for _, result := range sub.Results {
 		results = append(results, HomeworkResultResponse{QuestionID: result.QuestionID, Score: result.Score, Total: result.Total, Correct: result.Correct})
 	}
-	return HomeworkSubmissionResponse{StudentID: sub.StudentPublicID, StudentName: sub.StudentName, Username: sub.Username, Answers: sub.Answers, Score: sub.Score, SubmittedAt: sub.SubmittedAt, Results: results}
+	return HomeworkSubmissionResponse{StudentID: sub.StudentPublicID, StudentName: sub.StudentName, Username: sub.Username, Answers: sub.Answers, Score: sub.Score, SubmittedAt: sub.SubmittedAt, Results: results, Makeup: sub.Makeup}
 }

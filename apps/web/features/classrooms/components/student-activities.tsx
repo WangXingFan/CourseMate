@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CenteredEmptyState } from "@/components/ui/empty-state";
 import { Spinner, SpinnerLabel } from "@/components/ui/spinner";
+import { StudentAssignedPractice } from "./sections/student-assigned-practice";
 import { useClassroomStudentActivities } from "@/features/classrooms/hooks/use-classroom-student-activities";
 import { cn } from "@/lib/utils";
 import { useAuthSession } from "@/shared/auth/auth-session-context";
@@ -113,6 +114,7 @@ function StudentActivities({ accessToken, owner }: { accessToken: string; owner:
         <div className="mx-auto w-full max-w-4xl">
           {model.draftStatus && <p role="status" className="mb-4 text-sm">{drafts(model.draftStatus)}</p>}
           <StudentAttendance accessToken={accessToken} />
+          <StudentAssignedPractice accessToken={accessToken} owner={owner} />
           <StudentPerformance accessToken={accessToken} />
           <StudentAIActivity accessToken={accessToken} />
           {quizzes.length > 0 ? (

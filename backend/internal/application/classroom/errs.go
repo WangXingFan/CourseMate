@@ -3,6 +3,10 @@ package classroom
 import "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/shared/apperr"
 
 var (
+	ErrPracticeInvalid   = apperr.New("classroom.practice_invalid", "select 3 to 5 questions, current students and a future deadline")
+	ErrPracticeNotFound  = apperr.New("classroom.practice_not_found", "practice assignment not found")
+	ErrPracticeClosed    = apperr.New("classroom.practice_closed", "practice assignment has closed")
+	ErrPracticeSubmitted = apperr.New("classroom.practice_submitted", "practice assignment already submitted")
 	ErrForbidden         = apperr.New("classroom.forbidden", "teacher account required")
 	ErrNotFound          = apperr.New("classroom.not_found", "classroom not found")
 	ErrInvalid           = apperr.New("classroom.invalid", "invalid classroom details")

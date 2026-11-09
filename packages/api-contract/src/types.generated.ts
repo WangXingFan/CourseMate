@@ -168,6 +168,37 @@ export interface AssessmentStatsResponse {
   title: string;
 }
 
+export interface AssignedPracticeField {
+  id: string;
+  label: string;
+  unit: string;
+}
+
+export interface AssignedPracticeQuestion {
+  fields: AssignedPracticeField[];
+  id: string;
+  options: string[];
+  prompt: string;
+}
+
+export interface AssignedPracticeResult {
+  answers: Record<string, string>;
+  correct: boolean;
+  expected: string[];
+  explanation: string;
+  questionId: string;
+}
+
+export interface AssignedPracticeSubmissionResponse {
+  correct: number;
+  results: AssignedPracticeResult[];
+  submittedAt: string;
+}
+
+export interface AssignedPracticeSubmitRequest {
+  answers: Record<string, Record<string, string>>;
+}
+
 export interface AttendanceCheckInRequest {
   code: string;
 }
@@ -1529,6 +1560,23 @@ export interface HomeworkBankResponse {
   papers: HomeworkPaperResponse[];
 }
 
+export interface HomeworkDeadlineChangeResponse {
+  createdAt: string;
+  deadline: string;
+  previousDeadline: string;
+  reason: string;
+  studentId: string;
+  studentName: string;
+}
+
+export interface HomeworkDeadlineRequest {
+  deadline: string;
+  /** @maxLength 500 */
+  reason: string;
+  /** @maxLength 64 */
+  studentId: string;
+}
+
 export interface HomeworkListResponse {
   items: HomeworkResponse[];
   serverTime: string;
@@ -1559,6 +1607,7 @@ export interface HomeworkQuestionResponse {
 }
 
 export interface HomeworkReportResponse {
+  deadlineChanges: HomeworkDeadlineChangeResponse[];
   homework: HomeworkResponse;
   students: StudentResponse[];
   submissions: HomeworkSubmissionResponse[];
@@ -1567,7 +1616,9 @@ export interface HomeworkReportResponse {
 export interface HomeworkResponse {
   bankId: string;
   deadline: string;
+  endsAt: string;
   id: string;
+  makeup: boolean;
   questionCount: number;
   questions: HomeworkQuestionResponse[];
   startsAt: string;
@@ -1587,6 +1638,7 @@ export interface HomeworkResultResponse {
 
 export interface HomeworkSubmissionResponse {
   answers: string[][];
+  makeup: boolean;
   results: HomeworkResultResponse[];
   score: number;
   studentId: string;
@@ -3160,6 +3212,53 @@ export interface PlatformFileDeleteDataResponse {
 export interface PlatformFileDeleteResponseDoc {
   data: PlatformFileDeleteDataResponse;
   errorMsg: string;
+}
+
+export interface PracticeAssignmentResponse {
+  conceptId: string;
+  createdAt: string;
+  deadline: string;
+  id: string;
+  open: boolean;
+  questions: AssignedPracticeQuestion[];
+  students: PracticeRecipientResponse[];
+  submission?: AssignedPracticeSubmissionResponse | null;
+  title: string;
+}
+
+export interface PracticeAssignmentsResponse {
+  items: PracticeAssignmentResponse[];
+  serverTime: string;
+}
+
+export interface PracticeCandidatesResponse {
+  questions: AssignedPracticeQuestion[];
+}
+
+export interface PracticePublishRequest {
+  /** @maxLength 64 */
+  conceptId: string;
+  deadline: string;
+  locale: "zh-CN" | "en-US";
+  /**
+   * @maxItems 5
+   * @minItems 3
+   */
+  questionIds: string[];
+  /**
+   * @maxItems 200
+   * @minItems 1
+   */
+  studentIds: string[];
+  /** @maxLength 120 */
+  title: string;
+}
+
+export interface PracticeRecipientResponse {
+  baselineStatus: string;
+  name: string;
+  studentId: string;
+  submission?: AssignedPracticeSubmissionResponse | null;
 }
 
 export interface ProviderAuthBridgeExchangeRequest {
@@ -7786,6 +7885,68 @@ export namespace Classrooms {
   }
 
   /**
+   * No description
+   * @tags classrooms
+   * @name PracticeAssignmentsList
+   * @summary 教师查看巩固任务、发布时掌握状态及完成结果
+   * @request GET:/classrooms/{id}/practice-assignments
+   * @secure
+   */
+  export namespace PracticeAssignmentsList {
+    export type RequestParams = {
+      /** 班级 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = PracticeAssignmentsResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name PracticeAssignmentsCreate
+   * @summary 给本班指定学生发布 3 至 5 道巩固练习
+   * @request POST:/classrooms/{id}/practice-assignments
+   * @secure
+   */
+  export namespace PracticeAssignmentsCreate {
+    export type RequestParams = {
+      /** 班级 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = PracticePublishRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = PracticeAssignmentResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name PracticeCandidatesList
+   * @summary 教师为薄弱知识点选择巩固题
+   * @request GET:/classrooms/{id}/practice-candidates
+   * @secure
+   */
+  export namespace PracticeCandidatesList {
+    export type RequestParams = {
+      /** 班级 ID */
+      id: string;
+    };
+    export type RequestQuery = {
+      /** 知识点 ID */
+      conceptId: string;
+      /** zh-CN or en-US */
+      locale?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = PracticeCandidatesResponse;
+  }
+
+  /**
    * @description 教师按课前预习、课中练习或课后巩固选择习题，省略阶段时返回课前预习。
    * @tags classrooms
    * @name QuizLessonsList
@@ -8639,6 +8800,25 @@ export namespace Files {
 }
 
 export namespace Homeworks {
+  /**
+   * No description
+   * @tags classrooms
+   * @name DeadlinePartialUpdate
+   * @summary 延长全班作业期限或允许指定未提交学生补交，记录原因
+   * @request PATCH:/homeworks/{id}/deadline
+   * @secure
+   */
+  export namespace DeadlinePartialUpdate {
+    export type RequestParams = {
+      /** 作业 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = HomeworkDeadlineRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope;
+  }
+
   /**
    * No description
    * @tags classrooms
@@ -10003,6 +10183,27 @@ export namespace Models {
   }
 }
 
+export namespace PracticeAssignments {
+  /**
+   * No description
+   * @tags classrooms
+   * @name SubmissionsCreate
+   * @summary 提交巩固练习并更新知识掌握证据，重复请求返回原结果
+   * @request POST:/practice-assignments/{id}/submissions
+   * @secure
+   */
+  export namespace SubmissionsCreate {
+    export type RequestParams = {
+      /** 巩固任务 ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = AssignedPracticeSubmitRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = AssignedPracticeSubmissionResponse;
+  }
+}
+
 export namespace Quizzes {
   /**
    * @description 教师截止小测后，学生不能再提交答案。
@@ -10265,6 +10466,22 @@ export namespace Student {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = PerformanceRecordResponse;
+  }
+
+  /**
+   * No description
+   * @tags classrooms
+   * @name PracticeAssignmentsList
+   * @summary 学生仅查看分配给自己的巩固任务与本人结果
+   * @request GET:/student/practice-assignments
+   * @secure
+   */
+  export namespace PracticeAssignmentsList {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = PracticeAssignmentsResponse;
   }
 
   /**

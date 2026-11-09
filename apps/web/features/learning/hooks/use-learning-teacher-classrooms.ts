@@ -21,7 +21,7 @@ export function useLearningTeacherClassrooms(accessToken: string) {
     const controller = new AbortController();
     setLoading(true); setError("");
     void listClassrooms(accessToken, controller.signal)
-      .then(({ classrooms }) => { if (!controller.signal.aborted) { setItems(classrooms); setSelectedID((id) => classrooms.some((item) => item.id === id) ? id : classrooms[0]?.id ?? ""); } })
+      .then(({ classrooms }) => { if (!controller.signal.aborted) { setItems(classrooms); setSelectedID((id) => [id, new URLSearchParams(window.location.search).get("classroom")].find((candidate) => classrooms.some((item) => item.id === candidate)) ?? classrooms[0]?.id ?? ""); } })
       .catch((cause: unknown) => { if (!controller.signal.aborted) setError(resolveError(cause)); })
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();

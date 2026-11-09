@@ -9006,6 +9006,128 @@ const docTemplate = `{
                 }
             }
         },
+        "/classrooms/{id}/practice-assignments": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "教师查看巩固任务、发布时掌握状态及完成结果",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "班级 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/PracticeAssignmentsResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "给本班指定学生发布 3 至 5 道巩固练习",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "班级 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "知识点、题目、学生和期限",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/PracticePublishRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/PracticeAssignmentResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/classrooms/{id}/practice-candidates": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "教师为薄弱知识点选择巩固题",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "班级 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "知识点 ID",
+                        "name": "conceptId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "zh-CN or en-US",
+                        "name": "locale",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/PracticeCandidatesResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/classrooms/{id}/quiz-lessons": {
             "get": {
                 "security": [
@@ -11521,6 +11643,75 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/ConversationErrorDoc"
+                        }
+                    }
+                }
+            }
+        },
+        "/homeworks/{id}/deadline": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "延长全班作业期限或允许指定未提交学生补交，记录原因",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "作业 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "新期限、原因和可选学生 ID",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/HomeworkDeadlineRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
                         }
                     }
                 }
@@ -15107,6 +15298,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/practice-assignments/{id}/submissions": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "提交巩固练习并更新知识掌握证据，重复请求返回原结果",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "巩固任务 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "按题目 ID 提交答案",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AssignedPracticeSubmitRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/AssignedPracticeSubmissionResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/quizzes/{id}/close": {
             "post": {
                 "security": [
@@ -15666,6 +15902,30 @@ const docTemplate = `{
                         "description": "Forbidden",
                         "schema": {
                             "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/student/practice-assignments": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "classrooms"
+                ],
+                "summary": "学生仅查看分配给自己的巩固任务与本人结果",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/PracticeAssignmentsResponse"
                         }
                     }
                 }
@@ -16753,6 +17013,126 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string"
+                }
+            }
+        },
+        "AssignedPracticeField": {
+            "type": "object",
+            "required": [
+                "id",
+                "label",
+                "unit"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                }
+            }
+        },
+        "AssignedPracticeQuestion": {
+            "type": "object",
+            "required": [
+                "fields",
+                "id",
+                "options",
+                "prompt"
+            ],
+            "properties": {
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AssignedPracticeField"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "prompt": {
+                    "type": "string"
+                }
+            }
+        },
+        "AssignedPracticeResult": {
+            "type": "object",
+            "required": [
+                "answers",
+                "correct",
+                "expected",
+                "explanation",
+                "questionId"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "correct": {
+                    "type": "boolean"
+                },
+                "expected": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "explanation": {
+                    "type": "string"
+                },
+                "questionId": {
+                    "type": "string"
+                }
+            }
+        },
+        "AssignedPracticeSubmissionResponse": {
+            "type": "object",
+            "required": [
+                "correct",
+                "results",
+                "submittedAt"
+            ],
+            "properties": {
+                "correct": {
+                    "type": "integer"
+                },
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AssignedPracticeResult"
+                    }
+                },
+                "submittedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "AssignedPracticeSubmitRequest": {
+            "type": "object",
+            "required": [
+                "answers"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
@@ -21093,6 +21473,58 @@ const docTemplate = `{
                 }
             }
         },
+        "HomeworkDeadlineChangeResponse": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "deadline",
+                "previousDeadline",
+                "reason",
+                "studentId",
+                "studentName"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "previousDeadline": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "studentId": {
+                    "type": "string"
+                },
+                "studentName": {
+                    "type": "string"
+                }
+            }
+        },
+        "HomeworkDeadlineRequest": {
+            "type": "object",
+            "required": [
+                "deadline",
+                "reason",
+                "studentId"
+            ],
+            "properties": {
+                "deadline": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string",
+                    "maxLength": 500
+                },
+                "studentId": {
+                    "type": "string",
+                    "maxLength": 64
+                }
+            }
+        },
         "HomeworkListResponse": {
             "type": "object",
             "required": [
@@ -21203,11 +21635,18 @@ const docTemplate = `{
         "HomeworkReportResponse": {
             "type": "object",
             "required": [
+                "deadlineChanges",
                 "homework",
                 "students",
                 "submissions"
             ],
             "properties": {
+                "deadlineChanges": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/HomeworkDeadlineChangeResponse"
+                    }
+                },
                 "homework": {
                     "$ref": "#/definitions/HomeworkResponse"
                 },
@@ -21230,7 +21669,9 @@ const docTemplate = `{
             "required": [
                 "bankId",
                 "deadline",
+                "endsAt",
                 "id",
+                "makeup",
                 "questionCount",
                 "questions",
                 "startsAt",
@@ -21247,8 +21688,14 @@ const docTemplate = `{
                 "deadline": {
                     "type": "string"
                 },
+                "endsAt": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
+                },
+                "makeup": {
+                    "type": "boolean"
                 },
                 "questionCount": {
                     "type": "integer"
@@ -21314,6 +21761,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "answers",
+                "makeup",
                 "results",
                 "score",
                 "studentId",
@@ -21330,6 +21778,9 @@ const docTemplate = `{
                             "type": "string"
                         }
                     }
+                },
+                "makeup": {
+                    "type": "boolean"
                 },
                 "results": {
                     "type": "array",
@@ -26549,6 +27000,167 @@ const docTemplate = `{
                 },
                 "errorMsg": {
                     "type": "string"
+                }
+            }
+        },
+        "PracticeAssignmentResponse": {
+            "type": "object",
+            "required": [
+                "conceptId",
+                "createdAt",
+                "deadline",
+                "id",
+                "open",
+                "questions",
+                "students",
+                "submission",
+                "title"
+            ],
+            "properties": {
+                "conceptId": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "open": {
+                    "type": "boolean"
+                },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AssignedPracticeQuestion"
+                    }
+                },
+                "students": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PracticeRecipientResponse"
+                    }
+                },
+                "submission": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/AssignedPracticeSubmissionResponse"
+                        }
+                    ],
+                    "x-nullable": true
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "PracticeAssignmentsResponse": {
+            "type": "object",
+            "required": [
+                "items",
+                "serverTime"
+            ],
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PracticeAssignmentResponse"
+                    }
+                },
+                "serverTime": {
+                    "type": "string"
+                }
+            }
+        },
+        "PracticeCandidatesResponse": {
+            "type": "object",
+            "required": [
+                "questions"
+            ],
+            "properties": {
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AssignedPracticeQuestion"
+                    }
+                }
+            }
+        },
+        "PracticePublishRequest": {
+            "type": "object",
+            "required": [
+                "conceptId",
+                "deadline",
+                "locale",
+                "questionIds",
+                "studentIds",
+                "title"
+            ],
+            "properties": {
+                "conceptId": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "locale": {
+                    "type": "string",
+                    "enum": [
+                        "zh-CN",
+                        "en-US"
+                    ]
+                },
+                "questionIds": {
+                    "type": "array",
+                    "maxItems": 5,
+                    "minItems": 3,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "studentIds": {
+                    "type": "array",
+                    "maxItems": 200,
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 120
+                }
+            }
+        },
+        "PracticeRecipientResponse": {
+            "type": "object",
+            "required": [
+                "baselineStatus",
+                "name",
+                "studentId",
+                "submission"
+            ],
+            "properties": {
+                "baselineStatus": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "studentId": {
+                    "type": "string"
+                },
+                "submission": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/AssignedPracticeSubmissionResponse"
+                        }
+                    ],
+                    "x-nullable": true
                 }
             }
         },

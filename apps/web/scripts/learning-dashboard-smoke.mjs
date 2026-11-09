@@ -57,6 +57,7 @@ async function session(role, locale = "zh-CN") {
     else if (path.endsWith("/capabilities")) data = { features: { classrooms: true, knowledgeBases: true } };
     else if (path.endsWith("/branding")) data = { title: "CourseMate", shortName: "CourseMate", description: "", logoURL: "", faviconURL: "/favicon.ico" };
     else if (path.endsWith("/version")) { await route.fulfill({ json: { version: "0.4.4-beta.3", buildID: "" } }); return; }
+    else if (path.endsWith("/student/practice-assignments")) data = { items: [], serverTime: now };
     else if (path.endsWith("/student/quizzes")) data = { classroom, quizzes: [quiz] };
     else if (path.endsWith("/quizzes/numeric/submissions")) {
       const body = request.postDataJSON();

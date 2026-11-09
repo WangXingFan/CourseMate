@@ -65,7 +65,8 @@ export function normalizeQuestionMath(content: string): string {
       for (const [open, close] of [["(", ")"], ["[", "]"], ["{", "}"]]) {
         if (expression.split(open).length !== expression.split(close).length) return candidate;
       }
-      return `$${legacyLatex(expression)}$${suffix}`;
+      // Explicit delimiters keep decimal percentages out of currency normalization.
+      return `\\(${legacyLatex(expression)}\\)${suffix}`;
     });
   }).join("");
 }

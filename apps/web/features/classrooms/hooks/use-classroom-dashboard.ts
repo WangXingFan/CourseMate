@@ -6,20 +6,21 @@ import { useLocalizedErrorMessage } from "@/i18n/use-localized-error";
 import { listStudentAttendance } from "@/shared/api/attendance";
 import { listStudentQuizzes } from "@/shared/api/classrooms";
 import { listStudentHomeworks } from "@/shared/api/homeworks";
+import { listAssignedPractice } from "@/shared/api/practice-assignments";
 import { ApiError } from "@/shared/api/http-client";
 import { listLabAssessments, readLabAssessment } from "@/shared/api/lab-assessments";
 import { getLearningProgress } from "@/shared/api/learning";
 
 export type DashboardTask = {
   id: string;
-  kind: "attendance" | "quiz" | "homework" | "lab" | "review";
+  kind: "attendance" | "quiz" | "homework" | "practice" | "lab" | "review";
   title: string;
   href: string;
   deadline?: string;
   startsAt?: string;
 };
 type Section = { kind: DashboardTask["kind"]; items: DashboardTask[]; error: string; loading: boolean };
-const KINDS = ["attendance", "quiz", "homework", "lab", "review"] as const;
+const KINDS = ["attendance", "quiz", "homework", "practice", "lab", "review"] as const;
 
 export function useClassroomDashboard(accessToken: string) {
   const t = useTranslations("classrooms.dashboard");
@@ -46,6 +47,9 @@ export function useClassroomDashboard(accessToken: string) {
       homework: async () => (await listStudentHomeworks(accessToken, signal)).items
         .filter((item) => !item.submission && item.status !== "closed")
         .map((item) => ({ id: item.id, kind: "homework", title: item.title, deadline: item.deadline, startsAt: item.status === "scheduled" ? item.startsAt : undefined, href: `/homeworks#${item.id}` })),
+      practice: async () => (await listAssignedPractice(accessToken, undefined, signal)).items
+        .filter((item) => item.open && !item.submission)
+        .map((item) => ({ id: item.id, kind: "practice", title: item.title, deadline: item.deadline, href: `/activities#practice-${item.id}` })),
       lab: async () => {
         const { items } = await listLabAssessments(accessToken, undefined, signal);
         const results = await Promise.all(items.filter((item) => item.active).map((item) => readLabAssessment(accessToken, item.id, signal)));

@@ -38,10 +38,14 @@
     "notJoined": "You have not joined a class yet. Ask your teacher to add you.",
     "invalidQuizId": "Invalid quiz ID.",
     "homeworkNotFound": "Homework not found in your class.",
-    "homeworkInvalid": "Choose a valid paper and a deadline later than the start time and now.",
+    "homeworkInvalid": "Check the paper and schedule. Extensions need a reason and must be later than the current deadline, start time and now.",
     "homeworkWindow": "This homework is outside its submission window.",
     "homeworkSubmitted": "This homework has already been submitted.",
-    "homeworkAnswers": "Complete every question and blank before submitting."
+    "homeworkAnswers": "Complete every question and blank before submitting.",
+    "practiceInvalid": "Enter a name and future deadline, then select 3–5 questions and at least one student.",
+    "practiceNotFound": "Practice not found, or you are not an assigned student.",
+    "practiceClosed": "This practice assignment has closed.",
+    "practiceSubmitted": "Already submitted; answers cannot be changed."
   },
   "auth": {
     "accountLocked": "This account is temporarily locked after too many failed sign-in attempts. Try again later.",

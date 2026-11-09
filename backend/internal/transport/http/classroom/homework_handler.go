@@ -99,6 +99,7 @@ func (h *Handler) StudentHomeworks(c *gin.Context) {
 	views := make([]HomeworkResponse, 0, len(items))
 	for _, item := range items {
 		view := homeworkView(item.Homework, false, now)
+		view.Makeup = item.Makeup
 		if item.Submission != nil {
 			sub := homeworkSubmissionView(*item.Submission)
 			view.Submission = &sub
@@ -154,7 +155,38 @@ func (h *Handler) HomeworkReport(c *gin.Context) {
 	for _, sub := range report.Submissions {
 		subs = append(subs, homeworkSubmissionView(sub))
 	}
-	response.Success(c, HomeworkReportResponse{Homework: homeworkView(report.Homework, true, time.Now()), Students: students, Submissions: subs})
+	changes := make([]HomeworkDeadlineChangeResponse, 0, len(report.Homework.DeadlineChanges))
+	for _, change := range report.Homework.DeadlineChanges {
+		changes = append(changes, HomeworkDeadlineChangeResponse{StudentID: change.StudentPublicID, StudentName: change.StudentName, PreviousDeadline: change.PreviousDeadline, Deadline: change.Deadline, Reason: change.Reason, CreatedAt: change.CreatedAt})
+	}
+	response.Success(c, HomeworkReportResponse{Homework: homeworkView(report.Homework, true, time.Now()), Students: students, Submissions: subs, DeadlineChanges: changes})
+}
+
+// ExtendHomeworkDeadline godoc
+// @Summary 延长全班作业期限或允许指定未提交学生补交，记录原因
+// @Tags classrooms
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "作业 ID"
+// @Param body body HomeworkDeadlineRequest true "新期限、原因和可选学生 ID"
+// @Success 200 {object} response.Envelope
+// @Failure 400 {object} response.Envelope
+// @Failure 403 {object} response.Envelope
+// @Failure 404 {object} response.Envelope
+// @Failure 409 {object} response.Envelope
+// @Router /homeworks/{id}/deadline [patch]
+func (h *Handler) ExtendHomeworkDeadline(c *gin.Context) {
+	var req HomeworkDeadlineRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.InvalidRequestBody(c, err)
+		return
+	}
+	if err := h.service.ExtendHomeworkDeadline(c.Request.Context(), middleware.MustUserID(c), c.Param("id"), req.StudentID, req.Deadline, req.Reason); err != nil {
+		h.writeError(c, err)
+		return
+	}
+	response.Success(c, nil)
 }
 
 func (h *Handler) writeHomeworkError(c *gin.Context, err error) bool {

@@ -71,7 +71,7 @@ async function session(role, width) {
     const request = route.request(), path = new URL(request.url()).pathname;
     let data = {};
     if (path.endsWith("/classrooms")) data = { classrooms: [classroom] };
-    else if (path.endsWith("/student/attendance")) data = { items: [] };
+    else if (path.endsWith("/attendance") || path.endsWith("/practice-assignments") || path.endsWith("/homeworks") || path.endsWith("/lab-assessments")) data = { items: [], serverTime: now };
     else if (path.endsWith("/students")) data = { students: [{ id: "student_one", username: "student", displayName: "student" }] };
     else if (path.endsWith("/students/accounts/import/file")) {
       assert.equal(role, "teacher");
@@ -144,6 +144,7 @@ try {
   const teacher = await session("teacher", 1360);
   const student = await session("student", 390);
   await teacher.goto(`${base}/classrooms`);
+  await teacher.getByRole("button", { name: "学生名单", exact: true }).click();
   await teacher.getByRole("button", { name: "导入学生名单", exact: true }).click();
   const rosterDialog = teacher.getByRole("dialog");
   const rosterFileInput = rosterDialog.locator('input[type="file"]');

@@ -40,6 +40,7 @@ export function AppClassrooms({
         onRefresh={list.refresh}
       />
       <ClassroomDetail
+        key={detail.selected?.id ?? ""}
         accessToken={accessToken}
         selected={detail.selected}
         students={detail.students}
