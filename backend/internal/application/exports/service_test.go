@@ -33,6 +33,10 @@ type fakeClasses struct {
 	submissions []class.HomeworkSubmission
 }
 
+func (f fakeClasses) GetExportProfile(context.Context, uint) (class.ExportProfile, error) {
+	return class.ExportProfile{AcademicTerm: "2026-2027-1", CourseCode: "TEST101", CourseName: "示例课程", TeacherName: "示例教师", College: "示例学院", TeachingLocation: "示例教室"}, nil
+}
+
 func (f fakeClasses) GetOwnedClassroom(_ context.Context, _ string, actor uint) (*class.Classroom, error) {
 	if actor != f.owner {
 		return nil, repository.ErrNotFound

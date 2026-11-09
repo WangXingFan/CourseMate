@@ -474,7 +474,23 @@
     "performanceSource": "Classroom score source",
     "performanceLive": "Current cumulative preview (not finalized)",
     "aiActivityRange": "AI activity reporting period",
-    "aiActivityRangeHint": "Applies to the activity export and its score in combined transcripts. Blank dates default to class creation through today; only completed weeks enter the average."
+    "aiActivityRangeHint": "Applies to the activity export and its score in combined transcripts. Blank dates default to class creation through today; only completed weeks enter the average.",
+    "profile": {
+      "title": "Archive headers",
+      "academicTerm": "Academic term",
+      "courseCode": "Course code",
+      "courseName": "Course name",
+      "teacherName": "Teacher name",
+      "college": "College",
+      "teachingLocation": "Teaching room",
+      "save": "Save header information",
+      "saving": "Saving",
+      "saved": "Header information saved for this class",
+      "unsaved": "Header information has changed. Save before exporting.",
+      "incomplete": "Complete and save the header information before exporting.",
+      "loading": "Loading header information",
+      "retry": "Reload"
+    }
   },
   "performance": {
     "title": "Classroom scores",

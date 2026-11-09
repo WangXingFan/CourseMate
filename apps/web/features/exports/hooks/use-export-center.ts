@@ -9,6 +9,7 @@ import { exportClassroom, type ClassroomExportRequest } from "@/shared/api/expor
 import { listPerformanceRecords, type PerformanceRecordItem } from "@/shared/api/classroom-performance";
 import { downloadBlob } from "@/shared/lib/export-download";
 import { listHomeworks, type HomeworkResponse } from "@/shared/api/homeworks";
+import { useExportProfile } from "./use-export-profile";
 
 export const EXPORT_ITEMS = ["homeworks", "labs", "attendance", "performance", "ai_activity"] as const;
 export const REPORT_COURSES = [{ id: "L1", fileLabel: "实验一" }, { id: "L2", fileLabel: "实验二" }, { id: "L3", fileLabel: "实验三" }] as const;
@@ -20,6 +21,7 @@ export function useExportCenter(accessToken: string) {
   const resolveError = useLocalizedErrorMessage();
   const [classrooms, setClassrooms] = useState<ClassroomDTO[]>([]);
   const [classroomID, setClassroomID] = useState("");
+  const profile = useExportProfile(accessToken, classroomID);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [pending, setPending] = useState<ExportKind | null>(null);
@@ -95,6 +97,7 @@ export function useExportCenter(accessToken: string) {
   const homeworkPreview = previewName(homeworkTemplate, "作业", homework?.title ?? t("sampleHomework"));
 
   const download = async (kind: ExportKind) => {
+    if (kind !== "reports" && kind !== "homework_reports" && !profile.ready) return;
     if (!classroom || active.current || kind === "summary" && !validWeights || kind === "reports" && !validTemplate) return;
     if (kind === "homework_reports" && (!homework || homeworkLoading || homeworkError || !validHomeworkTemplate)) return;
     if ((kind === "ai_activity" || kind === "summary" && selected.ai_activity) && !validAIDates) return;
@@ -112,5 +115,5 @@ export function useExportCenter(accessToken: string) {
     finally { if (!controller.signal.aborted) setPending(null); active.current = null; }
   };
   const summaryOptions: ClassroomExportRequest = { kind: "summary", performanceRecordId: performanceRecordID, aiActivityStartDate, aiActivityEndDate, includeOngoing, filenameTemplate: "", courseID: course.id, weights: Object.fromEntries(EXPORT_ITEMS.filter((key) => selected[key]).map((key) => [key, Number(weights[key])])) };
-  return { homeworks, homework, homeworkID, setHomeworkID, homeworkLoading, homeworkError, homeworkTemplate, setHomeworkTemplate, validHomeworkTemplate, homeworkPreview, summaryOptions, aiActivityStartDate, setAIActivityStartDate, aiActivityEndDate, setAIActivityEndDate, validAIDates, today, records, performanceRecordID, setPerformanceRecordID, recordsLoading, recordsError, classrooms, classroom, classroomID, setClassroomID, loading, error, pending, done, includeOngoing, setIncludeOngoing, weights, setWeights, selected, setSelected, template, setTemplate, courseID, setCourseID, total, validWeights, validTemplate, preview, download, refresh: () => setRevision((value) => value + 1) };
+  return { profile, homeworks, homework, homeworkID, setHomeworkID, homeworkLoading, homeworkError, homeworkTemplate, setHomeworkTemplate, validHomeworkTemplate, homeworkPreview, summaryOptions, aiActivityStartDate, setAIActivityStartDate, aiActivityEndDate, setAIActivityEndDate, validAIDates, today, records, performanceRecordID, setPerformanceRecordID, recordsLoading, recordsError, classrooms, classroom, classroomID, setClassroomID, loading, error, pending, done, includeOngoing, setIncludeOngoing, weights, setWeights, selected, setSelected, template, setTemplate, courseID, setCourseID, total, validWeights, validTemplate, preview, download, refresh: () => setRevision((value) => value + 1) };
 }

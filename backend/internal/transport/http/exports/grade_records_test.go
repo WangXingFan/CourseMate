@@ -99,6 +99,29 @@ func TestGradeSnapshotHTTPStalenessEligibilityAndImmutability(t *testing.T) {
 		return rec
 	}
 	options := ClassroomExportRequest{Kind: "summary", Weights: map[string]float64{"homeworks": 100}}
+	profile := ClassroomExportProfile{AcademicTerm: "2026-2027-1", CourseCode: "TEST101", CourseName: "测试课程", TeacherName: "测试教师", College: "测试学院", TeachingLocation: "测试教室"}
+	request(1, "POST", "one/exports", options, 400)
+	for _, actor := range []uint{2, 3} {
+		status := 404
+		if actor == 3 {
+			status = 403
+		}
+		request(actor, "GET", "one/export-profile", nil, status)
+		request(actor, "PUT", "one/export-profile", profile, status)
+	}
+	invalidProfile := profile
+	invalidProfile.CourseName = "  "
+	request(1, "PUT", "one/export-profile", invalidProfile, 400)
+	request(1, "PUT", "one/export-profile", profile, 200)
+	var reloaded struct {
+		Data ClassroomExportProfile `json:"data"`
+	}
+	if err := json.Unmarshal(request(1, "GET", "one/export-profile", nil, 200).Body.Bytes(), &reloaded); err != nil || reloaded.Data != profile {
+		t.Fatalf("saved profile not restored: %+v %v", reloaded, err)
+	}
+	if err := json.Unmarshal(request(1, "GET", "two/export-profile", nil, 200).Body.Bytes(), &reloaded); err != nil || reloaded.Data.CourseCode != "" {
+		t.Fatal("profile leaked across classrooms")
+	}
 	preview := func() GradePreviewResponse {
 		t.Helper()
 		var body struct {
@@ -117,6 +140,10 @@ func TestGradeSnapshotHTTPStalenessEligibilityAndImmutability(t *testing.T) {
 		t.Fatal("unchanged preview became stale")
 	}
 	input := GradeFinalizeRequest{Title: "期末成绩", Fingerprint: first.Fingerprint, Options: options}
+	profile.TeachingLocation = "新教室"
+	request(1, "PUT", "one/export-profile", profile, 200)
+	request(1, "POST", "one/grade-records", input, 409)
+	input.Fingerprint = preview().Fingerprint
 	if err := db.Model(&models.ClassroomHomeworkSubmission{}).Where("student_id = ?", 3).Update("score", 70).Error; err != nil {
 		t.Fatal(err)
 	}
@@ -142,6 +169,15 @@ func TestGradeSnapshotHTTPStalenessEligibilityAndImmutability(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer x.Close()
+	header, err := x.GetCellValue("课程过程考核成绩登记表", "A3")
+	if err != nil || header != "教师姓名：测试教师    所属学院：测试学院    上课教室：新教室" {
+		t.Fatalf("saved archive header: %q %v", header, err)
+	}
+	profile.TeachingLocation = "下一学期教室"
+	request(1, "PUT", "one/export-profile", profile, 200)
+	if !bytes.Equal(request(1, "GET", path+"/export", nil, 200).Body.Bytes(), workbook.Body.Bytes()) {
+		t.Fatal("profile update rewrote the finalized workbook")
+	}
 	rows, err := x.GetRows("综合成绩")
 	if err != nil {
 		t.Fatal(err)

@@ -17,6 +17,8 @@ type Module struct{ service *app.Service }
 
 func NewModule(s *app.Service) *Module { return &Module{s} }
 func (m *Module) RegisterRoutes(g *gin.RouterGroup) {
+	g.GET("/classrooms/:id/export-profile", m.ExportProfile)
+	g.PUT("/classrooms/:id/export-profile", m.SaveExportProfile)
 	g.POST("/classrooms/:id/exports", m.Export)
 	g.POST("/classrooms/:id/grade-preview", m.GradePreview)
 	g.GET("/classrooms/:id/grade-records", m.GradeRecords)
@@ -65,7 +67,7 @@ func (m *Module) Export(c *gin.Context) {
 	f, err := m.service.Export(c.Request.Context(), middleware.MustUserID(c), c.Param("id"), in.options())
 	if err != nil {
 		switch {
-		case errors.Is(err, app.ErrInvalid):
+		case errors.Is(err, app.ErrInvalid), errors.Is(err, app.ErrProfileRequired):
 			response.ErrorFrom(c, 400, err)
 		case errors.Is(err, app.ErrForbidden):
 			response.ErrorFrom(c, 403, err)

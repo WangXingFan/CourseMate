@@ -8098,6 +8098,148 @@
                 }
             }
         },
+        "/classrooms/{id}/export-profile": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "exports"
+                ],
+                "summary": "Read the classroom's saved archive header information",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Owned classroom ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/ClassroomExportProfile"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "exports"
+                ],
+                "summary": "Save the classroom's archive header information for subsequent exports",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Owned classroom ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Archive header fields",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ClassroomExportProfile"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/ClassroomExportProfile"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/classrooms/{id}/exports": {
             "post": {
                 "security": [
@@ -18238,6 +18380,43 @@
             "properties": {
                 "open": {
                     "type": "boolean"
+                }
+            }
+        },
+        "ClassroomExportProfile": {
+            "type": "object",
+            "required": [
+                "academicTerm",
+                "college",
+                "courseCode",
+                "courseName",
+                "teacherName",
+                "teachingLocation"
+            ],
+            "properties": {
+                "academicTerm": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "college": {
+                    "type": "string",
+                    "maxLength": 120
+                },
+                "courseCode": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "courseName": {
+                    "type": "string",
+                    "maxLength": 120
+                },
+                "teacherName": {
+                    "type": "string",
+                    "maxLength": 80
+                },
+                "teachingLocation": {
+                    "type": "string",
+                    "maxLength": 120
                 }
             }
         },

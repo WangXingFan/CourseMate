@@ -1254,6 +1254,34 @@ definitions:
     required:
     - open
     type: object
+  ClassroomExportProfile:
+    properties:
+      academicTerm:
+        maxLength: 64
+        type: string
+      college:
+        maxLength: 120
+        type: string
+      courseCode:
+        maxLength: 64
+        type: string
+      courseName:
+        maxLength: 120
+        type: string
+      teacherName:
+        maxLength: 80
+        type: string
+      teachingLocation:
+        maxLength: 120
+        type: string
+    required:
+    - academicTerm
+    - college
+    - courseCode
+    - courseName
+    - teacherName
+    - teachingLocation
+    type: object
   ClassroomExportRequest:
     properties:
       aiActivityEndDate:
@@ -15569,6 +15597,91 @@ paths:
       summary: Open or close one experiment for the teacher's classroom
       tags:
       - classrooms
+  /classrooms/{id}/export-profile:
+    get:
+      parameters:
+      - description: Owned classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/ClassroomExportProfile'
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Read the classroom's saved archive header information
+      tags:
+      - exports
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Owned classroom ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Archive header fields
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/ClassroomExportProfile'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/ClassroomExportProfile'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Envelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Envelope'
+      security:
+      - BearerAuth: []
+      summary: Save the classroom's archive header information for subsequent exports
+      tags:
+      - exports
   /classrooms/{id}/exports:
     post:
       consumes:

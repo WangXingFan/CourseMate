@@ -521,6 +521,21 @@ export interface ClassroomExperimentRequest {
   open: boolean;
 }
 
+export interface ClassroomExportProfile {
+  /** @maxLength 64 */
+  academicTerm: string;
+  /** @maxLength 120 */
+  college: string;
+  /** @maxLength 64 */
+  courseCode: string;
+  /** @maxLength 120 */
+  courseName: string;
+  /** @maxLength 80 */
+  teacherName: string;
+  /** @maxLength 120 */
+  teachingLocation: string;
+}
+
 export interface ClassroomExportRequest {
   aiActivityEndDate?: string;
   aiActivityStartDate?: string;
@@ -7594,6 +7609,48 @@ export namespace Classrooms {
     export type RequestBody = ClassroomExperimentRequest;
     export type RequestHeaders = {};
     export type ResponseBody = ClassroomMutationResponse;
+  }
+
+  /**
+   * No description
+   * @tags exports
+   * @name ExportProfileList
+   * @summary Read the classroom's saved archive header information
+   * @request GET:/classrooms/{id}/export-profile
+   * @secure
+   */
+  export namespace ExportProfileList {
+    export type RequestParams = {
+      /** Owned classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope & {
+      data?: ClassroomExportProfile;
+    };
+  }
+
+  /**
+   * No description
+   * @tags exports
+   * @name ExportProfileUpdate
+   * @summary Save the classroom's archive header information for subsequent exports
+   * @request PUT:/classrooms/{id}/export-profile
+   * @secure
+   */
+  export namespace ExportProfileUpdate {
+    export type RequestParams = {
+      /** Owned classroom ID */
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = ClassroomExportProfile;
+    export type RequestHeaders = {};
+    export type ResponseBody = Envelope & {
+      data?: ClassroomExportProfile;
+    };
   }
 
   /**

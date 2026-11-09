@@ -50,6 +50,14 @@ const workbook = Buffer.from("PK-grade-snapshot-browser-fixture");
 const homeworkZip = Buffer.from("PK-homework-papers-browser-fixture");
 const homeworkExports = [];
 let homeworkLoadFailure = false;
+const archiveProfile = { academicTerm: "2025–2026 学年第二学期", courseCode: "CS3017", courseName: "信号与系统", teacherName: "示例教师", college: "电子信息学院", teachingLocation: "A201" };
+const exportProfiles = new Map([
+  ["class", process.env.EXPORT_PROFILE_ONLY ? { ...archiveProfile, academicTerm: "", courseCode: "", college: "", teachingLocation: "" } : { ...archiveProfile }],
+  ["class-target", { ...archiveProfile, teacherName: "二班教师", teachingLocation: "B302" }],
+]);
+let profileSaveFailure = false;
+let profileLoadFailure = false;
+let excelExports = 0;
 const exportedHomeworks = [
   { ...homework, id: "paper-1", title: "作业一", submissionCount: 1 },
   { ...homework, id: "paper-2", title: "作业一", startsAt: new Date(Date.now() - 7200000).toISOString(), status: "closed", submissionCount: 2 },
@@ -97,9 +105,23 @@ async function session(role, locale = "zh-CN") {
       if (homeworkLoadFailure) { await route.fulfill({ status: 503, json: { errorMsg: "作业列表暂时不可用", data: null } }); return; }
       data = { items: exportedHomeworks, serverTime: now };
     } else if (path.endsWith("/classrooms/class-target/homeworks")) data = { items: [], serverTime: now };
-    else if (path.endsWith("/classrooms/class/exports")) {
-      homeworkExports.push(request.postDataJSON());
-      await route.fulfill({ contentType: "application/zip", body: homeworkZip }); return;
+    else if (path.endsWith("/export-profile")) {
+      const id = path.split("/").at(-2);
+      if (request.method() === "PUT") {
+        if (profileSaveFailure) { await route.fulfill({ status: 503, json: { errorMsg: "表头信息保存失败", data: null } }); return; }
+        exportProfiles.set(id, Object.fromEntries(Object.entries(request.postDataJSON()).map(([key, value]) => [key, value.trim()])));
+      } else if (profileLoadFailure) { await route.fulfill({ status: 503, json: { errorMsg: "表头信息加载失败", data: null } }); return; }
+      data = exportProfiles.get(id);
+    } else if (path.endsWith("/classrooms/class/exports")) {
+      const options = request.postDataJSON();
+      if (options.kind === "homework_reports") {
+        homeworkExports.push(options);
+        await route.fulfill({ contentType: "application/zip", body: homeworkZip });
+      } else {
+        excelExports++;
+        await route.fulfill({ contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", body: workbook });
+      }
+      return;
     }
     else if (path.endsWith("/classrooms/class-target/students")) data = {students:[{...roster[0],id:"target-student"}]};
     else if (path.endsWith("/classrooms/class/mastery")) data = {classroomId:"class",concepts:[{concept:{id:"lesson:ss-1-1",title:"信号分类",kind:"lesson",topic:"",chapter:"",evidence:[],status:"weak"},assessed:1,weak:1,secure:0,developing:0}],students:[{id:"student-a",name:"示例学生",username:"001",weakConceptIds:["lesson:ss-1-1"],counts:{assessed:1,weak:1,secure:0,developing:0,unassessed:0}}]};
@@ -140,9 +162,79 @@ async function screenshot(page, name) {
 }
 const draftKeys = (page) => page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith("coursemate.answers.v1:")));
 
+async function checkExportProfile(teacher) {
+  await teacher.goto(`${base}/exports`);
+  const section = teacher.getByRole("region", { name: "归档表头", exact: true });
+  const save = section.getByRole("button", { name: "保存表头信息", exact: true });
+  const excel = teacher.getByRole("region", { name: "分项成绩", exact: true }).getByRole("button", { name: "导出 Excel", exact: true }).first();
+  const preview = teacher.getByRole("button", { name: "预览并定稿", exact: true });
+  await section.getByText("请补全并保存表头信息后导出。", { exact: true }).waitFor();
+  assert.equal(await save.isDisabled(), true);
+  assert.equal(await excel.isDisabled(), true);
+  assert.equal(await preview.isDisabled(), true);
+  assert.equal(await teacher.getByRole("region", { name: "学生实验报告", exact: true }).getByRole("button", { name: "打包下载 PDF", exact: true }).isEnabled(), true);
+  assert.equal(await section.getByLabel("课程名称", { exact: true }).inputValue(), archiveProfile.courseName);
+  const labels = { academicTerm: "学年学期", courseCode: "课程代码", courseName: "课程名称", teacherName: "教师姓名", college: "所属学院", teachingLocation: "上课教室" };
+  for (const [key, label] of Object.entries(labels)) await section.getByLabel(label, { exact: true }).fill(archiveProfile[key]);
+  assert.equal(await excel.isDisabled(), true, "unsaved headers allowed export");
+  await save.click();
+  await section.getByText("本班表头信息已保存", { exact: true }).waitFor();
+  assert.deepEqual(exportProfiles.get("class"), archiveProfile);
+  assert.equal(await excel.isEnabled(), true);
+  assert.equal(await preview.isEnabled(), true);
+  const downloading = teacher.waitForEvent("download");
+  await excel.click();
+  assert.deepEqual(await readFile(await (await downloading).path()), workbook);
+  assert.equal(excelExports, 1);
+  await teacher.reload();
+  await section.getByText("本班表头信息已保存", { exact: true }).waitFor();
+  for (const [key, label] of Object.entries(labels)) assert.equal(await section.getByLabel(label, { exact: true }).inputValue(), archiveProfile[key]);
+
+  await section.getByLabel("上课教室", { exact: true }).fill("A203");
+  await section.getByText("表头信息已修改，请保存后导出。", { exact: true }).waitFor();
+  assert.equal(await excel.isDisabled(), true);
+  assert.equal(await preview.isDisabled(), true);
+  profileSaveFailure = true;
+  await save.click();
+  await section.getByRole("alert").waitFor();
+  assert.equal(exportProfiles.get("class").teachingLocation, "A201");
+  assert.equal(await section.getByLabel("上课教室", { exact: true }).inputValue(), "A203");
+  assert.equal(await excel.isDisabled(), true);
+  profileSaveFailure = false;
+  await save.click();
+  await section.getByText("本班表头信息已保存", { exact: true }).waitFor();
+
+  const classroomChoice = teacher.getByRole("combobox", { name: "选择班级", exact: true });
+  profileLoadFailure = true;
+  await classroomChoice.selectOption("class-target");
+  await section.getByRole("alert").waitFor();
+  assert.equal(await excel.isDisabled(), true);
+  assert.equal(await section.getByLabel("上课教室", { exact: true }).inputValue(), "");
+  profileLoadFailure = false;
+  await section.getByRole("button", { name: "重新加载", exact: true }).click();
+  await section.getByText("本班表头信息已保存", { exact: true }).waitFor();
+  assert.equal(await section.getByLabel("上课教室", { exact: true }).inputValue(), "B302");
+  await classroomChoice.selectOption("class");
+  await section.getByText("本班表头信息已保存", { exact: true }).waitFor();
+  assert.equal(await section.getByLabel("上课教室", { exact: true }).inputValue(), "A203");
+
+  for (const width of [1440, 390]) for (const colorScheme of ["light", "dark"]) {
+    await teacher.setViewportSize({ width, height: 950 });
+    await teacher.emulateMedia({ colorScheme });
+    await section.scrollIntoViewIfNeeded();
+    await screenshot(teacher, `export-profile-${width}-${colorScheme}`);
+  }
+  const english = await session("teacher", "en-US");
+  await english.goto(`${base}/exports`);
+  await english.getByText("Header information saved for this class", { exact: true }).waitFor();
+  assert.equal(await english.getByLabel("Teaching room", { exact: true }).inputValue(), "A203");
+  await english.setViewportSize({ width: 390, height: 950 });
+  await screenshot(english, "export-profile-english-mobile");
+}
+
 try {
   browser = await chromium.launch({ headless: true, ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}) });
-  if (!process.env.TEACHER_CONTINUITY_ONLY && !process.env.HOMEWORK_EXPORT_ONLY) {
+  if (!process.env.TEACHER_CONTINUITY_ONLY && !process.env.HOMEWORK_EXPORT_ONLY && !process.env.EXPORT_PROFILE_ONLY) {
   const student = await session("student");
   await student.goto(`${base}/dashboard`);
   await student.getByRole("heading", { name: "我的学习", exact: true }).waitFor();
@@ -227,7 +319,8 @@ try {
 
   }
   const teacher = await session("teacher");
-  if (!process.env.HOMEWORK_EXPORT_ONLY) {
+  if (process.env.EXPORT_PROFILE_ONLY) await checkExportProfile(teacher);
+  if (!process.env.HOMEWORK_EXPORT_ONLY && !process.env.EXPORT_PROFILE_ONLY) {
   await teacher.goto(`${base}/dashboard`);
   await teacher.waitForURL("**/classrooms");
   await teacher.getByRole("button", {name:/信号与系统 · 一班/}).click();
@@ -255,7 +348,7 @@ try {
   assert.equal(copyCreated,true);
   await teacher.keyboard.press("Escape");
   }
-  if (!process.env.TEACHER_CONTINUITY_ONLY) {
+  if (!process.env.TEACHER_CONTINUITY_ONLY && !process.env.EXPORT_PROFILE_ONLY) {
     await teacher.goto(`${base}/exports`);
     const section = teacher.getByRole("region", { name: "学生作业答卷", exact: true });
     const choice = section.getByRole("combobox");
@@ -299,7 +392,7 @@ try {
     await englishTeacher.goto(`${base}/exports`);
     await englishTeacher.getByRole("heading", { name: "Student homework papers", exact: true }).waitFor();
   }
-  if (!process.env.TEACHER_CONTINUITY_ONLY && !process.env.HOMEWORK_EXPORT_ONLY) {
+  if (!process.env.TEACHER_CONTINUITY_ONLY && !process.env.HOMEWORK_EXPORT_ONLY && !process.env.EXPORT_PROFILE_ONLY) {
   await teacher.goto(`${base}/exports`);
   await teacher.getByRole("button", { name: "预览并定稿", exact: true }).click();
   const dialog = teacher.getByRole("dialog");
@@ -334,7 +427,7 @@ try {
   await screenshot(english, "dashboard-english");
   }
   assert.deepEqual(errors, []);
-  console.log(process.env.HOMEWORK_EXPORT_ONLY ? "PASS: homework selection, ZIP download, classroom isolation, errors, filename validation, bilingual UI and mobile/desktop light/dark layouts." : process.env.TEACHER_CONTINUITY_ONLY ? "PASS: teacher remediation selection, recipients, publication, results and cross-class copying; mobile/desktop." : "PASS: dashboard, read-only drafts, account isolation, submission, remediation, cross-class copying, homework exports and grade records.");
+  console.log(process.env.EXPORT_PROFILE_ONLY ? "PASS: required archive headers, save/reload, dirty export guard, save/load failures, class isolation, Excel download, bilingual UI and mobile/desktop light/dark layouts." : process.env.HOMEWORK_EXPORT_ONLY ? "PASS: homework selection, ZIP download, classroom isolation, errors, filename validation, bilingual UI and mobile/desktop light/dark layouts." : process.env.TEACHER_CONTINUITY_ONLY ? "PASS: teacher remediation selection, recipients, publication, results and cross-class copying; mobile/desktop." : "PASS: dashboard, read-only drafts, account isolation, submission, remediation, cross-class copying, homework exports and grade records.");
 } catch (error) {
   for (const [i, context] of (browser?.contexts() ?? []).entries()) {
     for (const page of context.pages()) await page.screenshot({ path: join(artifacts, `failure-${i}.png`) }).catch(() => {});

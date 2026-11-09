@@ -474,7 +474,23 @@
     "performanceSource": "课堂成绩来源",
     "performanceLive": "当前累计预览（未定稿）",
     "aiActivityRange": "AI 活跃度统计范围",
-    "aiActivityRangeHint": "用于 AI 活跃度单项导出和综合成绩单中的 AI 活跃度分。留空默认建班日期至今天；仅已结束周计入平均分。"
+    "aiActivityRangeHint": "用于 AI 活跃度单项导出和综合成绩单中的 AI 活跃度分。留空默认建班日期至今天；仅已结束周计入平均分。",
+    "profile": {
+      "title": "归档表头",
+      "academicTerm": "学年学期",
+      "courseCode": "课程代码",
+      "courseName": "课程名称",
+      "teacherName": "教师姓名",
+      "college": "所属学院",
+      "teachingLocation": "上课教室",
+      "save": "保存表头信息",
+      "saving": "正在保存",
+      "saved": "本班表头信息已保存",
+      "unsaved": "表头信息已修改，请保存后导出。",
+      "incomplete": "请补全并保存表头信息后导出。",
+      "loading": "正在加载表头信息",
+      "retry": "重新加载"
+    }
   },
   "performance": {
     "title": "课堂成绩",

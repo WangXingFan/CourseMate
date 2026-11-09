@@ -58,6 +58,7 @@ type attendanceData struct {
 	records map[uint]attendance.Record
 }
 type dataset struct {
+	profile          class.ExportProfile
 	recordTitle      string
 	aiActivity       *class.AIActivityReport
 	performance      *class.PerformanceReport
@@ -127,6 +128,15 @@ func (s *Service) loadDataset(ctx context.Context, actor uint, id string, o Opti
 		return nil, err
 	}
 	d := dataset{class: *c, now: s.now()}
+	if o.Kind != "reports" && o.Kind != "homework_reports" {
+		d.profile, err = s.classes.GetExportProfile(ctx, c.ID)
+		if err != nil {
+			return nil, err
+		}
+		if err := normalizeExportProfile(&d.profile); err != nil {
+			return nil, err
+		}
+	}
 	d.students, err = s.classes.ListClassroomStudents(ctx, c.ID)
 	if err != nil {
 		return nil, err

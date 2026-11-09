@@ -2,9 +2,9 @@ package exports
 
 import (
 	"fmt"
-	class "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/classroom"
 	"time"
 
+	class "github.com/DEEIX-AI/DEEIX-Chat/backend/internal/domain/classroom"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -20,7 +20,10 @@ type sheet struct {
 }
 
 func workbook(d dataset, o Options) (*File, error) {
-	f := excelize.NewFile()
+	f, err := registerWorkbook(d, o)
+	if err != nil {
+		return nil, err
+	}
 	defer f.Close()
 	sheets := []sheet{}
 	if o.Kind == "summary" {
@@ -87,15 +90,9 @@ func workbook(d dataset, o Options) (*File, error) {
 		{"综合成绩", "各项百分制成绩 × 对应权重之和；权重合计 100%；最终结果保留两位小数，中间计算不提前舍入。"},
 		{"缺少数据", "所选项目无考核，或学生无应到签到记录时，最终成绩留空；不会自动重新分配权重。"},
 	}})
-	for i, s := range sheets {
-		if i == 0 {
-			if err := f.SetSheetName("Sheet1", s.name); err != nil {
-				return nil, err
-			}
-		} else {
-			if _, err := f.NewSheet(s.name); err != nil {
-				return nil, err
-			}
+	for _, s := range sheets {
+		if _, err := f.NewSheet(s.name); err != nil {
+			return nil, err
 		}
 		for row, cells := range s.rows {
 			cell, err := excelize.CoordinatesToCellName(1, row+1)

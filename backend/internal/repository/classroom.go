@@ -8,6 +8,8 @@ import (
 )
 
 type ClassroomRepository interface {
+	GetExportProfile(context.Context, uint) (domain.ExportProfile, error)
+	SaveExportProfile(context.Context, uint, uint, domain.ExportProfile) error
 	SaveGradeRecord(context.Context, domain.GradeRecord) error
 	ListGradeRecords(context.Context, uint) ([]domain.GradeRecord, error)
 	GetGradeRecord(context.Context, uint, string) (*domain.GradeRecord, error)
