@@ -63,7 +63,7 @@ await context.route("**/api/v1/**", async (route) => {
   } else if (path.endsWith("/student/quizzes")) {
     if (activityStatus !== 200) { await route.fulfill({ status: activityStatus, json: { errorMsg: "加载错误", errorCode: activityStatus === 403 ? "classroom.not_joined" : "system.internal", data: null } }); return; }
     data = { classroom: { id: "joined-class", name: "导入名单测试班", teacherName: "任课老师" }, quizzes: [] };
-  } else if (path.endsWith("/student/attendance")) data = { items: [] };
+  } else if (path.endsWith("/student/attendance") || path.endsWith("/student/practice-assignments")) data = { items: [] };
   else if (path.endsWith("/auth/refresh")) data = { accessToken: "quiz-qa", sessionID: "quiz-qa" };
   else if (path.endsWith("/me")) data = { user };
   else if (path.endsWith("/capabilities")) data = { features: { knowledgeBases: true, classrooms: true } };
@@ -137,5 +137,9 @@ try {
   await page.getByText("还没有加入班级", { exact: true }).waitFor();
   assert.deepEqual(errors, []);
   console.log("Chapter quiz UI passed: four chapters, scoped answers, retry dedupe, timed results, rankings, mobile and classroom error states.");
-} catch (e) { await page.screenshot({ path: resolve(artifacts, "failure.png") }); throw e; }
+} catch (e) {
+  if (errors.length) console.error("Browser errors:", errors);
+  await page.screenshot({ path: resolve(artifacts, "failure.png") });
+  throw e;
+}
 finally { await browser.close(); if (!externalBase) await new Promise((done) => server.close(done)); }
