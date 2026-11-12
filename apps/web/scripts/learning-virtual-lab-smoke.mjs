@@ -100,6 +100,7 @@ try {
   const engine = createVirtualLabEngine();
   engine.records.data.tasks["L1-2"].analysis = "原系统性质实验的分析记录";
   const draws = [0.1, 0.5, 0.1], smokeBoxes = createBlackBoxes(engine.records.data.tasks["L1-2"], () => draws.shift() ?? 0.5);
+  assert.equal(new Set(smokeBoxes.map((box) => box.kind)).size, 3, "L1-2 gives each black box a different model");
   const seedBox = smokeBoxes[2], seedRecord = engine.records.data.tasks["L1-2"];
   seedRecord.params = blackBoxParams(engine, seedBox, "baseline");
   seedRecord.answers = { evidence: blackBoxEvidence(seedRecord.params) };
@@ -204,6 +205,7 @@ try {
   }
   await page.goto(`${base}/learn/experiments/workspace#task/L1-1`);
   await frame().locator("#prediction").waitFor();
+  assert.equal(await frame().locator("#param-a, #param-A, #param-shift, #param-delta").count(), 0, "Adjustment controls are absent during prediction");
   assert.equal(await frame().locator('[data-lab-givens] svg[data-chart="given"]').count(), 1, "Prediction needs the original signal");
   assert.equal(await frame().locator('[data-lab-givens] [data-series]').count(), 1, "Only the original signal is shown");
   assert.equal(await frame().locator('[data-lab-givens] [data-series="f(t)"]').count(), 1);
@@ -217,6 +219,7 @@ try {
     const step = LAB_FLOWS["L1-1"].steps[index];
     assert.equal(await frame().getByLabel("当前对照", { exact: true }).inputValue(), String(index));
     assert.equal(await frame().locator('[data-action="trial"]').count(), 0, "Recording is unavailable before the estimate");
+    if (step.controls?.length) for (const key of step.controls) assert.equal(await frame().locator(`#param-${key}`).count(), 0, "L1-1 adjustment controls wait until the estimate is revealed");
     if (index === 0) {
       assert.equal(await frame().locator('[data-reading-prediction]').count(), 1);
       assert.equal(await frame().locator('svg[data-chart="main"]').count(), 0, "The result plot waits for an estimate");
@@ -225,20 +228,23 @@ try {
     if (index === 1) {
       await saved();
       await page.reload();
-      await frame().locator("#param-a").waitFor();
+      assert.equal(await frame().locator("#param-a").count(), 0, "Reload keeps adjustment hidden during prediction");
       assert.equal(await frame().getByLabel("当前对照", { exact: true }).inputValue(), "1", "Reload resumes a manual step before the target has been reached");
-      assert.equal(await frame().locator("#param-a").inputValue(), "1", "The scale is not done for the student");
       await frame().locator("#reading-estimate").fill("3");
       await frame().locator('[data-action="reading-estimate"]').click();
+      await frame().locator("#param-a").waitFor();
+      assert.equal(await frame().locator("#param-a").inputValue(), "1", "The scale is not done for the student");
       await frame().locator("#observation").fill("3");
       await frame().locator('[data-action="trial"]').click();
       await frame().getByRole("alert").filter({ hasText: "先调节上方参数" }).waitFor();
     }
+    if (step.controls?.length && index !== 1) await fillObservation("L1-1", step, { ...engine.defaults("L1-1"), ...step.params });
+    if (step.controls?.length) for (const key of step.controls) assert.equal(await frame().locator(`#param-${key}`).count(), 1, "Revealing the estimate exposes adjustment controls");
     for (const key of step.controls ?? []) await frame().locator(`#param-${key}`).fill(String(step.params[key]));
     if (index === 1) {
       assert.equal(await frame().locator('svg[data-chart="main"]').count(), 1, "Changing parameters keeps the waveform visible");
       assert.equal(await frame().locator("[data-reading-prediction]").count(), 0, "Exploration does not require another estimate");
-      assert.equal(await frame().locator("[data-reading-comparison]").count(), 0, "An estimate for the old parameters is not reused");
+      assert.equal(await frame().locator("[data-reading-comparison]").count(), 1, "The forecast remains available after adjustment");
       assert.equal(await frame().locator("#observation").inputValue(), "", "Changing parameters clears the old reading");
       await frame().locator("#observation").fill("99");
       await frame().locator('[data-action="trial"]').click();
@@ -407,7 +413,7 @@ try {
       assert.equal(blackBoxComplete(completed), true);
       assert.ok(completed.analysis.startsWith("原系统性质实验的分析记录"), "The automatic conclusion preserves earlier analysis");
       for (const box of smokeBoxes) for (const probe of BLACK_BOX_PROBES) assert.ok(completed.trials.some((trial) => trial.measurements.blackBox?.box === box.id && trial.measurements.blackBox.probe === probe));
-      assert.deepEqual(createBlackBoxes(completed).map((box) => box.kind), ["square", "delay", "square"], "Repeated assignments survive account saves");
+      assert.deepEqual(createBlackBoxes(completed).map((box) => box.kind), ["timescale", "delay", "square"], "Distinct assignments survive account saves");
       assert.deepEqual(createBlackBoxes(completed).map(blackBoxChoices), smokeBoxes.map(blackBoxChoices), "All candidates survive account saves");
       await page.reload();
       await lab.locator('[data-black-box-summary]').waitFor();

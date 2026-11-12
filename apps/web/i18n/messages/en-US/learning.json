@@ -680,7 +680,7 @@
       "operationInstruction": "Open a checkpoint, compare both probes of the same black box, then submit the output height or timing and your judgment.",
       "compareFirst": "View and compare both probes before entering readings and judgments.",
       "title": "Identify the black boxes",
-      "mission": "Send test pulses to each unknown device and choose the one rule that explains all its outputs. Each device has three candidates; the candidates and their order vary, and a rule may appear again. Judge each device from its own input and output.",
+      "mission": "Send test pulses to each unknown device and choose the one rule that explains all its outputs. Each device uses a different rule; the candidates and their order vary. Judge each device from its own input and output.",
       "box": "Box {id}",
       "chooseBox": "Choose a black box",
       "identified": "Identified",

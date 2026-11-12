@@ -53,13 +53,22 @@ export function blackBoxChoices(box: BlackBox): readonly BlackBoxChoice[] {
 export function createBlackBoxes(record: LabTaskRecord, random = Math.random): BlackBox[] {
   const saved = record.trials.map(readBlackBoxTrial).findLast((trial) => trial?.box.assignment);
   if (saved?.box.assignment) {
-    const boxes = boxesForAssignment(saved.box.assignment) ?? [];
+    let boxes = boxesForAssignment(saved.box.assignment) ?? [];
+    if (new Set(boxes.map((box) => box.kind)).size !== boxes.length) {
+      // Keep repeated historical evidence, but require fresh evidence for three distinct models.
+      const assignment = BLACK_BOX_MODELS.map((model) => model.kind).join(":");
+      boxes = BLACK_BOX_MODELS.map((model, index) => ({ ...model, id: BLACK_BOX_IDS[index], assignment }));
+      const choices = createChoiceSets(boxes, () => 0.5);
+      return boxes.map((box) => ({ ...box, choices }));
+    }
     const choices = saved.box.choices ?? createChoiceSets(boxes, random);
     return boxes.map((box) => ({ ...box, choices }));
   }
-  // Independent draws allow repeated models. Saving the whole assignment with
-  // the first probe also preserves untested boxes when the page is refreshed.
-  const models = BLACK_BOX_IDS.map(() => BLACK_BOX_MODELS[Math.floor(random() * BLACK_BOX_MODELS.length)]);
+  const models = [...BLACK_BOX_MODELS];
+  for (let index = models.length - 1; index > 0; index--) {
+    const target = Math.floor(random() * (index + 1));
+    [models[index], models[target]] = [models[target], models[index]];
+  }
   const assignment = models.map((model) => model.kind).join(":");
   const boxes = models.map((model, index) => ({ ...model, id: BLACK_BOX_IDS[index], assignment }));
   const choices = createChoiceSets(boxes, random);

@@ -58,6 +58,7 @@ export function NativeLabTask({ model, engine, taskID }: { model: NativeLabModel
   const heading = useRef<HTMLHeadingElement>(null);
   const step = flow.steps[stepIndex];
   const observationSignature = `${taskID}:${step.key}:${JSON.stringify(record.params)}`;
+  const readingEstimateSignature = taskID === "L1-1" ? `${taskID}:${step.key}` : observationSignature;
   const observationText = observation.signature === observationSignature ? observation.text : "";
   const defaultParams = engine.defaults(taskID);
   const setupChanged = Object.entries(step.params).some(([key, value]) => record.params[key] !== value)
@@ -99,10 +100,9 @@ export function NativeLabTask({ model, engine, taskID }: { model: NativeLabModel
   const matchingTrial = record.trials.findLast((trial) => Object.entries(record.params).every(([key, value]) => trial.params[key] === value) && labTrialPrediction(step, trial) !== null);
   const savedEstimate = labTrialPrediction(step, matchingTrial);
   const measuredReading = savedEstimate?.value ?? (step.observation && validLabObservation(step, scene.readings, observationText) ? parseLabReading(observationText, step.observation?.reading ?? "") : null);
-  const readingEstimate = readingEstimates[observationSignature] ?? (savedEstimate ? String(Number(savedEstimate.predictedValue)) : "");
-  const currentEstimateRevealed = !!revealedEstimates[observationSignature] || !!savedEstimate;
-  // Once observation begins, parameter changes update the plot without hiding it.
-  // Predictions remain attached to their original parameters, never a new setup.
+  const readingEstimate = readingEstimates[readingEstimateSignature] ?? (savedEstimate ? String(Number(savedEstimate.predictedValue)) : "");
+  const currentEstimateRevealed = !!revealedEstimates[readingEstimateSignature] || !!savedEstimate;
+  // L1-1 asks for an estimate before controls appear, then compares it with the adjusted result.
   const readingEstimateRevealed = currentEstimateRevealed || taskID !== "L1-2" && (!!stepTrials[stepIndex] || Object.entries(revealedEstimates).some(([signature, shown]) => shown && signature.startsWith(`${taskID}:${step.key}:`)));
   const readingUnit = labReadingUnit(step.predictedReadingKey ?? step.observation?.reading ?? "");
   const estimateValue = parseLabReading(readingEstimate, step.predictedReadingKey ?? "");
@@ -231,7 +231,7 @@ export function NativeLabTask({ model, engine, taskID }: { model: NativeLabModel
           <div className="grid max-w-xl gap-4 sm:grid-cols-2">{task.params.filter((spec) => step.controls?.includes(spec.key)).map((spec) => <NativeLabParameter key={spec.key} taskID={taskID} spec={spec} value={record.params[spec.key]} onChange={(value) => model.updateParams(taskID, { [spec.key]: value })} />)}</div>
         </div>
       </details> : taskID === "L1-3" ? <NativeLabResponseControls params={record.params} specs={task.params} onChange={(params) => model.updateParams(taskID, params)} />
-        : !!step.controls?.length && <div className="grid max-w-xl gap-4 sm:grid-cols-2">{task.params.filter((spec) => step.controls?.includes(spec.key)).map((spec) => <NativeLabParameter key={spec.key} taskID={taskID} spec={spec} value={record.params[spec.key]} onChange={(value) => model.updateParams(taskID, { [spec.key]: value })} />)}</div>}
+        : !!step.controls?.length && (taskID !== "L1-1" || readingEstimateRevealed) && <div className="grid max-w-xl gap-4 sm:grid-cols-2">{task.params.filter((spec) => step.controls?.includes(spec.key)).map((spec) => <NativeLabParameter key={spec.key} taskID={taskID} spec={spec} value={record.params[spec.key]} onChange={(value) => model.updateParams(taskID, { [spec.key]: value })} />)}</div>}
       {taskID === "L1-2" ? <div className="max-w-3xl" data-estimate-givens><NativeLabGivens engine={engine} taskID={taskID} params={record.params} /></div>
         : step.predictedReadingKey && !readingEstimateRevealed && <div className="max-w-3xl" data-estimate-givens><NativeLabGivens engine={engine} taskID={taskID} params={record.params} /></div>}
       {step.predictedReadingKey && !readingEstimateRevealed && <fieldset className="max-w-xl min-w-0 space-y-3 border-t border-border pt-4" data-reading-prediction>
@@ -239,15 +239,15 @@ export function NativeLabTask({ model, engine, taskID }: { model: NativeLabModel
         {taskID === "L1-2" && <p className="text-sm leading-6">{f("tasks.L1-2.estimateGuide")}</p>}
         <label htmlFor="reading-estimate" className="block text-base">{f(`readings.${step.predictedReadingKey.replaceAll(".", "_")}`)}{readingUnit && <span className="ml-2 font-mono text-sm">({readingUnit})</span>}</label>
         {isCategoricalPrediction ? <select id="reading-estimate" value={readingEstimate} className={inputClass} onChange={(event) => {
-          setReadingEstimates((current) => ({ ...current, [observationSignature]: event.target.value }));
-          setRevealedEstimates((current) => ({ ...current, [observationSignature]: false })); setMessage("");
+          setReadingEstimates((current) => ({ ...current, [readingEstimateSignature]: event.target.value }));
+          setRevealedEstimates((current) => ({ ...current, [readingEstimateSignature]: false })); setMessage("");
         }}><option value="">{f("chooseObservation")}</option><option value="1">{taskID === "L1-2" ? f("tasks.L1-2.different") : f("yes")}</option><option value="0">{taskID === "L1-2" ? f("tasks.L1-2.same") : f("no")}</option></select>
           : <input id="reading-estimate" type="text" maxLength={40} inputMode="text" autoComplete="off" placeholder={f("estimateReadingPlaceholder")} value={readingEstimate} className={inputClass} onChange={(event) => {
-            setReadingEstimates((current) => ({ ...current, [observationSignature]: event.target.value }));
-            setRevealedEstimates((current) => ({ ...current, [observationSignature]: false })); setMessage("");
+            setReadingEstimates((current) => ({ ...current, [readingEstimateSignature]: event.target.value }));
+            setRevealedEstimates((current) => ({ ...current, [readingEstimateSignature]: false })); setMessage("");
           }} />}
         <div className="flex justify-end"><Button data-action="reading-estimate" disabled={!validReadingEstimate} onClick={() => {
-          setRevealedEstimates((current) => ({ ...current, [observationSignature]: true }));
+          setRevealedEstimates((current) => ({ ...current, [readingEstimateSignature]: true }));
           setObservation({ signature: "", text: "" }); setMessage("");
         }}>{f(taskID === "L1-2" ? "tasks.L1-2.showComparison" : "showReading")}<ArrowRight aria-hidden className="size-4" /></Button></div>
       </fieldset>}

@@ -7,7 +7,10 @@ import { plotGeometry } from "../features/learning/model/virtual-lab-native.ts";
 
 function orderedBoxes(engine) {
   let draw = 0;
-  return createBlackBoxes(engine.records.data.tasks["L1-2"], () => ((draw++ % 3) + 0.5) / 3);
+  return createBlackBoxes(engine.records.data.tasks["L1-2"], () => {
+    const index = draw++;
+    return index < 2 ? 0.999 : ((index % 3) + 0.5) / 3;
+  });
 }
 
 function send(engine, box, probe, guess = "", reasoning) {
@@ -17,18 +20,18 @@ function send(engine, box, probe, guess = "", reasoning) {
   engine.records.trial("L1-2", blackBoxScene(engine, box, probe, guess, reasoning), null);
 }
 
-test("independent draws allow every model for the third box, including repeats", () => {
+test("each assignment uses all three models in a randomized order", () => {
   const engine = createVirtualLabEngine(), record = engine.records.data.tasks["L1-2"];
   const assignments = new Set();
-  for (let first = 0; first < 3; first++) for (let second = 0; second < 3; second++) for (let third = 0; third < 3; third++) {
-    const draws = [first, second, third];
-    const boxes = createBlackBoxes(record, () => ((draws.shift() ?? 1) + 0.5) / 3);
-    assert.deepEqual(boxes.map((box) => box.kind), [first, second, third].map((index) => BLACK_BOX_MODELS[index].kind));
+  for (let lastTarget = 0; lastTarget < 3; lastTarget++) for (let middleTarget = 0; middleTarget < 2; middleTarget++) {
+    const draws = [(lastTarget + 0.5) / 3, (middleTarget + 0.5) / 2];
+    const boxes = createBlackBoxes(record, () => draws.shift() ?? 0.5);
+    assert.equal(new Set(boxes.map((box) => box.kind)).size, 3);
     assignments.add(boxes[0].assignment);
   }
-  assert.equal(assignments.size, 27);
-  const boxes = createBlackBoxes(record, () => 0);
-  assert.deepEqual(boxes.map((box) => box.kind), ["square", "square", "square"]);
+  assert.equal(assignments.size, 6);
+  const boxes = createBlackBoxes(record, () => 0.999);
+  assert.deepEqual(boxes.map((box) => box.kind), ["square", "delay", "timescale"]);
   send(engine, boxes[0], "baseline");
   const restored = createVirtualLabEngine();
   restored.records.import(JSON.parse(JSON.stringify(engine.records.data)));
@@ -181,19 +184,15 @@ test("old system-property evidence remains readable alongside the new trials", (
   assert.equal(readBlackBoxTrial(restored.records.data.tasks["L1-2"].trials[1]).box.id, "A");
 });
 
-test("repeating an earlier model does not complete the third box by elimination", () => {
+test("legacy repeated assignments are repaired without deleting their records", () => {
   const engine = createVirtualLabEngine(), record = engine.records.data.tasks["L1-2"];
-  const draws = [0.1, 0.5, 0.1], boxes = createBlackBoxes(record, () => draws.shift() ?? 0.5);
-  for (const box of boxes.slice(0, 2)) {
-    for (const probe of BLACK_BOX_PROBES) send(engine, box, probe);
-    send(engine, box, "shift", box.kind, { height: box.kind === "square" ? 4 : 2, shift: 1 });
-  }
-  assert.equal(blackBoxIdentified(record, boxes[2]), false);
-  for (const probe of BLACK_BOX_PROBES) send(engine, boxes[2], probe);
-  send(engine, boxes[2], "shift", "timescale", { height: 4, shift: 1 });
-  assert.equal(blackBoxComplete(record), false, "The unused model is the wrong answer for C");
-  send(engine, boxes[2], "shift", "square", { height: 4, shift: 1 });
-  assert.equal(blackBoxComplete(record), true);
+  send(engine, { ...BLACK_BOX_MODELS[1], id: "A", assignment: "delay:delay:delay" }, "baseline");
+  const oldTrials = structuredClone(record.trials);
+  const boxes = createBlackBoxes(record, () => { throw Error("A repeated assignment gets a deterministic repair"); });
+  assert.deepEqual(boxes.map((box) => box.kind), ["square", "delay", "timescale"]);
+  assert.deepEqual(createBlackBoxes(record), boxes, "Refresh keeps the repaired assignment stable");
+  assert.equal(blackBoxComplete(record), false, "Repeated historical evidence does not complete the distinct models");
+  assert.deepEqual(record.trials, oldTrials, "Previous evidence stays in the record");
 });
 
 test("original fixed black-box records retain their results and do not satisfy new independent boxes", () => {
