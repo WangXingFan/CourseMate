@@ -6,7 +6,7 @@ import (
 	"math/rand"
 )
 
-var Titles = map[string]string{"L1-1": "信号变换与窄脉冲", "L1-2": "系统性质检验", "L1-3": "响应分解", "L1-4": "卷积与心电滑动平均", "L2-1": "方波谐波合成", "L2-2": "矩形脉冲与连续频谱", "L2-3": "心电工频陷波设计", "L2-4": "采样与混叠", "L3-1": "信号与拉氏变换", "L3-2": "一阶系统响应", "L3-3": "心电陷波零极点", "L3-4": "最短达标脉宽"}
+var Titles = map[string]string{"L1-1": "信号变换与窄脉冲", "L1-2": "黑箱系统辨识", "L1-3": "响应变化诊断", "L1-4": "卷积与心电滑动平均", "L2-1": "方波谐波合成", "L2-2": "矩形脉冲与连续频谱", "L2-3": "心电工频陷波设计", "L2-4": "采样与混叠", "L3-1": "信号与拉氏变换", "L3-2": "一阶系统响应", "L3-3": "心电陷波零极点", "L3-4": "最短达标脉宽"}
 
 func number(id, label, unit string, points, value float64, explanation string) Field {
 	return Field{ID: id, Label: label, Unit: unit, Points: points, Expected: value, Kind: "number", Explanation: explanation}
@@ -47,53 +47,16 @@ func PaperFor(task string, v int) (Paper, error) {
 		add(number("width", "变换后支撑宽度", "s", 4, 3/math.Abs(b), "宽度除以时间尺度的绝对值。"))
 		add(number("pulseHeight", "窄脉冲高度", "", 4, 1/d, "高度×宽度=面积 1。"))
 	case "L1-2":
-		d := pick(v, .5, 1.5, 2)
-		p.Parameters = map[string]float64{"delay": d}
-		p.Prompt = fmt.Sprintf("判断 T[x]=x+1、x²、x(2t)、x(t−1)、积分器 ∫₋∞ᵗx(τ)dτ 的性质。所有输入均为因果信号。反例一：x₁=x₂=u(t)，α=β=1，在 t=%.3g s 比较 x² 系统两路径。反例二：x=u(t)，时移 d=%.3g s，在 t=%.3g s 比较 x(2t) 系统两路径。差值均按左路径−右路径。", d, d, .75*d)
-		for i, id := range []string{"affine", "square", "timescale", "delay", "integrator"} {
-			linear := i >= 2
-			invariant := i != 2
-			yes := "是"
-			no := "否"
-			lc, lo := yes, no
-			if !linear {
-				lc, lo = no, yes
-			}
-			ic, io := yes, no
-			if !invariant {
-				ic, io = no, yes
-			}
-			add(choice(id+"Linear", []string{"x+1", "x²", "x(2t)", "x(t−1)", "积分器"}[i]+" 是否线性？", 1, lc, []string{lo}, v+i))
-			add(choice(id+"Invariant", []string{"x+1", "x²", "x(2t)", "x(t−1)", "积分器"}[i]+" 是否时不变？", 1, ic, []string{io}, v+i+4))
-		}
-		add(number("nonlinearDifference", "反例一：T[x₁+x₂]−T[x₁]−T[x₂]", "", 2.5, 2, "阶跃接通后：4−1−1=2，非零差否定线性。"))
-		add(number("timeDifference", "反例二：T[x(t−d)]−(T[x])(t−d)", "", 2.5, 1, "t=0.75d 时，u(2t−d)=1，u(2t−2d)=0。"))
+		p = blackBoxPaper(v)
 	case "L1-3":
-		a, y, t := pick(v, .5, 1.5, 2), pick(v, 1.5, 2.5, .5), pick(v, .5, 1.5, 2)
-		if a == y {
-			y += 1
-		}
-		p.Parameters = map[string]float64{"A": a, "y0": y, "t": t}
-		p.Prompt = fmt.Sprintf("y′+y=%.3g u(t)，y(0⁻)=%.3g。求 t=%.3g s 的响应分量。", a, y, t)
-		zi, zs := y*math.Exp(-t), a*(1-math.Exp(-t))
-		add(number("zeroInput", "零输入响应", "", 5, zi, "yzi=y₀e⁻ᵗ。"))
-		add(number("zeroState", "零状态响应", "", 5, zs, "yzs=A(1−e⁻ᵗ)。"))
-		add(number("total", "全响应", "", 5, zi+zs, "全响应为零输入与零状态之和。"))
+		p = responseDiagnosisPaper(v)
 	case "L1-4":
-		t, w, t2 := pick(v, .25, .75, 1.25, 1.75), pick(v, .02, .04, .08), pick(v, .41, .44, .65)
-		p.Parameters = map[string]float64{"t": t, "width": w, "ecgTime": t2}
-		p.Prompt = fmt.Sprintf("r(t)=u(t)−u(t−1)，求 (r*r)(%.3g)。再对给定合成心电 x(t) 使用因果滑动平均窗 W=%.3g s，求 t=%.3g s 的平均输出及线性相位延迟 W/2。心电每秒一搏，由下方公式给出；可使用独立计算器或数值积分。", t, w, t2)
-		p.Formula = "x(t)=0.02 sin(2π·5t)+0.2 sin(2π·50t)+ΣₙΣᵢ aᵢ exp[−(t−n−cᵢ)²/(2σᵢ²)]，t≥0；t<0 为0。n=floor(t)−1,…,floor(t)+1；(a,c,σ)=(.12,.2,.04),(−.15,.37,.012),(1,.4,.012),(−.25,.43,.012),(.3,.65,.07)。"
-		add(number("integral", "矩形卷积值", "", 4, math.Max(0, math.Min(1, t)-math.Max(0, t-1)), "单位矩形卷积值等于重叠长度。"))
-		add(number("start", "矩形卷积支撑起点", "s", 1, 0, "两个起点相加。"))
-		add(number("end", "矩形卷积支撑终点", "s", 2, 2, "两个终点相加。"))
-		add(number("average", "心电滑动平均输出", "", 5, MovingAverage(t2, w), "计算 (1/W)∫₀ᵂx(t−τ)dτ。"))
-		add(number("delay", "平均窗线性相位延迟", "s", 3, w/2, "W/2 不是任意波形峰值的严格位移。"))
+		p = ecgPaper(v)
 	case "L2-1":
 		k, f := pick(v, 5, 9, 11, 13), pick(v, 5, 8, 12)
 		harmonic := 3.
 		p.Parameters = map[string]float64{"K": k, "f0": f, "k": harmonic}
-		p.Prompt = fmt.Sprintf("幅度 ±1、基频 %.3g Hz 的方波，叠加至最大奇次谐波 K=%.0f。求下列量，指定谐波序号 k=3。", f, k)
+		p.Prompt = fmt.Sprintf("幅度 ±1、基频 %.3g Hz 的方波，叠加至最大奇次谐波 K=%.0f；指定谐波序号 k=3。", f, k)
 		count := integer("count", "实际正弦项数", 4, (k+1)/2)
 		count.Explanation = "只取 1、3、…、K 这些正奇数，共 (K+1)/2 项。"
 		add(count)
@@ -115,7 +78,7 @@ func PaperFor(task string, v int) (Paper, error) {
 	case "L2-3":
 		keep, noise := pick(v, 8, 10, 12), pick(v, 48, 50, 52)
 		p.Parameters = map[string]float64{"keep": keep, "noise": noise}
-		p.Prompt = fmt.Sprintf("保留 %.0f Hz：R≥0.95；抑制 %.0f Hz：R≤0.05。使用 H(s)=(s²+ω₀²)/((s+α)²+ω₀²)，ω₀=2πf₀。选择最低阶、中心频率及 0<α≤80 s⁻¹，并按你填写的 f₀、α 计算两个幅度比。", keep, noise)
+		p.Prompt = fmt.Sprintf("保留 %.0f Hz：R≥0.95；抑制 %.0f Hz：R≤0.05。使用 H(s)=(s²+ω₀²)/((s+α)²+ω₀²)，ω₀=2πf₀，且 0<α≤80 s⁻¹。", keep, noise)
 		order := integer("order", "最低阶数", 3, 2)
 		order.Explanation = "实系数系统在非零频率陷波需要一对共轭零点 ±jω₀，最低阶为二阶。"
 		add(order)
@@ -137,7 +100,7 @@ func PaperFor(task string, v int) (Paper, error) {
 		fc := f / 5
 		n := 2.
 		p.Parameters = map[string]float64{"f0": f, "fs": fs, "fc": fc, "n": n}
-		p.Prompt = fmt.Sprintf("单位幅度 %.0f Hz 余弦，以 %.0f Hz 采样。加入二阶 Butterworth 低通，fc=%.3g Hz；幅度响应 1/√(1+(f/fc)⁴)。求阈值、混叠频率与滤波后混叠幅度。", f, fs, fc)
+		p.Prompt = fmt.Sprintf("单位幅度 %.0f Hz 余弦，以 %.0f Hz 采样。抗混叠滤波器为二阶 Butterworth 低通，fc=%.3g Hz，幅度响应 1/√(1+(f/fc)⁴)。", f, fs, fc)
 		add(number("nyquist", "奈奎斯特速率阈值 2f₀", "Hz", 3, 2*f, "通用安全采样要求 fs>2fmax。"))
 		add(number("alias", "折叠到 [0,fs/2] 的频率", "Hz", 4, Alias(f, fs), "对采样率取余后折叠。"))
 		add(number("amplitude", "滤波后混叠幅度", "", 4, 1/math.Sqrt(1+math.Pow(f/fc, 2*n)), "固定增益，幅度不归一化。"))
@@ -146,7 +109,7 @@ func PaperFor(task string, v int) (Paper, error) {
 	case "L3-1":
 		a, s, t := pick(v, .5, 1.5, 2.5), pick(v, .5, 1.5, 2), pick(v, .5, 1.5, 2.5)
 		p.Parameters = map[string]float64{"A": a, "start": s, "T": t}
-		p.Prompt = fmt.Sprintf("矩形信号幅度 %.3g，从 t=%.3g s 开始，持续 %.3g s。填写 X(s)=c(e^(−d₁s)−e^(−d₂s))/(s+b) 的四个系数。", a, s, t)
+		p.Prompt = fmt.Sprintf("矩形信号幅度 %.3g，从 t=%.3g s 开始，持续 %.3g s；变换模板为 X(s)=c(e^(−d₁s)−e^(−d₂s))/(s+b)。", a, s, t)
 		p.Reference = []Point{{0, 0}, {s, 0}, {s, a}, {s + t, a}, {s + t, 0}, {s + t + .5, 0}}
 		add(number("c", "分子系数 c", "", 3, a, "c 等于幅度。"))
 		add(number("b", "分母系数 b", "", 3, 0, "矩形由阶跃之差构成，分母为 s。"))
@@ -156,7 +119,7 @@ func PaperFor(task string, v int) (Paper, error) {
 		a, b, y := pick(v, .5, 1.5, 2), pick(v, 1.5, 2, .5), pick(v, .25, 1.25, 2.5)
 		c, d := b/a, y-b/a
 		p.Parameters = map[string]float64{"a": a, "A": b, "y0": y}
-		p.Prompt = fmt.Sprintf("y′+%.3g y=%.3g u(t)，y(0⁻)=%.3g。使用 (s+a)Y=A/s+b₀、y(t)=C+D exp(−at)。t90 始终指同一系统零初始状态响应到达终值 90%% 的时间。", a, b, y)
+		p.Prompt = fmt.Sprintf("y′+%.3g y=%.3g u(t)，y(0⁻)=%.3g。变换关系为 (s+a)Y=A/s+b₀，响应形式为 y(t)=C+D exp(−at)；t90 指同一系统零初始状态响应到达终值90%%的时间。", a, b, y)
 		for _, f := range []Field{number("b0", "初始项 b₀", "", 3, y, "b₀=y₀。"), number("C", "常数 C", "", 3, c, "C=A/a。"), number("D", "系数 D", "", 3, d, "D=y₀−A/a。"), number("y1", "y(1)", "", 3, c+d*math.Exp(-a), "把 t=1 代入解析响应。"), number("t90", "零状态 t90", "s", 3, math.Log(10)/a, "t90=ln(10)/a。")} {
 			add(f)
 		}
@@ -175,7 +138,7 @@ func PaperFor(task string, v int) (Paper, error) {
 		lower := -math.Log(1 - rho)
 		grid := math.Ceil(lower*100) / 100
 		p.Parameters = map[string]float64{"rho": rho}
-		p.Prompt = fmt.Sprintf("y′+y=u(t)−u(t−T)，零初值。要求峰值≥%.2f，脉宽只能按 0.01 s 调节。求连续理论下界与最短可选方案。", rho)
+		p.Prompt = fmt.Sprintf("y′+y=u(t)−u(t−T)，零初值。要求峰值≥%.2f，脉宽只能按 0.01 s 调节。", rho)
 		add(number("lower", "连续理论下界", "s", 4, lower, "T*=−ln(1−ρ)。"))
 		f := number("grid", "最短可选脉宽", "s", 4, grid, "向上取到 0.01 s 格点；相邻更短格点必须不达标。")
 		f.Tolerance = 1e-9

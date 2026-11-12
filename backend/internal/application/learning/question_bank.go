@@ -2,6 +2,7 @@ package learning
 
 import (
 	"fmt"
+	"math"
 	"slices"
 	"strconv"
 	"strings"
@@ -146,6 +147,28 @@ func buildStaffQuestionBank(locale string) []domain.BankQuestion {
 
 func labBankQuestion(paper labassessment.Paper, category, id string) domain.BankQuestion {
 	item := domain.BankQuestion{ID: id, Category: category, Title: paper.TaskID + " " + paper.Title, Prompt: paper.Prompt, Formula: paper.Formula, Explanation: paper.Explanation, Language: "zh-CN", Parts: []domain.BankPart{}}
+	if paper.TaskID == "L1-4" {
+		for _, field := range paper.Fields {
+			if field.ID == "ecgPlan" {
+				item.Prompt += " 图形观测：同一洁净心电R峰约1.00；方案A平均后峰高约0.87，方案B约0.28且更宽；两者均抵消理想50 Hz正弦。"
+			}
+			if field.ID == "ecgNoise" {
+				item.Prompt += " 图形观测：10 ms输出仍有波纹；20 ms输出接近零线。"
+			}
+			if field.ID == "ecgTiming" {
+				item.Prompt += " 图形观测：输出时刻400 ms时，20 ms窗取样[380,400]、中心390 ms；80 ms窗取样[320,400]、中心360 ms。输出时刻移动到440 ms后，两窗中心分别为430、400 ms。"
+			}
+		}
+	}
+	if paper.TaskID == "L1-3" && len(paper.Reference) > 0 {
+		// The question bank is text-only. Supply representative chart readings
+		// so these questions remain answerable outside the interactive workbench.
+		item.Prompt += " 曲线读数（t/s：调整前，调整后）："
+		for _, index := range []int{0, 20, 60, 160} {
+			point := paper.Reference[index]
+			item.Prompt += fmt.Sprintf("%.0f：%.4f，%.4f；", point.X, 1+math.Exp(-point.X), point.Y)
+		}
+	}
 	for _, field := range paper.Fields {
 		// The 48 authored concept questions have their own category.
 		if field.ID == "C1" || field.ID == "C2" {

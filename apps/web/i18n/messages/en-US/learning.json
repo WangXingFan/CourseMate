@@ -426,10 +426,10 @@
         "L3": "Laplace transforms and response verification"
       },
       "tasks": {
-        "L1-1": "Build a time array and generate sine, step, exponential and triangular signals. Write your own cosine and rectangle expressions. Compare time transformations and check finite-pulse areas with midpoint sums.",
+        "L1-1": "Build a time array and generate sine, step, exponential and triangular signals. Write your own cosine and rectangle expressions. Compare shifts, reversal, compression and combined transforms; verify their effects on peak time, height and support width, and use midpoint sums to check h=S/Δ for fixed-area rectangular pulses.",
         "L1-2": "Test affine, timescale, delay, integrator and square systems for linearity and time invariance with causal inputs. Change inputs and coefficients to construct counterexamples; compare both paths and their difference, and record the parameters and limits of finite tests.",
         "L1-3": "Compute zero-input, zero-state and total responses. Change the initial state and input switch, read specified times and verify the sum of components.",
-        "L1-4": "Change the averaging window from 0.02 to 0.08 s, compare R-wave distortion and delay, then halve dt to check integration error.",
+        "L1-4": "In the interactive experiment, compare 10/20 ms windows on 50 Hz interference and confirm that 20 ms covers one period. Then compare R-wave distortion and center delay with Python windows of 0.02/0.08 s, using t−W/2 for the data center, and halve dt to check integration error.",
         "L2-1": "Sum odd sine harmonics in a loop. Compare term counts, highest frequencies and overshoot for K=3, 7 and 15. Distinguish harmonic order from number of terms.",
         "L2-2": "Generate a rectangular pulse and approximate its continuous Fourier integral with an FFT. Compare the analytic spectrum while changing width, amplitude and delay. Check scaling and avoid phase readings at spectral zeros.",
         "L2-3": "Use both cutoff constraints to show that a first-order low-pass is infeasible; specify the notch center and alpha, then compare waveform distortion for narrow and wide notches.",
@@ -544,6 +544,227 @@
       "cursorX": "Horizontal axis",
       "cursorY": "Vertical axis"
     },
+    "ecg": {
+      "title": "Choose an averaging window for ECG",
+      "chooseStation": "Choose an observation",
+      "window": "Averaging window",
+      "viewed": "Viewed",
+      "passed": "Passed",
+      "noiseInput": "Before: isolated 50 Hz interference",
+      "input": "Before: the same noisy ECG segment",
+      "output": "After averaging: W = {width} ms",
+      "plan": "Plan {plan}: W = {width} ms",
+      "amplitude": "Normalized amplitude",
+      "zero": "Zero line",
+      "clean": "Clean ECG reference",
+      "interference": "50 Hz interference",
+      "noisy": "Noisy ECG",
+      "averaged": "Average output",
+      "moveTime": "Drag output time to move the shaded window",
+      "windowStart": "Sample interval starts",
+      "windowCenter": "Window center",
+      "outputTime": "Output time",
+      "windowRule": "Only data from the preceding {width} ms, shaded on the left, are averaged. The result is assigned to output time; the dashed vertical line marks the data center.",
+      "compareFirst": "View both window widths and compare the output before answering.",
+      "moveFirst": "Compare both widths, then drag output time by at least one step to observe the shaded window.",
+      "check": "Submit observation",
+      "correct": "Correct.",
+      "incorrect": "Compare the plots again.",
+      "retry": "Try again",
+      "next": "Next observation",
+      "progress": "Passed {done}/3 observations",
+      "complete": "Confirm completion",
+      "saveFailed": "Could not save. Try again.",
+      "answerRecord": "{station}: {answer}",
+      "connection": "The moving average you used is a convolution",
+      "convolution": "Move a rectangular window of width W and unit area along the ECG. At each output time, average the data inside the window to obtain one point on the output plot.",
+      "takeaway": "An ideal sinusoid cancels when the window spans an integer number of periods; for period P, the shortest full-cycle window is W=P. Both 20 ms and 80 ms cover whole cycles of the 50 Hz interference here. For a causal window [t−W,t], the data center is ((t−W)+t)/2=t−W/2, while the result is labeled at t. A wider window distorts the R wave more, so W/2 is the window's time-center difference, not an exact shift of every ECG peak.",
+      "operationInstruction": "Open O1 and O2. Switch widths or drag time, then answer from the plots. Operations: 5 points; window selection, R-wave preservation, and sample timing: 15 points; two principle questions: 5 points.",
+      "stations": {
+        "noise": {
+          "title": "Inspect interference",
+          "instruction": "An averaging window takes the mean of the preceding W ms of data. Start with interference alone: the ripple repeats every 20 ms. View 10 ms and 20 ms windows and check whether the averaged ripple remains.",
+          "question": "How does the 20 ms output compare with the 10 ms output?",
+          "options": {
+            "flat": "It approaches zero; ripple remains at 10 ms",
+            "stronger": "The ripple grows",
+            "unchanged": "Both keep the original ripple"
+          },
+          "feedback": "20 ms covers a full cycle. Positive and negative areas cancel, giving zero average for an ideal 50 Hz sine. 10 ms covers only half a cycle and generally leaves ripple. These plots show output after the window has filled. For another sinusoid, if its period is P, the shortest full-cycle window is W=P."
+        },
+        "shape": {
+          "title": "Preserve the R wave",
+          "instruction": "Return to the full ECG. The dashed line is the clean reference; the tall spike near 400 ms is the R wave. Compare its height and width using 20 ms and 80 ms windows.",
+          "question": "Both windows cancel the ideal 50 Hz sine. Which keeps the R wave closer to the clean reference?",
+          "options": {
+            "short": "20 ms preserves the R wave better",
+            "long": "80 ms: smoother always means more accurate",
+            "equal": "Neither window affects the R wave"
+          },
+          "feedback": "80 ms mixes more neighboring data: the R wave is lower and wider, and its timing changes. When both cancel the ideal 50 Hz sine, 20 ms causes less distortion to this ECG segment."
+        },
+        "timing": {
+          "title": "Follow the window",
+          "instruction": "The shaded interval in the input plot contains the data being averaged. The solid vertical line in the output plot marks output time. Switch widths and drag time, then compare the window center with output time below.",
+          "question": "As the window moves, where is the center of the averaged data relative to output time?",
+          "options": {
+            "before": "Earlier: the result is output later",
+            "at": "At output time",
+            "after": "Later: future data are used"
+          },
+          "feedback": "Causal averaging uses past and current data. The center of [t−W,t] is ((t−W)+t)/2=t−W/2: 10 ms earlier for a 20 ms window and 40 ms earlier for an 80 ms window. This explains the greater linear-phase delay of the wider window. ECG peaks also distort, so their shifts need not equal W/2."
+        }
+      }
+    },
+    "responseDiagnosis": {
+      "title": "Diagnose a Response Change",
+      "mission": "The system equation stays the same; only the initial value or step amplitude may change. Compare the outputs, identify the change, choose an isolation test, and predict whether the tested curves will overlap throughout.",
+      "operationInstruction": "Open O1 and O2, choose a test, run it, then judge whether the curves overlap throughout. Both the operation and observation must be correct. Run the test again after changing your choice.",
+      "scoring": "Assessment: 25 points. Operations: 5; diagnosis, test selection and prediction: 5 each; principles: 5.",
+      "before": "Before",
+      "after": "After",
+      "cursor": "Move the reading cursor",
+      "originalChart": "Outputs before and after the adjustment",
+      "verificationChart": "Outputs after the isolation test",
+      "chooseCase": "Choose a diagnosis case",
+      "case": "Case {number}",
+      "passed": "Diagnosis passed",
+      "revise": "Revision needed",
+      "sourceQuestion": "What changed, based on the two curves?",
+      "testQuestion": "Which test isolates the effect of the {target}?",
+      "predictionQuestion": "After correctly isolating the {target}, will the two curves overlap throughout?",
+      "targets": {
+        "initial": "initial state",
+        "input": "external input"
+      },
+      "sources": {
+        "initial": "Only the initial state changed",
+        "input": "Only the external input changed",
+        "both": "Both changed",
+        "neither": "Neither changed"
+      },
+      "tests": {
+        "inputOff": "Turn both inputs off; keep their respective initial states",
+        "resetInitial": "Reset both initial states to zero; keep their respective inputs",
+        "clearBoth": "Clear both inputs and both initial states",
+        "repeat": "Repeat both runs under their original conditions"
+      },
+      "predictions": {
+        "overlap": "Overlap throughout",
+        "different": "Differ during part of the interval"
+      },
+      "feedback": {
+        "source": "Source diagnosis",
+        "test": "Test selection",
+        "prediction": "Result prediction"
+      },
+      "correct": "Correct",
+      "incorrect": "Revision needed",
+      "submit": "Submit and run verification",
+      "verification": "Verification curves",
+      "verificationResult": "Observed result: {prediction}.",
+      "wrongTest": "This operation does not isolate the requested source. Choose: {test}. Revise your choice to run verification.",
+      "revealed": "Adjusted case: initial value {initial}, step amplitude {amplitude}.",
+      "principle": "The starting value reflects the initial state; the limiting value reflects the sustained input. Turning the input off leaves the zero-input response; clearing the initial state leaves the zero-state response.",
+      "retry": "Try again",
+      "nextCase": "Next case",
+      "progress": "{done}/3 cases passed",
+      "complete": "Complete practice",
+      "answerRecord": "Case {number}: {source}; test: {test}; prediction: {prediction}.",
+      "trialLimit": "200 attempts saved. Download your records first.",
+      "saveFailed": "Could not save the attempt. Try again.",
+      "runTest": "Run selected test"
+    },
+    "blackBox": {
+      "assessmentProbes": "Switch black-box probes",
+      "operationInstruction": "Open a checkpoint, compare both probes of the same black box, then submit the output height or timing and your judgment.",
+      "compareFirst": "View and compare both probes before entering readings and judgments.",
+      "title": "Identify the black boxes",
+      "mission": "Send test pulses to each unknown device and choose the one rule that explains all its outputs. Each device has three candidates; the candidates and their order vary, and a rule may appear again. Judge each device from its own input and output.",
+      "box": "Box {id}",
+      "chooseBox": "Choose a black box",
+      "identified": "Identified",
+      "revise": "Revise the model",
+      "sendStep": "1 · Send pulses and observe the output",
+      "probeRule": "Each test starts from the same baseline: height 1, starting at 1 s, lasting 1 s. Double amplitude changes only the height; Send 1 s later changes only the start. Every test is recorded automatically.",
+      "conclusion": "Identification results for all three boxes",
+      "identifyStep": "2 · Select this box's observations, then identify its model",
+      "heightQuestion": "When the input height changes from 1 to 2, what is the output height?",
+      "shiftQuestion": "When the input is sent 1 second later, how far does the output move from the baseline?",
+      "chooseEvidence": "Choose from this box's test records",
+      "heightOption": "Output height becomes {value}",
+      "shiftOption": "Output moves by {value} s",
+      "retryHeight": "The height does not match this box's record. Check the output height in the doubled-amplitude row and choose again.",
+      "retryShift": "The time shift does not match this box's records. Subtract the baseline output start from the delayed test's output start and choose again.",
+      "reasoningRecord": "Observation evidence: when input height changes from 1 to 2, output height is {height}; sending the input 1 s later shifts the output by {shift} s.",
+      "tests": "{done} / 3 pulse types sent",
+      "probes": { "baseline": "Send baseline pulse", "double": "Double the amplitude", "shift": "Send 1 second later" },
+      "plot": "Dashed: input; solid: device output · Time / s, amplitude",
+      "input": "Input x(t) · dashed",
+      "output": "Output y(t) · solid",
+      "readouts": { "inputHeight": "Input height", "outputHeight": "Output height", "outputStart": "Output start / s", "outputWidth": "Output width / s" },
+      "columns": { "test": "Test", "inputHeight": "Input height", "inputStart": "Input start / s", "outputHeight": "Output height", "outputStart": "Output start / s", "outputWidth": "Output width / s" },
+      "observations": {
+        "baseline": "Baseline: input height {inputHeight}, starting at {inputStart} s for 1 s; output height {outputHeight}, starting at {outputStart} s for {outputWidth} s.",
+        "double": "Change amplitude only: the input doubles from 1 to {inputHeight}, and the output becomes {outputHeight}. Compare the curve heights and the baseline row.",
+        "shift": "Change timing only: the input starts at {inputStart} s instead of 1 s, and the output starts at {outputStart} s. Relative to the baseline, did the output also move by exactly 1 s?"
+      },
+      "start": "Select “Send baseline pulse” above to start testing this box.",
+      "needTests": "Send the baseline, then double its amplitude and send it 1 second later. Once all three rows are recorded, select this box's two observations and its model.",
+      "evidence": "Test records for this device",
+      "models": {
+        "square": "Square the input amplitude",
+        "delay": "Delay by 1 second",
+        "timescale": "Compress time by a factor of two",
+        "gain": "Double the input amplitude",
+        "attenuate": "Halve the input amplitude",
+        "identity": "Pass the input through unchanged",
+        "offset": "Add 1 to the input amplitude",
+        "invert": "Flip the input vertically",
+        "delayTwo": "Delay by 2 seconds",
+        "advance": "Advance by 1 second",
+        "stretch": "Stretch time by a factor of two",
+        "cube": "Cube the input amplitude"
+      },
+      "choiceFeedback": {
+        "square": "This candidate maps input height 1 to output 1, and input height 2 to output 4. Check this device's baseline and doubled-amplitude records.",
+        "delay": "This candidate always starts the output 1 s after the input, keeping the height and width. Check this device's start times and pulse widths.",
+        "timescale": "This candidate halves both the start time and width. Check the baseline start, output width and delayed-input record for this device.",
+        "gain": "This candidate maps baseline input height 1 to output 2, and doubled input height 2 to output 4. Check both output heights for this device.",
+        "attenuate": "This candidate maps input height 1 to output 0.5, and input height 2 to output 1. Check this device's height records.",
+        "identity": "This candidate keeps the input height, start time and width unchanged in every test. Compare this device's input and output across all three tests.",
+        "offset": "This candidate maps input height 1 to output 2 and input height 2 to output 3; the output is also 1 wherever the input is zero. Check the graph and height records.",
+        "invert": "This candidate turns a positive input pulse into a negative output pulse. Check whether this device's output is above or below zero.",
+        "delayTwo": "This candidate starts the output 2 s after the input. Subtract the baseline input start from the output start to check the gap.",
+        "advance": "This candidate starts the output 1 s before the input. An input starting at 1 s should produce an output starting at 0 s. Check this device's start times.",
+        "stretch": "This candidate makes the output 2 s wide. Delaying the input by 1 s moves the output by 2 s. Check the width and the two output start times.",
+        "cube": "This candidate changes the output height from 1 to 8 when the input height changes from 1 to 2. Check this device's doubled-amplitude record."
+      },
+      "checkModel": "Check observations and identification",
+      "retry": {
+        "square": "This model disagrees with the doubled-amplitude test. Compare the input and output heights and try again.",
+        "delay": "This model disagrees with the pulse position or width. Compare when the input and output start and how far apart they are.",
+        "timescale": "This model does not explain the output width and start time. Check how far the output moves when the input is sent 1 second later."
+      },
+      "reveal": "Box {id} identified: formula and properties",
+      "explanations": {
+        "square": "An input height of 1 gives 1; doubling it to 2 gives 4, rather than 2. The square operator is therefore nonlinear. It applies the same square operation at every time, so shifting the input shifts the output equally: it is time invariant.",
+        "delay": "The output keeps the input height and width and always starts 1 second later. A delay preserves superposition, so it is linear. Sending the input 1 second later also delays the output by 1 second, so it is time invariant.",
+        "timescale": "The output width is half the input width. Moving the input start from 1 to 2 s moves the output start from 0.5 to 1 s, a shift of only 0.5 s. The system is time varying. Time scaling still preserves superposition, so it is linear."
+      },
+      "principle": "These tests distinguish the three candidate models in this task. A counterexample disproves a property; use the revealed formula to justify a positive conclusion. One amplitude-doubling test cannot prove linearity.",
+      "linear": "Linear: does the system preserve input superposition?",
+      "invariant": "Time invariant: does delaying the input only delay the output equally?",
+      "yes": "Yes",
+      "no": "No",
+      "nextBox": "Test the next box",
+      "progress": "{done} / {total} boxes identified",
+      "complete": "Save conclusions and finish",
+      "guessRecord": "Identification for box {id}: {model}",
+      "analysisRecord": "Box {id}: {model}; linear: {linear}; time invariant: {invariant}. Baseline, doubled-amplitude and 1-second-delayed input/output tests recorded.",
+      "trialLimit": "This task has reached 200 records. Download a backup first.",
+      "actionFailed": "This test could not be saved. Try again."
+    },
     "flow": {
       "steps": "Experiment steps",
       "predict": "Predict",
@@ -585,7 +806,7 @@
       "tasks": {
         "L1-1": {
           "question": "For 2f(2(t−1)), how do the peak time and height change?",
-          "conclusion": "Compare the original signal with 2f(2(t−1)). How does the combined scale and shift change its peak? Does the 0.2 s narrow pulse still have area 1?",
+          "conclusion": "Use the readings to verify the general transform y(t)=A f(a(t−t₀)): an original peak at t_p moves to t₀+t_p/a, its height is multiplied by A, and support width is divided by |a|. A fixed-area S rectangular pulse has height S/Δ.",
           "steps": {
             "original": "Original: read peak time and height",
             "shift": "Set the shift to 1 s and compare the peak position",
@@ -597,12 +818,65 @@
             "pulse2": "Set the pulse width to 0.1 s and read its height"
           },
           "given": "Original f(t): a triangular pulse from 0 to 3 s, with its peak at (1 s, 1).",
-          "objective": "Compare the original and combined transform, then check the narrow pulse area.",
+          "objective": "Compare the original and combined transform, record peak time, height and support width, then use midpoint sums to check narrow-pulse height and area.",
           "pulseGiven": "Reference pulse: Δ=0.5 s, height 2, area 1. The area stays 1 as the width changes."
         },
         "L1-2": {
-          "question": "Are the five systems linear and time invariant?",
-          "conclusion": "Classify all five systems using counterexamples or algebraic arguments.",
+          "question": "Predict whether each of the five systems is linear and time invariant. Add reasons after the comparisons.",
+          "predictionGuide": "For each system, enter “linear: yes/no; time invariant: yes/no.” These are initial guesses; no proof is needed yet.",
+          "predictionPlaceholder": "x+1: linear __; time invariant __\nx(2t): linear __; time invariant __\nx(t−1): linear __; time invariant __\nIntegrator: linear __; time invariant __\nx²: linear __; time invariant __",
+          "startComparisons": "Start comparison 1",
+          "conclusion": "Complete the linearity and time-invariance result for each system, with reasons. A nonzero difference is a counterexample; use the definitions to reason about properties not measured directly.",
+          "conclusionGuide": "Each system is directly tested for one property. Use the definitions above to determine its other property.",
+          "conclusionPlaceholder": "x+1: linear __; time invariant __; reason __\nx(2t): linear __; time invariant __; reason __\nx(t−1): linear __; time invariant __; reason __\nIntegrator: linear __; time invariant __; reason __\nx²: linear __; time invariant __; reason __",
+          "systemsTitle": "Five systems to classify",
+          "linearityTitle": "Linearity",
+          "linearityDescription": "Combine the inputs with their coefficients before the system. The result should equal the weighted sum of the separate outputs.",
+          "timeInvariantTitle": "Time invariance",
+          "timeInvariantDescription": "Shift the input before the system. The result should equal shifting the system output afterward.",
+          "inputSignals": "Inputs for this comparison",
+          "evidenceLabel": "Parameter record · Copy this setup",
+          "parameterRecordTitle": "Parameters saved with this comparison",
+          "parameterRecordHelp": "Nothing to fill in or copy. Select “Record and continue” to save the parameters shown here with this comparison.",
+          "linearityRecord": "Input x₁: {x1}; input x₂: {x2}; superposition coefficients α: {alpha}, β: {beta}",
+          "timeShiftRecord": "Input x: {x1}; time shift d: {delay} s",
+          "signals": {
+            "step": "Unit step u(t)",
+            "pulse": "Unit rectangular pulse u(t)−u(t−1)",
+            "exp": "Exponential signal e^(−t)u(t)",
+            "sin": "Sine signal sin(t)u(t)"
+          },
+          "linearityPathA": "A · Combine inputs, then apply the system",
+          "linearityPathB": "B · Apply the system separately, then combine outputs",
+          "timeShiftPathA": "A · Shift the input, then apply the system",
+          "timeShiftPathB": "B · Apply the system, then shift its output",
+          "action1": "Read the system formula and the two operation paths A and B above. This step tests the property named in its heading.",
+          "action2": "Predict whether paths A and B will differ, then select “Show comparison.” Keep the presets; no parameter changes or numeric estimate are needed.",
+          "action3": "Compare the marked time on both plots and read the listed A, B and difference values. Select “Different” or “Same,” record the result and continue.",
+          "exploreParametersTitle": "Optional: change parameters to explore",
+          "parameterEffect": "Changing x₁ or x₂ changes the input signals; α or β changes their weights; d changes the time shift. These edits change both outputs and the difference curve. Use the presets for the required comparisons. After an edit, estimate again and submit to see the new plots. The next comparison restores its preset.",
+          "estimateGuide": "Predict whether outputs A and B differ. No number is needed. The plots will mark the same time and list A, B and their difference.",
+          "showComparison": "Show comparison",
+          "same": "Same",
+          "different": "Different",
+          "readoutTitle": "Read both paths at one time",
+          "readoutTime": "Both plots mark t={time} s. The output values are listed below, so there is no need to copy numbers from the graph.",
+          "outputA": "Path A output",
+          "outputB": "Path B output",
+          "absoluteDifference": "Absolute difference |A−B|",
+          "result": "Result",
+          "differencePlotTitle": "Difference curve A−B",
+          "outputPlotTitle": "Outputs from paths A and B",
+          "differencePlotGuide": "Use this plot to see where the paths differ. Its marker matches the output plot; the exact values are listed below.",
+          "recordAndContinue": "Record and continue",
+          "differenceRule": "One case where the paths differ is a counterexample: the system fails this property. If they match here, that only shows agreement for these inputs; one test cannot prove the general rule.",
+          "instructions": {
+            "affine": "Test linearity of x+1: compare combining the inputs before adding the constant with adding the constant to each output first.",
+            "square": "Test linearity of x²: compare combining the inputs before squaring with squaring each input separately.",
+            "timescale": "Test time invariance of x(2t): compare shifting the input before time compression with shifting the output afterward.",
+            "delay": "Test time invariance of x(t−1): compare shifting the input before the system with shifting the system output afterward.",
+            "integrator": "Test time invariance of the integrator: compare shifting the input before integration with shifting the integrated output afterward."
+          },
           "steps": {
             "linear0": "2x: compare the two superposition paths",
             "shift0": "2x: compare the two time-shift paths",
@@ -610,27 +884,76 @@
             "shift1": "x²: compare the two time-shift paths",
             "linear2": "t·x: compare the two superposition paths",
             "shift2": "t·x: compare the two time-shift paths",
-            "affine": "x+1: linearity counterexample",
-            "square": "x²: linearity counterexample",
-            "timescale": "x(2t): time-variance counterexample",
-            "delay": "x(t−1): time invariance",
-            "integrator": "Integrator: time invariance"
+            "affine": "x+1 · linearity",
+            "square": "x² · linearity",
+            "timescale": "x(2t) · time invariance",
+            "delay": "x(t−1) · time invariance",
+            "integrator": "Integrator · time invariance"
           },
-          "given": "All inputs are zero for t<0.",
-          "objective": "Construct counterexamples for linearity and time invariance.",
+          "given": "Inputs in this experiment are zero for t<0.",
+          "objective": "Complete five preset comparisons: predict whether the paths differ, inspect A, B and their difference at one marked time, then record what you observe. Finally classify linearity and time invariance for all five systems.",
           "target": "The parameters or reading do not meet this target."
         },
         "L1-3": {
-          "question": "Starting at 2, will the output rise or fall when a unit step is applied?",
-          "conclusion": "Why do initial values 2 and 0.5 give different directions? Which two parts form the total response?",
+          "question": "Does switching the input off remove the output? Does a positive input always make the output rise?",
+          "predictionGuide": "The initial value y₀ describes the state present before the input is applied.",
+          "predictionPlaceholder": "With input off, I expect… With the same unit input, initial value 2 will… and initial value 0.5 will…",
+          "conclusion": "Why does output remain with input off? Which contribution changes with initial state or input amplitude?",
+          "conclusionGuide": "Answer three questions: What causes the output when the input is off? At t=1 s in comparison 3, does the sum of the contributions match the actual output? Why do initial values 2 and 0.5 give different directions with the same unit input? Use y′=1−y.",
+          "conclusionPlaceholder": "1. With input off…\n2. Adding the contributions…\n3. Changing the initial value…; increasing input amplitude from 1 to 2…",
           "steps": {
-            "zeroInput": "Input off: observe the initial-state response",
-            "zeroState": "Zero initial state: observe the input response",
-            "total": "Initial value 2: compare total with the sum of parts",
-            "lower": "Initial value 0.5: compare the direction"
+            "zeroInput": "Input off · initial value 2",
+            "zeroState": "Input on · initial value 0, amplitude 1",
+            "total": "Change initial state · initial value 2, amplitude 1",
+            "lower": "Lower initial state · initial value 0.5, amplitude 1",
+            "amplitude": "Increase input · initial value 0.5, amplitude 2"
           },
+          "instructions": {
+            "zeroInput": "Switch the input off. Is there still output without an input?",
+            "zeroState": "Set the initial value to 0 and switch on a unit input. Observe where the output starts.",
+            "total": "Set the initial value back to 2. Does the sum of contributions match the actual output?",
+            "lower": "Keep the unit input and lower the initial value from 2 to 0.5. Compare the output direction.",
+            "amplitude": "Keep initial value 0.5 and increase input amplitude from 1 to 2. Which component changes?"
+          },
+          "controls": {
+            "enabled": "External input",
+            "off": "Off",
+            "on": "On",
+            "A": "Input amplitude A",
+            "initial": "Initial value y₀"
+          },
+          "inputPlot": "Input x(t)",
+          "outputAtOne": "Output y(1)",
+          "recordNext": "Save and continue",
+          "questions": {
+            "zeroInput": "Why is there still output with the input off? Does zero input mean zero initial state?",
+            "zeroState": "The output starts at zero and then appears. How does its source differ from the previous comparison?",
+            "total": "Does adding the two component values give the total output at the same time? Compare values, rather than curve shapes.",
+            "lower": "The input is unchanged. Does the output still move in the same direction? Use y′=1−y to determine whether it rises or falls."
+          },
+          "plots": {
+            "zeroInput": "Zero-input response",
+            "zeroState": "Zero-state response",
+            "total": "Total response and its components",
+            "lower": "Change only the initial value: total and components"
+          },
+          "series": {
+            "initial": "Initial state · zero-input",
+            "input": "External input · zero-state",
+            "total": "Actual output · total"
+          },
+          "tableTitle": "Check the sum of components",
+          "columns": {
+            "time": "Time t / s",
+            "initial": "Initial-state contribution",
+            "input": "Input contribution",
+            "sum": "Sum of contributions",
+            "total": "Actual output"
+          },
+          "tableQuestion": "Compare the sum and actual-output columns. Do they match at all four times? Each column is rounded independently, so the last digit may differ.",
+          "recordGuide": "The vertical marker is already at t=1 s. Read the response below the plot; in the last two comparisons, you can also use the actual-output column. Check and continue saves the setup and the readings at all four times.",
           "given": "Input and initial state are specified below.",
-          "objective": "Separate the response caused by the initial state from the response caused by the input."
+          "objective": "Switch the input and adjust initial state and amplitude to compare their contributions."
         },
         "L1-4": {
           "question": "How does a moving average suppress ECG mains interference, and why does it delay the waveform?",
@@ -663,43 +986,43 @@
         },
         "L2-2": {
           "question": "Does a narrower rectangular pulse have a wider or narrower spectrum?",
-          "conclusion": "What does width, time shift and amplitude each change in the spectrum? Use your readings.",
+          "conclusion": "What does width, time shift and amplitude each change in the spectrum? Use the first pair of zeros to relate main-lobe width to pulse width.",
           "steps": {
-            "width0": "Width 0.5 s: read DC value and first zero",
+            "width0": "Width 0.5 s: read DC and first zero, then derive main-lobe width from ±1/T",
             "width1": "Width 1 s: read DC value and first zero",
-            "width2": "Width 2 s: read DC value and first zero",
+            "width2": "Width 2 s: read DC and first zero, then derive main-lobe width from ±1/T",
             "shift": "Shift right 1 s: compare phase at f=0.25 Hz",
             "amplitude": "Double amplitude: compare the DC value"
           },
-          "given": "Rectangular pulse x(t); amplitude, width and center are specified below.",
-          "objective": "Verify how pulse width, delay and amplitude change the spectrum."
+          "given": "Rectangular pulse x(t); amplitude, width and center are specified below. X(f)=AT·sinc(fT)e^(−j2πft₀), with sinc(z)=sin(πz)/(πz); the first pair of zeros is at ±1/T, so the main-lobe width is 2/T.",
+          "objective": "Verify how pulse width, delay and amplitude change the spectrum, and find the main-lobe width from the first pair of zeros."
         },
         "L2-3": {
-          "question": "How can you remove 50 Hz interference while retaining low-frequency ECG components?",
-          "conclusion": "Use both cutoff constraints to show that a first-order low-pass is infeasible; specify the notch center and alpha, then compare waveform distortion for narrow and wide notches.",
+          "question": "Can a first-order low-pass preserve the 10 Hz ECG component and suppress 50 Hz interference? If not, how can a notch filter help?",
+          "conclusion": "Use both amplitude readings to explain why no first-order low-pass works. Record a notch center and alpha that meet the limits, then compare ECG distortion at alpha=10 and 60.",
           "steps": {
             "cutoff0": "fc=100 Hz: compare both amplitude ratios",
             "cutoff1": "fc=200 Hz: compare both amplitude ratios",
             "cutoff2": "fc=500 Hz: compare both amplitude ratios",
-            "first0": "First-order low-pass, fc=2 Hz: is the ECG retained?",
-            "first1": "First-order low-pass, fc=40 Hz: is mains interference suppressed?",
-            "design": "Tune the notch center and alpha to meet both ratios",
-            "higher": "Alpha=60: compare the wider notch and waveform distortion"
+            "first0": "First-order low-pass, fc=2 Hz: read ratios at 10 and 50 Hz",
+            "first1": "First-order low-pass, fc=40 Hz: can both limits pass?",
+            "design": "Tune the notch center and alpha to retain 10 Hz and suppress 50 Hz",
+            "higher": "Set alpha=60: compare the wider notch and ECG distortion"
           },
-          "given": "Require a ratio ≥0.95 at 10 Hz and ≤0.05 at 50 Hz. Ratios are measured with separate sinusoidal probes.",
-          "objective": "Design a second-order notch to remove mains interference and inspect ECG distortion.",
+          "given": "Targets: amplitude ratio ≥0.95 at 10 Hz and ≤0.05 at 50 Hz. First test why a low-pass cannot meet both, then design a notch.",
+          "objective": "Show why a first-order low-pass cannot meet both targets, then tune a second-order notch and inspect ECG distortion.",
           "target": "The parameters or reading do not meet this target."
         },
         "L2-4": {
           "question": "Which sampling rates, 100 Hz and 15 Hz, can reconstruct a 10 Hz cosine?",
-          "conclusion": "Explain sample ambiguity and the effect of filtering before sampling.",
+          "conclusion": "Explain sample ambiguity, why filtering after sampling cannot recover the original aliased frequency, and what filtering before sampling does.",
           "steps": {
             "sample0": "fs=100 Hz: compare original and reconstruction",
             "sample1": "fs=25 Hz: compare original and reconstruction",
             "sample2": "fs=15 Hz: compare original and reconstruction",
             "candidate": "Find a lower-frequency cosine matching all samples",
             "audio": "3 kHz input, 4 kHz sampling",
-            "filtered": "Set an independent anti-alias low-pass and compare alias amplitudes"
+            "filtered": "Set an anti-alias low-pass before sampling, compare amplitudes, and explain why post-sampling filtering cannot restore the original frequency"
           },
           "given": "Original signal: a cosine of amplitude 1 and frequency 10 Hz.",
           "objective": "Compare candidate signals, audio aliasing and antialias filtering.",
@@ -722,18 +1045,18 @@
           "objective": "Express amplitude, decay and signal timing in the Laplace transform."
         },
         "L3-2": {
-          "question": "How does the initial term enter the full response?",
-          "conclusion": "Derive the full response with its initial term and explain both components.",
+          "question": "How do the initial state and external input combine in the output of y′+y=u(t)?",
+          "conclusion": "Write the zero-input, zero-state and total responses. Check y(0) and y(1), find when the zero-state response first reaches 0.9, and explain what changes with the initial value.",
           "steps": {
-            "initial": "Fill H, X and partial fractions; check y(0)",
-            "one": "t=1 s: compare analytical and numerical responses",
-            "ninety": "Adjust measurement time to find y≈0.9",
-            "initial1": "Initial value 0.5: update coefficients",
-            "initial2": "Initial value 2: update coefficients"
+            "initial": "y₀=0: write H, X, Y and partial fractions; check y(0)",
+            "one": "Keep y₀=0 and compare the analytical value with the numerical result at t=1 s",
+            "ninety": "Move the measurement time to find when the zero-state response first reaches 0.900",
+            "initial1": "Set y₀=0.5: update Y and its coefficients, then compare y(1)",
+            "initial2": "Set y₀=2: update Y and its coefficients, then compare y(1)"
           },
           "derivation": "Show H(s), Y(s), partial fractions and y(t).",
           "given": "y′+y=u(t), initial values 0, 0.5 and 2.",
-          "objective": "Solve and verify zero-state and nonzero-initial-state responses.",
+          "objective": "Apply a unit step and solve the responses for y₀=0, 0.5 and 2, checking each expression against the numerical curve.",
           "target": "Adjust the measurement time until y(t) is within 0.002 of 0.900."
         },
         "L3-3": {
@@ -746,12 +1069,12 @@
             "under": "Alpha=5: zeros, poles and a narrow notch",
             "over": "Alpha=60: compare decay and bandwidth",
             "unstable": "Alpha=−10: right-half-plane poles and divergence",
-            "design": "Load the Lab 2 design, tune poles and meet both ratios",
-            "frequency": "Compare ECG output and frequency response for the same design"
+            "design": "Reuse the Lab 2 notch, or tune center and alpha until both limits pass",
+            "frequency": "Keep the same parameters and compare the ECG output with the frequency response"
           },
           "derivation": "Find zeros, poles and the causal ROC; invert H(s)−1 for the non-impulsive part of h(t), and explain cancellation at alpha=0.",
-          "given": "H(s)=(s²+ω₀²)/((s+α)²+ω₀²), ω₀=2πf₀; the input is the same synthetic ECG with mains interference.",
-          "objective": "Compare narrow and wide notches and right-half-plane poles, then design a stable notch and inspect its frequency response.",
+          "given": "H(s)=(s²+ω₀²)/((s+α)²+ω₀²), ω₀=2πf₀. Notch targets: amplitude ratio ≥0.95 at 10 Hz and ≤0.05 at 50 Hz. Input: synthetic ECG with mains interference.",
+          "objective": "Compare narrow and wide notches and unstable poles, then design a stable notch to the stated limits and inspect its frequency response.",
           "target": "The parameters or reading do not meet this target."
         },
         "L3-4": {
@@ -760,7 +1083,7 @@
           "steps": {
             "width0": "T=0.5 s: read peak value and time",
             "width1": "T=1 s: read peak value and time",
-            "width2": "T=2 s: read peak value and time",
+            "width2": "T=2 s: read the peak and observe the output decay after t=T",
             "width3": "T=3 s: read peak value and time",
             "refine": "Refine the width to just meet the target (peak 0.800–0.802)"
           },
@@ -800,7 +1123,8 @@
         "supportStart": "After reversal, when does the signal start (s)?",
         "supportEnd": "After compression, when does the signal end (s)?",
         "height": "What is the height of this narrow pulse?",
-        "maxDifference": "What is the maximum absolute difference between the two paths?",
+        "maxDifference": "Read Δmax=max|A−B| from the difference plot; enter 0 if the paths overlap.",
+        "counterexample": "Do paths A and B differ?",
         "atTimes_1_total": "Read the full response at t=1 s from the plot.",
         "integral": "What is the product area (output) at the current time?",
         "maximum": "What is the maximum of the synthesized waveform?",

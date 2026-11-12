@@ -54,11 +54,11 @@ export function plotGroups(series: LabSeries, breakJump?: number): [number, numb
   return groups;
 }
 
-export function plotGeometry(plot: LabPlot, width = 900) {
+export function plotGeometry(plot: LabPlot, width = 900, yRange?: readonly [number, number]) {
   const values = plot.series.flatMap((s) => s.points.flatMap(([, y]) => y !== null && Number.isFinite(y) ? [y] : []));
   const minimum = Math.min(0, ...values), maximum = Math.max(0, ...values);
   const padding = Math.max((maximum - minimum) * 0.13, 0.15);
-  const low = minimum - padding, high = maximum + padding;
+  const low = yRange?.[0] ?? minimum - padding, high = yRange?.[1] ?? maximum + padding;
   const columns = width < 600 ? 1 : 3;
   return { height: (width < 600 ? 325 : 305) + Math.max(0, Math.ceil(plot.series.length / columns) - 1) * 19, columns,
     x: (value: number) => 62 + (value - plot.range[0]) / (plot.range[1] - plot.range[0]) * (width - 85),

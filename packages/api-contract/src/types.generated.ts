@@ -2085,6 +2085,12 @@ export interface LabFieldResultResponse {
   submitted: string;
 }
 
+export interface LabObservationResponse {
+  id: string;
+  input: LabPointResponse[];
+  output: LabPointResponse[];
+}
+
 export interface LabOpenRequest {
   open: boolean;
 }
@@ -2097,6 +2103,7 @@ export interface LabOptionResponse {
 export interface LabPaperResponse {
   fields: LabFieldResponse[];
   formula: string;
+  observations?: LabObservationResponse[];
   prompt: string;
   reference: LabPointResponse[];
   taskId: string;

@@ -3,6 +3,9 @@
 // Set VIRTUAL_LAB_BASE_URL to also verify a running Go server's static responses.
 import assert from "node:assert/strict";
 import { LAB_FLOWS, labReading } from "../features/learning/model/virtual-lab-flow.ts";
+import { BLACK_BOX_PROBES, blackBoxChoices, blackBoxComplete, blackBoxEvidence, blackBoxParams, blackBoxScene, createBlackBoxes } from "../features/learning/model/virtual-lab-black-box.ts";
+import { diagnosisComplete, diagnosisScene, expectedDiagnosis } from "../features/learning/model/virtual-lab-response-diagnosis.ts";
+import { ECG_STATIONS, ECG_EXERCISES, ecgComplete } from "../features/learning/model/virtual-lab-ecg.ts";
 import { createVirtualLabEngine } from "../public/vendor/signal-lab/core.mjs";
 import { createVirtualLabEngine as createPhaseTwoEngine } from "../public/vendor/signal-lab/legacy-v1.1.mjs";
 import { createVirtualLabEngine as createLegacyEngine } from "../public/vendor/signal-lab/legacy-v1.mjs";
@@ -95,6 +98,17 @@ try {
   });
   const frame = () => page.locator("[data-native-lab]");
   const engine = createVirtualLabEngine();
+  engine.records.data.tasks["L1-2"].analysis = "原系统性质实验的分析记录";
+  const draws = [0.1, 0.5, 0.1], smokeBoxes = createBlackBoxes(engine.records.data.tasks["L1-2"], () => draws.shift() ?? 0.5);
+  const seedBox = smokeBoxes[2], seedRecord = engine.records.data.tasks["L1-2"];
+  seedRecord.params = blackBoxParams(engine, seedBox, "baseline");
+  seedRecord.answers = { evidence: blackBoxEvidence(seedRecord.params) };
+  engine.records.trial("L1-2", blackBoxScene(engine, seedBox, "baseline"), null);
+  const diagnosisCases = [{ initial: 0.5, amplitude: 1, target: "initial" }, { initial: 2, amplitude: 1.5, target: "input" }, { initial: 0.5, amplitude: 1, target: "initial" }];
+  const diagnosisRecord = engine.records.data.tasks["L1-3"];
+  diagnosisRecord.params = { ...engine.defaults("L1-3"), A: 1, initial: 0.5, enabled: "on" };
+  engine.records.trial("L1-3", diagnosisScene(engine, diagnosisCases, 0, { source: "neither", test: "clearBoth", prediction: "overlap" }), null);
+  records.set(101, { accountId: 101, revision: 1, document: JSON.stringify(engine.records.data), updatedAt: now });
   const fillObservation = async (id, step, params, estimateValue) => {
     if (!step.observation) return;
     const readings = engine.scene(id, params, labAnswers(id, params)).readings;
@@ -313,6 +327,195 @@ try {
     await page.goto(`${base}/learn/experiments/workspace#task/${id}`);
     await frame().locator(`[data-native-task="${id}"]`).waitFor();
     if (id === "L1-1") continue;
+    if (id === "L1-2") {
+      const lab = frame().locator("[data-black-box-lab]");
+      assert.equal(await lab.locator('#prediction, #analysis, [data-answer], svg[data-chart="difference"]').count(), 0, "The replacement has no prediction form, manual parameter record or difference graph");
+      assert.equal(await lab.locator('[data-action="complete"]').count(), 0);
+      for (const box of smokeBoxes) {
+        const height = box.kind === "square" ? 4 : 2, shift = box.kind === "timescale" ? 0.5 : 1;
+        await lab.locator(`[data-black-box-station="${box.id}"]`).waitFor();
+        assert.equal(await lab.locator('[data-model]').count(), 0, "Test all three probes before identifying a model");
+        assert.equal(await lab.locator('[data-probe="double"]').isDisabled(), box.id !== "C");
+        assert.equal(await lab.locator('[data-probe="shift"]').isDisabled(), box.id !== "C");
+        await lab.locator('[data-probe="baseline"]').click();
+        const baseline = await lab.locator('[data-series="输出 y(t) · 实线"] polyline').getAttribute("points");
+        await lab.locator('[data-probe="double"]').click();
+        assert.notEqual(await lab.locator('[data-series="输出 y(t) · 实线"] polyline').getAttribute("points"), baseline, "Doubling the amplitude visibly changes the plotted output");
+        const heights = await lab.locator('[data-black-box-readout] dd').allTextContents();
+        assert.equal(Number(heights[0]), 2);
+        assert.equal(Number(heights[1]), height);
+        if (box.id === "A") {
+          await saved();
+          await page.reload();
+          await lab.locator('[data-black-box-readout]').waitFor();
+          assert.equal(Number((await lab.locator('[data-black-box-readout] dd').allTextContents())[1]), height, "Reload restores the last probe and its output");
+        }
+        if (box.id === "A") await captureBlackBox("amplitude");
+        await lab.locator('[data-probe="shift"]').click();
+        const choiceIDs = () => lab.locator('[data-model]').evaluateAll((elements) => elements.map((element) => element.getAttribute("data-model")));
+        assert.deepEqual(await choiceIDs(), blackBoxChoices(box), "The question shows its saved candidates in their saved order");
+        assert.equal(await lab.locator('[data-black-box-evidence] tbody tr').count(), 3);
+        assert.equal(await lab.locator('[data-black-box-evidence] tbody').innerText().then((text) => text.includes("—")), false, "Every probe has an automatic record");
+        const shiftReadout = await lab.locator('[data-black-box-readout] dd').allTextContents();
+        assert.equal(Number(shiftReadout[2]), box.kind === "square" ? 2 : box.kind === "delay" ? 3 : 1);
+        assert.equal(Number(shiftReadout[3]), box.kind === "timescale" ? 0.5 : 1);
+        if (box.id === "C") await captureBlackBox("timing");
+        if (box.id === "A") {
+          await lab.locator(`[data-model="${box.kind}"]`).check();
+          assert.equal(await lab.locator('[data-action="identify"]').isDisabled(), true, "A model guess alone cannot pass");
+          await lab.locator('[data-black-box-height]').selectOption(String(height === 4 ? 2 : 4));
+          await lab.locator('[data-black-box-shift]').selectOption(String(shift));
+          await lab.locator('[data-action="identify"]').click();
+          await lab.getByRole("alert").filter({ hasText: "高度判断" }).waitFor();
+          assert.equal(await lab.locator('[data-black-box-identified]').count(), 0, "The correct model with incorrect evidence cannot pass");
+          await lab.locator('[data-black-box-height]').selectOption(String(height));
+          const wrong = blackBoxChoices(box).find((kind) => !["square", "delay", "timescale"].includes(kind));
+          await lab.locator(`[data-model="${wrong}"]`).check();
+          await lab.locator('[data-action="identify"]').click();
+          await lab.getByRole("alert").filter({ hasText: "这个候选" }).waitFor();
+          await lab.locator('[data-action="identify"]').click();
+          assert.match(await lab.getByRole("alert").innerText(), /这个候选/, "A distractor returns feedback about its own predicted behavior");
+          assert.equal(await lab.locator('[data-black-box-identified]').count(), 0);
+          await saved();
+          await page.reload();
+          await lab.locator(`[data-model="${wrong}"]`).waitFor();
+          assert.equal(await lab.locator(`[data-model="${wrong}"]`).isChecked(), true, "The wrong guess is retained after refresh");
+          assert.deepEqual(await choiceIDs(), blackBoxChoices(box), "Refresh does not change the candidates or their positions");
+        }
+        await lab.locator('[data-black-box-height]').selectOption(String(height));
+        await lab.locator('[data-black-box-shift]').selectOption(String(shift));
+        if (box.id === "C") {
+          assert.equal(await lab.locator('[data-model]').count(), 3);
+          assert.equal(await lab.locator('[data-model="square"]').isEnabled(), true, "A model chosen for A remains available for C");
+          const wrong = blackBoxChoices(box).find((kind) => kind !== box.kind);
+          await lab.locator(`[data-model="${wrong}"]`).check();
+          await lab.locator('[data-action="identify"]').click();
+          await lab.getByRole("alert").waitFor();
+          assert.equal(await lab.locator('[data-black-box-identified]').count(), 0, "A distractor does not pass the third box");
+        }
+        await lab.locator(`[data-model="${box.kind}"]`).check();
+        await lab.locator('[data-action="identify"]').click();
+        await lab.locator('[data-black-box-identified] .katex').waitFor();
+        assert.equal(await lab.locator(`[data-box="${box.id}"] svg`).count(), 1);
+        if (box.id !== "C") await lab.locator('[data-action="next-box"]').click();
+      }
+      await lab.locator('[data-black-box-summary]').waitFor();
+      await lab.locator('[data-action="complete"]').click();
+      await saved();
+      const completed = JSON.parse(records.get(101).document).tasks[id];
+      assert.equal(completed.completion.confirmed, true);
+      assert.equal(blackBoxComplete(completed), true);
+      assert.ok(completed.analysis.startsWith("原系统性质实验的分析记录"), "The automatic conclusion preserves earlier analysis");
+      for (const box of smokeBoxes) for (const probe of BLACK_BOX_PROBES) assert.ok(completed.trials.some((trial) => trial.measurements.blackBox?.box === box.id && trial.measurements.blackBox.probe === probe));
+      assert.deepEqual(createBlackBoxes(completed).map((box) => box.kind), ["square", "delay", "square"], "Repeated assignments survive account saves");
+      assert.deepEqual(createBlackBoxes(completed).map(blackBoxChoices), smokeBoxes.map(blackBoxChoices), "All candidates survive account saves");
+      await page.reload();
+      await lab.locator('[data-black-box-summary]').waitFor();
+      assert.equal(await lab.locator('[data-action="complete"]').count(), 0, "Completion survives refresh");
+      assert.equal(await lab.locator('[data-model="square"]').isChecked(), true, "An identified box retains its selected model");
+      continue;
+
+      async function captureBlackBox(name) {
+        for (const width of [1440, 390]) for (const theme of ["light", "dark"]) {
+          await page.setViewportSize({ width, height: 950 });
+          await page.evaluate((value) => {
+            document.documentElement.classList.toggle("dark", value === "dark");
+            document.documentElement.classList.toggle("light", value === "light");
+          }, theme);
+          await lab.locator('[data-black-box-results]').screenshot({ path: join(artifacts, `black-box-${name}-${width}-${theme}.png`), animations: "disabled" });
+          if (await lab.locator('[data-black-box-reasoning]').count()) await lab.locator('[data-black-box-reasoning]').screenshot({ path: join(artifacts, `black-box-evidence-${width}-${theme}.png`), animations: "disabled" });
+          if (await lab.locator('[data-black-box-choices]').count()) await lab.locator('[data-black-box-choices]').screenshot({ path: join(artifacts, `black-box-choices-${width}-${theme}.png`), animations: "disabled" });
+          assert.ok(await lab.evaluate((element) => element.scrollWidth <= element.clientWidth + 1), "The black-box station fits the viewport");
+          if (width === 390) {
+            const table = lab.getByRole("region", { name: "本台设备的测试记录", exact: true });
+            await table.evaluate((element) => { element.scrollLeft = element.scrollWidth; });
+            assert.ok(await table.evaluate((element) => element.scrollLeft > 0), "All evidence columns are reachable on mobile");
+            await table.evaluate((element) => { element.scrollLeft = 0; });
+          }
+        }
+        await page.setViewportSize({ width: 1440, height: 950 });
+        await page.evaluate(() => { document.documentElement.classList.remove("dark"); document.documentElement.classList.add("light"); });
+      }
+    }
+    if (id === "L1-3") {
+      const lab = frame().locator("[data-response-diagnosis]");
+      assert.equal(await lab.locator('#prediction, #analysis, [data-response-controls], [data-action="complete"]').count(), 0, "Only curve diagnosis remains");
+      await lab.locator('[data-action="retry-diagnosis"]').click();
+      assert.equal(await lab.locator('[data-response-plot="inputOff"], [data-response-plot="resetInitial"]').count(), 0, "No verification curve before a prediction");
+      assert.equal(await lab.locator('[data-action="diagnose"]').isDisabled(), true);
+      for (const width of [1440, 390]) for (const theme of ["light", "dark"]) {
+        await page.setViewportSize({ width, height: 950 });
+        await page.evaluate((theme) => { document.documentElement.classList.toggle("dark", theme === "dark"); document.documentElement.classList.toggle("light", theme === "light"); }, theme);
+        await lab.screenshot({ path: join(artifacts, `response-diagnosis-${width}-${theme}.png`), animations: "disabled" });
+        assert.ok(await lab.evaluate((element) => element.scrollWidth <= element.clientWidth + 1));
+      }
+      await page.setViewportSize({ width: 1440, height: 950 });
+      await page.evaluate(() => { document.documentElement.classList.remove("dark"); document.documentElement.classList.add("light"); });
+      for (let index = 0; index < diagnosisCases.length; index++) {
+        await lab.locator(`[data-diagnosis-case="${index}"]`).click();
+        const expected = expectedDiagnosis(diagnosisCases[index]);
+        const answer = async (values) => { for (const [key, value] of Object.entries(values)) await lab.locator(`input[name="${key}"][value="${value}"]`).check(); };
+        if (index === 0) {
+          await answer({ ...expected, prediction: "overlap" });
+          await lab.locator('[data-action="diagnose"]').click();
+          await lab.locator('[data-diagnosis-result]').waitFor();
+          assert.match(await lab.locator('[data-diagnosis-result]').innerText(), /结果预测：需要修正/);
+          assert.equal(await lab.locator('[data-action="complete"]').count(), 0, "Correct source and operation with a wrong prediction cannot finish");
+          await lab.locator('[data-action="retry-diagnosis"]').click();
+        }
+        assert.equal(await lab.locator('[data-diagnosis-result]').count(), 0);
+        await answer(expected);
+        const before = await lab.locator('[data-response-plot="comparison"] polyline').first().getAttribute("points");
+        await lab.locator('[data-action="diagnose"]').click();
+        await lab.locator(`[data-response-plot="${expected.test}"]`).waitFor();
+        assert.notEqual(await lab.locator(`[data-response-plot="${expected.test}"] polyline`).first().getAttribute("points"), before, "Isolation visibly changes the output");
+        await saved();
+        if (index === 0) {
+          await page.reload();
+          await lab.locator('[data-diagnosis-case="1"][aria-current="step"]').waitFor();
+          assert.equal(await lab.locator('[data-action="complete"]').count(), 0, "Unvisited cases still need answers after refresh");
+        }
+      }
+      await lab.locator('[data-action="complete"]').click(); await saved();
+      assert.equal(diagnosisComplete(JSON.parse(records.get(101).document).tasks[id]), true);
+      await page.reload();
+      await lab.getByText("已通过 3/3 组判断", { exact: true }).waitFor();
+      assert.equal(await lab.locator('[data-action="complete"]').count(), 0);
+      continue;
+    }
+    if (id === "L1-4") {
+      const lab = frame().locator("[data-ecg-experiment]");
+      assert.equal(await lab.locator("#prediction, #analysis, [data-reading-prediction]").count(), 0);
+      for (const station of ECG_STATIONS) {
+        await lab.locator(`[data-ecg-station="${station}"]`).click();
+        assert.equal(await lab.locator('[data-action="check-ecg"]').isDisabled(), true);
+        const before = await lab.locator('[data-ecg-chart="ecg-output"] [data-ecg-line="signal"]').getAttribute("points");
+        await lab.locator(`[data-ecg-width="${ECG_EXERCISES[station].widths[1]}"]`).click();
+        assert.notEqual(await lab.locator('[data-ecg-chart="ecg-output"] [data-ecg-line="signal"]').getAttribute("points"), before);
+        if (station === "timing") {
+          await lab.locator("[data-ecg-time]").fill("450");
+          assert.match(await lab.locator("[data-ecg-timeline]").innerText(), /410 ms/);
+        }
+        if (station === "noise") {
+          await lab.locator('input[value="stronger"]').check();
+          await lab.locator('[data-action="check-ecg"]').click();
+          await lab.locator('[data-action="retry-ecg"]').click();
+          assert.equal(await lab.locator('[data-action="complete"]').count(), 0);
+        }
+        await lab.locator(`input[value="${ECG_EXERCISES[station].answer}"]`).check();
+        await lab.locator('[data-action="check-ecg"]').click();
+        await lab.locator("[data-ecg-result]").waitFor();
+        await saved();
+      }
+      await lab.locator('[data-action="complete"]').click(); await saved();
+      const record = JSON.parse(records.get(101).document).tasks[id];
+      assert.equal(ecgComplete(record), true);
+      assert.equal(record.prediction, "");
+      await page.reload();
+      await lab.getByText("已通过 3/3 项观察", { exact: true }).waitFor();
+      assert.equal(await lab.locator('[data-action="complete"]').count(), 0);
+      continue;
+    }
     await frame().locator('[data-lab-givens]').waitFor();
     assert.ok(await frame().locator('[data-given-formula] .katex').count(), `${id}: known conditions`);
     await frame().locator("#prediction").fill("先判断参数变化，再用数据核验。");
@@ -329,7 +532,7 @@ try {
         assert.equal(await frame().locator('#param-alpha').inputValue(), "12", "Use the saved Lab 2 design, not the later wide-notch comparison");
         assert.equal(await frame().locator('#param-center').inputValue(), "50");
       }
-      for (const key of step.controls ?? []) {
+      for (const key of id === "L1-3" ? [] : step.controls ?? []) {
         const control = frame().locator(`#param-${key}`);
         if (await control.evaluate(element=>element.tagName==='SELECT')) await control.selectOption(String(params[key]));
         else await control.fill(String(params[key]));
@@ -340,6 +543,71 @@ try {
         for (const label of step.hiddenMetrics ?? []) assert.equal(await frame().locator("dl dt").filter({ hasText: label }).count(), 0, `${id}/${step.key}: hide ${label}`);
       }
       await fillObservation(id, step, params, id === "L2-3" && index === 0 ? "1" : undefined);
+      if (id === "L1-3") {
+        const controls = frame().locator('[data-response-controls]');
+        await controls.waitFor();
+        assert.equal(await frame().locator('#observation, #reading-estimate, [data-lab-objective]').count(), 0, "Only the operation and its results remain in the response workflow");
+        assert.equal(await frame().locator('[data-action="trial"]').isDisabled(), true, "The target setup must be reached by operating controls");
+        assert.equal(await controls.locator('#param-A').inputValue(), String(step.initial.A));
+        assert.equal(await controls.locator('#param-initial').inputValue(), String(step.initial.initial));
+        assert.equal(await controls.locator(`[data-response-input="${step.initial.enabled}"]`).getAttribute('aria-pressed'), "true");
+        const plot = frame().locator('svg[data-chart="main"]');
+        const before = await plot.locator('polyline').evaluateAll((lines) => lines.map((line) => line.getAttribute('points')));
+        const inputBefore = await controls.locator('[data-response-input-plot] polyline').getAttribute('points');
+        if (step.key === "zeroInput") await controls.locator('[data-response-input="off"]').click();
+        if (step.key === "zeroState") {
+          await controls.locator('#param-initial').fill('0');
+          await controls.locator('[data-response-input="on"]').click();
+        }
+        if (step.key === "total") {
+          const slider = controls.getByRole('slider', { name: '初值 y₀滑块', exact: true });
+          await slider.focus();
+          for (let i = 0; i < 20; i++) await page.keyboard.press('ArrowRight');
+        }
+        if (step.key === "lower") await controls.locator('#param-initial').fill('0.5');
+        if (step.key === "amplitude") await controls.locator('#param-A').fill('2');
+        assert.notDeepEqual(await plot.locator('polyline').evaluateAll((lines) => lines.map((line) => line.getAttribute('points'))), before, "Operating the switch or parameter changes the response");
+        assert.equal(await frame().locator('[data-action="trial"]').isDisabled(), false);
+        assert.equal(await controls.locator('[data-response-input-value]').innerText(), `x(t) = ${params.enabled === "off" ? "0" : `${params.A}u(t)`}`);
+        if (["zeroInput", "zeroState", "amplitude"].includes(step.key)) assert.notEqual(await controls.locator('[data-response-input-plot] polyline').getAttribute('points'), inputBefore, "The input plot shows switching and amplitude changes");
+        if (step.key === "lower") {
+          await saved();
+          await page.reload();
+          await controls.locator('#param-initial').waitFor();
+          assert.equal(await frame().getByLabel('当前对照', { exact: true }).inputValue(), String(index));
+          assert.equal(await controls.locator('#param-initial').inputValue(), '0.5', "Refresh retains the operated state");
+          assert.equal(await frame().locator('[data-action="trial"]').isDisabled(), false);
+        }
+        assert.equal(await frame().locator('[data-reading-prediction]').count(), 0, "Response comparisons show the plot without an exact numerical guess");
+        assert.ok(await frame().locator('[data-response-instructions]').isVisible());
+        assert.equal(await plot.locator('[data-series]').count(), index < 2 ? 1 : 3, "Isolated sources have a single unambiguous curve");
+        assert.match(await frame().locator('[data-lab-cursor-readout]').innerText(), /1\.0 s/);
+        const decomposition = frame().locator('[data-response-decomposition]');
+        assert.equal(await decomposition.count(), index < 2 ? 0 : 1);
+        if (index >= 2) {
+          const rows = decomposition.locator('tbody tr');
+          assert.equal(await rows.count(), 4);
+          const values = (await rows.nth(1).locator('td').allTextContents()).map(Number);
+          const readings = engine.scene(id, params, {}).readings.atTimes[1];
+          assert.ok(Math.abs(values[0] - readings.zeroInput) <= 0.0001);
+          assert.ok(Math.abs(values[1] - readings.zeroState) <= 0.0001);
+          assert.ok(Math.abs(values[2] - values[3]) <= 0.0001, "The sum matches an independently integrated output");
+        }
+        for (const width of [1440, 390]) for (const theme of ["light", "dark"]) {
+          await page.setViewportSize({ width, height: 950 });
+          await page.evaluate((theme) => document.documentElement.classList.toggle("dark", theme === "dark"), theme);
+          await frame().locator('[data-lab-phase="observe"]').screenshot({ path: join(artifacts, `response-${step.key}-${width}-${theme}.png`), animations: "disabled" });
+          assert.ok(await frame().locator('[data-native-task]').evaluate((element) => element.scrollWidth <= element.clientWidth + 1), "Response comparisons fit the viewport");
+          if (index >= 2 && width === 390) {
+            const scroller = decomposition.getByRole("region");
+            await scroller.evaluate((element) => { element.scrollLeft = element.scrollWidth; });
+            assert.ok(await scroller.evaluate((element) => element.scrollLeft > 0), "All response columns are reachable on mobile");
+            await scroller.evaluate((element) => { element.scrollLeft = 0; });
+          }
+        }
+        await page.setViewportSize({ width: 1440, height: 950 });
+        await page.evaluate(() => document.documentElement.classList.remove("dark"));
+      }
       const inputs = frame().locator("[data-answer]"), answers = labAnswers(id, params);
       if (await inputs.count()) assert.ok(await frame().locator('[data-answer-formula] .katex').count());
       for (let j=0; j<await inputs.count(); j++) await inputs.nth(j).fill(answers[await inputs.nth(j).getAttribute("data-answer")]);
@@ -364,7 +632,7 @@ try {
       }
       if (id === "L1-4" && flow.steps[index].key.startsWith("response")) assert.equal(await frame().locator('svg[data-chart="output"]').first().isVisible(), true);
       if (id === "L2-4" && flow.steps[index].key !== "candidate") assert.equal(await frame().locator('[data-series^="候选"]').count(), 0);
-      if ((id === "L1-2" && index === 0) || (id === "L1-4" && step.key === "response1") || (id === "L2-3" && step.key === "design") || (id === "L2-4" && step.key === "filtered") || (id === "L3-2" && step.key === "initial2") || (id === "L3-3" && step.key === "design")) {
+      if ((id === "L1-4" && step.key === "response1") || (id === "L2-3" && step.key === "design") || (id === "L2-4" && step.key === "filtered") || (id === "L3-2" && step.key === "initial2") || (id === "L3-3" && step.key === "design")) {
         for (const width of [1440,390]) for (const theme of ["light","dark"]) {
           await page.setViewportSize({width,height:950});
           await page.evaluate(theme=>document.documentElement.classList.toggle('dark',theme==='dark'),theme);
@@ -379,6 +647,7 @@ try {
       await frame().locator('[data-action="trial"]').click();
     }
     assert.equal(await frame().locator("[data-lab-prediction-summary] tbody tr").count(), flow.steps.filter((step) => step.predictedReadingKey).length, `${id}: all saved estimates appear in the conclusion`);
+    if (id === "L1-3") assert.equal(await frame().locator('[data-lab-comparison] tbody tr').count(), 5, "The compact comparison includes the input-amplitude experiment");
     if (id === "L2-3") await frame().getByRole("status").filter({ hasText: "你的判断与读数不一致" }).waitFor();
     await frame().locator("#analysis").fill("已记录各组参数与读数，并比较变化。");
     if (flow.derivation) {
@@ -438,6 +707,7 @@ try {
   await assertEventually(async () => assert.equal(JSON.parse(records.get(101).document).tasks["L1-1"].analysis, "导入的备份记录"));
   assert.equal(JSON.parse(records.get(101).document).student.number, "student101");
   assert.equal(JSON.parse(records.get(101).document).student.name, "实验测试101");
+  assert.equal(blackBoxComplete(JSON.parse(records.get(101).document).tasks["L1-2"]), true, "Import preserves all black-box identifications");
   await page.evaluate(() => { window.location.hash = "records/L1"; });
   await frame().locator("#student-number").waitFor();
   const exportEvent = page.waitForEvent("download");
@@ -450,6 +720,12 @@ try {
   await page.locator("#print-report").waitFor({ state: "attached" });
   const report = await page.locator("#print-report").textContent();
   for (const id of ["L1-1", "L1-2", "L1-3", "L1-4"]) assert.ok(report.includes(id));
+  assert.match(report, /黑箱 A[\s\S]*幅度加倍[\s\S]*黑箱 C/);
+  assert.ok(await page.locator('#print-report svg[data-chart="black-box-input"]').count());
+  assert.ok(await page.locator('#print-report svg[data-chart="black-box-output"]').count());
+  assert.ok(await page.locator('#print-report svg[data-chart="response-comparison"]').count());
+  assert.ok(await page.locator('#print-report svg[data-chart="response-verification"]').count());
+  assert.equal(await page.locator('#print-report svg[data-chart="difference"]').count(), 0, "New black-box reports use pulse plots");
   assert.equal(await page.locator("[data-python-report]").count(), 0, "Lab reports omit the retired Python section");
   await page.emulateMedia({ media: "print" });
   assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor), "rgb(255, 255, 255)", "Reports must print on white paper in either theme");

@@ -15,6 +15,8 @@ func parseNumber(raw, unit string) (float64, bool) {
 	}
 	choices := []suffix{}
 	switch unit {
+	case "ms":
+		choices = []suffix{{"毫秒", 1}, {"ms", 1}, {"秒", 1000}, {"s", 1000}}
 	case "s":
 		choices = []suffix{{"毫秒", .001}, {"ms", .001}, {"秒", 1}, {"s", 1}}
 	case "Hz":

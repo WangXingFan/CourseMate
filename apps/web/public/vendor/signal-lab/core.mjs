@@ -323,7 +323,7 @@ L.plot.svg=svg;L.plot.read=read;
       plots.push({ key: 'main', title: '两条路径的输出对照', range: [-2, 5], series: [series('路径 A', c.a), series('路径 B', c.b, { dash: '7 4' })] });
       plots.push({ key: 'difference', title: '逐点差异 A − B', range: [-2, 5], series: [series('输出差异', c.difference, { fill: true })] });
       metrics.push(metric('最大绝对差', c.error), metric('本组试验', c.error < 1e-9 ? '两路径吻合' : '发现反例'), metric('检验窗口', '−2 → 5', 's'));
-      Object.assign(readings, { maxDifference: c.error, comparison: c.error < 1e-9 ? 'equal-for-this-input' : 'counterexample', window: [-2, 5] });
+      Object.assign(readings, { maxDifference: c.error, comparison: c.error < 1e-9 ? 'equal-for-this-input' : 'counterexample', counterexample: c.error > 1e-6, window: [-2, 5] });
       formula = linear ? 'A: T[αx₁+βx₂]　↔　B: αT[x₁]+βT[x₂]' : 'A: T[x(t−d)]　↔　B: y(t−d)，y=T[x]';
       note = '一个反例可以否定普遍命题；有限次吻合只说明本组输入一致。常数输入在全时域定义，不使用窗口补零。';
     }
@@ -476,6 +476,10 @@ L.plot.svg=svg;L.plot.read=read;
 
 installPhaseTwo(environment.SignalLab);
 installPhaseThree(environment.SignalLab);
+Object.assign(environment.SignalLab.tasks['L1-2'], { title: '黑箱系统辨识', short: '黑箱辨识', goal: '发送测试脉冲，识别三台未知设备的规律。', question: '怎样从输入和输出判断未知设备在做什么？', evidence: '三台黑箱的基准、幅度翻倍、延后输入记录与辨识结果。' });
+environment.SignalLab.guides['L1-2'] = { steps: ['三台黑箱独立工作，同一规律可能重复。分别发送基准脉冲。', '点击幅度加倍，比较输入输出高度；点击延后 1 秒，比较输入输出起点。', '选出本台的输出高度与延后时间，再从本台的三个候选规律中辨识模型。各台选项与顺序会变化。', '揭示公式，结合证据理解线性和时不变性，完成三台辨识。'], evidence: environment.SignalLab.tasks['L1-2'].evidence };
+Object.assign(environment.SignalLab.tasks['L1-3'], { title: '响应变化诊断', short: '响应变化诊断', goal: '从前后输出曲线诊断变化来源，选择隔离测试并预测结果。', question: '初始状态变了，还是外部输入变了？', evidence: '三组曲线的来源判断、隔离测试与预测；提交后保存验证曲线。' });
+environment.SignalLab.guides['L1-3'] = { steps: ['观察调整前后的两条输出曲线。', '判断变化来自初始状态、外部输入、两者或均未改变。', '按题目目标选择隔离测试，先预测是否全程重合，再提交验证。'], evidence: environment.SignalLab.tasks['L1-3'].evidence };
 // records: preserved numerical / schema implementation.
 (function(root){
 'use strict';const L=root.SignalLab,KEY='signals-lab-v1-records',ids=L.taskIds,now=()=>new Date().toISOString();
@@ -492,6 +496,7 @@ const numeric={
 'L3-1':[],'L3-2':['yAtTime','t90','initial','initialValue','decompositionError'],'L3-3':['center','alpha','measureTime','yAtTime'],'L3-4':['width','peak','peakTime','theoreticalPeak']
 }[id];
 if(!numeric.every(k=>typeof m[k]==='number'&&Number.isFinite(m[k])))return false;
+if(id==='L1-2'&&Object.hasOwn(m,'counterexample')&&typeof m.counterexample!=='boolean')return false;
 if(['L2-3','L3-3','L3-4'].includes(id)&&typeof m.passed!=='boolean')return false;
 if(id==='L3-3'&&typeof m.stable!=='boolean')return false;
 if(id==='L2-4'&&p.mode==='audio'&&!['aliasFrequency','aliasedAmplitude'].every(k=>typeof m[k]==='number'&&Number.isFinite(m[k])))return false;
@@ -533,12 +538,12 @@ if(v.cursor!==null&&!(typeof v.cursor==='number'&&Number.isFinite(v.cursor)&&Mat
 }
 if(!Array.isArray(t.figures)||t.figures.length>200||!t.figures.every(v=>v&&L.validParams(id,v.params)&&dateField(v.time)&&L.validAnswers(id,legacy?{}:v.answers)))fail(id+' 图形快照错误');
 if(!t.completion||typeof t.completion.confirmed!=='boolean'||t.completion.confirmedAt!==null&&!dateField(t.completion.confirmedAt))fail(id+' 完成状态错误');
-if(t.completion.confirmed&&(!t.prediction.trim()||!t.trials.length||!t.analysis.trim()))fail(id+' 完成证据缺失');
+if(t.completion.confirmed&&((id!=='L1-4'&&!t.prediction.trim())||!t.trials.length||!t.analysis.trim()))fail(id+' 完成证据缺失');
 const clone=v=>JSON.parse(JSON.stringify(v));clean.tasks[id]={experimentId:id.slice(0,2),taskId:id,params:Object.fromEntries(L.tasks[id].params.map(p=>[p.key,t.params[p.key]])),answers:{...L.defaultAnswers(id),...answers},prediction:t.prediction,predictionDraft:t.predictionDraft,revisions:t.revisions.map(v=>({text:v.text,time:v.time})),trials:t.trials.map(v=>({...clone(v),answers:legacy?{}:{...v.answers}})),derivation:t.derivation,analysis:t.analysis,python:t.python?{code:t.python.code,result:t.python.result?clone(t.python.result):null}:{code:'',result:null},figures:t.figures.map(v=>({params:{...v.params},answers:legacy?{}:{...v.answers},time:v.time})),completion:{...t.completion}};
 }if(raw.legacyArchive!==undefined)clean.legacyArchive=validateLegacyArchive(raw.legacyArchive);if(raw.phaseTwoArchive!==undefined)clean.phaseTwoArchive=validatePhaseTwoArchive(raw.phaseTwoArchive);return clean;
 }
 function save(){data.updatedAt=now();onChange(JSON.stringify(data));}
-function missing(id){const t=data.tasks[id];return[!t.prediction.trim()&&'保存实验前预测',!t.trials.length&&'保存至少一次试验',!t.analysis.trim()&&'填写结果分析',(L.tasks[id].answers||[]).length&&!t.trials.some(v=>v.measurements.answerStatus?.length>0&&v.measurements.answerStatus.every(a=>a.status!=='missing'))&&'保存模板填写结果'].filter(Boolean);}
+function missing(id){const t=data.tasks[id];return[id!=='L1-4'&&!t.prediction.trim()&&'保存实验前预测',!t.trials.length&&'保存至少一次试验',!t.analysis.trim()&&'填写结果分析',(L.tasks[id].answers||[]).length&&!t.trials.some(v=>v.measurements.answerStatus?.length>0&&v.measurements.answerStatus.every(a=>a.status!=='missing'))&&'保存模板填写结果'].filter(Boolean);}
 function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
 function filename(suffix,label='三次实验记录'){const safe=s=>s.replace(/[<>:"/\\|?*\x00-\x1f]/g,'_').slice(0,60);return[data.student.number||'学号',data.student.name||'姓名',label,'v'+L.version].map(safe).join('_')+suffix;}
 L.records={get data(){return data;},get storageAvailable(){return storageAvailable;},get recoveryWarning(){return recoveryWarning;},save,missing,download,filename,validate,

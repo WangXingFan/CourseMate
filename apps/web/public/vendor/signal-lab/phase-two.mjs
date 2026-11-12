@@ -168,7 +168,7 @@ export function installPhaseTwo(L) {
       const status = supplied ? valid ? 'correct' : 'review' : 'missing';
       const answerFeedback = [{ key: 'evidence', label: '参数记录', status, message: status === 'correct' ? '已复算' : status === 'missing' ? '尚未填写' : '参数记录与当前设置不一致' }];
       return { plots: [{ key: 'main', title: '两条路径', range: [-2, 5], series: [line('路径 A', c.a), line('路径 B', c.b, { dash: '7 4' })] }, { key: 'difference', title: 'A−B', range: [-2, 5], series: [line('差值', c.difference)] }],
-        metrics: [metric('最大绝对差', c.error), metric('本组试验', c.error > 1e-6 ? '反例' : '吻合')], readings: { maxDifference: c.error, comparison: c.error > 1e-6 ? 'counterexample' : 'equal-for-this-input', window: [-2, 5], answerStatus: answerFeedback }, answerFeedback,
+        metrics: [metric('最大绝对差', c.error), metric('本组试验', c.error > 1e-6 ? '反例' : '吻合')], readings: { maxDifference: c.error, comparison: c.error > 1e-6 ? 'counterexample' : 'equal-for-this-input', counterexample: c.error > 1e-6, window: [-2, 5], answerStatus: answerFeedback }, answerFeedback,
         formula: p.test === 'linearity' ? 'T[αx₁+βx₂] ↔ αT[x₁]+βT[x₂]' : 'T[x(t−d)] ↔ T[x](t−d)', note: '全部输入在 t<0 为零；单个反例可否定性质，有限次吻合不能证明性质。' };
     }
     if (id === 'L2-3') {

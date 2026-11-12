@@ -235,7 +235,7 @@ func validateLabTasks(tasks map[string]any, specs map[string]labTaskSpec, ids []
 		if completion["confirmedAt"] != nil && !validLabDate(completion["confirmedAt"]) {
 			return errors.New("invalid completion date")
 		}
-		if confirmed && (item["prediction"] == "" || item["analysis"] == "" || len(item["trials"].([]any)) == 0) {
+		if confirmed && (id != "L1-4" && item["prediction"] == "" || item["analysis"] == "" || len(item["trials"].([]any)) == 0) {
 			return errors.New("missing completion evidence")
 		}
 	}

@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import katex from "katex";
 import { createVirtualLabEngine } from "../public/vendor/signal-lab/core.mjs";
 import { LAB_FLOWS, firstMissingLabStep, hasLabStepEvidence, labMeasurementAt, labPredictionDiffers, labReading, labStepTrials, labTrialPrediction, matchesLabStep, resumeLabStep, validLabObservation } from "../features/learning/model/virtual-lab-flow.ts";
-import { LAB_PREDICTION_FORMULAS, labAnswerFormulas, labObservationFormulas, labObservationPlotKey, labPredictionPlot } from "../features/learning/model/virtual-lab-presentation.ts";
+import { LAB_PREDICTION_FORMULAS, labAnswerFormulas, labObservationFormulas, labObservationPlotKey, labPredictionPlot, labSystemPropertyReadout } from "../features/learning/model/virtual-lab-presentation.ts";
 import { labAnswers } from "./virtual-lab-fixtures.mjs";
 
 function observedScene(engine, id, step) {
@@ -18,7 +18,7 @@ test("all guided comparisons have valid setups, bilingual prompts and portable e
   const messages = await Promise.all(["zh-CN", "en-US"].map(async (locale) => JSON.parse(await readFile(new URL(`../i18n/messages/${locale}/learning.json`, import.meta.url), "utf8")).virtualLab.flow));
   const engine = createVirtualLabEngine();
   assert.deepEqual(Object.fromEntries(Object.entries(LAB_FLOWS).map(([id, flow]) => [id, flow.steps.length])), {
-    "L1-1": 4, "L1-2": 5, "L1-3": 4, "L1-4": 5, "L2-1": 3, "L2-2": 4,
+    "L1-1": 4, "L1-2": 5, "L1-3": 5, "L1-4": 5, "L2-1": 3, "L2-2": 4,
     "L2-3": 4, "L2-4": 5, "L3-1": 3, "L3-2": 5, "L3-3": 5, "L3-4": 3,
   });
   assert.deepEqual(Object.keys(LAB_FLOWS), engine.taskIds);
@@ -62,6 +62,40 @@ test("all guided comparisons have valid setups, bilingual prompts and portable e
   for (const [id, flow] of Object.entries(LAB_FLOWS)) assert.equal(firstMissingLabStep(flow, restored.records.data.tasks[id]), -1, id);
 });
 
+test("response comparisons isolate sources and show opposite directions with the same input", () => {
+  const engine = createVirtualLabEngine(), id = "L1-3", flow = LAB_FLOWS[id];
+  const record = engine.records.data.tasks[id], scenes = {};
+  for (const step of flow.steps) {
+    assert.equal(step.predictedReadingKey, undefined, "Observation begins without guessing an exact response value");
+    assert.equal(step.observation, undefined, "Readings are saved automatically");
+    assert.equal(matchesLabStep(step, { params: step.initial, answers: {} }), false, "Each comparison begins before the required operation");
+    record.params = { ...engine.defaults(id), ...step.params };
+    const scene = observedScene(engine, id, step);
+    scenes[step.key] = scene;
+    for (const point of scene.readings.atTimes) {
+      const input = step.params.enabled === "on" ? step.params.A : 0;
+      const expected = input + (step.params.initial - input) * Math.exp(-point.t);
+      assert.ok(Math.abs(point.total - expected) < 1e-9);
+      assert.ok(Math.abs(point.zeroInput + point.zeroState - point.total) < 1e-9);
+    }
+    engine.records.trial(id, scene, null);
+  }
+  assert.ok(scenes.zeroInput.readings.atTimes.every((point) => point.zeroState === 0));
+  assert.ok(scenes.zeroState.readings.atTimes.every((point) => point.zeroInput === 0));
+  assert.ok(scenes.total.readings.atTimes[1].total < scenes.total.readings.initial, "A positive input can accompany a falling output");
+  assert.ok(scenes.lower.readings.atTimes[1].total > scenes.lower.readings.initial);
+  for (let i = 0; i < 4; i++) {
+    assert.equal(scenes.lower.readings.atTimes[i].zeroState, scenes.total.readings.atTimes[i].zeroState, "Changing initial state leaves the input contribution unchanged");
+    assert.equal(scenes.zeroInput.readings.atTimes[i].zeroInput, scenes.total.readings.atTimes[i].zeroInput);
+    assert.equal(scenes.zeroState.readings.atTimes[i].zeroState, scenes.total.readings.atTimes[i].zeroState);
+    assert.equal(scenes.amplitude.readings.atTimes[i].zeroInput, scenes.lower.readings.atTimes[i].zeroInput, "Changing the input leaves the initial-state contribution unchanged");
+    assert.equal(scenes.amplitude.readings.atTimes[i].zeroState, 2 * scenes.lower.readings.atTimes[i].zeroState);
+  }
+  assert.equal(firstMissingLabStep(flow, record), -1, "Saving the operated setup and automatic readings completes each comparison");
+  const off = { ...record.params, enabled: "off" };
+  assert.deepEqual(engine.scene(id, { ...off, A: 1 }, {}).readings.atTimes, engine.scene(id, { ...off, A: 2 }, {}).readings.atTimes, "The amplitude knob has no effect while input is off");
+});
+
 test("prediction difference uses a 20 percent numeric threshold and exact boolean comparison", () => {
   assert.equal(labPredictionDiffers(120, 100), false);
   assert.equal(labPredictionDiffers(121, 100), true);
@@ -69,6 +103,31 @@ test("prediction difference uses a 20 percent numeric threshold and exact boolea
   assert.equal(labPredictionDiffers(0.01, 0), true);
   assert.equal(labPredictionDiffers(true, 1), false);
   assert.equal(labPredictionDiffers(false, 1), true);
+});
+
+test("system-property comparisons ask for a difference and show paired readings at one useful time", () => {
+  const engine = createVirtualLabEngine();
+  const expected = { affine: true, square: true, timescale: true, delay: false, integrator: false };
+  for (const step of LAB_FLOWS["L1-2"].steps) {
+    const params = { ...engine.defaults("L1-2"), ...step.params };
+    const scene = engine.scene("L1-2", params, { evidence: params.test === "linearity" ? `x1=${params.x1}; x2=${params.x2}; alpha=${params.alpha}; beta=${params.beta}` : `x1=${params.x1}; delay=${params.delay}` });
+    const result = labSystemPropertyReadout(engine, scene);
+    assert.equal(step.predictedReadingKey, "counterexample");
+    assert.equal(step.observation?.reading, "counterexample");
+    assert.equal(scene.readings.counterexample, expected[step.key]);
+    assert.ok(result, `${step.key} has a paired plot reading`);
+    assert.equal(result.counterexample, expected[step.key]);
+    assert.ok(Math.abs(result.difference - Math.abs(result.a - result.b)) < 1e-9);
+    assert.ok(Math.abs(result.time - 1.5) < 0.01 || result.counterexample);
+  }
+});
+
+test("older max-difference trials still count as completed system-property comparisons", () => {
+  const engine = createVirtualLabEngine(), step = LAB_FLOWS["L1-2"].steps[0], params = { ...engine.defaults("L1-2"), ...step.params };
+  const scene = engine.scene("L1-2", params, { evidence: `x1=${params.x1}; x2=${params.x2}; alpha=${params.alpha}; beta=${params.beta}` });
+  const legacyTrial = { params, answers: {}, measurements: { ...scene.readings, observation: { step: step.key, reading: "maxDifference", value: scene.readings.maxDifference, predictedValue: scene.readings.maxDifference } } };
+  assert.equal(hasLabStepEvidence(step, legacyTrial), true);
+  assert.deepEqual(labTrialPrediction(step, legacyTrial), { predictedValue: true, value: 1 });
 });
 
 test("step estimates round-trip without changing the lab record schema", () => {

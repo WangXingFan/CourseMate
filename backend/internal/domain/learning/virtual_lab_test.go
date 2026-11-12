@@ -32,6 +32,30 @@ func TestVirtualLabAcceptsShippedEngineEvidenceAndRejectsCorruption(t *testing.T
 	}
 }
 
+func TestECGObservationCompletionDoesNotRequireAnAdvancePrediction(t *testing.T) {
+	document, err := os.ReadFile("testdata/virtual-lab.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var raw map[string]any
+	if err := json.Unmarshal(document, &raw); err != nil {
+		t.Fatal(err)
+	}
+	task := raw["tasks"].(map[string]any)["L1-4"].(map[string]any)
+	task["prediction"] = ""
+	task["analysis"] = "Recorded judgments after comparing the windows."
+	task["completion"] = map[string]any{"confirmed": true, "confirmedAt": raw["updatedAt"]}
+	encoded, _ := json.Marshal(raw)
+	if err := ValidateVirtualLab(string(encoded)); err != nil {
+		t.Fatal(err)
+	}
+	task["analysis"] = ""
+	encoded, _ = json.Marshal(raw)
+	if ValidateVirtualLab(string(encoded)) == nil {
+		t.Fatal("missing observation analysis accepted")
+	}
+}
+
 func TestVirtualLabPythonEvidence(t *testing.T) {
 	document, err := os.ReadFile("testdata/virtual-lab.json")
 	if err != nil {

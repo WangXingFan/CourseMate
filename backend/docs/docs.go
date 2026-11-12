@@ -23735,6 +23735,31 @@ const docTemplate = `{
                 }
             }
         },
+        "LabObservationResponse": {
+            "type": "object",
+            "required": [
+                "id",
+                "input",
+                "output"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "input": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LabPointResponse"
+                    }
+                },
+                "output": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LabPointResponse"
+                    }
+                }
+            }
+        },
         "LabOpenRequest": {
             "type": "object",
             "required": [
@@ -23780,6 +23805,12 @@ const docTemplate = `{
                 },
                 "formula": {
                     "type": "string"
+                },
+                "observations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LabObservationResponse"
+                    }
                 },
                 "prompt": {
                     "type": "string"

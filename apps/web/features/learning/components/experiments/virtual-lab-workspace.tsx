@@ -13,6 +13,9 @@ import { NativeLabClosed } from "./native-lab-closed";
 import { NativeLabHelp, NativeLabOverview } from "./native-lab-overview";
 import { NativeLabRecords, NativeLabReport } from "./native-lab-records";
 import { NativeLabTask } from "./native-lab-task";
+import { NativeLabBlackBox } from "./native-lab-black-box";
+import { NativeLabResponseDiagnosis } from "./native-lab-response-diagnosis";
+import { NativeLabEcg } from "./native-lab-ecg";
 
 export function VirtualLabWorkspace({ initialRoute = "home" }: { initialRoute?: string }) {
   const t = useTranslations("learning.virtualLab");
@@ -44,7 +47,7 @@ export function VirtualLabWorkspace({ initialRoute = "home" }: { initialRoute?: 
       {snapshot?.localWarning && <p role="alert" className="mb-4 text-sm text-destructive">{t("localWarning")}</p>}
       {importError && <p role="alert" className="mb-4 text-sm text-destructive">{importError}</p>}
       {engine ? <><nav hidden={route.page === "task"} aria-label={n("navigation")} className="mb-7 flex flex-wrap gap-1 rounded-lg border border-border/60 bg-card p-1.5">{links.map((link) => <a key={link.href} href={link.href} aria-current={link.active ? "page" : undefined} className={`rounded-lg px-3 py-2 text-sm leading-5 transition-colors ${link.active ? "bg-accent font-medium text-primary shadow-[inset_2px_0_0_var(--primary)]" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"}`}>{link.label}</a>)}</nav><div id="main" data-lab-route={`${route.page}/${route.id}`}>
-        {(["task", "course"].includes(route.page) && !access.courses?.[route.id.slice(0, 2)] || route.page === "home" && !Object.values(access.courses ?? {}).some(Boolean)) ? <NativeLabClosed loading={!access.courses} error={access.error} refresh={access.refresh} /> : route.page === "task" ? <NativeLabTask key={`${snapshot?.nonce}-${route.id}`} model={model} engine={engine} taskID={route.id} /> : route.page === "records" ? <NativeLabRecords key={snapshot?.nonce} openCourses={access.courses ?? {}} engine={engine} courseID={route.id} onPrint={onPrint} /> : route.page === "help" ? <NativeLabHelp /> : <NativeLabOverview engine={engine} openCourses={access.courses ?? {}} courseID={route.page === "course" ? route.id : undefined} />}
+        {(["task", "course"].includes(route.page) && !access.courses?.[route.id.slice(0, 2)] || route.page === "home" && !Object.values(access.courses ?? {}).some(Boolean)) ? <NativeLabClosed loading={!access.courses} error={access.error} refresh={access.refresh} /> : route.page === "task" ? route.id === "L1-2" ? <NativeLabBlackBox key={snapshot?.nonce} engine={engine} /> : route.id === "L1-3" ? <NativeLabResponseDiagnosis key={snapshot?.nonce} engine={engine} /> : route.id === "L1-4" ? <NativeLabEcg key={snapshot?.nonce} engine={engine} /> : <NativeLabTask key={`${snapshot?.nonce}-${route.id}`} model={model} engine={engine} taskID={route.id} /> : route.page === "records" ? <NativeLabRecords key={snapshot?.nonce} openCourses={access.courses ?? {}} engine={engine} courseID={route.id} onPrint={onPrint} /> : route.page === "help" ? <NativeLabHelp /> : <NativeLabOverview engine={engine} openCourses={access.courses ?? {}} courseID={route.page === "course" ? route.id : undefined} />}
       </div></> : status !== "invalid" && <div className="flex min-h-80 items-center justify-center text-sm text-muted-foreground">{status === "error" ? t("loadFailed") : <SpinnerLabel>{t("status.loading")}</SpinnerLabel>}</div>}
     </div>
     <input ref={fileInput} id="import-file" type="file" accept=".json,application/json" className="hidden" onChange={(event) => { const file = event.target.files?.[0]; if (file) setPendingFile(file); event.target.value = ""; }} />

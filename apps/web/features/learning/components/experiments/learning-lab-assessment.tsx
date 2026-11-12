@@ -22,6 +22,9 @@ export function LearningLabAssessment() {
 }
 function AssessmentWorkspace({ accessToken, accountID }: { accessToken: string; accountID: number }) {
   const t = useTranslations("learning.assessment");
+  const d = useTranslations("learning.virtualLab.responseDiagnosis");
+  const e = useTranslations("learning.virtualLab.ecg");
+  const b = useTranslations("learning.virtualLab.blackBox");
   const [taskID, setTaskID] = useState("L1-1");
   const [explain, setExplain] = useState(false);
   useEffect(() => {
@@ -51,8 +54,8 @@ function AssessmentWorkspace({ accessToken, accountID }: { accessToken: string; 
       {task && <section key={`${model.data.assignment.id}:${taskID}`} className="space-y-7">
         <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="font-display text-2xl font-normal">{task.title}</h2><span className="text-sm text-muted-foreground">{t(`status.${task.status}`)}</span></div>
         <dl className="grid grid-cols-3 gap-3">{[["operations", task.operations, 5], ["independent", task.independent, 15], ["concepts", task.concepts, 5]].map(([key, value, max]) => <div key={key} className="border-l-2 border-border pl-3"><dt className="text-sm text-muted-foreground">{t(String(key))}</dt><dd className="mt-2 font-mono text-lg">{value}/{max}</dd></div>)}</dl>
-        <div className="space-y-3"><h3 className="font-display text-xl font-normal">{t("operationTitle")}</h3><p className="text-sm leading-7 text-muted-foreground">{t("operationHint")}</p>
-          {active && <LabAssessmentWorkbench taskID={taskID} />}
+        <div className="space-y-3"><h3 className="font-display text-xl font-normal">{t("operationTitle")}</h3><p className="text-sm leading-7">{taskID === "L1-2" ? b("operationInstruction") : taskID === "L1-3" ? d("operationInstruction") : taskID === "L1-4" ? e("operationInstruction") : t("operationHint")}</p>
+          {active && !["L1-2", "L1-3", "L1-4"].includes(taskID) && <LabAssessmentWorkbench taskID={taskID} />}
           {task.checkpoints.map((point) => <details key={point.id} className="rounded-lg border border-border p-4 sm:p-5"><summary className="cursor-pointer text-sm">{point.id} · {t("points", { value: point.maximum })} · {t(point.passed ? "passed" : "notPassed")}</summary><div className="mt-5 space-y-5">
             <LabAssessmentForm key={`${point.id}:${point.passed}`} paper={point.paper} initial={point.answers} draftKey={`lab:${accountID}:${model.data?.assignment.id}:${taskID}:${point.id}`} checkpoint pending={model.pending} disabled={!active || point.passed} onSubmit={(answers) => model.checkpoint(taskID, point.id, answers)} />
             {point.result && <LabAssessmentResult paper={point.paper} result={point.result} conditionsOnly />}

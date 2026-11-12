@@ -18,7 +18,7 @@ export function NativeLabPredictionSummary({ engine, taskID }: { engine: Virtual
   if (!rows.length) return null;
 
   const formatValue = (value: number | boolean, categorical: boolean) => categorical
-    ? t(value ? "yes" : "no")
+    ? taskID === "L1-2" ? t(value ? "tasks.L1-2.different" : "tasks.L1-2.same") : t(value ? "yes" : "no")
     : engine.format(Number(value), 6);
 
   return <section className="space-y-3" data-lab-prediction-summary>

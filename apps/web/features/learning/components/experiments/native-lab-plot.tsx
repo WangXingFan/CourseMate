@@ -6,14 +6,14 @@ import { plotGeometry, plotGroups } from "@/features/learning/model/virtual-lab-
 import type { LabPlot, VirtualLabEngine } from "@/public/vendor/signal-lab/core.mjs";
 import { useIsMobile } from "@/shared/hooks/use-mobile";
 
-export function NativeLabPlot({ engine, plot, taskID, cursor = null, onCursor }: {
-  engine: VirtualLabEngine; plot: LabPlot; taskID: string; cursor?: number | null; onCursor?: (value: number) => void;
+export function NativeLabPlot({ engine, plot, taskID, cursor = null, onCursor, yRange, yTicks }: {
+  engine: VirtualLabEngine; plot: LabPlot; taskID: string; cursor?: number | null; onCursor?: (value: number) => void; yRange?: readonly [number, number]; yTicks?: readonly number[];
 }) {
   const t = useTranslations("learning.virtualLab.native");
   const clip = useId().replaceAll(":", "");
   const mobile = useIsMobile();
   const width = mobile ? 400 : 900, right = width - 23, ticks = mobile ? 4 : 6;
-  const { height, x, y, low, high, columns } = plotGeometry(plot, width);
+  const { height, x, y, low, high, columns } = plotGeometry(plot, width, yRange);
   const colors = engine.plot.colors;
   const timeAxis = !plot.xUnit || plot.xUnit === "s";
   const span = plot.range[1] - plot.range[0];
@@ -46,8 +46,7 @@ export function NativeLabPlot({ engine, plot, taskID, cursor = null, onCursor }:
         {axisTicks.map((value) => {
           return <g key={value}><path d={`M${x(value)} 46V241`} stroke="var(--border)" strokeDasharray="2 4" /><text x={x(value)} y="264" textAnchor="middle">{axisLabel(value)}</text></g>;
         })}
-        {Array.from({ length: 5 }, (_, index) => {
-          const value = low + (high - low) * index / 4;
+        {(yTicks ?? Array.from({ length: 5 }, (_, index) => low + (high - low) * index / 4)).map((value) => {
           return <g key={value}><path d={`M62 ${y(value)}H${right}`} stroke="var(--border)" strokeDasharray="2 4" /><text x="54" y={y(value) + 5} textAnchor="end">{engine.format(value, 3)}</text></g>;
         })}
         <path d={`M62 ${y(0)}H${right}`} stroke="var(--foreground)" strokeOpacity="0.45" />

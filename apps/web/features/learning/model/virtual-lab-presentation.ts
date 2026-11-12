@@ -1,4 +1,4 @@
-import type { LabParameters, LabPlot, VirtualLabEngine } from "@/public/vendor/signal-lab/core.mjs";
+import type { LabParameters, LabPlot, LabScene, VirtualLabEngine } from "@/public/vendor/signal-lab/core.mjs";
 
 // These are the givens, never solved responses or a student's current settings.
 export const LAB_PREDICTION_FORMULAS: Record<string, string[]> = {
@@ -6,15 +6,54 @@ export const LAB_PREDICTION_FORMULAS: Record<string, string[]> = {
   "L1-2": [String.raw`x+1,\quad x(2t),\quad x(t-1),\quad \int_{-\infty}^t x(\tau)d\tau,\quad x^2`],
   "L1-3": [String.raw`y'+y=x(t),\quad y(0^-)=2`, `x(t)=u(t)`],
   "L1-4": [String.raw`r(t)=u(t)-u(t-1),\quad y(t)=(r*r)(t)`, String.raw`x(t)=x_{ECG}(t)+0.2\sin(2\pi50t),\quad h_W(t)=\frac{u(t)-u(t-W)}{W}`],
-  "L2-1": [String.raw`f_0=10\,\mathrm{Hz},\quad K=3,7,15`],
-  "L2-2": [String.raw`x(t)=u(t+T/2)-u(t-T/2),\quad T=0.5,2\,\mathrm{s}`],
+  "L2-1": [String.raw`f_0=10\,\mathrm{Hz},\quad K=3,7,15`, String.raw`x_K(t)=\sum_{\substack{k=1\\k\text{ odd}}}^{K}\frac{4}{\pi k}\sin(2\pi kf_0t),\quad A_k=\frac{4}{\pi k}`],
+  "L2-2": [String.raw`x(t)=u(t+T/2)-u(t-T/2),\quad T=0.5,2\,\mathrm{s}`, String.raw`X(f)=AT\,\operatorname{sinc}(fT)e^{-j2\pi ft_0},\quad \operatorname{sinc}(z)=\frac{\sin(\pi z)}{\pi z}`, String.raw`f_1=\frac{1}{T},\quad \Delta f_{\mathrm{main}}=\frac{2}{T}`],
   "L2-3": [String.raw`x(t)=x_{ECG}(t)+0.2\sin(2\pi50t)`, String.raw`H(s)=\frac{s^2+\omega_0^2}{(s+\alpha)^2+\omega_0^2},\quad R(10)\ge0.95,\ R(50)\le0.05`],
   "L2-4": [String.raw`x(t)=\cos(2\pi10t),\quad f_s=100,15\,\mathrm{Hz}`],
   "L3-1": [`x(t)=u(t-1)`],
   "L3-2": [String.raw`y'+y=u(t),\quad y(0^-)=0`],
-  "L3-3": [String.raw`H(s)=\frac{s^2+\omega_0^2}{(s+\alpha)^2+\omega_0^2},\quad \omega_0=2\pi f_0`],
+  "L3-3": [String.raw`H(s)=\frac{s^2+\omega_0^2}{(s+\alpha)^2+\omega_0^2},\quad \omega_0=2\pi f_0`, String.raw`R(10\,\mathrm{Hz})\ge0.95,\quad R(50\,\mathrm{Hz})\le0.05`],
   "L3-4": [String.raw`y'+y=x(t),\quad y(0^-)=0`, `x(t)=u(t)-u(t-T)`],
 };
+
+export const LAB_SYSTEM_PROPERTY_SYSTEMS = [
+  `T_1[x](t)=x(t)+1`,
+  `T_2[x](t)=x(2t)`,
+  `T_3[x](t)=x(t-1)`,
+  String.raw`T_4[x](t)=\int_{-\infty}^{t}x(\tau)\,d\tau`,
+  `T_5[x](t)=x^2(t)`,
+];
+
+export function labSystemPropertyReadout(engine: VirtualLabEngine, scene: LabScene): { time: number; a: number; b: number; difference: number; counterexample: boolean } | null {
+  const output = scene.plots.find((plot) => plot.key === "main"), difference = scene.plots.find((plot) => plot.key === "difference");
+  const aSeries = output?.series[0], bSeries = output?.series[1], differenceSeries = difference?.series[0];
+  if (!output || !difference || !aSeries || !bSeries || !differenceSeries) return null;
+  const points = differenceSeries.points.filter(([time, value]) => time >= 0 && value !== null && Number.isFinite(value));
+  if (!points.length) return null;
+  const counterexample = typeof scene.readings.counterexample === "boolean" ? scene.readings.counterexample : false;
+  const point = points.reduce((selected, current) => counterexample
+    ? Math.abs(current[1] ?? 0) > Math.abs(selected[1] ?? 0) ? current : selected
+    : Math.abs(current[0] - 1.5) < Math.abs(selected[0] - 1.5) ? current : selected);
+  const time = point[0], a = engine.plot.read(aSeries, time, output.breakJump), b = engine.plot.read(bSeries, time, output.breakJump);
+  if (a === null || b === null) return null;
+  const measuredDifference = Math.abs(a - b);
+  return { time, a, b, difference: measuredDifference, counterexample: counterexample || measuredDifference > 1e-6 };
+}
+
+export function labSystemPropertyRoutes(params: LabParameters): { system: string; pathA: string; pathB: string; test: string } | null {
+  const systems: Record<string, string> = {
+    affine: `T[x](t)=x(t)+1`,
+    square: `T[x](t)=x^2(t)`,
+    timescale: `T[x](t)=x(2t)`,
+    delay: `T[x](t)=x(t-1)`,
+    integrator: String.raw`T[x](t)=\int_{-\infty}^{t}x(\tau)\,d\tau`,
+  };
+  const system = systems[String(params.kind)];
+  if (!system) return null;
+  return params.test === "linearity"
+    ? { system, pathA: String.raw`A(t)=T[\alpha x_1+\beta x_2](t)`, pathB: String.raw`B(t)=\alpha T[x_1](t)+\beta T[x_2](t)`, test: "linearity" }
+    : { system, pathA: `A(t)=T[x(t-d)](t)`, pathB: `B(t)=T[x](t-d)`, test: "invariance" };
+}
 
 export function labPredictionPlot(engine: VirtualLabEngine, id: string, current?: LabParameters): LabPlot | null {
   if (id === "L1-1" && current?.mode === "impulse") {
@@ -91,7 +130,8 @@ export function labObservationFormulas(id: string, p: LabParameters): string[] {
   if (id === "L1-3") return [String.raw`y'+y=${p.enabled === "on" ? `${p.A}u(t)` : "0"},\quad y(0^-)=${p.initial}`];
   if (id === "L1-4") return [p.kind === "rr" ? `r(t)=u(t)-u(t-1)` : String.raw`x(t)=x_{ECG}(t)+0.2\sin(2\pi50t)`, p.kind === "rr"
     ? `y(t)=(r*r)(t)` : String.raw`h_W(t)=\frac{u(t)-u(t-W)}{W},\quad y(t)=(x_{ECG+50Hz}*h_W)(t),\quad W=${p.width}\,\mathrm{s}`];
-  if (id === "L2-2") return [`x(t)=A[u(t-t_0+T/2)-u(t-t_0-T/2)]`, String.raw`A=${p.A},\quad T=${p.T}\,\mathrm{s},\quad t_0=${p.center}\,\mathrm{s}`];
+  if (id === "L2-1") return [String.raw`x_K(t)=\sum_{\substack{k=1\\k\text{ odd}}}^{K}\frac{4}{\pi k}\sin(2\pi kf_0t)`, String.raw`A_k=\frac{4}{\pi k}`];
+  if (id === "L2-2") return [`x(t)=A[u(t-t_0+T/2)-u(t-t_0-T/2)]`, String.raw`X(f)=AT\,\operatorname{sinc}(fT)e^{-j2\pi ft_0}`, String.raw`\operatorname{sinc}(z)=\frac{\sin(\pi z)}{\pi z}`, String.raw`f_1=\frac{1}{T},\quad \Delta f_{\mathrm{main}}=\frac{2}{T}`, String.raw`A=${p.A},\quad T=${p.T}\,\mathrm{s},\quad t_0=${p.center}\,\mathrm{s}`];
   if (id === "L2-3") return [String.raw`R(f)=\frac{A_{\mathrm{out}}(f)}{A_{\mathrm{in}}(f)}`, String.raw`R(10)\ge0.95,\quad R(50)\le0.05`, p.filterType === "lowpass" ? String.raw`H(s)=\frac{2\pi f_c}{s+2\pi f_c},\quad f_c=${p.fc}\,\mathrm{Hz}` : String.raw`H(s)=\frac{s^2+(2\pi f_0)^2}{(s+\alpha)^2+(2\pi f_0)^2},\quad f_0=${p.center},\quad\alpha=${p.alpha}`];
   if (id === "L2-4" && p.mode === "audio") return [String.raw`f_0=3000\,\mathrm{Hz},\quad f_s=4000\,\mathrm{Hz}`];
   if (id === "L3-1") {
@@ -102,6 +142,6 @@ export function labObservationFormulas(id: string, p: LabParameters): string[] {
   }
   if (id === "L3-2") return [String.raw`y'+y=u(t),\quad y(0^-)=${p.initial}`];
   if (id === "L3-3") return [...LAB_PREDICTION_FORMULAS[id], String.raw`f_0=${p.center}\,\mathrm{Hz},\quad\alpha=${p.alpha}\,\mathrm{s}^{-1}`];
-  if (id === "L3-4") return [String.raw`y'+y=u(t)-u(t-${p.T}),\quad y(0^-)=0`];
+  if (id === "L3-4") return [String.raw`y'+y=u(t)-u(t-${p.T}),\quad y(0^-)=0`, String.raw`y(t)=\begin{cases}1-e^{-t},&0\le t\le T\\(1-e^{-T})e^{-(t-T)},&t\ge T\end{cases}`];
   return [];
 }

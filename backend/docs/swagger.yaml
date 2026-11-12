@@ -4805,6 +4805,23 @@ definitions:
     - points
     - submitted
     type: object
+  LabObservationResponse:
+    properties:
+      id:
+        type: string
+      input:
+        items:
+          $ref: '#/definitions/LabPointResponse'
+        type: array
+      output:
+        items:
+          $ref: '#/definitions/LabPointResponse'
+        type: array
+    required:
+    - id
+    - input
+    - output
+    type: object
   LabOpenRequest:
     properties:
       open:
@@ -4830,6 +4847,10 @@ definitions:
         type: array
       formula:
         type: string
+      observations:
+        items:
+          $ref: '#/definitions/LabObservationResponse'
+        type: array
       prompt:
         type: string
       reference:

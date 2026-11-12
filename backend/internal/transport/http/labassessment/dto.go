@@ -36,13 +36,19 @@ type LabPointResponse struct {
 	X float64 `json:"x"`
 	Y float64 `json:"y"`
 }
+type LabObservationResponse struct {
+	ID     string             `json:"id"`
+	Input  []LabPointResponse `json:"input"`
+	Output []LabPointResponse `json:"output"`
+}
 type LabPaperResponse struct {
-	TaskID    string             `json:"taskId"`
-	Title     string             `json:"title"`
-	Prompt    string             `json:"prompt"`
-	Formula   string             `json:"formula"`
-	Fields    []LabFieldResponse `json:"fields"`
-	Reference []LabPointResponse `json:"reference"`
+	TaskID       string                   `json:"taskId"`
+	Title        string                   `json:"title"`
+	Prompt       string                   `json:"prompt"`
+	Formula      string                   `json:"formula"`
+	Fields       []LabFieldResponse       `json:"fields"`
+	Reference    []LabPointResponse       `json:"reference"`
+	Observations []LabObservationResponse `json:"observations,omitempty"`
 }
 type LabFieldResultResponse struct {
 	ID          string  `json:"id"`
@@ -148,6 +154,16 @@ func paperView(p domain.Paper) LabPaperResponse {
 	}
 	for _, pt := range p.Reference {
 		out.Reference = append(out.Reference, LabPointResponse{X: pt.X, Y: pt.Y})
+	}
+	for _, observation := range p.Observations {
+		view := LabObservationResponse{ID: observation.ID, Input: []LabPointResponse{}, Output: []LabPointResponse{}}
+		for _, pt := range observation.Input {
+			view.Input = append(view.Input, LabPointResponse{X: pt.X, Y: pt.Y})
+		}
+		for _, pt := range observation.Output {
+			view.Output = append(view.Output, LabPointResponse{X: pt.X, Y: pt.Y})
+		}
+		out.Observations = append(out.Observations, view)
 	}
 	return out
 }

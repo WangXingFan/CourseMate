@@ -26,12 +26,17 @@ type Field struct {
 	Options                              []Option
 }
 type Point struct{ X, Y float64 }
+type Observation struct {
+	ID            string
+	Input, Output []Point
+}
 type Paper struct {
 	TaskID, Title, Prompt, Formula, Explanation string
 	Variant                                     int
 	Parameters                                  map[string]float64
 	Fields                                      []Field
 	Reference                                   []Point
+	Observations                                []Observation
 }
 type FieldResult struct {
 	ID, Submitted, Expected, Explanation string

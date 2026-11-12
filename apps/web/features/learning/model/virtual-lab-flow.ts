@@ -1,4 +1,7 @@
 import { parseLabReading } from "./virtual-lab-reading.ts";
+import { blackBoxComplete, readBlackBoxTrial } from "./virtual-lab-black-box.ts";
+import { diagnosisComplete } from "./virtual-lab-response-diagnosis.ts";
+import { ecgComplete } from "./virtual-lab-ecg.ts";
 import type { LabMeasurement, LabParameters, LabTaskRecord, LabTrial } from "@/public/vendor/signal-lab/core.mjs";
 
 export type LabStep = { key: string; params: LabParameters; controls?: string[]; initial?: LabParameters; exclude?: LabParameters[];
@@ -18,12 +21,16 @@ export const LAB_FLOWS: Record<string, LabFlow> = {
     { key: "pulse1", params: { mode: "impulse", delta: 0.2 }, controls: ["delta"], initial: { delta: 0.5 }, hiddenMetrics: ["脉冲高度"], predictedReadingKey: "height", observation: { reading: "height", tolerance: 0.05 } },
   ] },
   "L1-2": { steps: [
-    ...["affine", "square"].map((kind) => ({ key: kind, params: { kind, test: "linearity" }, controls: ["x1", "x2", "alpha", "beta"], hiddenMetrics: ["最大绝对差", "本组试验"], predictedReadingKey: "maxDifference", observation: { reading: "maxDifference", tolerance: 0.01 }, target: { reading: "maxDifference", min: 0.0001 } })),
-    { key: "timescale", params: { kind: "timescale", test: "invariance" }, controls: ["x1", "delay"], hiddenMetrics: ["最大绝对差", "本组试验"], predictedReadingKey: "maxDifference", observation: { reading: "maxDifference", tolerance: 0.01 }, target: { reading: "maxDifference", min: 0.0001 } },
-    ...["delay", "integrator"].map((kind) => ({ key: kind, params: { kind, test: "invariance" }, controls: ["x1", "delay"], hiddenMetrics: ["最大绝对差", "本组试验"], predictedReadingKey: "maxDifference", observation: { reading: "maxDifference", tolerance: 0.01 } })),
+    ...["affine", "square"].map((kind) => ({ key: kind, params: { kind, test: "linearity" }, controls: ["x1", "x2", "alpha", "beta"], hiddenMetrics: ["最大绝对差", "本组试验"], predictedReadingKey: "counterexample", observation: { reading: "counterexample", tolerance: 0 } })),
+    { key: "timescale", params: { kind: "timescale", test: "invariance" }, controls: ["x1", "delay"], hiddenMetrics: ["最大绝对差", "本组试验"], predictedReadingKey: "counterexample", observation: { reading: "counterexample", tolerance: 0 } },
+    ...["delay", "integrator"].map((kind) => ({ key: kind, params: { kind, test: "invariance" }, controls: ["x1", "delay"], hiddenMetrics: ["最大绝对差", "本组试验"], predictedReadingKey: "counterexample", observation: { reading: "counterexample", tolerance: 0 } })),
   ] },
   "L1-3": { steps: [
-    ...[{ key: "zeroInput", enabled: "off", initial: 2 }, { key: "zeroState", enabled: "on", initial: 0 }, { key: "total", enabled: "on", initial: 2 }, { key: "lower", enabled: "on", initial: 0.5 }].map(({ key, enabled, initial }) => ({ key, params: { enabled, A: 1, initial }, predictedReadingKey: "atTimes.1.total", observation: { reading: "atTimes.1.total", tolerance: 0.03 } })),
+    { key: "zeroInput", params: { enabled: "off", initial: 2 }, controls: ["enabled", "A", "initial"], initial: { enabled: "on", A: 1, initial: 2 } },
+    { key: "zeroState", params: { enabled: "on", A: 1, initial: 0 }, controls: ["enabled", "A", "initial"], initial: { enabled: "off", A: 1, initial: 2 } },
+    { key: "total", params: { enabled: "on", A: 1, initial: 2 }, controls: ["enabled", "A", "initial"], initial: { enabled: "on", A: 1, initial: 0 } },
+    { key: "lower", params: { enabled: "on", A: 1, initial: 0.5 }, controls: ["enabled", "A", "initial"], initial: { enabled: "on", A: 1, initial: 2 } },
+    { key: "amplitude", params: { enabled: "on", A: 2, initial: 0.5 }, controls: ["enabled", "A", "initial"], initial: { enabled: "on", A: 1, initial: 0.5 } },
   ] },
   "L1-4": { steps: [
     ...[{ key: "overlap1", time: 0.5 }, { key: "overlap2", time: 1 }, { key: "overlap4", time: 2.5 }].map(({ key, time }) => ({ key, params: { kind: "rr", time }, hiddenMetrics: ["乘积积分值"], predictedReadingKey: "integral", observation: { reading: "integral", tolerance: 0.03 } })),
@@ -102,6 +109,11 @@ export function labPredictionDiffers(predicted: LabMeasurement, measured: LabMea
 export function labTrialPrediction(step: LabStep, trial?: Pick<LabTrial, "measurements">): { predictedValue: number | boolean; value: number } | null {
   const observation = trial?.measurements.observation;
   if (!observation || typeof observation !== "object" || Array.isArray(observation) || observation.step !== step.key) return null;
+  if (step.predictedReadingKey === "counterexample" && observation.reading === "maxDifference") {
+    const comparison = trial?.measurements.comparison;
+    if (comparison !== "counterexample" && comparison !== "equal-for-this-input") return null;
+    return { predictedValue: typeof observation.predictedValue === "number" ? observation.predictedValue > 1e-6 : comparison === "counterexample", value: Number(comparison === "counterexample") };
+  }
   const { predictedValue, value } = observation;
   if (typeof predictedValue !== "boolean" && !(typeof predictedValue === "number" && Number.isFinite(predictedValue) && Math.abs(predictedValue) <= 1e9)) return null;
   if (typeof value !== "number" || !Number.isFinite(value)) return null;
@@ -126,6 +138,11 @@ export function hasLabStepEvidence(step: LabStep, trial: Pick<LabTrial, "params"
   }
   if (!step.observation) return true;
   const answer = trial.measurements.observation;
+  if (step.observation.reading === "counterexample" && answer && typeof answer === "object" && !Array.isArray(answer)
+    && answer.step === step.key && answer.reading === "maxDifference" && typeof answer.value === "number") {
+    const maximumDifference = labReading(trial.measurements, "maxDifference");
+    return maximumDifference !== null && Math.abs(answer.value - maximumDifference) <= 0.01;
+  }
   return !!answer && typeof answer === "object" && !Array.isArray(answer) && answer.step === step.key && typeof answer.value === "number" && validLabObservation(step, trial.measurements, String(answer.value));
 }
 
@@ -154,6 +171,9 @@ export function firstMissingLabStep(flow: LabFlow, record: LabTaskRecord): numbe
 }
 
 export function labMissingWork(id: string, record: LabTaskRecord): string[] {
+  if (id === "L1-4") return ecgComplete(record) ? [] : ["continueComparisons"];
+  if (id === "L1-3") return diagnosisComplete(record) ? [] : ["continueComparisons"];
+  if (id === "L1-2" && (!record.completion.confirmed || record.trials.some((trial) => readBlackBoxTrial(trial)))) return blackBoxComplete(record) ? [] : ["continueComparisons"];
   const flow = LAB_FLOWS[id], missing: string[] = [];
   if (!record.prediction.trim()) missing.push("enterPrediction");
   if (firstMissingLabStep(flow, record) >= 0) missing.push("continueComparisons");

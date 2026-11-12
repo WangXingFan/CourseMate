@@ -29,3 +29,37 @@ func TestStudentProjectionDoesNotLeakAnswers(t *testing.T) {
 		t.Fatal("explicit explanation missing")
 	}
 }
+
+func TestResponseDiagnosisPublicPaper(t *testing.T) {
+	p, _ := domain.PaperFor("L1-3", 18)
+	view := paperView(p)
+	payload, err := json.Marshal(view)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, key := range []string{`"answer":`, `"parameters":`, `"expected":`, `"explanation":`} {
+		if strings.Contains(strings.ToLower(string(payload)), key) {
+			t.Fatal("leaked", key)
+		}
+	}
+	if len(view.Reference) != 161 || len(view.Fields) != 5 || view.Fields[0].Kind != "choice" {
+		t.Fatal("the public paper must provide a curve and all five scored judgments")
+	}
+}
+
+func TestBlackBoxPublicObservationsDoNotLeakScoring(t *testing.T) {
+	p, _ := domain.PaperFor("L1-2", 9)
+	view := paperView(p)
+	if len(view.Observations) != 3 || len(view.Observations[0].Input) != 6 || len(view.Observations[0].Output) != 6 {
+		t.Fatal("the public paper must include independent input/output probes")
+	}
+	payload, err := json.Marshal(view)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, key := range []string{`"answer":`, `"parameters":`, `"expected":`, `"explanation":`, `"variant":`} {
+		if strings.Contains(strings.ToLower(string(payload)), key) {
+			t.Fatal("leaked", key)
+		}
+	}
+}

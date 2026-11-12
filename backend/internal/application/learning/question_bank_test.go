@@ -49,6 +49,9 @@ func TestQuestionBankLabAnswersPassExistingGrader(t *testing.T) {
 					t.Fatal(err)
 				}
 				question := labBankQuestion(paper, "lab_calculation", fmt.Sprintf("%s-%d", task, variant))
+				if task == "L1-3" && !strings.Contains(question.Prompt, "曲线读数（t/s：调整前，调整后）") {
+					t.Fatal("text-only response questions must include the information from the curves")
+				}
 				answers := map[string]string{}
 				partIndex := 0
 				for _, field := range paper.Fields {
