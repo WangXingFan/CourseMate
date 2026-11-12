@@ -174,9 +174,19 @@ func TestVirtualLabGuideRoles(t *testing.T) {
 			var env struct {
 				Data LearningVirtualLabGuideResponse
 			}
-			_ = json.Unmarshal(res.Body.Bytes(), &env)
-			if strings.Count(env.Data.HTML, "教师参考：") != 12 || strings.Contains(env.Data.HTML, "信号与系统虚拟实验室/index.html") {
+			if err := json.Unmarshal(res.Body.Bytes(), &env); err != nil {
+				t.Fatal(err)
+			}
+			if strings.Count(env.Data.HTML, `<details class="task">`) != 12 || strings.Contains(env.Data.HTML, "信号与系统虚拟实验室/index.html") {
 				t.Fatal("guide incomplete or stale link")
+			}
+			for course := 1; course <= 3; course++ {
+				for task := 1; task <= 4; task++ {
+					id := fmt.Sprintf("L%d-%d", course, task)
+					if !strings.Contains(env.Data.HTML, "<summary>"+id+" · ") || !strings.Contains(env.Data.HTML, `href="/learn/experiments/workspace#task/`+id+`"`) {
+						t.Fatalf("guide missing task section or workbench link: %s", id)
+					}
+				}
 			}
 		}
 	}
