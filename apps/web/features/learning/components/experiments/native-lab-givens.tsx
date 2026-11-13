@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { MathFormula } from "@/features/learning/components/shared/math-formula";
+import { QuestionContent } from "@/shared/components/question-content";
 import { LAB_PREDICTION_FORMULAS, LAB_SYSTEM_PROPERTY_SYSTEMS, labObservationFormulas, labPredictionPlot } from "@/features/learning/model/virtual-lab-presentation";
 import type { LabParameters, VirtualLabEngine } from "@/public/vendor/signal-lab/core.mjs";
 import { NativeLabPlot } from "./native-lab-plot";
@@ -24,8 +25,8 @@ export function NativeLabGivens({ engine, taskID, params }: { engine: VirtualLab
     </div>
   </div>;
   return <div className="min-w-0 space-y-4" data-lab-givens>
-    {plot && <figure><figcaption className="mb-2 text-sm">{t(taskID === "L1-2" && params ? "tasks.L1-2.inputSignals" : `tasks.${taskID}.${givenKey}`)}</figcaption><NativeLabPlot engine={engine} taskID={taskID} plot={plot} /></figure>}
-    {!plot && <p className="text-sm leading-6">{t(`tasks.${taskID}.given`)}</p>}
+    {plot && <figure><figcaption className="mb-2 text-sm"><QuestionContent className="text-sm leading-6" content={t(taskID === "L1-2" && params ? "tasks.L1-2.inputSignals" : `tasks.${taskID}.${givenKey}`)} /></figcaption><NativeLabPlot engine={engine} taskID={taskID} plot={plot} /></figure>}
+    {!plot && <QuestionContent className="text-sm leading-6" content={t(`tasks.${taskID}.given`)} />}
     <div className="space-y-2 overflow-x-auto border-l-2 border-seal pl-4" data-given-formula>{(params && taskID === "L1-2" ? labObservationFormulas(taskID, params).slice(1, 2) : params ? labObservationFormulas(taskID, params) : LAB_PREDICTION_FORMULAS[taskID]).map((formula) => <div key={formula}><MathFormula>{formula}</MathFormula></div>)}</div>
   </div>;
 }

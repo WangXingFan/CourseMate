@@ -15,6 +15,7 @@ import { labAnswerFormulas, labObservationFormulas, labObservationPlotKey, labSy
 import { LearningHelp } from "@/features/learning/components/shared/learning-help";
 import { NativeLabComparison } from "./native-lab-comparison";
 import { NativeLabAudio } from "./native-lab-audio";
+import { NativeLabExplanation } from "./native-lab-explanation";
 import { NativeLabGivens } from "./native-lab-givens";
 import { labReadingUnit, parseLabReading } from "@/features/learning/model/virtual-lab-reading";
 import { NativeLabPredictionSummary } from "./native-lab-prediction-summary";
@@ -184,6 +185,7 @@ export function NativeLabTask({ model, engine, taskID }: { model: NativeLabModel
     <nav aria-label={f("steps")} className="grid grid-cols-3 border-b border-border">
       {(["predict", "observe", "conclude"] as const).map((item, index) => <button type="button" key={item} data-phase={item} aria-current={phase === item ? "step" : undefined} disabled={item !== "predict" && !hasPrediction} onClick={() => go(item)} className={`flex min-h-12 items-center justify-center gap-2 border-b-2 px-2 py-3 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${phase === item ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}><span className="font-mono">0{index + 1}</span>{f(item)}</button>)}
     </nav>
+    <NativeLabExplanation taskID={taskID} />
     {message && phase !== "observe" && <p role="alert" className="text-sm text-destructive">{message}</p>}
     <h2 ref={heading} tabIndex={-1} className="sr-only">{f(phase)}</h2>
     {phase === "predict" && <section className="mx-auto max-w-3xl space-y-5 py-4" data-lab-phase="predict">

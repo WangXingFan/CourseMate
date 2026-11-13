@@ -17,6 +17,12 @@ function observedScene(engine, id, step) {
 test("all guided comparisons have valid setups, bilingual prompts and portable evidence", async () => {
   const messages = await Promise.all(["zh-CN", "en-US"].map(async (locale) => JSON.parse(await readFile(new URL(`../i18n/messages/${locale}/learning.json`, import.meta.url), "utf8")).virtualLab.flow));
   const engine = createVirtualLabEngine();
+  for (const message of messages) {
+    assert.ok(message.explanation.title);
+    assert.ok(message.explanation.what);
+    assert.ok(message.explanation.how);
+    assert.ok(message.explanation.takeaway);
+  }
   assert.deepEqual(Object.fromEntries(Object.entries(LAB_FLOWS).map(([id, flow]) => [id, flow.steps.length])), {
     "L1-1": 4, "L1-2": 5, "L1-3": 5, "L1-4": 5, "L2-1": 3, "L2-2": 4,
     "L2-3": 4, "L2-4": 5, "L3-1": 3, "L3-2": 5, "L3-3": 5, "L3-4": 3,
@@ -31,6 +37,9 @@ test("all guided comparisons have valid setups, bilingual prompts and portable e
         assert.ok(message.tasks[id].conclusion);
         assert.ok(message.tasks[id].given);
         assert.ok(message.tasks[id].objective);
+        assert.ok(message.tasks[id].explanation.what);
+        assert.ok(message.tasks[id].explanation.how);
+        assert.ok(message.tasks[id].explanation.takeaway);
         assert.ok(message.estimateReading);
         assert.ok(message.showReading);
         if (step.observation) assert.ok(message.readings[step.observation.reading.replaceAll(".", "_")]);
