@@ -7,6 +7,10 @@ import { LAB_FLOWS, firstMissingLabStep, hasLabStepEvidence, labMeasurementAt, l
 import { LAB_PREDICTION_FORMULAS, labAnswerFormulas, labObservationFormulas, labObservationPlotKey, labPredictionPlot, labSystemPropertyReadout } from "../features/learning/model/virtual-lab-presentation.ts";
 import { labAnswers } from "./virtual-lab-fixtures.mjs";
 
+function explanationHasFormula(explanation) {
+  return ["what", "how", "takeaway"].some((key) => Array.isArray(explanation[key]) && explanation[key].some((part) => part && typeof part === "object" && typeof part.formula === "string"));
+}
+
 function observedScene(engine, id, step) {
   const record = engine.records.data.tasks[id], scene = engine.scene(id, record.params, record.answers);
   scene.readings.exerciseStep = step.key;
@@ -40,6 +44,7 @@ test("all guided comparisons have valid setups, bilingual prompts and portable e
         assert.ok(message.tasks[id].explanation.what);
         assert.ok(message.tasks[id].explanation.how);
         assert.ok(message.tasks[id].explanation.takeaway);
+        assert.ok(explanationHasFormula(message.tasks[id].explanation), `${id} explanation uses inline formulas`);
         assert.ok(message.estimateReading);
         assert.ok(message.showReading);
         if (step.observation) assert.ok(message.readings[step.observation.reading.replaceAll(".", "_")]);

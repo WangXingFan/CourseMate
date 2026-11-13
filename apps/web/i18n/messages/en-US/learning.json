@@ -812,9 +812,9 @@
       "tasks": {
         "L1-1": {
           "explanation": {
-            "what": "This task starts from a known triangular pulse and changes A, a, and t₀ in y(t)=A f(a(t−t₀)), so you can see how the peak position, height, and support interval move.",
-            "how": "Track one key point: if the original peak is at t_p, the transformed peak is at t₀+t_p/a, its height is multiplied by A, and the time-axis width becomes 1/|a| of the original. The second part keeps pulse area at 1, so a narrower width Δ forces a taller height 1/Δ.",
-            "takeaway": "Do not mix scaling and shifting: a acts on the time axis first, then t₀ shifts the result. With fixed area, a narrower pulse must be taller; this is the intuition behind approximating an impulse with a narrow pulse."
+            "what": [{"text":"This task starts from a known triangular pulse and changes "},{"formula":"y(t)=A f(a(t-t_0))"},{"text":" through amplitude "},{"formula":"A"},{"text":", scale "},{"formula":"a"},{"text":", and shift "},{"formula":"t_0"},{"text":", so you can see how the peak position, height, and support interval move."}],
+            "how": [{"text":"Track one key point: if the original peak is at "},{"formula":"t_p"},{"text":", the transformed peak is at "},{"formula":"t_0+t_p/a"},{"text":", its height is multiplied by "},{"formula":"A"},{"text":", and the time-axis width becomes "},{"formula":"1/|a|"},{"text":" of the original. The second part keeps the pulse area at "},{"formula":"1"},{"text":", so a narrower width "},{"formula":"\\Delta"},{"text":" forces a taller height "},{"formula":"1/\\Delta"},{"text":"."}],
+            "takeaway": [{"text":"Do not mix scaling and shifting: "},{"formula":"a"},{"text":" acts on the time axis first, then "},{"formula":"t_0"},{"text":" shifts the result. With fixed area, a narrower pulse must be taller; this is the intuition behind approximating an impulse with a narrow pulse."}]
           },
           "question": "For 2f(2(t−1)), how do the peak time and height change?",
           "conclusion": "Use the readings to verify the general transform y(t)=A f(a(t−t₀)): an original peak at t_p moves to t₀+t_p/a, its height is multiplied by A, and support width is divided by |a|. A fixed-area S rectangular pulse has height S/Δ.",
@@ -834,9 +834,9 @@
         },
         "L1-2": {
           "explanation": {
-            "what": "This task classifies systems by linearity and time invariance instead of computing one particular output. Linearity compares combining inputs before the system with combining separate outputs. Time invariance compares shifting the input before the system with shifting the output afterward.",
-            "how": "Each system runs paths A and B. One input that makes the paths differ is a counterexample and rules out the property. If the paths match for one input, that only shows agreement for that case; it does not prove the property in general.",
-            "takeaway": "x+1 and x² expose nonlinearity, x(2t) exposes time variance, and the delay, integrator, and pure gain are controls. Decide by definitions and counterexamples, not by whether two curves look similar."
+            "what": [{"text":"This task classifies systems by linearity and time invariance instead of computing one particular output. Linearity requires "},{"formula":"T[\\alpha x_1+\\beta x_2]=\\alpha T[x_1]+\\beta T[x_2]"},{"text":". Time invariance requires shifting the input before the system to equal shifting the output afterward: "},{"formula":"T[x(t-d)]=y(t-d)"},{"text":", where "},{"formula":"y=T[x]"},{"text":"."}],
+            "how": [{"text":"Each system runs paths "},{"formula":"A"},{"text":" and "},{"formula":"B"},{"text":". One input that makes the paths differ is a counterexample and rules out the property. If the paths match for one input, that only shows agreement for that case; it does not prove the property in general."}],
+            "takeaway": [{"formula":"x+1"},{"text":" and "},{"formula":"x^2"},{"text":" expose nonlinearity, "},{"formula":"x(2t)"},{"text":" exposes time variance, and the delay, integrator, and pure gain are controls. Decide by definitions and counterexamples, not by whether two curves look similar."}]
           },
           "question": "Predict whether each of the five systems is linear and time invariant. Add reasons after the comparisons.",
           "predictionGuide": "For each system, enter “linear: yes/no; time invariant: yes/no.” These are initial guesses; no proof is needed yet.",
@@ -912,9 +912,9 @@
         },
         "L1-3": {
           "explanation": {
-            "what": "This task splits the total response of y′+y=x into two sources: the zero-input response caused only by the initial state, and the zero-state response caused only by the external input.",
-            "how": "With the input off, initial value y₀ decays as y₀e^(−t). Starting from zero and applying a step of amplitude A gives A(1−e^(−t)). Adding them gives y(t)=A+(y₀−A)e^(−t).",
-            "takeaway": "A positive input does not guarantee a rising output. The direction at t=0 is set by y′(0)=A−y₀, so a high initial value can make the output fall first. After the input is switched off, the output decays instead of dropping instantly to zero."
+            "what": [{"text":"This task splits the total response of "},{"formula":"y'+y=x"},{"text":" into two sources: the zero-input response caused only by the initial state, and the zero-state response caused only by the external input."}],
+            "how": [{"text":"With the input off, initial value "},{"formula":"y_0"},{"text":" decays as "},{"formula":"y_0e^{-t}"},{"text":". Starting from zero and applying a step of amplitude "},{"formula":"A"},{"text":" gives "},{"formula":"A(1-e^{-t})"},{"text":". Adding them gives the total response "},{"formula":"y(t)=A+(y_0-A)e^{-t}"},{"text":"."}],
+            "takeaway": [{"text":"A positive input does not guarantee a rising output. The direction at "},{"formula":"t=0"},{"text":" is set by "},{"formula":"y'(0)=A-y_0"},{"text":", so a high initial value can make the output fall first. After the input is switched off, the output decays instead of dropping instantly to zero."}]
           },
           "question": "Does switching the input off remove the output? Does a positive input always make the output rise?",
           "predictionGuide": "The initial value y₀ describes the state present before the input is applied.",
@@ -978,9 +978,9 @@
         },
         "L1-4": {
           "explanation": {
-            "what": "This task first demonstrates the flip, shift, multiply, and integrate steps of convolution with two rectangles, then applies the same process to an ECG signal and a moving-average window.",
-            "how": "Convolution y(t)=∫x(τ)h(t−τ)dτ fixes an output time t, flips and shifts the impulse response, and integrates the overlap product. A moving average slides a rectangle of width W along the ECG and averages the data inside the window.",
-            "takeaway": "A wider window usually smooths more and suppresses mains interference better, but it also lowers and widens the R wave. A causal window [t−W,t] is centered at t−W/2, so it has W/2 of linear phase delay. After the R wave changes shape, its peak shift need not equal W/2 exactly."
+            "what": [{"text":"This task first demonstrates the flip, shift, multiply, and integrate steps of convolution "},{"formula":"y=x*h"},{"text":" with two rectangles, then applies the same process to an ECG signal and a moving-average window."}],
+            "how": [{"text":"Convolution "},{"formula":"y(t)=\\int x(\\tau)h(t-\\tau)\\,d\\tau"},{"text":" fixes an output time "},{"formula":"t"},{"text":", flips and shifts the impulse response, and integrates the overlap product. A moving average slides a rectangle of width "},{"formula":"W"},{"text":" along the ECG and averages the data inside the window."}],
+            "takeaway": [{"text":"A wider window usually smooths more and suppresses mains interference better, but it also lowers and widens the R wave. A causal window "},{"formula":"[t-W,t]"},{"text":" is centered at "},{"formula":"t-W/2"},{"text":", so it has "},{"formula":"W/2"},{"text":" of linear phase delay. After the R wave changes shape, its peak shift need not equal "},{"formula":"W/2"},{"text":" exactly."}]
           },
           "question": "How does a moving average suppress ECG mains interference, and why does it delay the waveform?",
           "conclusion": "Explain convolution using product area; compare interference suppression, R-wave distortion and the W/2 phase delay.",
@@ -1000,9 +1000,9 @@
         },
         "L2-1": {
           "explanation": {
-            "what": "This task builds an ideal ±1 square wave with fundamental frequency 10 Hz by adding odd harmonics one at a time. It demonstrates the Fourier series: a square wave decomposes into 10 Hz, 30 Hz, 50 Hz, and higher odd harmonics.",
-            "how": "K is the highest odd harmonic number, not the number of terms. The term count is (K+1)/2 and the highest frequency is 10K Hz. The amplitude of harmonic k is 4/(πk), so higher harmonics contribute less. Compare K=3, 7, and 15 on the flat regions, transition edges, and maximum value.",
-            "takeaway": "Increasing K makes the flat regions closer to ±1 and the transitions steeper, but the overshoot near a jump does not disappear. This is the Gibbs phenomenon. The maximum falls from about 1.200 to about 1.180 rather than converging to 1."
+            "what": [{"text":"This task builds an ideal square wave with amplitude "},{"formula":"\\pm1"},{"text":" and fundamental frequency "},{"formula":"10\\,\\mathrm{Hz}"},{"text":" by adding odd harmonics "},{"formula":"x_K(t)=\\frac{4}{\\pi}\\sum_{k=1,3,\\ldots}^{K}\\frac{\\sin(2\\pi k f_0t)}{k}"},{"text":". It demonstrates the Fourier series: a square wave decomposes into "},{"formula":"10\\,\\mathrm{Hz}"},{"text":", "},{"formula":"30\\,\\mathrm{Hz}"},{"text":", "},{"formula":"50\\,\\mathrm{Hz}"},{"text":", and higher odd harmonics."}],
+            "how": [{"formula":"K"},{"text":" is the highest odd harmonic number, not the number of terms. The term count is "},{"formula":"(K+1)/2"},{"text":" and the highest frequency is "},{"formula":"10K\\,\\mathrm{Hz}"},{"text":". The amplitude of harmonic "},{"formula":"k"},{"text":" is "},{"formula":"4/(\\pi k)"},{"text":", so higher harmonics contribute less. Compare "},{"formula":"K=3"},{"text":", "},{"formula":"7"},{"text":", and "},{"formula":"15"},{"text":" on the flat regions, transition edges, and maximum value."}],
+            "takeaway": [{"text":"Increasing "},{"formula":"K"},{"text":" makes the flat regions closer to "},{"formula":"\\pm1"},{"text":" and the transitions steeper, but the overshoot near a jump does not disappear. This is the Gibbs phenomenon. The maximum falls from about "},{"formula":"1.200"},{"text":" to about "},{"formula":"1.180"},{"text":" rather than converging to "},{"formula":"1"},{"text":"."}]
           },
           "question": "Will adding harmonics remove overshoot at a square-wave jump?",
           "conclusion": "Compare K=3 and K=15. Where is the approximation better, and how does overshoot change?",
@@ -1017,9 +1017,9 @@
         },
         "L2-2": {
           "explanation": {
-            "what": "This task studies how the continuous spectrum of one rectangular pulse changes when its width, height, or delay changes. A rectangle in time corresponds to a sinc-shaped spectrum in frequency.",
-            "how": "With frequency in Hz, X(f)=AT sinc(fT)e^(−j2πft₀). The amplitude is controlled by AT and sinc(fT); a time shift changes only phase. The first positive zero is at 1/T Hz, the width between main-lobe zeros is 2/T Hz, and X(0)=AT.",
-            "takeaway": "A narrower pulse has a wider main lobe. Amplitude scales the spectrum without moving its zeros. A time shift leaves the amplitude spectrum unchanged and adds a phase proportional to frequency. Phase is undefined at a spectral zero, so avoid reading phase there."
+            "what": [{"text":"This task studies how the continuous spectrum of one rectangular pulse changes when its width, height, or delay changes. A rectangle in time corresponds to "},{"formula":"X(f)=AT\\operatorname{sinc}(fT)e^{-j2\\pi ft_0}"},{"text":" in frequency."}],
+            "how": [{"text":"Evaluate in order: (1) Zero-frequency value: "},{"formula":"X(0)=AT"},{"text":", because "},{"formula":"\\operatorname{sinc}(0)=1"},{"text":". (2) First positive zero: the smallest positive solution of "},{"formula":"\\operatorname{sinc}(fT)=0"},{"text":" is "},{"formula":"fT=1"},{"text":", so "},{"formula":"f_1=1/T"},{"text":". (3) Main-lobe width: "},{"formula":"\\Delta f_{\\mathrm{main}}=2/T"},{"text":". (4) Phase: where the amplitude is positive, "},{"formula":"\\arg X(f)=-2\\pi ft_0"},{"text":". For "},{"formula":"T=1\\,\\mathrm{s}"},{"text":", "},{"formula":"t_0=1\\,\\mathrm{s}"},{"text":", and "},{"formula":"f=0.25\\,\\mathrm{Hz}"},{"text":", "},{"formula":"\\varphi=-\\pi/2\\,\\mathrm{rad}"},{"text":". Phase is equivalent modulo "},{"formula":"2\\pi"},{"text":" and is undefined at spectral zeros."}],
+            "takeaway": [{"text":"A narrower pulse has a wider main lobe. Amplitude scales "},{"formula":"|X(f)|"},{"text":" without moving its zeros. A time shift leaves the amplitude spectrum unchanged and adds a phase proportional to frequency. Phase is undefined at a spectral zero, so avoid reading phase there."}]
           },
           "question": "Does a narrower rectangular pulse have a wider or narrower spectrum?",
           "conclusion": "What does width, time shift and amplitude each change in the spectrum? Use the first pair of zeros to relate main-lobe width to pulse width.",
@@ -1035,9 +1035,9 @@
         },
         "L2-3": {
           "explanation": {
-            "what": "This task must preserve low-frequency ECG content at 10 Hz while suppressing 50 Hz mains interference. It also explains why a first-order low-pass filter cannot meet both limits and why a second-order notch is needed.",
-            "how": "A first-order low-pass has magnitude 1/√(1+(f/fc)²). Keeping 10 Hz above 0.95 requires a high fc, while suppressing 50 Hz below 0.05 requires a low fc; the two intervals do not overlap. The notch H(s)=(s²+ω₀²)/((s+α)²+ω₀²) places zeros at ±jω₀ and creates a null at 50 Hz.",
-            "takeaway": "The notch center selects the suppressed frequency, while α controls notch width, transients, and stability. Imaginary-axis zeros create the null; left-half-plane poles make the system stable. Two sine amplitude ratios alone are not enough; the whole ECG waveform must also be checked for distortion."
+            "what": [{"text":"This task must preserve low-frequency ECG content at "},{"formula":"10\\,\\mathrm{Hz}"},{"text":" while suppressing "},{"formula":"50\\,\\mathrm{Hz}"},{"text":" mains interference. It also explains why a first-order low-pass filter cannot meet both limits and why a second-order notch is needed."}],
+            "how": [{"text":"A first-order low-pass has magnitude "},{"formula":"|H(j2\\pi f)|=1/\\sqrt{1+(f/f_c)^2}"},{"text":". Keeping "},{"formula":"10\\,\\mathrm{Hz}"},{"text":" above "},{"formula":"0.95"},{"text":" requires a high "},{"formula":"f_c"},{"text":", while suppressing "},{"formula":"50\\,\\mathrm{Hz}"},{"text":" below "},{"formula":"0.05"},{"text":" requires a low "},{"formula":"f_c"},{"text":"; the two intervals do not overlap. The notch "},{"formula":"H(s)=\\frac{s^2+\\omega_0^2}{(s+\\alpha)^2+\\omega_0^2}"},{"text":" places zeros at "},{"formula":"\\pm j\\omega_0"},{"text":" and creates a null at "},{"formula":"50\\,\\mathrm{Hz}"},{"text":"."}],
+            "takeaway": [{"text":"The notch center selects the suppressed frequency, while "},{"formula":"\\alpha"},{"text":" controls notch width, transients, and stability. Imaginary-axis zeros create the null; left-half-plane poles make the system stable. Two sine amplitude ratios alone are not enough; the whole ECG waveform must also be checked for distortion."}]
           },
           "question": "Can a first-order low-pass preserve the 10 Hz ECG component and suppress 50 Hz interference? If not, how can a notch filter help?",
           "conclusion": "Use both amplitude readings to explain why no first-order low-pass works. Record a notch center and alpha that meet the limits, then compare ECG distortion at alpha=10 and 60.",
@@ -1048,7 +1048,7 @@
             "first0": "First-order low-pass, fc=2 Hz: read ratios at 10 and 50 Hz",
             "first1": "First-order low-pass, fc=40 Hz: can both limits pass?",
             "design": "Tune the notch center and alpha to retain 10 Hz and suppress 50 Hz",
-            "higher": "Set alpha=60: compare the wider notch and ECG distortion"
+            "higher": "Fixed comparison (f₀=50 Hz and alpha=60 already loaded): compare the wider notch and ECG distortion"
           },
           "given": "Targets: amplitude ratio ≥0.95 at 10 Hz and ≤0.05 at 50 Hz. First test why a low-pass cannot meet both, then design a notch.",
           "objective": "Show why a first-order low-pass cannot meet both targets, then tune a second-order notch and inspect ECG distortion.",
@@ -1056,9 +1056,9 @@
         },
         "L2-4": {
           "explanation": {
-            "what": "This task asks whether a continuous signal can still be recovered uniquely after it becomes a set of samples. When the sampling rate is too low, a high-frequency signal can masquerade as a low-frequency one. This is aliasing.",
-            "how": "Samples are x[n]=x(n/fs). The sampling theorem requires fs to exceed twice the highest signal frequency. After sampling, f₀ and fs−f₀ can produce the same samples. A 10 Hz signal sampled at 15 Hz appears as 5 Hz, and a 3 kHz signal sampled at 4 kHz appears as 1 kHz.",
-            "takeaway": "A pre-sampling filter prevents high-frequency content from entering the sampler. A post-sampling filter cannot recover information already lost to aliasing. The anti-alias low-pass must come before sampling and cannot be replaced by the 50 Hz ECG notch."
+            "what": [{"text":"This task asks whether a continuous signal can still be recovered uniquely after it becomes a set of samples. When the sampling rate "},{"formula":"f_s"},{"text":" is too low, a high-frequency signal can masquerade as a low-frequency one. This is aliasing."}],
+            "how": [{"text":"Samples are "},{"formula":"x[n]=x(n/f_s)"},{"text":". The sampling theorem requires "},{"formula":"f_s>2f_{\\max}"},{"text":". After sampling, "},{"formula":"f_0"},{"text":" and "},{"formula":"f_s-f_0"},{"text":" can produce the same samples. A "},{"formula":"10\\,\\mathrm{Hz}"},{"text":" signal sampled at "},{"formula":"15\\,\\mathrm{Hz}"},{"text":" appears as "},{"formula":"5\\,\\mathrm{Hz}"},{"text":", and a "},{"formula":"3\\,\\mathrm{kHz}"},{"text":" signal sampled at "},{"formula":"4\\,\\mathrm{kHz}"},{"text":" appears as "},{"formula":"1\\,\\mathrm{kHz}"},{"text":"."}],
+            "takeaway": [{"text":"A pre-sampling filter prevents content above "},{"formula":"f_s/2"},{"text":" from entering the sampler. A post-sampling filter cannot recover information already lost to aliasing. The anti-alias low-pass must come before sampling and cannot be replaced by the "},{"formula":"50\\,\\mathrm{Hz}"},{"text":" ECG notch."}]
           },
           "question": "Which sampling rates, 100 Hz and 15 Hz, can reconstruct a 10 Hz cosine?",
           "conclusion": "Explain sample ambiguity, why filtering after sampling cannot recover the original aliased frequency, and what filtering before sampling does.",
@@ -1077,9 +1077,9 @@
         },
         "L3-1": {
           "explanation": {
-            "what": "This task converts common time-domain signals into Laplace transforms. The point is not mechanical integration, but seeing where amplitude, decay rate, start time, and end time appear in the expression.",
-            "how": "A e^(−at)u(t) transforms to A/(s+a). A delayed rectangle A[u(t−t₁)−u(t−t₁−T)] transforms to A(e^(−t₁s)−e^(−(t₁+T)s))/s, where the two exponential terms mark the start and end.",
-            "takeaway": "e^(−ds) represents delay without changing amplitude. A finite rectangle is the difference of two delayed steps. The second time shift is the end time t₁+T; the duration T by itself is not the end time."
+            "what": [{"text":"This task converts common time-domain signals into Laplace transforms "},{"formula":"X(s)=\\int_{-\\infty}^{\\infty}x(t)e^{-st}\\,dt"},{"text":". The point is not mechanical integration, but seeing where amplitude, decay rate, start time, and end time appear in the expression."}],
+            "how": [{"formula":"Ae^{-at}u(t)"},{"text":" transforms to "},{"formula":"A/(s+a)"},{"text":". A delayed rectangle "},{"formula":"A[u(t-t_1)-u(t-t_1-T)]"},{"text":" transforms to "},{"formula":"A(e^{-t_1s}-e^{-(t_1+T)s})/s"},{"text":", where the two exponential terms mark the start and end."}],
+            "takeaway": [{"formula":"e^{-ds}"},{"text":" represents delay without changing amplitude. A finite rectangle is the difference of two delayed steps. The second time shift is the end time "},{"formula":"t_1+T"},{"text":"; the duration "},{"formula":"T"},{"text":" by itself is not the end time."}]
           },
           "question": "What factor appears in the Laplace transform when a signal is delayed?",
           "conclusion": "A rectangle starts at 1 s and lasts 2 s. When do its two steps occur?",
@@ -1097,9 +1097,9 @@
         },
         "L3-2": {
           "explanation": {
-            "what": "This task starts from y′+y=u(t), uses the Laplace transform to find the zero-state response, and compares it with an independent numerical integration curve.",
-            "how": "With zero initial state, H(s)=1/(s+1), X(s)=1/s, and Y(s)=1/[s(s+1)]. Partial fractions give C/s+D/(s+1), so y(t)=C+D e^(−t). Use y(0)=0 and the long-term value as t→∞ to check the coefficients.",
-            "takeaway": "H(s) is defined only for a zero initial state. With a nonzero initial value, b₀=y₀ must remain in the transformed equation. Writing only Y=HX omits the initial-state contribution, and t90 must be defined from the zero-state response."
+            "what": [{"text":"This task starts from "},{"formula":"y'+y=u(t)"},{"text":", uses the Laplace transform to find the zero-state response, and compares it with an independent numerical integration curve."}],
+            "how": [{"text":"With zero initial state, "},{"formula":"H(s)=1/(s+1)"},{"text":", "},{"formula":"X(s)=1/s"},{"text":", and "},{"formula":"Y(s)=1/[s(s+1)]"},{"text":". Partial fractions give "},{"formula":"C/s+D/(s+1)"},{"text":", so "},{"formula":"y(t)=C+De^{-t}"},{"text":". Use "},{"formula":"y(0)=0"},{"text":" and the long-term value as "},{"formula":"t\\to\\infty"},{"text":" to check the coefficients."}],
+            "takeaway": [{"formula":"H(s)"},{"text":" is defined only for a zero initial state. With a nonzero initial value, "},{"formula":"b_0=y_0"},{"text":" must remain in the transformed equation. Writing only "},{"formula":"Y=HX"},{"text":" omits the initial-state contribution, and "},{"formula":"t_{90}"},{"text":" must be defined from the zero-state response."}]
           },
           "question": "How do the initial state and external input combine in the output of y′+y=u(t)?",
           "conclusion": "Write the zero-input, zero-state and total responses. Check y(0) and y(1), find when the zero-state response first reaches 0.9, and explain what changes with the initial value.",
@@ -1117,9 +1117,9 @@
         },
         "L3-3": {
           "explanation": {
-            "what": "This task reuses the 50 Hz notch from Lab 2 but interprets it in the s-plane: zeros determine where the notch occurs, while poles determine decay, bandwidth, and stability.",
-            "how": "For H(s)=(s²+ω₀²)/((s+α)²+ω₀²), the zeros are ±jω₀ and the poles are −α±jω₀. For α>0, the poles are in the left half-plane, the causal ROC is Re(s)>−α and contains the imaginary axis. For α<0 the system is unstable. At α=0, all zeros and poles cancel exactly, giving H=1 with no notch.",
-            "takeaway": "Imaginary-axis zeros create the null at f₀, while pole locations determine stability and transient decay. H(jω) is a stable frequency response only when the ROC contains the imaginary axis; an algebraic slice of an unstable system is not a steady-state frequency response."
+            "what": [{"text":"This task reuses the "},{"formula":"50\\,\\mathrm{Hz}"},{"text":" notch from Lab 2 but interprets "},{"formula":"H(s)"},{"text":" in the s-plane: zeros determine where the notch occurs, while poles determine decay, bandwidth, and stability."}],
+            "how": [{"text":"For "},{"formula":"H(s)=\\frac{s^2+\\omega_0^2}{(s+\\alpha)^2+\\omega_0^2}"},{"text":", the zeros are "},{"formula":"\\pm j\\omega_0"},{"text":" and the poles are "},{"formula":"-\\alpha\\pm j\\omega_0"},{"text":". For "},{"formula":"\\alpha>0"},{"text":", the poles are in the left half-plane, the causal ROC is "},{"formula":"\\operatorname{Re}(s)>-\\alpha"},{"text":" and contains the imaginary axis. For "},{"formula":"\\alpha<0"},{"text":" the system is unstable. At "},{"formula":"\\alpha=0"},{"text":", all zeros and poles cancel exactly, giving "},{"formula":"H=1"},{"text":" with no notch."}],
+            "takeaway": [{"text":"Imaginary-axis zeros create the null at "},{"formula":"f_0"},{"text":", while pole locations determine stability and transient decay. "},{"formula":"H(j\\omega)"},{"text":" is a stable frequency response only when the ROC contains the imaginary axis; an algebraic slice of an unstable system is not a steady-state frequency response."}]
           },
           "question": "What do the notch zeros and poles each determine?",
           "conclusion": "Derive zeros, poles and the causal ROC; explain how alpha affects transients, bandwidth and stability, using the same notch design as Lab 2.",
@@ -1140,9 +1140,9 @@
         },
         "L3-4": {
           "explanation": {
-            "what": "This task designs the shortest rectangular pulse duration T that makes the zero-initial-state output peak reach at least 0.8.",
-            "how": "For the input u(t)−u(t−T) and y′+y=x, the zero-state output peaks at 1−e^(−T) when t=T. Requiring 1−e^(−T)≥0.8 gives the continuous lower bound T≥−ln(0.2)=ln5≈1.609 s. With a 0.01 s control step, the shortest selectable value is 1.61 s.",
-            "takeaway": "Finding one passing parameter does not prove it is shortest. Derive the lower bound from the peak condition, round up to the control grid, and verify that the next shorter choice fails. The output keeps decaying after the input ends, so it does not immediately drop to zero at t=T."
+            "what": [{"text":"This task designs the shortest rectangular pulse duration "},{"formula":"T"},{"text":" that makes the zero-initial-state output peak reach at least "},{"formula":"0.8"},{"text":"."}],
+            "how": [{"text":"For the input "},{"formula":"u(t)-u(t-T)"},{"text":" and "},{"formula":"y'+y=x"},{"text":", the zero-state output peaks at "},{"formula":"1-e^{-T}"},{"text":" when "},{"formula":"t=T"},{"text":". Requiring "},{"formula":"1-e^{-T}\\ge0.8"},{"text":" gives the continuous lower bound "},{"formula":"T\\ge-\\ln(0.2)=\\ln5\\approx1.609\\,\\mathrm{s}"},{"text":". With a "},{"formula":"0.01\\,\\mathrm{s}"},{"text":" control step, the shortest selectable value is "},{"formula":"1.61\\,\\mathrm{s}"},{"text":"."}],
+            "takeaway": [{"text":"Finding one passing parameter does not prove it is shortest. Derive the lower bound from the peak condition, round up to the control grid, and verify that the next shorter choice fails. The output keeps decaying after the input ends, so it does not immediately drop to zero at "},{"formula":"t=T"},{"text":"."}]
           },
           "question": "How does the duration of a unit rectangular pulse affect the output peak?",
           "conclusion": "What is the shortest pulse width reaching 0.8? Support it with a failing and a passing trial.",

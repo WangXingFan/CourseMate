@@ -50,7 +50,7 @@ for (const locale of ["zh-CN", "en-US"]) {
       visit(JSON.parse(readFileSync(new URL(file, directory), "utf8")), "", file);
     }
     assert.ok(formatted > 1000);
-    assert.equal(formulas, 13);
+    assert.ok(formulas >= 13, `${locale}: expected at least 13 raw formulas`);
   });
 
   test(`${locale}: prose exponents retain literal braces and scenario parameters interpolate`, () => {

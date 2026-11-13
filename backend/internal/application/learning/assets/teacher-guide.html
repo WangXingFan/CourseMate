@@ -6,13 +6,13 @@
 <title>教师开课指南 | 信号与系统实验</title>
 <style>
 :root{--paper:#f5f4ee;--ink:#27382f;--green:#2d4e3c;--line:#d9ddcf;--muted:#6c7469;--orange:#b15a37}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:25px}body{overflow-wrap:anywhere;margin:0;background:var(--paper);color:var(--ink);font:15px/1.85 "Microsoft YaHei",sans-serif}a{color:var(--green)}a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--orange);outline-offset:4px}.wrap{max-width:1120px;margin:auto;padding:34px 42px 70px}.mast{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:15px;gap:16px;font-size:12px;letter-spacing:1px}.muted{color:var(--muted)}.hero{display:grid;grid-template-columns:1.4fr 1fr;gap:48px;padding:46px 0 36px}.kicker{font-size:12px;letter-spacing:2px;color:var(--orange)}h1{font:600 44px/1.45 "SimSun",serif;margin:15px 0}h2{font:600 27px/1.5 "SimSun",serif;margin:0 0 14px}h3{font-size:16px;margin:0 0 6px}p{margin:9px 0 16px}.hero p{max-width:640px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin:25px 0}.btn{display:inline-block;text-decoration:none;background:var(--green);color:#fffdf2;padding:11px 19px;border:1px solid var(--green);border-radius:4px;font:inherit;font-size:14px;cursor:pointer}.btn.alt{color:var(--green);background:transparent}.signal{align-self:center}.signal svg{width:100%;height:auto}.signal p{font-size:12px}.nav{display:flex;flex-wrap:wrap;gap:12px 27px;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:13px}.nav a{text-decoration:none}section{padding:36px 0;border-bottom:1px solid var(--line)}.check{padding-left:23px}.check li{padding:5px 0}.demo{list-style:none;counter-reset:demo;padding:0}.demo>li{counter-increment:demo;position:relative;padding:0 0 20px 51px;margin:22px 0}.demo>li:before{content:counter(demo,decimal-leading-zero);position:absolute;left:0;top:0;font:24px Georgia,serif;color:var(--orange)}.demo p{margin:0}.note{font-weight:600;color:#805134}.task{border:1px solid var(--line);margin:13px 0;background:#fffefa;border-radius:5px}.task summary{padding:18px 20px;cursor:pointer;font-weight:600}.task summary .code{font:13px Consolas,monospace;color:var(--orange);margin-right:17px}.task summary small{float:right;font-size:11px;color:var(--muted);font-weight:400}.inside{padding:0 26px 23px}.inside ol{padding-left:22px}.inside li{margin:8px 0}.ask{font-size:16px}.reference{color:#745b3b}.text-link{font-size:13px;text-decoration:underline}.schedule{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:23px}.schedule div{padding-top:14px;border-top:2px solid #b9c4ad}.schedule b{display:block;font-size:16px}.schedule p{font-size:13px}.footer{font-size:12px;padding-top:25px;color:var(--muted)}@media(max-width:740px){.wrap{padding:20px}.hero{grid-template-columns:1fr;gap:12px;padding-top:25px}.signal{max-width:430px}h1{font-size:34px}.task summary small{display:none}.schedule{grid-template-columns:1fr 1fr}.mast{font-size:11px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}@media print{@page{margin:18mm}body{background:#fff;font-size:10pt}.wrap{max-width:none;padding:0}.hero{padding-top:20px}h1{font-size:28pt}.actions,.nav,.text-link,.print-button{display:none}.task{break-inside:avoid}.task summary{padding:10px}.inside{padding:0 12px 10px}.hero{grid-template-columns:1fr}.signal{display:none}section{padding:20px 0}.demo>li{break-inside:avoid}h2{break-after:avoid}}
-</style>
+.walkthrough{margin:18px 0 26px;padding:18px 20px;border-left:3px solid var(--orange);background:#faf7ee;border-radius:4px}.walkthrough h3{margin-top:0}.walkthrough ol{padding-left:22px}.walkthrough li{margin:0 0 18px}.walkthrough li>p{margin:5px 0}.walkthrough .label{font-weight:600;color:var(--green)}@media print{.walkthrough li{break-inside:avoid}}.inside table{width:100%;border-collapse:collapse;margin:14px 0 20px;font-size:14px}.inside th,.inside td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}.inside th{background:#edf0e6;font-weight:600}.inside td code{overflow-wrap:anywhere}.inside table.params{table-layout:fixed}.inside table.params th:nth-child(1),.inside table.params td:nth-child(1){width:22%}.inside table.params th:nth-child(2),.inside table.params td:nth-child(2){width:31%}.inside table.params th:nth-child(3),.inside table.params td:nth-child(3){width:47%}@media print{.inside thead{display:table-header-group}.inside tr{break-inside:avoid}}</style>
 </head>
 <body>
 <main class="wrap">
 <header>
 <h1>教师开课操作指南</h1>
-<p>2026-11-04 更新。按页面控件名称编写，覆盖建班开课、十二项操作练习、计分验收、成绩核对与结束课程。</p>
+<p>2026-11-13 更新。按页面控件名称编写，覆盖建班开课、十二项操作练习、课堂看点讲解、计分验收、成绩核对与结束课程。</p>
 <p>本页含教师参考答案，仅教师与管理员可查看。预测示例仅供教师熟悉操作，不作为学生必须复制的答案。</p>
 </header>
 <nav>
@@ -58,6 +58,17 @@
 <p>
 <a href="/learn/experiments/workspace#task/L1-1" target="_blank">打开本任务工作台</a>
 </p>
+<div class="walkthrough" data-teacher-walkthrough="L1-1">
+<h3>课堂讲解：每一步看哪里、怎么看</h3>
+<p class="muted">下面是教师带看顺序；使用“当前对照”的任务按组编号对应，黑箱、诊断和卷积任务按页面站点顺序对应。先让学生指出曲线和读数，再解释为什么。</p>
+<ol>
+<li><strong>第 1/4 组 · 原信号</strong><p><span class="label">看图：</span>主图画原三角脉冲；峰值在 t=1 s、高度 1，支撑区间为 0 到 3 s。</p><p><span class="label">怎么读：</span>点击峰值附近的曲线，读横轴和纵轴两个数值，不要把峰值高度读成支撑宽度。</p><p><span class="label">讲解结论：</span>先固定一个关键点，后面所有变换都看它映射到哪里。</p></li>
+<li><strong>第 2/4 组 · 压缩 a=2</strong><p><span class="label">看图：</span>实线是压缩后的当前波形，虚线保留原信号对照。</p><p><span class="label">怎么读：</span>峰值移到 0.5 s，高度仍为 1，支撑终点从 3 s 移到 1.5 s。</p><p><span class="label">讲解结论：</span>时间轴被压缩到原来的一半，幅度不变。</p></li>
+<li><strong>第 3/4 组 · 组合 2f(2(t−1))</strong><p><span class="label">看图：</span>主图同时显示原信号和当前结果。</p><p><span class="label">怎么读：</span>峰值时间为 t=1+1/2=1.5 s，峰高为 2，支撑宽度为原来的 1/2。</p><p><span class="label">讲解结论：</span>先做时间压缩，再平移结果，幅度单独乘在纵轴上。</p></li>
+<li><strong>第 4/4 组 · 窄脉冲 Δ=0.2 s</strong><p><span class="label">看图：</span>切到等面积窄脉冲模式，只观察窄脉冲的宽度和高度。</p><p><span class="label">怎么读：</span>横轴宽度为 0.2 s，纵轴高度为 1/0.2=5，面积仍为 1。</p><p><span class="label">讲解结论：</span>面积固定时，脉冲越窄，高度必须越高；这是近似冲激函数的直观含义。</p></li>
+</ol>
+</div>
+
 <h3>起步：先判断</h3>
 <p>先读题目，教师试用可在“先判断”输入：<code>我认为时间压缩会缩短支撑区间，平移改变位置，等面积脉冲变窄时会变高。</code>，点击“开始操作”。学生请写自己的判断。</p>
 <h3>按顺序完成 4 组对照</h3>
@@ -65,7 +76,7 @@
 <ol>
 <li>在“当前对照”选择 <code>1 / 4</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -107,7 +118,7 @@
 <ol>
 <li>在“当前对照”选择 <code>2 / 4</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -149,7 +160,7 @@
 <ol>
 <li>在“当前对照”选择 <code>3 / 4</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -191,7 +202,7 @@
 <ol>
 <li>在“当前对照”选择 <code>4 / 4</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -358,6 +369,17 @@
 <p>
 <a href="/learn/experiments/workspace#task/L1-2" target="_blank">打开本任务工作台</a>
 </p>
+<div class="walkthrough" data-teacher-walkthrough="L1-2">
+<h3>课堂讲解：每一步看哪里、怎么看</h3>
+<p class="muted">下面是教师带看顺序；使用“当前对照”的任务按组编号对应，黑箱、诊断和卷积任务按页面站点顺序对应。先让学生指出曲线和读数，再解释为什么。</p>
+<ol>
+<li><strong>步骤 1/4 · 发送基准脉冲</strong><p><span class="label">看图：</span>每台黑箱先用虚线输入、实线输出对照。</p><p><span class="label">怎么读：</span>读输出高度、输出起点和输出宽度；输入高度 1、从 1 s 开始、持续 1 s。</p><p><span class="label">讲解结论：</span>基准测试只建立参照，不能单独认出模型。</p></li>
+<li><strong>步骤 2/4 · 幅度加倍</strong><p><span class="label">看图：</span>在基准图上把输入高度从 1 改为 2，比较同一纵轴下的输出高度。</p><p><span class="label">怎么读：</span>输出高度变为 2 说明仍是线性放大；变为 4 说明经过了平方；不能只看曲线形状。</p><p><span class="label">讲解结论：</span>线性要求输入放大 2 倍时输出也放大 2 倍，平方器会给出非线性的反例。</p></li>
+<li><strong>步骤 3/4 · 延后 1 秒发送</strong><p><span class="label">看图：</span>把输入起点从 1 s 移到 2 s，输出仍画在同一时间轴上。</p><p><span class="label">怎么读：</span>比较输出相对基准延后了多少：延迟系统延后 1 s，时间压缩系统只延后 0.5 s。</p><p><span class="label">讲解结论：</span>时不变要求输入平移多少，输出也平移多少；平移量不一致就是有效反例。</p></li>
+<li><strong>步骤 4/4 · 三台综合辨识</strong><p><span class="label">看图：</span>三行测试记录会同时列出输出高度和输出起点。</p><p><span class="label">怎么读：</span>先用基准建立图形，再用幅度加倍和延后测试逐项排除候选，最后才选模型。</p><p><span class="label">讲解结论：</span>不同黑箱的候选顺序会打乱；一次测试吻合不足以证明性质普遍成立。</p></li>
+</ol>
+</div>
+
 <h3>任务：用三个测试认出未知系统</h3>
 <p>黑箱 A、B、C 各自独立工作，三种模型各出现一次。每台显示一个正确模型与两个干扰模型，并打乱顺序。干扰项从幅度放大、衰减、原样通过、幅度加常数、反相、提前、延迟、时间拉伸、立方等候选中抽取，不再固定显示同样的三个选项。学生需根据本台证据辨识；学生任务说明不提前限定正确模型的范围。</p>
 <h3>每台黑箱按同样的顺序操作</h3>
@@ -417,6 +439,17 @@
 <summary>L1-3 · 响应变化诊断</summary>
 <div class="inside">
 <p><a href="/learn/experiments/workspace#task/L1-3" target="_blank">打开本任务工作台</a></p>
+<div class="walkthrough" data-teacher-walkthrough="L1-3">
+<h3>课堂讲解：每一步看哪里、怎么看</h3>
+<p class="muted">下面是教师带看顺序；使用“当前对照”的任务按组编号对应，黑箱、诊断和卷积任务按页面站点顺序对应。先让学生指出曲线和读数，再解释为什么。</p>
+<ol>
+<li><strong>步骤 1/4 · 观察调整前后曲线</strong><p><span class="label">看图：</span>先看两条响应曲线的起点、变化方向和最终值。</p><p><span class="label">怎么读：</span>起点不同优先怀疑初始状态；最终值不同优先检查输入；形状和方向都变则可能两者同时改变。</p><p><span class="label">讲解结论：</span>不要只比较 t→∞ 的最终值，两个完全不同的响应也可能最后到同一个值。</p></li>
+<li><strong>步骤 2/4 · 选择隔离测试</strong><p><span class="label">看图：</span>按要求只隔离初始状态，或只隔离外部输入。</p><p><span class="label">怎么读：</span>隔离初始状态时关闭输入、保留两个初值；隔离输入时把两个初值都清零、保留输入。</p><p><span class="label">讲解结论：</span>隔离测试必须只改变一个来源，否则无法把变化归因到初值或输入。</p></li>
+<li><strong>步骤 3/4 · 提交预测再验证</strong><p><span class="label">看图：</span>先写测试后是否全程重合的预测，再看验证图。</p><p><span class="label">怎么读：</span>看整段时间轴：若只在起点或末端相同、中间不同，仍然不是全程重合。</p><p><span class="label">讲解结论：</span>全程重合才是隔离正确的证据；只比较某一个时刻容易误判。</p></li>
+<li><strong>步骤 4/4 · 归纳响应来源</strong><p><span class="label">看图：</span>结合曲线和验证结果回答问题。</p><p><span class="label">怎么读：</span>零输入响应由初值产生；稳定系统的零状态最终趋向输入的长期值；两者相加构成全响应。</p><p><span class="label">讲解结论：</span>输入关闭不等于系统立刻归零，初值贡献仍会按系统动态衰减。</p></li>
+</ol>
+</div>
+
 <h3>学生做什么</h3>
 <p>系统为y′+y=x(t)。调整前初值2、阶跃幅度1；调整后参数隐藏。学生看两条输出曲线，依次判断变化来源、选择指定目标的隔离测试、预测测试后是否全程重合，再提交验证。三组独立抽取，允许重复；三个判断均正确才通过本组。</p>
 <h3>验收自动评分：25分</h3>
@@ -438,6 +471,17 @@
 <summary>L1-4 · 卷积与心电滑动平均</summary>
 <div class="inside">
 <p><a href="/learn/experiments/workspace#task/L1-4" target="_blank">打开本任务工作台</a></p>
+<div class="walkthrough" data-teacher-walkthrough="L1-4">
+<h3>课堂讲解：每一步看哪里、怎么看</h3>
+<p class="muted">下面是教师带看顺序；使用“当前对照”的任务按组编号对应，黑箱、诊断和卷积任务按页面站点顺序对应。先让学生指出曲线和读数，再解释为什么。</p>
+<ol>
+<li><strong>站点 1/4 · 看干扰：10 ms 与 20 ms</strong><p><span class="label">看图：</span>左图是输入，右图是滑动平均输出；切换两种窗宽。</p><p><span class="label">怎么读：</span>10 ms 输出仍有明显 50 Hz 波纹，20 ms 输出接近零线；50 Hz 的周期为 20 ms。</p><p><span class="label">讲解结论：</span>窗口刚好覆盖整数个周期时，正弦正负面积相抵，剩余波纹最小。</p></li>
+<li><strong>站点 2/4 · 保住 R 波：20 ms 与 80 ms</strong><p><span class="label">看图：</span>把虚线洁净心电作为参考，比较实线平均输出的高度和宽度。</p><p><span class="label">怎么读：</span>20 ms 的 R 波更高、更窄；80 ms 的 R 波明显被压低、展宽。</p><p><span class="label">讲解结论：</span>两种窗都能抵消理想 50 Hz 时，应选更能保留 R 波的短窗。</p></li>
+<li><strong>站点 3/4 · 跟着窗口走</strong><p><span class="label">看图：</span>拖动输出时刻，观察左图阴影窗口及下方起点、中心、输出时刻。</p><p><span class="label">怎么读：</span>窗口中心始终早于输出时刻 W/2：20 ms 早 10 ms，80 ms 早 40 ms。</p><p><span class="label">讲解结论：</span>当前输出的平均只使用过去数据；平均输出相对窗中心有线性相位延迟。</p></li>
+<li><strong>总结 4/4 · 联系卷积</strong><p><span class="label">看图：</span>把矩形窗看成一个宽度 W、面积为 1 的卷积核。</p><p><span class="label">怎么读：</span>窗口沿心电移动，每个位置对窗内数据积分取平均，得到右图一个输出点。</p><p><span class="label">讲解结论：</span>滑动平均就是卷积；R 峰形变后，峰位移动不一定严格等于 W/2。</p></li>
+</ol>
+</div>
+
 <h3>学生起步：直接比较图形</h3>
 <p>入口是“看干扰”，左图给输入，右图给平均输出。无需先解释原理或估计心电积分。</p>
 <ol>
@@ -469,6 +513,17 @@
 <p>
 <a href="/learn/experiments/workspace#task/L2-1" target="_blank">打开本任务工作台</a>
 </p>
+<div class="walkthrough" data-teacher-walkthrough="L2-1">
+<h3>课堂讲解：每一步看哪里、怎么看</h3>
+<p class="muted">下面是教师带看顺序；使用“当前对照”的任务按组编号对应，黑箱、诊断和卷积任务按页面站点顺序对应。先让学生指出曲线和读数，再解释为什么。</p>
+<ol>
+<li><strong>第 1/4 组 · K=3</strong><p><span class="label">看图：</span>看主图实线合成波、虚线目标方波，以及右侧谐波幅度谱。</p><p><span class="label">怎么读：</span>叠加项数为 (3+1)/2=2，最高频率为 30 Hz；合成最大值约 1.200，跳变附近已经出现过冲。</p><p><span class="label">讲解结论：</span>平坦区还不够平，跳变附近也不是理想竖线。</p></li>
+<li><strong>第 2/4 组 · K=7</strong><p><span class="label">看图：</span>比较 K=7 与 K=3 的主图平坦区、跳变沿和谐波谱。</p><p><span class="label">怎么读：</span>项数为 4，最高频率为 70 Hz，合成最大值约 1.184；平坦区更接近目标。</p><p><span class="label">讲解结论：</span>增加谐波让远离跳变处更接近方波，但跳变附近的振铃仍保留。</p></li>
+<li><strong>第 3/4 组 · K=15</strong><p><span class="label">看图：</span>同样看主图和频谱，不要把 K 直接当作叠加项数。</p><p><span class="label">怎么读：</span>项数为 8，最高频率为 150 Hz，合成最大值约 1.180。</p><p><span class="label">讲解结论：</span>谐波越多，跳变越陡、振铃越窄，但过冲不会消失，这就是吉布斯现象。</p></li>
+<li><strong>第 4/4 组 · 读谐波幅度谱</strong><p><span class="label">看图：</span>在频谱图只看奇数频率的竖线。</p><p><span class="label">怎么读：</span>第 k 次谐波幅度为 4/(πk)；没有偶数次谐波。</p><p><span class="label">讲解结论：</span>频率越高幅度越小；增加 K 是把更多高频项加入，而不是把已有项变大。</p></li>
+</ol>
+</div>
+
 <h3>起步：先判断</h3>
 <p>先读题目，教师试用可在“先判断”输入：<code>增加奇次谐波会使方波平坦段更接近目标，但跳变附近仍可能过冲。</code>，点击“开始操作”。学生请写自己的判断。</p>
 <h3>按顺序完成 3 组对照</h3>
@@ -476,7 +531,7 @@
 <ol>
 <li>在“当前对照”选择 <code>1 / 3</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -501,7 +556,7 @@
 <ol>
 <li>在“当前对照”选择 <code>2 / 3</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -526,7 +581,7 @@
 <ol>
 <li>在“当前对照”选择 <code>3 / 3</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -667,6 +722,17 @@
 <p>
 <a href="/learn/experiments/workspace#task/L2-2" target="_blank">打开本任务工作台</a>
 </p>
+<div class="walkthrough" data-teacher-walkthrough="L2-2">
+<h3>课堂讲解：每一步看哪里、怎么看</h3>
+<p class="muted">下面是教师带看顺序；使用“当前对照”的任务按组编号对应，黑箱、诊断和卷积任务按页面站点顺序对应。先让学生指出曲线和读数，再解释为什么。</p>
+<ol>
+<li><strong>第 1/4 组 · 脉宽 T=0.5 s</strong><p><span class="label">看图：</span>主图看矩形脉冲，幅度谱图看 sinc 主瓣和第一正零点。</p><p><span class="label">怎么读：</span>X(0)=AT=0.5；第一正零点为 1/T=2 Hz；主瓣零点间宽度为 2/T=4 Hz。</p><p><span class="label">讲解结论：</span>零频值看纵轴，第一零点看横轴；X(0) 的单位是幅度·s。</p></li>
+<li><strong>第 2/4 组 · 脉宽 T=2 s</strong><p><span class="label">看图：</span>保持幅度 A=1，与上一组比较时域宽度和频域主瓣。</p><p><span class="label">怎么读：</span>X(0)=2；第一正零点为 0.5 Hz；主瓣宽度为 1 Hz。</p><p><span class="label">讲解结论：</span>时域脉冲越窄，频域主瓣越宽；反之脉宽越大，主瓣越窄。</p></li>
+<li><strong>第 3/4 组 · 右移 1 s</strong><p><span class="label">看图：</span>看时域位置、幅度谱和相位谱三张图；比较 f=0.25 Hz 处的相位。</p><p><span class="label">怎么读：</span>时移后幅度谱形状不变；零点仍在 ±1/T；相位为 −2πft₀，本组在 0.25 Hz 处为 −π/2 rad。</p><p><span class="label">讲解结论：</span>相位只在幅度不为零处读取；谱线零点处相位没有定义，主值还会按 2π 折返。</p></li>
+<li><strong>第 4/4 组 · 幅度加倍</strong><p><span class="label">看图：</span>固定 T=1 s，把 A 从 1 改为 2，比较零频值和谱高。</p><p><span class="label">怎么读：</span>X(0)=AT 从 1 变成 2，零点位置和主瓣宽度不变。</p><p><span class="label">讲解结论：</span>幅度只缩放频谱纵轴，不改变频谱零点；时移只改相位，不改幅度谱。</p></li>
+</ol>
+</div>
+
 <h3>起步：先判断</h3>
 <p>先读题目，教师试用可在“先判断”输入：<code>矩形变宽会使频谱主瓣变窄，时移主要改变相位。</code>，点击“开始操作”。学生请写自己的判断。</p>
 <h3>按顺序完成 4 组对照</h3>
@@ -674,7 +740,7 @@
 <ol>
 <li>在“当前对照”选择 <code>1 / 4</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -710,7 +776,7 @@
 <ol>
 <li>在“当前对照”选择 <code>2 / 4</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -746,7 +812,7 @@
 <ol>
 <li>在“当前对照”选择 <code>3 / 4</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -782,7 +848,7 @@
 <ol>
 <li>在“当前对照”选择 <code>4 / 4</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -930,6 +996,17 @@
 <p>
 <a href="/learn/experiments/workspace#task/L2-3" target="_blank">打开本任务工作台</a>
 </p>
+<div class="walkthrough" data-teacher-walkthrough="L2-3">
+<h3>课堂讲解：每一步看哪里、怎么看</h3>
+<p class="muted">下面是教师带看顺序；使用“当前对照”的任务按组编号对应，黑箱、诊断和卷积任务按页面站点顺序对应。先让学生指出曲线和读数，再解释为什么。</p>
+<ol>
+<li><strong>第 1/4 组 · 一阶低通 fc=2 Hz</strong><p><span class="label">看图：</span>主图看滤波输出（橙红实线）、含工频心电（青绿虚线）和洁净心电（紫色长虚线）三条曲线。</p><p><span class="label">怎么读：</span>输出几乎贴平，50 Hz 细纹被压掉，但 R 波也被严重压低；10 Hz 幅度比约 0.196，50 Hz 幅度比约 0.040。</p><p><span class="label">讲解结论：</span>50 Hz 达标但 10 Hz 未达标：这是过度滤波，说明不能只看波纹有没有消失。</p></li>
+<li><strong>第 2/4 组 · 一阶低通 fc=40 Hz</strong><p><span class="label">看图：</span>仍看同一主图，并打开“自由调参 · 更多图形”中的幅频响应。</p><p><span class="label">怎么读：</span>R 波保留较好，但青绿色工频细纹仍明显；10 Hz 幅度比约 0.970，50 Hz 幅度比约 0.625。</p><p><span class="label">讲解结论：</span>10 Hz 达标但 50 Hz 未达标：这是滤波不够。两组约束无交集，所以一阶低通无解。</p></li>
+<li><strong>第 3/4 组 · 设计二阶陷波</strong><p><span class="label">看图：</span>切换滤波器为二阶陷波，调中心 f₀ 与 α，先看双项指标再对照主图。</p><p><span class="label">怎么读：</span>把 f₀ 调到 50 Hz、α 取 10 附近可得到约 0.999 和 0；填写最低阶数 2。</p><p><span class="label">讲解结论：</span>陷波零点对准工频；二阶才能形成一对共轭零点。指标达标后还要看 R 波和其他心电成分是否被改变。</p></li>
+<li><strong>第 4/4 组 · 固定宽陷波 α=60</strong><p><span class="label">看图：</span>切到第 4 组，固定参数 f₀=50 Hz、α=60 会自动载入，不需要手动改。</p><p><span class="label">怎么读：</span>幅频响应的凹口更宽；10 Hz 幅度比约 0.961、50 Hz 仍为 0。主图中 R 波可能更容易形变。</p><p><span class="label">讲解结论：</span>双项正弦指标通过不等于整段心电保真；α 增大要同时比较带宽、暂态和波形失真。</p></li>
+</ol>
+</div>
+
 <h3>起步：先判断</h3>
 <p>先读题目，教师试用可在“先判断”输入：<code>一阶低通可能无法同时保留10 Hz并压低50 Hz，陷波可以在干扰频率放置零点。</code>，点击“开始操作”。学生请写自己的判断。</p>
 <h3>按顺序完成 4 组对照</h3>
@@ -937,7 +1014,7 @@
 <ol>
 <li>在“当前对照”选择 <code>1 / 4</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -967,7 +1044,7 @@
 <ol>
 <li>在“当前对照”选择 <code>2 / 4</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -997,7 +1074,7 @@
 <ol>
 <li>在“当前对照”选择 <code>3 / 4</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -1049,7 +1126,7 @@
 <ol>
 <li>在“当前对照”选择 <code>4 / 4</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -1254,6 +1331,18 @@
 <p>
 <a href="/learn/experiments/workspace#task/L2-4" target="_blank">打开本任务工作台</a>
 </p>
+<div class="walkthrough" data-teacher-walkthrough="L2-4">
+<h3>课堂讲解：每一步看哪里、怎么看</h3>
+<p class="muted">下面是教师带看顺序；使用“当前对照”的任务按组编号对应，黑箱、诊断和卷积任务按页面站点顺序对应。先让学生指出曲线和读数，再解释为什么。</p>
+<ol>
+<li><strong>第 1/5 组 · fs=100 Hz</strong><p><span class="label">看图：</span>看原信号、采样点和 sinc 重建曲线；采样点应密集覆盖 10 Hz 余弦。</p><p><span class="label">怎么读：</span>重建曲线与原信号基本重合，采样差接近 0。</p><p><span class="label">讲解结论：</span>采样率高于 2 倍信号频率时，带限重建可以恢复原信号。</p></li>
+<li><strong>第 2/5 组 · fs=15 Hz</strong><p><span class="label">看图：</span>把采样率改为 15 Hz，比较样本位置和重建曲线。</p><p><span class="label">怎么读：</span>样本变稀疏，重建波形与原 10 Hz 不再一致；10 Hz 在此采样率下会产生混叠候选。</p><p><span class="label">讲解结论：</span>采样点能连出一条平滑曲线，不代表它就是原来的连续信号；连接方式只是显示。</p></li>
+<li><strong>第 3/5 组 · 候选频率</strong><p><span class="label">看图：</span>在候选控件中调到 5 Hz，比较候选余弦与原信号在同一组采样时刻的值。</p><p><span class="label">怎么读：</span>候选曲线通过相同的采样点，样本差接近 0；10 Hz 和 5 Hz 在 15 Hz 采样下不可区分。</p><p><span class="label">讲解结论：</span>这就是频率歧义；找等样本候选时要同时看多个采样点，不能只看一个点。</p></li>
+<li><strong>第 4/5 组 · 3 kHz / 4 kHz 音频</strong><p><span class="label">看图：</span>先看原信号与重建信号的频率和播放听感，不先加抗混叠滤波。</p><p><span class="label">怎么读：</span>3 kHz 对 4 kHz 采样会混叠为 1 kHz；图上和听感都会把高频伪装成低频。</p><p><span class="label">讲解结论：</span>混叠发生在采样时刻，采样后看到的是已经折叠后的频率，不能把责任归给重建算法。</p></li>
+<li><strong>第 5/5 组 · 采样前抗混叠低通</strong><p><span class="label">看图：</span>打开独立 Butterworth 滤波，改变阶数和截止频率，比较混叠幅度。</p><p><span class="label">怎么读：</span>采样前先衰减高频，混叠幅度应降到目标以下；播放保持固定增益，不能靠归一化掩盖衰减。</p><p><span class="label">讲解结论：</span>低通必须在采样之前；50 Hz 心电陷波不能替代抗混叠低通，采样后滤波也不能恢复已丢失的原频率。</p></li>
+</ol>
+</div>
+
 <h3>起步：先判断</h3>
 <p>先读题目，教师试用可在“先判断”输入：<code>降低采样率可能出现同样本的其他频率，采样前滤波能减少高频混叠。</code>，点击“开始操作”。学生请写自己的判断。</p>
 <h3>按顺序完成 5 组对照</h3>
@@ -1261,7 +1350,7 @@
 <ol>
 <li>在“当前对照”选择 <code>1 / 5</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -1291,7 +1380,7 @@
 <ol>
 <li>在“当前对照”选择 <code>2 / 5</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -1321,7 +1410,7 @@
 <ol>
 <li>在“当前对照”选择 <code>3 / 5</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -1355,7 +1444,7 @@
 <ol>
 <li>在“当前对照”选择 <code>4 / 5</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -1390,7 +1479,7 @@
 <ol>
 <li>在“当前对照”选择 <code>5 / 5</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -1565,6 +1654,16 @@
 <p>
 <a href="/learn/experiments/workspace#task/L3-1" target="_blank">打开本任务工作台</a>
 </p>
+<div class="walkthrough" data-teacher-walkthrough="L3-1">
+<h3>课堂讲解：每一步看哪里、怎么看</h3>
+<p class="muted">下面是教师带看顺序；使用“当前对照”的任务按组编号对应，黑箱、诊断和卷积任务按页面站点顺序对应。先让学生指出曲线和读数，再解释为什么。</p>
+<ol>
+<li><strong>第 1/3 组 · 指数信号</strong><p><span class="label">看图：</span>看时域指数衰减图和变换模板。</p><p><span class="label">怎么读：</span>Ae^(−at)u(t) 对应 A/(s+a)：系数 c=A、分母常数 b=a、第一时移 d₁=0。</p><p><span class="label">讲解结论：</span>衰减率 a 进入分母，幅度 A 留在分子；t=0 之前信号为零，所以不是延迟。</p></li>
+<li><strong>第 2/3 组 · 延迟矩形</strong><p><span class="label">看图：</span>看矩形开始、结束和两次阶跃的边缘。</p><p><span class="label">怎么读：</span>宽度 1 s 的矩形从 t=0 开始、到 t=1 结束，模板 c=A、b=0、d₁=0、d₂=1。</p><p><span class="label">讲解结论：</span>有限矩形是两个阶跃之差；第二个时移表示结束时刻，不是持续时间本身。</p></li>
+<li><strong>第 3/3 组 · 独立延迟矩形</strong><p><span class="label">看图：</span>看 A=3、开始 1 s、持续 2 s 的图形，先确认起止边缘。</p><p><span class="label">怎么读：</span>开始为 1 s、结束为 3 s，模板为 c=3、b=0、d₁=1、d₂=3。</p><p><span class="label">讲解结论：</span>先在图上找到两个边缘，再把它们填进两个 e^(−ds) 因子，避免把 T=2 直接当作第二个时移。</p></li>
+</ol>
+</div>
+
 <h3>起步：先判断</h3>
 <p>先读题目，教师试用可在“先判断”输入：<code>延迟矩形可写为两个阶跃之差，第二个时移应该是结束时刻。</code>，点击“开始操作”。学生请写自己的判断。</p>
 <h3>按顺序完成 3 组对照</h3>
@@ -1572,7 +1671,7 @@
 <ol>
 <li>在“当前对照”选择 <code>1 / 3</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -1635,7 +1734,7 @@
 <ol>
 <li>在“当前对照”选择 <code>2 / 3</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -1704,7 +1803,7 @@
 <ol>
 <li>在“当前对照”选择 <code>3 / 3</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -1909,6 +2008,18 @@
 <p>
 <a href="/learn/experiments/workspace#task/L3-2" target="_blank">打开本任务工作台</a>
 </p>
+<div class="walkthrough" data-teacher-walkthrough="L3-2">
+<h3>课堂讲解：每一步看哪里、怎么看</h3>
+<p class="muted">下面是教师带看顺序；使用“当前对照”的任务按组编号对应，黑箱、诊断和卷积任务按页面站点顺序对应。先让学生指出曲线和读数，再解释为什么。</p>
+<ol>
+<li><strong>第 1/5 组 · 零初值模板</strong><p><span class="label">看图：</span>看阶跃响应曲线、H/X/Y 公式与部分分式模板。</p><p><span class="label">怎么读：</span>H=1/(s+1)、X=1/s、Y=1/[s(s+1)]，部分分式为 C/s+D/(s+1)；y(0)=0，y(∞)=1。</p><p><span class="label">讲解结论：</span>先由 y(0) 和最终值检查系数，不能只把曲线形状对上。</p></li>
+<li><strong>第 2/5 组 · t=1 s 对照</strong><p><span class="label">看图：</span>看解析曲线和独立数值曲线的同一竖线。</p><p><span class="label">怎么读：</span>y(1)=1−e^(−1)≈0.632；两条曲线应在标记处重合。</p><p><span class="label">讲解结论：</span>解析计算和独立积分互相核验，读数误差应落在题目容差内。</p></li>
+<li><strong>第 3/5 组 · 寻找 t90</strong><p><span class="label">看图：</span>移动测量时刻，观察零状态响应何时首次达到 0.900。</p><p><span class="label">怎么读：</span>解 1−e^(−t)=0.9，得 t=−ln0.1≈2.303 s；界面按误差不超过 0.002 判断。</p><p><span class="label">讲解结论：</span>t90 是零状态响应达到 90% 的时间，不要拿非零初值的到达时间代替。</p></li>
+<li><strong>第 4/5 组 · 初值 y₀=0.5</strong><p><span class="label">看图：</span>比较全响应起点、指数项系数和最终值。</p><p><span class="label">怎么读：</span>b₀=0.5，y=1−0.5e^(−t)，起点为 0.5、最终仍趋向 1。</p><p><span class="label">讲解结论：</span>非零初值会加入初始项，改变起点和暂态系数，但不改变稳定系统的长期输入值。</p></li>
+<li><strong>第 5/5 组 · 初值 y₀=2</strong><p><span class="label">看图：</span>与上一组比较起点和曲线方向。</p><p><span class="label">怎么读：</span>b₀=2，y=1+e^(−t)，起点为 2，输出先下降后趋向 1。</p><p><span class="label">讲解结论：</span>只写 Y=HX 会漏掉初值项；初值越高，暂态需要衰减的初始偏差越大。</p></li>
+</ol>
+</div>
+
 <h3>起步：先判断</h3>
 <p>先读题目，教师试用可在“先判断”输入：<code>非零初值会贡献零输入响应，因此只用Y=HX可能遗漏初始状态。</code>，点击“开始操作”。学生请写自己的判断。</p>
 <h3>按顺序完成 5 组对照</h3>
@@ -1916,7 +2027,7 @@
 <ol>
 <li>在“当前对照”选择 <code>1 / 5</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -1986,7 +2097,7 @@
 <ol>
 <li>在“当前对照”选择 <code>2 / 5</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -2056,7 +2167,7 @@
 <ol>
 <li>在“当前对照”选择 <code>3 / 5</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -2126,7 +2237,7 @@
 <ol>
 <li>在“当前对照”选择 <code>4 / 5</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -2196,7 +2307,7 @@
 <ol>
 <li>在“当前对照”选择 <code>5 / 5</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -2423,6 +2534,18 @@
 <p>
 <a href="/learn/experiments/workspace#task/L3-3" target="_blank">打开本任务工作台</a>
 </p>
+<div class="walkthrough" data-teacher-walkthrough="L3-3">
+<h3>课堂讲解：每一步看哪里、怎么看</h3>
+<p class="muted">下面是教师带看顺序；使用“当前对照”的任务按组编号对应，黑箱、诊断和卷积任务按页面站点顺序对应。先让学生指出曲线和读数，再解释为什么。</p>
+<ol>
+<li><strong>第 1/5 组 · α=5 窄带陷波</strong><p><span class="label">看图：</span>看零极点图、幅频响应和心电输出；虚轴单位是 rad/s。</p><p><span class="label">怎么读：</span>零点在 ±j2π50，极点在 −5±j2π50；ROC 为 Re(s)>−5，包含虚轴，系统稳定。</p><p><span class="label">讲解结论：</span>零点负责 50 Hz 的陷波，极点实部决定衰减速度；不要把 50 Hz 直接读成虚轴 50 rad/s。</p></li>
+<li><strong>第 2/5 组 · α=60 宽带陷波</strong><p><span class="label">看图：</span>保持中心 50 Hz，比较幅频凹口宽度、暂态和 R 波。</p><p><span class="label">怎么读：</span>极点移到 −60±j2π50，凹口更宽、暂态衰减更快，但更多心电频率会受影响。</p><p><span class="label">讲解结论：</span>α 增大不是单纯“更好”；它在抑制宽度、暂态速度和波形保真之间取舍。</p></li>
+<li><strong>第 3/5 组 · α=−10 不稳定</strong><p><span class="label">看图：</span>看极点是否进入右半平面，以及时域输出是否发散。</p><p><span class="label">怎么读：</span>极点为 +10±j2π50，右半平面；因果响应发散，不能把 H(jω) 的代数截面当作稳态频响。</p><p><span class="label">讲解结论：</span>零点和极点位置相同不代表稳定；稳定性由极点和 ROC 决定。</p></li>
+<li><strong>第 4/5 组 · 接入实验二方案</strong><p><span class="label">看图：</span>在极点图上拖动或输入 center、alpha，观察两项幅度指标和稳定状态。</p><p><span class="label">怎么读：</span>中心对准 50 Hz，α>0，且 10 Hz 幅度比达标、50 Hz 幅度比达标；极点应保持在左半平面。</p><p><span class="label">讲解结论：</span>稳定、中心、两个幅度指标要同时满足，不能只把零点拖到 50 Hz。</p></li>
+<li><strong>第 5/5 组 · 同参数频响</strong><p><span class="label">看图：</span>保持刚才的设计参数，同时看心电输出与幅频响应。</p><p><span class="label">怎么读：</span>频响在 50 Hz 形成凹口，时域中工频细纹被压低；R 波和低频形态也要检查。</p><p><span class="label">讲解结论：</span>这一组把频域指标与时域波形连起来，解释频带宽度和暂态代价。</p></li>
+</ol>
+</div>
+
 <h3>起步：先判断</h3>
 <p>先读题目，教师试用可在“先判断”输入：<code>正α使极点位于左半平面，负α可能导致不稳定；零点应对准50 Hz。</code>，点击“开始操作”。学生请写自己的判断。</p>
 <h3>按顺序完成 5 组对照</h3>
@@ -2430,7 +2553,7 @@
 <ol>
 <li>在“当前对照”选择 <code>1 / 5</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -2489,7 +2612,7 @@
 <ol>
 <li>在“当前对照”选择 <code>2 / 5</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -2546,7 +2669,7 @@
 <ol>
 <li>在“当前对照”选择 <code>3 / 5</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -2605,7 +2728,7 @@
 <ol>
 <li>在“当前对照”选择 <code>4 / 5</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -2663,7 +2786,7 @@
 <ol>
 <li>在“当前对照”选择 <code>5 / 5</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -2859,6 +2982,16 @@
 <p>
 <a href="/learn/experiments/workspace#task/L3-4" target="_blank">打开本任务工作台</a>
 </p>
+<div class="walkthrough" data-teacher-walkthrough="L3-4">
+<h3>课堂讲解：每一步看哪里、怎么看</h3>
+<p class="muted">下面是教师带看顺序；使用“当前对照”的任务按组编号对应，黑箱、诊断和卷积任务按页面站点顺序对应。先让学生指出曲线和读数，再解释为什么。</p>
+<ol>
+<li><strong>第 1/3 组 · T=0.5 s</strong><p><span class="label">看图：</span>看矩形输入和响应曲线，找到峰值位置。</p><p><span class="label">怎么读：</span>输出在 t=T=0.5 s 达到峰值 1−e^(−0.5)≈0.393；输入结束后曲线继续衰减。</p><p><span class="label">讲解结论：</span>峰值发生在输入结束时刻，不能读成输入结束后的某个更晚点。</p></li>
+<li><strong>第 2/3 组 · T=2 s</strong><p><span class="label">看图：</span>与上一组比较峰值高度和峰值时刻。</p><p><span class="label">怎么读：</span>峰值在 t=2 s，约为 1−e^(−2)≈0.865；脉宽越长，峰值越高。</p><p><span class="label">讲解结论：</span>在达到最终值之前，持续时间越长，输出积累得越多。</p></li>
+<li><strong>第 3/3 组 · 细调最短脉宽</strong><p><span class="label">看图：</span>在 1.60 s 与 1.61 s 附近观察峰值与是否达标。</p><p><span class="label">怎么读：</span>理论下界 T≥−ln(1−0.8)=ln5≈1.609 s；控件步长 0.01 s 时最短方案为 1.61 s，峰值约 0.800。</p><p><span class="label">讲解结论：</span>必须同时检查相邻更短的 1.60 s 不达标；找到可行方案不等于证明了最短。</p></li>
+</ol>
+</div>
+
 <h3>起步：先判断</h3>
 <p>先读题目，教师试用可在“先判断”输入：<code>脉冲越长输出峰值越高，最短可选宽度还受0.01 s步长限制。</code>，点击“开始操作”。学生请写自己的判断。</p>
 <h3>按顺序完成 3 组对照</h3>
@@ -2866,7 +2999,7 @@
 <ol>
 <li>在“当前对照”选择 <code>1 / 3</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -2891,7 +3024,7 @@
 <ol>
 <li>在“当前对照”选择 <code>2 / 3</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>
@@ -2916,7 +3049,7 @@
 <ol>
 <li>在“当前对照”选择 <code>3 / 3</code>。页面会载入本组固定参数；下列标“手动”的项目需要按表操作。</li>
 <li>
-<table>
+<table class="params">
 <thead>
 <tr>
 <th>控件</th>

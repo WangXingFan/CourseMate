@@ -177,13 +177,16 @@ func TestVirtualLabGuideRoles(t *testing.T) {
 			if err := json.Unmarshal(res.Body.Bytes(), &env); err != nil {
 				t.Fatal(err)
 			}
-			if strings.Count(env.Data.HTML, `<details class="task">`) != 12 || strings.Contains(env.Data.HTML, "信号与系统虚拟实验室/index.html") {
+			if strings.Count(env.Data.HTML, `<details class="task">`) != 12 || strings.Count(env.Data.HTML, `data-teacher-walkthrough=`) != 12 || strings.Contains(env.Data.HTML, "信号与系统虚拟实验室/index.html") {
 				t.Fatal("guide incomplete or stale link")
+			}
+			if strings.Count(env.Data.HTML, "课堂讲解：每一步看哪里、怎么看") != 12 || strings.Count(env.Data.HTML, "看图：") != 12 || strings.Count(env.Data.HTML, "怎么读：") != 12 || strings.Count(env.Data.HTML, "讲解结论：") != 12 {
+				t.Fatal("teacher walkthroughs incomplete")
 			}
 			for course := 1; course <= 3; course++ {
 				for task := 1; task <= 4; task++ {
 					id := fmt.Sprintf("L%d-%d", course, task)
-					if !strings.Contains(env.Data.HTML, "<summary>"+id+" · ") || !strings.Contains(env.Data.HTML, `href="/learn/experiments/workspace#task/`+id+`"`) {
+					if !strings.Contains(env.Data.HTML, "<summary>"+id+" · ") || !strings.Contains(env.Data.HTML, `data-teacher-walkthrough="`+id+`"`) || !strings.Contains(env.Data.HTML, `href="/learn/experiments/workspace#task/`+id+`"`) || !strings.Contains(env.Data.HTML, "课堂讲解：每一步看哪里、怎么看") || !strings.Contains(env.Data.HTML, "怎么读：") || !strings.Contains(env.Data.HTML, "讲解结论：") {
 						t.Fatalf("guide missing task section or workbench link: %s", id)
 					}
 				}
