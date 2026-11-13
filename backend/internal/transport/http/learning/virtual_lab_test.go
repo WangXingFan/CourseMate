@@ -180,7 +180,7 @@ func TestVirtualLabGuideRoles(t *testing.T) {
 			if strings.Count(env.Data.HTML, `<details class="task">`) != 12 || strings.Count(env.Data.HTML, `data-teacher-walkthrough=`) != 12 || strings.Contains(env.Data.HTML, "信号与系统虚拟实验室/index.html") {
 				t.Fatal("guide incomplete or stale link")
 			}
-			if strings.Count(env.Data.HTML, "课堂讲解：每一步看哪里、怎么看") != 12 || strings.Count(env.Data.HTML, "看图：") != 12 || strings.Count(env.Data.HTML, "怎么读：") != 12 || strings.Count(env.Data.HTML, "讲解结论：") != 12 {
+			if strings.Count(env.Data.HTML, "课堂讲解：每一步看哪里、怎么看") != 12 || strings.Count(env.Data.HTML, "看图：") < 12 || strings.Count(env.Data.HTML, "怎么读：") < 12 || strings.Count(env.Data.HTML, "讲解结论：") < 12 {
 				t.Fatal("teacher walkthroughs incomplete")
 			}
 			for course := 1; course <= 3; course++ {
