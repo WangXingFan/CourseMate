@@ -1030,7 +1030,7 @@
             "shift": "Shift right 1 s: compare phase at f=0.25 Hz",
             "amplitude": "Double amplitude: compare the DC value"
           },
-          "given": "Rectangular pulse $x(t)$; amplitude, width and center are specified below. $X(f)=AT\\operatorname{sinc}(fT)e^{-j2\\pi ft_0}$, with $\\operatorname{sinc}(z)=\\frac{\\sin(\\pi z)}{\\pi z}$; the first pair of zeros is at $\\pm 1/T$, so the main-lobe width is $2/T$.",
+          "given": "Rectangular pulse $x(t)$; amplitude, width and center are specified below. $X(f)=AT\\operatorname'{sinc}(fT)e^{-j2\\pi ft_0}$, with $\\operatorname{sinc}(z)=\\frac{\\sin(\\pi z)}{\\pi z}'$; the first pair of zeros is at $\\pm 1/T$, so the main-lobe width is $2/T$.",
           "objective": "Verify how pulse width, delay and amplitude change the spectrum, and find the main-lobe width from the first pair of zeros."
         },
         "L2-3": {
